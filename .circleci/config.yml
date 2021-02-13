@@ -8,12 +8,16 @@ version: 2.0
 # https://hub.docker.com/r/circleci/node/tags/
 
 jobs:
-  build:
+  install-and-cibuild:
     docker:
       - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
     steps:
       - checkout
+      - run:
+          name: set heap option before very first node.js call
+          command: |
+            export NODE_OPTIONS='--max-old-space-size=4096'
       - run:
           name: Install dependencies
           command: |
@@ -36,7 +40,7 @@ jobs:
           paths:
             - plotly.js
 
-  test-jasmine:
+  no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -46,10 +50,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run jasmine tests (batch 1)
-          command: ./.circleci/test.sh jasmine
+          name: Run jasmine tests (part A)
+          command: ./.circleci/test.sh no-gl-jasmine
 
-  test-jasmine2:
+  webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -59,10 +63,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run jasmine tests (batch 2)
-          command: ./.circleci/test.sh jasmine2
+          name: Run jasmine tests (part B)
+          command: ./.circleci/test.sh webgl-jasmine
 
-  test-jasmine3:
+  no-gl-flaky-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -71,10 +75,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run jasmine tests (batch 3)
-          command: ./.circleci/test.sh jasmine3
+          name: Run jasmine tests (part C)
+          command: ./.circleci/test.sh no-gl-flaky-jasmine
 
-  test-image:
+  stable-image:
     docker:
       - image: plotly/testbed:latest
     parallelism: 4
@@ -88,13 +92,13 @@ jobs:
             supervisord &
             npm run docker -- setup
       - run:
-          name: Run image tests
-          command: ./.circleci/test.sh image
+          name: Run image tests (part A)
+          command: ./.circleci/test.sh stable-image
       - store_artifacts:
           path: build
           destination: /
 
-  test-image2:
+  flaky-image:
     docker:
       - image: plotly/testbed:latest
     working_directory: /var/www/streambed/image_server/plotly.js/
@@ -107,13 +111,13 @@ jobs:
             supervisord &
             npm run docker -- setup
       - run:
-          name: Run image tests
-          command: ./.circleci/test.sh image2
+          name: Run image tests (part B)
+          command: ./.circleci/test.sh flaky-image
       - store_artifacts:
           path: build
           destination: /
 
-  test-syntax:
+  source-syntax:
     docker:
       - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
@@ -121,10 +125,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run syntax tests
-          command: ./.circleci/test.sh syntax
+          name: Run syntax tests on source files
+          command: ./.circleci/test.sh source-syntax
 
-  test-bundle:
+  jasmine-bundle:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.13.0-browsers
@@ -133,10 +137,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Run test-bundle
-          command: ./.circleci/test.sh bundle
+          name: Run jasmine tests (part D)
+          command: ./.circleci/test.sh jasmine-bundle
 
-  publish:
+  publish-dist:
     docker:
       - image: circleci/node:12.13.0
     working_directory: ~/plotly.js
@@ -167,44 +171,52 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
       - run:
+          name: Test validation using node.js and jsdom
+          command: npm run test-plain-obj
+      - run:
+          name: Test plotly.min.js import using requirejs
+          command: npm run test-requirejs
+      - run:
           name: Test plotly bundles againt unexpected characters
           command: npm run no-bad-char
-      - run:
-          name: Test plotly bundles againt duplicate keys
-          command: npm run no-dup-keys
       - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
+      - run:
+          name: Test plotly bundles againt duplicate keys
+          environment:
+            NODE_OPTIONS: --max_old_space_size=4096
+          command: npm run no-dup-keys
 
 workflows:
   version: 2
   build-and-test:
     jobs:
-      - build
-      - test-bundle:
+      - install-and-cibuild
+      - jasmine-bundle:
           requires:
-            - build
-      - test-jasmine:
+            - install-and-cibuild
+      - no-gl-jasmine:
           requires:
-            - build
-      - test-jasmine2:
+            - install-and-cibuild
+      - webgl-jasmine:
           requires:
-            - build
-      - test-jasmine3:
+            - install-and-cibuild
+      - no-gl-flaky-jasmine:
           requires:
-            - build
-      - test-image:
+            - install-and-cibuild
+      - stable-image:
           requires:
-            - build
-      - test-image2:
+            - install-and-cibuild
+      - flaky-image:
           requires:
-            - build
-      - test-syntax:
+            - install-and-cibuild
+      - source-syntax:
           requires:
-            - build
-      - publish:
+            - install-and-cibuild
+      - publish-dist:
           requires:
-            - build
+            - install-and-cibuild

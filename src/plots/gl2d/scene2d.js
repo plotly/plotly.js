@@ -401,9 +401,10 @@ proto.plot = function(fullData, calcData, fullLayout) {
     options.screenBox = [0, 0, width, height];
 
     var mockGraphDiv = {_fullLayout: {
-        _axisConstraintGroups: this.graphDiv._fullLayout._axisConstraintGroups,
+        _axisConstraintGroups: fullLayout._axisConstraintGroups,
         xaxis: this.xaxis,
-        yaxis: this.yaxis
+        yaxis: this.yaxis,
+        _size: fullLayout._size
     }};
 
     cleanAxisConstraints(mockGraphDiv, this.xaxis);

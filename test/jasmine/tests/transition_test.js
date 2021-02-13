@@ -12,26 +12,31 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var delay = require('../assets/delay');
 var mock = require('@mocks/animation');
 
-function runTests(transitionDuration) {
-    describe('Plots.transition (duration = ' + transitionDuration + ')', function() {
-        'use strict';
+describe('Plots.transition', function() {
+    'use strict';
 
-        var gd;
+    var gd;
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
+    beforeEach(function(done) {
+        gd = createGraphDiv();
 
-            var mockCopy = Lib.extendDeep({}, mock);
+        var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
-        });
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
 
-        afterEach(function() {
-            Plotly.purge(gd);
-            destroyGraphDiv();
-        });
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
 
-        it('resolves only once the transition has completed', function(done) {
+    // Run the whole set of tests twice: once with zero duration and once with
+    // nonzero duration since the behavior should be identical, but there's a
+    // very real possibility of race conditions or other timing issues.
+    //
+    // And of course, remember to put the async loop in a closure:
+    [0, 20].forEach(function(transitionDuration) {
+        it('with duration:' + transitionDuration + ', resolves only once the transition has completed', function(done) {
             var t1 = Date.now();
             var traces = plotApiHelpers.coerceTraceIndices(gd, null);
 
@@ -42,7 +47,7 @@ function runTests(transitionDuration) {
                 }).then(done, done.fail);
         });
 
-        it('emits plotly_transitioning on transition start', function(done) {
+        it('with duration:' + transitionDuration + ', emits plotly_transitioning on transition start', function(done) {
             var beginTransitionCnt = 0;
             var traces = plotApiHelpers.coerceTraceIndices(gd, null);
 
@@ -55,7 +60,7 @@ function runTests(transitionDuration) {
                 }).then(done, done.fail);
         });
 
-        it('emits plotly_transitioned on transition end', function(done) {
+        it('with duration:' + transitionDuration + ', emits plotly_transitioned on transition end', function(done) {
             var trEndCnt = 0;
             var traces = plotApiHelpers.coerceTraceIndices(gd, null);
 
@@ -68,7 +73,7 @@ function runTests(transitionDuration) {
                 }).then(done, done.fail);
         });
 
-        it('transitions an annotation', function(done) {
+        it('with duration:' + transitionDuration + ', transitions an annotation', function(done) {
             function annotationPosition() {
                 var g = gd._fullLayout._infolayer.select('.annotation').select('.annotation-text-g');
                 var bBox = g.node().getBoundingClientRect();
@@ -96,7 +101,7 @@ function runTests(transitionDuration) {
             }).then(done, done.fail);
         });
 
-        it('transitions an image', function(done) {
+        it('with duration:' + transitionDuration + ', transitions an image', function(done) {
             var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
             var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
@@ -131,7 +136,7 @@ function runTests(transitionDuration) {
             }).then(done, done.fail);
         });
 
-        it('transitions a shape', function(done) {
+        it('with duration:' + transitionDuration + ', transitions a shape', function(done) {
             function getPath() {
                 return gd._fullLayout._shapeUpperLayer.select('path').node();
             }
@@ -189,7 +194,7 @@ function runTests(transitionDuration) {
         });
 
 
-        it('transitions a transform', function(done) {
+        it('with duration:' + transitionDuration + ', transitions a transform', function(done) {
             Plotly.restyle(gd, {
                 'transforms[0]': {
                     enabled: true,
@@ -226,7 +231,7 @@ function runTests(transitionDuration) {
 
         // This doesn't really test anything that the above tests don't cover, but it combines
         // the behavior and attempts to ensure chaining and events happen in the correct order.
-        it('transitions may be chained', function(done) {
+        it('with duration:' + transitionDuration + ', transitions may be chained', function(done) {
             var currentlyRunning = 0;
             var beginCnt = 0;
             var endCnt = 0;
@@ -258,17 +263,8 @@ function runTests(transitionDuration) {
                 .then(done, done.fail);
         });
     });
-}
+});
 
-for(var i = 0; i < 2; i++) {
-    var duration = i * 20;
-    // Run the whole set of tests twice: once with zero duration and once with
-    // nonzero duration since the behavior should be identical, but there's a
-    // very real possibility of race conditions or other timing issues.
-    //
-    // And of course, remember to put the async loop in a closure:
-    runTests(duration);
-}
 
 describe('Plotly.react transitions:', function() {
     var gd;
@@ -844,7 +840,7 @@ describe('Plotly.react transitions:', function() {
         .then(done, done.fail);
     });
 
-    it('should not transition layout when axis auto-ranged value do not changed', function(done) {
+    it('@flaky should not transition layout when axis auto-ranged value do not changed', function(done) {
         var data = [{y: [1, 2, 1]}];
         var layout = {transition: {duration: 10}};
 

@@ -750,7 +750,7 @@ describe('Animating multiple axes', function() {
         .then(done, done.fail);
     });
 
-    it('updates ranges of secondary axes (date + category case)', function(done) {
+    it('@flaky updates ranges of secondary axes (date + category case)', function(done) {
         Plotly.newPlot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
@@ -950,7 +950,7 @@ describe('animating scatter traces', function() {
         }).then(done, done.fail);
     });
 
-    it('should animate axis ranges using the less number of steps', function(done) {
+    it('@flaky should animate axis ranges using the less number of steps', function(done) {
         // sanity-check that scatter points and bars are still there
         function _assertNodeCnt() {
             var gd3 = d3Select(gd);

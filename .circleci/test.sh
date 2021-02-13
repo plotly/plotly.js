@@ -41,7 +41,7 @@ set_tz () {
 
 case $1 in
 
-    jasmine)
+    no-gl-jasmine)
         set_tz
 
         SUITE=$(circleci tests glob "$ROOT/test/jasmine/tests/*" | circleci tests split)
@@ -50,7 +50,7 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    jasmine2)
+    webgl-jasmine)
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=5 --tag=gl | circleci tests split))
@@ -62,7 +62,7 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    jasmine3)
+    no-gl-flaky-jasmine)
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))
@@ -75,26 +75,26 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    image)
+    stable-image)
         SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | circleci tests split)
         npm run test-image -- $SUITE --filter --skip-flaky || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
-    image2)
+    flaky-image)
         MAX_AUTO_RETRY=5
         retry npm run test-image -- --just-flaky
         npm run test-export     || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
-    bundle)
+    jasmine-bundle)
         set_tz
         npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
-    syntax)
+    source-syntax)
         npm run lint        || EXIT_STATE=$?
         npm run test-syntax || EXIT_STATE=$?
         exit $EXIT_STATE
