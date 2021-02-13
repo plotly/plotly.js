@@ -945,8 +945,8 @@ describe('Test splom interactions:', function() {
 
         function assertDims(msg, w, h) {
             var canvas = gd._fullLayout._glcanvas;
-            expect(canvas.node().width).toBe(w, msg + '| canvas width');
-            expect(canvas.node().height).toBe(h, msg + '| canvas height');
+            expect(canvas.node().width / 2).toBe(w, msg + '| canvas width');
+            expect(canvas.node().height / 2).toBe(h, msg + '| canvas height');
 
             var gl = canvas.data()[0].regl._gl;
             if(/Chrome\/78/.test(window.navigator.userAgent)) {
@@ -954,8 +954,8 @@ describe('Test splom interactions:', function() {
                 expect(gl.drawingBufferWidth).toBe(Math.min(w, 4096), msg + '| drawingBufferWidth');
                 expect(gl.drawingBufferHeight).toBe(Math.min(h, 4096), msg + '| drawingBufferHeight');
             } else {
-                expect(gl.drawingBufferWidth).toBe(w, msg + '| drawingBufferWidth');
-                expect(gl.drawingBufferHeight).toBe(h, msg + '| drawingBufferHeight');
+                expect(gl.drawingBufferWidth / 2).toBe(w, msg + '| drawingBufferWidth');
+                expect(gl.drawingBufferHeight / 2).toBe(h, msg + '| drawingBufferHeight');
             }
         }
 
@@ -1222,7 +1222,7 @@ describe('Test splom update switchboard:', function() {
 
             expect(toPlainArray(scene.matrixOptions.color))
                 .toBeCloseToArray([31, 119, 180, 255], 1, 'base color');
-            expect(scene.matrixOptions.size).toBe(3, 'base size');
+            expect(scene.matrixOptions.size).toBe(6, 'base size');
             expect(fullLayout.xaxis.range).toBeCloseToArray([0.851, 3.148], 1, 'base xrng');
 
             return Plotly.restyle(gd, 'marker.color', 'black');
@@ -1302,7 +1302,7 @@ describe('Test splom update switchboard:', function() {
                 ['draw', 1]
             ]);
 
-            expect(scene.matrixOptions.size).toBe(10, msg);
+            expect(scene.matrixOptions.size).toBe(20, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.753, 3.246], 1, 'xrng ' + msg);
 
@@ -1320,7 +1320,7 @@ describe('Test splom update switchboard:', function() {
                 ['draw', 1]
             ]);
 
-            expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
+            expect(scene.matrixOptions.sizes).toBeCloseToArray([4, 10, 20], 1, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
 
