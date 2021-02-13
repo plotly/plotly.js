@@ -435,6 +435,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
     var plotGlPixelRatio = gd._context.plotGlPixelRatio;
+    var paperColor = gd._fullLayout.paper_bgcolor;
 
     calcAllTicks(cdModule);
 
@@ -454,6 +455,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
             d.viewModel.plotGlPixelRatio = plotGlPixelRatio;
+            d.viewModel.paperColor = paperColor;
             d.model = d.viewModel ? d.viewModel.model : null;
         });
 
@@ -650,7 +652,12 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .attr('stroke-width', '1px');
 
     axis.selectAll('text')
-        .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
+        .style('text-shadow',
+            paperColor + ' 1px 1px 1px #fff, ' +
+            paperColor + ' -1px -1px 1px #fff, ' +
+            paperColor + ' 1px -1px 1px #fff, ' +
+            paperColor + ' -1px 1px 1px #fff'
+        )
         .style('cursor', 'default');
 
     var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)
@@ -752,5 +759,5 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .text(function(d) { return extremeText(d, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
-    brush.ensureAxisBrush(axisOverlays);
+    brush.ensureAxisBrush(axisOverlays, paperColor);
 };
