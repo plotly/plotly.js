@@ -627,6 +627,17 @@ describe('config argument', function() {
                 }
             }
 
+            function checkCanvasSize(canvases, width, height) {
+                var i;
+                for(i = 0; i < canvases.length; i++) {
+                    var domRect = canvases[i].getBoundingClientRect();
+                    expect(domRect.width).toBe(width);
+                    expect(domRect.height).toBe(height);
+                    expect(+canvases[i].getAttribute('width')).toBe(width * 2);
+                    expect(+canvases[i].getAttribute('height')).toBe(height * 2);
+                }
+            }
+
             function testResponsive() {
                 checkLayoutSize(elWidth, elHeight);
                 viewport.set(width / 2, height / 2);
@@ -640,7 +651,7 @@ describe('config argument', function() {
                     checkElementsSize(mainSvgs, elWidth / 2, elHeight / 2);
 
                     var canvases = document.getElementsByTagName('canvas');
-                    checkElementsSize(canvases, elWidth, elHeight);
+                    checkCanvasSize(canvases, elWidth / 2, elHeight / 2);
                 })
                 .catch(failTest);
             }
