@@ -73,7 +73,7 @@ function convertStyle(gd, trace) {
 
         var dashes = (constants.DASHES[trace.line.dash] || [1]).slice();
         for(i = 0; i < dashes.length; ++i) {
-            dashes[i] *= trace.line.width;
+            dashes[i] *= trace.line.width * plotGlPixelRatio;
         }
         opts.line.dashes = dashes;
     }
