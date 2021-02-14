@@ -138,13 +138,13 @@ function makeGridData(gd) {
 
         if(xa.showgrid) {
             for(k = 0; k < xVals.length; k++) {
-                x = xoffset + xa.l2p(xVals[k].x);
+                x = xoffset + xa.l2p(xVals[k].x) * plotGlPixelRatio;
                 push('grid', xa, x, yOffset, x, yOffset + ylength);
             }
         }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
-                y = yOffset + yb + ym * yVals[k].x;
+                y = yOffset + yb + ym * yVals[k].x * plotGlPixelRatio;
                 push('grid', ya, xoffset, y, xoffset + xlength, y);
             }
         }
