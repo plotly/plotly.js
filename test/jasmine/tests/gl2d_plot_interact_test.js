@@ -255,8 +255,8 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should not clear context when dimensions are not integers', function(done) {
-        var w = 500.5;
-        var h = 400.5;
+        var w = 500.25;
+        var h = 400.25;
         var w0 = Math.floor(w);
         var h0 = Math.floor(h);
 
@@ -266,12 +266,12 @@ describe('Test gl plot side effects', function() {
             expect(fullLayout.height).toBe(h, msg);
 
             var canvas = fullLayout._glcanvas;
-            expect(canvas.node().width).toBe(w0, msg);
-            expect(canvas.node().height).toBe(h0, msg);
+            expect(canvas.node().width).toBe(w0 * 2, msg);
+            expect(canvas.node().height).toBe(h0 * 2, msg);
 
             var gl = canvas.data()[0].regl._gl;
-            expect(gl.drawingBufferWidth).toBe(w0, msg);
-            expect(gl.drawingBufferHeight).toBe(h0, msg);
+            expect(gl.drawingBufferWidth).toBe(w0 * 2, msg);
+            expect(gl.drawingBufferHeight).toBe(h0 * 2, msg);
         }
 
         Plotly.newPlot(gd, [{
