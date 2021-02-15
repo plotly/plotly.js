@@ -21,7 +21,11 @@ module.exports = function click(gd, evt, subplot) {
     if(evt && evt.target) {
         if(gd._hoverdata) {
             data = gd._hoverdata;
-        } else if(clickmode.indexOf('anywhere') > -1) {
+        } else if(gd._fullLayout.geo){
+            var lat = gd._fullLayout.geo._subplot.xaxis.p2c();
+            var lon = gd._fullLayout.geo._subplot.yaxis.p2c();
+            data = [{lat: lat, lon: lon}];
+        }else if(clickmode.indexOf('anywhere') > -1) {
             var xaxis = gd._fullLayout.xaxis;
             var yaxis = gd._fullLayout.yaxis;
             var bb = evt.target.getBoundingClientRect();
