@@ -163,7 +163,7 @@
     "karma-viewport": "^1.0.7",
     "lodash": "^4.17.20",
     "madge": "^3.12.0",
-    "mathjax": "2.7.9",
+    "mathjax": "2.7.5",
     "minify-stream": "^2.1.0",
     "mkdirp": "^1.0.4",
     "node-sass": "^5.0.0",

@@ -59,7 +59,7 @@ function getInfoContent() {
         '```',
         '',
         'You can get the relevant MathJax files from the internet e.g.',
-        '"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/MathJax.js?config=TeX-AMS-MML_SVG.js"',
+        '"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js"',
         '',
         'By default, plotly.js will modify the global MathJax configuration on load.',
         'This can lead to undesirable behavior if plotly.js is loaded alongside',
