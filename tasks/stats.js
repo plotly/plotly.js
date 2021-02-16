@@ -172,13 +172,13 @@ function makeBundleHeaderInfo(pathObj) {
 function makeBundleInfo(pathObj) {
     var name = pathObj.name;
     var sizes = findSizes(pathObj);
-    var moduleList = common.findModuleList(pathObj.index);
+    var traceList = constants.partialBundleTraces[pathObj.name];
     var pkgName = 'plotly.js-' + name + '-dist';
 
     return [
         '### plotly.js ' + name,
         '',
-        'The `' + name + '` partial bundle contains trace modules ' + common.formatEnumeration(moduleList) + '.',
+        'The `' + name + '` partial bundle contains trace modules ' + common.formatEnumeration(traceList) + '.',
         '',
         '#### Stats',
         '',

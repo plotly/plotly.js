@@ -1,7 +1,7 @@
 var Plots = require('@src/plots/plots');
-var Plotly = require('@lib/core');
-var ohlc = require('@lib/ohlc');
-var candlestick = require('@lib/candlestick');
+var Plotly = require('@src/core');
+var ohlc = require('@src/traces/ohlc');
+var candlestick = require('@src/traces/candlestick');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');

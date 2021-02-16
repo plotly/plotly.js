@@ -1,7 +1,7 @@
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/core');
-var PlotlyContour = require('@lib/contour');
+var Plotly = require('@src/core');
+var PlotlyContour = require('@src/traces/contour');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

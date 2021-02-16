@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var supplyDefaults = require('@src/traces/mesh3d').supplyDefaults;
 var createGraphDiv = require('../assets/create_graph_div');

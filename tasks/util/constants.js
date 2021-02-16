@@ -29,10 +29,112 @@ var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
 ];
 
+var partialBundleTraces = {
+    basic: [
+        'bar',
+        'pie',
+        'scatter'
+    ],
+    cartesian: [
+        'bar',
+        'box',
+        'contour',
+        'heatmap',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'image',
+        'pie',
+        'scatter',
+        'scatterternary',
+        'violin'
+    ],
+    finance: [
+        'bar',
+        'candlestick',
+        'funnel',
+        'funnelarea',
+        'histogram',
+        'indicator',
+        'ohlc',
+        'pie',
+        'scatter',
+        'waterfall'
+    ],
+    geo: [
+        'choropleth',
+        'scatter',
+        'scattergeo'
+    ],
+    gl2d: [
+        'heatmapgl',
+        'parcoords',
+        'pointcloud',
+        'scatter',
+        'scattergl',
+        'splom'
+    ],
+    gl3d: [
+        'cone',
+        'isosurface',
+        'mesh3d',
+        'scatter',
+        'scatter3d',
+        'streamtube',
+        'surface',
+        'volume'
+    ],
+    mapbox: [
+        'choroplethmapbox',
+        'densitymapbox',
+        'scatter',
+        'scattermapbox'
+    ],
+    strict: [
+        'bar',
+        'barpolar',
+        'box',
+        'candlestick',
+        'carpet',
+        'choropleth',
+        'choroplethmapbox',
+        'contour',
+        'contourcarpet',
+        'densitymapbox',
+        'funnel',
+        'funnelarea',
+        'heatmap',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'image',
+        'indicator',
+        'ohlc',
+        'parcats',
+        'parcoords',
+        'pie',
+        'sankey',
+        'scatter',
+        'scattercarpet',
+        'scattergeo',
+        'scattergl',
+        'scattermapbox',
+        'scatterpolar',
+        'scatterpolargl',
+        'scatterternary',
+        'splom',
+        'sunburst',
+        'table',
+        'treemap',
+        'violin',
+        'waterfall'
+    ]
+};
+
 var partialBundlePaths = partialBundleNames.map(function(name) {
     return {
         name: name,
-        index: path.join(pathToLib, 'index-' + name + '.js'),
+        index: path.join(pathToBuild, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
     };
@@ -60,6 +162,7 @@ module.exports = {
     pathToSchema: path.join(pathToDist, 'plot-schema.json'),
     pathToTranslationKeys: path.join(pathToDist, 'translation-keys.txt'),
 
+    partialBundleTraces: partialBundleTraces,
     partialBundleNames: partialBundleNames,
     partialBundlePaths: partialBundlePaths,
 

@@ -103,14 +103,14 @@ function syncPartialBundlePkg(d) {
 
 
     function writeREADME(cb) {
-        var moduleList = common.findModuleList(d.index);
+        var traceList = constants.partialBundleTraces[d.name];
 
         var cnt = [
             '# ' + d.name,
             '',
             d.desc,
             '',
-            'Contains trace modules ' + common.formatEnumeration(moduleList) + '.',
+            'Contains trace modules ' + common.formatEnumeration(traceList) + '.',
             '',
             'For more info on plotly.js, go to https://github.com/plotly/plotly.js',
             '',
