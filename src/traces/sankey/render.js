@@ -1025,7 +1025,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     nodeLabel
         .style('text-shadow', function(d) {
-            return d.horizontal ? svgTextUtils.makeTextShadow(1, 1, 1, '#fff') : 'none';
+            return d.horizontal ? svgTextUtils.makeTextShadow(1, '#fff') : 'none';
         })
         .each(function(d) {Drawing.font(nodeLabel, d.textFont);});
 
