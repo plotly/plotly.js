@@ -79,14 +79,6 @@ If none of the distributed npm packages meet your needs, you create custom bundl
 `npm run partial-bundle pie sunburst name=custom`
 
 
-#### Non-ascii characters
-
-Important: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `charset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
-
-```html
-<script src="my-plotly-bundle.js" charset="utf-8"></script>
-```
-
 ## Building plotly.js
 
 Building instructions using `webpack`, `browserify` and other build frameworks are in [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md)
