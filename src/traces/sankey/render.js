@@ -15,6 +15,7 @@ var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 var Registry = require('../../registry');
 
@@ -1024,7 +1025,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     nodeLabel
         .style('text-shadow', function(d) {
-            return d.horizontal ? '-1px 1px 1px #fff, 1px 1px 1px #fff, 1px -1px 1px #fff, -1px -1px 1px #fff' : 'none';
+            return d.horizontal ? svgTextUtils.makeTextShadow(1, 1, 1, '#fff') : 'none';
         })
         .each(function(d) {Drawing.font(nodeLabel, d.textFont);});
 
