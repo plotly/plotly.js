@@ -75,26 +75,9 @@ Starting in `v1.15.0`, plotly.js ships with several _partial_ bundles (more info
 
 Starting in `v1.39.0`, plotly.js publishes _distributed_ npm packages with no dependencies. For example, run `npm install plotly.js-geo-dist` and add `import Plotly from 'plotly.js-geo-dist';` to your code to start using the plotly.js geo package.
 
-If none of the distributed npm packages meet your needs, and you would like to manually pick which plotly.js modules to include, you'll first need to run `npm install plotly.js` and then create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*. For example, in CommonJS:
+If none of the distributed npm packages meet your needs, you create custom bundle of desired trace modules e.g. `pie` and `sunburst` using
+`npm run partial-bundle pie sunburst name=custom`
 
-```javascript
-// in custom-plotly.js
-var Plotly = require('plotly.js/lib/core');
-
-// Load in the trace types for pie, and choropleth
-Plotly.register([
-    require('plotly.js/lib/pie'),
-    require('plotly.js/lib/choropleth')
-]);
-
-module.exports = Plotly;
-```
-
-Then elsewhere in your code:
-
-```javascript
-var Plotly = require('./path/to/custom-plotly');
-```
 
 #### Non-ascii characters
 
