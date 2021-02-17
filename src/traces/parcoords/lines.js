@@ -318,7 +318,7 @@ module.exports = function(canvasGL, d) {
         frag: fragmentShaderSource,
 
         primitive: 'lines',
-        lineWidth: plotGlPixelRatio,
+        lineWidth: 1,
         attributes: attributes,
         uniforms: {
             resolution: regl.prop('resolution'),
