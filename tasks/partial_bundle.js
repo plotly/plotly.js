@@ -8,16 +8,59 @@ var common = require('./util/common');
 var _bundle = require('./util/browserify_wrapper');
 
 var header = constants.licenseDist + '\n';
-
-var tasks = [];
 var allTraces = fs.readdirSync(path.join(constants.pathToSrc, 'traces'));
 var fullIndex = fs.readFileSync(constants.pathToPlotlyIndex, 'utf-8');
 
-// Browserify the plotly.js partial bundles
-constants.partialBundlePaths.forEach(function(pathObj) {
-    tasks.push(function(done) {
-        var traceList = constants.partialBundleTraces[pathObj.name];
+var argv = process.argv;
 
+if(argv.length > 2) {
+    // command line
+
+    var traceList = ['scatter']; // added by default
+    var name;
+    for(var i = 2; i < argv.length; i++) {
+        var a = argv[i];
+
+        if(
+            allTraces.indexOf(a) !== -1 && // requested
+            traceList.indexOf(a) === -1    // not added before
+        ) {
+            traceList.push(a);
+        }
+        if(a.indexOf('name=') !== -1) name = a.replace('name=', '');
+    }
+    if(!name) name = 'custom';
+    traceList = traceList.sort();
+
+    var opts = {
+        traceList: traceList,
+        name: name,
+
+        index: path.join(constants.pathToBuild, 'index-' + name + '.js'),
+        dist: path.join(constants.pathToDist, 'plotly-' + name + '.js'),
+        distMin: path.join(constants.pathToDist, 'plotly-' + name + '.min.js')
+    };
+
+    console.log(opts);
+
+    var tasks = [];
+
+    partialBundle(tasks, opts);
+
+    runSeries(tasks, function(err) {
+        if(err) throw err;
+    });
+}
+
+// Browserify the plotly.js partial bundles
+function partialBundle(tasks, opts) {
+    var name = opts.name;
+    var index = opts.index;
+    var dist = opts.dist;
+    var distMin = opts.distMin;
+    var traceList = opts.traceList;
+
+    tasks.push(function(done) {
         var partialIndex = fullIndex;
         allTraces.forEach(function(trace) {
             if(traceList.indexOf(trace) === -1) {
@@ -37,25 +80,23 @@ constants.partialBundlePaths.forEach(function(pathObj) {
             }
         });
 
-        common.writeFile(pathObj.index, partialIndex, done);
+        common.writeFile(index, partialIndex, done);
     });
 
     tasks.push(function(done) {
-        _bundle(pathObj.index, pathObj.dist, {
+        _bundle(index, dist, {
             standalone: 'Plotly',
-            pathToMinBundle: pathObj.distMin
+            pathToMinBundle: distMin
         }, function() {
-            var headerDist = header.replace('plotly.js', 'plotly.js (' + pathObj.name + ')');
-            var headerDistMin = header.replace('plotly.js', 'plotly.js (' + pathObj.name + ' - minified)');
+            var headerDist = header.replace('plotly.js', 'plotly.js (' + name + ')');
+            var headerDistMin = header.replace('plotly.js', 'plotly.js (' + name + ' - minified)');
 
-            prependFile(pathObj.dist, headerDist, common.throwOnError);
-            prependFile(pathObj.distMin, headerDistMin, common.throwOnError);
+            prependFile(dist, headerDist, common.throwOnError);
+            prependFile(distMin, headerDistMin, common.throwOnError);
 
             done();
         });
     });
-});
+}
 
-runSeries(tasks, function(err) {
-    if(err) throw err;
-});
+module.exports = partialBundle;

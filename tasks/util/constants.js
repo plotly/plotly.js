@@ -131,18 +131,21 @@ var partialBundleTraces = {
     ]
 };
 
-var partialBundlePaths = partialBundleNames.map(function(name) {
+function makePartialBundleOpts(name) {
     return {
         name: name,
+        traceList: partialBundleTraces[name],
         index: path.join(pathToBuild, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
     };
-});
+}
 
 var year = (new Date()).getFullYear();
 
 module.exports = {
+    makePartialBundleOpts: makePartialBundleOpts,
+
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
@@ -162,9 +165,7 @@ module.exports = {
     pathToSchema: path.join(pathToDist, 'plot-schema.json'),
     pathToTranslationKeys: path.join(pathToDist, 'translation-keys.txt'),
 
-    partialBundleTraces: partialBundleTraces,
     partialBundleNames: partialBundleNames,
-    partialBundlePaths: partialBundlePaths,
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),

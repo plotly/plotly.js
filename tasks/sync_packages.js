@@ -23,8 +23,10 @@ var copyrightAndLicense = [
     ''
 ].join('\n');
 
+var partialBundlePaths = constants.partialBundleNames.map(constants.makePartialBundleOpts);
+
 // sync "partial bundle" packages
-constants.partialBundlePaths
+partialBundlePaths
     .map(function(d) {
         return {
             name: 'plotly.js-' + d.name + '-dist',
@@ -44,7 +46,7 @@ constants.partialBundlePaths
     .forEach(syncPartialBundlePkg);
 
 // sync "minified partial bundle" packages
-constants.partialBundlePaths
+partialBundlePaths
     .map(function(d) {
         return {
             name: 'plotly.js-' + d.name + '-dist-min',
@@ -103,7 +105,7 @@ function syncPartialBundlePkg(d) {
 
 
     function writeREADME(cb) {
-        var traceList = constants.partialBundleTraces[d.name];
+        var traceList = d.traceList;
 
         var cnt = [
             '# ' + d.name,
