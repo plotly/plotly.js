@@ -229,27 +229,27 @@ function _doPlot(gd, data, layout, config) {
                 .style('width', fullLayout.width + 'px')
                 .style('height', fullLayout.height + 'px');
 
-            var regl = fullLayout._glcanvas.data()[0].regl;
-            if(regl) {
-                // Unfortunately, this can happen when relayouting to large
-                // width/height on some browsers.
-                if(Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
-                    Math.floor(fullLayout.height * plotGlPixelRatio) !== regl._gl.drawingBufferHeight
-                 ) {
-                    var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
-                    if(drawFrameworkCalls) {
-                        Lib.error(msg);
-                    } else {
-                        Lib.log(msg + ' Clearing graph and plotting again.');
-                        Plots.cleanPlot([], {}, gd._fullData, fullLayout);
-                        Plots.supplyDefaults(gd);
-                        fullLayout = gd._fullLayout;
-                        Plots.doCalcdata(gd);
-                        drawFrameworkCalls++;
-                        return drawFramework();
-                    }
-                }
-            }
+            // var regl = fullLayout._glcanvas.data()[0].regl;
+            // if(regl) {
+            //     // Unfortunately, this can happen when relayouting to large
+            //     // width/height on some browsers.
+            //     if(Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
+            //         Math.floor(fullLayout.height * plotGlPixelRatio) !== regl._gl.drawingBufferHeight
+            //      ) {
+            //         var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
+            //         if(drawFrameworkCalls) {
+            //             Lib.error(msg);
+            //         } else {
+            //             Lib.log(msg + ' Clearing graph and plotting again.');
+            //             Plots.cleanPlot([], {}, gd._fullData, fullLayout);
+            //             Plots.supplyDefaults(gd);
+            //             fullLayout = gd._fullLayout;
+            //             Plots.doCalcdata(gd);
+            //             drawFrameworkCalls++;
+            //             return drawFramework();
+            //         }
+            //     }
+            // }
         }
 
         if(fullLayout.modebar.orientation === 'h') {
