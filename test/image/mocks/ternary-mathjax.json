@@ -22,21 +22,21 @@
       "sum": 100,
       "aaxis": {
         "title": {
-          "text": "$A^2$"
+          "text": "$$A^2$$"
         },
         "showline": true,
         "showgrid": true
       },
       "baxis": {
         "title": {
-          "text": "$B^2$"
+          "text": "$$B^2$$"
         },
         "showline": true,
         "showgrid": true
       },
       "caxis": {
         "title": {
-          "text": "$C^2$"
+          "text": "$$C^2$$"
         },
         "showline": true,
         "showgrid": true
