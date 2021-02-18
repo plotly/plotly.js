@@ -49,6 +49,7 @@
     "start-image_viewer": "node devtools/image_viewer/server.js",
     "start": "npm run start-test_dashboard",
     "baseline": "node tasks/baseline.js",
+    "noci-baseline": "npm run cibuild && ./tasks/noci_test.sh image && git checkout dist",
     "preversion": "check-node-version --node 12 --npm 6.14 && npm-link-check && npm ls --prod",
     "version": "npm run build && npm run no-bad-char && git add -A dist build src/version.js",
     "postversion": "node -e \"console.log('Version bumped and committed. If ok, run: git push && git push --tags')\"",
