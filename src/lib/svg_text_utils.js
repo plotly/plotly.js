@@ -153,27 +153,16 @@ function cleanEscapesForTex(s) {
 
 function texToSVG(_texString, _config, _callback) {
     var originalRenderer,
-        originalConfig,
         originalProcessSectionDelay,
         tmpDiv;
 
     MathJax.Hub.Queue(
     function() {
-        originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
-
         originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
         if(MathJax.Hub.processSectionDelay !== undefined) {
             // MathJax 2.5+
             MathJax.Hub.processSectionDelay = 0;
         }
-
-        return MathJax.Hub.Config({
-            messageStyle: 'none',
-            tex2jax: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
-            },
-            displayAlign: 'left',
-        });
     },
     function() {
         // Get original renderer
@@ -213,7 +202,6 @@ function texToSVG(_texString, _config, _callback) {
         if(originalProcessSectionDelay !== undefined) {
             MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
         }
-        return MathJax.Hub.Config(originalConfig);
     });
 }
 
