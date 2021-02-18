@@ -18,7 +18,16 @@ module.exports = function eventData(pt, trace) {
         text: pt.text,
 
         // pt.v (and pt.i below) for backward compatibility
-        v: pt.v
+        v: pt.v,
+
+        // TODO: These coordinates aren't quite correct and don't take into account some offset
+        // I still haven't quite located (similar to xa._offset)
+        bbox: {
+            x0: pt.x0,
+            x1: pt.x1,
+            y0: pt.y0,
+            y1: pt.y1,
+        },
     };
 
     // Only include pointNumber if it's unambiguous

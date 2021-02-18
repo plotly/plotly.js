@@ -379,12 +379,20 @@ function attachFxHandlers(sliceTop, gd, cd) {
 
         if(hoverinfo === 'all') hoverinfo = 'label+text+value+percent+name';
 
+        // If hoverinfo === 'none', we still want the *coordinates* of hover to be
+        // output, just not the hover to actually display
+        var rInscribed = pt.rInscribed || 0;
+        var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
+        var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+        pt.x0 = hoverCenterX - rInscribed * cd0.r;
+        pt.x1 = hoverCenterX + rInscribed * cd0.r;
+        pt.y0 = hoverCenterY;
+        pt.y1 = hoverCenterY;
+
         // in case we dragged over the pie from another subplot,
         // or if hover is turned off
         if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
-            var rInscribed = pt.rInscribed || 0;
-            var hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed);
-            var hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed);
+
             var separators = fullLayout2.separators;
             var text = [];
 
@@ -406,9 +414,9 @@ function attachFxHandlers(sliceTop, gd, cd) {
 
             Fx.loneHover({
                 trace: trace,
-                x0: hoverCenterX - rInscribed * cd0.r,
-                x1: hoverCenterX + rInscribed * cd0.r,
-                y: hoverCenterY,
+                x0: pt.x0,
+                x1: pt.x1,
+                y: pt.y0,
                 text: text.join('<br>'),
                 name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',

@@ -680,6 +680,12 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var oldhoverdata = gd._hoverdata;
     var newhoverdata = [];
 
+    // Top/left hover offsets relative to graph div. As long as hover content is
+    // a sibling of the graph div, it will be positioned correctly relative to
+    // the offset parent, whatever that may be.
+    var hot = gd.offsetTop + gd.clientTop;
+    var hol = gd.offsetLeft + gd.clientLeft;
+
     // pull out just the data that's useful to
     // other people and send it to the event
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
@@ -693,6 +699,14 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
             pt.hovertemplate = ht || pt.trace.hovertemplate || false;
         }
+
+        var bbox = {};
+        eventData.bbox = bbox;
+
+        if ('x0' in pt) bbox.x0 = hol + pt.x0 + pt.xa._offset;
+        if ('x1' in pt) bbox.x1 = hol + pt.x1 + pt.xa._offset;
+        if ('y0' in pt) bbox.y0 = hot + pt.y0 + pt.ya._offset;
+        if ('y1' in pt) bbox.y1 = hot + pt.y1 + pt.ya._offset;
 
         pt.eventData = [eventData];
         newhoverdata.push(eventData);
