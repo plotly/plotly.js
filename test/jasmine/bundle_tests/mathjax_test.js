@@ -8,17 +8,17 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test MathJax:', function() {
     var mathJaxScriptTag;
 
-    // N.B. we have to load MathJax "dynamically" as Karam
+    // N.B. we used to have to load MathJax "dynamically" as Karam
     // does not undefined the MathJax's `?config=` parameter.
     //
-    // Eventually, it might be nice to move these tests in the "regular" test
+    // Now with the mathjax_config no longer needed,
+    // it might be nice to move these tests in the "regular" test
     // suites, but to do that we'll need to find a way to remove MathJax from
     // page without breaking things downstream.
     beforeAll(function(done) {
         mathJaxScriptTag = document.createElement('script');
         mathJaxScriptTag.type = 'text/javascript';
         mathJaxScriptTag.onload = function() {
-            require('@src/fonts/mathjax_config')();
             done();
         };
         mathJaxScriptTag.onerror = function() {
@@ -73,12 +73,12 @@ describe('Test MathJax:', function() {
         }
 
         var longCats = ['aaaaaaaaa', 'bbbbbbbbb', 'cccccccc'];
-        var texTitle = '$f(x) = \\int_0^\\infty \\psi(t) dt$';
-        var texCats = ['$\\phi$', '$\\nabla \\cdot \\vec{F}$', '$\\frac{\\partial x}{\\partial y}$'];
+        var texTitle = '$$f(x) = \\int_0^\\infty \\psi(t) dt$$';
+        var texCats = ['$$\\phi$$', '$$\\nabla \\cdot \\vec{F}$$', '$$\\frac{\\partial x}{\\partial y}$$'];
         var longTexCats = [
-            '$\\int_0^\\infty \\psi(t) dt$',
-            '$\\alpha \\int_0^\\infty \\eta(t) dt$',
-            '$\\int_0^\\infty \\zeta(t) dt$'
+            '$$\\int_0^\\infty \\psi(t) dt$$',
+            '$$\\alpha \\int_0^\\infty \\eta(t) dt$$',
+            '$$\\int_0^\\infty \\zeta(t) dt$$'
         ];
 
         it('should scoot x-axis title below x-axis ticks', function(done) {
