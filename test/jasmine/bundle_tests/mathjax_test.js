@@ -8,7 +8,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test MathJax:', function() {
     var mathJaxScriptTag;
 
-    // N.B. we used to have to load MathJax "dynamically" as Karam
+    // N.B. we have to load MathJax "dynamically" as Karam
     // does not undefined the MathJax's `?config=` parameter.
     //
     // Now with the mathjax_config no longer needed,
