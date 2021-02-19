@@ -73,12 +73,12 @@ describe('Test MathJax:', function() {
         }
 
         var longCats = ['aaaaaaaaa', 'bbbbbbbbb', 'cccccccc'];
-        var texTitle = '$$f(x) = \\int_0^\\infty \\psi(t) dt$$';
-        var texCats = ['$$\\phi$$', '$$\\nabla \\cdot \\vec{F}$$', '$$\\frac{\\partial x}{\\partial y}$$'];
+        var texTitle = '$f(x) = \\int_0^\\infty \\psi(t) dt$';
+        var texCats = ['$\\phi$', '$\\nabla \\cdot \\vec{F}$', '$\\frac{\\partial x}{\\partial y}$'];
         var longTexCats = [
-            '$$\\int_0^\\infty \\psi(t) dt$$',
-            '$$\\alpha \\int_0^\\infty \\eta(t) dt$$',
-            '$$\\int_0^\\infty \\zeta(t) dt$$'
+            '$\\int_0^\\infty \\psi(t) dt$',
+            '$\\alpha \\int_0^\\infty \\eta(t) dt$',
+            '$\\int_0^\\infty \\zeta(t) dt$'
         ];
 
         it('should scoot x-axis title below x-axis ticks', function(done) {
