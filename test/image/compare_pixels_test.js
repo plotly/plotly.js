@@ -80,6 +80,20 @@ function unique(value, index, self) {
 }
 allMockList = allMockList.filter(unique);
 
+// Skip MathJax mocks that are tested using orca in noci_test
+var MATHJAX_LIST = [
+    'mathjax',
+    'ternary-mathjax',
+    'table_plain_birds',
+    'table_wrapped_birds',
+    'parcats_grid_subplots',
+    'legend_mathjax_title_and_items',
+    'table_latex_multitrace_scatter'
+];
+allMockList = allMockList.filter(function(e) {
+    return MATHJAX_LIST.indexOf(e) === -1;
+});
+
 // filter out untestable mocks if no pattern is specified (ie. we're testing all mocks)
 // or if flag '--filter' is provided
 console.log('');

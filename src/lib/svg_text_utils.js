@@ -755,6 +755,16 @@ function alignHTMLWith(_base, container, options) {
     };
 }
 
+exports.makeTextShadow = function(offset, color) {
+    var x = offset + 'px ';
+    var y = offset + 'px ';
+    var b = '1px ';
+    return x + y + b + color + ', ' +
+        '-' + x + '-' + y + b + color + ', ' +
+        x + '-' + y + b + color + ', ' +
+        '-' + x + y + b + color;
+};
+
 /*
  * Editable title
  * @param {d3.selection} context: the element being edited. Normally text,
