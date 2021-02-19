@@ -21,7 +21,7 @@
 
             "height": 30,
 
-            "values": [["<b>#</b>", ""], ["<b>Species</b>", ""], ["Latitude", "$$\\phi °$$"], ["Longitude", "$$\\lambda °$$"], ["Exposure", ""], ["Condition", "<i>Live / Dead</i>"], ["Date", "<i>yyyy-mm-dd</i>"]],
+            "values": [["<b>#</b>", ""], ["<b>Species</b>", ""], ["Latitude", "$\\phi °$"], ["Longitude", "$\\lambda °$"], ["Exposure", ""], ["Condition", "<i>Live / Dead</i>"], ["Date", "<i>yyyy-mm-dd</i>"]],
 
             "align": ["right", "left", "right", "right", "left", "left", "left"],
 
