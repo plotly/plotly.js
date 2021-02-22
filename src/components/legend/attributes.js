@@ -79,7 +79,7 @@ module.exports = {
     },
     itemsymbol: {
         valType: 'enumerated',
-        values: ['trace', ...Drawing.symbolList],
+        values: ['trace'].concat(Drawing.symbolList),
         dflt: 'trace',
         editType: 'legend',
         description: [
