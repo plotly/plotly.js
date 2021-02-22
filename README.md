@@ -97,7 +97,7 @@ var Plotly = require('./path/to/custom-plotly');
 ```
 
 Alternatively you could browserify a custom bundle of desired trace modules e.g. `pie` and `choropleth` using
-`npm run partial-bundle pie choropleth name=custom`
+`npm run partial-bundle pie choropleth --name=custom`
 
 
 ## Building plotly.js

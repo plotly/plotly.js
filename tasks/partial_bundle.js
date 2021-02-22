@@ -26,7 +26,7 @@ if(argv.length > 2) {
         ) {
             traceList.push(a);
         }
-        if(a.indexOf('name=') !== -1) name = a.replace('name=', '');
+        if(a.indexOf('--name=') === 0) name = a.replace('--name=', '');
     }
     if(!name) name = 'custom';
     traceList = traceList.sort();
