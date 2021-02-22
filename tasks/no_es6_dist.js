@@ -2,6 +2,8 @@ var eslint = require('eslint');
 var constants = require('./util/constants');
 var EXIT_CODE = 0;
 
+var partialBundlePaths = constants.partialBundleNames.map(constants.makePartialBundleOpts);
+
 assertES5();
 
 // Ensure no ES6 has snuck through into the build:
@@ -17,7 +19,7 @@ function assertES5() {
         }
     });
 
-    var files = constants.partialBundlePaths.map(function(f) { return f.dist; });
+    var files = partialBundlePaths.map(function(f) { return f.dist; });
     files.unshift(constants.pathToPlotlyDist);
 
     var report = cli.executeOnFiles(files);

@@ -1,26 +1,24 @@
 var path = require('path');
 var glob = require('glob');
 var runSeries = require('run-series');
+var prependFile = require('prepend-file');
 
 var constants = require('./util/constants');
 var common = require('./util/common');
 var _bundle = require('./util/browserify_wrapper');
 var makeSchema = require('./util/make_schema');
 var wrapLocale = require('./util/wrap_locale');
-/*
- * This script takes one argument
- *
- * Run `npm run build -- dev` or `npm run build -- --dev`
- * to include source map in the plotly.js bundle
- *
- * N.B. This script is meant for dist builds; the output bundles are placed
- *      in plotly.js/dist/.
- *      Use `npm run watch` for dev builds.
- */
 
-var arg = process.argv[2];
-var DEV = (arg === 'dev') || (arg === '--dev');
-
+var header = constants.licenseDist + '\n';
+var pathToLib = constants.pathToLib;
+var pathToDist = constants.pathToDist;
+var pathToSchema = constants.pathToSchema;
+var pathToPlotlyDist = constants.pathToPlotlyDist;
+var pathToPlotlyIndex = constants.pathToPlotlyIndex;
+var pathToPlotlyDistMin = constants.pathToPlotlyDistMin;
+var pathToPlotlyDistWithMeta = constants.pathToPlotlyDistWithMeta;
+var pathToPlotlyGeoAssetsSrc = constants.pathToPlotlyGeoAssetsSrc;
+var pathToPlotlyGeoAssetsDist = constants.pathToPlotlyGeoAssetsDist;
 
 // Check if style build file is there
 var doesFileExist = common.doesFileExist;
@@ -32,11 +30,11 @@ if(!doesFileExist(constants.pathToCSSBuild)) {
 }
 
 // "Browserify" the locales
-var localeGlob = path.join(constants.pathToLib, 'locales', '*.js');
+var localeGlob = path.join(pathToLib, 'locales', '*.js');
 glob(localeGlob, function(err, files) {
     files.forEach(function(file) {
         var outName = 'plotly-locale-' + path.basename(file);
-        var outPath = path.join(constants.pathToDist, outName);
+        var outPath = path.join(pathToDist, outName);
         wrapLocale(file, outPath);
     });
 });
@@ -46,41 +44,39 @@ glob(localeGlob, function(err, files) {
 var tasks = [];
 
 // Browserify plotly.js
-tasks.push(function(cb) {
-    _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
+tasks.push(function(done) {
+    _bundle(pathToPlotlyIndex, pathToPlotlyDist, {
         standalone: 'Plotly',
-        debug: DEV,
-        pathToMinBundle: constants.pathToPlotlyDistMin
-    }, cb);
-});
-
-// Browserify the geo assets
-tasks.push(function(cb) {
-    _bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
-        standalone: 'PlotlyGeoAssets'
-    }, cb);
-});
-
-// Browserify plotly.js with meta and output plot-schema JSON
-tasks.push(function(cb) {
-    _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
-        standalone: 'Plotly',
-        debug: DEV,
-        noCompress: true
+        pathToMinBundle: pathToPlotlyDistMin
     }, function() {
-        makeSchema(constants.pathToPlotlyDistWithMeta, constants.pathToSchema)();
-        cb();
+        prependFile(pathToPlotlyDist, header, common.throwOnError);
+        prependFile(pathToPlotlyDistMin, header, common.throwOnError);
+
+        done();
     });
 });
 
-// Browserify the plotly.js partial bundles
-constants.partialBundlePaths.forEach(function(pathObj) {
-    tasks.push(function(cb) {
-        _bundle(pathObj.index, pathObj.dist, {
-            standalone: 'Plotly',
-            debug: DEV,
-            pathToMinBundle: pathObj.distMin
-        }, cb);
+// Browserify the geo assets
+tasks.push(function(done) {
+    _bundle(pathToPlotlyGeoAssetsSrc, pathToPlotlyGeoAssetsDist, {
+        standalone: 'PlotlyGeoAssets'
+    }, function() {
+        prependFile(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
+
+        done();
+    });
+});
+
+// Browserify plotly.js with meta and output plot-schema JSON
+tasks.push(function(done) {
+    _bundle(pathToPlotlyIndex, pathToPlotlyDistWithMeta, {
+        standalone: 'Plotly',
+        noCompress: true
+    }, function() {
+        prependFile(pathToPlotlyDistWithMeta, header, common.throwOnError);
+
+        makeSchema(pathToPlotlyDistWithMeta, pathToSchema)();
+        done();
     });
 });
 

@@ -96,13 +96,9 @@ Then elsewhere in your code:
 var Plotly = require('./path/to/custom-plotly');
 ```
 
-#### Non-ascii characters
+Alternatively you could browserify a custom bundle of desired trace modules e.g. `pie` and `choropleth` using
+`npm run partial-bundle pie choropleth --name=custom`
 
-Important: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `charset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
-
-```html
-<script src="my-plotly-bundle.js" charset="utf-8"></script>
-```
 
 ## Building plotly.js
 

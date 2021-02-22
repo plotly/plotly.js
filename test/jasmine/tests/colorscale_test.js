@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 
 var Colorscale = require('@src/components/colorscale');
 

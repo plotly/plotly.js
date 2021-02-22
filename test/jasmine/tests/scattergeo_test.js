@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var BADNUM = require('@src/constants/numerical').BADNUM;
 var loggers = require('@src/lib/loggers');

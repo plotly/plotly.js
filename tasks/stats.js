@@ -19,6 +19,8 @@ var ENC = 'utf-8';
 var JS = '.js';
 var MINJS = '.min.js';
 
+var partialBundlePaths = constants.partialBundleNames.map(constants.makePartialBundleOpts);
+
 // main
 common.writeFile(pathDistREADME, getReadMeContent());
 
@@ -136,7 +138,7 @@ function getMainBundleInfo() {
         '',
         'Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles:',
         '',
-        constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
+        partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
         '',
         'Starting in `v1.39.0`, each plotly.js partial bundle has a corresponding npm package with no dependencies.',
         '',
@@ -151,7 +153,7 @@ function getMainBundleInfo() {
 
 // info about partial bundles
 function getPartialBundleInfo() {
-    return constants.partialBundlePaths.map(makeBundleInfo);
+    return partialBundlePaths.map(makeBundleInfo);
 }
 
 // footer info
@@ -172,13 +174,13 @@ function makeBundleHeaderInfo(pathObj) {
 function makeBundleInfo(pathObj) {
     var name = pathObj.name;
     var sizes = findSizes(pathObj);
-    var moduleList = common.findModuleList(pathObj.index);
+    var traceList = pathObj.traceList;
     var pkgName = 'plotly.js-' + name + '-dist';
 
     return [
         '### plotly.js ' + name,
         '',
-        'The `' + name + '` partial bundle contains trace modules ' + common.formatEnumeration(moduleList) + '.',
+        'The `' + name + '` partial bundle contains trace modules ' + common.formatEnumeration(traceList) + '.',
         '',
         '#### Stats',
         '',

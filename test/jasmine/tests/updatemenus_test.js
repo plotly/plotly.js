@@ -3,7 +3,7 @@ var constants = require('@src/components/updatemenus/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Events = require('@src/lib/events');
 var Drawing = require('@src/components/drawing');

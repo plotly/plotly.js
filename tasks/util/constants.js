@@ -1,3 +1,4 @@
+var fs = require('fs');
 var path = require('path');
 var pkg = require('../../package.json');
 
@@ -8,6 +9,11 @@ var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
+
+var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
+var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
+var pathToPlotlyTraces = path.join(pathToSrc, 'traces');
+var allTraces = fs.readdirSync(pathToPlotlyTraces);
 
 var pathToTopojsonSrc;
 try {
@@ -28,25 +34,133 @@ var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
 ];
 
-var partialBundlePaths = partialBundleNames.map(function(name) {
+var partialBundleTraces = {
+    basic: [
+        'bar',
+        'pie',
+        'scatter'
+    ],
+    cartesian: [
+        'bar',
+        'box',
+        'contour',
+        'heatmap',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'image',
+        'pie',
+        'scatter',
+        'scatterternary',
+        'violin'
+    ],
+    finance: [
+        'bar',
+        'candlestick',
+        'funnel',
+        'funnelarea',
+        'histogram',
+        'indicator',
+        'ohlc',
+        'pie',
+        'scatter',
+        'waterfall'
+    ],
+    geo: [
+        'choropleth',
+        'scatter',
+        'scattergeo'
+    ],
+    gl2d: [
+        'heatmapgl',
+        'parcoords',
+        'pointcloud',
+        'scatter',
+        'scattergl',
+        'splom'
+    ],
+    gl3d: [
+        'cone',
+        'isosurface',
+        'mesh3d',
+        'scatter',
+        'scatter3d',
+        'streamtube',
+        'surface',
+        'volume'
+    ],
+    mapbox: [
+        'choroplethmapbox',
+        'densitymapbox',
+        'scatter',
+        'scattermapbox'
+    ],
+    strict: [
+        'bar',
+        'barpolar',
+        'box',
+        'candlestick',
+        'carpet',
+        'choropleth',
+        'choroplethmapbox',
+        'contour',
+        'contourcarpet',
+        'densitymapbox',
+        'funnel',
+        'funnelarea',
+        'heatmap',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'image',
+        'indicator',
+        'ohlc',
+        'parcats',
+        'parcoords',
+        'pie',
+        'sankey',
+        'scatter',
+        'scattercarpet',
+        'scattergeo',
+        'scattergl',
+        'scattermapbox',
+        'scatterpolar',
+        'scatterpolargl',
+        'scatterternary',
+        'splom',
+        'sunburst',
+        'table',
+        'treemap',
+        'violin',
+        'waterfall'
+    ]
+};
+
+function makePartialBundleOpts(name) {
     return {
         name: name,
+        traceList: partialBundleTraces[name],
         index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
     };
-});
+}
 
 var year = (new Date()).getFullYear();
 
 module.exports = {
+    makePartialBundleOpts: makePartialBundleOpts,
+
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
     pathToDist: pathToDist,
 
-    pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
+    allTraces: allTraces,
+    mainIndex: mainIndex,
+    pathToPlotlyIndex: pathToPlotlyIndex,
+    pathToPlotlyTraces: pathToPlotlyTraces,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyVersion: path.join(pathToSrc, 'version.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
@@ -59,7 +173,6 @@ module.exports = {
     pathToTranslationKeys: path.join(pathToDist, 'translation-keys.txt'),
 
     partialBundleNames: partialBundleNames,
-    partialBundlePaths: partialBundlePaths,
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),

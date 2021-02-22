@@ -5,7 +5,7 @@ var Registry = require('@src/registry');
 var d3Select = require('../../strict-d3').select;
 var utcFormat = require('d3-time-format').utcFormat;
 
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
