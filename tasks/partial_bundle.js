@@ -1,4 +1,3 @@
-var fs = require('fs');
 var path = require('path');
 var runSeries = require('run-series');
 var prependFile = require('prepend-file');
@@ -8,8 +7,8 @@ var common = require('./util/common');
 var _bundle = require('./util/browserify_wrapper');
 
 var header = constants.licenseDist + '\n';
-var allTraces = fs.readdirSync(path.join(constants.pathToSrc, 'traces'));
-var fullIndex = fs.readFileSync(constants.pathToPlotlyIndex, 'utf-8');
+var allTraces = constants.allTraces;
+var mainIndex = constants.mainIndex;
 
 var argv = process.argv;
 
@@ -61,7 +60,7 @@ function partialBundle(tasks, opts) {
     var traceList = opts.traceList;
 
     tasks.push(function(done) {
-        var partialIndex = fullIndex;
+        var partialIndex = mainIndex;
         allTraces.forEach(function(trace) {
             if(traceList.indexOf(trace) === -1) {
                 var WHITESPACE_BEFORE = '\\s*';

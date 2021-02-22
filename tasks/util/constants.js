@@ -1,3 +1,4 @@
+var fs = require('fs');
 var path = require('path');
 var pkg = require('../../package.json');
 
@@ -9,6 +10,11 @@ var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
 var pathToVendor = path.join(pathToRoot, 'vendor/');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
+
+var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
+var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
+var pathToPlotlyTraces = path.join(pathToSrc, 'traces');
+var allTraces = fs.readdirSync(pathToPlotlyTraces);
 
 var pathToTopojsonSrc;
 try {
@@ -153,7 +159,10 @@ module.exports = {
     pathToVendor: pathToVendor,
     pathToDist: pathToDist,
 
-    pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
+    allTraces: allTraces,
+    mainIndex: mainIndex,
+    pathToPlotlyIndex: pathToPlotlyIndex,
+    pathToPlotlyTraces: pathToPlotlyTraces,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyVersion: path.join(pathToSrc, 'version.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
