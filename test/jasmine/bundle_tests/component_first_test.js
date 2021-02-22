@@ -1,8 +1,8 @@
-var Plotly = require('@src/core');
-var Bar = require('@src/traces/bar');
-var Scatter3d = require('@src/traces/scatter3d');
-var Filter = require('@src/transforms/filter');
-var Calendars = require('@src/components/calendars');
+var Plotly = require('@lib/core');
+var Bar = require('@lib/bar');
+var Scatter3d = require('@lib/scatter3d');
+var Filter = require('@lib/filter');
+var Calendars = require('@lib/calendars');
 
 var checkComponent = require('../assets/check_component');
 

@@ -1,7 +1,7 @@
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@src/core');
-var PlotlyChoropleth = require('@src/traces/choropleth');
+var Plotly = require('@lib/core');
+var PlotlyChoropleth = require('@lib/choropleth');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

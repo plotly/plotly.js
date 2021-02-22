@@ -1,4 +1,4 @@
-var Plotly = require('@src/core');
+var Plotly = require('@lib/core');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -20,7 +20,7 @@ describe('Dynamic @lib/ module imports', function() {
             // N.B. from a different subplot type
             // more info in:
             // https://github.com/plotly/plotly.js/issues/3428
-            var ScatterPolar = require('@src/traces/scatterpolar');
+            var ScatterPolar = require('@lib/scatterpolar');
             Plotly.register(ScatterPolar);
         })
         .then(function() {

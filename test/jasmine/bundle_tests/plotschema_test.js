@@ -4,9 +4,9 @@ var Lib = require('@src/lib');
 var Registry = require('@src/registry');
 
 var baseAttrs = require('@src/plots/attributes');
-var scatter = require('@src/traces/scatter');
-var parcoords = require('@src/traces/parcoords');
-var surface = require('@src/traces/surface');
+var scatter = require('@lib/scatter');
+var parcoords = require('@lib/parcoords');
+var surface = require('@lib/surface');
 
 var baseLayoutAttrs = require('@src/plots/layout_attributes');
 var cartesianAttrs = require('@src/plots/cartesian').layoutAttributes;
@@ -444,7 +444,7 @@ describe('getTraceValObject', function() {
             {type: 'groupby'}
         ]};
 
-        var filterAttrs = require('@src/transforms/filter').attributes;
+        var filterAttrs = require('@lib/filter').attributes;
         expect(getTraceValObject(mockTrace, ['transforms', 0, 'operation']))
             .toBe(filterAttrs.operation);
         // check a component-provided attr
@@ -452,7 +452,7 @@ describe('getTraceValObject', function() {
             .toBe(filterAttrs.valuecalendar);
 
         expect(getTraceValObject(mockTrace, ['transforms', 1, 'styles', 13, 'value', 'line', 'color']))
-            .toBe(require('@src/transforms/groupby').attributes.styles.value);
+            .toBe(require('@lib/groupby').attributes.styles.value);
 
         [
             ['transforms', 0],
@@ -498,13 +498,13 @@ describe('getLayoutValObject', function() {
     it('finds trace layout attributes', function() {
         var layoutBar = {_modules: [Registry.modules.bar._module]};
         expect(getLayoutValObject(layoutBar, ['barmode']))
-            .toBe(require('@src/traces/bar').layoutAttributes.barmode);
+            .toBe(require('@lib/bar').layoutAttributes.barmode);
         var layoutBox = {_modules: [Registry.modules.box._module]};
         expect(getLayoutValObject(layoutBox, ['boxgap']))
-            .toBe(require('@src/traces/box').layoutAttributes.boxgap);
+            .toBe(require('@lib/box').layoutAttributes.boxgap);
         var layoutPie = {_modules: [Registry.modules.pie._module]};
         expect(getLayoutValObject(layoutPie, ['hiddenlabels']))
-            .toBe(require('@src/traces/pie').layoutAttributes.hiddenlabels);
+            .toBe(require('@lib/pie').layoutAttributes.hiddenlabels);
 
         // not found when these traces are unused on the plot
         expect(getLayoutValObject(blankLayout, ['barmode'])).toBe(false);

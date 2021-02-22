@@ -1,8 +1,8 @@
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@src/core');
-var PlotlyHistogram2dContour = require('@src/traces/histogram2dcontour');
-var PlotlyHistogram = require('@src/traces/histogram');
+var Plotly = require('@lib/core');
+var PlotlyHistogram2dContour = require('@lib/histogram2dcontour');
+var PlotlyHistogram = require('@lib/histogram');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
