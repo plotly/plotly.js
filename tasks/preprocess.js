@@ -33,6 +33,8 @@ function exposePartsInLib() {
         obj[name] = folder + '/' + name;
     };
 
+    insert('core', 'src');
+
     insert('calendars', 'src/components');
 
     [
