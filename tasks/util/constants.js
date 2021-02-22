@@ -141,7 +141,7 @@ function makePartialBundleOpts(name) {
     return {
         name: name,
         traceList: partialBundleTraces[name],
-        index: path.join(pathToBuild, 'index-' + name + '.js'),
+        index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
     };
