@@ -57,7 +57,7 @@ function writeLibFiles(obj) {
             path.join(constants.pathToLib, name + '.js'),
             [
                 '\'use strict\';',
-                '// deprecated in plotly.js v2 - one may use ' + obj[name] + ' instead of ' + 'lib/' + name,
+                '',
                 'module.exports = require(\'../' + obj[name] + '\');',
                 ''
             ].join('\n')
