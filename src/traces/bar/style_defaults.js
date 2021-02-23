@@ -23,6 +23,10 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
 
     coerce('marker.line.width');
     coerce('marker.opacity');
+    coerce('marker.patternfill.shape');
+    coerce('marker.patternfill.bgcolor');
+    coerce('marker.patternfill.scale');
+    coerce('marker.patternfill.solidity');
     coerce('selected.marker.color');
     coerce('unselected.marker.color');
 };

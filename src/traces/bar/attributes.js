@@ -39,6 +39,51 @@ var marker = extendFlat({
         max: 1,
         editType: 'style',
         description: 'Sets the opacity of the bars.'
+    },
+    patternfill: {
+        shape: {
+            valType: 'enumerated',
+            values: ['', '/', '\\', 'x', '-', '|', '+', '.'],
+            dflt: '',
+            arrayOk: true,
+            editType: 'style',
+            description: [
+                'Sets the shape of the pattern fill.',
+                'By default, no pattern is used for filling the area.',
+            ].join(' ')
+        },
+        bgcolor: {
+            valType: 'color',
+            arrayOk: true,
+            editType: 'style',
+            description: [
+                'Sets the background color of the pattern fill.',
+                'Defaults to a transparent background.',
+            ].join(' ')
+        },
+        scale: {
+            valType: 'number',
+            min: 0,
+            dflt: 1,
+            arrayOk: true,
+            editType: 'style',
+            description: [
+                'Sets the scale of the pattern fill.',
+                'Defaults to 1.',
+            ].join(' ')
+        },
+        solidity: {
+            valType: 'number',
+            min: 0,
+            dflt: 1,
+            arrayOk: true,
+            editType: 'style',
+            description: [
+                'Sets the solidity of the pattern fill.',
+                'Defaults to 1.',
+            ].join(' ')
+        },
+        editType: 'style'
     }
 });
 

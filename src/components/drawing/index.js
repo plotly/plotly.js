@@ -354,6 +354,145 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
     fullLayout._gradientUrlQueryParts[k] = 1;
 };
 
+/**
+ * pattern: create and apply a pattern fill
+ *
+ * @param {object} sel: d3 selection to apply this pattern to
+ *     You can use `selection.call(Drawing.pattern, ...)`
+ * @param {DOM element} gd: the graph div `sel` is part of
+ * @param {string} patternID: a unique (within this plot) identifier
+ *     for this pattern, so that we don't create unnecessary definitions
+ * @param {string} bgcolor: background color for this pattern
+ * @param {string} fgcolor: foreground color for this pattern
+ * @param {number} scale: scale of this pattern
+ * @param {number} solidity: how solid lines of this pattern are
+ * @param {string} prop: the property to apply to, 'fill' or 'stroke'
+ */
+drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, scale, solidity, prop) {
+    var fullLayout = gd._fullLayout;
+    var fullID = 'p' + fullLayout._uid + '-' + patternID;
+    var baseSize = 8 * scale;
+    var width, height;
+
+    var path = '';
+    switch(shape) {
+        case '/':
+            width  = baseSize * Math.sqrt(2);
+            height = baseSize * Math.sqrt(2);
+            path = 'M-1,1l2,-2' +
+                   'M0,' + height + 'L' + width + ',0' +
+                   'M' + (width - 1) + ',' + (height + 1) + 'l2,-2';
+            break;
+        case '\\':
+            width  = baseSize * Math.sqrt(2);
+            height = baseSize * Math.sqrt(2);
+            path = 'M' + (width - 1) + ',-1l2,2' +
+                   'M0,0L' + width + ',' + height +
+                   'M-1,' + (height - 1) + 'l2,2';
+            break;
+        case 'x':
+            width  = baseSize * Math.sqrt(2);
+            height = baseSize * Math.sqrt(2);
+            path = 'M-1,1l2,-2' +
+                   'M0,' + height + 'L' + width + ',0' +
+                   'M' + (width - 1) + ',' + (height + 1) + 'l2,-2' +
+                   'M' + (width - 1) + ',-1l2,2' +
+                   'M0,0L' + width + ',' + height +
+                   'M-1,' + (height - 1) + 'l2,2';
+            break;
+        case '|':
+            width  = baseSize;
+            height = baseSize;
+            path = 'M' + (width / 2) + ',0L' + (width / 2) + ',' + height;
+            break;
+        case '-':
+            width  = baseSize;
+            height = baseSize;
+            path = 'M0,' + (height / 2) + 'L' + width + ',' + (height / 2);
+            break;
+        case '+':
+            width  = baseSize;
+            height = baseSize;
+            path = 'M' + (width / 2) + ',0L' + (width / 2) + ',' + height +
+                   'M0,' + (height / 2) + 'L' + width + ',' + (height / 2);
+            break;
+        case '+':
+            width  = baseSize;
+            height = baseSize;
+            path = 'M' + (width / 2) + ',0L' + (width / 2) + ',' + height +
+                   'M0,' + (height / 2) + 'L' + width + ',' + (height / 2);
+            break;
+        case '.':
+            width  = baseSize;
+            height = baseSize;
+            break;
+    }
+
+    var pattern = fullLayout._defs.select('.patterns')
+        .selectAll('#' + fullID)
+        .data([0]);
+
+    pattern.exit().remove();
+
+    pattern.enter()
+        .append('pattern')
+        .each(function() {
+            var el = d3.select(this);
+
+            el.attr({
+                'id'           : fullID,
+                'width'        : width + 'px',
+                'height'       : height + 'px',
+                'patternUnits' : 'userSpaceOnUse'
+            });
+
+            var rects = el.selectAll('rect').data([0]);
+            rects.exit().remove();
+            if(bgcolor) {
+                rects.enter()
+                    .append('rect')
+                    .attr({
+                        'width'  : width + 'px',
+                        'height' : height + 'px',
+                        'fill'   : bgcolor
+                    });
+            }
+
+            if(shape == '.') {
+                var circles = el.selectAll('circle').data([0]);
+                circles.exit().remove();
+                circles.enter()
+                    .append('circle')
+                    .attr({
+                        'cx'   : width / 2,
+                        'cy'   : height / 2,
+                        'r'    : solidity,
+                        'fill' : fgcolor
+                    });
+            } else {
+                var paths = el.selectAll('path').data([0]);
+                paths.exit().remove();
+                paths.enter()
+                    .append('path')
+                    .attr({
+                        'd'            : path,
+                        'stroke'       : fgcolor,
+                        'stroke-width' : solidity + 'px'
+                    });
+            }
+        });
+
+    sel.style(prop, getFullUrl(fullID, gd))
+        .style(prop + '-opacity', null);
+
+    sel.classed("pattern_filled", true);
+    var className2query = function(s) {
+        return '.' + s.attr('class').replace(/\s/g, '.');
+    };
+    var k = className2query(d3.select(sel.node().parentNode)) + '>.pattern_filled';
+    fullLayout._patternUrlQueryParts[k] = 1;
+};
+
 /*
  * Make the gradients container and clear out any previous gradients.
  * We never collect all the gradients we need in one place,
@@ -372,6 +511,16 @@ drawing.initGradients = function(gd) {
     fullLayout._gradientUrlQueryParts = {};
 };
 
+drawing.initPatterns = function(gd) {
+    var fullLayout = gd._fullLayout;
+
+    var patternsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'patterns');
+    patternsGroup.selectAll('pattern').remove();
+
+    // initialize stash of query parts filled in Drawing.pattern,
+    // used to fix URL strings during image exports
+    fullLayout._patternUrlQueryParts = {};
+};
 
 drawing.pointStyle = function(s, trace, gd) {
     if(!s.size()) return;
@@ -482,6 +631,16 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             if(!gradientInfo[gradientType]) gradientType = 0;
         }
 
+        var getPatternAttr = function(mp, i, dflt) {
+            if (mp && Array.isArray(mp)) {
+                if (i < mp.length) return mp[i];
+                else               return dflt;
+            }
+            return mp;
+        };
+        var markerPattern = marker.patternfill;
+        var patternShape  = markerPattern && getPatternAttr(markerPattern.shape, d.i, '');
+
         if(gradientType && gradientType !== 'none') {
             var gradientColor = d.mgc;
             if(gradientColor) perPointGradient = true;
@@ -492,6 +651,20 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
 
             drawing.gradient(sel, gd, gradientID, gradientType,
                 [[0, gradientColor], [1, fillColor]], 'fill');
+        } else if(patternShape) {
+          var patternBGColor  = getPatternAttr(markerPattern.bgcolor , d.i, null);
+          var patternScale    = getPatternAttr(markerPattern.scale   , d.i, 1);
+          var patternSolidity = getPatternAttr(markerPattern.solidity, d.i, 1);
+          var perPointPattern = Array.isArray(markerPattern.shape)   ||
+                                Array.isArray(markerPattern.bgcolor) ||
+                                Array.isArray(markerPattern.scale)   ||
+                                Array.isArray(markerPattern.solidity);
+
+            var patternID = trace.uid;
+            if(perPointPattern) patternID += '-' + d.i;
+
+            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, fillColor,
+                            patternScale, patternSolidity, 'fill');
         } else {
             Color.fill(sel, fillColor);
         }

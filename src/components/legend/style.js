@@ -357,8 +357,30 @@ module.exports = function style(s, gd, legend) {
             var d0 = d[0];
             var w = boundLineWidth(d0.mlw, marker.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            p.style('stroke-width', w + 'px')
-                .call(Color.fill, d0.mc || marker.color);
+            p.style('stroke-width', w + 'px');
+
+            var fillColor = d0.mc || marker.color;
+
+            var getPatternAttr = function(mp, dflt) {
+                if (mp && Array.isArray(mp)) {
+                    if (mp.length > 0) return mp[0];
+                    else               return dflt;
+                }
+                return mp;
+            };
+            var markerPattern = marker.patternfill;
+            var patternShape  = markerPattern && getPatternAttr(markerPattern.shape, '');
+
+            if(patternShape) {
+                var patternBGColor  = getPatternAttr(markerPattern.bgcolor , null);
+                var patternScale    = getPatternAttr(markerPattern.scale   , 1);
+                var patternSolidity = getPatternAttr(markerPattern.solidity, 1);
+                var patternID       = trace.uid;
+                p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
+                       fillColor, patternScale, patternSolidity, 'fill');
+            } else {
+                p.call(Color.fill, fillColor);
+            }
 
             if(w) Color.stroke(p, d0.mlc || markerLine.color);
         });

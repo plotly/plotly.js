@@ -126,6 +126,7 @@ var list = [
     'bar_annotation_max_range_eq_category',
     'bar_multiline_labels',
     'bar_nonnumeric_sizes',
+    'bar_patternfill',
     'bar_show_narrow',
     'bar_stack-with-gaps',
     'bar_stackrelative_negative',
@@ -1214,6 +1215,7 @@ figs['bar_marker_array'] = require('@mocks/bar_marker_array');
 figs['bar_annotation_max_range_eq_category'] = require('@mocks/bar_annotation_max_range_eq_category');
 figs['bar_multiline_labels'] = require('@mocks/bar_multiline_labels');
 figs['bar_nonnumeric_sizes'] = require('@mocks/bar_nonnumeric_sizes');
+figs['bar_patternfill'] = require('@mocks/bar_patternfill');
 figs['bar_show_narrow'] = require('@mocks/bar_show_narrow');
 figs['bar_stack-with-gaps'] = require('@mocks/bar_stack-with-gaps');
 figs['bar_stackrelative_negative'] = require('@mocks/bar_stackrelative_negative');
