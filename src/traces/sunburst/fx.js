@@ -18,7 +18,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     var hierarchy = cd0.hierarchy;
 
     var isSunburst = trace.type === 'sunburst';
-    var isTreemap = trace.type === 'treemap';
+    var isTreemapOrIcicle =
+        trace.type === 'treemap' ||
+        trace.type === 'icicle';
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
@@ -57,7 +59,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverCenterX = cd0.cx + pt.pxmid[0] * (1 - pt.rInscribed);
                 hoverCenterY = cd0.cy + pt.pxmid[1] * (1 - pt.rInscribed);
             }
-            if(isTreemap) {
+            if(isTreemapOrIcicle) {
                 hoverCenterX = pt._hoverX;
                 hoverCenterY = pt._hoverY;
             }
@@ -145,7 +147,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverItems.x1 = hoverCenterX + pt.rInscribed * pt.rpx1;
                 hoverItems.idealAlign = pt.pxmid[0] < 0 ? 'left' : 'right';
             }
-            if(isTreemap) {
+            if(isTreemapOrIcicle) {
                 hoverItems.x = hoverCenterX;
                 hoverItems.idealAlign = hoverCenterX < 0 ? 'left' : 'right';
             }
@@ -159,7 +161,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             trace._hasHoverLabel = true;
         }
 
-        if(isTreemap) {
+        if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
             opts.styleOne(slice, pt, traceNow, {
                 hovered: true
@@ -192,7 +194,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             trace._hasHoverLabel = false;
         }
 
-        if(isTreemap) {
+        if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
             opts.styleOne(slice, pt, traceNow, {
                 hovered: false

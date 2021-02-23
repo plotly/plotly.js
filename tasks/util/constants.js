@@ -112,6 +112,7 @@ var partialBundleTraces = {
         'histogram',
         'histogram2d',
         'histogram2dcontour',
+        'icicle',
         'image',
         'indicator',
         'ohlc',

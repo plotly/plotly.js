@@ -13,6 +13,7 @@ var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
 var sunburstExtendedColorWays = {};
 var treemapExtendedColorWays = {};
+var icicleExtendedColorWays = {};
 
 exports.calc = function(gd, trace) {
     var fullLayout = gd._fullLayout;
@@ -245,7 +246,9 @@ exports._runCrossTraceCalc = function(desiredType, gd) {
 
     if(fullLayout['extend' + desiredType + 'colors']) {
         colorWay = generateExtendedColors(colorWay,
-            desiredType === 'treemap' ? treemapExtendedColorWays : sunburstExtendedColorWays
+            desiredType === 'icicle' ? icicleExtendedColorWays :
+            desiredType === 'treemap' ? treemapExtendedColorWays :
+                sunburstExtendedColorWays
         );
     }
     var dfltColorCount = 0;
