@@ -7,30 +7,9 @@ module.exports = function partition(entry, size, opts) {
     var flipY = opts.flipY;
     var swapXY = opts.packing === 'dice-slice';
 
-    var top = opts.pad[flipY ? 'bottom' : 'top'];
-    var left = opts.pad[flipX ? 'right' : 'left'];
-    var right = opts.pad[flipX ? 'left' : 'right'];
-    var bottom = opts.pad[flipY ? 'top' : 'bottom'];
-
-    var tmp;
-    if(swapXY) {
-        tmp = left;
-        left = top;
-        top = tmp;
-
-        tmp = right;
-        right = bottom;
-        bottom = tmp;
-    }
-
     var result = d3Hierarchy
-        .icicle()
-        .tile(getTilingMethod(opts.packing, opts.squarifyratio))
-        .paddingInner(opts.pad.inner)
-        .paddingLeft(left)
-        .paddingRight(right)
-        .paddingTop(top)
-        .paddingBottom(bottom)
+        .partition()
+        .padding(opts.pad.inner)
         .size(
             swapXY ? [size[1], size[0]] : size
         )(entry);
@@ -44,21 +23,6 @@ module.exports = function partition(entry, size, opts) {
     }
     return result;
 };
-
-function getTilingMethod(key, squarifyratio) {
-    switch(key) {
-        case 'squarify':
-            return d3Hierarchy.icicleSquarify.ratio(squarifyratio);
-        case 'binary':
-            return d3Hierarchy.icicleBinary;
-        case 'dice':
-            return d3Hierarchy.icicleDice;
-        case 'slice':
-            return d3Hierarchy.icicleSlice;
-        default: // i.e. 'slice-dice' | 'dice-slice'
-            return d3Hierarchy.icicleSliceDice;
-    }
-}
 
 function flipTree(node, size, opts) {
     var tmp;
