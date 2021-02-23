@@ -7,6 +7,7 @@ var colorScaleAttrs = require('../../components/colorscale/attributes');
 var domainAttrs = require('../../plots/domain').attributes;
 var pieAttrs = require('../pie/attributes');
 var sunburstAttrs = require('../sunburst/attributes');
+var treemapAttrs = require('../treemap/attributes');
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -34,28 +35,9 @@ module.exports = {
             ].join(' ')
         },
 
-        flip: {
-            valType: 'flaglist',
-            flags: [
-                'x',
-                'y'
-            ],
-            dflt: '',
-            editType: 'plot',
-            description: [
-                'Determines if the positions obtained from solver are flipped on each axis.'
-            ].join(' ')
-        },
+        flip: treemapAttrs.tiling.flip,
 
-        pad: {
-            valType: 'number',
-            min: 0,
-            dflt: 3,
-            editType: 'plot',
-            description: [
-                'Sets the inner padding (in px).'
-            ].join(' ')
-        },
+        pad: treemapAttrs.tiling.pad,
 
         editType: 'calc',
     },
@@ -75,64 +57,7 @@ module.exports = {
 
     leaf: sunburstAttrs.leaf,
 
-    pathbar: {
-        visible: {
-            valType: 'boolean',
-            dflt: true,
-            editType: 'plot',
-            description: [
-                'Determines if the path bar is drawn',
-                'i.e. outside the trace `domain` and',
-                'with one pixel gap.'
-            ].join(' ')
-        },
-
-        side: {
-            valType: 'enumerated',
-            values: [
-                'top',
-                'bottom'
-            ],
-            dflt: 'top',
-            editType: 'plot',
-            description: [
-                'Determines on which side of the the icicle the',
-                '`pathbar` should be presented.'
-            ].join(' ')
-        },
-
-        edgeshape: {
-            valType: 'enumerated',
-            values: [
-                '>',
-                '<',
-                '|',
-                '/',
-                '\\'
-            ],
-            dflt: '>',
-            editType: 'plot',
-            description: [
-                'Determines which shape is used for edges between `barpath` labels.'
-            ].join(' ')
-        },
-
-        thickness: {
-            valType: 'number',
-            min: 12,
-            editType: 'plot',
-            description: [
-                'Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used',
-                'with 3 pixles extra padding on each side.'
-            ].join(' ')
-        },
-
-        textfont: extendFlat({}, pieAttrs.textfont, {
-            description: 'Sets the font used inside `pathbar`.'
-        }),
-
-        editType: 'calc'
-    },
+    pathbar: treemapAttrs.pathbar,
 
     text: pieAttrs.text,
     textinfo: sunburstAttrs.textinfo,
@@ -149,29 +74,9 @@ module.exports = {
 
     textfont: pieAttrs.textfont,
     insidetextfont: pieAttrs.insidetextfont,
-    outsidetextfont: extendFlat({}, pieAttrs.outsidetextfont, {
-        description: [
-            'Sets the font used for `textinfo` lying outside the sector.',
-            'This option refers to the root of the hierarchy',
-            'presented on top left corner of a icicle graph.',
-            'Please note that if a hierarchy has multiple root nodes,',
-            'this option won\'t have any effect and `insidetextfont` would be used.'
-        ].join(' ')
-    }),
+    outsidetextfont: treemapAttrs.outsidetextfont,
 
-    textposition: {
-        valType: 'enumerated',
-        values: [
-            'top left', 'top center', 'top right',
-            'middle left', 'middle center', 'middle right',
-            'bottom left', 'bottom center', 'bottom right'
-        ],
-        dflt: 'top left',
-        editType: 'plot',
-        description: [
-            'Sets the positions of the `text` elements.'
-        ].join(' ')
-    },
+    textposition: treemapAttrs.textposition,
     sort: pieAttrs.sort,
     root: sunburstAttrs.root,
 
