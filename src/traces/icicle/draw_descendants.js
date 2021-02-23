@@ -37,8 +37,6 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     var hasRight = trace.textposition.indexOf('right') !== -1;
     var hasBottom = trace.textposition.indexOf('bottom') !== -1;
 
-    var noRoomForHeader = (!hasBottom && !trace.marker.pad.t) || (hasBottom && !trace.marker.pad.b);
-
     // N.B. slice data isn't the calcdata,
     // grab corresponding calcdata item in sliceData[i].data.data
     var allData = partition(entry, [width, height], {
@@ -47,11 +45,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         flipX: trace.tiling.flip.indexOf('x') > -1,
         flipY: trace.tiling.flip.indexOf('y') > -1,
         pad: {
-            inner: trace.tiling.pad,
-            top: trace.marker.pad.t,
-            left: trace.marker.pad.l,
-            right: trace.marker.pad.r,
-            bottom: trace.marker.pad.b,
+            inner: trace.tiling.pad
         }
     });
 
@@ -122,12 +116,10 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     }
 
     updateSlices.each(function(pt) {
-        var isHeader = helpers.isHeader(pt, trace);
-
-        pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
+        pt._hoverX = viewX(pt.x1 - trace.tiling.pad),
         pt._hoverY = hasBottom ?
-                viewY(pt.y1 - trace.marker.pad.b / 2) :
-                viewY(pt.y0 + trace.marker.pad.t / 2);
+                viewY(pt.y1 - trace.tiling.pad / 2) :
+                viewY(pt.y0 + trace.tiling.pad / 2);
 
         var sliceTop = d3.select(this);
 
@@ -160,11 +152,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         if(pt.x0 === pt.x1 || pt.y0 === pt.y1) {
             pt._text = '';
         } else {
-            if(isHeader) {
-                pt._text = noRoomForHeader ? '' : helpers.getPtLabel(pt) || '';
-            } else {
-                pt._text = formatSliceLabel(pt, entry, trace, cd, fullLayout) || '';
-            }
+            pt._text = formatSliceLabel(pt, entry, trace, cd, fullLayout) || '';
         }
 
         var sliceTextGroup = Lib.ensureSingle(sliceTop, 'g', 'slicetext');
@@ -178,14 +166,13 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         sliceText.text(pt._text || ' ') // use one space character instead of a blank string to avoid jumps during transition
             .classed('slicetext', true)
-            .attr('text-anchor', hasRight ? 'end' : (hasLeft || isHeader) ? 'start' : 'middle')
+            .attr('text-anchor', hasRight ? 'end' : hasLeft ? 'start' : 'middle')
             .call(Drawing.font, font)
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
         pt.transform = toMoveInsideSlice(pt, {
-            fontSize: font.size,
-            isHeader: isHeader
+            fontSize: font.size
         });
         pt.transform.fontSize = font.size;
 

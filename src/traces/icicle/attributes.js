@@ -22,41 +22,6 @@ module.exports = {
     maxdepth: sunburstAttrs.maxdepth,
 
     tiling: {
-        packing: {
-            valType: 'enumerated',
-            values: [
-                'squarify',
-                'binary',
-                'dice',
-                'slice',
-                'slice-dice',
-                'dice-slice'
-            ],
-            dflt: 'squarify',
-            editType: 'plot',
-            description: [
-                'Determines d3 icicle solver.',
-                'For more info please refer to https://github.com/d3/d3-hierarchy#icicle-tiling'
-            ].join(' ')
-        },
-
-        squarifyratio: {
-            valType: 'number',
-            min: 1,
-            dflt: 1,
-            editType: 'plot',
-            description: [
-                'When using *squarify* `packing` algorithm, according to https://github.com/d3/d3-hierarchy/blob/master/README.md#squarify_ratio',
-                'this option specifies the desired aspect ratio of the generated rectangles.',
-                'The ratio must be specified as a number greater than or equal to one.',
-                'Note that the orientation of the generated rectangles (tall or wide)',
-                'is not implied by the ratio; for example, a ratio of two will attempt',
-                'to produce a mixture of rectangles whose width:height ratio is either 2:1 or 1:2.',
-                'When using *squarify*, unlike d3 which uses the Golden Ratio i.e. 1.618034,',
-                'Plotly applies 1 to increase squares in icicle layouts.'
-            ].join(' ')
-        },
-
         flip: {
             valType: 'flaglist',
             flags: [
@@ -84,60 +49,7 @@ module.exports = {
     },
 
     marker: extendFlat({
-        pad: {
-            t: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the top (in px).'
-                ].join(' ')
-            },
-            l: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the left (in px).'
-                ].join(' ')
-            },
-            r: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the right (in px).'
-                ].join(' ')
-            },
-            b: {
-                valType: 'number',
-                min: 0,
-                editType: 'plot',
-                description: [
-                    'Sets the padding form the bottom (in px).'
-                ].join(' ')
-            },
-
-            editType: 'calc'
-        },
-
         colors: sunburstAttrs.marker.colors,
-
-        depthfade: {
-            valType: 'enumerated',
-            values: [true, false, 'reversed'],
-            editType: 'style',
-            description: [
-                'Determines if the sector colors are faded towards',
-                'the background from the leaves up to the headers.',
-                'This option is unavailable when a `colorscale` is present,',
-                'defaults to false when `marker.colors` is set,',
-                'but otherwise defaults to true.',
-                'When set to *reversed*, the fading direction is inverted,',
-                'that is the top elements within hierarchy are drawn with fully saturated colors',
-                'while the leaves are faded towards the background color.'
-            ].join(' ')
-        },
 
         line: sunburstAttrs.marker.line,
 
@@ -148,6 +60,8 @@ module.exports = {
             anim: false // TODO: set to anim: true?
         })
     ),
+
+    leaf: sunburstAttrs.leaf,
 
     pathbar: {
         visible: {

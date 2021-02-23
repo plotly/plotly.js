@@ -34,11 +34,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('level');
     coerce('maxdepth');
 
-    var packing = coerce('tiling.packing');
-    if(packing === 'squarify') {
-        coerce('tiling.squarifyratio');
-    }
-
     coerce('tiling.flip');
     coerce('tiling.pad');
 
@@ -62,32 +57,24 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         moduleHasInsideanchor: false
     });
     coerce('textposition');
-    var bottomText = traceOut.textposition.indexOf('bottom') !== -1;
 
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
-    var colors = coerce('marker.colors');
+    coerce('marker.colors');
     var withColorscale = traceOut._hasColorscale = (
         hasColorscale(traceIn, 'marker', 'colors') ||
         (traceIn.marker || {}).coloraxis // N.B. special logic to consider "values" colorscales
     );
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
-    } else {
-        coerce('marker.depthfade', !(colors || []).length);
     }
-
-    var headerSize = traceOut.textfont.size * 2;
-
-    coerce('marker.pad.t', bottomText ? headerSize / 4 : headerSize);
-    coerce('marker.pad.l', headerSize / 4);
-    coerce('marker.pad.r', headerSize / 4);
-    coerce('marker.pad.b', bottomText ? headerSize : headerSize / 4);
 
     if(withColorscale) {
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
+
+    coerce('leaf.opacity', withColorscale ? 1 : 0.7);
 
     traceOut._hovered = {
         marker: {

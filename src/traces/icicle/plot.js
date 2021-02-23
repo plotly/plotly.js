@@ -307,7 +307,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             hasLeft ? -1 :
             hasRight ? 1 : 0;
 
-        var pad = trace.marker.pad;
+        var pad = trace.tiling.pad;
         if(opts.isHeader) {
             x0 += pad.l - TEXTPAD;
             x1 -= pad.r - TEXTPAD;
