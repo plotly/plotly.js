@@ -14,7 +14,7 @@ var clearMinTextSize = uniformText.clearMinTextSize;
 var resizeText = require('../bar/style').resizeText;
 var constants = require('./constants');
 var drawDescendants = require('./draw_descendants');
-var drawAncestors = require('./draw_ancestors');
+var drawAncestors = require('../treemap/draw_ancestors');
 
 module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
