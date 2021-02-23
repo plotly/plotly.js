@@ -34,6 +34,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('level');
     coerce('maxdepth');
 
+    coerce('tiling.orientation');
     coerce('tiling.flip');
     coerce('tiling.pad');
 
