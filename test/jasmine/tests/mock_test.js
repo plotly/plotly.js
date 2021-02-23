@@ -644,6 +644,14 @@ var list = [
     'histogram2dcontour_legend-coloraxis',
     'hists-on-matching-axes',
     'hot_heatmap',
+    'icicle_coffee',
+    'icicle_coffee-maxdepth3',
+    'icicle_first',
+    'icicle_flare',
+    'icicle_textposition',
+    'icicle_values_colorscale',
+    'icicle_with-without_values',
+    'icicle_with-without_values_template',
     'image_adventurer',
     'image_astronaut_source',
     'image_axis_reverse',
@@ -1733,6 +1741,14 @@ figs['histogram2dcontour_bingroup-coloraxis'] = require('@mocks/histogram2dconto
 figs['histogram2dcontour_legend-coloraxis'] = require('@mocks/histogram2dcontour_legend-coloraxis');
 figs['hists-on-matching-axes'] = require('@mocks/hists-on-matching-axes');
 figs['hot_heatmap'] = require('@mocks/hot_heatmap');
+figs['icicle_coffee'] = require('@mocks/icicle_coffee');
+figs['icicle_coffee-maxdepth3'] = require('@mocks/icicle_coffee-maxdepth3');
+figs['icicle_first'] = require('@mocks/icicle_first');
+figs['icicle_flare'] = require('@mocks/icicle_flare');
+figs['icicle_textposition'] = require('@mocks/icicle_textposition');
+figs['icicle_values_colorscale'] = require('@mocks/icicle_values_colorscale');
+figs['icicle_with-without_values'] = require('@mocks/icicle_with-without_values');
+figs['icicle_with-without_values_template'] = require('@mocks/icicle_with-without_values_template');
 figs['image_adventurer'] = require('@mocks/image_adventurer');
 figs['image_astronaut_source'] = require('@mocks/image_astronaut_source');
 figs['image_axis_reverse'] = require('@mocks/image_axis_reverse');
