@@ -362,20 +362,20 @@ module.exports = function style(s, gd, legend) {
             var fillColor = d0.mc || marker.color;
 
             var getPatternAttr = function(mp, dflt) {
-                if (mp && Array.isArray(mp)) {
-                    if (mp.length > 0) return mp[0];
-                    else               return dflt;
+                if(mp && Array.isArray(mp)) {
+                    if(mp.length > 0) return mp[0];
+                    else return dflt;
                 }
                 return mp;
             };
             var markerPattern = marker.patternfill;
-            var patternShape  = markerPattern && getPatternAttr(markerPattern.shape, '');
+            var patternShape = markerPattern && getPatternAttr(markerPattern.shape, '');
 
             if(patternShape) {
-                var patternBGColor  = getPatternAttr(markerPattern.bgcolor , null);
-                var patternScale    = getPatternAttr(markerPattern.scale   , 1);
+                var patternBGColor = getPatternAttr(markerPattern.bgcolor, null);
+                var patternScale = getPatternAttr(markerPattern.scale, 1);
                 var patternSolidity = getPatternAttr(markerPattern.solidity, 1);
-                var patternID       = trace.uid;
+                var patternID = trace.uid;
                 p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
                        fillColor, patternScale, patternSolidity, 'fill');
             } else {
