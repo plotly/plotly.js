@@ -40,10 +40,9 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     // N.B. slice data isn't the calcdata,
     // grab corresponding calcdata item in sliceData[i].data.data
     var allData = partition(entry, [width, height], {
-        packing: trace.tiling.packing,
-        squarifyratio: trace.tiling.squarifyratio,
         flipX: trace.tiling.flip.indexOf('x') > -1,
         flipY: trace.tiling.flip.indexOf('y') > -1,
+        orientation: trace.tiling.orientation,
         pad: {
             inner: trace.tiling.pad
         }

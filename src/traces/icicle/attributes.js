@@ -22,6 +22,18 @@ module.exports = {
     maxdepth: sunburstAttrs.maxdepth,
 
     tiling: {
+        orientation: {
+            valType: 'enumerated',
+            values: ['v', 'h'],
+            dflt: 'h',
+            editType: 'plot',
+            description: [
+                'Sets the orientation of the icicle.',
+                'With *v* the icicle grows vertically.',
+                'With *h* the icicle grows horizontally.',
+            ].join(' ')
+        },
+
         flip: {
             valType: 'flaglist',
             flags: [
