@@ -12,8 +12,10 @@ var pathToBuild = path.join(pathToRoot, 'build/');
 
 var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
 var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
-var pathToPlotlyTraces = path.join(pathToSrc, 'traces');
-var allTraces = fs.readdirSync(pathToPlotlyTraces);
+var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'));
+var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
+    .map(function(e) { return e.replace('.js', ''); });
+allTransforms.splice(allTransforms.indexOf('helpers'), 1);
 
 var pathToTopojsonSrc;
 try {
@@ -140,6 +142,8 @@ function makePartialBundleOpts(name) {
     return {
         name: name,
         traceList: partialBundleTraces[name],
+        transformList: allTransforms,
+        calendars: true,
         index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
@@ -157,10 +161,10 @@ module.exports = {
     pathToBuild: pathToBuild,
     pathToDist: pathToDist,
 
+    allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,
     pathToPlotlyIndex: pathToPlotlyIndex,
-    pathToPlotlyTraces: pathToPlotlyTraces,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyVersion: path.join(pathToSrc, 'version.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),

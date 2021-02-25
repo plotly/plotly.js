@@ -47,10 +47,17 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     }
 
     var b = browserify(pathToIndex, browserifyOpts);
-    var pending = pathToMinBundle ? 2 : 1;
+    var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
     function done() {
-        if(cb && --pending === 0) cb(null);
+        if(cb && --pending === 0) {
+            if(opts.deleteIndex) {
+                console.log('delete', pathToIndex);
+                fs.unlinkSync(pathToIndex, {});
+            }
+
+            cb(null);
+        }
     }
 
     var bundleStream = b.bundle(function(err) {
@@ -71,13 +78,15 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
             });
     }
 
-    bundleStream
-        .pipe(applyDerequire())
-        .pipe(fs.createWriteStream(pathToBundle))
-        .on('finish', function() {
-            logger(pathToBundle);
-            done();
-        });
+    if(pathToBundle) {
+        bundleStream
+            .pipe(applyDerequire())
+            .pipe(fs.createWriteStream(pathToBundle))
+            .on('finish', function() {
+                logger(pathToBundle);
+                done();
+            });
+    }
 };
 
 function logger(pathToOutput) {
