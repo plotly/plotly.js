@@ -14,16 +14,23 @@ var mainIndex = constants.mainIndex;
 
 function isFalse(a) {
     return (
-        !a ||
         a === 'none' ||
         a === 'false'
     );
 }
 
-function inputArray(a, allOptions) {
-    return isFalse(a) ? [] : (
-        a === 'all' || typeof a !== 'string'
-    ) ? allOptions.slice() : a.split(',');
+function inputBoolean(a, dflt) {
+    return !a ? dflt : !isFalse(a);
+}
+
+function inputArray(a, dflt) {
+    dflt = dflt.slice();
+
+    return (
+        isFalse(a) ? [] :
+            !a || a === 'all' ? dflt :
+                a.split(',')
+    );
 }
 
 if(process.argv.length > 2) {
@@ -35,10 +42,10 @@ if(process.argv.length > 2) {
     var out = args.out ? args.out : 'custom';
     var traces = inputArray(args.traces, allTraces);
     var transforms = inputArray(args.transforms, allTransforms);
-    var calendars = isFalse(args.calendars) ? false : true;
-    var sourcemaps = !isFalse(args.sourcemaps) ? true : false;
-    var minified = isFalse(args.minified) ? false : true;
-    var keepindex = isFalse(args.keepindex) ? false : true;
+    var calendars = inputBoolean(args.calendars, true);
+    var keepindex = inputBoolean(args.keepindex, false);
+    var sourcemaps = inputBoolean(args.sourcemaps, false);
+    var unminified = inputBoolean(args.unminified, false);
 
     var i, t;
 
@@ -82,10 +89,10 @@ if(process.argv.length > 2) {
         index: path.join(constants.pathToLib, 'index-' + out + '.js')
     };
 
-    if(minified) {
-        opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
-    } else {
+    if(unminified) {
         opts.dist = path.join(constants.pathToDist, 'plotly-' + out + '.js');
+    } else {
+        opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
     }
 
     if(!keepindex) {
