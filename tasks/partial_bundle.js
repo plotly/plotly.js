@@ -62,7 +62,7 @@ if(process.argv.length > 2) {
     var transforms = inputArray(args.transforms, allTransforms);
 
     var opts = {
-        traceList: createList(['scatter'], traces, allTraces, 'trace'),
+        traceList: createList([], traces, allTraces, 'trace'),
         transformList: createList([], transforms, allTransforms, 'transform'),
 
         name: out,
