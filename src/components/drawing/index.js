@@ -364,67 +364,129 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  *     for this pattern, so that we don't create unnecessary definitions
  * @param {string} bgcolor: background color for this pattern
  * @param {string} fgcolor: foreground color for this pattern
- * @param {number} scale: scale of this pattern
+ * @param {number} size: size of unit squares for repetition of this pattern
  * @param {number} solidity: how solid lines of this pattern are
  * @param {string} prop: the property to apply to, 'fill' or 'stroke'
  */
-drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, scale, solidity, prop) {
+drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, solidity, prop) {
     var fullLayout = gd._fullLayout;
     var fullID = 'p' + fullLayout._uid + '-' + patternID;
-    var baseSize = 8 * scale;
     var width, height;
 
-    var path = '';
+    var path, linewidth, radius;
+    var patternTag;
+    var patternAttrs = {};
     switch(shape) {
         case '/':
-            width = baseSize * Math.sqrt(2);
-            height = baseSize * Math.sqrt(2);
-            path = 'M-1,1l2,-2' +
+            width = size * Math.sqrt(2);
+            height = size * Math.sqrt(2);
+            path = 'M-' + (width / 4) + ',' + (height / 4) + 'l' + (width / 2) + ',-' + (height / 2) +
                    'M0,' + height + 'L' + width + ',0' +
-                   'M' + (width - 1) + ',' + (height + 1) + 'l2,-2';
+                   'M' + (width / 4 * 3) + ',' + (height / 4 * 5) + 'l' + (width / 2) + ',-' + (height / 2);
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
             break;
         case '\\':
-            width = baseSize * Math.sqrt(2);
-            height = baseSize * Math.sqrt(2);
-            path = 'M' + (width - 1) + ',-1l2,2' +
+            width = size * Math.sqrt(2);
+            height = size * Math.sqrt(2);
+            path = 'M' + (width / 4 * 3) + ',-' + (height / 4) + 'l' + (width / 2) + ',' + (height / 2) +
                    'M0,0L' + width + ',' + height +
-                   'M-1,' + (height - 1) + 'l2,2';
+                   'M-' + (width / 4) + ',' + (height / 4 * 3) + 'l' + (width / 2) + ',' + (height / 2);
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
             break;
         case 'x':
-            width = baseSize * Math.sqrt(2);
-            height = baseSize * Math.sqrt(2);
-            path = 'M-1,1l2,-2' +
+            width = size * Math.sqrt(2);
+            height = size * Math.sqrt(2);
+            path = 'M-' + (width / 4) + ',' + (height / 4) + 'l' + (width / 2) + ',-' + (height / 2) +
                    'M0,' + height + 'L' + width + ',0' +
-                   'M' + (width - 1) + ',' + (height + 1) + 'l2,-2' +
-                   'M' + (width - 1) + ',-1l2,2' +
+                   'M' + (width / 4 * 3) + ',' + (height / 4 * 5) + 'l' + (width / 2) + ',-' + (height / 2) +
+                   'M' + (width / 4 * 3) + ',-' + (height / 4) + 'l' + (width / 2) + ',' + (height / 2) +
                    'M0,0L' + width + ',' + height +
-                   'M-1,' + (height - 1) + 'l2,2';
+                   'M-' + (width / 4) + ',' + (height / 4 * 3) + 'l' + (width / 2) + ',' + (height / 2);
+            linewidth = size - size * Math.sqrt(1.0 - solidity);
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
             break;
         case '|':
-            width = baseSize;
-            height = baseSize;
+            width = size;
+            height = size;
+            patternTag = 'path';
             path = 'M' + (width / 2) + ',0L' + (width / 2) + ',' + height;
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
             break;
         case '-':
-            width = baseSize;
-            height = baseSize;
+            width = size;
+            height = size;
+            patternTag = 'path';
             path = 'M0,' + (height / 2) + 'L' + width + ',' + (height / 2);
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
             break;
         case '+':
-            width = baseSize;
-            height = baseSize;
+            width = size;
+            height = size;
+            patternTag = 'path';
             path = 'M' + (width / 2) + ',0L' + (width / 2) + ',' + height +
                    'M0,' + (height / 2) + 'L' + width + ',' + (height / 2);
+            linewidth = size - size * Math.sqrt(1.0 - solidity);
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
             break;
         case '.':
-            width = baseSize;
-            height = baseSize;
+            width = size;
+            height = size;
+            if(solidity < Math.PI / 4) {
+                radius = Math.sqrt(solidity * size * size / Math.PI);
+            } else {
+                // linear interpolation
+                var linearFn = function(x, x0, x1, y0, y1) {
+                    return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+                };
+                radius = linearFn(solidity, Math.PI / 4, 1.0, size / 2, size / Math.sqrt(2));
+            }
+            patternTag = 'circle';
+            patternAttrs = {
+                'cx': width / 2,
+                'cy': height / 2,
+                'r': radius,
+                'fill': fgcolor
+            };
             break;
     }
 
     var pattern = fullLayout._defs.select('.patterns')
         .selectAll('#' + fullID)
-        .data([0]);
+        .data([shape + ';' + bgcolor + ';' + fgcolor + ';' + size + ';' + solidity]);
 
     pattern.exit().remove();
 
@@ -440,9 +502,9 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, scale, s
                 'patternUnits': 'userSpaceOnUse'
             });
 
-            var rects = el.selectAll('rect').data([0]);
-            rects.exit().remove();
             if(bgcolor) {
+                var rects = el.selectAll('rect').data([0]);
+                rects.exit().remove();
                 rects.enter()
                     .append('rect')
                     .attr({
@@ -452,28 +514,11 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, scale, s
                     });
             }
 
-            if(shape === '.') {
-                var circles = el.selectAll('circle').data([0]);
-                circles.exit().remove();
-                circles.enter()
-                    .append('circle')
-                    .attr({
-                        'cx': width / 2,
-                        'cy': height / 2,
-                        'r': solidity,
-                        'fill': fgcolor
-                    });
-            } else {
-                var paths = el.selectAll('path').data([0]);
-                paths.exit().remove();
-                paths.enter()
-                    .append('path')
-                    .attr({
-                        'd': path,
-                        'stroke': fgcolor,
-                        'stroke-width': solidity + 'px'
-                    });
-            }
+            var patterns = el.selectAll(patternTag).data([0]);
+            patterns.exit().remove();
+            patterns.enter()
+                .append(patternTag)
+                .attr(patternAttrs);
         });
 
     sel.style(prop, getFullUrl(fullID, gd))
@@ -632,7 +677,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             }
             return mp;
         };
-        var markerPattern = marker.patternfill;
+        var markerPattern = marker.pattern;
         var patternShape = markerPattern && getPatternAttr(markerPattern.shape, d.i, '');
 
         if(gradientType && gradientType !== 'none') {
@@ -647,18 +692,18 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
             var patternBGColor = getPatternAttr(markerPattern.bgcolor, d.i, null);
-            var patternScale = getPatternAttr(markerPattern.scale, d.i, 1);
+            var patternSize = getPatternAttr(markerPattern.size, d.i, 1);
             var patternSolidity = getPatternAttr(markerPattern.solidity, d.i, 1);
             var perPointPattern = Array.isArray(markerPattern.shape) ||
                                   Array.isArray(markerPattern.bgcolor) ||
-                                  Array.isArray(markerPattern.scale) ||
+                                  Array.isArray(markerPattern.size) ||
                                   Array.isArray(markerPattern.solidity);
 
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
 
             drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, fillColor,
-                            patternScale, patternSolidity, 'fill');
+                            patternSize, patternSolidity, 'fill');
         } else {
             Color.fill(sel, fillColor);
         }

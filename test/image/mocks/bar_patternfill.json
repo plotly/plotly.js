@@ -23,7 +23,7 @@
           "color": "#4477AA",
           "width": 1
         },
-        "patternfill": {
+        "pattern": {
           "shape": "/"
         }
       }
@@ -51,7 +51,7 @@
           "color": "#CCBB44",
           "width": 1
         },
-        "patternfill": {
+        "pattern": {
           "shape": "\\"
         }
       }
@@ -79,7 +79,7 @@
           "color": "#EE6677",
           "width": 1
         },
-        "patternfill": {
+        "pattern": {
           "shape": ["|", "-", "+", "x", "."]
         }
       }
@@ -107,11 +107,11 @@
           "color": ["#061a0a", "#124d1d", "#1d802f", "#29b342", "#35e655"],
           "width": 1
         },
-        "patternfill": {
+        "pattern": {
           "shape": ["/", "\\", "x", ".", "+"],
           "bgcolor": "#c6eff5",
-          "scale": [0.7, 1.0, 1.2, 1.5, 2.0],
-          "solidity": [2, 3, 4, 5, 6]
+          "size": [4, 6, 8, 10, 12],
+          "solidity": [0.1, 0.3, 0.5, 0.7, 0.9]
         }
       }
     }

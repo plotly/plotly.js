@@ -368,16 +368,16 @@ module.exports = function style(s, gd, legend) {
                 }
                 return mp;
             };
-            var markerPattern = marker.patternfill;
+            var markerPattern = marker.pattern;
             var patternShape = markerPattern && getPatternAttr(markerPattern.shape, '');
 
             if(patternShape) {
                 var patternBGColor = getPatternAttr(markerPattern.bgcolor, null);
-                var patternScale = getPatternAttr(markerPattern.scale, 1);
+                var patternSize = getPatternAttr(markerPattern.size, 1);
                 var patternSolidity = getPatternAttr(markerPattern.solidity, 1);
                 var patternID = trace.uid;
                 p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
-                       fillColor, patternScale, patternSolidity, 'fill');
+                       fillColor, patternSize, patternSolidity, 'fill');
             } else {
                 p.call(Color.fill, fillColor);
             }
