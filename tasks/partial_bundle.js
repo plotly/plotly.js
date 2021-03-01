@@ -12,6 +12,23 @@ var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;
 var mainIndex = constants.mainIndex;
 
+function createList(outList, inList, allList, type) {
+    for(var i = 0; i < inList.length; i++) {
+        var t = inList[i];
+        if(
+            outList.indexOf(t) === -1 // not added before
+        ) {
+            if(allList.indexOf(t) === -1) {
+                console.error(t, 'is not a valid ' + type + '!', 'Valid ' + type + 's are:', allList);
+            } else {
+                outList.push(t);
+            }
+        }
+    }
+
+    return outList.sort();
+}
+
 function isFalse(a) {
     return (
         a === 'none' ||
@@ -39,41 +56,9 @@ if(process.argv.length > 2) {
     var traces = inputArray(args.traces, allTraces);
     var transforms = inputArray(args.transforms, allTransforms);
 
-    var i, t;
-
-    var traceList = ['scatter']; // added by default
-    for(i = 0; i < traces.length; i++) {
-        t = traces[i];
-        if(
-            traceList.indexOf(t) === -1 // not added before
-        ) {
-            if(allTraces.indexOf(t) === -1) {
-                console.error(t, 'is not a valid trace!', 'Valid traces are:', allTraces);
-            } else {
-                traceList.push(t);
-            }
-        }
-    }
-    traceList = traceList.sort();
-
-    var transformList = [];
-    for(i = 0; i < transforms.length; i++) {
-        t = transforms[i];
-        if(
-            transformList.indexOf(t) === -1 // not added before
-        ) {
-            if(allTransforms.indexOf(t) === -1) {
-                console.error(t, 'is not a valid transform!', 'Valid transforms are:', allTransforms);
-            } else {
-                transformList.push(t);
-            }
-        }
-    }
-    transformList = transformList.sort();
-
     var opts = {
-        traceList: traceList,
-        transformList: transformList,
+        traceList: createList(['scatter'], traces, allTraces, 'trace'),
+        transformList: createList([], transforms, allTransforms, 'transform'),
 
         name: out,
         index: path.join(constants.pathToLib, 'index-' + out + '.js'),
