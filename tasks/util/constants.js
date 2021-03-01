@@ -10,15 +10,17 @@ var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
+function startsWithLowerCase(v) {
+    return v.charAt(0) !== v.charAt(0).toUpperCase();
+}
+
 var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
 var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
-    .filter(function(v) {
-        return v.charAt(0) !== v.charAt(0).toUpperCase();
-    });
+    .filter(startsWithLowerCase);
 var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
     .filter(function(v) {
-        return v.charAt(0) !== v.charAt(0).toUpperCase() && v !== 'helpers.js';
+        return startsWithLowerCase(v) && v !== 'helpers.js';
     })
     .map(function(e) { return e.replace('.js', ''); });
 
