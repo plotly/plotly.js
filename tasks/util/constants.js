@@ -12,10 +12,15 @@ var pathToBuild = path.join(pathToRoot, 'build/');
 
 var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
 var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
-var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'));
+var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
+    .filter(function(v) {
+        return v.charAt(0) !== v.charAt(0).toUpperCase();
+    });
 var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
+    .filter(function(v) {
+        return v.charAt(0) !== v.charAt(0).toUpperCase() && v !== 'helpers.js';
+    })
     .map(function(e) { return e.replace('.js', ''); });
-allTransforms.splice(allTransforms.indexOf('helpers'), 1);
 
 var pathToTopojsonSrc;
 try {
