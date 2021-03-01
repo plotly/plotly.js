@@ -70,7 +70,10 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
                 ascii_only: true
             },
 
-            sourceMap: !!sourceMap
+            sourceMap: sourceMap ? {
+                root: '/',
+                filename: path.basename(sourceMap)
+            } : false
         };
 
         if(sourceMap) {
