@@ -62,13 +62,13 @@ if(process.argv.length > 2) {
 
         name: out,
         index: path.join(constants.pathToLib, 'index-' + out + '.js'),
+        sourceMap: path.join(constants.pathToDist, 'plotly-' + out + '.js.map'),
         dist: path.join(constants.pathToDist, 'plotly-' + out + '.js'),
         distMin: path.join(constants.pathToDist, 'plotly-' + out + '.min.js')
     };
 
     console.log(opts);
 
-    opts.sourcemap = true;
     opts.calendars = true;
 
     var tasks = [];
@@ -89,7 +89,7 @@ function partialBundle(tasks, opts) {
     var traceList = opts.traceList;
     var transformList = opts.transformList;
     var calendars = opts.calendars;
-    var sourcemap = opts.sourcemap;
+    var sourceMap = opts.sourceMap;
 
     tasks.push(function(done) {
         var partialIndex = mainIndex;
@@ -123,7 +123,7 @@ function partialBundle(tasks, opts) {
 
     tasks.push(function(done) {
         var bundleOpts = {
-            debug: sourcemap,
+            pathToSourceMap: sourceMap,
             standalone: 'Plotly',
             pathToMinBundle: distMin
         };

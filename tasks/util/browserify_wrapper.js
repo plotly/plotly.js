@@ -23,9 +23,8 @@ var strictD3 = require('./strict_d3');
  *  - noCompress {boolean} skip attribute meta compression?
  * @param {function} cb callback
  *
- * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted
- * or opts.debug is true. Otherwise outputs two file: one un-minified bundle and
- * one minified bundle.
+ * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted.
+ * Otherwise outputs two file: one un-minified bundle and one minified bundle.
  *
  * Logs basename of bundle when completed.
  */
@@ -36,7 +35,8 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var browserifyOpts = {};
     browserifyOpts.standalone = opts.standalone;
-    browserifyOpts.debug = opts.debug;
+    var sourceMap = opts.pathToSourceMap;
+    browserifyOpts.debug = opts.debug || sourceMap;
 
     if(opts.noCompress) {
         browserifyOpts.ignoreTransform = './tasks/compress_attributes.js';
@@ -72,10 +72,18 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
             });
     }
 
-    if(pathToBundle) {
+    if(sourceMap) {
         bundleStream
             .pipe(applyDerequire())
-            .pipe(exorcist(pathToBundle + '.map'))
+            .pipe(exorcist(sourceMap))
+            .pipe(fs.createWriteStream(pathToBundle))
+            .on('finish', function() {
+                logger(pathToBundle);
+                done();
+            });
+    } else {
+        bundleStream
+            .pipe(applyDerequire())
             .pipe(fs.createWriteStream(pathToBundle))
             .on('finish', function() {
                 logger(pathToBundle);
