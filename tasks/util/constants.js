@@ -217,17 +217,6 @@ module.exports = {
     testContainerUrl: 'http://localhost:9010/',
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
-    uglifyOptions: {
-        ecma: 5,
-        mangle: true,
-        output: {
-            beautify: false,
-            ascii_only: true
-        },
-
-        sourceMap: false
-    },
-
     licenseDist: [
         '/**',
         '* plotly.js v' + pkg.version,

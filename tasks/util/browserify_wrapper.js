@@ -19,6 +19,7 @@ var strictD3 = require('./strict_d3');
  *  - standalone {string}
  *  - debug {boolean} [optional]
  *  Additional option:
+ *  - pathToSourceMap {string} path to destination source map
  *  - pathToMinBundle {string} path to destination minified bundle
  *  - noCompress {boolean} skip attribute meta compression?
  * @param {function} cb callback
@@ -62,26 +63,40 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     });
 
     if(pathToMinBundle) {
-        bundleStream
-            .pipe(applyDerequire())
-            .pipe(minify(constants.uglifyOptions))
-            .pipe(fs.createWriteStream(pathToMinBundle))
-            .on('finish', function() {
-                logger(pathToMinBundle);
-                done();
-            });
+        var minifyOpts = {
+            ecma: 5,
+            mangle: true,
+            output: {
+                beautify: false,
+                ascii_only: true
+            },
+
+            sourceMap: !!sourceMap
+        };
+
+        if(sourceMap) {
+            bundleStream
+                .pipe(applyDerequire())
+                .pipe(minify(minifyOpts))
+                .pipe(exorcist(sourceMap))
+                .pipe(fs.createWriteStream(pathToMinBundle))
+                .on('finish', function() {
+                    logger(pathToMinBundle);
+                    done();
+                });
+        } else {
+            bundleStream
+                .pipe(applyDerequire())
+                .pipe(minify(minifyOpts))
+                .pipe(fs.createWriteStream(pathToMinBundle))
+                .on('finish', function() {
+                    logger(pathToMinBundle);
+                    done();
+                });
+        }
     }
 
-    if(sourceMap) {
-        bundleStream
-            .pipe(applyDerequire())
-            .pipe(exorcist(sourceMap))
-            .pipe(fs.createWriteStream(pathToBundle))
-            .on('finish', function() {
-                logger(pathToBundle);
-                done();
-            });
-    } else {
+    if(pathToBundle) {
         bundleStream
             .pipe(applyDerequire())
             .pipe(fs.createWriteStream(pathToBundle))

@@ -62,8 +62,7 @@ if(process.argv.length > 2) {
 
         name: out,
         index: path.join(constants.pathToLib, 'index-' + out + '.js'),
-        sourceMap: path.join(constants.pathToDist, 'plotly-' + out + '.js.map'),
-        dist: path.join(constants.pathToDist, 'plotly-' + out + '.js'),
+        sourceMap: path.join(constants.pathToDist, 'plotly-' + out + '.min.js.map'),
         distMin: path.join(constants.pathToDist, 'plotly-' + out + '.min.js')
     };
 
