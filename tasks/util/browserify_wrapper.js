@@ -7,7 +7,6 @@ var derequire = require('derequire');
 var through = require('through2');
 var exorcist = require('exorcist');
 
-var constants = require('./constants');
 var strictD3 = require('./strict_d3');
 
 /** Convenience browserify wrapper
