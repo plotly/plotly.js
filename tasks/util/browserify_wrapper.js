@@ -72,7 +72,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
             sourceMap: sourceMap ? {
                 root: '/',
-                filename: path.basename(sourceMap)
+                filename: path.basename(pathToMinBundle)
             } : false
         };
 
