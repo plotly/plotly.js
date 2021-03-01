@@ -145,6 +145,7 @@
     "elliptic": "^6.5.3",
     "eslint": "^7.17.0",
     "espree": "^7.3.1",
+    "exorcist": "^1.0.1",
     "extra-iterable": "^2.5.14",
     "falafel": "^2.2.4",
     "fs-extra": "^9.0.1",
