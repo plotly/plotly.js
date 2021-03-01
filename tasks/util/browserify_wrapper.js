@@ -5,6 +5,7 @@ var browserify = require('browserify');
 var minify = require('minify-stream');
 var derequire = require('derequire');
 var through = require('through2');
+var exorcist = require('exorcist');
 
 var constants = require('./constants');
 var strictD3 = require('./strict_d3');
@@ -81,6 +82,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     if(pathToBundle) {
         bundleStream
             .pipe(applyDerequire())
+            .pipe(exorcist(pathToBundle + '.map'))
             .pipe(fs.createWriteStream(pathToBundle))
             .on('finish', function() {
                 logger(pathToBundle);
