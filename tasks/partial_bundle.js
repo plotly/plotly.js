@@ -44,8 +44,6 @@ if(process.argv.length > 2) {
     var transforms = inputArray(args.transforms, allTransforms);
     var calendars = inputBoolean(args.calendars, true);
     var keepindex = inputBoolean(args.keepindex, false);
-    var sourcemaps = inputBoolean(args.sourcemaps, false);
-    var unminified = inputBoolean(args.unminified, false);
 
     var i, t;
 
@@ -83,23 +81,20 @@ if(process.argv.length > 2) {
         traceList: traceList,
         transformList: transformList,
         calendars: calendars,
-        sourcemaps: sourcemaps,
 
         name: out,
-        index: path.join(constants.pathToLib, 'index-' + out + '.js')
+        index: path.join(constants.pathToLib, 'index-' + out + '.js'),
+        dist: path.join(constants.pathToDist, 'plotly-' + out + '.js'),
+        distMin: path.join(constants.pathToDist, 'plotly-' + out + '.min.js')
     };
-
-    if(unminified) {
-        opts.dist = path.join(constants.pathToDist, 'plotly-' + out + '.js');
-    } else {
-        opts.distMin = path.join(constants.pathToDist, 'plotly-' + out + '.min.js');
-    }
 
     if(!keepindex) {
         opts.deleteIndex = true;
     }
 
     console.log(opts);
+
+    opts.sourcemap = true;
 
     var tasks = [];
 
@@ -119,7 +114,7 @@ function partialBundle(tasks, opts) {
     var traceList = opts.traceList;
     var transformList = opts.transformList;
     var calendars = opts.calendars;
-    var sourcemaps = opts.sourcemaps;
+    var sourcemap = opts.sourcemap;
     var deleteIndex = opts.deleteIndex;
 
     tasks.push(function(done) {
@@ -154,7 +149,7 @@ function partialBundle(tasks, opts) {
 
     tasks.push(function(done) {
         var bundleOpts = {
-            debug: sourcemaps,
+            debug: sourcemap,
             deleteIndex: deleteIndex,
             standalone: 'Plotly',
             pathToMinBundle: distMin
