@@ -36,7 +36,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     var browserifyOpts = {};
     browserifyOpts.standalone = opts.standalone;
     var sourceMap = opts.pathToSourceMap;
-    browserifyOpts.debug = opts.debug || sourceMap;
+    browserifyOpts.debug = opts.debug || !!sourceMap;
 
     if(opts.noCompress) {
         browserifyOpts.ignoreTransform = './tasks/compress_attributes.js';
@@ -71,6 +71,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
             },
 
             sourceMap: sourceMap ? {
+                includeSources: true,
                 root: '/',
                 filename: path.basename(pathToMinBundle)
             } : false
@@ -78,7 +79,6 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
         if(sourceMap) {
             bundleStream
-                .pipe(applyDerequire())
                 .pipe(minify(minifyOpts))
                 .pipe(exorcist(sourceMap))
                 .pipe(fs.createWriteStream(pathToMinBundle))
