@@ -19,10 +19,6 @@ function isFalse(a) {
     );
 }
 
-function inputBoolean(a, dflt) {
-    return !a ? dflt : !isFalse(a);
-}
-
 function inputArray(a, dflt) {
     dflt = dflt.slice();
 
@@ -42,7 +38,6 @@ if(process.argv.length > 2) {
     var out = args.out ? args.out : 'custom';
     var traces = inputArray(args.traces, allTraces);
     var transforms = inputArray(args.transforms, allTransforms);
-    var calendars = inputBoolean(args.calendars, true);
 
     var i, t;
 
@@ -79,7 +74,6 @@ if(process.argv.length > 2) {
     var opts = {
         traceList: traceList,
         transformList: transformList,
-        calendars: calendars,
 
         name: out,
         index: path.join(constants.pathToLib, 'index-' + out + '.js'),
@@ -90,6 +84,7 @@ if(process.argv.length > 2) {
     console.log(opts);
 
     opts.sourcemap = true;
+    opts.calendars = true;
 
     var tasks = [];
 
