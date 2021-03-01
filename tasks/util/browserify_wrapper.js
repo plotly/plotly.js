@@ -79,6 +79,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
         if(sourceMap) {
             bundleStream
+                .pipe(applyDerequire())
                 .pipe(minify(minifyOpts))
                 .pipe(exorcist(sourceMap))
                 .pipe(fs.createWriteStream(pathToMinBundle))
