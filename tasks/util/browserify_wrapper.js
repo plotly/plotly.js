@@ -51,14 +51,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
     function done() {
-        if(cb && --pending === 0) {
-            if(opts.deleteIndex) {
-                console.log('delete', pathToIndex);
-                fs.unlinkSync(pathToIndex, {});
-            }
-
-            cb(null);
-        }
+        if(cb && --pending === 0) cb(null);
     }
 
     var bundleStream = b.bundle(function(err) {
