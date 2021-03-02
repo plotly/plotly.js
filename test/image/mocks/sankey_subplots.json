@@ -1,5 +1,8 @@
 {
     "data": [{
+            "textfont": {
+                "color": "red"
+            },
             "domain": {
                 "x": [0, 0.45]
             },
@@ -7,9 +10,14 @@
             "orientation": "h",
             "node": {
                 "line": {
+                    "width": 8,
                     "color": "black"
                 },
-                "label": ["el1", "el2", "el3"]
+                "label": [
+                    "<i>Rien ne se perd,<br>rien ne se crée,<br>tout se <b>transforme</b>.</i><sub>",
+                    "el2",
+                    "<b>e<sup>iπ</sup> = cos i + i sin π</b>"
+                ]
             },
             "link": {
                 "source": [0, 2],
