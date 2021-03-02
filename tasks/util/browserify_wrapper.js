@@ -6,7 +6,6 @@ var minify = require('minify-stream');
 var derequire = require('derequire');
 var through = require('through2');
 
-var constants = require('./constants');
 var strictD3 = require('./strict_d3');
 
 /** Convenience browserify wrapper
@@ -22,9 +21,8 @@ var strictD3 = require('./strict_d3');
  *  - noCompress {boolean} skip attribute meta compression?
  * @param {function} cb callback
  *
- * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted
- * or opts.debug is true. Otherwise outputs two file: one un-minified bundle and
- * one minified bundle.
+ * Outputs one bundle (un-minified) file if opts.pathToMinBundle is omitted.
+ * Otherwise outputs two file: one un-minified bundle and one minified bundle.
  *
  * Logs basename of bundle when completed.
  */
@@ -47,10 +45,17 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     }
 
     var b = browserify(pathToIndex, browserifyOpts);
-    var pending = pathToMinBundle ? 2 : 1;
+    var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
     function done() {
-        if(cb && --pending === 0) cb(null);
+        if(cb && --pending === 0) {
+            if(opts.deleteIndex) {
+                console.log('delete', pathToIndex);
+                fs.unlinkSync(pathToIndex, {});
+            }
+
+            cb(null);
+        }
     }
 
     var bundleStream = b.bundle(function(err) {
@@ -61,9 +66,20 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     });
 
     if(pathToMinBundle) {
+        var minifyOpts = {
+            ecma: 5,
+            mangle: true,
+            output: {
+                beautify: false,
+                ascii_only: true
+            },
+
+            sourceMap: false
+        };
+
         bundleStream
             .pipe(applyDerequire())
-            .pipe(minify(constants.uglifyOptions))
+            .pipe(minify(minifyOpts))
             .pipe(fs.createWriteStream(pathToMinBundle))
             .on('finish', function() {
                 logger(pathToMinBundle);
@@ -71,13 +87,15 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
             });
     }
 
-    bundleStream
-        .pipe(applyDerequire())
-        .pipe(fs.createWriteStream(pathToBundle))
-        .on('finish', function() {
-            logger(pathToBundle);
-            done();
-        });
+    if(pathToBundle) {
+        bundleStream
+            .pipe(applyDerequire())
+            .pipe(fs.createWriteStream(pathToBundle))
+            .on('finish', function() {
+                logger(pathToBundle);
+                done();
+            });
+    }
 };
 
 function logger(pathToOutput) {

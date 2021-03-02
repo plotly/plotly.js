@@ -15,7 +15,9 @@ for(var i = 0; i < partialBundlePaths.length; i++) {
         index: opts.index,
         dist: opts.dist,
         distMin: opts.distMin,
-        traceList: opts.traceList
+        traceList: opts.traceList,
+        transformList: opts.transformList,
+        calendars: opts.calendars
     });
 }
 

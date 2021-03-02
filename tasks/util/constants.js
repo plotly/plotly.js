@@ -10,10 +10,19 @@ var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
+function startsWithLowerCase(v) {
+    return v.charAt(0) !== v.charAt(0).toUpperCase();
+}
+
 var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
 var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
-var pathToPlotlyTraces = path.join(pathToSrc, 'traces');
-var allTraces = fs.readdirSync(pathToPlotlyTraces);
+var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
+    .filter(startsWithLowerCase);
+var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
+    .filter(function(v) {
+        return startsWithLowerCase(v) && v !== 'helpers.js';
+    })
+    .map(function(e) { return e.replace('.js', ''); });
 
 var pathToTopojsonSrc;
 try {
@@ -140,6 +149,8 @@ function makePartialBundleOpts(name) {
     return {
         name: name,
         traceList: partialBundleTraces[name],
+        transformList: allTransforms,
+        calendars: true,
         index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
@@ -157,10 +168,10 @@ module.exports = {
     pathToBuild: pathToBuild,
     pathToDist: pathToDist,
 
+    allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,
     pathToPlotlyIndex: pathToPlotlyIndex,
-    pathToPlotlyTraces: pathToPlotlyTraces,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyVersion: path.join(pathToSrc, 'version.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
@@ -207,17 +218,6 @@ module.exports = {
     testContainerPort: '9010',
     testContainerUrl: 'http://localhost:9010/',
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
-
-    uglifyOptions: {
-        ecma: 5,
-        mangle: true,
-        output: {
-            beautify: false,
-            ascii_only: true
-        },
-
-        sourceMap: false
-    },
 
     licenseDist: [
         '/**',
