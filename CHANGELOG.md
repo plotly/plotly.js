@@ -12,7 +12,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [2.0.0] -- UNRELEASED
 
 ### Added
- - Removed usage of function constructors from `basic`, `cartesian`, `finance`, `geo`, and `mapbox`
+ - CSP safety: refactored to avoid usage of function constructors from `basic`, `cartesian`, `finance`, `geo`, and `mapbox`
    partial bundles and added tests to ensure that they will not again do so in the future [[#5359](https://github.com/plotly/plotly.js/pull/5359), [#5383](https://github.com/plotly/plotly.js/pull/5383), [#5387](https://github.com/plotly/plotly.js/pull/5387)],
    with thanks to [Equinor](https://www.equinor.com) for sponsoring the related development!
  - Add `strict` partial bundle [[#5413](https://github.com/plotly/plotly.js/pull/5413), [#5444](https://github.com/plotly/plotly.js/pull/5444)], which includes
