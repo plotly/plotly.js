@@ -755,9 +755,9 @@ function alignHTMLWith(_base, container, options) {
     };
 }
 
-exports.makeTextShadow = function(offset, color) {
-    var x = offset + 'px ';
-    var y = offset + 'px ';
+exports.makeTextShadow = function(color) {
+    var x = '1px ';
+    var y = '1px ';
     var b = '1px ';
     return x + y + b + color + ', ' +
         '-' + x + '-' + y + b + color + ', ' +
