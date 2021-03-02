@@ -17,7 +17,6 @@ var strictD3 = require('./strict_d3');
  *  - standalone {string}
  *  - debug {boolean} [optional]
  *  Additional option:
- *  - pathToSourceMap {string} path to destination source map
  *  - pathToMinBundle {string} path to destination minified bundle
  *  - noCompress {boolean} skip attribute meta compression?
  * @param {function} cb callback
