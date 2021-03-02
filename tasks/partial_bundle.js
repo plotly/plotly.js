@@ -113,8 +113,7 @@ function partialBundle(tasks, opts) {
             var newCode = partialIndex.replace(
                 new RegExp(
                     WHITESPACE_BEFORE +
-                    'require\\(\'\\./' + t + '\'\\)' +
-                    (t === 'calendars' ? '' : ','), // there is no comma after calendars require
+                    'require\\(\'\\./' + t + '\'\\),',
                 'g'), ''
             );
 
