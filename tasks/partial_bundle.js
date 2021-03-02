@@ -78,6 +78,7 @@ if(process.argv.length > 2) {
     console.log(opts);
 
     opts.calendars = true;
+    opts.deleteIndex = true;
 
     var tasks = [];
 
@@ -92,6 +93,7 @@ if(process.argv.length > 2) {
 function partialBundle(tasks, opts) {
     var name = opts.name;
     var index = opts.index;
+    var deleteIndex = opts.deleteIndex;
     var dist = opts.dist;
     var distMin = opts.distMin;
     var traceList = opts.traceList;
@@ -131,6 +133,7 @@ function partialBundle(tasks, opts) {
     tasks.push(function(done) {
         var bundleOpts = {
             standalone: 'Plotly',
+            deleteIndex: deleteIndex,
             pathToMinBundle: distMin
         };
 
