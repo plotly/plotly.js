@@ -5,7 +5,6 @@ var browserify = require('browserify');
 var minify = require('minify-stream');
 var derequire = require('derequire');
 var through = require('through2');
-var exorcist = require('exorcist');
 
 var strictD3 = require('./strict_d3');
 
@@ -35,8 +34,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var browserifyOpts = {};
     browserifyOpts.standalone = opts.standalone;
-    var sourceMap = opts.pathToSourceMap;
-    browserifyOpts.debug = opts.debug || !!sourceMap;
+    browserifyOpts.debug = opts.debug;
 
     if(opts.noCompress) {
         browserifyOpts.ignoreTransform = './tasks/compress_attributes.js';
@@ -70,33 +68,17 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
                 ascii_only: true
             },
 
-            sourceMap: sourceMap ? {
-                includeSources: true,
-                root: '/',
-                filename: path.basename(pathToMinBundle)
-            } : false
+            sourceMap: false
         };
 
-        if(sourceMap) {
-            bundleStream
-                .pipe(applyDerequire())
-                .pipe(minify(minifyOpts))
-                .pipe(exorcist(sourceMap))
-                .pipe(fs.createWriteStream(pathToMinBundle))
-                .on('finish', function() {
-                    logger(pathToMinBundle);
-                    done();
-                });
-        } else {
-            bundleStream
-                .pipe(applyDerequire())
-                .pipe(minify(minifyOpts))
-                .pipe(fs.createWriteStream(pathToMinBundle))
-                .on('finish', function() {
-                    logger(pathToMinBundle);
-                    done();
-                });
-        }
+        bundleStream
+            .pipe(applyDerequire())
+            .pipe(minify(minifyOpts))
+            .pipe(fs.createWriteStream(pathToMinBundle))
+            .on('finish', function() {
+                logger(pathToMinBundle);
+                done();
+            });
     }
 
     if(pathToBundle) {
