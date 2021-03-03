@@ -486,7 +486,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
 
     var pattern = fullLayout._defs.select('.patterns')
         .selectAll('#' + fullID)
-        .data([shape + ';' + bgcolor + ';' + fgcolor + ';' + size + ';' + solidity]);
+        .data([shape + ';' + bgcolor + ';' + fgcolor + ';' + size + ';' + solidity], Lib.identity);
 
     pattern.exit().remove();
 
@@ -692,8 +692,8 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
             var patternBGColor = getPatternAttr(markerPattern.bgcolor, d.i, null);
-            var patternSize = getPatternAttr(markerPattern.size, d.i, 1);
-            var patternSolidity = getPatternAttr(markerPattern.solidity, d.i, 1);
+            var patternSize = getPatternAttr(markerPattern.size, d.i, 8);
+            var patternSolidity = getPatternAttr(markerPattern.solidity, d.i, 0.3);
             var perPointPattern = Array.isArray(markerPattern.shape) ||
                                   Array.isArray(markerPattern.bgcolor) ||
                                   Array.isArray(markerPattern.size) ||

@@ -373,9 +373,9 @@ module.exports = function style(s, gd, legend) {
 
             if(patternShape) {
                 var patternBGColor = getPatternAttr(markerPattern.bgcolor, null);
-                var patternSize = getPatternAttr(markerPattern.size, 1);
-                var patternSolidity = getPatternAttr(markerPattern.solidity, 1);
-                var patternID = trace.uid;
+                var patternSize = Math.min(12, getPatternAttr(markerPattern.size, 8));
+                var patternSolidity = getPatternAttr(markerPattern.solidity, 0.3);
+                var patternID = 'legend-' + trace.uid;
                 p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
                        fillColor, patternSize, patternSolidity, 'fill');
             } else {
