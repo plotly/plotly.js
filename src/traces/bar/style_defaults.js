@@ -23,10 +23,12 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
 
     coerce('marker.line.width');
     coerce('marker.opacity');
-    coerce('marker.pattern.shape');
-    coerce('marker.pattern.bgcolor');
-    coerce('marker.pattern.size');
-    coerce('marker.pattern.solidity');
+    var pattern = coerce('marker.pattern.shape');
+    if (pattern) {
+        coerce('marker.pattern.bgcolor');
+        coerce('marker.pattern.size');
+        coerce('marker.pattern.solidity');
+    }
     coerce('selected.marker.color');
     coerce('unselected.marker.color');
 };
