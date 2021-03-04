@@ -970,6 +970,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('cursor', 'default');
 
     nodeLabel
+        .attr('data-notex', 1) // prohibit tex interpretation until we can handle tex and regular text together
         .text(function(d) { return d.node.label; })
         .each(function(d) {
             var e = d3.select(this);
@@ -987,8 +988,6 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             var blockHeight = d.textFont.size * (
                 (nLines - 1) * LINE_SPACING - CAP_SHIFT
             );
-
-            // TODO: handle MathJax
 
             var posX = d.nodeLineWidth / 2 + TEXTPAD;
             var posY = ((d.horizontal ? d.visibleHeight : d.visibleWidth) - blockHeight) / 2;
