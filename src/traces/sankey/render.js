@@ -987,7 +987,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             // how much to shift a multi-line label to center it vertically.
             var nLines = svgTextUtils.lineCount(e);
             var blockHeight = d.textFont.size * (
-                nLines === 1 ? -CAP_SHIFT : (nLines - 1) * LINE_SPACING
+                (nLines - 1) * LINE_SPACING - CAP_SHIFT
             );
 
             // TODO: handle MathJax
