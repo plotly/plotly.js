@@ -2,16 +2,43 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var ScatterPolarGl = require('@src/traces/scatterpolargl');
 
+var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
+
+function drag(gd, path) {
+    var len = path.length;
+    var el = d3Select(gd).select('rect.nsewdrag').node();
+    var opts = {element: el};
+
+    Lib.clearThrottle();
+    mouseEvent('mousemove', path[0][0], path[0][1], opts);
+    mouseEvent('mousedown', path[0][0], path[0][1], opts);
+
+    path.slice(1, len).forEach(function(pt) {
+        Lib.clearThrottle();
+        mouseEvent('mousemove', pt[0], pt[1], opts);
+    });
+
+    mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], opts);
+}
+
+function select(gd, path) {
+    return new Promise(function(resolve, reject) {
+        gd.once('plotly_selected', resolve);
+        setTimeout(function() { reject('did not trigger *plotly_selected*');}, 200);
+        drag(gd, path);
+    });
+}
 
 describe('Test scatterpolargl hover:', function() {
     var gd;
@@ -130,6 +157,18 @@ describe('Test scatterpolargl interactions:', function() {
     function totalPixels() {
         return readPixel(gd.querySelector('.gl-canvas-context'), 0, 0, 400, 400)
             .reduce(function(acc, v) { return acc + v; }, 0);
+    }
+
+    function assertEventData(actual, expected) {
+        expect(actual.points.length).toBe(expected.points.length);
+
+        expected.points.forEach(function(e, i) {
+            var a = actual.points[i];
+            if(a) {
+                expect(a.r).toBe(e.r, 'r');
+                expect(a.theta).toBe(e.theta, 'theta');
+            }
+        });
     }
 
     it('@gl should be able to toggle from svg to gl', function(done) {
@@ -257,6 +296,47 @@ describe('Test scatterpolargl interactions:', function() {
             expect(gd._fullLayout.polar._subplot._scene).toBe(null);
         })
         .then(done, done.fail);
+    });
+
+    [
+      ['linear', [0, 180]],
+      ['category', ['A', 'B']],
+    ].forEach(function(test) {
+        var axType = test[0];
+        var x = test[1];
+        it('@gl should return the same eventData as scatter on ' + axType + ' axis', function(done) {
+            var _mock = {
+                data: [{type: 'scatterpolar', r: [5, 10], theta: x}],
+                layout: {dragmode: 'select', width: 400, height: 400}
+            };
+            gd = createGraphDiv();
+            var scatterpolarEventData = {};
+            var selectPath = [[200, 150], [400, 250]];
+
+            Plotly.newPlot(gd, _mock)
+            .then(delay(20))
+            .then(function() {
+                expect(gd._fullLayout.polar.angularaxis.type).toEqual(test[0]);
+                return select(gd, selectPath);
+            })
+            .then(delay(20))
+            .then(function(eventData) {
+                scatterpolarEventData = eventData;
+                // Make sure we selected a point
+                expect(eventData.points.length).toBe(1);
+                return Plotly.restyle(gd, 'type', 'scatterpolargl');
+            })
+            .then(delay(20))
+            .then(function() {
+                expect(gd._fullLayout.polar.angularaxis.type).toEqual(test[0]);
+                return select(gd, selectPath);
+            })
+            .then(delay(20))
+            .then(function(eventData) {
+                assertEventData(eventData, scatterpolarEventData);
+            })
+            .then(done, done.fail);
+        });
     });
 });
 
