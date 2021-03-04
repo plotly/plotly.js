@@ -998,7 +998,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
                 posY = (d.visibleHeight - blockHeight) / 2;
             } else {
-                posY = TEXTPAD;
+                posY = d.nodeLineWidth / 2 + TEXTPAD;
                 posX = (d.visibleWidth - blockHeight) / 2;
             }
 
