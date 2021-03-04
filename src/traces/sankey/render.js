@@ -976,9 +976,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             Drawing.font(e, d.textFont);
             svgTextUtils.convertToTspans(e, gd);
         })
-        .style('text-shadow', function(d) {
-            return d.horizontal ? svgTextUtils.makeTextShadow(gd._fullLayout.paper_bgcolor) : 'none';
-        })
+        .style('text-shadow', svgTextUtils.makeTextShadow(gd._fullLayout.paper_bgcolor))
         .attr('text-anchor', function(d) {
             return (d.horizontal && d.left) ? 'end' : 'start';
         })
