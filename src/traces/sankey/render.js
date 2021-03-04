@@ -990,23 +990,24 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
             // TODO: handle MathJax
 
-            var posX;
-            var posY;
+            var posX = d.nodeLineWidth / 2 + TEXTPAD;
+            var posY = ((d.horizontal ? d.visibleHeight : d.visibleWidth) - blockHeight) / 2;
             if(d.horizontal) {
-                posX = d.left ? 0 : d.visibleWidth;
-                posX += (d.left ? -1 : 1) * (d.nodeLineWidth / 2 + TEXTPAD);
-
-                posY = (d.visibleHeight - blockHeight) / 2;
-            } else {
-                posY = d.nodeLineWidth / 2 + TEXTPAD;
-                posX = (d.visibleWidth - blockHeight) / 2;
+                if(d.left) {
+                    posX = -posX;
+                } else {
+                    posX += d.visibleWidth;
+                }
             }
 
             var flipText = d.horizontal ? '' : (
                 'scale(-1,1)' + strRotate(90)
             );
 
-            return strTranslate(posX, posY) + flipText;
+            return strTranslate(
+                d.horizontal ? posX : posY,
+                d.horizontal ? posY : posX
+            ) + flipText;
         });
 
     nodeLabel
