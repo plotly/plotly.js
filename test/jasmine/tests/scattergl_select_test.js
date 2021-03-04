@@ -349,6 +349,49 @@ describe('Test gl2d lasso/select:', function() {
         })
         .then(done, done.fail);
     });
+
+    [
+      ['linear', [1, 2, 3]],
+      ['log', [1, 2, 3]],
+      ['category', ['A', 'B', 'C']],
+      ['date', ['1900-01-01', '2000-01-01', '2100-01-01']]
+    ].forEach(function(test) {
+        var axType = test[0];
+        var x = test[1];
+        it('@gl should return the same eventData as scatter on ' + axType + ' axis', function(done) {
+            var _mock = {
+                data: [{type: 'scatter', x: x, y: [6, 5, 4]}],
+                layout: {dragmode: 'select', width: 400, height: 400, xaxis: {type: axType}}
+            };
+            gd = createGraphDiv();
+            var scatterEventData = {};
+            var selectPath = [[150, 150], [250, 250]];
+
+            Plotly.newPlot(gd, _mock)
+            .then(delay(20))
+            .then(function() {
+                expect(gd._fullLayout.xaxis.type).toEqual(test[0]);
+                return select(gd, selectPath);
+            })
+            .then(delay(20))
+            .then(function(eventData) {
+                scatterEventData = eventData;
+                // Make sure we selected a point
+                expect(eventData.points.length).toBe(1);
+                return Plotly.restyle(gd, 'type', 'scattergl');
+            })
+            .then(delay(20))
+            .then(function() {
+                expect(gd._fullLayout.xaxis.type).toEqual(test[0]);
+                return select(gd, selectPath);
+            })
+            .then(delay(20))
+            .then(function(eventData) {
+                assertEventData(eventData, scatterEventData);
+            })
+            .then(done, done.fail);
+        });
+    });
 });
 
 describe('Test displayed selections:', function() {
