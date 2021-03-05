@@ -340,8 +340,7 @@ describe('Test scatterpolargl interactions:', function() {
                 .then(done, done.fail);
             });
         });
-    })
-
+    });
 });
 
 describe('Test scatterpolargl autorange:', function() {
