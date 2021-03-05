@@ -298,46 +298,50 @@ describe('Test scatterpolargl interactions:', function() {
         .then(done, done.fail);
     });
 
-    [
-      ['linear', [0, 180]],
-      ['category', ['A', 'B']],
-    ].forEach(function(test) {
-        var axType = test[0];
-        var x = test[1];
-        it('@gl should return the same eventData as scatter on ' + axType + ' axis', function(done) {
-            var _mock = {
-                data: [{type: 'scatterpolar', r: [5, 10], theta: x}],
-                layout: {dragmode: 'select', width: 400, height: 400}
-            };
-            gd = createGraphDiv();
-            var scatterpolarEventData = {};
-            var selectPath = [[200, 150], [400, 250]];
+    ['r', 'theta'].forEach(function(ax) {
+        [
+          ['linear', [0, 180]],
+          ['category', ['A', 'B']],
+        ].forEach(function(test) {
+            var axType = test[0];
+            var axNames = {'r': 'radialaxis', 'theta': 'angularaxis'};
+            it('@gl should return the same eventData as scatter on ' + axType + ' ' + ax + ' axis', function(done) {
+                var _mock = {
+                    data: [{type: 'scatterpolar', r: [5, 10], theta: [0, 180]}],
+                    layout: {dragmode: 'select', width: 400, height: 400}
+                };
+                _mock.data[0][ax] = test[1];
+                gd = createGraphDiv();
+                var scatterpolarEventData = {};
+                var selectPath = [[185, 150], [400, 250]];
 
-            Plotly.newPlot(gd, _mock)
-            .then(delay(20))
-            .then(function() {
-                expect(gd._fullLayout.polar.angularaxis.type).toEqual(test[0]);
-                return select(gd, selectPath);
-            })
-            .then(delay(20))
-            .then(function(eventData) {
-                scatterpolarEventData = eventData;
-                // Make sure we selected a point
-                expect(eventData.points.length).toBe(1);
-                return Plotly.restyle(gd, 'type', 'scatterpolargl');
-            })
-            .then(delay(20))
-            .then(function() {
-                expect(gd._fullLayout.polar.angularaxis.type).toEqual(test[0]);
-                return select(gd, selectPath);
-            })
-            .then(delay(20))
-            .then(function(eventData) {
-                assertEventData(eventData, scatterpolarEventData);
-            })
-            .then(done, done.fail);
+                Plotly.newPlot(gd, _mock)
+                .then(delay(20))
+                .then(function() {
+                    expect(gd._fullLayout.polar[axNames[ax]].type).toEqual(test[0]);
+                    return select(gd, selectPath);
+                })
+                .then(delay(20))
+                .then(function(eventData) {
+                    scatterpolarEventData = eventData;
+                    // Make sure we selected a point
+                    expect(eventData.points.length).toBe(1);
+                    return Plotly.restyle(gd, 'type', 'scatterpolargl');
+                })
+                .then(delay(20))
+                .then(function() {
+                    expect(gd._fullLayout.polar[axNames[ax]].type).toEqual(test[0]);
+                    return select(gd, selectPath);
+                })
+                .then(delay(20))
+                .then(function(eventData) {
+                    assertEventData(eventData, scatterpolarEventData);
+                })
+                .then(done, done.fail);
+            });
         });
-    });
+    })
+
 });
 
 describe('Test scatterpolargl autorange:', function() {
