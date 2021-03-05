@@ -16,10 +16,6 @@ module.exports = {
         sankeyNodeSet: 'sankey-node-set',
         sankeyNode: 'sankey-node',
         nodeRect: 'node-rect',
-        nodeCapture: 'node-capture',
-        nodeCentered: 'node-entered',
-        nodeLabelGuide: 'node-label-guide',
-        nodeLabel: 'node-label',
-        nodeLabelTextPath: 'node-label-text-path'
+        nodeLabel: 'node-label'
     }
 };

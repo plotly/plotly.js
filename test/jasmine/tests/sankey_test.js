@@ -669,7 +669,7 @@ describe('sankey tests', function() {
             Lib.clearThrottle();
         }
 
-        var node = [404, 302];
+        var node = [410, 300];
         var link = [450, 300];
 
         it('should show the correct hover labels', function(done) {
@@ -677,7 +677,7 @@ describe('sankey tests', function() {
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy).then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -697,7 +697,7 @@ describe('sankey tests', function() {
                 return Plotly.relayout(gd, 'hoverlabel.font.family', 'Roboto');
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -722,7 +722,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -753,7 +753,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -815,7 +815,7 @@ describe('sankey tests', function() {
             mockCopy.data[0].link.customdata[61] = ['linkCustomdata0', 'linkCustomdata1'];
 
             Plotly.newPlot(gd, mockCopy).then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -838,7 +838,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     [ 'hovertemplate', '447TWh', '447.48', 'nodeCustomdata0/nodeCustomdata1', 'trace 0'],
@@ -890,7 +890,7 @@ describe('sankey tests', function() {
 
             Plotly.newPlot(gd, mockCopy)
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -1054,7 +1054,7 @@ describe('sankey tests', function() {
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy)
-            .then(function() { _hover(404, 302); })
+            .then(function() { _hover(410, 300); })
             .then(function() {
                 assertHoverLabelContent({
                     nums: 'Solid\nincoming flow count: 4\noutgoing flow count: 3',
@@ -1064,7 +1064,7 @@ describe('sankey tests', function() {
             .then(function() {
                 return Plotly.restyle(gd, 'hoverlabel.namelength', 3);
             })
-            .then(function() { _hover(404, 302); })
+            .then(function() { _hover(410, 300); })
             .then(function() {
                 assertHoverLabelContent({
                     nums: 'Solid\nincoming flow count: 4\noutgoing flow count: 3',
@@ -1086,7 +1086,7 @@ describe('sankey tests', function() {
 
         function _makeWrapper(eventType, mouseFn) {
             var posByElementType = {
-                node: [404, 302],
+                node: [410, 300],
                 link: [450, 300]
             };
 

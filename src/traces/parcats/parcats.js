@@ -238,7 +238,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
             })
         .attr('alignment-baseline', 'middle')
 
-        .style('text-shadow', svgTextUtils.makeTextShadow(1, paperColor))
+        .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('fill', 'rgb(0, 0, 0)')
         .attr('x',
             function(d) {

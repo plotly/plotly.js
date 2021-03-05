@@ -755,10 +755,12 @@ function alignHTMLWith(_base, container, options) {
     };
 }
 
-exports.makeTextShadow = function(offset, color) {
-    var x = offset + 'px ';
-    var y = offset + 'px ';
-    var b = '1px ';
+var onePx = '1px ';
+
+exports.makeTextShadow = function(color) {
+    var x = onePx;
+    var y = onePx;
+    var b = onePx;
     return x + y + b + color + ', ' +
         '-' + x + '-' + y + b + color + ', ' +
         x + '-' + y + b + color + ', ' +
