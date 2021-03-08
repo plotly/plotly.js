@@ -48,6 +48,12 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var markerColor = coerce('marker.color', defaultColor);
     coerce('marker.line.color', Color.defaultLine);
     coerce('marker.line.width');
+    var patternShape = coerce('marker.pattern.shape');
+    if(patternShape) {
+        coerce('marker.pattern.bgcolor');
+        coerce('marker.pattern.size');
+        coerce('marker.pattern.solidity');
+    }
 
     var connectorVisible = coerce('connector.visible');
     if(connectorVisible) {

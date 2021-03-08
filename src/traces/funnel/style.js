@@ -31,6 +31,7 @@ function style(gd, cd, sel) {
             }
         });
 
+        Drawing.pointStyle(gTrace.selectAll('path'), trace, gd);
         styleTextPoints(gTrace, trace, gd);
 
         gTrace.selectAll('.regions').each(function() {
