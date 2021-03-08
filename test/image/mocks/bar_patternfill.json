@@ -1,0 +1,125 @@
+{
+  "data": [
+    {
+      "x": [
+        "Area 1",
+        "Area 2",
+        "Area 3",
+        "Area 4",
+        "Area 5"
+      ],
+      "y": [
+        20,
+        14,
+        23,
+        30,
+        5
+      ],
+      "name": "Product A",
+      "type": "bar",
+      "marker": {
+        "color": "#4477AA",
+        "line": {
+          "color": "#4477AA",
+          "width": 1
+        },
+        "pattern": {
+          "shape": "/"
+        }
+      }
+    },
+    {
+      "x": [
+        "Area 1",
+        "Area 2",
+        "Area 3",
+        "Area 4",
+        "Area 5"
+      ],
+      "y": [
+        12,
+        18,
+        29,
+        10,
+        23
+      ],
+      "name": "Product B",
+      "type": "bar",
+      "marker": {
+        "color": "#CCBB44",
+        "line": {
+          "color": "#CCBB44",
+          "width": 1
+        },
+        "pattern": {
+          "shape": "\\"
+        }
+      }
+    },
+    {
+      "x": [
+        "Area 1",
+        "Area 2",
+        "Area 3",
+        "Area 4",
+        "Area 5"
+      ],
+      "y": [
+        30,
+        23,
+        22,
+        33,
+        15
+      ],
+      "name": "Product C",
+      "type": "bar",
+      "marker": {
+        "color": "#EE6677",
+        "line": {
+          "color": "#EE6677",
+          "width": 1
+        },
+        "pattern": {
+          "shape": ["|", "-", "+", "x", "."]
+        }
+      }
+    },
+    {
+      "x": [
+        "Area 1",
+        "Area 2",
+        "Area 3",
+        "Area 4",
+        "Area 5"
+      ],
+      "y": [
+        18,
+        29,
+        31,
+        20,
+        23
+      ],
+      "name": "Product D",
+      "type": "bar",
+      "marker": {
+        "color": ["#061a0a", "#124d1d", "#1d802f", "#29b342", "#35e655"],
+        "line": {
+          "color": ["#061a0a", "#124d1d", "#1d802f", "#29b342", "#35e655"],
+          "width": 1
+        },
+        "pattern": {
+          "shape": ["/", "\\", "x", ".", "+"],
+          "bgcolor": "#c6eff5",
+          "size": [4, 6, 8, 10, 12],
+          "solidity": [0.1, 0.3, 0.5, 0.7, 0.9]
+        }
+      }
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "type": "category"
+    },
+    "barmode": "stack"
+  }
+}
