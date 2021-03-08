@@ -1,5 +1,4 @@
 var Plotly = require('@lib/core');
-var Scatter = require('@lib/scatter');
 var Bar = require('@lib/bar');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -9,9 +8,9 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Bundle with bar', function() {
     'use strict';
 
-    Plotly.register([Scatter, Bar]);
+    Plotly.register(Bar);
 
-    var mock = require('@mocks/bar_line.json');
+    var mock = require('@mocks/0.json');
 
     beforeEach(function(done) {
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
@@ -19,15 +18,9 @@ describe('Bundle with bar', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('should graph scatter traces', function() {
-        var nodes = d3SelectAll('g.trace.scatter');
-
-        expect(nodes.size()).toEqual(1);
-    });
-
     it('should graph bar traces', function() {
         var nodes = d3SelectAll('g.trace.bars');
 
-        expect(nodes.size()).toEqual(1);
+        expect(nodes.size()).toEqual(3);
     });
 });

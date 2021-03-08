@@ -1,5 +1,4 @@
 var Plotly = require('@lib/core');
-var Scatter = require('@lib/scatter');
 var Choropleth = require('@lib/choropleth');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -11,7 +10,7 @@ var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 describe('Bundle with choropleth', function() {
     'use strict';
 
-    Plotly.register([Scatter, Choropleth]);
+    Plotly.register(Choropleth);
 
     var gd;
 
