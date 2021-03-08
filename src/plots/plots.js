@@ -843,7 +843,7 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
         _fullLayout: newFullLayout
     };
 
-    var ids = newSubplotList.cartesian.concat(newSubplotList.gl2d || []);
+    var ids = (newSubplotList.cartesian || []).concat(newSubplotList.gl2d || []);
 
     for(i = 0; i < ids.length; i++) {
         var id = ids[i];

@@ -72,9 +72,9 @@ exports.listIds = function(gd, axLetter) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout) return [];
 
-    var subplotLists = fullLayout._subplots;
-    if(axLetter) return subplotLists[axLetter + 'axis'];
-    return subplotLists.xaxis.concat(subplotLists.yaxis);
+    var subplotLists = fullLayout._subplots || {};
+    if(axLetter) return subplotLists[axLetter + 'axis'] || [];
+    return (subplotLists.xaxis || []).concat(subplotLists.yaxis || []);
 };
 
 // get an axis object from its id 'x','x2' etc

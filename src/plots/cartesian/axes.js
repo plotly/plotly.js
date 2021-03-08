@@ -86,7 +86,7 @@ function expandRange(range) {
  */
 axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption) {
     var axLetter = attr.charAt(attr.length - 1);
-    var axlist = gd._fullLayout._subplots[axLetter + 'axis'];
+    var axlist = gd._fullLayout._subplots[axLetter + 'axis'] || [];
     var refAttr = attr + 'ref';
     var attrDef = {};
 

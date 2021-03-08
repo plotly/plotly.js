@@ -3,6 +3,7 @@
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var axisIds = require('./axis_ids');
+var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
 
 /**
  * Factory function for checking component arrays for subplot references.
@@ -21,7 +22,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
         if(!Array.isArray(array)) return;
 
         var Cartesian = Registry.subplotsRegistry.cartesian;
-        var idRegex = Cartesian.idRegex;
+        var idRegex = cartesianIdRegex;
         var subplots = layoutOut._subplots;
         var xaList = subplots.xaxis;
         var yaList = subplots.yaxis;
