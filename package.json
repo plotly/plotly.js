@@ -142,7 +142,6 @@
     "deep-equal": "^2.0.5",
     "derequire": "^2.1.1",
     "ecstatic": "^4.1.4",
-    "elliptic": "^6.5.3",
     "eslint": "^7.17.0",
     "espree": "^7.3.1",
     "extra-iterable": "^2.5.14",
