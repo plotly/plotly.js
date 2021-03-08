@@ -1,7 +1,8 @@
 var Plots = require('@src/plots/plots');
 var Plotly = require('@lib/core');
-var ohlc = require('@lib/ohlc');
-var candlestick = require('@lib/candlestick');
+var Scatter = require('@lib/scatter');
+var Ohlc = require('@lib/ohlc');
+var Candlestick = require('@lib/candlestick');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -10,7 +11,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Bundle with finance trace type', function() {
     'use strict';
 
-    Plotly.register([ohlc, candlestick]);
+    Plotly.register([Scatter, Ohlc, Candlestick]);
 
     var mock = require('@mocks/finance_style.json');
 
