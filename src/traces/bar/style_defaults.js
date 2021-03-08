@@ -23,8 +23,8 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
 
     coerce('marker.line.width');
     coerce('marker.opacity');
-    var pattern = coerce('marker.pattern.shape');
-    if(pattern) {
+    var patternShape = coerce('marker.pattern.shape');
+    if(patternShape) {
         coerce('marker.pattern.bgcolor');
         coerce('marker.pattern.size');
         coerce('marker.pattern.solidity');

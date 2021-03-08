@@ -373,6 +373,11 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
     var fullID = 'p' + fullLayout._uid + '-' + patternID;
     var width, height;
 
+    // linear interpolation
+    var linearFn = function(x, x0, x1, y0, y1) {
+        return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+    };
+
     var path, linewidth, radius;
     var patternTag;
     var patternAttrs = {};
@@ -468,10 +473,6 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             if(solidity < Math.PI / 4) {
                 radius = Math.sqrt(solidity * size * size / Math.PI);
             } else {
-                // linear interpolation
-                var linearFn = function(x, x0, x1, y0, y1) {
-                    return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
-                };
                 radius = linearFn(solidity, Math.PI / 4, 1.0, size / 2, size / Math.sqrt(2));
             }
             patternTag = 'circle';
@@ -559,6 +560,13 @@ drawing.initPatterns = function(gd) {
     // initialize stash of query parts filled in Drawing.pattern,
     // used to fix URL strings during image exports
     fullLayout._patternUrlQueryParts = {};
+};
+
+drawing.getPatternAttr = function(mp, i, dflt) {
+    if(mp && Lib.isArrayOrTypedArray(mp)) {
+        return i < mp.length ? mp[i] : dflt;
+    }
+    return mp;
 };
 
 drawing.pointStyle = function(s, trace, gd) {
@@ -665,20 +673,13 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
 
         // for legend - arrays will propagate through here, but we don't need
         // to treat it as per-point.
-        if(Array.isArray(gradientType)) {
+        if(Lib.isArrayOrTypedArray(gradientType)) {
             gradientType = gradientType[0];
             if(!gradientInfo[gradientType]) gradientType = 0;
         }
 
-        var getPatternAttr = function(mp, i, dflt) {
-            if(mp && Array.isArray(mp)) {
-                if(i < mp.length) return mp[i];
-                else return dflt;
-            }
-            return mp;
-        };
         var markerPattern = marker.pattern;
-        var patternShape = markerPattern && getPatternAttr(markerPattern.shape, d.i, '');
+        var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, d.i, '');
 
         if(gradientType && gradientType !== 'none') {
             var gradientColor = d.mgc;
@@ -691,13 +692,13 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             drawing.gradient(sel, gd, gradientID, gradientType,
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
-            var patternBGColor = getPatternAttr(markerPattern.bgcolor, d.i, null);
-            var patternSize = getPatternAttr(markerPattern.size, d.i, 8);
-            var patternSolidity = getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            var perPointPattern = Array.isArray(markerPattern.shape) ||
-                                  Array.isArray(markerPattern.bgcolor) ||
-                                  Array.isArray(markerPattern.size) ||
-                                  Array.isArray(markerPattern.solidity);
+            var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
+            var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
+            var perPointPattern = Lib.isArrayOrTypedArray(markerPattern.shape) ||
+                                  Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                                  Lib.isArrayOrTypedArray(markerPattern.size) ||
+                                  Lib.isArrayOrTypedArray(markerPattern.solidity);
 
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
