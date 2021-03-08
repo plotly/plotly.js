@@ -126,7 +126,6 @@ var list = [
     'bar_annotation_max_range_eq_category',
     'bar_multiline_labels',
     'bar_nonnumeric_sizes',
-    'bar_patternfill',
     'bar_show_narrow',
     'bar_stack-with-gaps',
     'bar_stackrelative_negative',
@@ -770,6 +769,7 @@ var list = [
     'parcats_numeric_sort',
     'parcats_reordered',
     'parcats_unbundled',
+    'pattern_bars',
     'percent_error_bar',
     'period_positioning',
     'period_positioning2',
@@ -1215,7 +1215,6 @@ figs['bar_marker_array'] = require('@mocks/bar_marker_array');
 figs['bar_annotation_max_range_eq_category'] = require('@mocks/bar_annotation_max_range_eq_category');
 figs['bar_multiline_labels'] = require('@mocks/bar_multiline_labels');
 figs['bar_nonnumeric_sizes'] = require('@mocks/bar_nonnumeric_sizes');
-figs['bar_patternfill'] = require('@mocks/bar_patternfill');
 figs['bar_show_narrow'] = require('@mocks/bar_show_narrow');
 figs['bar_stack-with-gaps'] = require('@mocks/bar_stack-with-gaps');
 figs['bar_stackrelative_negative'] = require('@mocks/bar_stackrelative_negative');
@@ -1859,6 +1858,7 @@ figs['parcats_invisible_dimension'] = require('@mocks/parcats_invisible_dimensio
 figs['parcats_numeric_sort'] = require('@mocks/parcats_numeric_sort');
 figs['parcats_reordered'] = require('@mocks/parcats_reordered');
 figs['parcats_unbundled'] = require('@mocks/parcats_unbundled');
+figs['pattern_bars'] = require('@mocks/pattern_bars');
 figs['percent_error_bar'] = require('@mocks/percent_error_bar');
 figs['period_positioning'] = require('@mocks/period_positioning');
 figs['period_positioning2'] = require('@mocks/period_positioning2');
