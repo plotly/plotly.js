@@ -15,3 +15,52 @@ exports.dash = {
         'or a dash length list in px (eg *5px,10px,2px,2px*).'
     ].join(' ')
 };
+
+exports.pattern = {
+    shape: {
+        valType: 'enumerated',
+        values: ['', '/', '\\', 'x', '-', '|', '+', '.'],
+        dflt: '',
+        arrayOk: true,
+        editType: 'style',
+        description: [
+            'Sets the shape of the pattern fill.',
+            'By default, no pattern is used for filling the area.',
+        ].join(' ')
+    },
+    bgcolor: {
+        valType: 'color',
+        arrayOk: true,
+        editType: 'style',
+        description: [
+            'Sets the background color of the pattern fill.',
+            'Defaults to a transparent background.',
+        ].join(' ')
+    },
+    size: {
+        valType: 'number',
+        min: 0,
+        dflt: 8,
+        arrayOk: true,
+        editType: 'style',
+        description: [
+            'Sets the size of unit squares of the pattern fill in pixels,',
+            'which corresponds to the interval of repetition of the pattern.',
+        ].join(' ')
+    },
+    solidity: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0.3,
+        arrayOk: true,
+        editType: 'style',
+        description: [
+            'Sets the solidity of the pattern fill.',
+            'Solidity is roughly proportional to the ratio of the area filled by the pattern.',
+            'Solidity of 0 shows only the background color without pattern',
+            'and solidty of 1 shows only the foreground color without pattern.',
+        ].join(' ')
+    },
+    editType: 'style'
+};

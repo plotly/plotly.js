@@ -3,6 +3,7 @@
 var Color = require('../../components/color');
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
+var coercePattern = require('../../lib').coercePattern;
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout) {
     coerce('marker.color', defaultColor);
@@ -23,12 +24,8 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
 
     coerce('marker.line.width');
     coerce('marker.opacity');
-    var patternShape = coerce('marker.pattern.shape');
-    if(patternShape) {
-        coerce('marker.pattern.bgcolor');
-        coerce('marker.pattern.size');
-        coerce('marker.pattern.solidity');
-    }
+    coercePattern(coerce, 'marker.pattern');
+
     coerce('selected.marker.color');
     coerce('unselected.marker.color');
 };
