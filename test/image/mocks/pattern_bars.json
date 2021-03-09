@@ -61,7 +61,7 @@
       "t": ["M", "N", "O", "P"],
       "r": [1, 2, 3, 4],
       "type": "barpolar",
-      "name": "polar-1",
+      "name": "Barpolar 1",
       "marker": {
         "color": "red",
         "pattern": {
@@ -74,7 +74,7 @@
       "t": ["M", "N", "O", "P"],
       "r": [2, 3, 4, 1],
       "type": "barpolar",
-      "name": "polar-2",
+      "name": "Barpolar 2",
       "marker": {
         "color": "rgba(0,127,0,0.5)",
         "pattern": {
@@ -87,7 +87,7 @@
       "t": ["M", "N", "O", "P"],
       "r": [3, 4, 1, 2],
       "type": "barpolar",
-      "name": "polar-3",
+      "name": "Barpolar 3",
       "marker": {
         "color": "blue",
         "pattern": {
@@ -100,7 +100,7 @@
       "t": ["M", "N", "O", "P"],
       "r": [4, 1, 2, 3],
       "type": "barpolar",
-      "name": "polar-4",
+      "name": "Barpolar 4",
       "marker": {
         "color": "orange",
         "pattern": {
@@ -115,7 +115,7 @@
       "xaxis": "x2",
       "yaxis": "y2",
       "y": ["A", "A", "A", "A", "B", "B", "C"],
-      "name": "Night",
+      "name": "Histogram 1",
       "type": "histogram",
       "marker": {
         "color": "yellow",
@@ -133,7 +133,7 @@
       "xaxis": "x2",
       "yaxis": "y2",
       "y": ["C", "C", "C", "C", "B", "B", "A"],
-      "name": "Day",
+      "name": "Histogram 2",
       "type": "histogram",
       "marker": {
         "color": "yellow",
@@ -199,7 +199,7 @@
 
     "xaxis3": {
       "anchor": "y3",
-      "domain": [0.65, 1]
+      "domain": [0.7, 1]
     },
     "yaxis3": {
       "anchor": "x3",
