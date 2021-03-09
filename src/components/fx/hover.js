@@ -248,8 +248,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return dragElement.unhoverRaw(gd, evt);
     }
 
-    var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
-    var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
+    var hoverdistance = fullLayout.hoverdistance;
+    if(hoverdistance === -1) hoverdistance = Infinity;
+
+    var spikedistance = fullLayout.spikedistance;
+    if(spikedistance === -1) spikedistance = Infinity;
 
     // hoverData: the set of candidate points we've found to highlight
     var hoverData = [];
