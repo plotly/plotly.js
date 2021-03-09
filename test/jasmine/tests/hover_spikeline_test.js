@@ -419,12 +419,13 @@ describe('spikeline hover', function() {
         .then(done, done.fail);
     });
 
-    it('correctly select the closest bar even when setting spikedistance to -1', function(done) {
+    it('correctly select the closest bar even when setting spikedistance to -1 (case of x hovermode)', function(done) {
         var mock = require('@mocks/bar_stack-with-gaps');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.xaxis.showspikes = true;
         mockCopy.layout.yaxis.showspikes = true;
         mockCopy.layout.spikedistance = -1;
+        mockCopy.layout.hovermode = 'x';
 
         Plotly.newPlot(gd, mockCopy)
         .then(function() {
@@ -433,10 +434,33 @@ describe('spikeline hover', function() {
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
 
-            _hover({xpx: 600, ypx: 200});
+            _hover({xpx: 600, ypx: 100});
             lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
+        })
+        .then(done, done.fail);
+    });
+
+    it('correctly select the closest bar even when setting spikedistance to -1 (case of closest hovermode)', function(done) {
+        var mock = require('@mocks/bar_stack-with-gaps');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.xaxis.showspikes = true;
+        mockCopy.layout.yaxis.showspikes = true;
+        mockCopy.layout.spikedistance = -1;
+        mockCopy.layout.hovermode = 'closest';
+
+        Plotly.newPlot(gd, mockCopy)
+        .then(function() {
+            _hover({xpx: 600, ypx: 400});
+            var lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#1f77b4');
+
+            _hover({xpx: 600, ypx: 100});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
         })
         .then(done, done.fail);
     });
