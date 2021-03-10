@@ -214,8 +214,8 @@ function viewModel(state, callbacks, model) {
     var canvasPixelRatio = model.canvasPixelRatio;
 
     var xScale = function(d) {return width * d / Math.max(1, model.colCount - 1);};
-    if (model.colXPositions) {
-        xScale = function(d) {return model.colXPositions[d]};
+    if(model.colXPositions) {
+        xScale = function(d) {return model.colXPositions[d];};
     }
 
     var unitPad = c.verticalPadding / height;
