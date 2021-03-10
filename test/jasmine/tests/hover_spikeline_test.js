@@ -465,6 +465,69 @@ describe('spikeline hover', function() {
         .then(done, done.fail);
     });
 
+    it('could select the closest scatter point inside bar', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                type: 'scatter',
+                marker: { color: 'green' },
+                x: [
+                    -1,
+                    0,
+                    0.5,
+                    1
+                ],
+                y: [
+                    0.1,
+                    0.2,
+                    0.25,
+                    0.3
+                ]
+            },
+            {
+                type: 'bar',
+                marker: { color: 'blue' },
+                x: [
+                    -1,
+                    -0.2,
+                    1
+                ],
+                y: [
+                    1,
+                    2,
+                    0.5
+                ]
+            }],
+            layout: {
+                hovermode: 'x',
+                xaxis: { showspikes: true },
+                yaxis: { showspikes: true },
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50,
+                }
+            }
+        })
+        .then(function() {
+            var lines;
+
+            _hover({xpx: 200, ypx: 200});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('blue');
+
+            _hover({xpx: 200, ypx: 350});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('green');
+        })
+        .then(done, done.fail);
+    });
+
     it('correctly responds to setting the spikedistance to 0 by disabling ' +
         'the search for points to draw the spikelines', function(done) {
         var _mock = makeMock('toaxis', 'closest');
