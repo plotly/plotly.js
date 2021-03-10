@@ -4728,7 +4728,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
-    it('shares filtering logic with compare mode x', function(done) {
+    it('filtering logic for compare mode x', function(done) {
         var mock = require('@mocks/27.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
@@ -4736,17 +4736,134 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, { xval: '2002' });
                 assertElementCount('g.hovertext', 2);
-
-                return Plotly.relayout(gd, 'hovermode', 'x unified');
-            })
-            .then(function() {
-                _hover(gd, { xval: '2002' });
-                assertLabel({title: '2002.042', items: [
-                    'Market income : 0.5537845',
-                    'Market incom... : 0.4420997'
-                ]});
             })
             .then(done, done.fail);
+    });
+
+    it('x unified should include close points and filter multiple points from the same trace', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    type: 'bar',
+                    name: 'bar',
+                    x: [
+                        '2017-04',
+                        '2017-07',
+                        '2017-10',
+                        '2018-01'
+                    ],
+                    xperiod: 'M3',
+                    y: [10, 5, 10, 5]
+                },
+                {
+                    type: 'scatter',
+                    name: 'scatter',
+                    x: [
+                        '2017-01-01',
+                        '2017-02-01',
+                        '2017-03-01',
+                        '2017-04-01',
+                        '2017-05-01',
+                        '2017-06-01',
+                        '2017-07-01',
+                        '2017-08-01',
+                        '2017-09-01',
+                        '2017-10-01',
+                        '2017-11-01',
+                        '2017-12-01'
+                    ],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                }
+            ],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function(gd) {
+            _hover(gd, { xpx: 25, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2017', items: [
+                'scatter : 1'
+            ]});
+
+            _hover(gd, { xpx: 50, ypx: 250 });
+            assertLabel({title: 'Feb 1, 2017', items: [
+                'scatter : 2'
+            ]});
+
+            _hover(gd, { xpx: 75, ypx: 250 });
+            assertLabel({title: 'Mar 1, 2017', items: [
+                'scatter : 3'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 250 });
+            assertLabel({title: 'Apr 1, 2017', items: [
+                'bar : 10',
+                'scatter : 4'
+            ]});
+
+            _hover(gd, { xpx: 125, ypx: 250 });
+            assertLabel({title: 'May 1, 2017', items: [
+                'bar : (Apr 1, 2017, 10)',
+                'scatter : 5'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 250 });
+            assertLabel({title: 'Jun 1, 2017', items: [
+                'bar : (Apr 1, 2017, 10)',
+                'scatter : 6'
+            ]});
+
+            _hover(gd, { xpx: 175, ypx: 250 });
+            assertLabel({title: 'Jul 1, 2017', items: [
+                'bar : 5',
+                'scatter : 7'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 250 });
+            assertLabel({title: 'Aug 1, 2017', items: [
+                'bar : (Jul 1, 2017, 5)',
+                'scatter : 8'
+            ]});
+
+            _hover(gd, { xpx: 225, ypx: 250 });
+            assertLabel({title: 'Sep 1, 2017', items: [
+                'bar : (Jul 1, 2017, 5)',
+                'scatter : 9'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 250 });
+            assertLabel({title: 'Oct 1, 2017', items: [
+                'bar : 10',
+                'scatter : 10'
+            ]});
+
+            _hover(gd, { xpx: 275, ypx: 250 });
+            assertLabel({title: 'Nov 1, 2017', items: [
+                'bar : (Oct 1, 2017, 10)',
+                'scatter : 11'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 250 });
+            assertLabel({title: 'Dec 1, 2017', items: [
+                'bar : (Oct 1, 2017, 10)',
+                'scatter : 12'
+            ]});
+
+            _hover(gd, { xpx: 350, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2018', items: [
+                'bar : 5'
+            ]});
+        })
+        .then(done, done.fail);
     });
 
     it('should have the same traceorder as the legend', function(done) {
