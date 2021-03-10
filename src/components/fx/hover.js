@@ -980,13 +980,27 @@ function createHoverText(hoverData, opts, gd) {
         });
     }
 
+    function unifiedFilterClosePoints(hoverData) {
+        var out = [];
+        var seen = [];
+        for(var i = 0; i < hoverData.length; i++) {
+            var d = hoverData[i];
+            var id = d.cd[0].trace.index;
+            if(!seen[id]) {
+                seen[id] = 1;
+                out.push(d);
+            }
+        }
+        return out;
+    }
+
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
 
         // similarly to compare mode, we remove the "close but not quite together" points
-        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
+        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = unifiedFilterClosePoints(hoverData);
 
         // Return early if nothing is hovered on
         if(hoverData.length === 0) return;
