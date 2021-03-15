@@ -2177,12 +2177,18 @@ axes.drawOne = function(gd, ax, opts) {
     // TODO: mirror labels, esp for subplots
 
     seq.push(function() {
-        return axes.drawLabels(gd, ax, {
+        var opts = {
             vals: vals,
             layer: mainAxLayer,
             transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
-        });
+        };
+
+        if(ax._anchorAxis) {
+            opts.grid = plotinfo.gridlayer.select('.' + ax._anchorAxis._id);
+        }
+
+        return axes.drawLabels(gd, ax, opts);
     });
 
     if(ax.type === 'multicategory') {
@@ -2861,7 +2867,9 @@ axes.drawGrid = function(gd, ax, opts) {
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
-        .style('stroke-width', ax._gw + 'px');
+        .style('stroke-width', ax._gw + 'px')
+        .style({ opacity: 100 }); // ensure visible
+
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -3054,6 +3062,9 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var isX = ax._id.charAt(0) === 'x';
 
+            var visibleLabelMin = Infinity;
+            var visibleLabelMax = -Infinity;
+
             tickLabels.each(function(d) {
                 var thisLabel = d3.select(this);
                 var mathjaxGroup = thisLabel.select('.text-math-group');
@@ -3068,9 +3079,31 @@ axes.drawLabels = function(gd, ax, opts) {
                         if(bb.bottom > max) hide = true;
                         else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
                     }
-                    if(hide) thisLabel.select('text').style({ opacity: 0 });
+                    if(hide) {
+                        thisLabel.select('text').style({ opacity: 0 });
+                    } else {
+                        visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
+                        visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
+                    }
                 } // TODO: hide mathjax?
             });
+
+            var anchorAx = ax._anchorAxis || {};
+
+            if((anchorAx.ticklabelposition || '').indexOf('inside') !== -1) {
+                var grid = opts.grid;
+                if(grid) {
+                    grid.each(function() {
+                        d3.select(this).selectAll('path').each(function(d) {
+                            var q = anchorAx.l2p(d.x) + anchorAx._offset;
+
+                            if(q < visibleLabelMax && q > visibleLabelMin) {
+                                d3.select(this).style({ opacity: 0 });
+                            }
+                        });
+                    });
+                }
+            }
         };
     }
 
