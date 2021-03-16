@@ -2180,11 +2180,10 @@ axes.drawOne = function(gd, ax, opts) {
         var opts = {
             vals: vals,
             layer: mainAxLayer,
+            plotinfo: plotinfo,
             transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
         };
-
-        opts.grid = plotinfo.gridlayer.select('.' + ax._id);
 
         return axes.drawLabels(gd, ax, opts);
     });
@@ -3092,20 +3091,17 @@ axes.drawLabels = function(gd, ax, opts) {
     };
 
     ax._hideCounterAxisInsideTickLabels = function() {
-        var anchorAx = ax._anchorAxis || {};
-        if((anchorAx.ticklabelposition || '').indexOf('inside') !== -1) {
-            var grid = opts.grid;
-            if(grid) {
-                grid.each(function() {
-                    d3.select(this).selectAll('path').each(function(d) {
-                        var q = ax.l2p(d.x) + ax._offset;
+        if(((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1) {
+            var grid = opts.plotinfo.gridlayer.select('.' + ax._id);
+            grid.each(function() {
+                d3.select(this).selectAll('path').each(function(d) {
+                    var q = ax.l2p(d.x) + ax._offset;
 
-                        if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
-                            d3.select(this).style({ opacity: 0 });
-                        }
-                    });
+                    if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
+                        d3.select(this).style({ opacity: 0 });
+                    }
                 });
-            }
+            });
         }
     };
 
