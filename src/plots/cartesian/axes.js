@@ -1452,7 +1452,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 ax._prevDateHead = headStr;
                 dateStr += '<br>' + headStr;
             } else {
-                var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+                var isInside = insideTicklabelposition(ax);
                 var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
                 if(
                     (!isInside && side === 'top') ||
@@ -2870,7 +2870,7 @@ axes.drawGrid = function(gd, ax, opts) {
         .style('stroke-width', ax._gw + 'px')
         .style(VISIBLE);
 
-    if(((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1) {
+    if(insideTicklabelposition(ax._anchorAxis || {})) {
         if(ax._hideCounterAxisInsideTickLabels) {
             ax._hideCounterAxisInsideTickLabels();
         }
@@ -3008,7 +3008,7 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     function positionLabels(s, angle) {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+        var isInside = insideTicklabelposition(ax);
 
         s.each(function(d) {
             var thisLabel = d3.select(this);
@@ -3053,7 +3053,7 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     ax._hideOutOfRangeInsideTickLabels = function() {
-        if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
+        if(insideTicklabelposition(ax)) {
             var rl = Lib.simpleMap(ax.range, ax.r2l);
 
             // hide inside tick labels that go outside axis end points
@@ -3099,7 +3099,7 @@ axes.drawLabels = function(gd, ax, opts) {
     };
 
     ax._hideCounterAxisInsideTickLabels = function() {
-        if(((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1) {
+        if(insideTicklabelposition(ax._anchorAxis || {})) {
             var grid = opts.plotinfo.gridlayer.select('.' + ax._id);
             grid.each(function() {
                 d3.select(this).selectAll('path').each(function(d) {
@@ -3240,7 +3240,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var anchorAx = ax._anchorAxis;
     if(
         anchorAx && anchorAx.autorange &&
-        (ax.ticklabelposition || '').indexOf('inside') !== -1 &&
+        insideTicklabelposition(ax) &&
         !isLinked(fullLayout, ax._id)
     ) {
         if(!fullLayout._insideTickLabelsAutorange) {
@@ -3389,7 +3389,7 @@ function drawTitle(gd, ax) {
     if(ax.title.hasOwnProperty('standoff')) {
         titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
     } else {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+        var isInside = insideTicklabelposition(ax);
 
         if(ax.type === 'multicategory') {
             titleStandoff = ax._depth;
@@ -3746,4 +3746,8 @@ function moveOutsideBreak(v, ax) {
         }
     }
     return v;
+}
+
+function insideTicklabelposition(ax) {
+    return ((ax.ticklabelposition || '').indexOf('inside') !== -1);
 }
