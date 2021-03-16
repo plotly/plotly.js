@@ -2868,7 +2868,7 @@ axes.drawGrid = function(gd, ax, opts) {
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
         .style('stroke-width', ax._gw + 'px')
-        .style({ opacity: 100 }); // ensure visible
+        .style({ opacity: 1 }); // ensure visible
 
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
@@ -3033,8 +3033,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
 
                 if(isInside) {
-                    // ensure visible
-                    thisText.style({ opacity: 100 });
+                    thisText.style({ opacity: 1 }); // ensure visible
 
                     if(ax._hideOutOfRangeInsideTickLabels) {
                         ax._hideOutOfRangeInsideTickLabels();
