@@ -2870,11 +2870,7 @@ axes.drawGrid = function(gd, ax, opts) {
         .style('stroke-width', ax._gw + 'px')
         .style(VISIBLE);
 
-    if(insideTicklabelposition(ax._anchorAxis || {})) {
-        if(ax._hideCounterAxisInsideTickLabels) {
-            ax._hideCounterAxisInsideTickLabels();
-        }
-    }
+    hideCounterAxisInsideTickLabels(ax);
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -3750,4 +3746,12 @@ function moveOutsideBreak(v, ax) {
 
 function insideTicklabelposition(ax) {
     return ((ax.ticklabelposition || '').indexOf('inside') !== -1);
+}
+
+function hideCounterAxisInsideTickLabels(ax) {
+    if(insideTicklabelposition(ax._anchorAxis || {})) {
+        if(ax._hideCounterAxisInsideTickLabels) {
+            ax._hideCounterAxisInsideTickLabels();
+        }
+    }
 }
