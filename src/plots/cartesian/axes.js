@@ -2867,6 +2867,11 @@ axes.drawGrid = function(gd, ax, opts) {
         .style('stroke-width', ax._gw + 'px')
         .style({ opacity: 1 }); // ensure visible
 
+    if(((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1) {
+        if(ax._hideCounterAxisInsideTickLabels) {
+            ax._hideCounterAxisInsideTickLabels();
+        }
+    }
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
