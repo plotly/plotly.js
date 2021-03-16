@@ -2804,7 +2804,10 @@ axes.drawTicks = function(gd, ax, opts) {
         .classed('crisp', opts.crisp !== false)
         .call(Color.stroke, ax.tickcolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
-        .attr('d', opts.path);
+        .attr('d', opts.path)
+        .style(VISIBLE);
+
+    hideCounterAxisInsideTickLabels(ax);
 
     ticks.attr('transform', opts.transFn);
 };
@@ -3078,8 +3081,10 @@ axes.drawLabels = function(gd, ax, opts) {
                         if(bb.bottom > max) hide = true;
                         else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
                     }
+
+                    var t = thisLabel.select('text');
                     if(hide) {
-                        thisLabel.select('text').style(HIDDEN);
+                        t.style(HIDDEN);
                     } else {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                         visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
@@ -3096,14 +3101,32 @@ axes.drawLabels = function(gd, ax, opts) {
 
     ax._hideCounterAxisInsideTickLabels = function() {
         if(insideTicklabelposition(ax._anchorAxis || {})) {
-            var grid = opts.plotinfo.gridlayer.select('.' + ax._id);
-            grid.each(function() {
-                d3.select(this).selectAll('path').each(function(d) {
-                    var q = ax.l2p(d.x) + ax._offset;
+            [
+                { K: 'gridline', L: 'path' },
+                { K: 'zeroline', L: 'path' },
+                { K: 'tick', L: 'path' },
+                { K: 'tick', L: 'text' },
+                { K: 'tick2', L: 'text' },
+                { K: 'tick2', L: 'path' },
+                { K: 'divider', L: 'path' }
 
-                    if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
-                        d3.select(this).style(HIDDEN);
-                    }
+            ].forEach(function(e) {
+                var isX = ax._id.charAt(0) === 'x';
+
+                var sel;
+                if(e.K === 'gridline') sel = opts.plotinfo.gridlayer;
+                else if(e.K === 'zeroline') sel = opts.plotinfo.zerolinelayer;
+                else sel = opts.plotinfo[(isX ? 'x' : 'y') + 'axislayer'];
+
+                sel.each(function() {
+                    d3.select(this).selectAll(e.L).each(function(d) {
+                        var q = ax.l2p(d.x) + ax._offset;
+
+                        var t = d3.select(this);
+                        if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
+                            t.style(HIDDEN);
+                        }
+                    });
                 });
             });
         }
