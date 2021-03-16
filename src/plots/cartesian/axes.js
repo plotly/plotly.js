@@ -34,6 +34,9 @@ var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
+var VISIBLE = { visibility: 'visible' };
+var HIDDEN = { visibility: 'hidden' };
+
 var alignmentConstants = require('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
 var CAP_SHIFT = alignmentConstants.CAP_SHIFT;
@@ -2865,7 +2868,7 @@ axes.drawGrid = function(gd, ax, opts) {
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
         .style('stroke-width', ax._gw + 'px')
-        .style({ visibility: 'visible' });
+        .style(VISIBLE);
 
     if(((ax._anchorAxis || {}).ticklabelposition || '').indexOf('inside') !== -1) {
         if(ax._hideCounterAxisInsideTickLabels) {
@@ -3035,7 +3038,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
 
                 if(isInside) {
-                    thisText.style({ visibility: 'visible' });
+                    thisText.style(VISIBLE);
 
                     if(ax._hideOutOfRangeInsideTickLabels) {
                         ax._hideOutOfRangeInsideTickLabels();
@@ -3080,7 +3083,7 @@ axes.drawLabels = function(gd, ax, opts) {
                         else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
                     }
                     if(hide) {
-                        thisLabel.select('text').style({ visibility: 'hidden' });
+                        thisLabel.select('text').style(HIDDEN);
                     } else {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                         visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
@@ -3103,7 +3106,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     var q = ax.l2p(d.x) + ax._offset;
 
                     if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
-                        d3.select(this).style({ visibility: 'hidden' });
+                        d3.select(this).style(HIDDEN);
                     }
                 });
             });
