@@ -419,12 +419,13 @@ describe('spikeline hover', function() {
         .then(done, done.fail);
     });
 
-    it('correctly select the closest bar even when setting spikedistance to -1', function(done) {
+    it('correctly select the closest bar even when setting spikedistance to -1 (case of x hovermode)', function(done) {
         var mock = require('@mocks/bar_stack-with-gaps');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.xaxis.showspikes = true;
         mockCopy.layout.yaxis.showspikes = true;
         mockCopy.layout.spikedistance = -1;
+        mockCopy.layout.hovermode = 'x';
 
         Plotly.newPlot(gd, mockCopy)
         .then(function() {
@@ -433,10 +434,96 @@ describe('spikeline hover', function() {
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
 
-            _hover({xpx: 600, ypx: 200});
+            _hover({xpx: 600, ypx: 100});
             lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
+        })
+        .then(done, done.fail);
+    });
+
+    it('correctly select the closest bar even when setting spikedistance to -1 (case of closest hovermode)', function(done) {
+        var mock = require('@mocks/bar_stack-with-gaps');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.xaxis.showspikes = true;
+        mockCopy.layout.yaxis.showspikes = true;
+        mockCopy.layout.spikedistance = -1;
+        mockCopy.layout.hovermode = 'closest';
+
+        Plotly.newPlot(gd, mockCopy)
+        .then(function() {
+            _hover({xpx: 600, ypx: 400});
+            var lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#1f77b4');
+
+            _hover({xpx: 600, ypx: 100});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
+        })
+        .then(done, done.fail);
+    });
+
+    it('could select the closest scatter point inside bar', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                type: 'scatter',
+                marker: { color: 'green' },
+                x: [
+                    -1,
+                    0,
+                    0.5,
+                    1
+                ],
+                y: [
+                    0.1,
+                    0.2,
+                    0.25,
+                    0.3
+                ]
+            },
+            {
+                type: 'bar',
+                marker: { color: 'blue' },
+                x: [
+                    -1,
+                    -0.2,
+                    1
+                ],
+                y: [
+                    1,
+                    2,
+                    0.5
+                ]
+            }],
+            layout: {
+                hovermode: 'x',
+                xaxis: { showspikes: true },
+                yaxis: { showspikes: true },
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50,
+                }
+            }
+        })
+        .then(function() {
+            var lines;
+
+            _hover({xpx: 200, ypx: 200});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('blue');
+
+            _hover({xpx: 200, ypx: 350});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('green');
         })
         .then(done, done.fail);
     });
