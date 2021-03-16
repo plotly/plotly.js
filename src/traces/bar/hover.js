@@ -62,26 +62,19 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
 
-    function hoverPositionFn(_minPos, _maxPos) {
+    function inbox(_minPos, _maxPos, maxDistance) {
         // add a little to the pseudo-distance for wider bars, so that like scatter,
         // if you are over two overlapping bars, the narrower one wins.
         return Fx.inbox(_minPos - posVal, _maxPos - posVal,
-            maxHoverDistance + Math.min(1, Math.abs(_maxPos - _minPos) / pRangeCalc) - 1);
-    }
-
-    function spikePositionFn(_minPos, _maxPos) {
-        // add a little to the pseudo-distance for wider bars, so that like scatter,
-        // if you are over two overlapping bars, the narrower one wins.
-        return Fx.inbox(_minPos - posVal, _maxPos - posVal,
-            maxSpikeDistance + Math.min(1, Math.abs(_maxPos - _minPos) / pRangeCalc) - 1);
+            maxDistance + Math.min(1, Math.abs(_maxPos - _minPos) / pRangeCalc) - 1);
     }
 
     function positionFn(di) {
-        return hoverPositionFn(minPos(di), maxPos(di));
+        return inbox(minPos(di), maxPos(di), maxHoverDistance);
     }
 
     function thisBarPositionFn(di) {
-        return spikePositionFn(thisBarMinPos(di), thisBarMaxPos(di));
+        return inbox(thisBarMinPos(di), thisBarMaxPos(di), maxSpikeDistance);
     }
 
     function getSize(di) {
