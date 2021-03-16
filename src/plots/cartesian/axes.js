@@ -2184,9 +2184,7 @@ axes.drawOne = function(gd, ax, opts) {
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
         };
 
-        if(ax._anchorAxis) {
-            opts.grid = plotinfo.gridlayer.select('.' + ax._anchorAxis._id);
-        }
+        opts.grid = plotinfo.gridlayer.select('.' + ax._id);
 
         return axes.drawLabels(gd, ax, opts);
     });
@@ -3047,9 +3045,8 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    ax._hideOutOfRangeInsideTickLabels = undefined;
-    if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
-        ax._hideOutOfRangeInsideTickLabels = function() {
+    ax._hideOutOfRangeInsideTickLabels = function() {
+        if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
             var rl = Lib.simpleMap(ax.range, ax.r2l);
 
             // hide inside tick labels that go outside axis end points
@@ -3087,24 +3084,30 @@ axes.drawLabels = function(gd, ax, opts) {
                 } // TODO: hide mathjax?
             });
 
-            var anchorAx = ax._anchorAxis || {};
-
-            if((anchorAx.ticklabelposition || '').indexOf('inside') !== -1) {
-                var grid = opts.grid;
-                if(grid) {
-                    grid.each(function() {
-                        d3.select(this).selectAll('path').each(function(d) {
-                            var q = anchorAx.l2p(d.x) + anchorAx._offset;
-
-                            if(q < visibleLabelMax && q > visibleLabelMin) {
-                                d3.select(this).style({ opacity: 0 });
-                            }
-                        });
-                    });
-                }
+            if(ax._anchorAxis) {
+                ax._anchorAxis._visibleLabelMin = visibleLabelMin;
+                ax._anchorAxis._visibleLabelMax = visibleLabelMax;
             }
-        };
-    }
+        }
+    };
+
+    ax._hideCounterAxisInsideTickLabels = function() {
+        var anchorAx = ax._anchorAxis || {};
+        if((anchorAx.ticklabelposition || '').indexOf('inside') !== -1) {
+            var grid = opts.grid;
+            if(grid) {
+                grid.each(function() {
+                    d3.select(this).selectAll('path').each(function(d) {
+                        var q = ax.l2p(d.x) + ax._offset;
+
+                        if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
+                            d3.select(this).style({ opacity: 0 });
+                        }
+                    });
+                });
+            }
+        }
+    };
 
     // make sure all labels are correctly positioned at their base angle
     // the positionLabels call above is only for newly drawn labels.
