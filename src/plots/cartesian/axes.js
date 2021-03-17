@@ -2922,7 +2922,10 @@ axes.drawZeroLine = function(gd, ax, opts) {
     zl.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
+        .style(VISIBLE);
+
+    hideCounterAxisInsideTickLabels(ax);
 };
 
 /**
@@ -3105,10 +3108,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 { K: 'gridline', L: 'path' },
                 { K: 'zeroline', L: 'path' },
                 { K: 'tick', L: 'path' },
-                { K: 'tick', L: 'text' },
-                { K: 'tick2', L: 'text' },
-                { K: 'tick2', L: 'path' },
-                { K: 'divider', L: 'path' }
+                { K: 'tick', L: 'text' }
 
             ].forEach(function(e) {
                 var isX = ax._id.charAt(0) === 'x';
