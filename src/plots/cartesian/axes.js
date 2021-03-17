@@ -38,7 +38,6 @@ var VISIBLE = { visibility: 'visible' };
 var HIDDEN = { visibility: 'hidden' };
 
 var GRID_PATH = { K: 'gridline', L: 'path' };
-var ZERO_PATH = { K: 'zeroline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
 var TICK_TEXT = { K: 'tick', L: 'text' };
 
@@ -2185,15 +2184,13 @@ axes.drawOne = function(gd, ax, opts) {
     // TODO: mirror labels, esp for subplots
 
     seq.push(function() {
-        var opts = {
+        return axes.drawLabels(gd, ax, {
             vals: vals,
             layer: mainAxLayer,
             plotinfo: plotinfo,
             transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
-        };
-
-        return axes.drawLabels(gd, ax, opts);
+        });
     });
 
     if(ax.type === 'multicategory') {
@@ -2924,10 +2921,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
     zl.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
-        .style(VISIBLE);
-
-    hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
 };
 
 /**
@@ -3108,7 +3102,6 @@ axes.drawLabels = function(gd, ax, opts) {
         if(insideTicklabelposition(ax._anchorAxis || {})) {
             (partialOpts || [
                 GRID_PATH,
-                ZERO_PATH,
                 TICK_PATH,
                 TICK_TEXT
             ]).forEach(function(e) {
@@ -3116,9 +3109,9 @@ axes.drawLabels = function(gd, ax, opts) {
                 if(isTickText && ax.ticklabelmode === 'period') return;
 
                 var sel;
-                if(e.K === 'gridline') sel = opts.plotinfo.gridlayer;
-                else if(e.K === 'zeroline') sel = opts.plotinfo.zerolinelayer;
+                if(e.K === 'gridline') sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
                 else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
+
 
                 sel.each(function() {
                     d3.select(this).selectAll(e.L).each(function(d) {
