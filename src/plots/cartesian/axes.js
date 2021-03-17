@@ -2809,10 +2809,7 @@ axes.drawTicks = function(gd, ax, opts) {
         .classed('crisp', opts.crisp !== false)
         .call(Color.stroke, ax.tickcolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
-        .attr('d', opts.path)
-        .style(VISIBLE);
-
-    hideCounterAxisInsideTickLabels(ax, [TICK_PATH]);
+        .attr('d', opts.path);
 
     ticks.attr('transform', opts.transFn);
 };
@@ -3115,6 +3112,9 @@ axes.drawLabels = function(gd, ax, opts) {
                 TICK_PATH,
                 TICK_TEXT
             ]).forEach(function(e) {
+                var isTickText = e.K === 'tick' && e.L === 'text';
+                if(isTickText && ax.ticklabelmode === 'period') return;
+
                 var sel;
                 if(e.K === 'gridline') sel = opts.plotinfo.gridlayer;
                 else if(e.K === 'zeroline') sel = opts.plotinfo.zerolinelayer;
@@ -3127,6 +3127,8 @@ axes.drawLabels = function(gd, ax, opts) {
                         var t = d3.select(this);
                         if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
                             t.style(HIDDEN);
+                        } else if(e.K === 'tick' && e.L === 'path') {
+                            t.style(VISIBLE);
                         }
                     });
                 });
