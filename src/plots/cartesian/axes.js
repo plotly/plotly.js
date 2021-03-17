@@ -37,6 +37,11 @@ var BADNUM = constants.BADNUM;
 var VISIBLE = { visibility: 'visible' };
 var HIDDEN = { visibility: 'hidden' };
 
+var GRID_PATH = { K: 'gridline', L: 'path' };
+var ZERO_PATH = { K: 'zeroline', L: 'path' };
+var TICK_PATH = { K: 'tick', L: 'path' };
+var TICK_TEXT = { K: 'tick', L: 'text' };
+
 var alignmentConstants = require('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
 var CAP_SHIFT = alignmentConstants.CAP_SHIFT;
@@ -2807,7 +2812,7 @@ axes.drawTicks = function(gd, ax, opts) {
         .attr('d', opts.path)
         .style(VISIBLE);
 
-    hideCounterAxisInsideTickLabels(ax);
+    hideCounterAxisInsideTickLabels(ax, [TICK_PATH]);
 
     ticks.attr('transform', opts.transFn);
 };
@@ -2873,7 +2878,7 @@ axes.drawGrid = function(gd, ax, opts) {
         .style('stroke-width', ax._gw + 'px')
         .style(VISIBLE);
 
-    hideCounterAxisInsideTickLabels(ax);
+    hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -2925,7 +2930,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
         .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
         .style(VISIBLE);
 
-    hideCounterAxisInsideTickLabels(ax);
+    hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
 };
 
 /**
@@ -3102,21 +3107,18 @@ axes.drawLabels = function(gd, ax, opts) {
         }
     };
 
-    ax._hideCounterAxisInsideTickLabels = function() {
+    ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
         if(insideTicklabelposition(ax._anchorAxis || {})) {
-            [
-                { K: 'gridline', L: 'path' },
-                { K: 'zeroline', L: 'path' },
-                { K: 'tick', L: 'path' },
-                { K: 'tick', L: 'text' }
-
-            ].forEach(function(e) {
-                var isX = ax._id.charAt(0) === 'x';
-
+            (partialOpts || [
+                GRID_PATH,
+                ZERO_PATH,
+                TICK_PATH,
+                TICK_TEXT
+            ]).forEach(function(e) {
                 var sel;
                 if(e.K === 'gridline') sel = opts.plotinfo.gridlayer;
                 else if(e.K === 'zeroline') sel = opts.plotinfo.zerolinelayer;
-                else sel = opts.plotinfo[(isX ? 'x' : 'y') + 'axislayer'];
+                else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
 
                 sel.each(function() {
                     d3.select(this).selectAll(e.L).each(function(d) {
@@ -3771,10 +3773,10 @@ function insideTicklabelposition(ax) {
     return ((ax.ticklabelposition || '').indexOf('inside') !== -1);
 }
 
-function hideCounterAxisInsideTickLabels(ax) {
+function hideCounterAxisInsideTickLabels(ax, opts) {
     if(insideTicklabelposition(ax._anchorAxis || {})) {
         if(ax._hideCounterAxisInsideTickLabels) {
-            ax._hideCounterAxisInsideTickLabels();
+            ax._hideCounterAxisInsideTickLabels(opts);
         }
     }
 }
