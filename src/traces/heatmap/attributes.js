@@ -2,9 +2,9 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -111,16 +111,10 @@ module.exports = extendFlat({
         editType: 'plot',
         description: 'Sets the vertical gap (in pixels) between bricks.'
     },
-    zhoverformat: {
-        valType: 'string',
-        dflt: '',
-        editType: 'none',
-        description: [
-            'Sets the hover text formatting rule using d3 formatting mini-languages',
-            'which are very similar to those in Python. See:',
-            FORMAT_LINK
-        ].join(' ')
-    },
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
+    zhoverformat: hoverformatAttrs.zhoverformat,
+
     hovertemplate: hovertemplateAttrs(),
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 }, {

@@ -5086,3 +5086,128 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 });
+
+describe('hover on traces with (x|y)hoverformat', function() {
+    'use strict';
+
+    var gd, fig;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        fig = {
+            layout: {
+                hovermode: 'closest',
+                width: 400,
+                height: 400,
+                margin: {
+                    t: 0,
+                    b: 0,
+                    l: 0,
+                    r: 0
+                }
+            }
+        };
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    [
+        {type: 'scatter', nums: '(02/01/2000, 1.00)'},
+        {type: 'scattergl', nums: '(02/01/2000, 1.00)'},
+        {type: 'histogram', nums: '(02/01/2000, 1.00)'},
+        {type: 'bar', nums: '(02/01/2000, 1.00)'},
+        {type: 'box', nums: '(02/01/2000, median: 1.00)'},
+        {type: 'ohlc', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
+        {type: 'candlestick', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
+        {type: 'waterfall', nums: '(02/01/2000, 1.00)\n1.00 ▲\nInitial: 0.00'},
+        {type: 'funnel', nums: '(02/01/2000, 1.00)\n100% of initial\n100% of previous\n100% of total'},
+    ].forEach(function(t) {
+        it(t.type + ' trace', function(done) {
+            fig.data = [{
+                xhoverformat: '%x',
+                yhoverformat: '.2f',
+                x: ['2000-02'],
+                y: [1],
+                low: [2],
+                high: [5],
+                open: [4],
+                close: [3]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(function() { _hover(200, 200); })
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    [
+        {type: 'contour', nums: 'x: 02/01/2000\ny: 1.00\nz: 4.000'},
+        {type: 'heatmap', nums: 'x: 02/01/2000\ny: 1.00\nz: 4.000'},
+        {type: 'histogram2d', nums: 'x: 02/01/2000\ny: 1.00\nz: 1.000'},
+        {type: 'histogram2dcontour', nums: 'x: 01/31/2000\ny: 1.00\nz: 1.000'},
+    ].forEach(function(t) {
+        it(t.type + ' trace', function(done) {
+            fig.data = [{
+                xhoverformat: '%x',
+                yhoverformat: '.2f',
+                zhoverformat: '.3f',
+                x: ['2000-01', '2000-02'],
+                y: [1, 1],
+                z: [[1, 2], [3, 4]]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(function() { _hover(200, 200); })
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    it('splom trace', function(done) {
+        fig.data = [{
+            xhoverformat: '%x',
+            yhoverformat: '.2f',
+            dimensions: [{
+                label: 'A',
+                values: ['2000-01', '2000-02'],
+                type: 'date'
+            }, {
+                label: 'B',
+                values: [3, 4]
+            }],
+            type: 'splom'
+        }];
+
+        Plotly.newPlot(gd, fig)
+        .then(function() { _hover(180, 220); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: '(02/01/2000, 4.00)'
+            });
+        })
+        .then(done, done.fail);
+    });
+});

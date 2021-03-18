@@ -2,6 +2,7 @@
 
 var baseAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -26,6 +27,8 @@ var attrs = module.exports = overrideAll({
     yperiod0: scatterAttrs.yperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
     yperiodalignment: scatterAttrs.yperiodalignment,
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,

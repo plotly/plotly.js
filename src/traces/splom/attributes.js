@@ -2,6 +2,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
@@ -129,6 +130,9 @@ module.exports = {
     }),
 
     hovertemplate: hovertemplateAttrs(),
+
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
 
     marker: markerAttrs,
 

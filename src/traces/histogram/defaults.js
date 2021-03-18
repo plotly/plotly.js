@@ -24,6 +24,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v');
     var sampleLetter = orientation === 'v' ? 'x' : 'y';

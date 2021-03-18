@@ -2,6 +2,7 @@
 
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
 var delta = require('../../constants/delta.js');
@@ -28,6 +29,8 @@ module.exports = {
     xperiod: scatterAttrs.xperiod,
     xperiod0: scatterAttrs.xperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
 
     x: {
         valType: 'data_array',

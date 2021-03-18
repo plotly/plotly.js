@@ -50,7 +50,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
                 kdePointData[pLetter + '0'] = pOnPath[0];
                 kdePointData[pLetter + '1'] = pOnPath[1];
                 kdePointData[vLetter + '0'] = kdePointData[vLetter + '1'] = vValPx;
-                kdePointData[vLetter + 'Label'] = vLetter + ': ' + Axes.hoverLabelText(vAxis, vVal) + ', ' + cd[0].t.labels.kde + ' ' + kdeVal.toFixed(3);
+                kdePointData[vLetter + 'Label'] = vLetter + ': ' + Axes.hoverLabelText(vAxis, vVal, trace[vLetter + 'hoverformat']) + ', ' + cd[0].t.labels.kde + ' ' + kdeVal.toFixed(3);
 
                 // move the spike to the KDE point
                 kdePointData.spikeDistance = closeBoxData[0].spikeDistance;

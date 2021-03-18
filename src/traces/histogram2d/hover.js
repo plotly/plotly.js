@@ -13,11 +13,12 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var ny = indices[0];
     var nx = indices[1];
     var cd0 = pointData.cd[0];
+    var trace = cd0.trace;
     var xRange = cd0.xRanges[nx];
     var yRange = cd0.yRanges[ny];
 
-    pointData.xLabel = hoverLabelText(pointData.xa, xRange[0], xRange[1]);
-    pointData.yLabel = hoverLabelText(pointData.ya, yRange[0], yRange[1]);
+    pointData.xLabel = hoverLabelText(pointData.xa, [xRange[0], xRange[1]], trace.xhoverformat);
+    pointData.yLabel = hoverLabelText(pointData.ya, [yRange[0], yRange[1]], trace.yhoverformat);
 
     return pts;
 };

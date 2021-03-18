@@ -3,6 +3,7 @@
 var scatterAttrs = require('../scatter/attributes');
 var barAttrs = require('../bar/attributes');
 var colorAttrs = require('../../components/color/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -70,6 +71,8 @@ module.exports = {
     yperiod0: scatterAttrs.yperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
     yperiodalignment: scatterAttrs.yperiodalignment,
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
 
     name: {
         valType: 'string',

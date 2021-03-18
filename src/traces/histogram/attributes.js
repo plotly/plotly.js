@@ -1,6 +1,7 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var makeBinAttrs = require('./bin_attributes');
 var constants = require('./constants');
@@ -21,6 +22,9 @@ module.exports = {
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
     },
+
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
 
     text: extendFlat({}, barAttrs.text, {
         description: [
