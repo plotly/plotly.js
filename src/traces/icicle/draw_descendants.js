@@ -14,7 +14,7 @@ var formatSliceLabel = require('../sunburst/plot').formatSliceLabel;
 
 var onPathbar = false; // for Descendants
 
-module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
+module.exports = function drawDescendants(gd, cd, entry, slices, opts, traceType='icicle') {
     var width = opts.width;
     var height = opts.height;
     var viewX = opts.viewX;

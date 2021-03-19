@@ -78,7 +78,7 @@ function getKey(pt) {
         helpers.getPtId(pt);
 }
 
-function plotOne(gd, cd, element, transitionOpts) {
+function plotOne(gd, cd, element, transitionOpts, traceType='icicle') {
     var fullLayout = gd._fullLayout;
     var cd0 = cd[0];
     var trace = cd0.trace;
@@ -307,7 +307,14 @@ function plotOne(gd, cd, element, transitionOpts) {
             hasLeft ? -1 :
             hasRight ? 1 : 0;
 
-        var pad = trace.marker.pad;
+        // var pad = trace.marker.pad;
+        if(traceType == 'treemap') {
+            var pad = trace.marker.pad;
+        }
+        if(traceType == 'icicle') {
+            var pad = trace.tiling.pad;
+        }
+
         if(opts.isHeader) {
             x0 += pad.l - TEXTPAD;
             x1 -= pad.r - TEXTPAD;
@@ -598,7 +605,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         handleSlicesExit: handleSlicesExit,
         hasTransition: hasTransition,
         strTransform: strTransform
-    });
+    }, traceType);
 
     if(trace.pathbar.visible) {
         drawAncestors(gd, cd, entry, selAncestors, {
@@ -623,3 +630,8 @@ function plotOne(gd, cd, element, transitionOpts) {
         selAncestors.remove();
     }
 }
+
+var apples = 123;
+module.exports.apples = apples;
+module.exports.getKey = getKey;
+module.exports.plotOne = plotOne;

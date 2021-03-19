@@ -14,7 +14,7 @@ var formatSliceLabel = require('../sunburst/plot').formatSliceLabel;
 
 var onPathbar = false; // for Descendants
 
-module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
+module.exports = function drawDescendants(gd, cd, entry, slices, opts, traceType='treemap') {
     var width = opts.width;
     var height = opts.height;
     var viewX = opts.viewX;
@@ -37,7 +37,10 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     var hasRight = trace.textposition.indexOf('right') !== -1;
     var hasBottom = trace.textposition.indexOf('bottom') !== -1;
 
-    var noRoomForHeader = (!hasBottom && !trace.marker.pad.t) || (hasBottom && !trace.marker.pad.b);
+    console.log("draw_descendants for treemap");
+    if(traceType === 'treemap') {
+        var noRoomForHeader = (!hasBottom && !trace.marker.pad.t) || (hasBottom && !trace.marker.pad.b);
+    }
 
     // N.B. slice data isn't the calcdata,
     // grab corresponding calcdata item in sliceData[i].data.data
