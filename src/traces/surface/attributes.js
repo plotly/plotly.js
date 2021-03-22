@@ -2,6 +2,7 @@
 
 var Color = require('../../components/color');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var baseAttrs = require('../../plots/attributes');
 
@@ -144,6 +145,10 @@ var attrs = module.exports = overrideAll(extendFlat({
         description: 'Same as `text`.'
     },
     hovertemplate: hovertemplateAttrs(),
+
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
+    zhoverformat: hoverformatAttrs.zhoverformat,
 
     connectgaps: {
         valType: 'boolean',

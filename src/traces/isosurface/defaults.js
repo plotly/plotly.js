@@ -44,6 +44,8 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
     ['x', 'y', 'z'].forEach(function(dim) {
+        coerce(dim + 'hoverformat');
+
         var capDim = 'caps.' + dim;
         var showCap = coerce(capDim + '.show');
         if(showCap) {

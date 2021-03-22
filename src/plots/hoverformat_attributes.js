@@ -2,13 +2,13 @@
 
 var FORMAT_LINK = require('../constants/docs').FORMAT_LINK;
 
-function axisHoverFormat(axis) {
+function axisHoverFormat(str) {
     return {
         valType: 'string',
         dflt: '',
         editType: 'none',
         description: [
-            'Sets the hover text formatting rule on the ' + axis + ' axis using d3 formatting mini-languages',
+            'Sets the hover text formatting rule for the ' + str + ' using d3 formatting mini-languages',
             'which are very similar to those in Python. See:',
             FORMAT_LINK
         ].join(' ')
@@ -16,7 +16,11 @@ function axisHoverFormat(axis) {
 }
 
 module.exports = {
-    xhoverformat: axisHoverFormat('x'),
-    yhoverformat: axisHoverFormat('y'),
-    zhoverformat: axisHoverFormat('z')
+    uhoverformat: axisHoverFormat('u component'),
+    vhoverformat: axisHoverFormat('v component'),
+    whoverformat: axisHoverFormat('w component'),
+
+    xhoverformat: axisHoverFormat('x axis'),
+    yhoverformat: axisHoverFormat('y aixs'),
+    zhoverformat: axisHoverFormat('z axis')
 };

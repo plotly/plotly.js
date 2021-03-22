@@ -1,6 +1,7 @@
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var hoverformatAttrs = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var surfaceAttrs = require('../surface/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -88,6 +89,10 @@ module.exports = extendFlat({
         description: 'Same as `text`.'
     },
     hovertemplate: hovertemplateAttrs({editType: 'calc'}),
+
+    xhoverformat: hoverformatAttrs.xhoverformat,
+    yhoverformat: hoverformatAttrs.yhoverformat,
+    zhoverformat: hoverformatAttrs.zhoverformat,
 
     delaunayaxis: {
         valType: 'enumerated',
