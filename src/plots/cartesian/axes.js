@@ -37,6 +37,7 @@ var BADNUM = constants.BADNUM;
 var VISIBLE = { visibility: 'visible' };
 var HIDDEN = { visibility: 'hidden' };
 
+var ZERO_PATH = { K: 'zeroline' };
 var GRID_PATH = { K: 'gridline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
 var TICK_TEXT = { K: 'tick', L: 'text' };
@@ -2921,7 +2922,10 @@ axes.drawZeroLine = function(gd, ax, opts) {
     zl.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
+        .style(VISIBLE);
+
+    hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
 };
 
 /**
@@ -3101,6 +3105,7 @@ axes.drawLabels = function(gd, ax, opts) {
     ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
         if(insideTicklabelposition(ax._anchorAxis || {})) {
             (partialOpts || [
+                ZERO_PATH,
                 GRID_PATH,
                 TICK_PATH,
                 TICK_TEXT
@@ -3109,12 +3114,15 @@ axes.drawLabels = function(gd, ax, opts) {
                 if(isTickText && ax.ticklabelmode === 'period') return;
 
                 var sel;
-                if(e.K === 'gridline') sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
+                if(e.K === ZERO_PATH.K) sel = opts.plotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                else if(e.K === GRID_PATH.K) sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
                 else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
 
-
                 sel.each(function() {
-                    d3.select(this).selectAll(e.L).each(function(d) {
+                    var w = d3.select(this);
+                    if(e.L) w = w.selectAll(e.L);
+
+                    w.each(function(d) {
                         var q = ax.l2p(d.x) + ax._offset;
 
                         var t = d3.select(this);
