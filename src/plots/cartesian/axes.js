@@ -34,8 +34,8 @@ var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
-var VISIBLE = { visibility: 'visible' };
-var HIDDEN = { visibility: 'hidden' };
+var VISIBLE = { opacity: 1 };
+var HIDDEN = { opacity: 0 };
 
 var ZERO_PATH = { K: 'zeroline' };
 var GRID_PATH = { K: 'gridline', L: 'path' };
