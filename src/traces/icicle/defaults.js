@@ -71,10 +71,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
-    if(withColorscale) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
-    }
-
     coerce('leaf.opacity', withColorscale ? 1 : 0.7);
 
     traceOut._hovered = {
