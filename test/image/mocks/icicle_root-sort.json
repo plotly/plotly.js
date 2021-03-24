@@ -1,0 +1,105 @@
+{
+  "data": [
+    {
+      "type": "icicle",
+      "sort": true,
+      "root": {
+        "color": "DodgerBlue"
+      },
+      "domain": {
+        "x": [0, 0.45]
+      },
+      "textinfo": "label+percent parent",
+      "labels": [
+        "Fruit",
+        "Apple",
+        "Pear",
+        "Grape",
+        "Orange",
+        "Kiwi",
+        "Banana",
+        "Melon",
+        "Watermelon",
+        "Pineapple",
+        "Strawberry"
+      ],
+      "parents": [
+        "",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit"
+      ],
+      "values": [100, 5, 15, 10, 8, 20, 12, 9, 5, 8, 8],
+      "branchvalues": "total"
+    },
+    {
+      "type": "icicle",
+      "sort": false,
+      "root": {
+        "color": "DodgerBlue"
+      },
+      "domain": {
+        "x": [0.55, 1],
+        "y": [0, 1]
+      },
+      "textinfo": "label+percent parent",
+      "labels": [
+        "Fruit",
+        "Apple",
+        "Pear",
+        "Grape",
+        "Orange",
+        "Kiwi",
+        "Banana",
+        "Melon",
+        "Watermelon",
+        "Pineapple",
+        "Strawberry"
+      ],
+      "parents": [
+        "",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit",
+        "Fruit"
+      ],
+      "values": [100, 5, 15, 10, 8, 20, 12, 9, 5, 8, 8],
+      "branchvalues": "total"
+    }
+  ],
+  "layout": {
+    "width": 800,
+    "height": 700,
+    "annotations": [
+      {
+        "showarrow": false,
+        "text": "sort: <b>true</b>",
+        "x": 0.225,
+        "xanchor": "center",
+        "y": 1,
+        "yanchor": "bottom"
+      },
+      {
+        "showarrow": false,
+        "text": "sort: <b>false</b>",
+        "x": 0.775,
+        "xanchor": "center",
+        "y": 1,
+        "yanchor": "bottom"
+      }
+    ]
+  }
+}
