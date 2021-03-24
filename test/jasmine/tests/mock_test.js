@@ -646,8 +646,13 @@ var list = [
     'hot_heatmap',
     'icicle_coffee',
     'icicle_coffee-maxdepth3',
+    'icicle_coffee-maxdepth3-all-directions',
+    'icicle_count_branches',
     'icicle_first',
     'icicle_flare',
+    'icicle_leaf-opacity-level',
+    'icicle_packages_colorscale_novalue',
+    'icicle_root-sort',
     'icicle_textposition',
     'icicle_values_colorscale',
     'icicle_with-without_values',
@@ -1743,8 +1748,13 @@ figs['hists-on-matching-axes'] = require('@mocks/hists-on-matching-axes');
 figs['hot_heatmap'] = require('@mocks/hot_heatmap');
 figs['icicle_coffee'] = require('@mocks/icicle_coffee');
 figs['icicle_coffee-maxdepth3'] = require('@mocks/icicle_coffee-maxdepth3');
+figs['icicle_coffee-maxdepth3-all-directions'] = require('@mocks/icicle_coffee-maxdepth3-all-directions');
+figs['icicle_count_branches'] = require('@mocks/icicle_count_branches');
 figs['icicle_first'] = require('@mocks/icicle_first');
 figs['icicle_flare'] = require('@mocks/icicle_flare');
+figs['icicle_leaf-opacity-level'] = require('@mocks/icicle_leaf-opacity-level');
+figs['icicle_packages_colorscale_novalue'] = require('@mocks/icicle_packages_colorscale_novalue');
+figs['icicle_root-sort'] = require('@mocks/icicle_root-sort');
 figs['icicle_textposition'] = require('@mocks/icicle_textposition');
 figs['icicle_values_colorscale'] = require('@mocks/icicle_values_colorscale');
 figs['icicle_with-without_values'] = require('@mocks/icicle_with-without_values');
