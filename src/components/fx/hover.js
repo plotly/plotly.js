@@ -14,6 +14,7 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var Registry = require('../../registry');
 
 var helpers = require('./helpers');
@@ -779,8 +780,9 @@ function createHoverText(hoverData, opts, gd) {
     var c0 = hoverData[0];
     var xa = c0.xa;
     var ya = c0.ya;
-    var commonAttr = hovermode.charAt(0) === 'y' ? 'yLabel' : 'xLabel';
-    var t0 = c0[commonAttr];
+    var axLetter = hovermode.charAt(0);
+    var v0 = c0[axLetter + 'LabelVal'];
+    var t0 = c0[axLetter + 'Label'];
     var t00 = (String(t0) || '').split(' ')[0];
     var outerContainerBB = outerContainer.node().getBoundingClientRect();
     var outerTop = outerContainerBB.top;
@@ -978,23 +980,26 @@ function createHoverText(hoverData, opts, gd) {
 
     function filterClosePoints(hoverData) {
         return hoverData.filter(function(d) {
-            return (d.zLabelVal !== undefined) ||
-                (d[commonAttr] || '').split(' ')[0] === t00;
-        });
-    }
+            if(d.zLabelVal !== undefined) return true;
+            if((d[axLetter + 'Label'] || '').split(' ')[0] === t00) return true;
+            if(d.trace[axLetter + 'period']) {
+                var v = d[axLetter + 'LabelVal'];
+                var ax = d[axLetter + 'a'];
+                var trace = {};
+                trace[axLetter + 'period'] = d.trace[axLetter + 'period'];
+                trace[axLetter + 'period0'] = d.trace[axLetter + 'period0'];
 
-    function unifiedFilterClosePoints(hoverData) {
-        var out = [];
-        var seen = [];
-        for(var i = 0; i < hoverData.length; i++) {
-            var d = hoverData[i];
-            var id = d.cd[0].trace.index;
-            if(!seen[id]) {
-                seen[id] = 1;
-                out.push(d);
+                trace[axLetter + 'periodalignment'] = 'start';
+
+                var start = alignPeriod(trace, ax, axLetter, [v])[0];
+                trace[axLetter + 'periodalignment'] = 'end';
+                var end = alignPeriod(trace, ax, axLetter, [v])[0];
+
+                if(v0 >= start && v0 <= end) return true;
             }
-        }
-        return out;
+
+            return false;
+        });
     }
 
     // Show a single hover label
@@ -1003,7 +1008,7 @@ function createHoverText(hoverData, opts, gd) {
         container.selectAll('g.hovertext').remove();
 
         // similarly to compare mode, we remove the "close but not quite together" points
-        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = unifiedFilterClosePoints(hoverData);
+        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
 
         // Return early if nothing is hovered on
         if(hoverData.length === 0) return;

@@ -4728,7 +4728,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
-    it('filtering logic for compare mode x', function(done) {
+    it('shares filtering logic with compare mode x', function(done) {
         var mock = require('@mocks/27.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
@@ -4736,11 +4736,20 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, { xval: '2002' });
                 assertElementCount('g.hovertext', 2);
+
+                return Plotly.relayout(gd, 'hovermode', 'x unified');
+            })
+            .then(function() {
+                _hover(gd, { xval: '2002' });
+                assertLabel({title: '2002.042', items: [
+                    'Market income : 0.5537845',
+                    'Market incom... : 0.4420997'
+                ]});
             })
             .then(done, done.fail);
     });
 
-    it('x unified should include close points and filter multiple points from the same trace', function(done) {
+    it('case of scatter points on period bars', function(done) {
         Plotly.newPlot(gd, {
             data: [
                 {
