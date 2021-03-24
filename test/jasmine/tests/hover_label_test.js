@@ -4933,8 +4933,7 @@ describe('hovermode: (x|y)unified', function() {
 
             _hover(gd, { xpx: 75, ypx: 250 });
             assertLabel({title: 'Mar 1, 2017', items: [
-                'M1 : 3',
-                'M1 : (Feb 1, 2017, 2)'
+                'M1 : 3'
             ]});
 
             _hover(gd, { xpx: 100, ypx: 250 });

@@ -990,12 +990,12 @@ function createHoverText(hoverData, opts, gd) {
                 trace[axLetter + 'period0'] = d.trace[axLetter + 'period0'];
 
                 trace[axLetter + 'periodalignment'] = 'start';
-
                 var start = alignPeriod(trace, ax, axLetter, [v])[0];
+
                 trace[axLetter + 'periodalignment'] = 'end';
                 var end = alignPeriod(trace, ax, axLetter, [v])[0];
 
-                if(v0 >= start && v0 <= end) return true;
+                if(v0 >= start && v0 < end) return true;
             }
 
             return false;
