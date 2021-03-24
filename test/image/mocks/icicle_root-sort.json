@@ -37,7 +37,6 @@
         "Fruit"
       ],
       "values": [100, 5, 15, 10, 8, 20, 12, 9, 5, 8, 8],
-      "count": "branches",
       "branchvalues": "total"
     },
     {
@@ -78,7 +77,6 @@
         "Fruit"
       ],
       "values": [100, 5, 15, 10, 8, 20, 12, 9, 5, 8, 8],
-      "count": "branches",
       "branchvalues": "total"
     }
   ],

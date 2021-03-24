@@ -322,8 +322,7 @@
         "visible": false
       },
       "tiling": {
-        "orientation": "h",
-        "flip": ""
+        "orientation": "h"
       },
       "maxdepth": 3,
       "domain": {
@@ -954,8 +953,7 @@
         "visible": false
       },
       "tiling": {
-        "orientation": "v",
-        "flip": ""
+        "orientation": "v"
       },
       "maxdepth": 3,
       "domain": {
@@ -1267,7 +1265,6 @@
   ],
   "layout": {
     "margin": {"l": 0, "r": 0, "b": 0, "t": 0},
-    "plot_bgcolor": "#dadada",
     "width": 1200,
     "height": 1200,
     "shapes": [
