@@ -66,10 +66,3 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
         join.exit().remove();
     }
 };
-
-
-function getKey(pt) {
-    return helpers.isHierarchyRoot(pt) ?
-        '' : // don't use the dummyId
-        helpers.getPtId(pt);
-}
