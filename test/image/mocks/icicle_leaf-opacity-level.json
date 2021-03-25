@@ -8,7 +8,7 @@
       "root": {"color": "limegreen"},
       "level": "",
       "leaf": {
-        "opacity": 0.1
+        "opacity": 1
       }
     },
     {
@@ -19,7 +19,7 @@
       "root": {"color": "limegreen"},
       "level": "Seth",
       "leaf": {
-        "opacity": 0.3
+        "opacity": 0.7
       }
     },
     {
@@ -30,7 +30,7 @@
       "root": {"color": "limegreen"},
       "level": "Enos",
       "leaf": {
-        "opacity": 0.7
+        "opacity": 0.3
       }
     },
     {
@@ -41,7 +41,7 @@
       "root": {"color": "limegreen"},
       "level": "Enos",
       "leaf": {
-        "opacity": 1
+        "opacity": 0.1
       }
     }
   ],
@@ -50,7 +50,7 @@
       {
         "showarrow": false,
         "text": "opacity=<b>0.1</b>, level=<b>''</b>",
-        "x": 0,
+        "x": 0.75,
         "xanchor": "left",
         "y": 1,
         "yanchor": "bottom"
@@ -58,14 +58,6 @@
       {
         "showarrow": false,
         "text": "opacity=<b>0.3</b>, level=<b>'Seth'</b>",
-        "x": 0.25,
-        "xanchor": "left",
-        "y": 1,
-        "yanchor": "bottom"
-      },
-      {
-        "showarrow": false,
-        "text": "opacity=<b>0.7</b>, level=<b>'Enos'</b>",
         "x": 0.5,
         "xanchor": "left",
         "y": 1,
@@ -73,8 +65,16 @@
       },
       {
         "showarrow": false,
+        "text": "opacity=<b>0.7</b>, level=<b>'Enos'</b>",
+        "x": 0.25,
+        "xanchor": "left",
+        "y": 1,
+        "yanchor": "bottom"
+      },
+      {
+        "showarrow": false,
         "text": "opacity=<b>1</b>, level=<b>'Enos'</b>",
-        "x": 0.75,
+        "x": 0.0,
         "xanchor": "left",
         "y": 1,
         "yanchor": "bottom"
