@@ -66,7 +66,6 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
         join.exit().remove();
     }
 };
-<<<<<<< HEAD
 
 
 function getKey(pt) {
