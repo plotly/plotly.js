@@ -49,7 +49,7 @@
     "annotations": [
       {
         "showarrow": false,
-        "text": "opacity=<b>0.1</b>, level=<b>''</b>",
+        "text": "opacity=<b>0.1</b>, level=<b>'Enos'</b>",
         "x": 0.75,
         "xanchor": "left",
         "y": 1,
@@ -57,7 +57,7 @@
       },
       {
         "showarrow": false,
-        "text": "opacity=<b>0.3</b>, level=<b>'Seth'</b>",
+        "text": "opacity=<b>0.3</b>, level=<b>'Enos'</b>",
         "x": 0.5,
         "xanchor": "left",
         "y": 1,
@@ -65,7 +65,7 @@
       },
       {
         "showarrow": false,
-        "text": "opacity=<b>0.7</b>, level=<b>'Enos'</b>",
+        "text": "opacity=<b>0.7</b>, level=<b>'Seth'</b>",
         "x": 0.25,
         "xanchor": "left",
         "y": 1,
@@ -73,7 +73,7 @@
       },
       {
         "showarrow": false,
-        "text": "opacity=<b>1</b>, level=<b>'Enos'</b>",
+        "text": "opacity=<b>1</b>, level=<b>''</b>",
         "x": 0.0,
         "xanchor": "left",
         "y": 1,
