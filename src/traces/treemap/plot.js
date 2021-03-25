@@ -7,15 +7,12 @@ var helpers = require('../sunburst/helpers');
 var uniformText = require('../bar/uniform_text');
 var clearMinTextSize = uniformText.clearMinTextSize;
 var resizeText = require('../bar/style').resizeText;
-var constants = require('./constants');
-var drawIcicleGraph = require('../icicle/draw_descendants');
 var drawDescendants = require('./draw_descendants');
 var plotOne = require('./plot_one');
 var type = 'treemap';
 
 module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
-    var type = cdmodule[0][0].trace.type;
     var layer = fullLayout['_' + type + 'layer'];
     var join, onComplete;
 
@@ -69,6 +66,7 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
         join.exit().remove();
     }
 };
+<<<<<<< HEAD
 
 
 function getKey(pt) {
