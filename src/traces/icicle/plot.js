@@ -8,8 +8,8 @@ var uniformText = require('../bar/uniform_text');
 var clearMinTextSize = uniformText.clearMinTextSize;
 var resizeText = require('../bar/style').resizeText;
 var drawDescendants = require('./draw_descendants');
-var plotOne = require('./plot_one');
-var type = 'treemap';
+var plotOne = require('../treemap/plot_one');
+var type = 'icicle';
 
 module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
