@@ -37,26 +37,40 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts, traceType
     var hasRight = trace.textposition.indexOf('right') !== -1;
     var hasBottom = trace.textposition.indexOf('bottom') !== -1;
 
-    console.log("draw_descendants for treemap");
     if(traceType === 'treemap') {
         var noRoomForHeader = (!hasBottom && !trace.marker.pad.t) || (hasBottom && !trace.marker.pad.b);
     }
+    else {
+        var noRoomForHeader = false;
+    }
 
-    // N.B. slice data isn't the calcdata,
-    // grab corresponding calcdata item in sliceData[i].data.data
-    var allData = partition(entry, [width, height], {
-        packing: trace.tiling.packing,
-        squarifyratio: trace.tiling.squarifyratio,
-        flipX: trace.tiling.flip.indexOf('x') > -1,
-        flipY: trace.tiling.flip.indexOf('y') > -1,
-        pad: {
-            inner: trace.tiling.pad,
-            top: trace.marker.pad.t,
-            left: trace.marker.pad.l,
-            right: trace.marker.pad.r,
-            bottom: trace.marker.pad.b,
-        }
-    });
+    if(traceType === 'treemap') {
+        // N.B. slice data isn't the calcdata,
+        // grab corresponding calcdata item in sliceData[i].data.data
+        var allData = partition(entry, [width, height], {
+            packing: trace.tiling.packing,
+            squarifyratio: trace.tiling.squarifyratio,
+            flipX: trace.tiling.flip.indexOf('x') > -1,
+            flipY: trace.tiling.flip.indexOf('y') > -1,
+            pad: {
+                inner: trace.tiling.pad,
+                top: trace.marker.pad.t,
+                left: trace.marker.pad.l,
+                right: trace.marker.pad.r,
+                bottom: trace.marker.pad.b,
+            }
+        }, 'treemap');
+    }
+    else {
+        var allData = partition(entry, [width, height], {
+            flipX: trace.tiling.flip.indexOf('x') > -1,
+            flipY: trace.tiling.flip.indexOf('y') > -1,
+            orientation: trace.tiling.orientation,
+            pad: {
+                inner: trace.tiling.pad
+            }
+        }, 'icicle');
+    }
 
     var sliceData = allData.descendants();
 
@@ -125,15 +139,22 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts, traceType
     }
 
     updateSlices.each(function(pt) {
-        var isHeader = helpers.isHeader(pt, trace);
-
-        pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
-        pt._hoverY = hasBottom ?
-                viewY(pt.y1 - trace.marker.pad.b / 2) :
-                viewY(pt.y0 + trace.marker.pad.t / 2);
+        if(traceType === 'treemap') {
+            var isHeader = helpers.isHeader(pt, trace);
+            pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
+            pt._hoverY = hasBottom ?
+                    viewY(pt.y1 - trace.marker.pad.b / 2) :
+                    viewY(pt.y0 + trace.marker.pad.t / 2);
+        }
+        else {
+            var isHeader = false;
+            pt._hoverX = viewX(pt.x1 - trace.tiling.pad),
+            pt._hoverY = hasBottom ?
+                    viewY(pt.y1 - trace.tiling.pad / 2) :
+                    viewY(pt.y0 + trace.tiling.pad / 2);
+        }
 
         var sliceTop = d3.select(this);
-
         var slicePath = Lib.ensureSingle(sliceTop, 'path', 'surface', function(s) {
             s.style('pointer-events', 'all');
         });
@@ -186,10 +207,14 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts, traceType
             .call(svgTextUtils.convertToTspans, gd);
 
         pt.textBB = Drawing.bBox(sliceText.node());
-        pt.transform = toMoveInsideSlice(pt, {
-            fontSize: font.size,
-            isHeader: isHeader
-        });
+
+        var transformObj = {
+            fontSize: font.size
+        };
+        if(traceType === 'treemap') {
+            transformObj['isHeader'] = isHeader;
+        }
+        pt.transform = toMoveInsideSlice(pt, transformObj);
         pt.transform.fontSize = font.size;
 
         if(hasTransition) {

@@ -11,7 +11,6 @@ var toMoveInsideBar = barPlot.toMoveInsideBar;
 
 var treemapPlot = require('../treemap/plot');
 var getKey = treemapPlot.getKey;
-var apples = treemapPlot.apples;
 var plotOne = treemapPlot.plotOne;
 
 var uniformText = require('../bar/uniform_text');
@@ -26,8 +25,6 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
     var fullLayout = gd._fullLayout;
     var layer = fullLayout._iciclelayer;
     var join, onComplete;
-
-    console.log("apples is ", apples);
 
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
@@ -62,13 +59,11 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
             layer.selectAll('g.trace').each(function(cd) {
-                // plotOne(gd, cd, this, transitionOpts);
                 plotOne(gd, cd, this, transitionOpts, 'icicle');
             });
         });
     } else {
         join.each(function(cd) {
-            // plotOne(gd, cd, this, transitionOpts);
             plotOne(gd, cd, this, transitionOpts, 'icicle');
         });
 

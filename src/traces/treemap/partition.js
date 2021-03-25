@@ -2,48 +2,70 @@
 
 var d3Hierarchy = require('d3-hierarchy');
 
-module.exports = function partition(entry, size, opts) {
+module.exports = function partition(entry, size, opts, traceType='treemap') {
     var flipX = opts.flipX;
     var flipY = opts.flipY;
-    var swapXY = opts.packing === 'dice-slice';
 
-    var top = opts.pad[flipY ? 'bottom' : 'top'];
-    var left = opts.pad[flipX ? 'right' : 'left'];
-    var right = opts.pad[flipX ? 'left' : 'right'];
-    var bottom = opts.pad[flipY ? 'top' : 'bottom'];
+    if(traceType === 'treemap') {
+        var swapXY = opts.packing === 'dice-slice';
 
-    var tmp;
-    if(swapXY) {
-        tmp = left;
-        left = top;
-        top = tmp;
+        var top = opts.pad[flipY ? 'bottom' : 'top'];
+        var left = opts.pad[flipX ? 'right' : 'left'];
+        var right = opts.pad[flipX ? 'left' : 'right'];
+        var bottom = opts.pad[flipY ? 'top' : 'bottom'];
 
-        tmp = right;
-        right = bottom;
-        bottom = tmp;
+        var tmp;
+        if(swapXY) {
+            tmp = left;
+            left = top;
+            top = tmp;
+
+            tmp = right;
+            right = bottom;
+            bottom = tmp;
+        }
+
+        var result = d3Hierarchy
+            .treemap()
+            .tile(getTilingMethod(opts.packing, opts.squarifyratio))
+            .paddingInner(opts.pad.inner)
+            .paddingLeft(left)
+            .paddingRight(right)
+            .paddingTop(top)
+            .paddingBottom(bottom)
+            .size(
+                swapXY ? [size[1], size[0]] : size
+            )(entry);
+
+        if(swapXY || flipX || flipY) {
+            flipTree(result, size, {
+                swapXY: swapXY,
+                flipX: flipX,
+                flipY: flipY
+            });
+        }
+    } else {
+        var swapXY = opts.orientation === 'h';
+
+        var result = d3Hierarchy
+            .partition()
+            .padding(opts.pad.inner)
+            .size(
+                swapXY ? [size[1], size[0]] : size
+            )(entry);
+
+        if(swapXY || flipX || flipY) {
+            flipTree(result, size, {
+                swapXY: swapXY,
+                flipX: flipX,
+                flipY: flipY
+            });
+        }
     }
 
-    var result = d3Hierarchy
-        .treemap()
-        .tile(getTilingMethod(opts.packing, opts.squarifyratio))
-        .paddingInner(opts.pad.inner)
-        .paddingLeft(left)
-        .paddingRight(right)
-        .paddingTop(top)
-        .paddingBottom(bottom)
-        .size(
-            swapXY ? [size[1], size[0]] : size
-        )(entry);
-
-    if(swapXY || flipX || flipY) {
-        flipTree(result, size, {
-            swapXY: swapXY,
-            flipX: flipX,
-            flipY: flipY
-        });
-    }
     return result;
 };
+
 
 function getTilingMethod(key, squarifyratio) {
     switch(key) {

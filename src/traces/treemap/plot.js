@@ -54,12 +54,12 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
             layer.selectAll('g.trace').each(function(cd) {
-                plotOne(gd, cd, this, transitionOpts);
+                plotOne(gd, cd, this, transitionOpts, 'treemap');
             });
         });
     } else {
         join.each(function(cd) {
-            plotOne(gd, cd, this, transitionOpts);
+            plotOne(gd, cd, this, transitionOpts, 'treemap');
         });
 
         if(fullLayout.uniformtext.mode) {
@@ -631,7 +631,5 @@ function plotOne(gd, cd, element, transitionOpts, traceType='icicle') {
     }
 }
 
-var apples = 123;
-module.exports.apples = apples;
 module.exports.getKey = getKey;
 module.exports.plotOne = plotOne;
