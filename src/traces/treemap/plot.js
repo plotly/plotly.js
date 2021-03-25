@@ -13,26 +13,28 @@ var recordMinTextSize = uniformText.recordMinTextSize;
 var clearMinTextSize = uniformText.clearMinTextSize;
 var resizeText = require('../bar/style').resizeText;
 var constants = require('./constants');
+var drawIcicleGraph = require('../icicle/draw_descendants');
 var drawDescendants = require('./draw_descendants');
 var drawAncestors = require('./draw_ancestors');
 
 module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
-    var layer = fullLayout._treemaplayer;
+    var type = cdmodule[0][0].trace.type;
+    var layer = fullLayout['_' + type + 'layer'];
     var join, onComplete;
 
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionOpts;
 
-    clearMinTextSize('treemap', fullLayout);
+    clearMinTextSize(type, fullLayout);
 
-    join = layer.selectAll('g.trace.treemap')
+    join = layer.selectAll('g.trace.' + type)
         .data(cdmodule, function(cd) { return cd[0].trace.uid; });
 
     join.enter().append('g')
         .classed('trace', true)
-        .classed('treemap', true);
+        .classed(type, true);
 
     join.order();
 
@@ -63,7 +65,7 @@ module.exports = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) 
         });
 
         if(fullLayout.uniformtext.mode) {
-            resizeText(gd, fullLayout._treemaplayer.selectAll('.trace'), 'treemap');
+            resizeText(gd, layer.selectAll('.trace'), type);
         }
     }
 
@@ -82,6 +84,7 @@ function plotOne(gd, cd, element, transitionOpts) {
     var fullLayout = gd._fullLayout;
     var cd0 = cd[0];
     var trace = cd0.trace;
+    var type = trace.type;
     var hierarchy = cd0.hierarchy;
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
 
@@ -307,7 +310,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             hasLeft ? -1 :
             hasRight ? 1 : 0;
 
-        var pad = trace.marker.pad;
+        var pad = trace[type === 'icicle' ? 'tiling' : 'marker'].pad;
         if(opts.isHeader) {
             x0 += pad.l - TEXTPAD;
             x1 -= pad.r - TEXTPAD;
@@ -581,7 +584,7 @@ function plotOne(gd, cd, element, transitionOpts) {
         });
     }
 
-    nextOfPrevEntry = drawDescendants(gd, cd, entry, selDescendants, {
+    var descendantsOpts = {
         width: vpw,
         height: vph,
 
@@ -598,7 +601,11 @@ function plotOne(gd, cd, element, transitionOpts) {
         handleSlicesExit: handleSlicesExit,
         hasTransition: hasTransition,
         strTransform: strTransform
-    });
+    };
+
+    nextOfPrevEntry = type === 'icicle' ?
+        drawIcicleGraph(gd, cd, entry, selDescendants, descendantsOpts) :
+        drawDescendants(gd, cd, entry, selDescendants, descendantsOpts);
 
     if(trace.pathbar.visible) {
         drawAncestors(gd, cd, entry, selAncestors, {

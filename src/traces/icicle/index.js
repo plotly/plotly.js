@@ -15,7 +15,7 @@ module.exports = {
     calc: require('./calc').calc,
     crossTraceCalc: require('./calc').crossTraceCalc,
 
-    plot: require('./plot'),
+    plot: require('../treemap/plot'),
     style: require('./style').style,
 
     colorbar: require('../scatter/marker_colorbar'),

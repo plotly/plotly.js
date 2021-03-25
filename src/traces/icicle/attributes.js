@@ -8,7 +8,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var pieAttrs = require('../pie/attributes');
 var sunburstAttrs = require('../sunburst/attributes');
 var treemapAttrs = require('../treemap/attributes');
-var constants = require('./constants');
+var constants = require('../treemap/constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
