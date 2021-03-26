@@ -8,8 +8,7 @@ module.exports = function partition(entry, size, opts) {
     var swapXY = opts.orientation === 'h';
     var maxDepth = opts.maxDepth;
 
-    // calculate partion size
-    var newWidth = (entry.height + 1) * size[0] / Math.min(entry.height, maxDepth);
+    var newWidth = (entry.height + 1) * size[0] / Math.min(entry.height+1, maxDepth);
 
     var result = d3Hierarchy
         .partition()
