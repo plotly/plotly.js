@@ -129,7 +129,17 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
         if(hasTransition) {
             slicePath.transition().attrTween('d', function(pt2) {
-                var interp = makeUpdateSliceInterpolator(pt2, onPathbar, getRefRect(), [width, height]);
+                var interp = makeUpdateSliceInterpolator(
+                    pt2,
+                    onPathbar,
+                    getRefRect(),
+                    [width, height],
+                    {
+                        orientation: trace.tiling.orientation,
+                        flipX: trace.tiling.flip.indexOf('x') > -1,
+                        flipY: trace.tiling.flip.indexOf('y') > -1,
+                    }
+                );
                 return function(t) { return pathSlice(interp(t)); };
             });
         } else {
