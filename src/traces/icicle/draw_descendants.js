@@ -45,7 +45,8 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         orientation: trace.tiling.orientation,
         pad: {
             inner: trace.tiling.pad
-        }
+        },
+        maxDepth: trace._maxDepth
     });
 
     var sliceData = allData.descendants();
