@@ -11,8 +11,8 @@ module.exports = function partition(entry, size, opts) {
     var newWidth = size[0];
     var newHeight = size[1];
     if(maxDepth) {
-        newWidth = (entry.height + 1) * size[0] / Math.min(entry.height+1, maxDepth);
-        newHeight = (entry.height + 1) * size[1] / Math.min(entry.height+1, maxDepth);
+        newWidth = (entry.height + 1) * size[0] / Math.min(entry.height + 1, maxDepth);
+        newHeight = (entry.height + 1) * size[1] / Math.min(entry.height + 1, maxDepth);
     }
 
     var result = d3Hierarchy

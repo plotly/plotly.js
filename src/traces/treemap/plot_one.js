@@ -367,31 +367,31 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
                     } else {
                         if(type === 'icicle' && opts.orientation === 'h' && opts.flipX === false) {
                             prev = {
-                              x0: 0,
-                              x1: 0,
-                              y0: pt.y0,
-                              y1: pt.y1
+                                x0: 0,
+                                x1: 0,
+                                y0: pt.y0,
+                                y1: pt.y1
                             };
                         } else if(type === 'icicle' && opts.orientation === 'v' && opts.flipY === false) {
                             prev = {
-                              x0: pt.x0,
-                              x1: pt.x1,
-                              y0: 0,
-                              y1: 0
+                                x0: pt.x0,
+                                x1: pt.x1,
+                                y0: 0,
+                                y1: 0
                             };
                         } else if(type === 'icicle' && opts.orientation === 'h' && opts.flipX === true) {
                             prev = {
-                              x0: pt.x1,
-                              x1: pt.x1,
-                              y0: pt.y0,
-                              y1: pt.y1
+                                x0: pt.x1,
+                                x1: pt.x1,
+                                y0: pt.y0,
+                                y1: pt.y1
                             };
                         } else if(type === 'icicle' && opts.orientation === 'v' && opts.flipY === true) {
                             prev = {
-                              x0: pt.x0,
-                              x1: pt.x1,
-                              y0: pt.y1,
-                              y1: pt.y1
+                                x0: pt.x0,
+                                x1: pt.x1,
+                                y0: pt.y1,
+                                y1: pt.y1
                             };
                         } else {
                             prev = pt;
