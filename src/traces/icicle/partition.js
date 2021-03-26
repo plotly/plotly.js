@@ -8,13 +8,18 @@ module.exports = function partition(entry, size, opts) {
     var swapXY = opts.orientation === 'h';
     var maxDepth = opts.maxDepth;
 
-    var newWidth = (entry.height + 1) * size[0] / Math.min(entry.height+1, maxDepth);
+    var newWidth = size[0];
+    var newHeight = size[1];
+    if(maxDepth) {
+        newWidth = (entry.height + 1) * size[0] / Math.min(entry.height+1, maxDepth);
+        newHeight = (entry.height + 1) * size[1] / Math.min(entry.height+1, maxDepth);
+    }
 
     var result = d3Hierarchy
         .partition()
         .padding(opts.pad.inner)
         .size(
-            swapXY ? [size[1], newWidth] : size
+            swapXY ? [size[1], newWidth] : [size[0], newHeight]
         )(entry);
 
     if(swapXY || flipX || flipY) {
