@@ -1045,6 +1045,7 @@ function createHoverText(hoverData, opts, gd) {
         legendOpts.layer = container;
 
         // Draw unified hover label
+        legendOpts._inHover = true;
         legendDraw(gd, legendOpts);
 
         // Position the hover
