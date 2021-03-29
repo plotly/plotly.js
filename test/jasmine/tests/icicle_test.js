@@ -1,26 +1,16 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
-var constants = require('@src/traces/treemap/constants');
 
 var d3Select = require('../../strict-d3').select;
-var d3SelectAll = require('../../strict-d3').selectAll;
-var d3Transition = require('../../strict-d3').transition;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-var delay = require('../assets/delay');
-
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
-var checkTextTemplate = require('../assets/check_texttemplate');
-
-var SLICES_SELECTOR = '.iciclelayer text.slicetext';
-var SLICES_TEXT_SELECTOR = '.iciclelayer text.slicetext';
 
 function _mouseEvent(type, gd, v) {
     return function() {
@@ -38,14 +28,6 @@ function _mouseEvent(type, gd, v) {
 
 function hover(gd, v) {
     return _mouseEvent('mouseover', gd, v);
-}
-
-function unhover(gd, v) {
-    return _mouseEvent('mouseout', gd, v);
-}
-
-function click(gd, v) {
-    return _mouseEvent('click', gd, v);
 }
 
 describe('Test icicle defaults:', function() {
