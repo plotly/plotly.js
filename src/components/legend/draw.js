@@ -30,7 +30,7 @@ module.exports = function draw(gd, opts) {
     // Check whether this is the main legend (ie. called without any opts)
     if(!opts) {
         opts = fullLayout.legend || {};
-        opts._main = true;
+        opts._isLegend = true;
         layer = fullLayout._infolayer;
     } else {
         layer = opts.layer;
@@ -42,7 +42,7 @@ module.exports = function draw(gd, opts) {
     if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
 
     var legendData;
-    if(opts._main) {
+    if(opts._isLegend) {
         if(!gd.calcdata) return;
         legendData = fullLayout.showlegend && getLegendData(gd.calcdata, opts);
     } else {
@@ -52,14 +52,14 @@ module.exports = function draw(gd, opts) {
 
     var hiddenSlices = fullLayout.hiddenlabels || [];
 
-    if(opts._main && (!fullLayout.showlegend || !legendData.length)) {
+    if(opts._isLegend && (!fullLayout.showlegend || !legendData.length)) {
         layer.selectAll('.legend').remove();
         fullLayout._topdefs.select('#' + clipId).remove();
         return Plots.autoMargin(gd, 'legend');
     }
 
     var legend = Lib.ensureSingle(layer, 'g', 'legend', function(s) {
-        if(opts._main) s.attr('pointer-events', 'all');
+        if(opts._isLegend) s.attr('pointer-events', 'all');
     });
 
     var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', clipId, function(s) {
@@ -112,7 +112,7 @@ module.exports = function draw(gd, opts) {
     })
     .each(function() { d3.select(this).call(drawTexts, gd, opts); })
     .call(style, gd, opts)
-    .each(function() { if(opts._main) d3.select(this).call(setupTraceToggle, gd); });
+    .each(function() { if(opts._isLegend) d3.select(this).call(setupTraceToggle, gd); });
 
     Lib.syncOrAsync([
         Plots.previousPromises,
@@ -121,7 +121,7 @@ module.exports = function draw(gd, opts) {
             // IF expandMargin return a Promise (which is truthy),
             // we're under a doAutoMargin redraw, so we don't have to
             // draw the remaining pieces below
-            if(opts._main && expandMargin(gd)) return;
+            if(opts._isLegend && expandMargin(gd)) return;
 
             var gs = fullLayout._size;
             var bw = opts.borderwidth;
@@ -129,7 +129,7 @@ module.exports = function draw(gd, opts) {
             var lx = gs.l + gs.w * opts.x - FROM_TL[getXanchor(opts)] * opts._width;
             var ly = gs.t + gs.h * (1 - opts.y) - FROM_TL[getYanchor(opts)] * opts._effHeight;
 
-            if(opts._main && fullLayout.margin.autoexpand) {
+            if(opts._isLegend && fullLayout.margin.autoexpand) {
                 var lx0 = lx;
                 var ly0 = ly;
 
@@ -146,18 +146,18 @@ module.exports = function draw(gd, opts) {
 
             // Set size and position of all the elements that make up a legend:
             // legend, background and border, scroll box and scroll bar as well as title
-            if(opts._main) Drawing.setTranslate(legend, lx, ly);
+            if(opts._isLegend) Drawing.setTranslate(legend, lx, ly);
 
             // to be safe, remove previous listeners
             scrollBar.on('.drag', null);
             legend.on('wheel', null);
 
-            if(!opts._main || opts._height <= opts._maxHeight || gd._context.staticPlot) {
+            if(!opts._isLegend || opts._height <= opts._maxHeight || gd._context.staticPlot) {
                 // if scrollbar should not be shown.
                 var height = opts._effHeight;
 
-                // if not the main legend, let it be its full size
-                if(!opts._main) height = opts._height;
+                // if unified hover, let it be its full size
+                if(!opts._isLegend) height = opts._height;
 
                 bg.attr({
                     width: opts._width - bw,
@@ -386,7 +386,7 @@ function drawTexts(g, gd, opts) {
     var trace = legendItem.trace;
     var isPieLike = Registry.traceIs(trace, 'pie-like');
     var traceIndex = trace.index;
-    var isEditable = opts._main && gd._context.edits.legendText && !isPieLike;
+    var isEditable = opts._isLegend && gd._context.edits.legendText && !isPieLike;
     var maxNameLength = opts._maxNameLength;
 
     var name;
@@ -491,7 +491,7 @@ function setupTraceToggle(g, gd) {
 }
 
 function textLayout(s, g, gd, opts) {
-    if(!opts._main) s.attr('data-notex', true); // do not process MathJax if not main
+    if(!opts._isLegend) s.attr('data-notex', true); // do not process MathJax for unified hover
     svgTextUtils.convertToTspans(s, gd, function() {
         computeTextDimensions(g, gd, opts);
     });
@@ -499,7 +499,7 @@ function textLayout(s, g, gd, opts) {
 
 function computeTextDimensions(g, gd, opts) {
     var legendItem = g.data()[0][0];
-    if(opts._main && legendItem && !legendItem.trace.showlegend) {
+    if(opts._isLegend && legendItem && !legendItem.trace.showlegend) {
         g.remove();
         return;
     }
