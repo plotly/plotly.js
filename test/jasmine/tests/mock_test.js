@@ -644,9 +644,9 @@ var list = [
     'histogram2dcontour_legend-coloraxis',
     'hists-on-matching-axes',
     'hot_heatmap',
-    'icicle_coffee',
-    'icicle_coffee-maxdepth3',
     'icicle_coffee-maxdepth3-all-directions',
+    'icicle_coffee-maxdepth3',
+    'icicle_coffee',
     'icicle_count_branches',
     'icicle_first',
     'icicle_flare',
@@ -1029,6 +1029,7 @@ var list = [
     'uniformtext_bar-like_8_textangle',
     'uniformtext_bar-like_8_textangle45',
     'uniformtext_funnelarea',
+    'uniformtext_icicle',
     'uniformtext_pie_16_auto',
     'uniformtext_pie_8_horizontal',
     'uniformtext_pie_8_horizontal_center',
@@ -1746,9 +1747,9 @@ figs['histogram2dcontour_bingroup-coloraxis'] = require('@mocks/histogram2dconto
 figs['histogram2dcontour_legend-coloraxis'] = require('@mocks/histogram2dcontour_legend-coloraxis');
 figs['hists-on-matching-axes'] = require('@mocks/hists-on-matching-axes');
 figs['hot_heatmap'] = require('@mocks/hot_heatmap');
-figs['icicle_coffee'] = require('@mocks/icicle_coffee');
-figs['icicle_coffee-maxdepth3'] = require('@mocks/icicle_coffee-maxdepth3');
 figs['icicle_coffee-maxdepth3-all-directions'] = require('@mocks/icicle_coffee-maxdepth3-all-directions');
+figs['icicle_coffee-maxdepth3'] = require('@mocks/icicle_coffee-maxdepth3');
+figs['icicle_coffee'] = require('@mocks/icicle_coffee');
 figs['icicle_count_branches'] = require('@mocks/icicle_count_branches');
 figs['icicle_first'] = require('@mocks/icicle_first');
 figs['icicle_flare'] = require('@mocks/icicle_flare');
@@ -2131,6 +2132,7 @@ figs['uniformtext_bar-like_8_horizontal'] = require('@mocks/uniformtext_bar-like
 figs['uniformtext_bar-like_8_textangle'] = require('@mocks/uniformtext_bar-like_8_textangle');
 figs['uniformtext_bar-like_8_textangle45'] = require('@mocks/uniformtext_bar-like_8_textangle45');
 figs['uniformtext_funnelarea'] = require('@mocks/uniformtext_funnelarea');
+figs['uniformtext_icicle'] = require('@mocks/uniformtext_icicle');
 figs['uniformtext_pie_16_auto'] = require('@mocks/uniformtext_pie_16_auto');
 figs['uniformtext_pie_8_horizontal'] = require('@mocks/uniformtext_pie_8_horizontal');
 figs['uniformtext_pie_8_horizontal_center'] = require('@mocks/uniformtext_pie_8_horizontal_center');
