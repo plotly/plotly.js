@@ -3,14 +3,19 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var delay = require('../assets/delay');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
+
+var SLICES_SELECTOR = '.iciclelayer path.surface';
 
 function _mouseEvent(type, gd, v) {
     return function() {
@@ -28,6 +33,10 @@ function _mouseEvent(type, gd, v) {
 
 function hover(gd, v) {
     return _mouseEvent('mouseover', gd, v);
+}
+
+function click(gd, v) {
+    return _mouseEvent('click', gd, v);
 }
 
 describe('Test icicle defaults:', function() {
@@ -678,5 +687,241 @@ describe('Test icicle hover:', function() {
         it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
             run(spec).then(done, done.fail);
         });
+    });
+});
+
+describe('Test icicle restyle:', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    function _restyle(updateObj) {
+        return function() { return Plotly.restyle(gd, updateObj); };
+    }
+
+    it('should be able to toggle visibility', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/icicle_first.json'));
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3Select(gd).select('.iciclelayer');
+                expect(layer.selectAll('.trace').size()).toBe(exp, msg);
+            };
+        }
+
+        Plotly.newPlot(gd, mock)
+        .then(_assert('base', 2))
+        .then(_restyle({'visible': false}))
+        .then(_assert('both visible:false', 0))
+        .then(_restyle({'visible': true}))
+        .then(_assert('back to visible:true', 2))
+        .then(done, done.fail);
+    });
+
+    it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
+        var mock = Lib.extendDeep({}, require('@mocks/icicle_coffee.json'));
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3Select(gd).select('.iciclelayer');
+
+                expect(layer.selectAll('.slice').size()).toBe(exp, msg);
+
+                // editType:plot
+                if(msg !== 'base') {
+                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
+                }
+            };
+        }
+
+        Plotly.newPlot(gd, mock)
+        .then(_assert('base', 97))
+        .then(function() {
+            spyOn(Plots, 'doCalcdata').and.callThrough();
+        })
+        .then(_restyle({maxdepth: 3}))
+        .then(_assert('with maxdepth:3', 97))
+        .then(_restyle({level: 'Aromas'}))
+        .then(_assert('with non-root level', 67))
+        .then(_restyle({maxdepth: null, level: null}))
+        .then(_assert('back to first view', 97))
+        .then(done, done.fail);
+    });
+
+    it('should be able to restyle *leaf.opacity*', function(done) {
+        var mock = {
+            data: [{
+                type: 'icicle',
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B']
+            }]
+        };
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3Select(gd).select('.iciclelayer');
+
+                var opacities = [];
+                layer.selectAll('path.surface').each(function() {
+                    opacities.push(this.style.opacity);
+                });
+
+                expect(opacities).toEqual(exp, msg);
+
+                // editType:style
+                if(msg !== 'base') {
+                    expect(Plots.doCalcdata).toHaveBeenCalledTimes(0);
+                    expect(gd._fullData[0]._module.plot).toHaveBeenCalledTimes(0);
+                }
+            };
+        }
+
+        Plotly.newPlot(gd, mock)
+        .then(_assert('base', ['', '0.7', '', '0.7']))
+        .then(function() {
+            spyOn(Plots, 'doCalcdata').and.callThrough();
+            spyOn(gd._fullData[0]._module, 'plot').and.callThrough();
+        })
+        .then(_restyle({'leaf.opacity': 0.3}))
+        .then(_assert('lower leaf.opacity', ['', '0.3', '', '0.3']))
+        .then(_restyle({'leaf.opacity': 1}))
+        .then(_assert('raise leaf.opacity', ['', '1', '', '1']))
+        .then(_restyle({'leaf.opacity': null}))
+        .then(_assert('back to dflt', ['', '0.7', '', '0.7']))
+        .then(done, done.fail);
+    });
+});
+
+describe('Test icicle texttemplate without `values` should work at root level:', function() {
+    checkTextTemplate([{
+        type: 'icicle',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '100% of Seth', '33% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '17% of Eve', '50% of Seth', '100% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: %{value}', // N.B. there is no `values` array
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '17% of Eve',
+                '100% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('Test icicle texttemplate with *total* `values` should work at root level:', function() {
+    checkTextTemplate([{
+        type: 'icicle',
+        branchvalues: 'total',
+        labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+        parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve' ],
+        values: [65, 14, 12, 10, 2, 6, 6, 1, 4],
+        text: ['sixty-five', 'fourteen', 'twelve', 'ten', 'two', 'six', 'six', 'one', 'four']
+    }], 'g.slicetext', [
+        ['color: %{color}', ['color: rgba(0,0,0,0)', 'color: #1f77b4', 'color: #ff7f0e', 'color: #2ca02c', 'color: #d62728', 'color: #9467bd', 'color: #ff7f0e', 'color: #ff7f0e', 'color: #d62728']],
+        ['label: %{label}', ['label: Eve', 'label: Cain', 'label: Seth', 'label: Enos', 'label: Noam', 'label: Abel', 'label: Awan', 'label: Enoch', 'label: Azura']],
+        ['value: %{value}', ['value: 65', 'value: 14', 'value: 12', 'value: 10', 'value: 2', 'value: 6', 'value: 6', 'value: 1', 'value: 4']],
+        ['text: %{text}', ['text: sixty-five', 'text: fourteen', 'text: twelve', 'text: ten', 'text: two', 'text: six', 'text: six', 'text: one', 'text: four']],
+        ['path: %{currentPath}', ['path: /', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve/', 'path: Eve', 'path: Eve/Seth', 'path: Eve/Seth/', 'path: Eve/Awan/']],
+        ['%{percentRoot} of %{root}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentEntry} of %{entry}', ['100% of Eve', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '15% of Eve', '3% of Eve', '2% of Eve']],
+        ['%{percentParent} of %{parent}', ['%{percentParent} of %{parent}', '22% of Eve', '18% of Eve', '9% of Eve', '9% of Eve', '6% of Eve', '83% of Seth', '17% of Seth', '17% of Awan']],
+        [
+            [
+                'label: %{label}',
+                'text: %{text}',
+                'value: %{value}',
+                '%{percentRoot} of %{root}',
+                '%{percentEntry} of %{entry}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                '%{percentParent} of %{parent}',
+                'color: %{color}'
+            ],
+            [
+                'label: Eve',
+                'text: fourteen',
+                'value: 12',
+                '9% of Eve',
+                '15% of Eve',
+                '3% of Eve',
+                '6% of Eve',
+                '17% of Awan',
+                'color: #9467bd'
+            ]
+        ]
+    ]);
+});
+
+describe('icicle pathbar react', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should show and hide pathbar', function(done) {
+        var fig = {
+            data: [{
+                type: 'icicle',
+                parents: ['', 'A', 'B', 'C'],
+                labels: ['A', 'B', 'C', 'D'],
+                level: 'C'
+            }],
+            layout: {}
+        };
+
+        function _assert(msg, exp) {
+            return function() {
+                var selection = d3SelectAll(SLICES_SELECTOR);
+                var size = selection.size();
+
+                expect(size).toBe(exp, msg);
+            };
+        }
+
+        Plotly.newPlot(gd, fig)
+        .then(_assert('default pathbar.visible: true', 4))
+        .then(function() {
+            fig.data[0].pathbar = {visible: false};
+            return Plotly.react(gd, fig);
+        })
+        .then(_assert('disable pathbar', 2))
+        .then(function() {
+            fig.data[0].pathbar = {visible: true};
+            return Plotly.react(gd, fig);
+        })
+        .then(_assert('enable pathbar', 4))
+        .then(done, done.fail);
     });
 });
