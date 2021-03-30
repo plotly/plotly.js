@@ -8,7 +8,6 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
-var delay = require('../assets/delay');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -33,10 +32,6 @@ function _mouseEvent(type, gd, v) {
 
 function hover(gd, v) {
     return _mouseEvent('mouseover', gd, v);
-}
-
-function click(gd, v) {
-    return _mouseEvent('click', gd, v);
 }
 
 describe('Test icicle defaults:', function() {
