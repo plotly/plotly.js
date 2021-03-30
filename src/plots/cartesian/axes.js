@@ -34,9 +34,6 @@ var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
-var VISIBLE = { display: null };
-var HIDDEN = { display: 'none' };
-
 var ZERO_PATH = { K: 'zeroline' };
 var GRID_PATH = { K: 'gridline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
@@ -2871,7 +2868,7 @@ axes.drawGrid = function(gd, ax, opts) {
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
         .style('stroke-width', ax._gw + 'px')
-        .style(VISIBLE);
+        .style('display', null); // visible
 
     hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
 
@@ -2923,7 +2920,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
         .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
-        .style(VISIBLE);
+        .style('display', null); // visible
 
     hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
 };
@@ -3040,7 +3037,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
 
                 if(isInside) {
-                    thisText.style(VISIBLE);
+                    thisText.style('display', null); // visible
 
                     if(ax._hideOutOfRangeInsideTickLabels) {
                         ax._hideOutOfRangeInsideTickLabels();
@@ -3087,7 +3084,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
                     var t = thisLabel.select('text');
                     if(hide) {
-                        t.style(HIDDEN);
+                        t.style('display', 'none'); // hidden
                     } else {
                         visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                         visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
@@ -3127,9 +3124,9 @@ axes.drawLabels = function(gd, ax, opts) {
 
                         var t = d3.select(this);
                         if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
-                            t.style(HIDDEN);
+                            t.style('display', 'none'); // hidden
                         } else if(e.K === 'tick' && e.L === 'path') {
-                            t.style(VISIBLE);
+                            t.style('display', null); // visible
                         }
                     });
                 });
