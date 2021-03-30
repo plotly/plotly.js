@@ -3062,6 +3062,7 @@ axes.drawLabels = function(gd, ax, opts) {
             var min = Math.min(p0, p1) + ax._offset;
             var max = Math.max(p0, p1) + ax._offset;
 
+            var side = ax.side;
             var isX = ax._id.charAt(0) === 'x';
 
             var visibleLabelMin = Infinity;
@@ -3086,8 +3087,17 @@ axes.drawLabels = function(gd, ax, opts) {
                     if(hide) {
                         t.style('display', 'none'); // hidden
                     } else {
-                        visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
-                        visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
+                        if(side === 'bottom' || side === 'right') {
+                            visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
+                        } else {
+                            visibleLabelMin = -Infinity;
+                        }
+
+                        if(side === 'top' || side === 'left') {
+                            visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
+                        } else {
+                            visibleLabelMax = Infinity;
+                        }
                     }
                 } // TODO: hide mathjax?
             });
