@@ -2804,7 +2804,10 @@ axes.drawTicks = function(gd, ax, opts) {
         .classed('crisp', opts.crisp !== false)
         .call(Color.stroke, ax.tickcolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
-        .attr('d', opts.path);
+        .attr('d', opts.path)
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_PATH]);
 
     ticks.attr('transform', opts.transFn);
 };
