@@ -253,8 +253,8 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
         var pad = trace[type === 'icicle' ? 'tiling' : 'marker'].pad;
         if(opts.isHeader) {
-            x0 += (type === 'icicle' ? pad : pad.l)  - TEXTPAD;
-            x1 -= (type === 'icicle' ? pad : pad.r)  - TEXTPAD;
+            x0 += (type === 'icicle' ? pad : pad.l) - TEXTPAD;
+            x1 -= (type === 'icicle' ? pad : pad.r) - TEXTPAD;
             if(x0 >= x1) {
                 var mid = (x0 + x1) / 2;
                 x0 = mid;
