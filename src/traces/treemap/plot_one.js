@@ -249,10 +249,12 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             hasLeft ? -1 :
             hasRight ? 1 : 0;
 
+        // Note that `pad` is just an integer for `icicle`` traces where
+        // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
         var pad = trace[type === 'icicle' ? 'tiling' : 'marker'].pad;
         if(opts.isHeader) {
-            x0 += pad.l - TEXTPAD;
-            x1 -= pad.r - TEXTPAD;
+            x0 += (type === 'icicle' ? pad : pad.l)  - TEXTPAD;
+            x1 -= (type === 'icicle' ? pad : pad.r)  - TEXTPAD;
             if(x0 >= x1) {
                 var mid = (x0 + x1) / 2;
                 x0 = mid;
@@ -262,10 +264,10 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             // limit the drawing area for headers
             var limY;
             if(hasBottom) {
-                limY = y1 - pad.b;
+                limY = y1 - (type === 'icicle' ? pad : pad.b);
                 if(y0 < limY && limY < y1) y0 = limY;
             } else {
-                limY = y0 + pad.t;
+                limY = y0 + (type === 'icicle' ? pad : pad.t);
                 if(y0 < limY && limY < y1) y1 = limY;
             }
         }
