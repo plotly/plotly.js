@@ -24,18 +24,21 @@ var helpers = require('./helpers');
 
 var MAIN_TITLE = 1;
 
-module.exports = function draw(gd, container) {
+module.exports = function draw(gd, opts) {
+    if(!opts) opts = gd._fullLayout.legend || {};
+    return _draw(gd, opts);
+};
+
+function _draw(gd, container) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
     var layer;
 
-    // Check whether this is the main legend (ie. called without any container)
-    var inHover = container && container._inHover;
+    var inHover = container._inHover;
     if(inHover) {
         layer = container.layer;
         clipId += '-hover';
     } else {
-        container = fullLayout.legend || {};
         layer = fullLayout._infolayer;
     }
 
@@ -342,7 +345,7 @@ module.exports = function draw(gd, container) {
                 });
             }
         }], gd);
-};
+}
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
