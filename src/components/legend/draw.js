@@ -30,15 +30,14 @@ module.exports = function draw(gd, container) {
     var layer;
 
     // Check whether this is the main legend (ie. called without any container)
-    if(container && container._inHover) {
+    var inHover = container && container._inHover;
+    if(inHover) {
         layer = container.layer;
         clipId += '-hover';
     } else {
         container = fullLayout.legend || {};
         layer = fullLayout._infolayer;
     }
-
-    var inHover = !!container._inHover;
 
     if(!layer) return;
 
