@@ -70,6 +70,15 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         var isBottomOfRect = function(y) { return y - e <= ref.y0; };
         var isTopOfRect = function(y) { return y + e >= ref.y1; };
 
+        if(pt.x0 === ref.x0 && pt.x1 === ref.x1 && pt.y0 === ref.y0 && pt.y1 === ref.y1) {
+            return {
+                x0: pt.x0,
+                x1: pt.x1,
+                y0: pt.y0,
+                y1: pt.y1
+            }
+        }
+
         return {
             x0: isLeftOfRect(pt.x0 - e) ? 0 : isRightOfRect(pt.x0 - e) ? size[0] : pt.x0,
             x1: isLeftOfRect(pt.x1 + e) ? 0 : isRightOfRect(pt.x1 + e) ? size[0] : pt.x1,
