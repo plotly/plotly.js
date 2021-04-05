@@ -76,7 +76,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
                 x1: pt.x1,
                 y0: pt.y0,
                 y1: pt.y1
-            }
+            };
         }
 
         return {
