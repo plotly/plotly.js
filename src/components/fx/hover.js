@@ -1010,10 +1010,10 @@ function createHoverText(hoverData, opts, gd) {
         };
         var mockLayoutOut = {};
         legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
-        var legendOpts = mockLayoutOut.legend;
+        var mockLegend = mockLayoutOut.legend;
 
         // prepare items for the legend
-        legendOpts.entries = [];
+        mockLegend.entries = [];
         for(var j = 0; j < hoverData.length; j++) {
             var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
@@ -1039,13 +1039,14 @@ function createHoverText(hoverData, opts, gd) {
             }
             pt._distinct = true;
 
-            legendOpts.entries.push([pt]);
+            mockLegend.entries.push([pt]);
         }
-        legendOpts.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
-        legendOpts.layer = container;
+        mockLegend.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
+        mockLegend.layer = container;
 
         // Draw unified hover label
-        legendDraw(gd, legendOpts);
+        mockLegend._inHover = true;
+        legendDraw(gd, mockLegend);
 
         // Position the hover
         var ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
