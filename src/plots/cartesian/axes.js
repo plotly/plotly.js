@@ -2998,7 +2998,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     // sync label: just position it now.
                     positionLabels(thisLabel, tickAngle);
                 }
-            });
+            })
+            .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_TEXT]);
 
     tickLabels.exit().remove();
 
@@ -3040,7 +3043,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
 
                 if(isInside) {
-                    thisText.style('display', null); // visible
+                    thisText.style('opacity', 0); // visible
 
                     if(ax._hideOutOfRangeInsideTickLabels) {
                         ax._hideOutOfRangeInsideTickLabels();
@@ -3088,8 +3091,10 @@ axes.drawLabels = function(gd, ax, opts) {
 
                     var t = thisLabel.select('text');
                     if(hide) {
-                        t.style('display', 'none'); // hidden
+                        t.style('opacity', 0); // hidden
                     } else {
+                        t.style('opacity', 1); // visible
+
                         if(side === 'bottom' || side === 'right') {
                             visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                         } else {
@@ -3138,7 +3143,7 @@ axes.drawLabels = function(gd, ax, opts) {
                         var t = d3.select(this);
                         if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
                             t.style('display', 'none'); // hidden
-                        } else if(e.K === 'tick' && e.L === 'path') {
+                        } else if(e.K === 'tick') {
                             t.style('display', null); // visible
                         }
                     });
