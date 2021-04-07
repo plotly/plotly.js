@@ -3013,8 +3013,6 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     function positionLabels(s, angle) {
-        var isInside = insideTicklabelposition(ax);
-
         s.each(function(d) {
             var thisLabel = d3.select(this);
             var mathjaxGroup = thisLabel.select('.text-math-group');
@@ -3042,12 +3040,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     'text-anchor': anchor
                 });
 
-                if(isInside) {
-                    thisText.style('opacity', 1); // visible
+                thisText.style('opacity', 1); // visible
 
-                    if(ax._adjustTickLabelsOverflow) {
-                        ax._adjustTickLabelsOverflow();
-                    }
+                if(ax._adjustTickLabelsOverflow) {
+                    ax._adjustTickLabelsOverflow();
                 }
             } else {
                 var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
@@ -3058,19 +3054,27 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     ax._adjustTickLabelsOverflow = function() {
-        if(!insideTicklabelposition(ax)) return;
+        var ticklabeloverflow = ax.ticklabeloverflow;
+        if(!ticklabeloverflow || ticklabeloverflow === 'allow') return;
 
-        var rl = Lib.simpleMap(ax.range, ax.r2l);
+        var isX = ax._id.charAt(0) === 'x';
+        // div positions
+        var p0 = 0;
+        var p1 = isX ?
+            gd._fullLayout.width :
+            gd._fullLayout.height;
 
-        // hide inside tick labels that go outside axis end points
-        var p0 = ax.l2p(rl[0]);
-        var p1 = ax.l2p(rl[1]);
+        if(ticklabeloverflow.indexOf('domain') !== -1) {
+            // domain positions
+            var rl = Lib.simpleMap(ax.range, ax.r2l);
+            p0 = ax.l2p(rl[0]) + ax._offset;
+            p1 = ax.l2p(rl[1]) + ax._offset;
+        }
 
-        var min = Math.min(p0, p1) + ax._offset;
-        var max = Math.max(p0, p1) + ax._offset;
+        var min = Math.min(p0, p1);
+        var max = Math.max(p0, p1);
 
         var side = ax.side;
-        var isX = ax._id.charAt(0) === 'x';
 
         var visibleLabelMin = Infinity;
         var visibleLabelMax = -Infinity;
