@@ -3058,62 +3058,62 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     ax._adjustTickLabelsOverflow = function() {
-        if(insideTicklabelposition(ax)) {
-            var rl = Lib.simpleMap(ax.range, ax.r2l);
+        if(!insideTicklabelposition(ax)) return;
 
-            // hide inside tick labels that go outside axis end points
-            var p0 = ax.l2p(rl[0]);
-            var p1 = ax.l2p(rl[1]);
+        var rl = Lib.simpleMap(ax.range, ax.r2l);
 
-            var min = Math.min(p0, p1) + ax._offset;
-            var max = Math.max(p0, p1) + ax._offset;
+        // hide inside tick labels that go outside axis end points
+        var p0 = ax.l2p(rl[0]);
+        var p1 = ax.l2p(rl[1]);
 
-            var side = ax.side;
-            var isX = ax._id.charAt(0) === 'x';
+        var min = Math.min(p0, p1) + ax._offset;
+        var max = Math.max(p0, p1) + ax._offset;
 
-            var visibleLabelMin = Infinity;
-            var visibleLabelMax = -Infinity;
+        var side = ax.side;
+        var isX = ax._id.charAt(0) === 'x';
 
-            tickLabels.each(function(d) {
-                var thisLabel = d3.select(this);
-                var mathjaxGroup = thisLabel.select('.text-math-group');
+        var visibleLabelMin = Infinity;
+        var visibleLabelMax = -Infinity;
 
-                if(mathjaxGroup.empty()) {
-                    var bb = Drawing.bBox(thisLabel.node());
-                    var hide = false;
-                    if(isX) {
-                        if(bb.right > max) hide = true;
-                        else if(bb.left < min) hide = true;
+        tickLabels.each(function(d) {
+            var thisLabel = d3.select(this);
+            var mathjaxGroup = thisLabel.select('.text-math-group');
+
+            if(mathjaxGroup.empty()) {
+                var bb = Drawing.bBox(thisLabel.node());
+                var hide = false;
+                if(isX) {
+                    if(bb.right > max) hide = true;
+                    else if(bb.left < min) hide = true;
+                } else {
+                    if(bb.bottom > max) hide = true;
+                    else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
+                }
+
+                var t = thisLabel.select('text');
+                if(hide) {
+                    t.style('opacity', 0); // hidden
+                } else {
+                    t.style('opacity', 1); // visible
+
+                    if(side === 'bottom' || side === 'right') {
+                        visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                     } else {
-                        if(bb.bottom > max) hide = true;
-                        else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
+                        visibleLabelMin = -Infinity;
                     }
 
-                    var t = thisLabel.select('text');
-                    if(hide) {
-                        t.style('opacity', 0); // hidden
+                    if(side === 'top' || side === 'left') {
+                        visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
                     } else {
-                        t.style('opacity', 1); // visible
-
-                        if(side === 'bottom' || side === 'right') {
-                            visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
-                        } else {
-                            visibleLabelMin = -Infinity;
-                        }
-
-                        if(side === 'top' || side === 'left') {
-                            visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
-                        } else {
-                            visibleLabelMax = Infinity;
-                        }
+                        visibleLabelMax = Infinity;
                     }
-                } // TODO: hide mathjax?
-            });
+                }
+            } // TODO: hide mathjax?
+        });
 
-            if(ax._anchorAxis) {
-                ax._anchorAxis._visibleLabelMin = visibleLabelMin;
-                ax._anchorAxis._visibleLabelMax = visibleLabelMax;
-            }
+        if(ax._anchorAxis) {
+            ax._anchorAxis._visibleLabelMin = visibleLabelMin;
+            ax._anchorAxis._visibleLabelMax = visibleLabelMax;
         }
     };
 
