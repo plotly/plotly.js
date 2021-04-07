@@ -493,6 +493,23 @@ module.exports = {
             'so that the scales could match.'
         ].join(' ')
     },
+    ticklabeloverflow: {
+        valType: 'enumerated',
+        values: [
+            'allow',
+            'hide past div',
+            'hide past domain',
+            'push to div',
+            'push to domain'
+        ],
+        editType: 'calc',
+        description: [
+            'Determines whether or not the tick labels are drawn when overflown the div or domain.',
+            'The default value for inside tick labels is *hide past domain*.',
+            'Otherwise on *category* and *multicategory* axes the default is *allow*.',
+            'In other cases the default is *hide past div*.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],

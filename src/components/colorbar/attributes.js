@@ -136,6 +136,7 @@ module.exports = overrideAll({
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
     ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
+    ticklabeloverflow: extendFlat({}, axesAttrs.ticklabeloverflow, {dflt: 'allow'}),
     ticklabelposition: {
         valType: 'enumerated',
         values: [
