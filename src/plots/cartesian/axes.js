@@ -3045,8 +3045,8 @@ axes.drawLabels = function(gd, ax, opts) {
                 if(isInside) {
                     thisText.style('opacity', 1); // visible
 
-                    if(ax._hideOutOfRangeInsideTickLabels) {
-                        ax._hideOutOfRangeInsideTickLabels();
+                    if(ax._adjustTickLabelsOverflow) {
+                        ax._adjustTickLabelsOverflow();
                     }
                 }
             } else {
@@ -3057,7 +3057,7 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    ax._hideOutOfRangeInsideTickLabels = function() {
+    ax._adjustTickLabelsOverflow = function() {
         if(insideTicklabelposition(ax)) {
             var rl = Lib.simpleMap(ax.range, ax.r2l);
 
