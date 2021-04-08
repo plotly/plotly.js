@@ -3085,17 +3085,17 @@ axes.drawLabels = function(gd, ax, opts) {
 
             if(mathjaxGroup.empty()) {
                 var bb = Drawing.bBox(thisLabel.node());
-                var hide = false;
+                var adjust = false;
                 if(isX) {
-                    if(bb.right > max) hide = true;
-                    else if(bb.left < min) hide = true;
+                    if(bb.right > max) adjust = true;
+                    else if(bb.left < min) adjust = true;
                 } else {
-                    if(bb.bottom > max) hide = true;
-                    else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
+                    if(bb.bottom > max) adjust = true;
+                    else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) adjust = true;
                 }
 
                 var t = thisLabel.select('text');
-                if(hide) {
+                if(adjust) {
                     t.style('opacity', 0); // hidden
                 } else {
                     t.style('opacity', 1); // visible
