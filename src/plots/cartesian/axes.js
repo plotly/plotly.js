@@ -3057,6 +3057,8 @@ axes.drawLabels = function(gd, ax, opts) {
         var ticklabeloverflow = ax.ticklabeloverflow;
         if(!ticklabeloverflow || ticklabeloverflow === 'allow') return;
 
+        var hideOverflow = ticklabeloverflow.indexOf('hide') !== -1;
+
         var isX = ax._id.charAt(0) === 'x';
         // div positions
         var p0 = 0;
@@ -3096,7 +3098,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
                 var t = thisLabel.select('text');
                 if(adjust) {
-                    t.style('opacity', 0); // hidden
+                    if(hideOverflow) t.style('opacity', 0); // hidden
                 } else {
                     t.style('opacity', 1); // visible
 
