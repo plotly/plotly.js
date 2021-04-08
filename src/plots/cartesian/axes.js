@@ -3058,7 +3058,7 @@ axes.drawLabels = function(gd, ax, opts) {
         if(!ticklabeloverflow || ticklabeloverflow === 'allow') return;
 
         var hideOverflow = ticklabeloverflow.indexOf('hide') !== -1;
-        var pushOverflow = ticklabeloverflow.indexOf('push') !== -1;
+        // var pushOverflow = ticklabeloverflow.indexOf('push') !== -1;
 
         var isX = ax._id.charAt(0) === 'x';
         // div positions
@@ -3100,10 +3100,13 @@ axes.drawLabels = function(gd, ax, opts) {
                 var t = thisLabel.select('text');
                 if(adjust) {
                     if(hideOverflow) t.style('opacity', 0); // hidden
+                    /*
                     else if(pushOverflow) {
                         if(adjust.indexOf('left') !== -1) t.attr('text-anchor', 'start');
                         if(adjust.indexOf('right') !== -1) t.attr('text-anchor', 'end');
+                        // more TODO: https://github.com/plotly/plotly.js/issues/3292
                     }
+                    */
                 } else {
                     t.style('opacity', 1); // visible
 

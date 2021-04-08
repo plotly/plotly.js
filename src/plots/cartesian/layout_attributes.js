@@ -499,8 +499,8 @@ module.exports = {
             'allow',
             'hide past div',
             'hide past domain',
-            'push to div',
-            'push to domain'
+            // 'push to div',
+            // 'push to domain'
         ],
         editType: 'calc',
         description: [
