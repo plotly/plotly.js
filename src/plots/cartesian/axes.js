@@ -3043,7 +3043,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
 
                 if(isInside) {
-                    thisText.style('opacity', 0); // visible
+                    thisText.style('opacity', 1); // visible
 
                     if(ax._hideOutOfRangeInsideTickLabels) {
                         ax._hideOutOfRangeInsideTickLabels();
