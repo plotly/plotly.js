@@ -210,6 +210,7 @@ var attrs = module.exports = overrideAll(extendFlat({
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
     zhoverformat: axisHoverFormat('z'),
+    valuehoverformat: axisHoverFormat('value', 1),
 
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },

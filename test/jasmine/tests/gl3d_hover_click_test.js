@@ -1268,7 +1268,7 @@ describe('Test gl3d trace click/hover:', function() {
     });
 });
 
-describe('hover on traces with (x|y|z|u|v|w)hoverformat', function() {
+describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', function() {
     'use strict';
 
     var gd, fig;
@@ -1393,16 +1393,17 @@ describe('hover on traces with (x|y|z|u|v|w)hoverformat', function() {
     });
 
     [
-        {type: 'isosurface', nums: 'x: 1.0\ny: 1.00\nz: 1.000\nvalue: 8'},
-        {type: 'volume', nums: 'x: 1.0\ny: 1.00\nz: 1.000\nvalue: 8'},
+        {type: 'isosurface', nums: 'x: 1.0\ny: 1.00\nz: 1.000\nvalue: 8.0000'},
+        {type: 'volume', nums: 'x: 1.0\ny: 1.00\nz: 1.000\nvalue: 8.0000'},
     ].forEach(function(t) {
         it('@gl ' + t.type + ' trace', function(done) {
             fig.data = [{
                 showscale: false,
-                hoverinfo: 'x+y+z+u+v+w',
+                hoverinfo: 'x+y+z+u+v+w+value',
                 xhoverformat: '.1f',
                 yhoverformat: '.2f',
                 zhoverformat: '.3f',
+                valuehoverformat: '.4f',
                 x: [0, 1, 0, 1, 0, 1, 0, 1],
                 y: [0, 0, 1, 1, 0, 0, 1, 1],
                 z: [0, 0, 0, 0, 1, 1, 1, 1],
