@@ -2,7 +2,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
-var hoverformatAttrs = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var baseAttrs = require('../../plots/attributes');
@@ -90,9 +90,9 @@ var attrs = module.exports = overrideAll({
     }),
     hovertemplate: hovertemplateAttrs(),
 
-    xhoverformat: hoverformatAttrs.xhoverformat,
-    yhoverformat: hoverformatAttrs.yhoverformat,
-    zhoverformat: hoverformatAttrs.zhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
 
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),

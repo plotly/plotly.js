@@ -1,7 +1,7 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
-var hoverformatAttrs = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var makeBinAttrs = require('./bin_attributes');
 var constants = require('./constants');
@@ -23,8 +23,8 @@ module.exports = {
         ].join(' ')
     },
 
-    xhoverformat: hoverformatAttrs.xhoverformat,
-    yhoverformat: hoverformatAttrs.yhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     text: extendFlat({}, barAttrs.text, {
         description: [

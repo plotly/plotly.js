@@ -2,7 +2,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
-var hoverformatAttrs = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
@@ -111,9 +111,9 @@ module.exports = extendFlat({
         editType: 'plot',
         description: 'Sets the vertical gap (in pixels) between bricks.'
     },
-    xhoverformat: hoverformatAttrs.xhoverformat,
-    yhoverformat: hoverformatAttrs.yhoverformat,
-    zhoverformat: hoverformatAttrs.zhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z', 1),
 
     hovertemplate: hovertemplateAttrs(),
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})

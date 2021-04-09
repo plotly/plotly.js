@@ -1,7 +1,7 @@
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var hoverformatAttrs = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var mesh3dAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -130,12 +130,12 @@ var attrs = {
             'norm', 'divergence'
         ]
     }),
-    uhoverformat: hoverformatAttrs.uhoverformat,
-    vhoverformat: hoverformatAttrs.vhoverformat,
-    whoverformat: hoverformatAttrs.whoverformat,
-    xhoverformat: hoverformatAttrs.xhoverformat,
-    yhoverformat: hoverformatAttrs.yhoverformat,
-    zhoverformat: hoverformatAttrs.zhoverformat,
+    uhoverformat: axisHoverFormat('u', 1),
+    vhoverformat: axisHoverFormat('v', 1),
+    whoverformat: axisHoverFormat('w', 1),
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
 
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 };

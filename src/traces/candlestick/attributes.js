@@ -1,7 +1,7 @@
 'use strict';
 
 var extendFlat = require('../../lib').extendFlat;
-var hoverformatAttrs = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
 
@@ -22,8 +22,8 @@ module.exports = {
     xperiod: OHLCattrs.xperiod,
     xperiod0: OHLCattrs.xperiod0,
     xperiodalignment: OHLCattrs.xperiodalignment,
-    xhoverformat: hoverformatAttrs.xhoverformat,
-    yhoverformat: hoverformatAttrs.yhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     x: OHLCattrs.x,
     open: OHLCattrs.open,
