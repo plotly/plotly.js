@@ -21,6 +21,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
 
     handlePeriodDefaults(traceIn, traceOut, layout, coerce);
+    coerce('xhoverformat');
+    coerce('yhoverformat');
 
     coerce('orientation', (traceOut.y && !traceOut.x) ? 'v' : 'h');
     coerce('offset');
