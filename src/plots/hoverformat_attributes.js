@@ -1,6 +1,6 @@
 'use strict';
 
-var docs = require('../constants/docs')
+var docs = require('../constants/docs');
 var FORMAT_LINK = docs.FORMAT_LINK;
 var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
 
