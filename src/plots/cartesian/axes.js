@@ -34,6 +34,11 @@ var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
 
+var ZERO_PATH = { K: 'zeroline' };
+var GRID_PATH = { K: 'gridline', L: 'path' };
+var TICK_PATH = { K: 'tick', L: 'path' };
+var TICK_TEXT = { K: 'tick', L: 'text' };
+
 var alignmentConstants = require('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
 var CAP_SHIFT = alignmentConstants.CAP_SHIFT;
@@ -1449,7 +1454,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 ax._prevDateHead = headStr;
                 dateStr += '<br>' + headStr;
             } else {
-                var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+                var isInside = insideTicklabelposition(ax);
                 var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
                 if(
                     (!isInside && side === 'top') ||
@@ -2180,6 +2185,7 @@ axes.drawOne = function(gd, ax, opts) {
         return axes.drawLabels(gd, ax, {
             vals: vals,
             layer: mainAxLayer,
+            plotinfo: plotinfo,
             transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
         });
@@ -2798,7 +2804,10 @@ axes.drawTicks = function(gd, ax, opts) {
         .classed('crisp', opts.crisp !== false)
         .call(Color.stroke, ax.tickcolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
-        .attr('d', opts.path);
+        .attr('d', opts.path)
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_PATH]);
 
     ticks.attr('transform', opts.transFn);
 };
@@ -2861,7 +2870,10 @@ axes.drawGrid = function(gd, ax, opts) {
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
-        .style('stroke-width', ax._gw + 'px');
+        .style('stroke-width', ax._gw + 'px')
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -2910,7 +2922,10 @@ axes.drawZeroLine = function(gd, ax, opts) {
     zl.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
 };
 
 /**
@@ -2983,7 +2998,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     // sync label: just position it now.
                     positionLabels(thisLabel, tickAngle);
                 }
-            });
+            })
+            .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_TEXT]);
 
     tickLabels.exit().remove();
 
@@ -2995,7 +3013,7 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     function positionLabels(s, angle) {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+        var isInside = insideTicklabelposition(ax);
 
         s.each(function(d) {
             var thisLabel = d3.select(this);
@@ -3025,8 +3043,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 });
 
                 if(isInside) {
-                    // ensure visible
-                    thisText.style({ opacity: 100 });
+                    thisText.style('opacity', 1); // visible
 
                     if(ax._hideOutOfRangeInsideTickLabels) {
                         ax._hideOutOfRangeInsideTickLabels();
@@ -3040,9 +3057,8 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    ax._hideOutOfRangeInsideTickLabels = undefined;
-    if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
-        ax._hideOutOfRangeInsideTickLabels = function() {
+    ax._hideOutOfRangeInsideTickLabels = function() {
+        if(insideTicklabelposition(ax)) {
             var rl = Lib.simpleMap(ax.range, ax.r2l);
 
             // hide inside tick labels that go outside axis end points
@@ -3052,7 +3068,11 @@ axes.drawLabels = function(gd, ax, opts) {
             var min = Math.min(p0, p1) + ax._offset;
             var max = Math.max(p0, p1) + ax._offset;
 
+            var side = ax.side;
             var isX = ax._id.charAt(0) === 'x';
+
+            var visibleLabelMin = Infinity;
+            var visibleLabelMax = -Infinity;
 
             tickLabels.each(function(d) {
                 var thisLabel = d3.select(this);
@@ -3068,11 +3088,69 @@ axes.drawLabels = function(gd, ax, opts) {
                         if(bb.bottom > max) hide = true;
                         else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
                     }
-                    if(hide) thisLabel.select('text').style({ opacity: 0 });
+
+                    var t = thisLabel.select('text');
+                    if(hide) {
+                        t.style('opacity', 0); // hidden
+                    } else {
+                        t.style('opacity', 1); // visible
+
+                        if(side === 'bottom' || side === 'right') {
+                            visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
+                        } else {
+                            visibleLabelMin = -Infinity;
+                        }
+
+                        if(side === 'top' || side === 'left') {
+                            visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
+                        } else {
+                            visibleLabelMax = Infinity;
+                        }
+                    }
                 } // TODO: hide mathjax?
             });
-        };
-    }
+
+            if(ax._anchorAxis) {
+                ax._anchorAxis._visibleLabelMin = visibleLabelMin;
+                ax._anchorAxis._visibleLabelMax = visibleLabelMax;
+            }
+        }
+    };
+
+    ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
+        if(insideTicklabelposition(ax._anchorAxis || {})) {
+            (partialOpts || [
+                ZERO_PATH,
+                GRID_PATH,
+                TICK_PATH,
+                TICK_TEXT
+            ]).forEach(function(e) {
+                var isTickText = e.K === 'tick' && e.L === 'text';
+                if(isTickText && ax.ticklabelmode === 'period') return;
+
+                var sel;
+                if(e.K === ZERO_PATH.K) sel = opts.plotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                else if(e.K === GRID_PATH.K) sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
+                else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
+
+                sel.each(function() {
+                    var w = d3.select(this);
+                    if(e.L) w = w.selectAll(e.L);
+
+                    w.each(function(d) {
+                        var q = ax.l2p(d.x) + ax._offset;
+
+                        var t = d3.select(this);
+                        if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
+                            t.style('display', 'none'); // hidden
+                        } else if(e.K === 'tick') {
+                            t.style('display', null); // visible
+                        }
+                    });
+                });
+            });
+        }
+    };
 
     // make sure all labels are correctly positioned at their base angle
     // the positionLabels call above is only for newly drawn labels.
@@ -3201,7 +3279,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var anchorAx = ax._anchorAxis;
     if(
         anchorAx && anchorAx.autorange &&
-        (ax.ticklabelposition || '').indexOf('inside') !== -1 &&
+        insideTicklabelposition(ax) &&
         !isLinked(fullLayout, ax._id)
     ) {
         if(!fullLayout._insideTickLabelsAutorange) {
@@ -3350,7 +3428,7 @@ function drawTitle(gd, ax) {
     if(ax.title.hasOwnProperty('standoff')) {
         titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
     } else {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+        var isInside = insideTicklabelposition(ax);
 
         if(ax.type === 'multicategory') {
             titleStandoff = ax._depth;
@@ -3707,4 +3785,16 @@ function moveOutsideBreak(v, ax) {
         }
     }
     return v;
+}
+
+function insideTicklabelposition(ax) {
+    return ((ax.ticklabelposition || '').indexOf('inside') !== -1);
+}
+
+function hideCounterAxisInsideTickLabels(ax, opts) {
+    if(insideTicklabelposition(ax._anchorAxis || {})) {
+        if(ax._hideCounterAxisInsideTickLabels) {
+            ax._hideCounterAxisInsideTickLabels(opts);
+        }
+    }
 }
