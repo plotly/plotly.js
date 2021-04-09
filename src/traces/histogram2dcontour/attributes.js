@@ -41,7 +41,7 @@ module.exports = extendFlat({
     },
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
-    zhoverformat: axisHoverFormat('z'),
+    zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: histogram2dAttrs.hovertemplate
 },
     colorScaleAttrs('', {
