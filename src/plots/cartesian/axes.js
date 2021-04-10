@@ -3132,8 +3132,10 @@ axes.drawLabels = function(gd, ax, opts) {
                 TICK_PATH,
                 TICK_TEXT
             ]).forEach(function(e) {
-                var isTickText = e.K === 'tick' && e.L === 'text';
-                if(isTickText && ax.ticklabelmode === 'period') return;
+                var isPeriodLabel =
+                    e.K === 'tick' &&
+                    e.L === 'text' &&
+                    ax.ticklabelmode === 'period';
 
                 var sel;
                 if(e.K === ZERO_PATH.K) sel = opts.plotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
@@ -3145,7 +3147,9 @@ axes.drawLabels = function(gd, ax, opts) {
                     if(e.L) w = w.selectAll(e.L);
 
                     w.each(function(d) {
-                        var q = ax.l2p(d.x) + ax._offset;
+                        var q = ax.l2p(
+                            isPeriodLabel ? getPosX(d) : d.x
+                        ) + ax._offset;
 
                         var t = d3.select(this);
                         if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {

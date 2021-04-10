@@ -969,6 +969,9 @@ var list = [
     'ticklabelposition-2',
     'ticklabelposition-3',
     'ticklabelposition-4',
+    'ticklabelposition-5',
+    'ticklabelposition-6',
+    'ticklabelposition-7',
     'ticklabelposition-a',
     'ticklabelposition-b',
     'ticklabelposition-c',
@@ -2059,6 +2062,9 @@ figs['ticklabelposition-1'] = require('@mocks/ticklabelposition-1');
 figs['ticklabelposition-2'] = require('@mocks/ticklabelposition-2');
 figs['ticklabelposition-3'] = require('@mocks/ticklabelposition-3');
 figs['ticklabelposition-4'] = require('@mocks/ticklabelposition-4');
+figs['ticklabelposition-5'] = require('@mocks/ticklabelposition-5');
+figs['ticklabelposition-6'] = require('@mocks/ticklabelposition-6');
+figs['ticklabelposition-7'] = require('@mocks/ticklabelposition-7');
 figs['ticklabelposition-a'] = require('@mocks/ticklabelposition-a');
 figs['ticklabelposition-b'] = require('@mocks/ticklabelposition-b');
 figs['ticklabelposition-c'] = require('@mocks/ticklabelposition-c');
