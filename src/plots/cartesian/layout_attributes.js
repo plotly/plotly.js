@@ -504,7 +504,7 @@ module.exports = {
         ],
         editType: 'calc',
         description: [
-            'Determines whether or not the tick labels are drawn when overflown the div or domain.',
+            'Determines how we handle tick labels that would overflow either the graph div or the domain of the axis.',
             'The default value for inside tick labels is *hide past domain*.',
             'Otherwise on *category* and *multicategory* axes the default is *allow*.',
             'In other cases the default is *hide past div*.'
