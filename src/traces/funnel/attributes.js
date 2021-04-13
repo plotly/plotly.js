@@ -3,6 +3,7 @@
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var constants = require('./constants');
@@ -23,6 +24,8 @@ module.exports = {
     yperiod0: barAttrs.yperiod0,
     xperiodalignment: barAttrs.xperiodalignment,
     yperiodalignment: barAttrs.yperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     hovertext: barAttrs.hovertext,
     hovertemplate: hovertemplateAttrs({}, {

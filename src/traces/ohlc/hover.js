@@ -125,14 +125,14 @@ function hoverSplit(pointData, xval, yval, hovermode) {
         var pointData2;
         if(val in usedVals) {
             pointData2 = usedVals[val];
-            pointData2.yLabel += '<br>' + t.labels[attr] + Axes.hoverLabelText(ya, val);
+            pointData2.yLabel += '<br>' + t.labels[attr] + Axes.hoverLabelText(ya, val, trace.yhoverformat);
         } else {
             // copy out to a new object for each new y-value to label
             pointData2 = Lib.extendFlat({}, closestPoint);
 
             pointData2.y0 = pointData2.y1 = valPx;
             pointData2.yLabelVal = val;
-            pointData2.yLabel = t.labels[attr] + Axes.hoverLabelText(ya, val);
+            pointData2.yLabel = t.labels[attr] + Axes.hoverLabelText(ya, val, trace.yhoverformat);
 
             pointData2.name = '';
 
@@ -162,7 +162,7 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
     var dir = di.dir;
 
     function getLabelLine(attr) {
-        return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i]);
+        return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i], trace.yhoverformat);
     }
 
     var hoverinfo = di.hi || trace.hoverinfo;

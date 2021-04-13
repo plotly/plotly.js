@@ -6,8 +6,10 @@ var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
+var docs = require('../../constants/docs');
+var FORMAT_LINK = docs.FORMAT_LINK;
+var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
+
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;

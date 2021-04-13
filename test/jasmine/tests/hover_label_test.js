@@ -4749,6 +4749,255 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
+    it('case of scatter points on period bars', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    type: 'bar',
+                    name: 'bar',
+                    x: [
+                        '2017-04',
+                        '2017-07',
+                        '2017-10',
+                        '2018-01'
+                    ],
+                    xperiod: 'M3',
+                    y: [10, 5, 10, 5]
+                },
+                {
+                    type: 'scatter',
+                    name: 'scatter',
+                    x: [
+                        '2017-01-01',
+                        '2017-02-01',
+                        '2017-03-01',
+                        '2017-04-01',
+                        '2017-05-01',
+                        '2017-06-01',
+                        '2017-07-01',
+                        '2017-08-01',
+                        '2017-09-01',
+                        '2017-10-01',
+                        '2017-11-01',
+                        '2017-12-01'
+                    ],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                }
+            ],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function(gd) {
+            _hover(gd, { xpx: 50, ypx: 250 });
+            assertLabel({title: 'Feb 1, 2017', items: [
+                'scatter : 2'
+            ]});
+
+            _hover(gd, { xpx: 75, ypx: 250 });
+            assertLabel({title: 'Mar 1, 2017', items: [
+                'scatter : 3'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 250 });
+            assertLabel({title: 'Apr 1, 2017', items: [
+                'bar : 10',
+                'scatter : 4'
+            ]});
+
+            _hover(gd, { xpx: 125, ypx: 250 });
+            assertLabel({title: 'May 1, 2017', items: [
+                'bar : (Apr 1, 2017, 10)',
+                'scatter : 5'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 250 });
+            assertLabel({title: 'Jun 1, 2017', items: [
+                'bar : (Apr 1, 2017, 10)',
+                'scatter : 6'
+            ]});
+
+            _hover(gd, { xpx: 175, ypx: 250 });
+            assertLabel({title: 'Jul 1, 2017', items: [
+                'bar : 5',
+                'scatter : 7'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 250 });
+            assertLabel({title: 'Aug 1, 2017', items: [
+                'bar : (Jul 1, 2017, 5)',
+                'scatter : 8'
+            ]});
+
+            _hover(gd, { xpx: 225, ypx: 250 });
+            assertLabel({title: 'Sep 1, 2017', items: [
+                'bar : (Jul 1, 2017, 5)',
+                'scatter : 9'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 250 });
+            assertLabel({title: 'Oct 1, 2017', items: [
+                'bar : 10',
+                'scatter : 10'
+            ]});
+
+            _hover(gd, { xpx: 275, ypx: 250 });
+            assertLabel({title: 'Nov 1, 2017', items: [
+                'bar : (Oct 1, 2017, 10)',
+                'scatter : 11'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 250 });
+            assertLabel({title: 'Dec 1, 2017', items: [
+                'bar : (Oct 1, 2017, 10)',
+                'scatter : 12'
+            ]});
+
+            _hover(gd, { xpx: 350, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2018', items: [
+                'bar : 5'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('case of M1 period bars overlaid on M3 period bars', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    type: 'bar',
+                    name: 'M3',
+                    xperiod: 'M3',
+                    x: [
+                        '2017-04',
+                        '2017-07',
+                        '2017-10',
+                        '2018-01'
+                    ],
+                    y: [10, 5, 10, 5]
+                },
+                {
+                    type: 'bar',
+                    name: 'M1',
+                    xperiod: 'M1',
+                    x: [
+                        '2017-01',
+                        '2017-02',
+                        '2017-03',
+                        '2017-04',
+                        '2017-05',
+                        '2017-06',
+                        '2017-07',
+                        '2017-08',
+                        '2017-09',
+                        '2017-10',
+                        '2017-11',
+                        '2017-12'
+                    ],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                }
+            ],
+            layout: {
+                barmode: 'overlay',
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function(gd) {
+            _hover(gd, { xpx: 25, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2017', items: [
+                'M1 : 1'
+            ]});
+
+            _hover(gd, { xpx: 50, ypx: 250 });
+            assertLabel({title: 'Feb 1, 2017', items: [
+                'M1 : 2'
+            ]});
+
+            _hover(gd, { xpx: 75, ypx: 250 });
+            assertLabel({title: 'Mar 1, 2017', items: [
+                'M1 : 3'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 250 });
+            assertLabel({title: 'Apr 1, 2017', items: [
+                'M3 : 10',
+                'M1 : 4'
+            ]});
+
+            _hover(gd, { xpx: 125, ypx: 250 });
+            assertLabel({title: 'May 1, 2017', items: [
+                'M3 : (Apr 1, 2017, 10)',
+                'M1 : 5'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 250 });
+            assertLabel({title: 'Jun 1, 2017', items: [
+                'M3 : (Apr 1, 2017, 10)',
+                'M1 : 6'
+            ]});
+
+            _hover(gd, { xpx: 175, ypx: 250 });
+            assertLabel({title: 'Jul 1, 2017', items: [
+                'M3 : 5',
+                'M1 : 7'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 250 });
+            assertLabel({title: 'Aug 1, 2017', items: [
+                'M3 : (Jul 1, 2017, 5)',
+                'M1 : 8'
+            ]});
+
+            _hover(gd, { xpx: 225, ypx: 250 });
+            assertLabel({title: 'Sep 1, 2017', items: [
+                'M3 : (Jul 1, 2017, 5)',
+                'M1 : 9'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 250 });
+            assertLabel({title: 'Oct 1, 2017', items: [
+                'M3 : 10',
+                'M1 : 10'
+            ]});
+
+            _hover(gd, { xpx: 275, ypx: 250 });
+            assertLabel({title: 'Nov 1, 2017', items: [
+                'M3 : (Oct 1, 2017, 10)',
+                'M1 : 11'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 250 });
+            assertLabel({title: 'Dec 1, 2017', items: [
+                'M3 : (Oct 1, 2017, 10)',
+                'M1 : 12'
+            ]});
+
+            _hover(gd, { xpx: 350, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2018', items: [
+                'M3 : 5'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
     it('should have the same traceorder as the legend', function(done) {
         var mock = require('@mocks/stacked_area.json');
         var mockCopy = Lib.extendDeep({}, mock);
@@ -5084,5 +5333,130 @@ describe('hovermode: (x|y)unified', function() {
                 assertElementCount('g.legend', 1);
             })
             .then(done, done.fail);
+    });
+});
+
+describe('hover on traces with (x|y)hoverformat', function() {
+    'use strict';
+
+    var gd, fig;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        fig = {
+            layout: {
+                hovermode: 'closest',
+                width: 400,
+                height: 400,
+                margin: {
+                    t: 0,
+                    b: 0,
+                    l: 0,
+                    r: 0
+                }
+            }
+        };
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    [
+        {type: 'scatter', nums: '(02/01/2000, 1.00)'},
+        {type: 'scattergl', nums: '(02/01/2000, 1.00)'},
+        {type: 'histogram', nums: '(02/01/2000, 1.00)'},
+        {type: 'bar', nums: '(02/01/2000, 1.00)'},
+        {type: 'box', nums: '(02/01/2000, median: 1.00)'},
+        {type: 'ohlc', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
+        {type: 'candlestick', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
+        {type: 'waterfall', nums: '(02/01/2000, 1.00)\n1.00 ▲\nInitial: 0.00'},
+        {type: 'funnel', nums: '(02/01/2000, 1.00)\n100% of initial\n100% of previous\n100% of total'},
+    ].forEach(function(t) {
+        it(t.type + ' trace', function(done) {
+            fig.data = [{
+                xhoverformat: '%x',
+                yhoverformat: '.2f',
+                x: ['2000-02'],
+                y: [1],
+                low: [2],
+                high: [5],
+                open: [4],
+                close: [3]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(function() { _hover(200, 200); })
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    [
+        {type: 'contour', nums: 'x: 02/01/2000\ny: 1.00\nz: 4.000'},
+        {type: 'heatmap', nums: 'x: 02/01/2000\ny: 1.00\nz: 4.000'},
+        {type: 'histogram2d', nums: 'x: 02/01/2000\ny: 1.00\nz: 1.000'},
+        {type: 'histogram2dcontour', nums: 'x: 01/31/2000\ny: 1.00\nz: 1.000'},
+    ].forEach(function(t) {
+        it(t.type + ' trace', function(done) {
+            fig.data = [{
+                xhoverformat: '%x',
+                yhoverformat: '.2f',
+                zhoverformat: '.3f',
+                x: ['2000-01', '2000-02'],
+                y: [1, 1],
+                z: [[1, 2], [3, 4]]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(function() { _hover(200, 200); })
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    it('splom trace', function(done) {
+        fig.data = [{
+            xhoverformat: '%x',
+            yhoverformat: '.2f',
+            dimensions: [{
+                label: 'A',
+                values: ['2000-01', '2000-02'],
+                type: 'date'
+            }, {
+                label: 'B',
+                values: [3, 4]
+            }],
+            type: 'splom'
+        }];
+
+        Plotly.newPlot(gd, fig)
+        .then(function() { _hover(180, 220); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: '(02/01/2000, 4.00)'
+            });
+        })
+        .then(done, done.fail);
     });
 });

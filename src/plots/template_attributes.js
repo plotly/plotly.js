@@ -1,7 +1,8 @@
 'use strict';
 
-var FORMAT_LINK = require('../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = require('../constants/docs').DATE_FORMAT_LINK;
+var docs = require('../constants/docs');
+var FORMAT_LINK = docs.FORMAT_LINK;
+var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
 
 var templateFormatStringDescription = [
     'Variables are inserted using %{variable}, for example "y: %{y}".',
