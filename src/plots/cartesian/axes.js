@@ -3065,7 +3065,6 @@ axes.drawLabels = function(gd, ax, opts) {
         if(!ticklabeloverflow || ticklabeloverflow === 'allow') return;
 
         var hideOverflow = ticklabeloverflow.indexOf('hide') !== -1;
-        // var pushOverflow = ticklabeloverflow.indexOf('push') !== -1;
 
         var isX = ax._id.charAt(0) === 'x';
         // div positions
@@ -3095,25 +3094,18 @@ axes.drawLabels = function(gd, ax, opts) {
 
             if(mathjaxGroup.empty()) {
                 var bb = Drawing.bBox(thisLabel.node());
-                var adjust = '';
+                var adjust = 0;
                 if(isX) {
-                    if(bb.right > max) adjust += 'right';
-                    else if(bb.left < min) adjust += 'left';
+                    if(bb.right > max) adjust = 1;
+                    else if(bb.left < min) adjust = 1;
                 } else {
-                    if(bb.bottom > max) adjust += 'top';
-                    else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) adjust += 'bottom';
+                    if(bb.bottom > max) adjust = 1;
+                    else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) adjust = 1;
                 }
 
                 var t = thisLabel.select('text');
                 if(adjust) {
                     if(hideOverflow) t.style('opacity', 0); // hidden
-                    /*
-                    else if(pushOverflow) {
-                        if(adjust.indexOf('left') !== -1) t.attr('text-anchor', 'start');
-                        if(adjust.indexOf('right') !== -1) t.attr('text-anchor', 'end');
-                        // more TODO: https://github.com/plotly/plotly.js/issues/3292
-                    }
-                    */
                 } else {
                     t.style('opacity', 1); // visible
 

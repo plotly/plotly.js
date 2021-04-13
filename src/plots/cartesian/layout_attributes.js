@@ -500,9 +500,7 @@ module.exports = {
         values: [
             'allow',
             'hide past div',
-            'hide past domain',
-            // 'push to div',
-            // 'push to domain'
+            'hide past domain'
         ],
         editType: 'calc',
         description: [
