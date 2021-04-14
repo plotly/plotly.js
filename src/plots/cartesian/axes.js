@@ -3137,11 +3137,15 @@ axes.drawLabels = function(gd, ax, opts) {
 
     ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
         var isX = ax._id.charAt(0) === 'x';
+
+        var anchoredAxes = [];
         for(var subplot in fullLayout._plots) {
             var plotinfo = fullLayout._plots[subplot];
             if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
-            var anchorAx = isX ? plotinfo.yaxis : plotinfo.xaxis;
+            anchoredAxes.push(isX ? plotinfo.yaxis : plotinfo.xaxis);
+        }
 
+        anchoredAxes.forEach(function(anchorAx) {
             if(anchorAx && insideTicklabelposition(anchorAx)) {
                 (partialOpts || [
                     ZERO_PATH,
@@ -3181,7 +3185,7 @@ axes.drawLabels = function(gd, ax, opts) {
                     });
                 });
             }
-        }
+        });
     };
 
     // make sure all labels are correctly positioned at their base angle
