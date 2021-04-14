@@ -2076,14 +2076,14 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    hideInsideTickLabels(gd);
+    refineTicks(gd);
 };
 
-function hideInsideTickLabels(gd) {
+function refineTicks(gd) {
     var axList = axisIDs.list(gd, '', true);
 
     [
-        '_hideOutOfRangeInsideTickLabels',
+        '_adjustTickLabelsOverflow',
         '_hideCounterAxisInsideTickLabels'
     ].forEach(function(k) {
         for(var i = 0; i < axList.length; i++) {
