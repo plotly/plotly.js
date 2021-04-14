@@ -3124,48 +3124,63 @@ axes.drawLabels = function(gd, ax, opts) {
             } // TODO: hide mathjax?
         });
 
-        if(ax._anchorAxis) {
-            ax._anchorAxis._visibleLabelMin = visibleLabelMin;
-            ax._anchorAxis._visibleLabelMax = visibleLabelMax;
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            var anchorAx = isX ? plotinfo.yaxis : plotinfo.xaxis;
+            if(anchorAx) {
+                anchorAx['_visibleLabelMin_' + ax._id] = visibleLabelMin;
+                anchorAx['_visibleLabelMax_' + ax._id] = visibleLabelMax;
+            }
         }
     };
 
     ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
-        if(insideTicklabelposition(ax._anchorAxis || {})) {
-            (partialOpts || [
-                ZERO_PATH,
-                GRID_PATH,
-                TICK_PATH,
-                TICK_TEXT
-            ]).forEach(function(e) {
-                var isPeriodLabel =
-                    e.K === 'tick' &&
-                    e.L === 'text' &&
-                    ax.ticklabelmode === 'period';
+        var isX = ax._id.charAt(0) === 'x';
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            var anchorAx = isX ? plotinfo.yaxis : plotinfo.xaxis;
 
-                var sel;
-                if(e.K === ZERO_PATH.K) sel = opts.plotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
-                else if(e.K === GRID_PATH.K) sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
-                else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
+            if(anchorAx && insideTicklabelposition(anchorAx)) {
+                (partialOpts || [
+                    ZERO_PATH,
+                    GRID_PATH,
+                    TICK_PATH,
+                    TICK_TEXT
+                ]).forEach(function(e) {
+                    var isPeriodLabel =
+                        e.K === 'tick' &&
+                        e.L === 'text' &&
+                        ax.ticklabelmode === 'period';
 
-                sel.each(function() {
-                    var w = d3.select(this);
-                    if(e.L) w = w.selectAll(e.L);
+                    var sel;
+                    if(e.K === ZERO_PATH.K) sel = opts.plotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                    else if(e.K === GRID_PATH.K) sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
+                    else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
 
-                    w.each(function(d) {
-                        var q = ax.l2p(
-                            isPeriodLabel ? getPosX(d) : d.x
-                        ) + ax._offset;
+                    sel.each(function() {
+                        var w = d3.select(this);
+                        if(e.L) w = w.selectAll(e.L);
 
-                        var t = d3.select(this);
-                        if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
-                            t.style('display', 'none'); // hidden
-                        } else if(e.K === 'tick') {
-                            t.style('display', null); // visible
-                        }
+                        w.each(function(d) {
+                            var q = ax.l2p(
+                                isPeriodLabel ? getPosX(d) : d.x
+                            ) + ax._offset;
+
+                            var t = d3.select(this);
+                            if(
+                                q < ax['_visibleLabelMax_' + anchorAx._id] &&
+                                q > ax['_visibleLabelMin_' + anchorAx._id]
+                            ) {
+                                t.style('display', 'none'); // hidden
+                            } else if(e.K === 'tick') {
+                                t.style('display', null); // visible
+                            }
+                        });
                     });
                 });
-            });
+            }
         }
     };
 
