@@ -71,21 +71,33 @@ module.exports = function getLegendData(calcdata, opts) {
     var ltraces;
     var legendData;
 
+    // sort considering trace.legendrank and legend.traceorder
+    var dir = helpers.isReversed(opts) ? -1 : 1;
+    var orderFn = function(a, b) {
+        var A = a[0].trace;
+        var B = b[0].trace;
+        var delta = A.legendrank - B.legendrank;
+        if(!delta) delta = A.index - B.index;
+
+        return dir * delta;
+    };
+
     if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
         legendData = new Array(lgroupsLength);
 
         for(i = 0; i < lgroupsLength; i++) {
             ltraces = lgroupToTraces[lgroups[i]];
-            legendData[i] = helpers.isReversed(opts) ? ltraces.reverse() : ltraces;
+            legendData[i] = ltraces.sort(orderFn);
         }
     } else {
         // collapse all groups into one if all groups are blank
-        legendData = [new Array(lgroupsLength)];
-
+        legendData = [[]];
         for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]][0];
-            legendData[0][helpers.isReversed(opts) ? lgroupsLength - i - 1 : i] = ltraces;
+            legendData[0].push(
+                lgroupToTraces[lgroups[i]][0]
+            );
         }
+        legendData[0] = legendData[0].sort(orderFn);
         lgroupsLength = 1;
     }
 

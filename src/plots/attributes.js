@@ -41,6 +41,16 @@ module.exports = {
             'when toggling legend items.'
         ].join(' ')
     },
+    legendrank: {
+        valType: 'number',
+        dflt: 1000,
+        editType: 'style',
+        description: [
+            'Sets the legend rank for this trace.',
+            'Items with smaller ranks would be presented on top/left side while',
+            'with `*reversed* `legend.traceorder` they would be on bottom/right side.'
+        ].join(' ')
+    },
     opacity: {
         valType: 'number',
         min: 0,
