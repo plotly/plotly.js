@@ -3158,10 +3158,12 @@ axes.drawLabels = function(gd, ax, opts) {
                         e.L === 'text' &&
                         ax.ticklabelmode === 'period';
 
+                    var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+
                     var sel;
-                    if(e.K === ZERO_PATH.K) sel = opts.plotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
-                    else if(e.K === GRID_PATH.K) sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
-                    else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
+                    if(e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                    else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);
+                    else sel = mainPlotinfo[ax._id.charAt(0) + 'axislayer'];
 
                     sel.each(function() {
                         var w = d3.select(this);
