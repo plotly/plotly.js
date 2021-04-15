@@ -3145,7 +3145,7 @@ axes.drawLabels = function(gd, ax, opts) {
             anchoredAxes.push(isX ? plotinfo.yaxis : plotinfo.xaxis);
         }
 
-        anchoredAxes.forEach(function(anchorAx) {
+        anchoredAxes.forEach(function(anchorAx, idx) {
             if(anchorAx && insideTicklabelposition(anchorAx)) {
                 (partialOpts || [
                     ZERO_PATH,
@@ -3180,7 +3180,7 @@ axes.drawLabels = function(gd, ax, opts) {
                                 q > ax['_visibleLabelMin_' + anchorAx._id]
                             ) {
                                 t.style('display', 'none'); // hidden
-                            } else if(e.K === 'tick') {
+                            } else if(e.K === 'tick' && !idx) {
                                 t.style('display', null); // visible
                             }
                         });
