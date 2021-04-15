@@ -11,8 +11,10 @@ module.exports = function getLegendData(calcdata, opts) {
     var lgroupi = 0;
     var maxNameLength = 0;
     var i, j;
-
+    var initID = 0;
     function addOneItem(legendGroup, legendItem) {
+        legendItem._initID = initID++;
+
         // each '' legend group is treated as a separate group
         if(legendGroup === '' || !helpers.isGrouped(opts)) {
             // TODO: check this against fullData legendgroups?
@@ -78,6 +80,7 @@ module.exports = function getLegendData(calcdata, opts) {
         var B = b[0].trace;
         var delta = A.legendrank - B.legendrank;
         if(!delta) delta = A.index - B.index;
+        if(!delta) delta = a[0]._initID - b[0]._initID;
 
         return dir * delta;
     };

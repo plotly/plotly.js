@@ -283,14 +283,14 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_initID: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
 
                 }}],
-                [{trace: {
+                [{_initID: 2, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
@@ -298,7 +298,7 @@ describe('legend getLegendData', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_initID: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
@@ -341,20 +341,20 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_initID: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
 
                 }}],
-                [{trace: {
+                [{_initID: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_initID: 2, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
@@ -427,20 +427,20 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_initID: 2, trace: {
                     type: 'box',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
 
                 }}],
-                [{trace: {
+                [{_initID: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_initID: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
@@ -483,14 +483,14 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_initID: 2, trace: {
                     type: 'box',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
 
                 }}],
-                [{trace: {
+                [{_initID: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
@@ -498,7 +498,7 @@ describe('legend getLegendData', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_initID: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
