@@ -260,7 +260,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: 'group',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -288,7 +287,6 @@ describe('legend getLegendData', function() {
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
-
                 }}],
                 [{_initID: 2, trace: {
                     type: 'scatter',
@@ -318,7 +316,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: '',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -346,7 +343,6 @@ describe('legend getLegendData', function() {
                     visible: true,
                     legendgroup: '',
                     showlegend: true
-
                 }}],
                 [{_initID: 1, trace: {
                     type: 'bar',
@@ -374,7 +370,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: '',
                 showlegend: false
-
             }}],
             [{trace: {
                 type: 'box',
@@ -404,7 +399,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: '',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -432,7 +426,6 @@ describe('legend getLegendData', function() {
                     visible: true,
                     legendgroup: '',
                     showlegend: true
-
                 }}],
                 [{_initID: 1, trace: {
                     type: 'bar',
@@ -460,7 +453,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: 'group',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -488,7 +480,6 @@ describe('legend getLegendData', function() {
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
-
                 }}],
                 [{_initID: 0, trace: {
                     type: 'scatter',
