@@ -46,9 +46,12 @@ module.exports = {
         dflt: 1000,
         editType: 'style',
         description: [
-            'Sets the legend rank for this trace.',
+            'Sets the legend rank for this trace in each `legendgroup`.',
             'Items with smaller ranks would be presented on top/left side while',
-            'with `*reversed* `legend.traceorder` they would be on bottom/right side.'
+            'with `*reversed* `legend.traceorder` they would be on bottom/right side.',
+            'The default legendrank is 1000,',
+            'so that you can use ranks less than 1000 to place certain items before all unranked items,',
+            'and ranks greater than 1000 to go after all unranked items.'
         ].join(' ')
     },
     opacity: {
