@@ -7,6 +7,7 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
+var extendDeep = require('../../lib/extend').extendDeep;
 var Color = require('../../components/color');
 
 module.exports = {
@@ -75,7 +76,7 @@ module.exports = {
     offset: extendFlat({}, barAttrs.offset, {arrayOk: false}),
     width: extendFlat({}, barAttrs.width, {arrayOk: false}),
 
-    marker: barAttrs.marker,
+    marker: funnelMarker(),
 
     connector: {
         fillcolor: {
@@ -108,3 +109,9 @@ module.exports = {
     offsetgroup: barAttrs.offsetgroup,
     alignmentgroup: barAttrs.alignmentgroup
 };
+
+function funnelMarker() {
+    var marker = extendDeep({}, barAttrs.marker);
+    delete marker.pattern;
+    return marker;
+}
