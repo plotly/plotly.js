@@ -7,7 +7,6 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var constants = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
 var Color = require('../../components/color');
 
 module.exports = {
@@ -111,7 +110,7 @@ module.exports = {
 };
 
 function funnelMarker() {
-    var marker = extendDeep({}, barAttrs.marker);
+    var marker = extendFlat({}, barAttrs.marker);
     delete marker.pattern;
     return marker;
 }
