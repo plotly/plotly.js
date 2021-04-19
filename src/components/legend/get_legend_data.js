@@ -4,6 +4,9 @@ var Registry = require('../../registry');
 var helpers = require('./helpers');
 
 module.exports = function getLegendData(calcdata, opts) {
+    var grouped = helpers.isGrouped(opts);
+    var reversed = helpers.isReversed(opts);
+
     var lgroupToTraces = {};
     var lgroups = [];
     var hasOneNonBlankGroup = false;
@@ -11,6 +14,7 @@ module.exports = function getLegendData(calcdata, opts) {
     var lgroupi = 0;
     var maxNameLength = 0;
     var i, j;
+
     function addOneItem(legendGroup, legendItem) {
         // each '' legend group is treated as a separate group
         if(legendGroup === '' || !helpers.isGrouped(opts)) {
@@ -66,7 +70,7 @@ module.exports = function getLegendData(calcdata, opts) {
     if(!lgroups.length) return [];
 
     // collapse all groups into one if all groups are blank
-    var shouldCollapse = !hasOneNonBlankGroup || !helpers.isGrouped(opts);
+    var shouldCollapse = !hasOneNonBlankGroup || !grouped;
 
     // rearrange lgroupToTraces into a d3-friendly array of arrays
     var legendData;
@@ -86,20 +90,16 @@ module.exports = function getLegendData(calcdata, opts) {
     var orderFn = function(a, b) {
         return a.trace.legendrank - b.trace.legendrank;
     };
-    var rev = helpers.isReversed(opts);
     for(i = 0; i < legendData.length; i++) {
         legendData[i].sort(orderFn);
-        if(rev) legendData[i].reverse();
+        if(reversed) legendData[i].reverse();
     }
 
-    var arr = [];
     for(i = 0; i < legendData.length; i++) {
-        arr[i] = [];
         for(j = 0; j < legendData[i].length; j++) {
-            arr[i][j] = [legendData[i][j]];
+            legendData[i][j] = [legendData[i][j]];
         }
     }
-    legendData = arr;
 
     // number of legend groups - needed in legend/draw.js
     opts._lgroupsLength = legendData.length;
