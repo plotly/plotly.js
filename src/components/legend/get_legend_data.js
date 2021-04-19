@@ -69,25 +69,18 @@ module.exports = function getLegendData(calcdata, opts) {
     if(!lgroups.length) return [];
 
     // rearrange lgroupToTraces into a d3-friendly array of arrays
-    var lgroupsLength = lgroups.length;
     var legendData;
 
-    if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
-        legendData = [];
-        for(i = 0; i < lgroupsLength; i++) {
-            legendData.push(
-                lgroupToTraces[lgroups[i]]
-            );
+    var shouldCollapse = !hasOneNonBlankGroup || !helpers.isGrouped(opts);
+    legendData = shouldCollapse ? [[]] : [];
+    for(i = 0; i < lgroups.length; i++) {
+        var t = lgroupToTraces[lgroups[i]];
+        if(shouldCollapse) {
+            // collapse all groups into one if all groups are blank
+            legendData[0].push(t[0]);
+        } else {
+            legendData.push(t);
         }
-    } else {
-        // collapse all groups into one if all groups are blank
-        legendData = [[]];
-        for(i = 0; i < lgroupsLength; i++) {
-            legendData[0].push(
-                lgroupToTraces[lgroups[i]][0]
-            );
-        }
-        lgroupsLength = 1;
     }
 
     // sort considering trace.legendrank and legend.traceorder
@@ -102,12 +95,12 @@ module.exports = function getLegendData(calcdata, opts) {
         return dir * delta;
     };
 
-    for(i = 0; i < lgroupsLength; i++) {
-        legendData[i] = legendData[i].sort(orderFn);
+    for(i = 0; i < legendData.length; i++) {
+        legendData[i].sort(orderFn);
     }
 
     // number of legend groups - needed in legend/draw.js
-    opts._lgroupsLength = lgroupsLength;
+    opts._lgroupsLength = legendData.length;
     // maximum name/label length - needed in legend/draw.js
     opts._maxNameLength = maxNameLength;
 
