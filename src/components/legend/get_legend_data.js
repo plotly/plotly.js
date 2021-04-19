@@ -86,18 +86,19 @@ module.exports = function getLegendData(calcdata, opts) {
     }
     if(shouldCollapse) legendData = [legendData];
 
-    // sort considering trace.legendrank and legend.traceorder
     var orderFn = function(a, b) {
         return a.trace.legendrank - b.trace.legendrank;
     };
     for(i = 0; i < legendData.length; i++) {
+        // sort considering trace.legendrank and legend.traceorder
         legendData[i].sort(orderFn);
         if(reversed) legendData[i].reverse();
-    }
 
-    for(i = 0; i < legendData.length; i++) {
+        // add extra dim
         for(j = 0; j < legendData[i].length; j++) {
-            legendData[i][j] = [legendData[i][j]];
+            legendData[i][j] = [
+                legendData[i][j]
+            ];
         }
     }
 
