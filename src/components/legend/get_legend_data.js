@@ -11,10 +11,7 @@ module.exports = function getLegendData(calcdata, opts) {
     var lgroupi = 0;
     var maxNameLength = 0;
     var i, j;
-    var initID = 0;
     function addOneItem(legendGroup, legendItem) {
-        legendItem._initID = initID++;
-
         // each '' legend group is treated as a separate group
         if(legendGroup === '' || !helpers.isGrouped(opts)) {
             // TODO: check this against fullData legendgroups?
@@ -87,12 +84,7 @@ module.exports = function getLegendData(calcdata, opts) {
 
     // sort considering trace.legendrank and legend.traceorder
     var orderFn = function(a, b) {
-        var A = a.trace;
-        var B = b.trace;
-        var delta = A.legendrank - B.legendrank;
-        if(!delta) delta = A._initID - B._initID;
-
-        return delta;
+        return a.trace.legendrank - b.trace.legendrank;
     };
     var rev = helpers.isReversed(opts);
     for(i = 0; i < legendData.length; i++) {
