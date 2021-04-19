@@ -70,7 +70,6 @@ module.exports = function getLegendData(calcdata, opts) {
 
     // rearrange lgroupToTraces into a d3-friendly array of arrays
     var lgroupsLength = lgroups.length;
-    var ltraces;
     var legendData;
 
     // sort considering trace.legendrank and legend.traceorder
@@ -86,11 +85,11 @@ module.exports = function getLegendData(calcdata, opts) {
     };
 
     if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
-        legendData = new Array(lgroupsLength);
-
+        legendData = [];
         for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]];
-            legendData[i] = ltraces.sort(orderFn);
+            legendData.push(
+                lgroupToTraces[lgroups[i]].sort(orderFn)
+            );
         }
     } else {
         // collapse all groups into one if all groups are blank
