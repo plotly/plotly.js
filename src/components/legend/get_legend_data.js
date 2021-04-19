@@ -20,14 +20,14 @@ module.exports = function getLegendData(calcdata, opts) {
             // TODO: check this against fullData legendgroups?
             var uniqueGroup = '~~i' + lgroupi;
             lgroups.push(uniqueGroup);
-            lgroupToTraces[uniqueGroup] = [[legendItem]];
+            lgroupToTraces[uniqueGroup] = [legendItem];
             lgroupi++;
         } else if(lgroups.indexOf(legendGroup) === -1) {
             lgroups.push(legendGroup);
             hasOneNonBlankGroup = true;
-            lgroupToTraces[legendGroup] = [[legendItem]];
+            lgroupToTraces[legendGroup] = [legendItem];
         } else {
-            lgroupToTraces[legendGroup].push([legendItem]);
+            lgroupToTraces[legendGroup].push(legendItem);
         }
     }
 
@@ -68,36 +68,46 @@ module.exports = function getLegendData(calcdata, opts) {
     // won't draw a legend in this case
     if(!lgroups.length) return [];
 
+    // collapse all groups into one if all groups are blank
+    var shouldCollapse = !hasOneNonBlankGroup || !helpers.isGrouped(opts);
+
     // rearrange lgroupToTraces into a d3-friendly array of arrays
     var legendData;
 
-    var shouldCollapse = !hasOneNonBlankGroup || !helpers.isGrouped(opts);
-    legendData = shouldCollapse ? [[]] : [];
+    legendData = [];
     for(i = 0; i < lgroups.length; i++) {
         var t = lgroupToTraces[lgroups[i]];
         if(shouldCollapse) {
-            // collapse all groups into one if all groups are blank
-            legendData[0].push(t[0]);
+            legendData.push(t[0]);
         } else {
             legendData.push(t);
         }
     }
+    if(shouldCollapse) legendData = [legendData];
 
     // sort considering trace.legendrank and legend.traceorder
-    var dir = helpers.isReversed(opts) ? -1 : 1;
     var orderFn = function(a, b) {
-        var A = a[0].trace;
-        var B = b[0].trace;
+        var A = a.trace;
+        var B = b.trace;
         var delta = A.legendrank - B.legendrank;
-        if(!delta) delta = A.index - B.index;
-        if(!delta) delta = a[0]._initID - b[0]._initID;
+        if(!delta) delta = A._initID - B._initID;
 
-        return dir * delta;
+        return delta;
     };
-
+    var rev = helpers.isReversed(opts);
     for(i = 0; i < legendData.length; i++) {
         legendData[i].sort(orderFn);
+        if(rev) legendData[i].reverse();
     }
+
+    var arr = [];
+    for(i = 0; i < legendData.length; i++) {
+        arr[i] = [];
+        for(j = 0; j < legendData[i].length; j++) {
+            arr[i][j] = [legendData[i][j]];
+        }
+    }
+    legendData = arr;
 
     // number of legend groups - needed in legend/draw.js
     opts._lgroupsLength = legendData.length;
