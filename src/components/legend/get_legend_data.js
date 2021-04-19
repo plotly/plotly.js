@@ -88,7 +88,7 @@ module.exports = function getLegendData(calcdata, opts) {
         legendData = [];
         for(i = 0; i < lgroupsLength; i++) {
             legendData.push(
-                lgroupToTraces[lgroups[i]].sort(orderFn)
+                lgroupToTraces[lgroups[i]]
             );
         }
     } else {
@@ -99,8 +99,11 @@ module.exports = function getLegendData(calcdata, opts) {
                 lgroupToTraces[lgroups[i]][0]
             );
         }
-        legendData[0] = legendData[0].sort(orderFn);
         lgroupsLength = 1;
+    }
+
+    for(i = 0; i < lgroupsLength; i++) {
+        legendData[i] = legendData[i].sort(orderFn);
     }
 
     // number of legend groups - needed in legend/draw.js
