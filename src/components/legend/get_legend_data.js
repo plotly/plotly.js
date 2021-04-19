@@ -72,18 +72,6 @@ module.exports = function getLegendData(calcdata, opts) {
     var lgroupsLength = lgroups.length;
     var legendData;
 
-    // sort considering trace.legendrank and legend.traceorder
-    var dir = helpers.isReversed(opts) ? -1 : 1;
-    var orderFn = function(a, b) {
-        var A = a[0].trace;
-        var B = b[0].trace;
-        var delta = A.legendrank - B.legendrank;
-        if(!delta) delta = A.index - B.index;
-        if(!delta) delta = a[0]._initID - b[0]._initID;
-
-        return dir * delta;
-    };
-
     if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
         legendData = [];
         for(i = 0; i < lgroupsLength; i++) {
@@ -101,6 +89,18 @@ module.exports = function getLegendData(calcdata, opts) {
         }
         lgroupsLength = 1;
     }
+
+    // sort considering trace.legendrank and legend.traceorder
+    var dir = helpers.isReversed(opts) ? -1 : 1;
+    var orderFn = function(a, b) {
+        var A = a[0].trace;
+        var B = b[0].trace;
+        var delta = A.legendrank - B.legendrank;
+        if(!delta) delta = A.index - B.index;
+        if(!delta) delta = a[0]._initID - b[0]._initID;
+
+        return dir * delta;
+    };
 
     for(i = 0; i < lgroupsLength; i++) {
         legendData[i] = legendData[i].sort(orderFn);
