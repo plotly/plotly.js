@@ -15,26 +15,26 @@ module.exports = function calc(gd, trace) {
     var subplotId = trace.subplot;
     var radialAxis = fullLayout[subplotId].radialaxis;
     var angularAxis = fullLayout[subplotId].angularaxis;
-    var rArray = radialAxis.makeCalcdata(trace, 'r');
-    var thetaArray = angularAxis.makeCalcdata(trace, 'theta');
+    var reArray = radialAxis.makeCalcdata(trace, 're');
+    var imArray = angularAxis.makeCalcdata(trace, 'im');
     var len = trace._length;
     var cd = new Array(len);
 
     for(var i = 0; i < len; i++) {
-        var r = rArray[i];
-        var theta = thetaArray[i];
+        var re = reArray[i];
+        var im = imArray[i];
         var cdi = cd[i] = {};
 
-        if(isNumeric(r) && isNumeric(theta)) {
-            cdi.r = r;
-            cdi.theta = theta;
+        if(isNumeric(re) && isNumeric(im)) {
+            cdi.re = re;
+            cdi.im = im;
         } else {
-            cdi.r = BADNUM;
+            cdi.re = BADNUM;
         }
     }
 
     var ppad = calcMarkerSize(trace, len);
-    trace._extremes.x = Axes.findExtremes(radialAxis, rArray, {ppad: ppad});
+    trace._extremes.x = Axes.findExtremes(radialAxis, reArray, {ppad: ppad});
 
     calcColorscale(gd, trace);
     arraysToCalcdata(cd, trace);

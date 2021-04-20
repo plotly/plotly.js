@@ -47,9 +47,9 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
     if(!trace.hovertemplate) {
         var parts = hoverinfo.split('+');
 
-        if(parts.indexOf('all') !== -1) parts = ['r', 'theta', 'text'];
-        if(parts.indexOf('r') !== -1) textPart(radialAxis, pointData.rLabel);
-        if(parts.indexOf('theta') !== -1) textPart(angularAxis, pointData.thetaLabel);
+        if(parts.indexOf('all') !== -1) parts = ['re', 'im', 'text'];
+        if(parts.indexOf('re') !== -1) textPart(radialAxis, pointData.rLabel);
+        if(parts.indexOf('im') !== -1) textPart(angularAxis, pointData.thetaLabel);
 
         if(parts.indexOf('text') !== -1 && pointData.text) {
             text.push(pointData.text);

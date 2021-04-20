@@ -21,11 +21,11 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
         angularAxis = subplot.angularAxis;
     }
 
-    var rVal = radialAxis.c2l(cdi.r);
+    var rVal = radialAxis.c2l(cdi.re);
     labels.rLabel = Axes.tickText(radialAxis, rVal, true).text;
 
     // N.B here the ° sign is part of the formatted value for thetaunit:'degrees'
-    var thetaVal = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(cdi.theta) : cdi.theta;
+    var thetaVal = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(cdi.im) : cdi.im;
     labels.thetaLabel = Axes.tickText(angularAxis, thetaVal, true).text;
 
     return labels;

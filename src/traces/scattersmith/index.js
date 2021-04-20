@@ -3,7 +3,7 @@
 module.exports = {
     moduleType: 'trace',
     name: 'scattersmith',
-    basePlotModule: require('../../plots/polar'),
+    basePlotModule: require('../../plots/smith'),
     categories: ['polar', 'symbols', 'showLegend', 'scatter-like'],
 
     attributes: require('./attributes'),

@@ -17,13 +17,12 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleRThetaDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleReImDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
     }
 
-    coerce('thetaunit');
     coerce('mode', len < PTS_LINESONLY ? 'lines+markers' : 'lines');
     coerce('text');
     coerce('hovertext');
@@ -67,24 +66,13 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 }
 
-function handleRThetaDefaults(traceIn, traceOut, layout, coerce) {
-    var r = coerce('r');
-    var theta = coerce('theta');
-    var len;
+function handleReImDefaults(traceIn, traceOut, layout, coerce) {
+    var re = coerce('re');
+    var im = coerce('im');
+    var len = 0;
 
-    if(r) {
-        if(theta) {
-            len = Math.min(r.length, theta.length);
-        } else {
-            len = r.length;
-            coerce('theta0');
-            coerce('dtheta');
-        }
-    } else {
-        if(!theta) return 0;
-        len = traceOut.theta.length;
-        coerce('r0');
-        coerce('dr');
+    if (re && im) {
+      len = Math.min(re.length, im.length);
     }
 
     traceOut._length = len;
@@ -92,6 +80,5 @@ function handleRThetaDefaults(traceIn, traceOut, layout, coerce) {
 }
 
 module.exports = {
-    handleRThetaDefaults: handleRThetaDefaults,
     supplyDefaults: supplyDefaults
 };

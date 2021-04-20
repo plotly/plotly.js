@@ -23,13 +23,14 @@ module.exports = function plot(gd, subplot, moduleCalcData) {
 
         for(var j = 0; j < cdi.length; j++) {
             var cd = cdi[j];
-            var r = cd.r;
+            var re = cd.re;
+            var im = cd.im;
 
-            if(r === BADNUM) {
+            if(re === BADNUM) {
                 cd.x = cd.y = BADNUM;
             } else {
-                var rg = radialAxis.c2g(r);
-                var thetag = angularAxis.c2g(cd.theta);
+                var rg = radialAxis.c2g(re);
+                var thetag = angularAxis.c2g(im);
                 cd.x = rg * Math.cos(thetag);
                 cd.y = rg * Math.sin(thetag);
             }
