@@ -83,10 +83,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         switch(axName) {
             case 'radialaxis':
-                var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
-                axIn.autorange = autoRange;
-                if(autoRange && (axType === 'linear' || axType === '-')) coerceAxis('rangemode');
-                if(autoRange === 'reversed') axOut._m = -1;
+                axIn.autorange = false;
 
                 coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
