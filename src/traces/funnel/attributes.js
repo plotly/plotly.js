@@ -78,7 +78,7 @@ module.exports = {
     offset: extendFlat({}, barAttrs.offset, {arrayOk: false}),
     width: extendFlat({}, barAttrs.width, {arrayOk: false}),
 
-    marker: barAttrs.marker,
+    marker: funnelMarker(),
 
     connector: {
         fillcolor: {
@@ -111,3 +111,9 @@ module.exports = {
     offsetgroup: barAttrs.offsetgroup,
     alignmentgroup: barAttrs.alignmentgroup
 };
+
+function funnelMarker() {
+    var marker = extendFlat({}, barAttrs.marker);
+    delete marker.pattern;
+    return marker;
+}

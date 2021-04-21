@@ -424,6 +424,18 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     return out;
 };
 
+/*
+ * Shortcut to coerce the pattern attributes
+ */
+exports.coercePattern = function(coerce, attr) {
+    var shape = coerce(attr + '.shape');
+    if(shape) {
+        coerce(attr + '.size');
+        coerce(attr + '.bgcolor');
+        coerce(attr + '.solidity');
+    }
+};
+
 /** Coerce shortcut for 'hoverinfo'
  * handling 1-vs-multi-trace dflt logic
  *
