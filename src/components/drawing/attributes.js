@@ -57,7 +57,7 @@ exports.pattern = {
         editType: 'style',
         description: [
             'Sets the solidity of the pattern fill.',
-            'Solidity is roughly proportional to the ratio of the area filled by the pattern.',
+            'Solidity is roughly the fraction of the area filled by the pattern.',
             'Solidity of 0 shows only the background color without pattern',
             'and solidty of 1 shows only the foreground color without pattern.',
         ].join(' ')
