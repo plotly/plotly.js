@@ -192,11 +192,11 @@ describe('Test choropleth hover:', function() {
         .then(function() {
             if(hasCssTransform) {
                 transformPlot(gd, 'translate3d(10px, 10px, 0) scale(1)');
-                assertHoverLabel(pos[0] + 10, pos[1] + 10)
+                assertHoverLabel(pos[0] + 10, pos[1] + 10);
                 transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
-                assertHoverLabel(0.5 * pos[0], 0.5 * pos[1])
+                assertHoverLabel(0.5 * pos[0], 0.5 * pos[1]);
             } else {
-                assertHoverLabel(pos[0], pos[1])
+                assertHoverLabel(pos[0], pos[1]);
             }
         });
     }
