@@ -680,6 +680,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         });
     }
 
+    // move period positioned points to the end of list
+    orderPeriod(hoverData, hovermode);
+
     // lastly, emit custom hover/unhover events
     var oldhoverdata = gd._hoverdata;
     var newhoverdata = [];
@@ -1888,4 +1891,23 @@ function plainText(s, len) {
         len: len,
         allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
     });
+}
+
+function orderPeriod(hoverData, hovermode) {
+    var axLetter = hovermode.charAt(0);
+
+    var first = [];
+    var last = [];
+
+    for(var i = 0; i < hoverData.length; i++) {
+        var d = hoverData[i];
+
+        if(d.trace[axLetter + 'period']) {
+            last.push(d);
+        } else {
+            first.push(d);
+        }
+    }
+
+    hoverData = first.concat(last);
 }
