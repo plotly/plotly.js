@@ -358,6 +358,124 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var radialLayout = polarLayout.radialaxis;
     var a0 = mod(polarLayout.sector[0], 360);
     var ax = _this.radialAxis;
+    var hasRoomForIt = true;
+
+    _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
+    _this.fillViewInitialKey('radialaxis.range', ax.range.slice());
+
+    ax.setGeometry();
+
+    // rotate auto tick labels by 180 if in quadrant II and III to make them
+    // readable from left-to-right
+    //
+    // TODO try moving deeper in Axes.drawLabels for better results?
+    if(ax.tickangle === 'auto' && (a0 > 90 && a0 <= 270)) {
+        ax.tickangle = 180;
+    }
+
+    // easier to set rotate angle with custom translate function
+    var transFn = function(d) {
+        return strTranslate(ax.l2p(d.x) + innerRadius, 0);
+    };
+
+    // set special grid path function
+    var gridPathFn = function(d) {
+        var sq = function (x) { return x * x; };
+        var gammaX = function(re) {
+          var denom = sq(re + 1.0);
+          var result = (sq(re) - 1.0) / denom;
+          return result;
+        }
+        var gamma_x = gammaX(d.x);
+
+        var gridRadius = 0.5 * (_this.radius - ax.r2p(gamma_x));
+        var gridCenter = gridRadius + ax.r2p(gamma_x);
+        return Lib.pathArc(gridRadius, 0, 2 * Math.PI, gridCenter, 0);
+    };
+
+    var newTickLayout = strTickLayout(radialLayout);
+    if(_this.radialTickLayout !== newTickLayout) {
+        layers['radial-axis'].selectAll('.xtick').remove();
+        _this.radialTickLayout = newTickLayout;
+    }
+
+    if(hasRoomForIt) {
+        ax.setScale();
+
+        var vals = Axes.calcTicks(ax);
+        var valsClipped = Axes.clipEnds(ax, vals);
+        var tickSign = Axes.getTickSigns(ax)[2];
+
+        Axes.drawTicks(gd, ax, {
+            vals: vals,
+            layer: layers['radial-axis'],
+            path: Axes.makeTickPath(ax, 0, tickSign),
+            transFn: transFn,
+            crisp: false
+        });
+
+        Axes.drawGrid(gd, ax, {
+            vals: valsClipped,
+            layer: layers['radial-grid'],
+            path: gridPathFn,
+            transFn: Lib.noop,
+            crisp: false
+        });
+
+        Axes.drawLabels(gd, ax, {
+            vals: vals,
+            layer: layers['radial-axis'],
+            transFn: transFn,
+            labelFns: Axes.makeLabelFns(ax, 0)
+        });
+    }
+
+    // stash 'actual' radial axis angle for drag handlers (in degrees)
+    var angle = _this.radialAxisAngle = _this.vangles ?
+        rad2deg(snapToVertexAngle(deg2rad(radialLayout.angle), _this.vangles)) :
+        radialLayout.angle;
+
+    var tLayer = strTranslate(cx, cy);
+    var tLayer2 = tLayer + strRotate(-angle);
+
+    updateElement(
+        layers['radial-axis'],
+        hasRoomForIt && (radialLayout.showticklabels || radialLayout.ticks),
+        {transform: tLayer2}
+    );
+
+    updateElement(
+        layers['radial-grid'],
+        hasRoomForIt && radialLayout.showgrid,
+        {transform: tLayer}
+    );
+
+    updateElement(
+        layers['radial-line'].select('line'),
+        hasRoomForIt && radialLayout.showline,
+        {
+            x1: innerRadius,
+            y1: 0,
+            x2: radius,
+            y2: 0,
+            transform: tLayer2
+        }
+    )
+    .attr('stroke-width', radialLayout.linewidth)
+    .call(Color.stroke, radialLayout.linecolor);
+}
+
+proto._updateRadialAxis = function(fullLayout, polarLayout) {
+    var _this = this;
+    var gd = _this.gd;
+    var layers = _this.layers;
+    var radius = _this.radius;
+    var innerRadius = _this.innerRadius;
+    var cx = _this.cx;
+    var cy = _this.cy;
+    var radialLayout = polarLayout.radialaxis;
+    var a0 = mod(polarLayout.sector[0], 360);
+    var ax = _this.radialAxis;
     var hasRoomForIt = innerRadius < radius;
 
     _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
