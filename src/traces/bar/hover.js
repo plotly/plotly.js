@@ -35,8 +35,22 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
 
     var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
-    function thisBarMinPos(di) { return di[posLetter] - di.w / 2; }
-    function thisBarMaxPos(di) { return di[posLetter] + di.w / 2; }
+    function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
+    function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
+
+    function thisBarExtPos(di, sgn) {
+        var w = di.w;
+        var delta = sgn * w;
+        if(trace[posLetter + 'period']) {
+            var alignment = trace[posLetter + 'periodalignment'];
+            if(alignment === 'start') {
+                delta = (sgn === -1) ? 0 : w;
+            } else if(alignment === 'end') {
+                delta = (sgn === -1) ? -w : 0;
+            }
+        }
+        return di[posLetter] + delta / 2;
+    }
 
     var minPos = isClosest ?
         thisBarMinPos :
