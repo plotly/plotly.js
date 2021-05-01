@@ -650,26 +650,12 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
         var winningPoint = hoverData[0];
-        var cd0 = winningPoint.cd[winningPoint.index];
         var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
 
-        var xVal = winningPoint.xVal;
-        var ax = winningPoint.xa;
-        if(ax.type === 'category') xVal = ax._categoriesMap[xVal];
-        if(ax.type === 'date') xVal = ax.d2c(xVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            xVal += cd0.t.dPos;
-        }
-
-        var yVal = winningPoint.yVal;
-        ax = winningPoint.ya;
-        if(ax.type === 'category') yVal = ax._categoriesMap[yVal];
-        if(ax.type === 'date') yVal = ax.d2c(yVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            yVal += cd0.t.dPos;
-        }
-
-        findHoverPoints(xVal, yVal);
+        findHoverPoints(
+            getVal('x', winningPoint, isGrouped),
+            getVal('y', winningPoint, isGrouped)
+        );
 
         // Remove duplicated hoverData points
         // note that d3 also filters identical points in the rendering steps
@@ -1910,4 +1896,18 @@ function orderPeriod(hoverData, hovermode) {
     }
 
     hoverData = first.concat(last);
+}
+
+function getVal(axLetter, winningPoint, isGrouped) {
+    var cd0 = winningPoint.cd[winningPoint.index];
+    var ax = winningPoint[axLetter + 'a'];
+    var val = winningPoint[axLetter + 'Val'];
+
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    if(ax.type === 'date') val = ax.d2c(val);
+    if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
+        val += cd0.t.dPos;
+    }
+
+    return val;
 }
