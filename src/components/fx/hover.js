@@ -653,8 +653,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
 
         findHoverPoints(
-            getVal('x', winningPoint, isGrouped),
-            getVal('y', winningPoint, isGrouped)
+            customVal('x', winningPoint, isGrouped),
+            customVal('y', winningPoint, isGrouped)
         );
 
         // Remove duplicated hoverData points
@@ -1898,7 +1898,7 @@ function orderPeriod(hoverData, hovermode) {
     hoverData = first.concat(last);
 }
 
-function getVal(axLetter, winningPoint, isGrouped) {
+function customVal(axLetter, winningPoint, isGrouped) {
     var cd0 = winningPoint.cd[winningPoint.index];
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
