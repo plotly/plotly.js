@@ -651,10 +651,48 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     ) {
         var winningPoint = hoverData[0];
 
-        findHoverPoints(
-            customVal('x', winningPoint, fullLayout),
-            customVal('y', winningPoint, fullLayout)
-        );
+        var customXVal = customVal('x', winningPoint, fullLayout);
+        var customYVal = customVal('y', winningPoint, fullLayout);
+
+        findHoverPoints(customXVal, customYVal);
+
+        // also find start, middle and end point for period
+        var axLetter = hovermode.charAt(0);
+        if(winningPoint.trace[axLetter + 'period']) {
+            var initLen = hoverData.length;
+
+            var v = winningPoint[axLetter + 'LabelVal'];
+            var ax = winningPoint[axLetter + 'a'];
+            var T = {};
+            T[axLetter + 'period'] = winningPoint.trace[axLetter + 'period'];
+            T[axLetter + 'period0'] = winningPoint.trace[axLetter + 'period0'];
+
+            T[axLetter + 'periodalignment'] = 'start';
+            var start = alignPeriod(T, ax, axLetter, [v])[0];
+
+            T[axLetter + 'periodalignment'] = 'middle';
+            var middle = alignPeriod(T, ax, axLetter, [v])[0];
+
+            T[axLetter + 'periodalignment'] = 'end';
+            var end = alignPeriod(T, ax, axLetter, [v])[0];
+
+            if(axLetter === 'x') {
+                findHoverPoints(start, customYVal);
+                findHoverPoints(middle, customYVal);
+                findHoverPoints(end, customYVal);
+            } else {
+                findHoverPoints(customXVal, start);
+                findHoverPoints(customXVal, middle);
+                findHoverPoints(customXVal, end);
+            }
+
+            // remove non-period aditions
+            for(var k = hoverData.length - 1; k >= initLen; k--) {
+                if(!hoverData[k].trace[axLetter + 'period']) {
+                    hoverData.splice(k, 1);
+                }
+            }
+        }
 
         // Remove duplicated hoverData points
         // note that d3 also filters identical points in the rendering steps
