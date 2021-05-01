@@ -640,6 +640,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
+    // move period positioned points to the end of list
+    orderPeriod(hoverData, hovermode);
+
     // If in compare mode, select every point at position
     if(
         helpers.isXYhover(mode) &&
@@ -679,9 +682,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
         });
     }
-
-    // move period positioned points to the end of list
-    orderPeriod(hoverData, hovermode);
 
     // lastly, emit custom hover/unhover events
     var oldhoverdata = gd._hoverdata;
