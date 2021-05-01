@@ -649,20 +649,20 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
-        var hd = hoverData[0];
-        var cd0 = hd.cd[hd.index];
+        var winningPoint = hoverData[0];
+        var cd0 = winningPoint.cd[winningPoint.index];
         var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
 
-        var xVal = hd.xVal;
-        var ax = hd.xa;
+        var xVal = winningPoint.xVal;
+        var ax = winningPoint.xa;
         if(ax.type === 'category') xVal = ax._categoriesMap[xVal];
         if(ax.type === 'date') xVal = ax.d2c(xVal);
         if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
             xVal += cd0.t.dPos;
         }
 
-        var yVal = hd.yVal;
-        ax = hd.ya;
+        var yVal = winningPoint.yVal;
+        ax = winningPoint.ya;
         if(ax.type === 'category') yVal = ax._categoriesMap[yVal];
         if(ax.type === 'date') yVal = ax.d2c(yVal);
         if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
