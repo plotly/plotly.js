@@ -650,11 +650,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
         var winningPoint = hoverData[0];
-        var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
 
         findHoverPoints(
-            customVal('x', winningPoint, isGrouped),
-            customVal('y', winningPoint, isGrouped)
+            customVal('x', winningPoint, fullLayout),
+            customVal('y', winningPoint, fullLayout)
         );
 
         // Remove duplicated hoverData points
@@ -1898,15 +1897,21 @@ function orderPeriod(hoverData, hovermode) {
     hoverData = first.concat(last);
 }
 
-function customVal(axLetter, winningPoint, isGrouped) {
-    var cd0 = winningPoint.cd[winningPoint.index];
+function customVal(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
-    if(ax.type === 'category') val = ax._categoriesMap[val];
-    if(ax.type === 'date') val = ax.d2c(val);
-    if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-        val += cd0.t.dPos;
+    if(ax.type === 'category') return ax._categoriesMap[val];
+    if(ax.type === 'date') return ax.d2c(val);
+
+    var cd0 = winningPoint.cd[winningPoint.index];
+    if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
+        if(
+            fullLayout.boxmode === 'group' ||
+            fullLayout.violinmode === 'group'
+        ) {
+            val += cd0.t.dPos;
+        }
     }
 
     return val;
