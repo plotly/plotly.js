@@ -1263,3 +1263,7 @@ lib.join2 = function(arr, mainSeparator, lastSeparator) {
     }
     return arr.join(mainSeparator);
 };
+
+lib.bigFont = function(size) {
+    return Math.round(1.2 * size);
+};

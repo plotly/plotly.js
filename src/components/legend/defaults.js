@@ -122,7 +122,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     if(titleText) {
         coerce('title.side', isHorizontal ? 'left' : 'top');
         var dfltTitleFont = Lib.extendFlat({}, itemFont, {
-            size: Math.round(itemFont.size * 1.2)
+            size: Lib.bigFont(itemFont.size)
         });
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
