@@ -191,8 +191,8 @@ module.exports = {
             description: [
                 'Sets this legend\'s title font.',
                 'Defaulted to `legend.font`.',
-                'When `orientation` is *h*, the size would be defaulted to be',
-                '20% greater than the font size used for legend items.'
+                'The size would be defaulted to be',
+                'around 20% greater than the font size used for legend items.'
             ].join(' '),
         }),
         side: {
