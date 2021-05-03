@@ -508,8 +508,6 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         return;
     }
 
-    var isVertical = helpers.isVertical(legendObj);
-
     var mathjaxGroup = g.select('g[class*=math-group]');
     var mathjaxNode = mathjaxGroup.node();
     if(!legendObj) legendObj = gd._fullLayout.legend;
@@ -541,9 +539,9 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
         if(aTitle === MAIN_TITLE) {
-            if(!isVertical) {
+            if(legendObj.title.side === 'left') {
                 // add extra space between legend title and itmes
-                width += constants.titlePad * 2;
+                width += constants.itemGap * 2;
             }
 
             svgTextUtils.positionText(textEl,
