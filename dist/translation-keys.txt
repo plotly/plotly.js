@@ -1,16 +1,16 @@
 Autoscale                                              // components/modebar/buttons.js:201
 Box Select                                             // components/modebar/buttons.js:113
-Click to enter Colorscale title                        // plots/plots.js:320
+Click to enter Colorscale title                        // plots/plots.js:321
 Click to enter Component A title                       // plots/ternary/ternary.js:372
 Click to enter Component B title                       // plots/ternary/ternary.js:382
 Click to enter Component C title                       // plots/ternary/ternary.js:392
-Click to enter Plot title                              // plots/plots.js:317
-Click to enter X axis title                            // plots/plots.js:318
-Click to enter Y axis title                            // plots/plots.js:319
+Click to enter Plot title                              // plots/plots.js:318
+Click to enter X axis title                            // plots/plots.js:319
+Click to enter Y axis title                            // plots/plots.js:320
 Click to enter radial axis title                       // plots/polar/polar.js:488
 Compare data on hover                                  // components/modebar/buttons.js:229
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:19
-Double-click to zoom back out                          // plots/cartesian/dragbox.js:1164
+Double-click to zoom back out                          // plots/cartesian/dragbox.js:1165
 Download plot                                          // components/modebar/buttons.js:45
 Download plot as a png                                 // components/modebar/buttons.js:44
 Draw circle                                            // components/modebar/buttons.js:167
@@ -55,12 +55,12 @@ mean ± σ:                                              // traces/box/calc.js:2
 mean:                                                  // traces/box/calc.js:289
 median:                                                // traces/box/calc.js:284
 min:                                                   // traces/box/calc.js:285
-new text                                               // plots/plots.js:321
+new text                                               // plots/plots.js:322
 open:                                                  // traces/ohlc/calc.js:105
 outgoing flow count:                                   // traces/sankey/plot.js:161
 q1:                                                    // traces/box/calc.js:286
 q3:                                                    // traces/box/calc.js:287
 source:                                                // traces/sankey/plot.js:157
 target:                                                // traces/sankey/plot.js:158
-trace                                                  // plots/plots.js:323
+trace                                                  // plots/plots.js:324
 upper fence:                                           // traces/box/calc.js:291

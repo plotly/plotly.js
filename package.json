@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.0.0-rc.0",
+  "version": "2.0.0-rc.1",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -136,7 +136,7 @@
     "browserify": "^17.0.0",
     "browserify-transform-tools": "^1.7.0",
     "bubleify": "^2.0.0",
-    "canvas": "^2.6.1",
+    "canvas": "^2.7.0",
     "check-node-version": "^4.0.3",
     "chttps": "^1.0.6",
     "deep-equal": "^2.0.5",

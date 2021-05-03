@@ -12,18 +12,25 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [2.0.0] -- UNRELEASED
 
 ### Added
- - Removed usage of function constructors from `basic`, `cartesian`, `finance`, `geo`, and `mapbox`
+ - CSP safety: refactored to avoid usage of function constructors from `basic`, `cartesian`, `finance`, `geo`, and `mapbox`
    partial bundles and added tests to ensure that they will not again do so in the future [[#5359](https://github.com/plotly/plotly.js/pull/5359), [#5383](https://github.com/plotly/plotly.js/pull/5383), [#5387](https://github.com/plotly/plotly.js/pull/5387)],
    with thanks to [Equinor](https://www.equinor.com) for sponsoring the related development!
  - Add `strict` partial bundle [[#5413](https://github.com/plotly/plotly.js/pull/5413), [#5444](https://github.com/plotly/plotly.js/pull/5444)], which includes
    the maximal subset of the library which does not rely on function constructors
+ - Add `partial-bundle` script to facilitate generation of custom bundles [[#5527](https://github.com/plotly/plotly.js/pull/5527), [#5508](https://github.com/plotly/plotly.js/pull/5508)]
  - Implement "fast" `zsmooth` option for `image` trace [[#5354](https://github.com/plotly/plotly.js/pull/5354), [#5386](https://github.com/plotly/plotly.js/pull/5386)],
    with thanks to @almarklein for the contribution!
+ - Implement various `marker.pattern` options in `histogram`, `bar` and `barpolar` traces [[#5520](https://github.com/plotly/plotly.js/pull/5520), [#5537](https://github.com/plotly/plotly.js/pull/5537)]
+   with thanks to @s417-lama for the contribution!
+ - Implement `ticklabeloverflow` options on cartesian axes and colorbars to drop tick labels going outside div or domain [[#5584](https://github.com/plotly/plotly.js/pull/5584)]
+ - Implement `(x|y|z)hoverformat`, `(u|v|w)hoverformat` and `valueformat` to  cartesian and gl3d traces [[#5563](https://github.com/plotly/plotly.js/pull/5563)]
 
 ### Removed
- - Drop support for old browsers IE9 and IE10 [[#5376](https://github.com/plotly/plotly.js/pull/5376), [#5380](https://github.com/plotly/plotly.js/pull/5380), [#5460](https://github.com/plotly/plotly.js/pull/5460)]
+ - Drop support for old browsers IE9 and IE10 [[#5376](https://github.com/plotly/plotly.js/pull/5376), [#5380](https://github.com/plotly/plotly.js/pull/5380), [#5460](https://github.com/plotly/plotly.js/pull/5460), [#5491](https://github.com/plotly/plotly.js/pull/5491)]
  - Stop exporting v3 of d3 under `Plotly.d3` [[#5400](https://github.com/plotly/plotly.js/pull/5400), [#5406](https://github.com/plotly/plotly.js/pull/5406)]
  - Stop attaching `_has*` plot types to `fullLayout` [[#5409](https://github.com/plotly/plotly.js/pull/5409)]
+ - Stop injecting MathJax config by default [[#5514](https://github.com/plotly/plotly.js/pull/5514)]
+ - Remove `sane-topojson` and MathJax v2.3 files from dist folder and change supported MathJax version to v2.7.5 [[#5487](https://github.com/plotly/plotly.js/pull/5487), [#5492](https://github.com/plotly/plotly.js/pull/5492), [#5494](https://github.com/plotly/plotly.js/pull/5494)]
  - Reduce the number of exported methods from `Plotly.Fx` and `Plotly.Plots` in the API [[#5420](https://github.com/plotly/plotly.js/pull/5420)]
  - Drop `Plotly.plot` from the API [[#5412](https://github.com/plotly/plotly.js/pull/5412), [#5370](https://github.com/plotly/plotly.js/pull/5370), [#5393](https://github.com/plotly/plotly.js/pull/5393)]
  - Drop `Plotly.Queue` from the API [[#5423](https://github.com/plotly/plotly.js/pull/5423)]
@@ -40,7 +47,12 @@ where X.Y.Z is the semver of most recent plotly.js release.
  - Add major versions e.g. "latest-v2" when publishing latest to CDN and keep "latest" for v1 [[#5462](https://github.com/plotly/plotly.js/pull/5462)]
  - Switch to `native-promise-only` module to handle es6 promises [[#5358](https://github.com/plotly/plotly.js/pull/5358)]
  - Switch to `probe-image-size` module to get width and height of images [[#5388](https://github.com/plotly/plotly.js/pull/5388)]
- - Relax test for plain objects to enable validation in node.js and multiple window contexts [[#5411](https://github.com/plotly/plotly.js/pull/5411)]
+ - Relax test for plain objects to enable validation in node.js and multiple window contexts [[#5411](https://github.com/plotly/plotly.js/pull/5411), [#5498](https://github.com/plotly/plotly.js/pull/5498)]
+ - Display latitudes before longitudes in hoverlabels to comply with ISO 6709 (Standard representation of geographic point location by coordinates) [[#5485](https://github.com/plotly/plotly.js/pull/5485)]
+ - Adjust text shadow color in respect to `paper_bgcolor` for better dark mode display of
+   `sankey`, `parcoords` and `parcats` traces [[#5506](https://github.com/plotly/plotly.js/pull/5506)]
+ - Improve `sankey` text namely support pseudo-html, fix `textfont.color` and avoid clipping [[#5531](https://github.com/plotly/plotly.js/pull/5531)]
+ - Make selection event data of `scattergl` on par with `scatter` traces [[#5534](https://github.com/plotly/plotly.js/pull/5534)]
  - Fire `plotly_unhover` event when dragging [[#5407](https://github.com/plotly/plotly.js/pull/5407)],
    with thanks to @rreusser for the contribution!
  - Include transforms and calendars in partial bundles [[#5379](https://github.com/plotly/plotly.js/pull/5379), [#5422](https://github.com/plotly/plotly.js/pull/5422)]
@@ -56,10 +68,19 @@ where X.Y.Z is the semver of most recent plotly.js release.
    with thanks to @ruijin for the contribution!
  - Fix element targeting on hover in shadow DOM [[#5256](https://github.com/plotly/plotly.js/pull/5256)],
    with thanks to @dbluhm for the contribution!
+ - Hide gridlines and ticks overlapping "inside" ticklabels [[#5550](https://github.com/plotly/plotly.js/pull/5550), [#5586](https://github.com/plotly/plotly.js/pull/5586), [#5589](https://github.com/plotly/plotly.js/pull/5589)]
+ - Fix hover filter to display close period points [[#5543](https://github.com/plotly/plotly.js/pull/5543)]
+ - Fix spike on `bar`-like traces [[#5542](https://github.com/plotly/plotly.js/pull/5542)]
  - Fix displaying zero `threshold` for `indicator` trace [[#5430](https://github.com/plotly/plotly.js/pull/5430)]
+ - Fix axis constraints for `heatmapgl` [[#5476](https://github.com/plotly/plotly.js/pull/5476)]
+ - Fix setTimeout functions to return in the case of undefined layouts [[#5482](https://github.com/plotly/plotly.js/pull/5482)]
  - Avoid duplicate keys in object literals within plotly builds [[#5458](https://github.com/plotly/plotly.js/pull/5458)]
  - Improve attribute compression and avoid redundant copyright comments in non-minified
    bundles [[#5426](https://github.com/plotly/plotly.js/pull/5426), [#5429](https://github.com/plotly/plotly.js/pull/5429), [#5439](https://github.com/plotly/plotly.js/pull/5439)]
+ - Provide links to all pull requests in the changelog [[#5469](https://github.com/plotly/plotly.js/pull/5469)]
+ - Fix syntax test on the dist files [[#5471](https://github.com/plotly/plotly.js/pull/5471)]
+ - Publish partial bundles using relevant tag from the package e.g. `latest` or `rc` [[#5467](https://github.com/plotly/plotly.js/pull/5467)]
+ - Place CDN publish script inside plotly.js repository [[#5468](https://github.com/plotly/plotly.js/pull/5468), [#5470](https://github.com/plotly/plotly.js/pull/5470)]
 
 
 ## [1.58.4] -- 2020-12-21

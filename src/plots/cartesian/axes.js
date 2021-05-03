@@ -3124,49 +3124,70 @@ axes.drawLabels = function(gd, ax, opts) {
             } // TODO: hide mathjax?
         });
 
-        if(ax._anchorAxis) {
-            ax._anchorAxis._visibleLabelMin = visibleLabelMin;
-            ax._anchorAxis._visibleLabelMax = visibleLabelMax;
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            var anchorAx = isX ? plotinfo.yaxis : plotinfo.xaxis;
+            if(anchorAx) {
+                anchorAx['_visibleLabelMin_' + ax._id] = visibleLabelMin;
+                anchorAx['_visibleLabelMax_' + ax._id] = visibleLabelMax;
+            }
         }
     };
 
     ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
-        if(insideTicklabelposition(ax._anchorAxis || {})) {
-            (partialOpts || [
-                ZERO_PATH,
-                GRID_PATH,
-                TICK_PATH,
-                TICK_TEXT
-            ]).forEach(function(e) {
-                var isPeriodLabel =
-                    e.K === 'tick' &&
-                    e.L === 'text' &&
-                    ax.ticklabelmode === 'period';
+        var isX = ax._id.charAt(0) === 'x';
 
-                var sel;
-                if(e.K === ZERO_PATH.K) sel = opts.plotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
-                else if(e.K === GRID_PATH.K) sel = opts.plotinfo.gridlayer.selectAll('.' + ax._id);
-                else sel = opts.plotinfo[ax._id.charAt(0) + 'axislayer'];
+        var anchoredAxes = [];
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            anchoredAxes.push(isX ? plotinfo.yaxis : plotinfo.xaxis);
+        }
 
-                sel.each(function() {
-                    var w = d3.select(this);
-                    if(e.L) w = w.selectAll(e.L);
+        anchoredAxes.forEach(function(anchorAx, idx) {
+            if(anchorAx && insideTicklabelposition(anchorAx)) {
+                (partialOpts || [
+                    ZERO_PATH,
+                    GRID_PATH,
+                    TICK_PATH,
+                    TICK_TEXT
+                ]).forEach(function(e) {
+                    var isPeriodLabel =
+                        e.K === 'tick' &&
+                        e.L === 'text' &&
+                        ax.ticklabelmode === 'period';
 
-                    w.each(function(d) {
-                        var q = ax.l2p(
-                            isPeriodLabel ? getPosX(d) : d.x
-                        ) + ax._offset;
+                    var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
 
-                        var t = d3.select(this);
-                        if(q < ax._visibleLabelMax && q > ax._visibleLabelMin) {
-                            t.style('display', 'none'); // hidden
-                        } else if(e.K === 'tick') {
-                            t.style('display', null); // visible
-                        }
+                    var sel;
+                    if(e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                    else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);
+                    else sel = mainPlotinfo[ax._id.charAt(0) + 'axislayer'];
+
+                    sel.each(function() {
+                        var w = d3.select(this);
+                        if(e.L) w = w.selectAll(e.L);
+
+                        w.each(function(d) {
+                            var q = ax.l2p(
+                                isPeriodLabel ? getPosX(d) : d.x
+                            ) + ax._offset;
+
+                            var t = d3.select(this);
+                            if(
+                                q < ax['_visibleLabelMax_' + anchorAx._id] &&
+                                q > ax['_visibleLabelMin_' + anchorAx._id]
+                            ) {
+                                t.style('display', 'none'); // hidden
+                            } else if(e.K === 'tick' && !idx) {
+                                t.style('display', null); // visible
+                            }
+                        });
                     });
                 });
-            });
-        }
+            }
+        });
     };
 
     // make sure all labels are correctly positioned at their base angle
