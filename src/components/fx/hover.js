@@ -641,7 +641,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
     // move period positioned points to the end of list
-    orderPeriod(hoverData, hovermode);
+    hoverData = orderPeriod(hoverData, hovermode);
 
     // If in compare mode, select every point at position
     if(
@@ -649,6 +649,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
+        var initLen = hoverData.length;
         var winningPoint = hoverData[0];
 
         var customXVal = customVal('x', winningPoint, fullLayout);
@@ -659,8 +660,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // also find start, middle and end point for period
         var axLetter = hovermode.charAt(0);
         if(winningPoint.trace[axLetter + 'period']) {
-            var initLen = hoverData.length;
-
             var v = winningPoint[axLetter + 'LabelVal'];
             var ax = winningPoint[axLetter + 'a'];
             var T = {};
@@ -1932,7 +1931,7 @@ function orderPeriod(hoverData, hovermode) {
         }
     }
 
-    hoverData = first.concat(last);
+    return first.concat(last);
 }
 
 function customVal(axLetter, winningPoint, fullLayout) {
