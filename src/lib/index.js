@@ -720,7 +720,7 @@ lib.getFirefoxVersion = function() {
     var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);
     if(match && match.length === 2) {
         var versionInt = parseInt(match[1]);
-        if(!Number.isNaN(versionInt)) {
+        if(!isNaN(versionInt)) {
             return versionInt;
         }
     }
