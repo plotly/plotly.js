@@ -1939,8 +1939,8 @@ function customVal(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
-    if(ax.type === 'category') return ax._categoriesMap[val];
-    if(ax.type === 'date') return ax.d2c(val);
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    else if(ax.type === 'date') val = ax.d2c(val);
 
     var cd0 = winningPoint.cd[winningPoint.index];
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
