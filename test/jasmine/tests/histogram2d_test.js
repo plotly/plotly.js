@@ -18,7 +18,7 @@ describe('Test histogram2d', function() {
 
     function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         layout._dfltTitle = {colorbar: 'cb'};
-        layout.font = {size: 12};
+        layout.font = {color: '#444'};
 
         return supplyDefaultsRaw(traceIn, traceOut, defaultColor, layout);
     }

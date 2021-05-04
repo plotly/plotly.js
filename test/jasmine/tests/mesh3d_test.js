@@ -10,7 +10,7 @@ describe('Test mesh3d', function() {
 
     describe('supplyDefaults', function() {
         var defaultColor = '#444';
-        var layout = {_dfltTitle: {colorbar: 'cb'}, font: {size: 12}};
+        var layout = {_dfltTitle: {colorbar: 'cb'}, font: {color: '#444'}};
 
         var traceIn, traceOut;
 

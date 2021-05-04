@@ -58,8 +58,10 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
 
     coerce('title.text', layout._dfltTitle.colorbar);
 
-    var dfltTitleFont = Lib.extendFlat({}, font, {
-        size: Lib.bigFont(font.size)
+    var tickFont = colorbarOut.tickfont;
+    var dfltTitleFont = Lib.extendFlat({}, tickFont, {
+        color: font.color,
+        size: Lib.bigFont(tickFont.size)
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     coerce('title.side');
