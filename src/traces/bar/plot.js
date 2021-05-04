@@ -647,10 +647,14 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     }
 
     function formatLabel(u) {
+        if(pAxis.type === 'log') u = pAxis.c2r(u);
+
         return tickText(pAxis, u, true).text;
     }
 
     function formatNumber(v) {
+        if(vAxis.type === 'log') v = vAxis.c2r(v);
+
         return tickText(vAxis, +v, true).text;
     }
 
