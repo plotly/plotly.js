@@ -190,9 +190,7 @@ module.exports = {
             editType: 'legend',
             description: [
                 'Sets this legend\'s title font.',
-                'Defaulted to `legend.font`.',
-                'The size would be defaulted to be',
-                'around 20% greater than the font size used for legend items.'
+                'Defaults to `legend.font` with its size increased about 20%.'
             ].join(' '),
         }),
         side: {
