@@ -9,8 +9,14 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     var xa = Axes.getFromTrace(mockGd, trace, 'x');
     var ya = Axes.getFromTrace(mockGd, trace, 'y');
 
-    labels.xLabel = Axes.tickText(xa, cdi.x, true).text;
-    labels.yLabel = Axes.tickText(ya, cdi.y, true).text;
+    var x = cdi.x;
+    var y = cdi.y;
+
+    if(xa.type === 'log') x = xa.c2r(x);
+    if(ya.type === 'log') y = ya.c2r(y);
+
+    labels.xLabel = Axes.tickText(xa, x, true).text;
+    labels.yLabel = Axes.tickText(ya, y, true).text;
 
     return labels;
 };
