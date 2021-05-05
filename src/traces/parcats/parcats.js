@@ -399,7 +399,7 @@ function mouseoverPath(d) {
                 // hoverinfo is a combination of 'count' and 'probability'
 
                 // Mouse
-                var hoverX = d3.mouse(this)[0];
+                var hoverX = Lib.getPositionFromD3Event()[0];
 
                 // Label
                 var gd = d.parcatsViewModel.graphDiv;
@@ -446,7 +446,7 @@ function mouseoverPath(d) {
                 }
 
                 var hovertext = hovertextParts.join('<br>');
-                var mouseX = d3.mouse(gd)[0];
+                var mouseX = Lib.getPositionFromD3Event()[0];
 
                 Fx.loneHover({
                     trace: trace,
@@ -978,7 +978,7 @@ function mouseoverCategoryBand(bandViewModel) {
             // hoverinfo is not skip, so we at least style the bands and emit interaction events
 
             // Mouse
-            var mouseY = d3.mouse(this)[1];
+            var mouseY = Lib.getPositionFromD3Event()[1];
             if(mouseY < -1) {
                 // Hover is above above the category rectangle (probably the dimension title text)
                 return;
@@ -1085,8 +1085,8 @@ function dragDimensionStart(d) {
         .each(
             /** @param {CategoryViewModel} catViewModel */
             function(catViewModel) {
-                var catMouseX = d3.mouse(this)[0];
-                var catMouseY = d3.mouse(this)[1];
+                var catMouseX = Lib.getPositionFromD3Event()[0];
+                var catMouseY = Lib.getPositionFromD3Event()[1];
 
 
                 if(-2 <= catMouseX && catMouseX <= catViewModel.width + 2 &&
