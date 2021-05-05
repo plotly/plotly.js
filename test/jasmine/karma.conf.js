@@ -218,10 +218,10 @@ func.defaultConfig = {
     singleRun: argv.nowatch,
 
     // how long will Karma wait for a message from a browser before disconnecting (30 ms)
-    browserNoActivityTimeout: 30000,
+    browserNoActivityTimeout: 60000,
 
     // how long does Karma wait for a browser to reconnect (in ms).
-    browserDisconnectTimeout: 30000,
+    browserDisconnectTimeout: 60000,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
