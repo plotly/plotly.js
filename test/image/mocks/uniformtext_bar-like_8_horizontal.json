@@ -143,7 +143,7 @@
         "legend": {
             "orientation": "h",
             "title": {
-                "text": "<b>bar, funnel & waterfall uniform text</b><br>with <i>horizontal</i> orientation<br>minsize=8"
+                "text": "bar, funnel & waterfall uniform text<br>with <i>horizontal</i> orientation<br>minsize=8"
             }
         },
         "uniformtext": {
