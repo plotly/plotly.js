@@ -647,11 +647,11 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     }
 
     function formatLabel(u) {
-        return tickText(pAxis, u, true).text;
+        return tickText(pAxis, pAxis.c2l(u), true).text;
     }
 
     function formatNumber(v) {
-        return tickText(vAxis, +v, true).text;
+        return tickText(vAxis, vAxis.c2l(v), true).text;
     }
 
     var cdi = cd[index];
