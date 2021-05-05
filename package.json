@@ -114,7 +114,7 @@
     "ndarray-linear-interpolate": "^1.0.0",
     "parse-svg-path": "^0.1.2",
     "polybooljs": "^1.2.0",
-    "probe-image-size": "^6.0.0",
+    "probe-image-size": "^7.1.0",
     "regl": "^1.6.1",
     "regl-error2d": "^2.0.11",
     "regl-line2d": "^3.1.0",
