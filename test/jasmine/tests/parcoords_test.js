@@ -363,7 +363,7 @@ describe('parcoords initialization tests', function() {
 describe('parcoords edge cases', function() {
     var gd;
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
         gd = createGraphDiv();
     });
@@ -636,7 +636,10 @@ describe('parcoords edge cases', function() {
 
 describe('parcoords Lifecycle methods', function() {
     var gd;
-    beforeEach(function() { gd = createGraphDiv(); });
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+        gd = createGraphDiv();
+    });
     afterEach(destroyGraphDiv);
 
     it('Plotly.deleteTraces with one trace removes the plot', function(done) {
@@ -896,7 +899,7 @@ describe('parcoords basic use', function() {
     var gd;
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
         mockCopy = Lib.extendDeep({}, mock);
         mockCopy.data[0].domain = {
@@ -1212,6 +1215,7 @@ describe('parcoords react more attributes', function() {
     var gd;
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
@@ -1357,8 +1361,6 @@ describe('parcoords constraint interactions - without defined axis ranges', func
     var snapDelay = 100;
     var noSnapDelay = 20;
     beforeAll(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
         initialSnapDuration = PC.bar.snapDuration;
         PC.bar.snapDuration = shortenedSnapDuration;
     });
@@ -1369,6 +1371,7 @@ describe('parcoords constraint interactions - without defined axis ranges', func
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
@@ -1643,8 +1646,6 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
     var shortenedSnapDuration = 20;
     var noSnapDelay = 20;
     beforeAll(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
         initialSnapDuration = PC.bar.snapDuration;
         PC.bar.snapDuration = shortenedSnapDuration;
     });
@@ -1655,6 +1656,7 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
@@ -1737,6 +1739,7 @@ describe('parcoords constraint click interactions - with pre-defined constraint 
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
