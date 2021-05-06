@@ -4998,157 +4998,91 @@ describe('hovermode: (x|y)unified', function() {
         .then(done, done.fail);
     });
 
-    it('non-period points winning hover', function(done) {
-        Plotly.newPlot(gd, {
-            data: [
-                {
-                    name: 'bar',
-                    type: 'bar',
-                    x: ['1999-12', '2000-01', '2000-02'],
-                    y: [2, 1, 3],
-                    xhoverformat: '%b',
-                    xperiod: 'M1'
-                },
-                {
-                    name: 'scatter',
-                    type: 'scatter',
-                    x: [
-                        '2000-01-01', '2000-01-06', '2000-01-11', '2000-01-16', '2000-01-21', '2000-01-26',
-                        '2000-02-01', '2000-02-06', '2000-02-11', '2000-02-16', '2000-02-21', '2000-02-26',
-                        '2000-03-01', '2000-03-06', '2000-03-11', '2000-03-16', '2000-03-21', '2000-03-26'
-                    ],
-                    y: [
-                        1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
-                        2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
-                        3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
-                    ]
+    [{
+        xperiod: 0,
+        desc: 'non-period scatter points and period bars'
+    }, {
+        xperiod: 24 * 3600 * 1000,
+        desc: 'period scatter points and period bars'
+    }].forEach(function(t) {
+        it(t.desc, function(done) {
+            var fig = {
+                data: [
+                    {
+                        name: 'bar',
+                        type: 'bar',
+                        x: ['1999-12', '2000-01', '2000-02'],
+                        y: [2, 1, 3],
+                        xhoverformat: '%b',
+                        xperiod: 'M1'
+                    },
+                    {
+                        xperiod: t.xperiod,
+                        name: 'scatter',
+                        type: 'scatter',
+                        x: [
+                            '2000-01-01', '2000-01-06', '2000-01-11', '2000-01-16', '2000-01-21', '2000-01-26',
+                            '2000-02-01', '2000-02-06', '2000-02-11', '2000-02-16', '2000-02-21', '2000-02-26',
+                            '2000-03-01', '2000-03-06', '2000-03-11', '2000-03-16', '2000-03-21', '2000-03-26'
+                        ],
+                        y: [
+                            1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
+                            2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
+                            3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
+                        ]
+                    }
+                ],
+                layout: {
+                    showlegend: false,
+                    width: 600,
+                    height: 400,
+                    hovermode: 'x unified'
                 }
-            ],
-            layout: {
-                showlegend: false,
-                width: 600,
-                height: 400,
-                hovermode: 'x unified'
-            }
-        })
-        .then(function(gd) {
-            _hover(gd, { xpx: 50, ypx: 200 });
-            assertLabel({title: 'Dec', items: [
-                'bar : 2'
-            ]});
+            };
 
-            _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: 'Jan 1, 2000', items: [
-                'scatter : 1.1'
-            ]});
+            Plotly.newPlot(gd, fig)
+            .then(function(gd) {
+                _hover(gd, { xpx: 50, ypx: 200 });
+                assertLabel({title: 'Dec', items: [
+                    'bar : 2'
+                ]});
 
-            _hover(gd, { xpx: 150, ypx: 200 });
-            assertLabel({title: 'Jan 11, 2000', items: [
-                'bar : (Jan, 1)',
-                'scatter : 1.3'
-            ]});
+                _hover(gd, { xpx: 100, ypx: 200 });
+                assertLabel({title: 'Jan 1, 2000', items: [
+                    'scatter : 1.1'
+                ]});
 
-            _hover(gd, { xpx: 200, ypx: 200 });
-            assertLabel({title: 'Jan 26, 2000', items: [
-                'bar : (Jan, 1)',
-                'scatter : 1.6'
-            ]});
+                _hover(gd, { xpx: 150, ypx: 200 });
+                assertLabel({title: 'Jan 11, 2000', items: [
+                    'bar : (Jan, 1)',
+                    'scatter : 1.3'
+                ]});
 
-            _hover(gd, { xpx: 250, ypx: 200 });
-            assertLabel({title: 'Feb 11, 2000', items: [
-                'bar : (Feb, 3)',
-                'scatter : 2.3'
-            ]});
+                _hover(gd, { xpx: 200, ypx: 200 });
+                assertLabel({title: 'Jan 26, 2000', items: [
+                    'bar : (Jan, 1)',
+                    'scatter : 1.6'
+                ]});
 
-            _hover(gd, { xpx: 300, ypx: 200 });
-            assertLabel({title: 'Feb 21, 2000', items: [
-                'bar : (Feb, 3)',
-                'scatter : 2.5'
-            ]});
+                _hover(gd, { xpx: 250, ypx: 200 });
+                assertLabel({title: 'Feb 11, 2000', items: [
+                    'bar : (Feb, 3)',
+                    'scatter : 2.3'
+                ]});
 
-            _hover(gd, { xpx: 350, ypx: 200 });
-            assertLabel({title: 'Mar 6, 2000', items: [
-                'scatter : 3.2'
-            ]});
-        })
-        .then(done, done.fail);
-    });
+                _hover(gd, { xpx: 300, ypx: 200 });
+                assertLabel({title: 'Feb 21, 2000', items: [
+                    'bar : (Feb, 3)',
+                    'scatter : 2.5'
+                ]});
 
-    it('period scatter points and period bars', function(done) {
-        Plotly.newPlot(gd, {
-            data: [
-                {
-                    name: 'bar',
-                    type: 'bar',
-                    x: ['1999-12', '2000-01', '2000-02'],
-                    y: [2, 1, 3],
-                    xhoverformat: '%b',
-                    xperiod: 'M1'
-                },
-                {
-                    name: 'scatter',
-                    type: 'scatter',
-                    x: [
-                        '2000-01-01', '2000-01-06', '2000-01-11', '2000-01-16', '2000-01-21', '2000-01-26',
-                        '2000-02-01', '2000-02-06', '2000-02-11', '2000-02-16', '2000-02-21', '2000-02-26',
-                        '2000-03-01', '2000-03-06', '2000-03-11', '2000-03-16', '2000-03-21', '2000-03-26'
-                    ],
-                    y: [
-                        1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
-                        2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
-                        3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
-                    ],
-                    xperiod: 24 * 3600 * 1000,
-                }
-            ],
-            layout: {
-                showlegend: false,
-                width: 600,
-                height: 400,
-                hovermode: 'x unified'
-            }
-        })
-        .then(function(gd) {
-            _hover(gd, { xpx: 50, ypx: 200 });
-            assertLabel({title: 'Dec', items: [
-                'bar : 2'
-            ]});
-
-            _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: 'Jan 1, 2000', items: [
-                'scatter : 1.1'
-            ]});
-
-            _hover(gd, { xpx: 150, ypx: 200 });
-            assertLabel({title: 'Jan 11, 2000', items: [
-                'bar : (Jan, 1)',
-                'scatter : 1.3'
-            ]});
-
-            _hover(gd, { xpx: 200, ypx: 200 });
-            assertLabel({title: 'Jan 26, 2000', items: [
-                'bar : (Jan, 1)',
-                'scatter : 1.6'
-            ]});
-
-            _hover(gd, { xpx: 250, ypx: 200 });
-            assertLabel({title: 'Feb 11, 2000', items: [
-                'bar : (Feb, 3)',
-                'scatter : 2.3'
-            ]});
-
-            _hover(gd, { xpx: 300, ypx: 200 });
-            assertLabel({title: 'Feb 21, 2000', items: [
-                'bar : (Feb, 3)',
-                'scatter : 2.5'
-            ]});
-
-            _hover(gd, { xpx: 350, ypx: 200 });
-            assertLabel({title: 'Mar 6, 2000', items: [
-                'scatter : 3.2'
-            ]});
-        })
-        .then(done, done.fail);
+                _hover(gd, { xpx: 350, ypx: 200 });
+                assertLabel({title: 'Mar 6, 2000', items: [
+                    'scatter : 3.2'
+                ]});
+            })
+            .then(done, done.fail);
+        });
     });
 
     it('period points alignments', function(done) {
