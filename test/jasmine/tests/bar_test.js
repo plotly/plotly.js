@@ -125,8 +125,17 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.width).toBeUndefined();
     });
 
-    it('should coerce textposition to none', function() {
+    it('should coerce textposition to auto', function() {
         traceIn = {
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textposition).toBe('auto');
+    });
+
+    it('should not coerce text styling attributes when textposition is set to none', function() {
+        traceIn = {
+            textposition: 'none',
             y: [1, 2, 3]
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
@@ -1715,7 +1724,7 @@ describe('A bar plot', function() {
             y: [10, 20, 30, 40],
             type: 'bar',
             text: ['T1P1', 'T1P2', 13, 14],
-            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textposition: ['inside', 'outside', 'BADVALUE', 'none'],
             textfont: {
                 family: ['"comic sans"'],
                 color: ['red', 'green'],
@@ -1739,7 +1748,7 @@ describe('A bar plot', function() {
             y: [10, 20, 30, 40],
             type: 'bar',
             text: ['T1P1', 'T1P2', '13', '14'],
-            textposition: ['inside', 'outside', 'none'],
+            textposition: ['inside', 'outside', 'auto', 'none'],
             textfont: {
                 family: ['"comic sans"', 'arial'],
                 color: ['red', 'green'],

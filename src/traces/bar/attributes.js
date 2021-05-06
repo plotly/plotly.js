@@ -74,7 +74,7 @@ module.exports = {
     textposition: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],
-        dflt: 'none',
+        dflt: 'auto',
         arrayOk: true,
         editType: 'calc',
         description: [
