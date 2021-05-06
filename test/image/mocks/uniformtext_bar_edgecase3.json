@@ -17,7 +17,6 @@
                 44999
             ],
             "texttemplate": "%{y}",
-            "textposition": "auto",
             "textangle": 0,
             "textfont": {
                 "size": 16

@@ -13,7 +13,6 @@
             ],
             "type": "bar",
             "textangle": 0,
-            "textposition": "auto",
             "xaxis": "x",
             "yaxis": "y"
         },
@@ -30,7 +29,6 @@
             ],
             "type": "bar",
             "textangle": 0,
-            "textposition": "auto",
             "xaxis": "x",
             "yaxis": "y"
         },
