@@ -2712,6 +2712,23 @@ describe('Text templates on bar traces:', function() {
     checkTextTemplate({
         data: [{
             type: 'bar',
+            textposition: 'outside',
+            x: [1, 2, 3],
+            y: [3, 2, 1],
+            hovertemplate: '%{x}-%{y}',
+            texttemplate: '%{x}-%{y}'
+        }],
+        layout: {
+            xaxis: {type: 'log'},
+            yaxis: {type: 'log'},
+        }
+    }, 'text.bartext', [
+      ['%{x}-%{y}', ['1-3', '2-2', '3-1']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'bar',
             textposition: 'inside',
             x: ['a', 'b'],
             y: ['1000', '1200'],

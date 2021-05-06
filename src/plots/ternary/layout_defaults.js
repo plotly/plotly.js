@@ -82,7 +82,7 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
 
     Lib.coerceFont(coerce, 'title.font', {
         family: options.font.family,
-        size: Math.round(options.font.size * 1.2),
+        size: Lib.bigFont(options.font.size),
         color: dfltFontColor
     });
 

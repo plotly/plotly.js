@@ -1585,7 +1585,7 @@ describe('Test splom select:', function() {
 
             var to = setTimeout(function() {
                 reject('fail: plotly_selected not emitter');
-            }, 200);
+            }, 300);
 
             gd.once('plotly_selected', function(d) {
                 clearTimeout(to);
@@ -1684,7 +1684,7 @@ describe('Test splom select:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should redraw splom traces before scattergl trace (if any)', function(done) {
+    it('@gl should redraw splom traces before scattergl trace (if any)', function(done) {
         var fig = require('@mocks/splom_with-cartesian.json');
         fig.layout.dragmode = 'select';
         fig.layout.width = 400;
