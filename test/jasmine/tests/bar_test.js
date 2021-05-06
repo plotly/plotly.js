@@ -1364,7 +1364,6 @@ describe('A bar plot', function() {
         y: [20, 14, 23, 10, 59, 15],
         text: [20, 14, 23, 10, 59, 15],
         type: 'bar',
-        textposition: 'auto',
         marker: {
             color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
         }
@@ -1877,8 +1876,7 @@ describe('A bar plot', function() {
             type: 'bar',
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
-            text: [20, 14, 23],
-            textposition: 'auto'
+            text: [20, 14, 23]
         }])
         .then(function() {
             _assertNumberOfBarTextNodes(3);

@@ -150,7 +150,6 @@ describe('Waterfall.supplyDefaults', function() {
     it('should coerce textinfo when textposition is not none', function() {
         traceIn = {
             y: [1, 2, 3],
-            textposition: 'auto',
             textinfo: 'text'
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
@@ -742,7 +741,6 @@ describe('A waterfall plot', function() {
         y: [20, 14, 23, 10, 59, 15],
         text: [20, 14, 23, 10, 59, 15],
         type: 'waterfall',
-        textposition: 'auto',
         marker: {
             color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
         }
@@ -785,7 +783,6 @@ describe('A waterfall plot', function() {
                 }, {
                     width: [0.4, 0.6, 0.8, 1],
                     text: ['Three', 2, 'inside text', 0],
-                    textposition: 'auto',
                     textfont: { size: [10] },
                     y: [3, 2, 1, 0],
                     x: [1, 2, 3, 4],
@@ -799,7 +796,6 @@ describe('A waterfall plot', function() {
                     type: 'waterfall'
                 }, {
                     text: [0, 'outside text', -3, -2],
-                    textposition: 'auto',
                     y: [0, -0.25, -3, -2],
                     x: [1, 2, 3, 4],
                     type: 'waterfall'
@@ -1150,7 +1146,6 @@ describe('A waterfall plot', function() {
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
             text: [20, 14, 23],
-            textposition: 'auto'
         }])
         .then(function() {
             _assertNumberOfWaterfallTextNodes(3);
