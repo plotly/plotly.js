@@ -110,7 +110,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     if(title) {
         Lib.coerceFont(coerce, 'title.font', {
             family: font.family,
-            size: Math.round(font.size * 1.2),
+            size: Lib.bigFont(font.size),
             color: dfltFontColor
         });
         coerce('title.offset');

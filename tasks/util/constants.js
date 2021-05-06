@@ -168,6 +168,8 @@ module.exports = {
     pathToBuild: pathToBuild,
     pathToDist: pathToDist,
 
+    partialBundleTraces: partialBundleTraces,
+
     allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,

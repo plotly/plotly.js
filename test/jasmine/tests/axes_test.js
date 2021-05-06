@@ -1481,6 +1481,30 @@ describe('Test axes', function() {
             })
             .then(done, done.fail);
         });
+
+        it('should make room for the inside labels of the counter axes', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
+                    x: [1, 2, 3],
+                    y: [0, 100, 0]
+                }],
+                layout: {
+                    width: 300,
+                    height: 300,
+                    showlegend: false,
+                    plot_bgcolor: 'lightblue',
+                    yaxis: { ticklabelposition: 'inside' },
+                    xaxis: { range: [1.5, 2.5] }
+                }
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toEqual([1.5, 2.5]);
+
+                return Plotly.relayout(gd, 'xaxis.autorange', true);
+            }).then(function() {
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.37, 3.22], 1);
+            })
+            .then(done, done.fail);
+        });
     });
 
     describe('constraints relayout', function() {

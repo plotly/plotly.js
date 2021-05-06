@@ -58,14 +58,6 @@ function mostOfDrag(x1, y1, x2, y2) {
     mouseEvent('mousemove', x2, y2);
 }
 
-function purgeGraphDiv(done) {
-    var gd = d3Select('.js-plotly-plot').node();
-    if(gd) Plotly.purge(gd);
-    destroyGraphDiv();
-
-    return delay(50)().then(done);
-}
-
 function getAvgPixelByChannel(id) {
     var canvas = d3Select(id).node();
 
@@ -371,12 +363,12 @@ describe('parcoords initialization tests', function() {
 describe('parcoords edge cases', function() {
     var gd;
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl Works fine with one panel only', function(done) {
         var mockCopy = Lib.extendDeep({}, mock2);
@@ -644,8 +636,11 @@ describe('parcoords edge cases', function() {
 
 describe('parcoords Lifecycle methods', function() {
     var gd;
-    beforeEach(function() { gd = createGraphDiv(); });
-    afterEach(purgeGraphDiv);
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
 
     it('Plotly.deleteTraces with one trace removes the plot', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
@@ -904,7 +899,7 @@ describe('parcoords basic use', function() {
     var gd;
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
         mockCopy = Lib.extendDeep({}, mock);
         mockCopy.data[0].domain = {
@@ -915,7 +910,7 @@ describe('parcoords basic use', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl should create three WebGL contexts per graph', function(done) {
         Plotly.react(gd, mockCopy)
@@ -1220,10 +1215,11 @@ describe('parcoords react more attributes', function() {
     var gd;
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl should change various axis parameters', function(done) {
         Plotly.react(gd, mock3)
@@ -1365,22 +1361,21 @@ describe('parcoords constraint interactions - without defined axis ranges', func
     var snapDelay = 100;
     var noSnapDelay = 20;
     beforeAll(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
         initialSnapDuration = PC.bar.snapDuration;
         PC.bar.snapDuration = shortenedSnapDuration;
     });
 
     afterAll(function() {
-        purgeGraphDiv();
+        destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     function getDashArray(index) {
         var highlight = document.querySelectorAll('.highlight')[index];
@@ -1651,22 +1646,21 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
     var shortenedSnapDuration = 20;
     var noSnapDelay = 20;
     beforeAll(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
         initialSnapDuration = PC.bar.snapDuration;
         PC.bar.snapDuration = shortenedSnapDuration;
     });
 
     afterAll(function() {
-        purgeGraphDiv();
+        destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl updates constraints above and below axis ranges', function(done) {
         var x = 295;
@@ -1740,15 +1734,16 @@ describe('parcoords constraint click interactions - with pre-defined constraint 
     });
 
     afterAll(function() {
-        purgeGraphDiv();
+        destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl should not drop constraintrange on click', function(done) {
         Plotly.react(gd, initialFigure())
