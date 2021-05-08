@@ -168,7 +168,7 @@
     "mathjax": "2.7.5",
     "minify-stream": "^2.1.0",
     "mkdirp": "^1.0.4",
-    "node-sass": "^5.0.0",
+    "node-sass": "^6.0.0",
     "npm-link-check": "^4.0.0",
     "open": "^8.0.7",
     "prepend-file": "^2.0.0",
