@@ -10,7 +10,7 @@ version: 2.0
 jobs:
   install-and-cibuild:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -43,7 +43,7 @@ jobs:
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
@@ -56,7 +56,7 @@ jobs:
   webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
@@ -69,7 +69,7 @@ jobs:
   no-gl-flaky-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -119,7 +119,7 @@ jobs:
 
   source-syntax:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -131,7 +131,7 @@ jobs:
   jasmine-bundle:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -142,7 +142,7 @@ jobs:
 
   publish-dist:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -177,7 +177,7 @@ jobs:
 
   test-dist1:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -197,7 +197,7 @@ jobs:
 
   test-dist2:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
