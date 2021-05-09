@@ -1469,6 +1469,7 @@ describe('waterfall hover', function() {
                 t.base = 1000;
                 t.hoverinfo = 'all';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1499,6 +1500,7 @@ describe('waterfall hover', function() {
                 t.type = 'waterfall';
                 t.hovertemplate = 'Value: %{y}<br>SUM: %{final}<br>START: %{initial}<br>DIFF: %{delta}<extra></extra>';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1530,7 +1532,7 @@ describe('waterfall hover', function() {
                     y: [0, -1.1, 2.2, -3.3, 4.4],
                     type: 'waterfall'
                 }],
-                layout: {width: 400, height: 400}
+                layout: {width: 400, height: 400, hovermode: 'x'}
             })
             .then(function() {
                 var evt = { xpx: 200, ypx: 350 };

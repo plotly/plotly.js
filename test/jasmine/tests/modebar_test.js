@@ -1199,27 +1199,27 @@ describe('ModeBar', function() {
 
             describe('buttons hoverCompareCartesian and hoverClosestCartesian ', function() {
                 it('should update layout hovermode', function() {
-                    expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(hovermodeButtons, buttonCompare);
-
-                    buttonClosest.click();
                     expect(gd._fullLayout.hovermode).toBe('closest');
                     assertActive(hovermodeButtons, buttonClosest);
 
                     buttonCompare.click();
                     expect(gd._fullLayout.hovermode).toBe('x');
                     assertActive(hovermodeButtons, buttonCompare);
+
+                    buttonClosest.click();
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(hovermodeButtons, buttonClosest);
                 });
             });
 
             describe('button toggleSpikelines', function() {
                 it('should not change layout hovermode', function() {
-                    expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(hovermodeButtons, buttonCompare);
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(hovermodeButtons, buttonClosest);
 
                     buttonToggle.click();
-                    expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(hovermodeButtons, buttonCompare);
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(hovermodeButtons, buttonClosest);
                 });
 
                 it('should makes spikelines visible', function() {

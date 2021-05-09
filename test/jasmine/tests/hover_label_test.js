@@ -585,6 +585,7 @@ describe('hover info', function() {
                 {y: [1, 0, 1], type: 'bar', name: 'c'},
                 {y: [2, 1, 0], type: 'bar', name: 'd'}
             ], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0},
@@ -623,6 +624,7 @@ describe('hover info', function() {
                 {x: [1, 0, 1], type: 'bar', name: 'c', orientation: 'h'},
                 {x: [2, 1, 0], type: 'bar', name: 'd', orientation: 'h'}
             ], {
+                hovermode: 'y',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0},
@@ -892,8 +894,10 @@ describe('hover info', function() {
 
         it('should get the right content and color for contour constraints', function(done) {
             var contourConstraints = require('@mocks/contour_constraints.json');
+            var fig = Lib.extendDeep({}, contourConstraints);
+            fig.layout.hovermode = 'x';
 
-            Plotly.newPlot(gd, contourConstraints)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 _hover(gd, 250, 250);
                 assertHoverLabelContent({
@@ -976,6 +980,7 @@ describe('hover info', function() {
                 name: 'two',
                 showscale: false
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1068,6 +1073,7 @@ describe('hover info', function() {
             var gd = createGraphDiv();
 
             Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, -5, 10]}], {
+                hovermode: 'x',
                 yaxis: {type: 'log'},
                 width: 500,
                 height: 400,
@@ -1093,6 +1099,7 @@ describe('hover info', function() {
                 xbins: {start: -0.5, end: 8.5, size: 3},
                 type: 'histogram'
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1156,6 +1163,7 @@ describe('hover info', function() {
                 xbins: {start: -0.5, end: 8.5, size: 3},
                 type: 'histogram'
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1191,6 +1199,7 @@ describe('hover info', function() {
                 xbins: {start: -0.5, end: 8.5, size: 3},
                 type: 'histogram'
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1221,6 +1230,7 @@ describe('hover info', function() {
                         close: [0, 3, 2]
                     }, traceUpdates || {})],
                     layout: Lib.extendDeep({}, {
+                        hovermode: 'x',
                         width: 400,
                         height: 400,
                         margin: {l: 50, r: 50, t: 50, b: 50}
@@ -1328,7 +1338,7 @@ describe('hover info', function() {
                 .then(done, done.fail);
             });
 
-            it('shows text iff text is in hoverinfo', function(done) {
+            it('shows text if text is in hoverinfo', function(done) {
                 Plotly.newPlot(gd, financeMock({text: ['A', 'B', 'C']}))
                 .then(function() {
                     _hover(gd, 150, 150);
@@ -1366,6 +1376,7 @@ describe('hover info', function() {
             y: [0.12345, 0.23456, 0.34567]
         }];
         var layout = {
+            hovermode: 'x',
             yaxis: { showticklabels: true, hoverformat: ',.2r' },
             width: 600,
             height: 400
@@ -1600,7 +1611,7 @@ describe('hover info', function() {
                 text: ['San Francisco']
             };
             var data = [trace1, trace2];
-            var layout = {width: 600, height: 300, barmode: 'stack'};
+            var layout = {width: 600, height: 300, barmode: 'stack', hovermode: 'x'};
 
             Plotly.newPlot(gd, data, layout)
             .then(function() { _hover(gd, 300, 150); })
@@ -1635,7 +1646,7 @@ describe('hover info', function() {
                 text: ['New York']
             };
             var data = [trace1, trace2, trace3];
-            var layout = {width: 600, height: 300};
+            var layout = {width: 600, height: 300, hovermode: 'x'};
 
             Plotly.newPlot(gd, data, layout)
             .then(function() { _hover(gd, 300, 150); })
@@ -1675,6 +1686,7 @@ describe('hover info', function() {
                 hoverinfo: 'x+y+name',
                 hoverlabel: {namelength: -1}
             }], {
+                hovermode: 'x',
                 width: 600,
                 height: 300
             })
@@ -1709,6 +1721,7 @@ describe('hover info', function() {
                 {name: 'B', x: [8, 9], y: [9, 10]},
                 {name: 'C', x: [9, 10], y: [10, 11]}
             ], {
+                hovermode: 'x',
                 xaxis: {range: [0, 100]},
                 yaxis: {range: [0, 100]},
                 width: 700,
@@ -1768,6 +1781,7 @@ describe('hover info', function() {
                 x: ['2019-01-01', '2019-06-01', '2020-01-01'],
                 y: [2, 5, 10]
             }], {
+                hovermode: 'x',
                 xaxis: {range: ['2019-02-06', '2019-12-01']},
                 margin: {l: 0, r: 0},
                 width: 400,
@@ -1828,6 +1842,7 @@ describe('hover info', function() {
                 y: ['Looong label', 'Loooooger label', 'Waay loooong label', 'a'],
                 x: [2, 5, 10, 2]
             }], {
+                hovermode: 'y',
                 width: 400,
                 height: 400
             })
@@ -2065,6 +2080,7 @@ describe('hover info', function() {
         }, {
             y: [1]
         }], {
+            hovermode: 'x',
             meta: ['yo!'],
             width: 400,
             height: 400
@@ -2211,6 +2227,7 @@ describe('hover info on stacked subplots', function() {
                 // This was the problem in #2370
                 {}, {y: [100, 120, 100]}
             ]});
+        mock.layout.hovermode = 'x';
 
         var gd;
 
@@ -2343,6 +2360,7 @@ describe('hover on many lines+bars', function() {
             {y: values2},
             {y: values, type: 'bar'}
         ], {
+            hovermode: 'x',
             width: 400,
             height: 400,
             margin: {l: 100, r: 100, t: 100, b: 100}
@@ -2366,6 +2384,7 @@ describe('hover info on overlaid subplots', function() {
 
     it('should respond to hover', function(done) {
         var mock = require('@mocks/autorange-tozero-rangemode.json');
+        mock.layout.hovermode = 'x';
 
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
             mouseEvent('mousemove', 768, 345);
@@ -2408,7 +2427,7 @@ describe('hover after resizing', function() {
         gd = createGraphDiv();
 
         var data = [{ y: [2, 1, 2] }];
-        var layout = { width: 600, height: 500 };
+        var layout = { width: 600, height: 500, hovermode: 'x' };
 
         var pos0 = [305, 403];
         var pos1 = [401, 122];
@@ -2468,6 +2487,7 @@ describe('hover on fill', function() {
     it('should always show one label in the right place', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
+        mock.layout.hovermode = 'x';
 
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
             assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
@@ -2486,6 +2506,7 @@ describe('hover on fill', function() {
             fill: 'tonext',
             hoveron: 'fills'
         }], {
+            hovermode: 'x',
             width: 500,
             height: 500,
             margin: {l: 50, t: 50, r: 50, b: 50}
@@ -2543,6 +2564,7 @@ describe('hover on fill', function() {
 
     it('should act like closest mode on ternary when cartesian is in compare mode', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        mock.layout.hovermode = 'x';
         var gd = createGraphDiv();
 
         mock.data.push({y: [7, 8, 9]});
@@ -2589,6 +2611,7 @@ describe('Hover on multicategory axes', function() {
             x: [['2018', '2018', '2019', '2019'], ['a', 'b', 'a', 'b']],
             y: [1, 2, -1, 3]
         }], {
+            hovermode: 'x',
             bargap: 0,
             width: 400,
             height: 400
@@ -3495,6 +3518,7 @@ describe('hover updates', function() {
                 {x: [0], y: [0], showlegend: false},
             ],
             layout: {
+                hovermode: 'x',
                 margin: {t: 0, r: 0, b: 0, l: 0},
                 width: 200,
                 height: 200,
@@ -3554,7 +3578,7 @@ describe('hover updates', function() {
                 size: 16,
                 color: colors0.slice()
             }
-        }], { width: 700, height: 450 })
+        }], { width: 700, height: 450, hovermode: 'x' })
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
                 hoverCnt++;
@@ -3597,6 +3621,7 @@ describe('hover updates', function() {
         ];
 
         var layout = {
+            hovermode: 'x',
             xaxis: {domain: [0, 0.5]},
             xaxis2: {anchor: 'y2', domain: [0.5, 1]},
             yaxis2: {anchor: 'x2'},
@@ -4240,7 +4265,7 @@ describe('hover distance', function() {
             var x = [0, 1, 2];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'linear'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'linear'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4256,7 +4281,7 @@ describe('hover distance', function() {
             var x = [0, 1, 2];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'log'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'log'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4272,7 +4297,7 @@ describe('hover distance', function() {
             var x = ['a', 'b', 'c'];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'category'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'category'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4288,7 +4313,7 @@ describe('hover distance', function() {
             var x = ['2018', '2019', '2020'];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'date'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'date'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4404,51 +4429,6 @@ describe('hover label rotation:', function() {
             })
             .then(done, done.fail);
         });
-    });
-});
-
-describe('hovermode defaults to', function() {
-    var gd;
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
-
-    afterEach(destroyGraphDiv);
-
-    it('\'closest\' for cartesian plots if clickmode includes \'select\'', function(done) {
-        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6] }], { clickmode: 'event+select' })
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('closest');
-          })
-          .then(done, done.fail);
-    });
-
-    it('\'x\' for horizontal cartesian plots if clickmode lacks \'select\'', function(done) {
-        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'h' }], { clickmode: 'event' })
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('y');
-          })
-          .then(done, done.fail);
-    });
-
-    it('\'y\' for vertical cartesian plots if clickmode lacks \'select\'', function(done) {
-        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'v' }], { clickmode: 'event' })
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('x');
-          })
-          .then(done, done.fail);
-    });
-
-    it('\'closest\' for a non-cartesian plot', function(done) {
-        var mock = require('@mocks/polar_scatter.json');
-        expect(mock.layout.hovermode).toBeUndefined();
-
-        Plotly.newPlot(gd, mock.data, mock.layout)
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('closest');
-          })
-          .then(done, done.fail);
     });
 });
 

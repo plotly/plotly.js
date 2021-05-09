@@ -1423,6 +1423,7 @@ describe('funnel hover', function() {
                 t.orientation = 'v';
                 t.hoverinfo = 'all';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1454,6 +1455,7 @@ describe('funnel hover', function() {
                 t.orientation = 'v';
                 t.hovertemplate = 'Value: %{y}<br>Total percentage: %{percentTotal}<br>Initial percentage: %{percentInitial}<br>Previous percentage: %{percentPrevious}<extra></extra>';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1488,6 +1490,7 @@ describe('funnel hover', function() {
                         type: 'funnel'
                     }],
                     layout: {
+                        hovermode: 'x',
                         yaxis: {
                             visible: false,
                             tickprefix: '$',
