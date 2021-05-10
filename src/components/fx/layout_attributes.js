@@ -99,7 +99,7 @@ module.exports = {
     spikedistance: {
         valType: 'integer',
         min: -1,
-        dflt: 20,
+        dflt: -1,
         editType: 'none',
         description: [
             'Sets the default distance (in pixels) to look for data to draw',
