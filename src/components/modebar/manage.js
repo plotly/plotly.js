@@ -3,7 +3,6 @@
 var axisIds = require('../../plots/cartesian/axis_ids');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
 var Registry = require('../../registry');
-var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
@@ -86,7 +85,6 @@ function getButtonGroups(gd) {
     var hasPolar = fullLayout._has('polar');
     var hasSankey = fullLayout._has('sankey');
     var allAxesFixed = areAllAxesFixed(fullLayout);
-    var hasUnifiedHoverLabel = isUnifiedHover(fullLayout.hovermode);
 
     var groups = [];
 
@@ -111,45 +109,23 @@ function getButtonGroups(gd) {
     addGroup(commonGroup);
 
     var zoomGroup = [];
-    var hoverGroup = [];
     var resetGroup = [];
     var dragModeGroup = [];
 
     if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
         // graphs with more than one plot types get 'union buttons'
-        // which reset the view or toggle hover labels across all subplots.
-        hoverGroup = ['toggleHover'];
+        // which reset the view across all subplots.
         resetGroup = ['resetViews'];
     } else if(hasGeo) {
         zoomGroup = ['zoomInGeo', 'zoomOutGeo'];
-        hoverGroup = ['hoverClosestGeo'];
         resetGroup = ['resetGeo'];
     } else if(hasGL3D) {
-        hoverGroup = ['hoverClosest3d'];
         resetGroup = ['resetCameraDefault3d', 'resetCameraLastSave3d'];
     } else if(hasMapbox) {
         zoomGroup = ['zoomInMapbox', 'zoomOutMapbox'];
-        hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMapbox'];
-    } else if(hasGL2D) {
-        hoverGroup = ['hoverClosestGl2d'];
-    } else if(hasPie) {
-        hoverGroup = ['hoverClosestPie'];
     } else if(hasSankey) {
-        hoverGroup = ['hoverClosestCartesian', 'hoverCompareCartesian'];
         resetGroup = ['resetViewSankey'];
-    } else { // hasPolar, hasTernary
-        // always show at least one hover icon.
-        hoverGroup = ['toggleHover'];
-    }
-    // if we have cartesian, allow switching between closest and compare
-    // regardless of what other types are on the plot, since they'll all
-    // just treat any truthy hovermode as 'closest'
-    if(hasCartesian) {
-        hoverGroup = ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian'];
-    }
-    if(hasNoHover(fullData) || hasUnifiedHoverLabel) {
-        hoverGroup = [];
     }
 
     if((hasCartesian || hasGL2D) && !allAxesFixed) {
@@ -191,7 +167,6 @@ function getButtonGroups(gd) {
 
     addGroup(dragModeGroup);
     addGroup(zoomGroup.concat(resetGroup));
-    addGroup(hoverGroup);
 
     return appendButtonsToGroups(groups, buttonsToAdd);
 }
@@ -238,14 +213,6 @@ function isSelectable(fullData) {
     }
 
     return selectable;
-}
-
-// check whether all trace are 'noHover'
-function hasNoHover(fullData) {
-    for(var i = 0; i < fullData.length; i++) {
-        if(!Registry.traceIs(fullData[i], 'noHover')) return false;
-    }
-    return true;
 }
 
 function appendButtonsToGroups(groups, buttons) {
