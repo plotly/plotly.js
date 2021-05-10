@@ -66,6 +66,25 @@ var DRAW_MODES = [
     'eraseshape'
 ];
 
+var HOVER_MODES = [
+    'hoverCompareCartesian',
+    'hoverClosestCartesian',
+    'hoverClosestGl2d',
+    'hoverClosest3d',
+    'hoverClosestGeo',
+    'hoverClosestPie',
+    'toggleHover'
+];
+
+var SPIKE_MODES = [
+    'toggleSpikelines'
+];
+
+var EXTRA_MODES = []
+    .concat(DRAW_MODES)
+    .concat(HOVER_MODES)
+    .concat(SPIKE_MODES);
+
 // logic behind which buttons are displayed by default
 function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
@@ -152,8 +171,9 @@ function getButtonGroups(gd) {
         for(var i = 0; i < buttonsToAdd.length; i++) {
             var b = buttonsToAdd[i];
             if(typeof b === 'string') {
-                if(DRAW_MODES.indexOf(b) !== -1) {
+                if(EXTRA_MODES.indexOf(b) !== -1) {
                     if(
+                        DRAW_MODES.indexOf(b) === -1 ||
                         fullLayout._has('mapbox') || // draw shapes in paper coordinate (could be improved in future to support data coordinate, when there is no pitch)
                         fullLayout._has('cartesian') // draw shapes in data coordinate
                     ) {
