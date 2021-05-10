@@ -294,9 +294,6 @@ describe('spikeline hover', function() {
         var _mock = makeMock('toaxis', 'x');
         Plotly.newPlot(gd, _mock)
         .then(function() {
-            _setSpikedistance(-1);
-        })
-        .then(function() {
             _hover({xval: 1.5});
             _assert(
                 [[558, 401, 558, 251], [80, 251, 558, 251]], [[83, 251]]
@@ -388,24 +385,8 @@ describe('spikeline hover', function() {
     it('correctly responds to setting the spikedistance to -1 by increasing ' +
         'the range of search for points to draw the spikelines to Infinity', function(done) {
         var _mock = makeMock('toaxis', 'closest');
-        _mock.layout.spikedistance = 20;
 
         Plotly.newPlot(gd, _mock).then(function() {
-            _hover({xval: 1.6, yval: 2.6});
-            _assert(
-                [],
-                []
-            );
-
-            _hover({xval: 26, yval: 36}, 'x2y2');
-            _assert(
-                [],
-                []
-            );
-
-            _setSpikedistance(-1);
-        })
-        .then(function() {
             _hover({xval: 1.6, yval: 2.6});
             _assert(
                 [[557, 401, 557, 250], [80, 250, 557, 250]],
@@ -415,6 +396,21 @@ describe('spikeline hover', function() {
             _hover({xval: 26, yval: 36}, 'x2y2');
             _assert(
                 [[820, 220, 820, 167]],
+                []
+            );
+
+            _setSpikedistance(20);
+        })
+        .then(function() {
+            _hover({xval: 1.6, yval: 2.6});
+            _assert(
+                [],
+                []
+            );
+
+            _hover({xval: 26, yval: 36}, 'x2y2');
+            _assert(
+                [],
                 []
             );
         })
