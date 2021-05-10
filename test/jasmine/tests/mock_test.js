@@ -415,6 +415,7 @@ var list = [
     'gl2d_parcoords_blocks',
     'gl2d_parcoords_coloraxis',
     'gl2d_parcoords_constraints',
+    'gl2d_parcoords_column_positions',
     'gl2d_parcoords_large',
     'gl2d_parcoords_out-of-range_selected-above-below',
     'gl2d_parcoords_out-of-range_selected-all',
