@@ -603,7 +603,7 @@ module.exports = {
     spikesnap: {
         valType: 'enumerated',
         values: ['data', 'cursor', 'hovered data'],
-        dflt: 'data',
+        dflt: 'hovered data',
         editType: 'none',
         description: 'Determines whether spikelines are stuck to the cursor or to the closest datapoints.'
     },
