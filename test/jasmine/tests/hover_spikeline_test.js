@@ -22,13 +22,17 @@ describe('spikeline hover', function() {
 
     function makeMock(spikemode, hovermode) {
         var _mock = Lib.extendDeep({}, require('@mocks/19.json'));
+        _mock.layout.xaxis.spikesnap = 'data';
         _mock.layout.xaxis.showspikes = true;
         _mock.layout.xaxis.spikemode = spikemode;
+        _mock.layout.yaxis.spikesnap = 'data';
         _mock.layout.yaxis.showspikes = true;
         _mock.layout.yaxis.spikemode = spikemode + '+marker';
+        _mock.layout.xaxis2.spikesnap = 'data';
         _mock.layout.xaxis2.showspikes = true;
         _mock.layout.xaxis2.spikemode = spikemode;
         _mock.layout.hovermode = hovermode;
+
         return _mock;
     }
 
@@ -445,6 +449,8 @@ describe('spikeline hover', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.xaxis.showspikes = true;
         mockCopy.layout.yaxis.showspikes = true;
+        mockCopy.layout.xaxis.spikesnap = 'data';
+        mockCopy.layout.yaxis.spikesnap = 'data';
         mockCopy.layout.spikedistance = -1;
         mockCopy.layout.hovermode = 'closest';
 
@@ -824,9 +830,9 @@ describe('spikeline hover', function() {
                     data: [makeData(type, 'xaxis', x, data)],
                     layout: {
                         spikedistance: -1,
-                        xaxis: {showspikes: true},
-                        yaxis: {showspikes: true},
-                        zaxis: {showspikes: true},
+                        xaxis: {showspikes: true, spikesnap: 'data'},
+                        yaxis: {showspikes: true, spikesnap: 'data'},
+                        zaxis: {showspikes: true, spikesnap: 'data'},
                         title: {text: trace.type},
                         width: 400, height: 400
                     }
