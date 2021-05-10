@@ -455,6 +455,9 @@ describe('Test gl3d modebar handlers - perspective case', function() {
                     },
                     aspectratio: { x: 3, y: 2, z: 1 }
                 }
+            },
+            config: {
+                modeBarButtonsToAdd: ['hoverClosest3d']
             }
         };
 
