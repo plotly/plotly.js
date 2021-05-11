@@ -1,7 +1,6 @@
 'use strict';
 
 var Lib = require('../../lib');
-var isUnifiedHover = require('./helpers').isUnifiedHover;
 var layoutAttributes = require('./layout_attributes');
 var handleHoverModeDefaults = require('./hovermode_defaults');
 var handleHoverLabelDefaults = require('./hoverlabel_defaults');
@@ -14,7 +13,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     var hoverMode = handleHoverModeDefaults(layoutIn, layoutOut);
     if(hoverMode) {
         coerce('hoverdistance');
-        coerce('spikedistance', isUnifiedHover(hoverMode) ? -1 : undefined);
+        coerce('spikedistance');
     }
 
     var dragMode = coerce('dragmode');
