@@ -117,6 +117,20 @@ jobs:
           path: build
           destination: /
 
+  mock-validation:
+    docker:
+      - image: circleci/node:12.22.1
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test validation using node.js and jsdom
+          command: npm run test-plain-obj
+      - run:
+          name: Validate mocks
+          command: npm run test-mock
+
   source-syntax:
     docker:
       - image: circleci/node:12.22.1
@@ -183,9 +197,6 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Test validation using node.js and jsdom
-          command: npm run test-plain-obj
-      - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
       - run:
@@ -230,6 +241,9 @@ workflows:
           requires:
             - install-and-cibuild
       - flaky-image:
+          requires:
+            - install-and-cibuild
+      - mock-validation:
           requires:
             - install-and-cibuild
       - source-syntax:
