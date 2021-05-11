@@ -12,7 +12,6 @@
                 "invisible"
             ],
             "type": "bar",
-            "textposition": "auto",
             "textangle": -90,
             "xaxis": "x",
             "yaxis": "y"
@@ -29,7 +28,6 @@
                 "visible"
             ],
             "type": "bar",
-            "textposition": "auto",
             "textangle": -90,
             "xaxis": "x",
             "yaxis": "y"

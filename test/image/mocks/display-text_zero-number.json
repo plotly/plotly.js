@@ -41,7 +41,6 @@
             "measure": ["r", "r", "r", "r", "r", "t", "a"],
             "text": [null, "", "0", 0, 1, true, false],
             "textinfo": "label+text+final",
-            "textposition": "auto",
             "xaxis": "x2",
             "yaxis": "y2"
         }
