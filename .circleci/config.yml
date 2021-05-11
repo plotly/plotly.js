@@ -112,7 +112,7 @@ jobs:
             npm run docker -- setup
       - run:
           name: Run image tests (part B)
-          command: ./.circleci/test.sh flaky-image
+          command: ./.circleci/test.sh flaky-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
