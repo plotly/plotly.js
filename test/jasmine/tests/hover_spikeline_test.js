@@ -717,6 +717,7 @@ describe('spikeline hover', function() {
             {y: [5, 7, 9, 6, 4, 3]},
             {y: [5, 7, 9, 6, 4, 3], marker: {color: 'red'}}
         ], {
+            hovermode: 'x',
             xaxis: {showspikes: true},
             yaxis: {showspikes: true},
             spikedistance: -1,

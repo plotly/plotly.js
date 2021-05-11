@@ -2416,6 +2416,7 @@ describe('bar hover', function() {
                 t.type = 'bar';
                 t.hovertemplate = '%{y}<extra></extra>';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };

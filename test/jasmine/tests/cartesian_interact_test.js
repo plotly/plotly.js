@@ -2300,6 +2300,7 @@ describe('Event data:', function() {
                 }
             }
         }], {
+            hovermode: 'x',
             width: 500,
             height: 500
         })
