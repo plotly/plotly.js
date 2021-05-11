@@ -6,7 +6,7 @@ var plotlyServerDom = new jsdom.JSDOM('', { runScripts: 'dangerously'});
 plotlyServerDom.window.URL.createObjectURL = function() {};
 
 // Run Plotly inside jsdom
-var plotlyJsPath = require.resolve('../dist/plotly.js');
+var plotlyJsPath = require.resolve('../build/plotly.js');
 var plotlyJsSource = fs.readFileSync(plotlyJsPath, 'utf-8');
 plotlyServerDom.window.eval(plotlyJsSource);
 
