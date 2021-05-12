@@ -3,6 +3,7 @@
 var axisIds = require('../../plots/cartesian/axis_ids');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
 var Registry = require('../../registry');
+var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
@@ -66,25 +67,6 @@ var DRAW_MODES = [
     'eraseshape'
 ];
 
-var HOVER_MODES = [
-    'hoverCompareCartesian',
-    'hoverClosestCartesian',
-    'hoverClosestGl2d',
-    'hoverClosest3d',
-    'hoverClosestGeo',
-    'hoverClosestPie',
-    'toggleHover'
-];
-
-var SPIKE_MODES = [
-    'toggleSpikelines'
-];
-
-var EXTRA_MODES = []
-    .concat(DRAW_MODES)
-    .concat(HOVER_MODES)
-    .concat(SPIKE_MODES);
-
 // logic behind which buttons are displayed by default
 function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
@@ -104,6 +86,7 @@ function getButtonGroups(gd) {
     var hasPolar = fullLayout._has('polar');
     var hasSankey = fullLayout._has('sankey');
     var allAxesFixed = areAllAxesFixed(fullLayout);
+    var hasUnifiedHoverLabel = isUnifiedHover(fullLayout.hovermode);
 
     var groups = [];
 
@@ -128,23 +111,45 @@ function getButtonGroups(gd) {
     addGroup(commonGroup);
 
     var zoomGroup = [];
+    var hoverGroup = [];
     var resetGroup = [];
     var dragModeGroup = [];
 
     if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
         // graphs with more than one plot types get 'union buttons'
-        // which reset the view across all subplots.
+        // which reset the view or toggle hover labels across all subplots.
+        hoverGroup = ['toggleHover'];
         resetGroup = ['resetViews'];
     } else if(hasGeo) {
         zoomGroup = ['zoomInGeo', 'zoomOutGeo'];
+        hoverGroup = ['hoverClosestGeo'];
         resetGroup = ['resetGeo'];
     } else if(hasGL3D) {
+        hoverGroup = ['hoverClosest3d'];
         resetGroup = ['resetCameraDefault3d', 'resetCameraLastSave3d'];
     } else if(hasMapbox) {
         zoomGroup = ['zoomInMapbox', 'zoomOutMapbox'];
+        hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMapbox'];
+    } else if(hasGL2D) {
+        hoverGroup = ['hoverClosestGl2d'];
+    } else if(hasPie) {
+        hoverGroup = ['hoverClosestPie'];
     } else if(hasSankey) {
+        hoverGroup = ['hoverClosestCartesian', 'hoverCompareCartesian'];
         resetGroup = ['resetViewSankey'];
+    } else { // hasPolar, hasTernary
+        // always show at least one hover icon.
+        hoverGroup = ['toggleHover'];
+    }
+    // if we have cartesian, allow switching between closest and compare
+    // regardless of what other types are on the plot, since they'll all
+    // just treat any truthy hovermode as 'closest'
+    if(hasCartesian) {
+        hoverGroup = ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian'];
+    }
+    if(hasNoHover(fullData) || hasUnifiedHoverLabel) {
+        hoverGroup = [];
     }
 
     if((hasCartesian || hasGL2D) && !allAxesFixed) {
@@ -165,20 +170,40 @@ function getButtonGroups(gd) {
         dragModeGroup.push('select2d', 'lasso2d');
     }
 
-    // accept pre-defined buttons as string
+    var enabledHoverGroup = [];
+    var enableHover = function(a) {
+        // return if already added
+        if(enabledHoverGroup.indexOf(a) !== -1) return;
+        // should be in hoverGroup
+        if(hoverGroup.indexOf(a) !== -1) {
+            enabledHoverGroup.push(a);
+        }
+    };
     if(Array.isArray(buttonsToAdd)) {
         var newList = [];
         for(var i = 0; i < buttonsToAdd.length; i++) {
             var b = buttonsToAdd[i];
             if(typeof b === 'string') {
-                if(EXTRA_MODES.indexOf(b) !== -1) {
+                if(DRAW_MODES.indexOf(b) !== -1) {
+                    // accept pre-defined drag modes i.e. shape drawing features as string
                     if(
-                        DRAW_MODES.indexOf(b) === -1 ||
                         fullLayout._has('mapbox') || // draw shapes in paper coordinate (could be improved in future to support data coordinate, when there is no pitch)
                         fullLayout._has('cartesian') // draw shapes in data coordinate
                     ) {
                         dragModeGroup.push(b);
                     }
+                } else if(b === 'toggleSpikelines') {
+                    enableHover('toggleSpikelines');
+                } else if(b === 'toggleHover') {
+                    enableHover('toggleHover');
+                } else if(b === 'hoverCompare') {
+                    enableHover('hoverCompareCartesian');
+                } else if(b === 'hoverClosest') {
+                    enableHover('hoverClosestCartesian');
+                    enableHover('hoverClosestGeo');
+                    enableHover('hoverClosest3d');
+                    enableHover('hoverClosestGl2d');
+                    enableHover('hoverClosestPie');
                 }
             } else newList.push(b);
         }
@@ -187,6 +212,7 @@ function getButtonGroups(gd) {
 
     addGroup(dragModeGroup);
     addGroup(zoomGroup.concat(resetGroup));
+    addGroup(enabledHoverGroup);
 
     return appendButtonsToGroups(groups, buttonsToAdd);
 }
@@ -233,6 +259,14 @@ function isSelectable(fullData) {
     }
 
     return selectable;
+}
+
+// check whether all trace are 'noHover'
+function hasNoHover(fullData) {
+    for(var i = 0; i < fullData.length; i++) {
+        if(!Registry.traceIs(fullData[i], 'noHover')) return false;
+    }
+    return true;
 }
 
 function appendButtonsToGroups(groups, buttons) {

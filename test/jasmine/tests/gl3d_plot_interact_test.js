@@ -457,7 +457,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
                 }
             },
             config: {
-                modeBarButtonsToAdd: ['hoverClosest3d']
+                modeBarButtonsToAdd: ['hoverClosest']
             }
         };
 
@@ -537,7 +537,7 @@ describe('Test gl3d modebar handlers - perspective case', function() {
         expect(buttonOrbit.isActive()).toBe(false);
     });
 
-    it('@gl button hoverClosest3d should update the scene hovermode and spikes', function() {
+    it('@gl button hoverClosest should update the scene hovermode and spikes', function() {
         var buttonHover = selectButton(modeBar, 'hoverClosest3d');
 
         assertScenes(gd._fullLayout, 'hovermode', 'closest');

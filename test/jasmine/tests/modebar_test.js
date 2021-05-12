@@ -1068,8 +1068,8 @@ describe('ModeBar', function() {
                 Plotly.newPlot(gd, mockData, mockLayout, {
                     modeBarButtonsToAdd: [
                         'toggleSpikelines',
-                        'hoverCompareCartesian',
-                        'hoverClosestCartesian'
+                        'hoverCompare',
+                        'hoverClosest'
                     ]
                 }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
@@ -1246,7 +1246,7 @@ describe('ModeBar', function() {
 
                 gd = createGraphDiv();
                 Plotly.newPlot(gd, mockData, {}, {
-                    modeBarButtonsToAdd: ['hoverClosestPie']
+                    modeBarButtonsToAdd: ['hoverClosest']
                 }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
@@ -1281,7 +1281,7 @@ describe('ModeBar', function() {
 
                 gd = createGraphDiv();
                 Plotly.newPlot(gd, mockData, {}, {
-                    modeBarButtonsToAdd: ['hoverClosestGeo']
+                    modeBarButtonsToAdd: ['hoverClosest']
                 }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
