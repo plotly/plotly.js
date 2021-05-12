@@ -713,6 +713,38 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
+        it('creates mode bar without hover button when all traces are noHover', function() {
+            var buttons = getButtons([
+                ['toImage']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._context.modeBarButtonsToAdd = ['hoverclosest'];
+            gd._fullData = [{ type: 'indicator' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar with hover button even in the presence of one noHover trace', function() {
+            var buttons = getButtons([
+                ['toImage'],
+                ['hoverClosestPie']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._context.modeBarButtonsToAdd = ['hoverclosest'];
+            gd._fullLayout._basePlotModules = [{ name: 'pie' }];
+            gd._fullData = [{ type: 'indicator' }, {type: 'pie'}];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
         it('throws an error if modeBarButtonsToRemove isn\'t an array', function() {
             var gd = getMockGraphInfo();
             gd._context.modeBarButtonsToRemove = 'not gonna work';
