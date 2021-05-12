@@ -192,13 +192,13 @@ function getButtonGroups(gd) {
                     ) {
                         dragModeGroup.push(b);
                     }
-                } else if(b === 'toggleSpikelines') {
+                } else if(b === 'togglespikelines') {
                     enableHover('toggleSpikelines');
-                } else if(b === 'toggleHover') {
+                } else if(b === 'togglehover') {
                     enableHover('toggleHover');
-                } else if(b === 'hoverCompare') {
+                } else if(b === 'hovercompare') {
                     enableHover('hoverCompareCartesian');
-                } else if(b === 'hoverClosest') {
+                } else if(b === 'hoverclosest') {
                     enableHover('hoverClosestCartesian');
                     enableHover('hoverClosestGeo');
                     enableHover('hoverClosest3d');

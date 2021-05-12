@@ -1067,9 +1067,9 @@ describe('ModeBar', function() {
                 gd = createGraphDiv();
                 Plotly.newPlot(gd, mockData, mockLayout, {
                     modeBarButtonsToAdd: [
-                        'toggleSpikelines',
-                        'hoverCompare',
-                        'hoverClosest'
+                        'togglespikelines',
+                        'hovercompare',
+                        'hoverclosest'
                     ]
                 }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
@@ -1246,7 +1246,7 @@ describe('ModeBar', function() {
 
                 gd = createGraphDiv();
                 Plotly.newPlot(gd, mockData, {}, {
-                    modeBarButtonsToAdd: ['hoverClosest']
+                    modeBarButtonsToAdd: ['hoverclosest']
                 }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
@@ -1281,7 +1281,7 @@ describe('ModeBar', function() {
 
                 gd = createGraphDiv();
                 Plotly.newPlot(gd, mockData, {}, {
-                    modeBarButtonsToAdd: ['hoverClosest']
+                    modeBarButtonsToAdd: ['hoverclosest']
                 }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
@@ -1367,7 +1367,7 @@ describe('ModeBar', function() {
                 Plotly.newPlot(gd, [
                     {type: 'scatterternary', a: [1], b: [2], c: [3]}
                 ], {}, {
-                    modeBarButtonsToAdd: ['toggleHover']
+                    modeBarButtonsToAdd: ['togglehover']
                 })
                 .then(function() {
                     _run('base');
