@@ -1,3 +1,4 @@
+var minimist = require('minimist');
 var jsdom = require('jsdom');
 var path = require('path');
 var fs = require('fs');
@@ -14,15 +15,72 @@ plotlyServerDom.window.eval(plotlyJsSource);
 var pathToRoot = path.join(__dirname, '..');
 var pathToMocks = path.join(pathToRoot, 'test', 'image', 'mocks');
 
-function startsWithLowerCaseOrNumber(v) {
-    var c = v.charAt(0);
-    return c !== c.toUpperCase() || c === String(Number(c));
+var list = [];
+
+// command line options
+var args = minimist(process.argv.slice(2), {});
+if(args._.length) {
+    // test listed mock(s)
+    list = args._;
+} else {
+    // no mock listed, test all excluding the black list
+    list = fs.readdirSync(pathToMocks)
+        .filter(function(e) { return e.indexOf('.json') !== -1; })
+        .map(function(e) { return e.replace('.json', ''); })
+        .filter(notBlackListed);
 }
 
-var list = fs.readdirSync(pathToMocks)
-    .filter(startsWithLowerCaseOrNumber)
-    .map(function(e) { return e.replace('.json', ''); })
-    .filter(notBlackListed);
+var fail;
+var failedMocks = [];
+
+for(var i = 0; i < list.length; i++) {
+    var name = list[i];
+    console.log('validating ' + name);
+
+    var filename = path.join(pathToMocks, name + '.json');
+    var fig = JSON.parse(fs.readFileSync(filename));
+    var out = plotlyServerDom.window.Plotly.validate(fig.data, fig.layout);
+
+    fail = false;
+    assert(name, out);
+    if(fail) failedMocks.push(name);
+}
+
+if(failedMocks.length) {
+    var error = 'Failed at ' + JSON.stringify({mocks: failedMocks}, null, 2);
+    throw error;
+}
+
+function expectToBe(actual, expected) {
+    if(actual !== expected) {
+        console.error('Expected ' + actual + ' to be ' + expected);
+        fail = true;
+    }
+}
+
+function assert(name, v) {
+    var success = true;
+    if(!v) {
+        expectToBe(v, undefined);
+        if(v !== undefined) success = false;
+    } else {
+        v.forEach(function(e) {
+            var condition = (
+                e.code === 'invisible' ||
+                e.code === 'dynamic' ||
+                e.path[e.path.length - 1] === 'coloraxis'
+            );
+            expectToBe(condition, true); // we accept invisible, dynamic and coloraxis for now
+            if(!condition) {
+                console.log('file:', name);
+                console.log(JSON.stringify(v, null, 2));
+                success = false;
+                return success;
+            }
+        });
+    }
+    return success;
+}
 
 function notBlackListed(name) {
     return [
@@ -199,56 +257,4 @@ function notBlackListed(name) {
         'yignbu_heatmap',
         'yiorrd_heatmap'
     ].indexOf(name) === -1;
-}
-
-var fail;
-var failedMocks = [];
-
-for(var i = 0; i < list.length; i++) {
-    var name = list[i];
-    console.log('validating ' + name);
-
-    var filename = path.join(pathToMocks, name + '.json');
-    var fig = JSON.parse(fs.readFileSync(filename));
-    var out = plotlyServerDom.window.Plotly.validate(fig.data, fig.layout);
-
-    fail = false;
-    assert(name, out);
-    if(fail) failedMocks.push(name);
-}
-
-if(failedMocks.length) {
-    var error = 'Failed at ' + JSON.stringify({mocks: failedMocks}, null, 2);
-    throw error;
-}
-
-function expectToBe(actual, expected) {
-    if(actual !== expected) {
-        console.error('Expected ' + actual + ' to be ' + expected);
-        fail = true;
-    }
-}
-
-function assert(name, v) {
-    var success = true;
-    if(!v) {
-        expectToBe(v, undefined);
-        if(v !== undefined) success = false;
-    } else {
-        v.forEach(function(e) {
-            var condition = (
-                e.code === 'invisible' ||
-                e.code === 'dynamic' ||
-                e.path[e.path.length - 1] === 'coloraxis'
-            );
-            expectToBe(condition, true); // we accept invisible, dynamic and coloraxis for now
-            if(!condition) {
-                console.log('file:', name);
-                console.log(JSON.stringify(v, null, 2));
-                success = false;
-                return success;
-            }
-        });
-    }
-    return success;
 }
