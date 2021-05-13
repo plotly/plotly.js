@@ -206,6 +206,14 @@ function getButtonGroups(gd) {
                     enableHover('hoverClosest3d');
                     enableHover('hoverClosestGl2d');
                     enableHover('hoverClosestPie');
+                } else if(b === 'v1hovermode') {
+                    enableHover('toggleHover');
+                    enableHover('hoverClosestCartesian');
+                    enableHover('hoverCompareCartesian');
+                    enableHover('hoverClosestGeo');
+                    enableHover('hoverClosest3d');
+                    enableHover('hoverClosestGl2d');
+                    enableHover('hoverClosestPie');
                 }
             } else newList.push(b);
         }

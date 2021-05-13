@@ -1100,8 +1100,7 @@ describe('ModeBar', function() {
                 Plotly.newPlot(gd, mockData, mockLayout, {
                     modeBarButtonsToAdd: [
                         'togglespikelines',
-                        'hovercompare',
-                        'hoverclosest'
+                        'v1hovermode'
                     ]
                 }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
