@@ -600,6 +600,12 @@ module.exports = function setConvert(ax, fullLayout) {
         var rangebreaksIn = ax.rangebreaks || [];
         var bnds, b0, b1, vb, vDate;
 
+        if (!rangebreaksIn._cachedVals) {
+            rangebreaksIn._cachedVals = rangebreaksIn.map(brk => {
+                return brk.values ? Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc) : null;
+            });
+        }
+
         for(var i = 0; i < rangebreaksIn.length; i++) {
             var brk = rangebreaksIn[i];
 
@@ -653,7 +659,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
                     if(vb >= b0 && vb < b1) return BADNUM;
                 } else {
-                    var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
+                    var vals = rangebreaksIn._cachedVals[i];
                     for(var j = 0; j < vals.length; j++) {
                         b0 = vals[j];
                         b1 = b0 + brk.dvalue;
