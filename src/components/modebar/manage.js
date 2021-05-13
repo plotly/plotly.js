@@ -184,6 +184,8 @@ function getButtonGroups(gd) {
         for(var i = 0; i < buttonsToAdd.length; i++) {
             var b = buttonsToAdd[i];
             if(typeof b === 'string') {
+                b = b.toLowerCase();
+
                 if(DRAW_MODES.indexOf(b) !== -1) {
                     // accept pre-defined drag modes i.e. shape drawing features as string
                     if(
