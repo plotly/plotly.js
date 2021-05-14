@@ -15,4 +15,5 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('modebar.color', Color.addOpacity(defaultColor, 0.3));
     coerce('modebar.activecolor', Color.addOpacity(defaultColor, 0.7));
     coerce('modebar.uirevision', layoutOut.uirevision);
+    coerce('modebar.buttonstoadd');
 };

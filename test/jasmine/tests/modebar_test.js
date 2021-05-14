@@ -42,6 +42,7 @@ describe('ModeBar', function() {
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
                 modebar: {
+                    buttonstoadd: '',
                     orientation: 'h',
                     bgcolor: 'rgba(255,255,255,0.7)',
                     color: 'rgba(0, 31, 95, 0.3)',

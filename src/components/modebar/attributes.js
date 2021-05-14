@@ -37,5 +37,28 @@ module.exports = {
                 'root level and inside subplots. Defaults to `layout.uirevision`.'
             ].join(' ')
         },
+        buttonstoadd: {
+            valType: 'flaglist',
+            flags: [
+                'v1hovermode',
+                'hoverclosest',
+                'hovercompare',
+                'togglehover',
+                'togglespikelines',
+                'drawclosedpath',
+                'drawopenpath',
+                'drawline',
+                'drawrect',
+                'drawcircle',
+                'eraseshape',
+            ],
+            dflt: '',
+            editType: 'modebar',
+            description: [
+                'Determines which predefined modebar buttons to add.',
+                'Please note that these buttons will only be shown if they are compatible',
+                'with all trace types used in a graph.'
+            ].join(' ')
+        }
     }
 };

@@ -72,8 +72,9 @@ function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var context = gd._context;
+    var layoutButtonsToAdd = fullLayout.modebar.buttonstoadd.split('+');
+    var buttonsToAdd = context.modeBarButtonsToAdd.concat(layoutButtonsToAdd);
     var buttonsToRemove = context.modeBarButtonsToRemove;
-    var buttonsToAdd = context.modeBarButtonsToAdd;
 
     var hasCartesian = fullLayout._has('cartesian');
     var hasGL3D = fullLayout._has('gl3d');
