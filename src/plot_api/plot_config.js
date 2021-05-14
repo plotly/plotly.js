@@ -292,8 +292,8 @@ var configAttributes = {
             'simply provide their string name(s). This could include:',
             '*v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*,',
             '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*.',
-            'Please note that these predefined button(s) may not show up in case of being incompatible',
-            'with all the plot types used in a graph.'
+            'Please note that these predefined buttons will only be shown if they are compatible',
+            'with all trace types used in a graph.'
         ].join(' ')
     },
     modeBarButtons: {
