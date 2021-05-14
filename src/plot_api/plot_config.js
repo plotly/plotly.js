@@ -287,7 +287,13 @@ var configAttributes = {
         dflt: [],
         description: [
             'Add mode bar button using config objects',
-            'See ./components/modebar/buttons.js for list of arguments.'
+            'See ./components/modebar/buttons.js for list of arguments.',
+            'To enable predefined modebar buttons e.g. shape drawing, hover and spikelines,',
+            'simply provide their string name(s). This could include:',
+            '*v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*,',
+            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*.',
+            'Please note that these predefined button(s) may not show up in case of being incompatible',
+            'with all the plot types used in a graph.'
         ].join(' ')
     },
     modeBarButtons: {
