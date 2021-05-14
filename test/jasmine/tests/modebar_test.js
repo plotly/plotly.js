@@ -1435,7 +1435,7 @@ describe('ModeBar', function() {
         });
     });
 
-    describe('modebar styling', function() {
+    describe('modebar relayout', function() {
         var gd;
         var colors = ['rgba(128, 128, 128, 0.7)', 'rgba(255, 0, 128, 0.2)'];
         var targetBtn = 'pan2d';
@@ -1556,6 +1556,81 @@ describe('ModeBar', function() {
             .then(function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width > size.height).toBeTruthy();
+            })
+            .then(done, done.fail);
+        });
+
+        it('add and remove predefined shape drawing and hover buttons via layout.modebar.buttonstoadd', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {})
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                    'drawline',
+                    'drawopenpath',
+                    'drawclosedpath',
+                    'drawcircle',
+                    'drawrect',
+                    'eraseshape'
+                ].join('+'));
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 6);
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                    'hovercompare',
+                    'hoverclosest',
+                    'togglespikelines'
+                ].join('+'));
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 3);
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                    'v1hovermode',
+                    'togglespikelines'
+                ].join('+'));
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 3);
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                    'v1hovermode',
+                    'togglespikelines',
+                    'togglehover',
+                    'hovercompare',
+                    'hoverclosest',
+                    'eraseshape',
+                    'eraseshape',
+                    'eraseshape'
+                ].join('+'));
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 4, 'skip duplicates');
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                    'drawline',
+                    'invalid'
+                ].join('+'));
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 1, 'skip invalid');
             })
             .then(done, done.fail);
         });
