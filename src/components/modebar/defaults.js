@@ -19,5 +19,5 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('color', Color.addOpacity(defaultColor, 0.3));
     coerce('activecolor', Color.addOpacity(defaultColor, 0.7));
     coerce('uirevision', layoutOut.uirevision);
-    coerce('buttonstoadd');
+    coerce('add');
 };

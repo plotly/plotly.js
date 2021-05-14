@@ -34,7 +34,7 @@ module.exports = {
             'root level and inside subplots. Defaults to `layout.uirevision`.'
         ].join(' ')
     },
-    buttonstoadd: {
+    add: {
         valType: 'flaglist',
         flags: [
             'v1hovermode',

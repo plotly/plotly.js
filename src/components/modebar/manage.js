@@ -72,7 +72,7 @@ function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var context = gd._context;
-    var layoutButtonsToAdd = fullLayout.modebar.buttonstoadd.split('+');
+    var layoutButtonsToAdd = fullLayout.modebar.add.split('+');
     var buttonsToAdd = context.modeBarButtonsToAdd.concat(layoutButtonsToAdd);
     var buttonsToRemove = context.modeBarButtonsToRemove;
 

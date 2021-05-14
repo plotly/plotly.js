@@ -42,7 +42,7 @@ describe('ModeBar', function() {
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
                 modebar: {
-                    buttonstoadd: '',
+                    add: '',
                     orientation: 'h',
                     bgcolor: 'rgba(255,255,255,0.7)',
                     color: 'rgba(0, 31, 95, 0.3)',
@@ -1560,7 +1560,7 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
-        it('add and remove predefined shape drawing and hover buttons via layout.modebar.buttonstoadd and template', function(done) {
+        it('add and remove predefined shape drawing and hover buttons via layout.modebar.add and template', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
                 return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
@@ -1571,7 +1571,7 @@ describe('ModeBar', function() {
             .then(function() {
                 expect(countButtons()).toBe(initial);
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                return Plotly.relayout(gd, 'modebar.add', [
                     'drawline',
                     'drawopenpath',
                     'drawclosedpath',
@@ -1583,12 +1583,12 @@ describe('ModeBar', function() {
             .then(function() {
                 expect(countButtons()).toBe(initial + 6);
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', '');
+                return Plotly.relayout(gd, 'modebar.add', '');
             })
             .then(function() {
                 expect(countButtons()).toBe(initial);
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                return Plotly.relayout(gd, 'modebar.add', [
                     'hovercompare',
                     'hoverclosest',
                     'togglespikelines'
@@ -1597,12 +1597,12 @@ describe('ModeBar', function() {
             .then(function() {
                 expect(countButtons()).toBe(initial + 3);
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', '');
+                return Plotly.relayout(gd, 'modebar.add', '');
             })
             .then(function() {
                 expect(countButtons()).toBe(initial);
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                return Plotly.relayout(gd, 'modebar.add', [
                     'v1hovermode',
                     'togglespikelines'
                 ].join('+'));
@@ -1610,7 +1610,7 @@ describe('ModeBar', function() {
             .then(function() {
                 expect(countButtons()).toBe(initial + 3);
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                return Plotly.relayout(gd, 'modebar.add', [
                     'v1hovermode',
                     'togglespikelines',
                     'togglehover',
@@ -1624,7 +1624,7 @@ describe('ModeBar', function() {
             .then(function() {
                 expect(countButtons()).toBe(initial + 4, 'skip duplicates');
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', [
+                return Plotly.relayout(gd, 'modebar.add', [
                     'drawline',
                     'invalid'
                 ].join('+'));
@@ -1632,12 +1632,12 @@ describe('ModeBar', function() {
             .then(function() {
                 expect(countButtons()).toBe(initial + 1, 'skip invalid');
 
-                return Plotly.relayout(gd, 'modebar.buttonstoadd', '');
+                return Plotly.relayout(gd, 'modebar.add', '');
             })
             .then(function() {
                 expect(countButtons()).toBe(initial);
 
-                return Plotly.relayout(gd, 'template.layout.modebar.buttonstoadd', 'v1hovermode');
+                return Plotly.relayout(gd, 'template.layout.modebar.add', 'v1hovermode');
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 2, 'via template');
