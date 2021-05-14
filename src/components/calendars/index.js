@@ -234,6 +234,7 @@ module.exports = {
             }
         },
         transforms: {
+            description: 'This attribute is deprecated and it may be removed from the API in next major version.',
             filter: {
                 valuecalendar: makeAttrs([
                     'Sets the calendar system to use for `value`, if it is a date.'
