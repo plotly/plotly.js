@@ -1560,7 +1560,7 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
-        it('add and remove predefined shape drawing and hover buttons via layout.modebar.buttonstoadd', function(done) {
+        it('add and remove predefined shape drawing and hover buttons via layout.modebar.buttonstoadd and template', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
                 return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
@@ -1631,6 +1631,16 @@ describe('ModeBar', function() {
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 1, 'skip invalid');
+
+                return Plotly.relayout(gd, 'modebar.buttonstoadd', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'template.layout.modebar.buttonstoadd', 'v1hovermode');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 2, 'via template');
             })
             .then(done, done.fail);
         });
