@@ -1721,6 +1721,9 @@ describe('ModeBar', function() {
                     'toimage',
                 ].join('+'));
             })
+            .then(function() {
+                expect(countButtons()).toBe(initial - 9);
+            })
             .then(done, done.fail);
         });
     });
