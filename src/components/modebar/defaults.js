@@ -20,4 +20,5 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('activecolor', Color.addOpacity(defaultColor, 0.7));
     coerce('uirevision', layoutOut.uirevision);
     coerce('add');
+    coerce('remove');
 };

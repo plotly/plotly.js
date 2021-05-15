@@ -43,6 +43,7 @@ describe('ModeBar', function() {
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
                 modebar: {
                     add: '',
+                    remove: '',
                     orientation: 'h',
                     bgcolor: 'rgba(255,255,255,0.7)',
                     color: 'rgba(0, 31, 95, 0.3)',
@@ -851,12 +852,24 @@ describe('ModeBar', function() {
             expect(countButtons(gd._fullLayout._modeBar)).toEqual(6);
         });
 
-        it('updates mode bar buttons if modeBarButtonsToRemove changes', function() {
+        it('updates mode bar buttons if modeBarButtonsToRemove changes (exact camel case)', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
             var initialButtonCount = countButtons(gd._fullLayout._modeBar);
 
             gd._context.modeBarButtonsToRemove = ['toImage', 'zoom2d'];
+            manageModeBar(gd);
+
+            expect(countButtons(gd._fullLayout._modeBar))
+                .toEqual(initialButtonCount - 2);
+        });
+
+        it('updates mode bar buttons if modeBarButtonsToRemove changes (lowercase and short names)', function() {
+            var gd = setupGraphInfo();
+            manageModeBar(gd);
+            var initialButtonCount = countButtons(gd._fullLayout._modeBar);
+
+            gd._context.modeBarButtonsToRemove = ['toimage', 'zoom'];
             manageModeBar(gd);
 
             expect(countButtons(gd._fullLayout._modeBar))
@@ -1560,7 +1573,7 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
-        it('add and remove predefined shape drawing and hover buttons via layout.modebar.add and template', function(done) {
+        it('add predefined shape drawing and hover buttons via layout.modebar.add and template', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
                 return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
@@ -1641,6 +1654,72 @@ describe('ModeBar', function() {
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 2, 'via template');
+            })
+            .then(done, done.fail);
+        });
+
+        it('remove buttons using exact (camel case) and short (lower case) names via layout.modebar.remove and template', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {})
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.remove', [
+                    'zoom',
+                    'zoomin',
+                    'zoomout',
+                    'pan',
+                    'select',
+                    'lasso',
+                    'autoscale',
+                    'resetscale',
+                    'toimage',
+                ].join('+'));
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial - 9);
+
+                return Plotly.relayout(gd, 'modebar.remove', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.remove', [
+                    'zoom2d',
+                    'zoomIn2d',
+                    'zoomOut2d',
+                    'pan2d',
+                    'select2d',
+                    'lasso2d',
+                    'autoScale2d',
+                    'resetScale2d',
+                    'toImage',
+                ].join('+'));
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial - 9);
+
+                return Plotly.relayout(gd, 'modebar.remove', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'template.layout.modebar.remove', [
+                    'zoom',
+                    'zoomin',
+                    'zoomout',
+                    'pan',
+                    'select',
+                    'lasso',
+                    'autoscale',
+                    'resetscale',
+                    'toimage',
+                ].join('+'));
             })
             .then(done, done.fail);
         });
