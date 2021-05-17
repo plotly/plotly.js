@@ -72,10 +72,33 @@ function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var context = gd._context;
-    var buttonsToAdd = context.modeBarButtonsToAdd
-        .concat(fullLayout.modebar.add.split('+'));
-    var buttonsToRemove = context.modeBarButtonsToRemove
-        .concat(fullLayout.modebar.remove.split('+'));
+
+    function match(name, B) {
+        if(typeof B === 'string') {
+            if(B === name) return true;
+        } else {
+            if(B.name === name || B._cat === name) return true;
+        }
+        return false;
+    }
+
+    var buttonsToAdd = context.modeBarButtonsToAdd.concat(
+        fullLayout.modebar.add.split('+').filter(function(e) {
+            for(var i = 0; i < context.modeBarButtonsToRemove.length; i++) {
+                if(match(e, context.modeBarButtonsToRemove[i])) return false;
+            }
+            return true;
+        })
+    );
+
+    var buttonsToRemove = context.modeBarButtonsToRemove.concat(
+        fullLayout.modebar.remove.split('+').filter(function(e) {
+            for(var i = 0; i < context.modeBarButtonsToAdd.length; i++) {
+                if(match(e, context.modeBarButtonsToAdd[i])) return false;
+            }
+            return true;
+        })
+    );
 
     var hasCartesian = fullLayout._has('cartesian');
     var hasGL3D = fullLayout._has('gl3d');

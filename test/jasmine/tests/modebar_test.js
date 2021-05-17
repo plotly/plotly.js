@@ -1726,6 +1726,46 @@ describe('ModeBar', function() {
             })
             .then(done, done.fail);
         });
+
+        it('add button if removed by layout and added by config', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {
+                modebar: {
+                    remove: 'zoom'
+                }
+            }, {
+                modeBarButtonsToAdd: ['zoom']
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+            })
+            .then(done, done.fail);
+        });
+
+        it('remove button if added by layout and removed by config', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {
+                modebar: {
+                    add: 'drawline'
+                }
+            }, {
+                modeBarButtonsToRemove: ['drawline']
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+            })
+            .then(done, done.fail);
+        });
     });
 
     describe('modebar html', function() {
