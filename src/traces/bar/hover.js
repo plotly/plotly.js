@@ -39,17 +39,7 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        var w = di.w;
-        var delta = sgn * w;
-        if(trace[posLetter + 'period']) {
-            var alignment = trace[posLetter + 'periodalignment'];
-            if(alignment === 'start') {
-                delta = (sgn === -1) ? 0 : w;
-            } else if(alignment === 'end') {
-                delta = (sgn === -1) ? -w : 0;
-            }
-        }
-        return di[posLetter] + delta / 2;
+        return di[posLetter] + 0.5 * sgn * di.w;
     }
 
     var minPos = isClosest ?
