@@ -75,9 +75,12 @@ function getButtonGroups(gd) {
 
     function match(name, B) {
         if(typeof B === 'string') {
-            if(B === name) return true;
+            if(B.toLowerCase() === name.toLowerCase()) return true;
         } else {
-            if(B.name === name || B._cat === name) return true;
+            var v0 = B.name;
+            var v1 = (B._cat || B.name);
+
+            if(v0 === name || v1 === name.toLowerCase()) return true;
         }
         return false;
     }
