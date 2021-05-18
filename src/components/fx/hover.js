@@ -268,7 +268,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     // mapped onto each of the currently selected overlaid subplots
     var xvalArray, yvalArray;
 
-    var itemnum, curvenum, cd, trace, subplotId, subploti, mode,
+    var itemnum, curvenum, cd, trace, subplotId, subploti, _mode,
         xval, yval, pointData, closedataPreviousLength;
 
     // spikePoints: the set of candidate points we've found to draw spikes to
@@ -403,9 +403,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
 
             // within one trace mode can sometimes be overridden
-            mode = hovermode;
-            if(helpers.isUnifiedHover(mode)) {
-                mode = mode.charAt(0);
+            _mode = hovermode;
+            if(helpers.isUnifiedHover(_mode)) {
+                _mode = _mode.charAt(0);
             }
 
             // container for new point, also used to pass info into module.hoverPoints
@@ -463,20 +463,20 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // for a highlighting array, figure out what
             // we're searching for with this element
-            if(mode === 'array') {
+            if(_mode === 'array') {
                 var selection = evt[curvenum];
                 if('pointNumber' in selection) {
                     pointData.index = selection.pointNumber;
-                    mode = 'closest';
+                    _mode = 'closest';
                 } else {
-                    mode = '';
+                    _mode = '';
                     if('xval' in selection) {
                         xval = selection.xval;
-                        mode = 'x';
+                        _mode = 'x';
                     }
                     if('yval' in selection) {
                         yval = selection.yval;
-                        mode = mode ? 'closest' : 'y';
+                        _mode = _mode ? 'closest' : 'y';
                     }
                 }
             } else if(customXVal !== undefined && customYVal !== undefined) {
@@ -490,7 +490,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
-                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, {
+                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
                         hoverLayer: fullLayout._hoverlayer
                     });
 
@@ -650,7 +650,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     // If in compare mode, select every point at position
     if(
-        helpers.isXYhover(mode) &&
+        helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
