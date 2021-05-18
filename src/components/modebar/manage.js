@@ -7,6 +7,39 @@ var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
+var buttonList = Object.keys(modeBarButtons);
+
+var DRAW_MODES = [
+    'drawline',
+    'drawopenpath',
+    'drawclosedpath',
+    'drawcircle',
+    'drawrect',
+    'eraseshape'
+];
+
+var backButtons = [
+    'v1hovermode',
+    'hoverclosest',
+    'hovercompare',
+    'togglehover',
+    'togglespikelines'
+].concat(DRAW_MODES);
+
+var foreButtons = [];
+var addToForeButtons = function(b) {
+    if(backButtons.indexOf(b._cat || b.name) !== -1) return;
+    // for convenience add lowercase shotname e.g. zoomin as well fullname zoomInGeo
+    var name = b.name;
+    var _cat = (b._cat || b.name).toLowerCase();
+    if(foreButtons.indexOf(name) === -1) foreButtons.push(name);
+    if(foreButtons.indexOf(_cat) === -1) foreButtons.push(_cat);
+};
+buttonList.forEach(function(k) {
+    addToForeButtons(modeBarButtons[k]);
+});
+foreButtons.sort();
+
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -58,15 +91,6 @@ module.exports = function manageModeBar(gd) {
     else fullLayout._modeBar = createModeBar(gd, buttonGroups);
 };
 
-var DRAW_MODES = [
-    'drawline',
-    'drawopenpath',
-    'drawclosedpath',
-    'drawcircle',
-    'drawrect',
-    'eraseshape'
-];
-
 // logic behind which buttons are displayed by default
 function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
@@ -85,8 +109,14 @@ function getButtonGroups(gd) {
         return false;
     }
 
+    var layoutAdd = fullLayout.modebar.add;
+    if(typeof layoutAdd === 'string') layoutAdd = [layoutAdd];
+
+    var layoutRemove = fullLayout.modebar.remove;
+    if(typeof layoutRemove === 'string') layoutRemove = [layoutRemove];
+
     var buttonsToAdd = context.modeBarButtonsToAdd.concat(
-        fullLayout.modebar.add.split('+').filter(function(e) {
+        layoutAdd.filter(function(e) {
             for(var i = 0; i < context.modeBarButtonsToRemove.length; i++) {
                 if(match(e, context.modeBarButtonsToRemove[i])) return false;
             }
@@ -95,7 +125,7 @@ function getButtonGroups(gd) {
     );
 
     var buttonsToRemove = context.modeBarButtonsToRemove.concat(
-        fullLayout.modebar.remove.split('+').filter(function(e) {
+        layoutRemove.filter(function(e) {
             for(var i = 0; i < context.modeBarButtonsToAdd.length; i++) {
                 if(match(e, context.modeBarButtonsToAdd[i])) return false;
             }

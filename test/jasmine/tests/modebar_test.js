@@ -1573,7 +1573,7 @@ describe('ModeBar', function() {
             .then(done, done.fail);
         });
 
-        it('add predefined shape drawing and hover buttons via layout.modebar.add and template', function(done) {
+        it('add predefined shape drawing and hover buttons via layout.modebar.add', function(done) {
             function countButtons() {
                 var modeBarEl = gd._fullLayout._modeBar.element;
                 return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
@@ -1591,7 +1591,7 @@ describe('ModeBar', function() {
                     'drawcircle',
                     'drawrect',
                     'eraseshape'
-                ].join('+'));
+                ]);
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 6);
@@ -1605,7 +1605,7 @@ describe('ModeBar', function() {
                     'hovercompare',
                     'hoverclosest',
                     'togglespikelines'
-                ].join('+'));
+                ]);
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 3);
@@ -1618,7 +1618,7 @@ describe('ModeBar', function() {
                 return Plotly.relayout(gd, 'modebar.add', [
                     'v1hovermode',
                     'togglespikelines'
-                ].join('+'));
+                ]);
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 3);
@@ -1629,10 +1629,8 @@ describe('ModeBar', function() {
                     'togglehover',
                     'hovercompare',
                     'hoverclosest',
-                    'eraseshape',
-                    'eraseshape',
                     'eraseshape'
-                ].join('+'));
+                ]);
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 4, 'skip duplicates');
@@ -1640,7 +1638,7 @@ describe('ModeBar', function() {
                 return Plotly.relayout(gd, 'modebar.add', [
                     'drawline',
                     'invalid'
-                ].join('+'));
+                ]);
             })
             .then(function() {
                 expect(countButtons()).toBe(initial + 1, 'skip invalid');
@@ -1649,11 +1647,6 @@ describe('ModeBar', function() {
             })
             .then(function() {
                 expect(countButtons()).toBe(initial);
-
-                return Plotly.relayout(gd, 'template.layout.modebar.add', 'v1hovermode');
-            })
-            .then(function() {
-                expect(countButtons()).toBe(initial + 2, 'via template');
             })
             .then(done, done.fail);
         });
@@ -1679,7 +1672,7 @@ describe('ModeBar', function() {
                     'autoscale',
                     'resetscale',
                     'toimage',
-                ].join('+'));
+                ]);
             })
             .then(function() {
                 expect(countButtons()).toBe(initial - 9);
@@ -1699,30 +1692,64 @@ describe('ModeBar', function() {
                     'autoScale2d',
                     'resetScale2d',
                     'toImage',
-                ].join('+'));
+                ]);
             })
             .then(function() {
                 expect(countButtons()).toBe(initial - 9);
-
-                return Plotly.relayout(gd, 'modebar.remove', '');
             })
-            .then(function() {
-                expect(countButtons()).toBe(initial);
+            .then(done, done.fail);
+        });
 
-                return Plotly.relayout(gd, 'template.layout.modebar.remove', [
-                    'zoom',
-                    'zoomin',
-                    'zoomout',
-                    'pan',
-                    'select',
-                    'lasso',
-                    'autoscale',
-                    'resetscale',
-                    'toimage',
-                ].join('+'));
+        it('remove buttons using template', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {
+                template: {
+                    layout: {
+                        modebar: {
+                            remove: [
+                                'zoom',
+                                'zoomin',
+                                'zoomout',
+                                'pan',
+                                'select',
+                                'lasso',
+                                'autoscale',
+                                'resetscale',
+                                'toimage',
+                            ]
+                        }
+                    }
+                }
             })
             .then(function() {
                 expect(countButtons()).toBe(initial - 9);
+            })
+            .then(done, done.fail);
+        });
+
+        it('add buttons using template', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {
+                template: {
+                    layout: {
+                        modebar: {
+                            add: 'drawcircle'
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 1);
             })
             .then(done, done.fail);
         });

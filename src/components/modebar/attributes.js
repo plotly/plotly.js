@@ -1,35 +1,5 @@
 'use strict';
 
-var modeBarButtons = require('./buttons');
-var buttonList = Object.keys(modeBarButtons);
-var backButtons = [
-    'v1hovermode',
-    'hoverclosest',
-    'hovercompare',
-    'togglehover',
-    'togglespikelines',
-    'drawclosedpath',
-    'drawopenpath',
-    'drawline',
-    'drawrect',
-    'drawcircle',
-    'eraseshape',
-];
-
-var foreButtons = [];
-var addToForeButtons = function(b) {
-    if(backButtons.indexOf(b._cat || b.name) !== -1) return;
-    // for convenience add lowercase shotname e.g. zoomin as well fullname zoomInGeo
-    var name = b.name;
-    var _cat = (b._cat || b.name).toLowerCase();
-    if(foreButtons.indexOf(name) === -1) foreButtons.push(name);
-    if(foreButtons.indexOf(_cat) === -1) foreButtons.push(_cat);
-};
-buttonList.forEach(function(k) {
-    addToForeButtons(modeBarButtons[k]);
-});
-foreButtons.sort();
-
 module.exports = {
     editType: 'modebar',
 
@@ -65,8 +35,8 @@ module.exports = {
         ].join(' ')
     },
     add: {
-        valType: 'flaglist',
-        flags: backButtons,
+        valType: 'string',
+        arrayOk: true,
         dflt: '',
         editType: 'modebar',
         description: [
@@ -77,8 +47,8 @@ module.exports = {
         ].join(' ')
     },
     remove: {
-        valType: 'flaglist',
-        flags: foreButtons,
+        valType: 'string',
+        arrayOk: true,
         dflt: '',
         editType: 'modebar',
         description: [
