@@ -1,5 +1,7 @@
 'use strict';
 
+var constants = require('./constants');
+
 module.exports = {
     editType: 'modebar',
 
@@ -43,7 +45,8 @@ module.exports = {
             'Determines which predefined modebar buttons to add.',
             'Please note that these buttons will only be shown if they are',
             'compatible with all trace types used in a graph.',
-            'Similar to `config.modeBarButtonsToAdd` option'
+            'Similar to `config.modeBarButtonsToAdd` option.',
+            'This may include *' + constants.backButtons.join('*, *') + '*.'
         ].join(' ')
     },
     remove: {
@@ -53,7 +56,8 @@ module.exports = {
         editType: 'modebar',
         description: [
             'Determines which predefined modebar buttons to remove.',
-            'Similar to `config.modeBarButtonsToRemove` option'
+            'Similar to `config.modeBarButtonsToRemove` option.',
+            'This may include *' + constants.foreButtons.join('*, *') + '*.'
         ].join(' ')
     }
 };
