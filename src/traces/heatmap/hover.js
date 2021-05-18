@@ -5,7 +5,7 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var extractOpts = require('../../components/colorscale').extractOpts;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, opts) {
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
     if(!opts) opts = {};
     var isContour = opts.isContour;
 

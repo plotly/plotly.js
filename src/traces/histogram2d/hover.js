@@ -3,8 +3,8 @@
 var heatmapHover = require('../heatmap/hover');
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, opts) {
-    var pts = heatmapHover(pointData, xval, yval, hovermode, hoverLayer, opts);
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    var pts = heatmapHover(pointData, xval, yval, hovermode, opts);
 
     if(!pts) return;
 

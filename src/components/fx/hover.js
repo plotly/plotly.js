@@ -490,7 +490,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
-                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
+
                     if(newPoints) {
                         var newPoint;
                         for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
@@ -519,7 +522,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 if(hoverData.length === 0) {
                     pointData.distance = spikedistance;
                     pointData.index = false;
-                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
+                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
                     if(closestPoints) {
                         closestPoints = closestPoints.filter(function(point) {
                             // some hover points, like scatter fills, do not allow spikes,
