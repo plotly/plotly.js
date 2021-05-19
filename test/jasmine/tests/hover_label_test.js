@@ -4974,6 +4974,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 _hover(gd, { xpx: 100, ypx: 200 });
                 assertLabel({title: 'Jan 1, 2000', items: [
+                    'bar : (Dec, 2)',
                     'scatter : 1.1'
                 ]});
 
@@ -5051,22 +5052,20 @@ describe('hovermode: (x|y)unified', function() {
             _hover(gd, { xpx: 40, ypx: 200 });
             assertLabel({title: 'Jan', items: [
                 'bar : (Jan 1, 2000, 1)',
-                'start : 1',
-                'end : 1'
+                'start : 1'
             ]});
 
             _hover(gd, { xpx: 100, ypx: 200 });
             assertLabel({title: 'Jan 1, 2000', items: [
                 'bar : 1',
-                'start : (Jan, 1)',
-                'end : (Jan, 1)'
+                'start : (Jan, 1)'
             ]});
 
             _hover(gd, { xpx: 360, ypx: 200 });
             assertLabel({title: 'Feb 1, 2000', items: [
                 'bar : 2',
                 'start : (Feb, 2)',
-                'end : (Feb, 2)'
+                'end : (Jan, 1)'
             ]});
 
             _hover(gd, { xpx: 400, ypx: 200 });

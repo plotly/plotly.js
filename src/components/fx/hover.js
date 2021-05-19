@@ -14,7 +14,6 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
-var alignPeriod = require('../../plots/cartesian/align_period');
 var Registry = require('../../registry');
 
 var helpers = require('./helpers');
@@ -662,34 +661,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         findHoverPoints(customXVal, customYVal);
 
-        // also find start, middle and end point for period
         var axLetter = hovermode.charAt(0);
         if(winningPoint.trace[axLetter + 'period']) {
-            var v = winningPoint[axLetter + 'LabelVal'];
-            var ax = winningPoint[axLetter + 'a'];
-            var T = {};
-            T[axLetter + 'period'] = winningPoint.trace[axLetter + 'period'];
-            T[axLetter + 'period0'] = winningPoint.trace[axLetter + 'period0'];
-
-            T[axLetter + 'periodalignment'] = 'start';
-            var start = alignPeriod(T, ax, axLetter, [v])[0];
-
-            T[axLetter + 'periodalignment'] = 'middle';
-            var middle = alignPeriod(T, ax, axLetter, [v])[0];
-
-            T[axLetter + 'periodalignment'] = 'end';
-            var end = alignPeriod(T, ax, axLetter, [v])[0];
-
-            if(axLetter === 'x') {
-                findHoverPoints(start, customYVal);
-                findHoverPoints(middle, customYVal);
-                findHoverPoints(end, customYVal);
-            } else {
-                findHoverPoints(customXVal, start);
-                findHoverPoints(customXVal, middle);
-                findHoverPoints(customXVal, end);
-            }
-
             var k;
             var seen = {};
             for(k = 0; k < initLen; k++) {
