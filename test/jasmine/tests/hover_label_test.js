@@ -4674,6 +4674,55 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
+    it('should display hover for scatter and bars at various intervals', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                y: [21, 22, 23, 24, 25, 26]
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0.6', items: [
+                'bar : (1, 30)',
+                'scatter : 24'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 30',
+                'scatter : 26'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
     it('case of scatter points on period bars', function(done) {
         Plotly.newPlot(gd, {
             data: [
