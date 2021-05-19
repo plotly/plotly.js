@@ -1714,40 +1714,6 @@ describe('hover info', function() {
             })
             .then(done, done.fail);
         });
-
-        it('should avoid overlaps on *too close* pts are filtered out', function(done) {
-            Plotly.newPlot(gd, [
-                {name: 'A', x: [9, 10], y: [9, 10]},
-                {name: 'B', x: [8, 9], y: [9, 10]},
-                {name: 'C', x: [9, 10], y: [10, 11]}
-            ], {
-                hovermode: 'x',
-                xaxis: {range: [0, 100]},
-                yaxis: {range: [0, 100]},
-                width: 700,
-                height: 450
-            })
-            .then(function() { _hover(gd, 67, 239); })
-            .then(function() {
-                var nodesA = hoverInfoNodes('A');
-                var nodesC = hoverInfoNodes('C');
-
-                // Ensure layout correct
-                assertLabelsInsideBoxes(nodesA, 'A');
-                assertLabelsInsideBoxes(nodesC, 'C');
-                assertSecondaryRightToPrimaryBox(nodesA, 'A');
-                assertSecondaryRightToPrimaryBox(nodesC, 'C');
-
-                // Ensure stacking, finally
-                var boxA = nodesA.primaryBox.getBoundingClientRect();
-                var boxC = nodesC.primaryBox.getBoundingClientRect();
-
-                // Be robust against floating point arithmetic and subtle future layout changes
-                expect(calcLineOverlap(boxA.top, boxA.bottom, boxC.top, boxC.bottom))
-                  .toBeWithin(0, 1);
-            })
-            .then(done, done.fail);
-        });
     });
 
     describe('constraints info graph viewport', function() {
@@ -4703,27 +4669,6 @@ describe('hovermode: (x|y)unified', function() {
                     'trace 2 : 2',
                     'trace 5 : 2',
                     'trace 4 : 1'
-                ]});
-            })
-            .then(done, done.fail);
-    });
-
-    it('shares filtering logic with compare mode x', function(done) {
-        var mock = require('@mocks/27.json');
-        var mockCopy = Lib.extendDeep({}, mock);
-
-        Plotly.newPlot(gd, mockCopy)
-            .then(function(gd) {
-                _hover(gd, { xval: '2002' });
-                assertElementCount('g.hovertext', 2);
-
-                return Plotly.relayout(gd, 'hovermode', 'x unified');
-            })
-            .then(function() {
-                _hover(gd, { xval: '2002' });
-                assertLabel({title: '2002.042', items: [
-                    'Market income : 0.5537845',
-                    'Market incom... : 0.4420997'
                 ]});
             })
             .then(done, done.fail);

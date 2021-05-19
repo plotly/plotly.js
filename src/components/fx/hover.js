@@ -708,7 +708,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
 
         // Remove duplicated hoverData points
-        // note that d3 also filters identical points in the rendering steps
         var repeated = {};
         hoverData = hoverData.filter(function(hd) {
             var key = hoverDataKey(hd);
@@ -820,9 +819,7 @@ function createHoverText(hoverData, opts, gd) {
     var xa = c0.xa;
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
-    var v0 = c0[axLetter + 'LabelVal'];
     var t0 = c0[axLetter + 'Label'];
-    var t00 = (String(t0) || '').split(' ')[0];
     var outerContainerBB = outerContainer.node().getBoundingClientRect();
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
@@ -1011,43 +1008,12 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         label.attr('transform', strTranslate(lx, ly));
-
-        // remove the "close but not quite" points
-        // because of error bars, only take up to a space
-        hoverData = filterClosePoints(hoverData);
     });
-
-    function filterClosePoints(hoverData) {
-        return hoverData.filter(function(d) {
-            if(d.zLabelVal !== undefined) return true;
-            if((d[axLetter + 'Label'] || '').split(' ')[0] === t00) return true;
-            if(d.trace[axLetter + 'period']) {
-                var v = d[axLetter + 'LabelVal'];
-                var ax = d[axLetter + 'a'];
-                var trace = {};
-                trace[axLetter + 'period'] = d.trace[axLetter + 'period'];
-                trace[axLetter + 'period0'] = d.trace[axLetter + 'period0'];
-
-                trace[axLetter + 'periodalignment'] = 'start';
-                var start = alignPeriod(trace, ax, axLetter, [v])[0];
-
-                trace[axLetter + 'periodalignment'] = 'end';
-                var end = alignPeriod(trace, ax, axLetter, [v])[0];
-
-                if(v0 >= start && v0 < end) return true;
-            }
-
-            return false;
-        });
-    }
 
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
-
-        // similarly to compare mode, we remove the "close but not quite together" points
-        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
 
         // Return early if nothing is hovered on
         if(hoverData.length === 0) return;
