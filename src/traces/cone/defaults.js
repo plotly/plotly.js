@@ -45,6 +45,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('uhoverformat');
+    coerce('vhoverformat');
+    coerce('whoverformat');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('zhoverformat');
 
     // disable 1D transforms (for now)
     traceOut._length = null;

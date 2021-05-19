@@ -18,10 +18,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
+    var vLetter = isHorizontal ? 'x' : 'y';
     var vAxis = isHorizontal ? pointData.xa : pointData.ya;
 
     function formatNumber(a) {
-        return hoverLabelText(vAxis, a);
+        return hoverLabelText(vAxis, a, trace[vLetter + 'hoverformat']);
     }
 
     // the closest data point

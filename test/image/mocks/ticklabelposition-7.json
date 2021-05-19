@@ -1,0 +1,111 @@
+{
+    "data": [{
+        "xaxis": "x",
+        "yaxis": "y",
+        "x": ["20-10", "21-03"],
+        "y": [1e-1, 1e+6]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "x": ["21-03", "20-10"],
+        "y": [1e+6, 1e-1]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "x": ["20", "23"],
+        "y": [1e-1, 1e+6]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "x": ["23", "20"],
+        "y": [1e+6, 1e-1]
+    }],
+    "layout": {
+        "xaxis": {
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "type": "date",
+            "ticks": "outside",
+            "ticklabelmode": "period",
+            "side": "bottom",
+            "gridcolor": "white"
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "type": "log",
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "gridcolor": "white"
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [0.525, 1],
+            "autorange": "reversed",
+            "type": "date",
+            "ticks": "outside",
+            "ticklabelmode": "period",
+            "side": "bottom",
+            "ticklabelposition": "inside left",
+            "gridcolor": "white"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0, 0.475],
+            "type": "log",
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "gridcolor": "white"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "type": "date",
+            "ticks": "outside",
+            "ticklabelmode": "period",
+            "side": "top",
+            "ticklabelposition": "inside right",
+            "gridcolor": "white"
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "type": "log",
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "gridcolor": "white"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0, 0.475],
+            "autorange": "reversed",
+            "type": "date",
+            "ticks": "outside",
+            "ticklabelmode": "period",
+            "side": "top",
+            "gridcolor": "white"
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [0.525, 1],
+            "type": "log",
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "gridcolor": "white"
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 500,
+        "height": 500,
+        "margin": {
+            "t": 50,
+            "b": 50,
+            "l": 50,
+            "r": 50
+        }
+    }
+}

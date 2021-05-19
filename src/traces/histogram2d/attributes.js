@@ -4,6 +4,7 @@ var histogramAttrs = require('../histogram/attributes');
 var makeBinAttrs = require('../histogram/bin_attributes');
 var heatmapAttrs = require('../heatmap/attributes');
 var baseAttrs = require('../../plots/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
@@ -64,7 +65,9 @@ module.exports = extendFlat(
         xgap: heatmapAttrs.xgap,
         ygap: heatmapAttrs.ygap,
         zsmooth: heatmapAttrs.zsmooth,
-        zhoverformat: heatmapAttrs.zhoverformat,
+        xhoverformat: axisHoverFormat('x'),
+        yhoverformat: axisHoverFormat('y'),
+        zhoverformat: axisHoverFormat('z', 1),
         hovertemplate: hovertemplateAttrs({}, {keys: 'z'}),
         showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
     },

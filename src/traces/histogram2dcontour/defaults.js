@@ -23,4 +23,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
     coerce('hovertemplate');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
 };

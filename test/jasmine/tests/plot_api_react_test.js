@@ -178,7 +178,7 @@ describe('@noCIdep Plotly.react', function() {
 
     it('picks up partial redraws', function(done) {
         var data = [{y: [1, 2, 3], mode: 'markers'}];
-        var layout = {};
+        var layout = {hovermode: 'x'};
 
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)

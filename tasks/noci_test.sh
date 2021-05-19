@@ -18,6 +18,9 @@ root=$(dirname $0)/..
 
 # jasmine specs with @noCI tag
 test_jasmine () {
+    # run MathJax on FireFox
+    ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --nowatch && \
+    # run noCI tests
     npm run test-jasmine -- --tags=noCI,noCIdep --nowatch || EXIT_STATE=$?
 }
 

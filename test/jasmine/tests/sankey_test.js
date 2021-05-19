@@ -1318,7 +1318,7 @@ describe('sankey tests', function() {
                       .then(done, done.fail);
                 });
 
-                it('should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
+                it('@flaky should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
                     var move = [50, -50];
                     var nodes;

@@ -2,6 +2,10 @@
     "data": [
         {
             "type": "bar",
+            "textfont": {
+                "size": 24
+            },
+            "texttemplate": "%{y}",
             "y": [
                 1,
                 2,

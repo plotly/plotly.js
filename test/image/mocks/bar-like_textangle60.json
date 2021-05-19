@@ -12,7 +12,6 @@
                 "invisible"
             ],
             "type": "bar",
-            "textposition": "auto",
             "textangle": -60,
             "xaxis": "x",
             "yaxis": "y"
@@ -29,7 +28,6 @@
                 "visible"
             ],
             "type": "bar",
-            "textposition": "auto",
             "textangle": -60,
             "xaxis": "x",
             "yaxis": "y"
@@ -144,7 +142,7 @@
         "legend": {
             "orientation": "h",
             "title": {
-                "text": "<b>bar, funnel & waterfall</b><br>textangle:-60"
+                "text": "bar, funnel & waterfall<br>textangle:-60"
             }
         },
         "barmode": "stack",

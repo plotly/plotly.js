@@ -491,6 +491,18 @@
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the y axis."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "stackgroup": {
                     "valType": "string",
                     "dflt": "",
@@ -1566,6 +1578,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -2635,6 +2657,18 @@
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the y axis."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "text": {
                     "valType": "string",
                     "dflt": "",
@@ -3191,6 +3225,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -3492,6 +3536,70 @@
                         "max": 1,
                         "editType": "style",
                         "description": "Sets the opacity of the bars."
+                    },
+                    "pattern": {
+                        "shape": {
+                            "valType": "enumerated",
+                            "values": [
+                                "",
+                                "/",
+                                "\\",
+                                "x",
+                                "-",
+                                "|",
+                                "+",
+                                "."
+                            ],
+                            "dflt": "",
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area."
+                        },
+                        "bgcolor": {
+                            "valType": "color",
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the background color of the pattern fill. Defaults to a transparent background."
+                        },
+                        "size": {
+                            "valType": "number",
+                            "min": 0,
+                            "dflt": 8,
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern."
+                        },
+                        "solidity": {
+                            "valType": "number",
+                            "min": 0,
+                            "max": 1,
+                            "dflt": 0.3,
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern."
+                        },
+                        "editType": "style",
+                        "role": "object",
+                        "shapesrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  shape .",
+                            "editType": "none"
+                        },
+                        "bgcolorsrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  bgcolor .",
+                            "editType": "none"
+                        },
+                        "sizesrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  size .",
+                            "editType": "none"
+                        },
+                        "soliditysrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  solidity .",
+                            "editType": "none"
+                        }
                     },
                     "role": "object",
                     "colorsrc": {
@@ -4250,6 +4358,18 @@
                     "dflt": "middle",
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the y axis."
+                },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
                 },
                 "name": {
                     "valType": "string",
@@ -5619,11 +5739,23 @@
                     "editType": "plot",
                     "description": "Sets the vertical gap (in pixels) between bricks."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "zhoverformat": {
                     "valType": "string",
                     "dflt": "",
                     "editType": "none",
-                    "description": "Sets the hover text formatting rule using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format"
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
                 },
                 "hovertemplate": {
                     "valType": "string",
@@ -5871,6 +6003,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -6515,6 +6657,18 @@
                     "editType": "calc+clearAxisTypes",
                     "description": "Sets the sample data to be binned on the y axis."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "text": {
                     "valType": "string",
                     "dflt": "",
@@ -7003,6 +7157,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -7304,6 +7468,70 @@
                         "max": 1,
                         "editType": "style",
                         "description": "Sets the opacity of the bars."
+                    },
+                    "pattern": {
+                        "shape": {
+                            "valType": "enumerated",
+                            "values": [
+                                "",
+                                "/",
+                                "\\",
+                                "x",
+                                "-",
+                                "|",
+                                "+",
+                                "."
+                            ],
+                            "dflt": "",
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area."
+                        },
+                        "bgcolor": {
+                            "valType": "color",
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the background color of the pattern fill. Defaults to a transparent background."
+                        },
+                        "size": {
+                            "valType": "number",
+                            "min": 0,
+                            "dflt": 8,
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern."
+                        },
+                        "solidity": {
+                            "valType": "number",
+                            "min": 0,
+                            "max": 1,
+                            "dflt": 0.3,
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern."
+                        },
+                        "editType": "style",
+                        "role": "object",
+                        "shapesrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  shape .",
+                            "editType": "none"
+                        },
+                        "bgcolorsrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  bgcolor .",
+                            "editType": "none"
+                        },
+                        "sizesrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  size .",
+                            "editType": "none"
+                        },
+                        "soliditysrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  solidity .",
+                            "editType": "none"
+                        }
                     },
                     "role": "object",
                     "colorsrc": {
@@ -8118,11 +8346,23 @@
                     "editType": "calc",
                     "description": "Picks a smoothing algorithm use to smooth `z` data."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "zhoverformat": {
                     "valType": "string",
                     "dflt": "",
                     "editType": "none",
-                    "description": "Sets the hover text formatting rule using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format"
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
                 },
                 "hovertemplate": {
                     "valType": "string",
@@ -8370,6 +8610,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -9301,11 +9551,23 @@
                     "editType": "plot",
                     "role": "object"
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "zhoverformat": {
                     "valType": "string",
                     "dflt": "",
                     "editType": "none",
-                    "description": "Sets the hover text formatting rule using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format"
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
                 },
                 "hovertemplate": {
                     "valType": "string",
@@ -9547,6 +9809,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -10310,11 +10582,23 @@
                     "editType": "calc+clearAxisTypes",
                     "description": "If *array*, the heatmap's y coordinates are given by *y* (the default behavior when `y` is provided) If *scaled*, the heatmap's y coordinates are given by *y0* and *dy* (the default behavior when `y` is not provided)"
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "zhoverformat": {
                     "valType": "string",
                     "dflt": "",
                     "editType": "none",
-                    "description": "Sets the hover text formatting rule using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format"
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
                 },
                 "hovertemplate": {
                     "valType": "string",
@@ -10747,6 +11031,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -12384,6 +12678,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -13171,6 +13475,18 @@
                     "valType": "any",
                     "editType": "calc+clearAxisTypes",
                     "description": "Sets the y coordinate for single-box traces or the starting coordinate for multi-box traces set using q1/median/q3. See overview for more info."
+                },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
                 },
                 "name": {
                     "valType": "string",
@@ -14375,6 +14691,18 @@
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the y axis."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "hovertext": {
                     "valType": "string",
                     "dflt": "",
@@ -14960,6 +15288,16 @@
                             "editType": "colorbars",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -15727,6 +16065,18 @@
                     "dflt": "middle",
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the y axis."
+                },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
                 },
                 "hovertext": {
                     "valType": "string",
@@ -17900,6 +18250,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -19142,6 +19502,16 @@
                             "editType": "colorbars",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -20751,6 +21121,24 @@
                     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
                     "arrayOk": true
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
+                "zhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `zaxis.hoverformat`."
+                },
                 "mode": {
                     "valType": "flaglist",
                     "flags": [
@@ -21131,6 +21519,16 @@
                             "editType": "calc",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "calc",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -21663,6 +22061,16 @@
                             "editType": "calc",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "calc",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -22841,6 +23249,24 @@
                     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
                     "arrayOk": true
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
+                "zhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `zaxis.hoverformat`."
+                },
                 "connectgaps": {
                     "valType": "boolean",
                     "dflt": false,
@@ -23085,6 +23511,16 @@
                         "editType": "calc",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "calc",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -24356,6 +24792,30 @@
                     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
                     "arrayOk": true
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
+                "zhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `zaxis.hoverformat`."
+                },
+                "valuehoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `value`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
                 "showlegend": {
                     "valType": "boolean",
                     "dflt": false,
@@ -24595,6 +25055,16 @@
                         "editType": "calc",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "calc",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -25525,6 +25995,30 @@
                     "description": "Same as `text`.",
                     "editType": "calc"
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
+                "zhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `zaxis.hoverformat`."
+                },
+                "valuehoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `value`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
                 "hovertemplate": {
                     "valType": "string",
                     "dflt": "",
@@ -25765,6 +26259,16 @@
                         "editType": "calc",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "calc",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -26503,6 +27007,24 @@
                     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
                     "arrayOk": true
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
+                "zhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `zaxis.hoverformat`."
+                },
                 "delaunayaxis": {
                     "valType": "enumerated",
                     "values": [
@@ -26783,6 +27305,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -27641,6 +28173,42 @@
                     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. variable `norm` Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
                     "arrayOk": true
                 },
+                "uhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `u`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
+                "vhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `v`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
+                "whoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `w`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
+                "zhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `zaxis.hoverformat`."
+                },
                 "showlegend": {
                     "valType": "boolean",
                     "dflt": false,
@@ -27880,6 +28448,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -28637,6 +29215,42 @@
                     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. variables `tubex`, `tubey`, `tubez`, `tubeu`, `tubev`, `tubew`, `norm` and `divergence`. Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
                     "arrayOk": true
                 },
+                "uhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `u`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
+                "vhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `v`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
+                "whoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `w`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format By default the values are formatted using generic number format."
+                },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
+                "zhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `z`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `zaxis.hoverformat`."
+                },
                 "showlegend": {
                     "valType": "boolean",
                     "dflt": false,
@@ -28876,6 +29490,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -30422,6 +31046,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "calc",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -31683,6 +32317,16 @@
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
                     },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                    },
                     "ticklabelposition": {
                         "valType": "enumerated",
                         "values": [
@@ -32327,6 +32971,18 @@
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the y axis."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "calc",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "text": {
                     "valType": "string",
                     "dflt": "",
@@ -32694,6 +33350,16 @@
                             "editType": "calc",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "calc",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -34352,6 +35018,18 @@
                     "description": "Template string used for rendering the information that appear on hover box. Note that this will override `hoverinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format#locale_format for details on the date formatting syntax. The variables available in `hovertemplate` are the ones emitted as event data described at this link https://plotly.com/javascript/plotlyjs-events/#event-data. Additionally, every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available.  Anything contained in tag `<extra>` is displayed in the secondary box, for example \"<extra>{fullData.name}</extra>\". To hide the secondary box completely, use an empty tag `<extra></extra>`.",
                     "arrayOk": true
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "marker": {
                     "color": {
                         "valType": "color",
@@ -34592,6 +35270,16 @@
                             "editType": "colorbars",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -36568,6 +37256,16 @@
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
                     },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "calc",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                    },
                     "ticklabelposition": {
                         "valType": "enumerated",
                         "values": [
@@ -37559,6 +38257,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -38424,6 +39132,16 @@
                             "editType": "colorbars",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -39334,6 +40052,16 @@
                             "editType": "calc",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "calc",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -40425,6 +41153,16 @@
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
                     },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                    },
                     "ticklabelposition": {
                         "valType": "enumerated",
                         "values": [
@@ -41272,6 +42010,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",
@@ -44275,7 +45023,7 @@
                         "valType": "string",
                         "dflt": "",
                         "editType": "calc",
-                        "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see:  We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                        "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
                     "tickformatstops": {
                         "items": {
@@ -44793,7 +45541,7 @@
                         "valType": "string",
                         "dflt": "",
                         "editType": "calc",
-                        "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see:  We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
+                        "description": "Sets the tick label formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format We add one item to d3's date formatter: *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*"
                     },
                     "tickformatstops": {
                         "items": {
@@ -46342,6 +47090,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -47498,6 +48256,16 @@
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
                     },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                    },
                     "ticklabelposition": {
                         "valType": "enumerated",
                         "values": [
@@ -47995,6 +48763,18 @@
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the x axis."
                 },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
+                },
                 "x": {
                     "valType": "data_array",
                     "editType": "calc+clearAxisTypes",
@@ -48482,6 +49262,18 @@
                     "dflt": "middle",
                     "editType": "calc",
                     "description": "Only relevant when the axis `type` is *date*. Sets the alignment of data points on the x axis."
+                },
+                "xhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `x`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `xaxis.hoverformat`."
+                },
+                "yhoverformat": {
+                    "valType": "string",
+                    "dflt": "",
+                    "editType": "none",
+                    "description": "Sets the hover text formatting rule for `y`  using d3 formatting mini-languages which are very similar to those in Python. See: https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format And for dates see: https://github.com/d3/d3-time-format#locale_format By default the values are formatted using `yaxis.hoverformat`."
                 },
                 "x": {
                     "valType": "data_array",
@@ -50045,6 +50837,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -51188,6 +51990,16 @@
                             "editType": "calc",
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
+                        },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "calc",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                         },
                         "ticklabelposition": {
                             "valType": "enumerated",
@@ -52959,6 +53771,16 @@
                             "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                             "dflt": ""
                         },
+                        "ticklabeloverflow": {
+                            "valType": "enumerated",
+                            "values": [
+                                "allow",
+                                "hide past div",
+                                "hide past domain"
+                            ],
+                            "editType": "colorbars",
+                            "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
+                        },
                         "ticklabelposition": {
                             "valType": "enumerated",
                             "values": [
@@ -53260,6 +54082,70 @@
                         "max": 1,
                         "editType": "style",
                         "description": "Sets the opacity of the bars."
+                    },
+                    "pattern": {
+                        "shape": {
+                            "valType": "enumerated",
+                            "values": [
+                                "",
+                                "/",
+                                "\\",
+                                "x",
+                                "-",
+                                "|",
+                                "+",
+                                "."
+                            ],
+                            "dflt": "",
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the shape of the pattern fill. By default, no pattern is used for filling the area."
+                        },
+                        "bgcolor": {
+                            "valType": "color",
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the background color of the pattern fill. Defaults to a transparent background."
+                        },
+                        "size": {
+                            "valType": "number",
+                            "min": 0,
+                            "dflt": 8,
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the size of unit squares of the pattern fill in pixels, which corresponds to the interval of repetition of the pattern."
+                        },
+                        "solidity": {
+                            "valType": "number",
+                            "min": 0,
+                            "max": 1,
+                            "dflt": 0.3,
+                            "arrayOk": true,
+                            "editType": "style",
+                            "description": "Sets the solidity of the pattern fill. Solidity is roughly the fraction of the area filled by the pattern. Solidity of 0 shows only the background color without pattern and solidty of 1 shows only the foreground color without pattern."
+                        },
+                        "editType": "style",
+                        "role": "object",
+                        "shapesrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  shape .",
+                            "editType": "none"
+                        },
+                        "bgcolorsrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  bgcolor .",
+                            "editType": "none"
+                        },
+                        "sizesrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  size .",
+                            "editType": "none"
+                        },
+                        "soliditysrc": {
+                            "valType": "string",
+                            "description": "Sets the source reference on Chart Studio Cloud for  solidity .",
+                            "editType": "none"
+                        }
                     },
                     "role": "object",
                     "colorsrc": {
@@ -54646,6 +55532,16 @@
                     "editType": "calc",
                     "description": "Determines where tick labels are drawn with respect to the axis Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*. Similarly left or right has no effect on y axes or when `ticklabelmode` is set to *period*. Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match."
                 },
+                "ticklabeloverflow": {
+                    "valType": "enumerated",
+                    "values": [
+                        "allow",
+                        "hide past div",
+                        "hide past domain"
+                    ],
+                    "editType": "calc",
+                    "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. Otherwise on *category* and *multicategory* axes the default is *allow*. In other cases the default is *hide past div*."
+                },
                 "mirror": {
                     "valType": "enumerated",
                     "values": [
@@ -55746,6 +56642,16 @@
                     "dflt": "outside",
                     "editType": "calc",
                     "description": "Determines where tick labels are drawn with respect to the axis Please note that top or bottom has no effect on x axes or when `ticklabelmode` is set to *period*. Similarly left or right has no effect on y axes or when `ticklabelmode` is set to *period*. Has no effect on *multicategory* axes or when `tickson` is set to *boundaries*. When used on axes linked by `matches` or `scaleanchor`, no extra padding for inside labels would be added by autorange, so that the scales could match."
+                },
+                "ticklabeloverflow": {
+                    "valType": "enumerated",
+                    "values": [
+                        "allow",
+                        "hide past div",
+                        "hide past domain"
+                    ],
+                    "editType": "calc",
+                    "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. Otherwise on *category* and *multicategory* axes the default is *allow*. In other cases the default is *hide past div*."
                 },
                 "mirror": {
                     "valType": "enumerated",
@@ -63388,6 +64294,16 @@
                         "editType": "colorbars",
                         "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
                         "dflt": ""
+                    },
+                    "ticklabeloverflow": {
+                        "valType": "enumerated",
+                        "values": [
+                            "allow",
+                            "hide past div",
+                            "hide past domain"
+                        ],
+                        "editType": "colorbars",
+                        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*."
                     },
                     "ticklabelposition": {
                         "valType": "enumerated",

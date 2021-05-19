@@ -34,6 +34,7 @@ partialBundlePaths
             main: 'plotly-' + d.name + '.js',
             dist: d.dist,
             desc: 'Ready-to-use plotly.js ' + d.name + ' distributed bundle.',
+            traceList: constants.partialBundleTraces[d.name]
         };
     })
     .concat([{
@@ -42,6 +43,7 @@ partialBundlePaths
         main: 'plotly.js',
         dist: constants.pathToPlotlyDist,
         desc: 'Ready-to-use plotly.js distributed bundle.',
+        traceList: constants.allTraces
     }])
     .forEach(syncPartialBundlePkg);
 
@@ -54,6 +56,7 @@ partialBundlePaths
             main: 'plotly-' + d.name + '.min.js',
             dist: d.distMin,
             desc: 'Ready-to-use minified plotly.js ' + d.name + ' distributed bundle.',
+            traceList: constants.partialBundleTraces[d.name]
         };
     })
     .concat([{
@@ -62,6 +65,7 @@ partialBundlePaths
         main: 'plotly.min.js',
         dist: constants.pathToPlotlyDistMin,
         desc: 'Ready-to-use minified plotly.js distributed bundle.',
+        traceList: constants.allTraces
     }])
     .forEach(syncPartialBundlePkg);
 
@@ -105,14 +109,12 @@ function syncPartialBundlePkg(d) {
 
 
     function writeREADME(cb) {
-        var traceList = d.traceList;
-
         var cnt = [
             '# ' + d.name,
             '',
             d.desc,
             '',
-            'Contains trace modules ' + common.formatEnumeration(traceList) + '.',
+            'Contains trace modules ' + common.formatEnumeration(d.traceList) + '.',
             '',
             'For more info on plotly.js, go to https://github.com/plotly/plotly.js',
             '',

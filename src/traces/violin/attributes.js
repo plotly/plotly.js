@@ -2,12 +2,16 @@
 
 var boxAttrs = require('../box/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 
 module.exports = {
     y: boxAttrs.y,
     x: boxAttrs.x,
     x0: boxAttrs.x0,
     y0: boxAttrs.y0,
+
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     name: extendFlat({}, boxAttrs.name, {
         description: [

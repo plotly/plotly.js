@@ -166,7 +166,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         pointData2.attr = attr;
         pointData2[vLetter + '0'] = pointData2[vLetter + '1'] = valPx;
         pointData2[vLetter + 'LabelVal'] = val;
-        pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val);
+        pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val, trace[vLetter + 'hoverformat']);
 
         // Note: introduced to be able to distinguish a
         // clicked point from a box during click-to-select

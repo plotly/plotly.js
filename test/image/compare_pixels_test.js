@@ -270,6 +270,7 @@ function comparePixels(mockName, cb) {
         }
         if(isEqual) {
             fs.unlinkSync(imagePaths.diff);
+            fs.unlinkSync(imagePaths.test);
         }
 
         cb(isEqual, mockName);

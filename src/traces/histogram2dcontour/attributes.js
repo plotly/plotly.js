@@ -3,6 +3,7 @@
 var histogram2dAttrs = require('../histogram2d/attributes');
 var contourAttrs = require('../contour/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -38,7 +39,9 @@ module.exports = extendFlat({
         smoothing: contourAttrs.line.smoothing,
         editType: 'plot'
     },
-    zhoverformat: histogram2dAttrs.zhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: histogram2dAttrs.hovertemplate
 },
     colorScaleAttrs('', {

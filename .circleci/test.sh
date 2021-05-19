@@ -45,7 +45,8 @@ case $1 in
         set_tz
 
         SUITE=$(circleci tests glob "$ROOT/test/jasmine/tests/*" | circleci tests split)
-        npm run test-jasmine -- $SUITE --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
+        MAX_AUTO_RETRY=2
+        retry npm run test-jasmine -- $SUITE --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
 
         exit $EXIT_STATE
         ;;
@@ -55,7 +56,7 @@ case $1 in
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=5 --tag=gl | circleci tests split))
         for s in ${SHARDS[@]}; do
-            MAX_AUTO_RETRY=1
+            MAX_AUTO_RETRY=2
             retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --doNotFailOnEmptyTestSuite
         done
 
