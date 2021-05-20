@@ -9,7 +9,6 @@
                 "text": "category ascending"
             },
             "type": "category",
-            "categoryorder": "category ascending",
-            "categoryarray": ["y","b","x","a","d","z","e","c", "q", "k"]
+            "categoryorder": "category ascending"
         }}
 }
