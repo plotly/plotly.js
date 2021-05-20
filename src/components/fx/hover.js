@@ -644,8 +644,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
-    // move period positioned points to the end of list
-    hoverData = orderPeriod(hoverData, hovermode);
+    // move period positioned points and box/bar-like traces to the end of the list
+    hoverData = orderRangePoints(hoverData, hovermode);
 
     // If in compare mode, select every point at position
     if(
@@ -1864,7 +1864,7 @@ function plainText(s, len) {
     });
 }
 
-function orderPeriod(hoverData, hovermode) {
+function orderRangePoints(hoverData, hovermode) {
     var axLetter = hovermode.charAt(0);
 
     var first = [];
@@ -1873,7 +1873,11 @@ function orderPeriod(hoverData, hovermode) {
     for(var i = 0; i < hoverData.length; i++) {
         var d = hoverData[i];
 
-        if(d.trace[axLetter + 'period']) {
+        if(
+            d.trace[axLetter + 'period'] ||
+            Registry.traceIs(d.trace, 'bar-like') ||
+            Registry.traceIs(d.trace, 'box-violin')
+        ) {
             last.push(d);
         } else {
             first.push(d);
