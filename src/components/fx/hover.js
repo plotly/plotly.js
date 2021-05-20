@@ -661,22 +661,18 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         findHoverPoints(customXVal, customYVal);
 
-        var axLetter = hovermode.charAt(0);
-        if(winningPoint.trace[axLetter + 'period']) {
-            var k;
-            var seen = {};
-            for(k = 0; k < initLen; k++) {
-                seen[hoverData[k].trace.index] = true;
-            }
+        var k;
+        var seen = {};
+        for(k = 0; k < initLen; k++) {
+            seen[hoverData[k].trace.index] = true;
+        }
 
-            // remove non-period aditions and traces that seen before
-            for(k = hoverData.length - 1; k >= initLen; k--) {
-                if(
-                    seen[hoverData[k].trace.index] ||
-                    !hoverData[k].trace[axLetter + 'period']
-                ) {
-                    hoverData.splice(k, 1);
-                }
+        // remove aditions and traces that seen before
+        for(k = hoverData.length - 1; k >= initLen; k--) {
+            if(
+                seen[hoverData[k].trace.index]
+            ) {
+                hoverData.splice(k, 1);
             }
         }
 
