@@ -4674,7 +4674,7 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
-    it('should display hover for scatter and bars at various intervals', function(done) {
+    it('should display hover for scatter and bars at various intervals (default hoverdistance)', function(done) {
         Plotly.newPlot(gd, {
             data: [{
                 name: 'bar',
@@ -4718,6 +4718,126 @@ describe('hovermode: (x|y)unified', function() {
             assertLabel({title: '1', items: [
                 'bar : 30',
                 'scatter : 26'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display hover for scatter and bars at various intervals (case of hoverdistance: -1) tests finitRange', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                y: [21, 22, 23, 24, 25, 26]
+            }],
+            layout: {
+                hoverdistance: -1,
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0.6', items: [
+                'bar : (1, 30)',
+                'scatter : 24'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 30',
+                'scatter : 26'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display hover for two high-res scatter at different various intervals', function(done) {
+        var x1 = [];
+        var y1 = [];
+        var x2 = [];
+        var y2 = [];
+        var i, t;
+
+        function r100(v) {
+            return Math.round(v * 100);
+        }
+
+        for(i = 0; i <= 1800; i++) {
+            t = i / 180 * Math.PI;
+            x1.push(r100(t / 5));
+            y1.push(r100(Math.sin(t)));
+        }
+
+        for(i = 0; i <= 360; i++) {
+            t = i / 180 * Math.PI;
+            x2.push(r100(t));
+            y2.push(r100(Math.sin(t)));
+        }
+
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'high',
+                x: x1,
+                y: y1
+            }, {
+                name: 'low',
+                x: x2,
+                y: y2
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '157', items: [
+                'high : 100',
+                'low : 100'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 175, ypx: 200 });
+            assertLabel({title: '275', items: [
+                'high : 93',
+                'low : (274, 39)'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 350, ypx: 200 });
+            assertLabel({title: '550', items: [
+                'high : 68',
+                'low : −71'
             ]});
         })
         .then(done, done.fail);
