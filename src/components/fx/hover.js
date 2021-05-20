@@ -490,6 +490,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
                     var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
+                        finiteRange: true,
                         hoverLayer: fullLayout._hoverlayer
                     });
 
@@ -1868,23 +1869,25 @@ function orderRangePoints(hoverData, hovermode) {
     var axLetter = hovermode.charAt(0);
 
     var first = [];
+    var second = [];
     var last = [];
 
     for(var i = 0; i < hoverData.length; i++) {
         var d = hoverData[i];
 
         if(
-            d.trace[axLetter + 'period'] ||
             Registry.traceIs(d.trace, 'bar-like') ||
             Registry.traceIs(d.trace, 'box-violin')
         ) {
             last.push(d);
+        } else if(d.trace[axLetter + 'period']) {
+            second.push(d);
         } else {
             first.push(d);
         }
     }
 
-    return first.concat(last);
+    return first.concat(second).concat(last);
 }
 
 function customVal(axLetter, winningPoint, fullLayout) {
