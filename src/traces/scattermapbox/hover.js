@@ -86,7 +86,7 @@ function getExtraText(trace, di, labels) {
     }
 
     if(isAll || (hasLon && hasLat)) {
-        text.push('(' + format(lonlat[0]) + ', ' + format(lonlat[1]) + ')');
+        text.push('(' + format(lonlat[1]) + ', ' + format(lonlat[0]) + ')');
     } else if(hasLon) {
         text.push(labels.lon + format(lonlat[0]));
     } else if(hasLat) {
