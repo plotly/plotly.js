@@ -6,7 +6,7 @@ var getTraceColor = require('../scatter/get_trace_color');
 var fillText = Lib.fillText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-module.exports = function hoverPoints(pointData, xval, yval) {
+function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;
@@ -66,7 +66,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.hovertemplate = trace.hovertemplate;
 
     return [pointData];
-};
+}
 
 function getExtraText(trace, di, labels) {
     if(trace.hovertemplate) return;
@@ -99,3 +99,8 @@ function getExtraText(trace, di, labels) {
 
     return text.join('<br>');
 }
+
+module.exports = {
+    hoverPoints: hoverPoints,
+    getExtraText: getExtraText
+};
