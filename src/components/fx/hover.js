@@ -268,7 +268,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     // mapped onto each of the currently selected overlaid subplots
     var xvalArray, yvalArray;
 
-    var itemnum, curvenum, cd, trace, subplotId, subploti, mode,
+    var itemnum, curvenum, cd, trace, subplotId, subploti, _mode,
         xval, yval, pointData, closedataPreviousLength;
 
     // spikePoints: the set of candidate points we've found to draw spikes to
@@ -403,9 +403,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
 
             // within one trace mode can sometimes be overridden
-            mode = hovermode;
-            if(helpers.isUnifiedHover(mode)) {
-                mode = mode.charAt(0);
+            _mode = hovermode;
+            if(helpers.isUnifiedHover(_mode)) {
+                _mode = _mode.charAt(0);
             }
 
             // container for new point, also used to pass info into module.hoverPoints
@@ -463,20 +463,20 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // for a highlighting array, figure out what
             // we're searching for with this element
-            if(mode === 'array') {
+            if(_mode === 'array') {
                 var selection = evt[curvenum];
                 if('pointNumber' in selection) {
                     pointData.index = selection.pointNumber;
-                    mode = 'closest';
+                    _mode = 'closest';
                 } else {
-                    mode = '';
+                    _mode = '';
                     if('xval' in selection) {
                         xval = selection.xval;
-                        mode = 'x';
+                        _mode = 'x';
                     }
                     if('yval' in selection) {
                         yval = selection.yval;
-                        mode = mode ? 'closest' : 'y';
+                        _mode = _mode ? 'closest' : 'y';
                     }
                 }
             } else if(customXVal !== undefined && customYVal !== undefined) {
@@ -490,7 +490,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
-                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
+
                     if(newPoints) {
                         var newPoint;
                         for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
@@ -519,7 +522,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 if(hoverData.length === 0) {
                     pointData.distance = spikedistance;
                     pointData.index = false;
-                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
+                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
                     if(closestPoints) {
                         closestPoints = closestPoints.filter(function(point) {
                             // some hover points, like scatter fills, do not allow spikes,
@@ -640,33 +645,67 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
+    // move period positioned points to the end of list
+    hoverData = orderPeriod(hoverData, hovermode);
+
     // If in compare mode, select every point at position
     if(
-        helpers.isXYhover(mode) &&
+        helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
-        var hd = hoverData[0];
-        var cd0 = hd.cd[hd.index];
-        var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
+        var initLen = hoverData.length;
+        var winningPoint = hoverData[0];
 
-        var xVal = hd.xVal;
-        var ax = hd.xa;
-        if(ax.type === 'category') xVal = ax._categoriesMap[xVal];
-        if(ax.type === 'date') xVal = ax.d2c(xVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            xVal += cd0.t.dPos;
+        var customXVal = customVal('x', winningPoint, fullLayout);
+        var customYVal = customVal('y', winningPoint, fullLayout);
+
+        findHoverPoints(customXVal, customYVal);
+
+        // also find start, middle and end point for period
+        var axLetter = hovermode.charAt(0);
+        if(winningPoint.trace[axLetter + 'period']) {
+            var v = winningPoint[axLetter + 'LabelVal'];
+            var ax = winningPoint[axLetter + 'a'];
+            var T = {};
+            T[axLetter + 'period'] = winningPoint.trace[axLetter + 'period'];
+            T[axLetter + 'period0'] = winningPoint.trace[axLetter + 'period0'];
+
+            T[axLetter + 'periodalignment'] = 'start';
+            var start = alignPeriod(T, ax, axLetter, [v])[0];
+
+            T[axLetter + 'periodalignment'] = 'middle';
+            var middle = alignPeriod(T, ax, axLetter, [v])[0];
+
+            T[axLetter + 'periodalignment'] = 'end';
+            var end = alignPeriod(T, ax, axLetter, [v])[0];
+
+            if(axLetter === 'x') {
+                findHoverPoints(start, customYVal);
+                findHoverPoints(middle, customYVal);
+                findHoverPoints(end, customYVal);
+            } else {
+                findHoverPoints(customXVal, start);
+                findHoverPoints(customXVal, middle);
+                findHoverPoints(customXVal, end);
+            }
+
+            var k;
+            var seen = {};
+            for(k = 0; k < initLen; k++) {
+                seen[hoverData[k].trace.index] = true;
+            }
+
+            // remove non-period aditions and traces that seen before
+            for(k = hoverData.length - 1; k >= initLen; k--) {
+                if(
+                    seen[hoverData[k].trace.index] ||
+                    !hoverData[k].trace[axLetter + 'period']
+                ) {
+                    hoverData.splice(k, 1);
+                }
+            }
         }
-
-        var yVal = hd.yVal;
-        ax = hd.ya;
-        if(ax.type === 'category') yVal = ax._categoriesMap[yVal];
-        if(ax.type === 'date') yVal = ax.d2c(yVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            yVal += cd0.t.dPos;
-        }
-
-        findHoverPoints(xVal, yVal);
 
         // Remove duplicated hoverData points
         // note that d3 also filters identical points in the rendering steps
@@ -1888,4 +1927,43 @@ function plainText(s, len) {
         len: len,
         allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
     });
+}
+
+function orderPeriod(hoverData, hovermode) {
+    var axLetter = hovermode.charAt(0);
+
+    var first = [];
+    var last = [];
+
+    for(var i = 0; i < hoverData.length; i++) {
+        var d = hoverData[i];
+
+        if(d.trace[axLetter + 'period']) {
+            last.push(d);
+        } else {
+            first.push(d);
+        }
+    }
+
+    return first.concat(last);
+}
+
+function customVal(axLetter, winningPoint, fullLayout) {
+    var ax = winningPoint[axLetter + 'a'];
+    var val = winningPoint[axLetter + 'Val'];
+
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    else if(ax.type === 'date') val = ax.d2c(val);
+
+    var cd0 = winningPoint.cd[winningPoint.index];
+    if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
+        if(
+            fullLayout.boxmode === 'group' ||
+            fullLayout.violinmode === 'group'
+        ) {
+            val += cd0.t.dPos;
+        }
+    }
+
+    return val;
 }

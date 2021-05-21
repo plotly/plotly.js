@@ -10,7 +10,7 @@ version: 2.0
 jobs:
   install-and-cibuild:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -43,7 +43,7 @@ jobs:
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
@@ -56,7 +56,7 @@ jobs:
   webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     parallelism: 8
     working_directory: ~/plotly.js
     steps:
@@ -69,7 +69,7 @@ jobs:
   no-gl-flaky-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -93,7 +93,7 @@ jobs:
             npm run docker -- setup
       - run:
           name: Run image tests (part A)
-          command: ./.circleci/test.sh stable-image
+          command: ./.circleci/test.sh stable-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
@@ -112,14 +112,28 @@ jobs:
             npm run docker -- setup
       - run:
           name: Run image tests (part B)
-          command: ./.circleci/test.sh flaky-image
+          command: ./.circleci/test.sh flaky-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
 
+  mock-validation:
+    docker:
+      - image: circleci/node:12.22.1
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test validation using node.js and jsdom
+          command: npm run test-plain-obj
+      - run:
+          name: Validate mocks
+          command: npm run test-mock
+
   source-syntax:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -131,7 +145,7 @@ jobs:
   jasmine-bundle:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:12.22.1-browsers
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -142,7 +156,7 @@ jobs:
 
   publish-dist:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -177,14 +191,11 @@ jobs:
 
   test-dist1:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: Test validation using node.js and jsdom
-          command: npm run test-plain-obj
       - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
@@ -197,7 +208,7 @@ jobs:
 
   test-dist2:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -230,6 +241,9 @@ workflows:
           requires:
             - install-and-cibuild
       - flaky-image:
+          requires:
+            - install-and-cibuild
+      - mock-validation:
           requires:
             - install-and-cibuild
       - source-syntax:

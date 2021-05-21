@@ -44,7 +44,8 @@ register([
     require('./components/grid'),
     require('./components/errorbars'),
     require('./components/colorscale'),
-    require('./components/colorbar')
+    require('./components/colorbar'),
+    require('./components/modebar')
 ]);
 
 // locales en and en-US are required for default behavior

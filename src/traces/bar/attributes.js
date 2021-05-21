@@ -74,7 +74,7 @@ module.exports = {
     textposition: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],
-        dflt: 'none',
+        dflt: 'auto',
         arrayOk: true,
         editType: 'calc',
         description: [
@@ -86,7 +86,8 @@ module.exports = {
             'this one, then the text gets pushed inside.',
             '*auto* tries to position `text` inside the bar, but if',
             'the bar is too small and no bar is stacked on this one',
-            'the text is moved outside.'
+            'the text is moved outside.',
+            'If *none*, no text appears.'
         ].join(' ')
     },
 

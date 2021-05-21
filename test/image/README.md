@@ -65,6 +65,10 @@ npm run pretest
 **IMPORTANT:** the image tests scripts do **not** bundle the source files before
 running the image tests. We recommend running `npm run watch` or `npm start` in
 a separate tab to ensure that the most up-to-date code is used.
+Also if you are adding a new mock, you may need to re-run `npm start` or `npm run watch`
+to be able to find the new mock in the browser.
+To help ensure valid attributes are used in your new mock(s), please run `npm run test-mock`
+or `npm run test-mock mock_name(s)` after adding new mocks or implementing any new attributes.
 
 ##### A: Run image comparison tests
 

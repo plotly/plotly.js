@@ -1983,6 +1983,7 @@ describe('Test scatter *clipnaxis*:', function() {
 describe('event data', function() {
     var mock = require('@mocks/scatter-colorscale-colorbar');
     var mockCopy = Lib.extendDeep({}, mock);
+    mockCopy.layout.hovermode = 'x';
 
     var marker = mockCopy.data[0].marker;
     marker.opacity = [];

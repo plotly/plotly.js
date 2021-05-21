@@ -1398,16 +1398,16 @@ describe('Test splom hover:', function() {
 
     var specs = [{
         desc: 'basic',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: '7.7',
         name: 'Virginica',
         axis: '2.6',
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
     }, {
         desc: 'hovermode closest',
-        patch: function(fig) {
-            fig.layout.hovermode = 'closest';
-            return fig;
-        },
         nums: '(2.6, 7.7)',
         name: 'Virginica',
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
@@ -1415,6 +1415,7 @@ describe('Test splom hover:', function() {
         desc: 'skipping over visible false dims',
         patch: function(fig) {
             fig.data[0].dimensions[0].visible = false;
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: '7.7',
@@ -1428,6 +1429,7 @@ describe('Test splom hover:', function() {
             fig.layout.margin = {t: 0, l: 0, b: 0, r: 0};
             fig.layout.width = 400;
             fig.layout.height = 400;
+            fig.layout.hovermode = 'x';
             return fig;
         },
         pos: [20, 380],
@@ -1439,6 +1441,7 @@ describe('Test splom hover:', function() {
         mock: require('@mocks/splom_dates.json'),
         patch: function(fig) {
             fig.layout = {
+                hovermode: 'x',
                 margin: {t: 0, l: 0, b: 0, r: 0},
                 width: 400,
                 height: 400
@@ -1456,7 +1459,6 @@ describe('Test splom hover:', function() {
                 t.hovertext = 'LOOK';
                 t.text = 'NOP';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '(2.6, 7.7)\nLOOK',
@@ -1468,7 +1470,6 @@ describe('Test splom hover:', function() {
             fig.data.forEach(function(t) {
                 t.hovertemplate = '%{x}|%{y}<extra>pt %{pointNumber}</extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '2.6|7.7',

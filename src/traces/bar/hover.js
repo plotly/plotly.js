@@ -35,8 +35,12 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
 
     var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
-    function thisBarMinPos(di) { return di[posLetter] - di.w / 2; }
-    function thisBarMaxPos(di) { return di[posLetter] + di.w / 2; }
+    function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
+    function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
+
+    function thisBarExtPos(di, sgn) {
+        return di[posLetter] + 0.5 * sgn * di.w;
+    }
 
     var minPos = isClosest ?
         thisBarMinPos :

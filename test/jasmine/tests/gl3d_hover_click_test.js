@@ -543,7 +543,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face colors', function(done) {
+    it('@gl should display correct face colors', function(done) {
         var fig = mesh3dcoloringMock;
 
         Plotly.newPlot(gd, fig)
@@ -595,7 +595,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities (uniform grid)', function(done) {
+    it('@gl should display correct face intensities (uniform grid)', function(done) {
         var fig = mesh3dcellIntensityMock;
 
         Plotly.newPlot(gd, fig)
@@ -625,37 +625,32 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities (non-uniform grid)', function(done) {
-        var fig = mesh3dbunnyMock;
+    it('@gl should display correct face intensities (non-uniform grid)', function(done) {
+        var fig = Lib.extendDeep({}, mesh3dbunnyMock);
+
+        fig.layout.scene.camera.eye = {
+            x: 0,
+            y: 0.2,
+            z: 0.05
+        };
 
         Plotly.newPlot(gd, fig)
         .then(delay(20))
-        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(function() { mouseEvent('mouseover', 300, 100); })
         .then(delay(20))
         .then(function() {
             assertHoverText(
-                'x: −0.02154988',
-                'y: −0.1181136',
-                'z: 0.9471037',
-                'cell intensity: 8',
-                'trace 0'
-            );
-        })
-        .then(function() { mouseEvent('mouseover', 400, 300); })
-        .then(delay(20))
-        .then(function() {
-            assertHoverText(
-                'x: −0.3543044',
-                'y: 0.4389607',
-                'z: 0.6468034',
-                'cell intensity: 8',
+                'x: 0.0112223',
+                'y: −0.05352963',
+                'z: 0.5941605',
+                'cell intensity: 12',
                 'trace 0'
             );
         })
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities *alpha-hull* case', function(done) {
+    it('@gl should display correct face intensities *alpha-hull* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',
@@ -698,7 +693,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities *delaunay* case', function(done) {
+    it('@gl should display correct face intensities *delaunay* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',

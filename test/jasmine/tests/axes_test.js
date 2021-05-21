@@ -6645,6 +6645,7 @@ describe('Test tickformatstops:', function() {
     beforeEach(function() {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.hovermode = 'x';
     });
 
     afterEach(destroyGraphDiv);
@@ -6951,6 +6952,7 @@ describe('category preservation tests on gd passed to Plotly.react()', function(
                 x: ['a', 'b', 'c', 'd']
             }],
             layout: {
+                hovermode: 'x',
                 width: 500,
                 height: 500
             }

@@ -22,13 +22,17 @@ describe('spikeline hover', function() {
 
     function makeMock(spikemode, hovermode) {
         var _mock = Lib.extendDeep({}, require('@mocks/19.json'));
+        _mock.layout.xaxis.spikesnap = 'data';
         _mock.layout.xaxis.showspikes = true;
         _mock.layout.xaxis.spikemode = spikemode;
+        _mock.layout.yaxis.spikesnap = 'data';
         _mock.layout.yaxis.showspikes = true;
         _mock.layout.yaxis.spikemode = spikemode + '+marker';
+        _mock.layout.xaxis2.spikesnap = 'data';
         _mock.layout.xaxis2.showspikes = true;
         _mock.layout.xaxis2.spikemode = spikemode;
         _mock.layout.hovermode = hovermode;
+
         return _mock;
     }
 
@@ -294,9 +298,6 @@ describe('spikeline hover', function() {
         var _mock = makeMock('toaxis', 'x');
         Plotly.newPlot(gd, _mock)
         .then(function() {
-            _setSpikedistance(-1);
-        })
-        .then(function() {
             _hover({xval: 1.5});
             _assert(
                 [[558, 401, 558, 251], [80, 251, 558, 251]], [[83, 251]]
@@ -352,6 +353,7 @@ describe('spikeline hover', function() {
 
     it('increase the range of search for points to draw the spikelines on spikedistance change', function(done) {
         var _mock = makeMock('toaxis', 'closest');
+        _mock.layout.spikedistance = 20;
 
         Plotly.newPlot(gd, _mock).then(function() {
             _hover({xval: 1.6, yval: 2.6});
@@ -391,21 +393,6 @@ describe('spikeline hover', function() {
         Plotly.newPlot(gd, _mock).then(function() {
             _hover({xval: 1.6, yval: 2.6});
             _assert(
-                [],
-                []
-            );
-
-            _hover({xval: 26, yval: 36}, 'x2y2');
-            _assert(
-                [],
-                []
-            );
-
-            _setSpikedistance(-1);
-        })
-        .then(function() {
-            _hover({xval: 1.6, yval: 2.6});
-            _assert(
                 [[557, 401, 557, 250], [80, 250, 557, 250]],
                 [[83, 250]]
             );
@@ -413,6 +400,21 @@ describe('spikeline hover', function() {
             _hover({xval: 26, yval: 36}, 'x2y2');
             _assert(
                 [[820, 220, 820, 167]],
+                []
+            );
+
+            _setSpikedistance(20);
+        })
+        .then(function() {
+            _hover({xval: 1.6, yval: 2.6});
+            _assert(
+                [],
+                []
+            );
+
+            _hover({xval: 26, yval: 36}, 'x2y2');
+            _assert(
+                [],
                 []
             );
         })
@@ -447,6 +449,8 @@ describe('spikeline hover', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.xaxis.showspikes = true;
         mockCopy.layout.yaxis.showspikes = true;
+        mockCopy.layout.xaxis.spikesnap = 'data';
+        mockCopy.layout.yaxis.spikesnap = 'data';
         mockCopy.layout.spikedistance = -1;
         mockCopy.layout.hovermode = 'closest';
 
@@ -498,6 +502,7 @@ describe('spikeline hover', function() {
                 ]
             }],
             layout: {
+                spikedistance: 20,
                 hovermode: 'x',
                 xaxis: { showspikes: true },
                 yaxis: { showspikes: true },
@@ -567,6 +572,7 @@ describe('spikeline hover', function() {
         return {
             width: 600, height: 600, margin: {l: 100, r: 100, t: 100, b: 100},
             showlegend: false,
+            spikedistance: 20,
             xaxis: {range: [-0.5, 1.5], showspikes: true, spikemode: 'toaxis+marker'},
             yaxis: {range: [-1, 3], showspikes: true, spikemode: 'toaxis+marker'},
             hovermode: 'x',
@@ -717,6 +723,7 @@ describe('spikeline hover', function() {
             {y: [5, 7, 9, 6, 4, 3]},
             {y: [5, 7, 9, 6, 4, 3], marker: {color: 'red'}}
         ], {
+            hovermode: 'x',
             xaxis: {showspikes: true},
             yaxis: {showspikes: true},
             spikedistance: -1,
@@ -824,9 +831,9 @@ describe('spikeline hover', function() {
                     data: [makeData(type, 'xaxis', x, data)],
                     layout: {
                         spikedistance: -1,
-                        xaxis: {showspikes: true},
-                        yaxis: {showspikes: true},
-                        zaxis: {showspikes: true},
+                        xaxis: {showspikes: true, spikesnap: 'data'},
+                        yaxis: {showspikes: true, spikesnap: 'data'},
+                        zaxis: {showspikes: true, spikesnap: 'data'},
                         title: {text: trace.type},
                         width: 400, height: 400
                     }
