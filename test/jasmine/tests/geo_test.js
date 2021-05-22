@@ -1421,66 +1421,6 @@ describe('Test geo interactions', function() {
         .then(done, done.fail);
     });
 
-    it('should plot to scope defaults when user setting lead to NaN map bounds', function(done) {
-        var gd = createGraphDiv();
-
-        spyOn(Lib, 'warn');
-
-        Plotly.newPlot(gd, [{
-            type: 'scattergeo',
-            lon: [0],
-            lat: [0]
-        }], {
-            geo: {
-                projection: {
-                    type: 'kavrayskiy7',
-                    rotation: {
-                        lat: 38.794799,
-                        lon: -81.622334,
-                    }
-                },
-                center: {
-                    lat: -81
-                },
-                lataxis: {
-                    range: [38.794799, 45.122292]
-                },
-                lonaxis: {
-                    range: [-82.904731, -81.622334]
-                }
-            },
-            width: 700,
-            heigth: 500
-        })
-        .then(function() {
-            var geoLayout = gd._fullLayout.geo;
-            var geo = geoLayout._subplot;
-
-            expect(geoLayout.projection.rotation).toEqual({
-                lon: 0, lat: 0, roll: 0,
-            });
-            expect(geoLayout.center).toEqual({
-                lon: 0, lat: 0
-            });
-            expect(geoLayout.lonaxis.range).toEqual([-180, 180]);
-            expect(geoLayout.lataxis.range).toEqual([-90, 90]);
-
-            expect(geo.viewInitial).toEqual({
-                'fitbounds': false,
-                'projection.rotation.lon': 0,
-                'center.lon': 0,
-                'center.lat': 0,
-                'projection.scale': 1
-            });
-
-            expect(Lib.warn).toHaveBeenCalledTimes(1);
-            expect(Lib.warn).toHaveBeenCalledWith(
-                'Invalid geo settings, relayout\'ing to default view.'
-            );
-        })
-        .then(done, done.fail);
-    });
-
     it('should get hover right for choropleths involving landmasses that cross antimeridian', function(done) {
         var gd = createGraphDiv();
 

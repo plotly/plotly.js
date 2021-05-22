@@ -249,29 +249,6 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
     var s = this.fitScale = projection.scale();
     var t = projection.translate();
 
-    if(
-        !isFinite(b[0][0]) || !isFinite(b[0][1]) ||
-        !isFinite(b[1][0]) || !isFinite(b[1][1]) ||
-        isNaN(t[0]) || isNaN(t[0])
-    ) {
-        var attrToUnset = ['fitbounds', 'projection.rotation', 'center', 'lonaxis.range', 'lataxis.range'];
-        var msg = 'Invalid geo settings, relayout\'ing to default view.';
-        var updateObj = {};
-
-        // clear all attributes that could cause invalid bounds,
-        // clear viewInitial to update reset-view behavior
-
-        for(var i = 0; i < attrToUnset.length; i++) {
-            updateObj[this.id + '.' + attrToUnset[i]] = null;
-        }
-
-        this.viewInitial = null;
-
-        Lib.warn(msg);
-        gd._promises.push(Registry.call('relayout', gd, updateObj));
-        return msg;
-    }
-
     if(geoLayout.fitbounds) {
         var b2 = projection.getBounds(makeRangeBox(axLon.range, axLat.range));
         var k2 = Math.min(
