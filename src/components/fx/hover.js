@@ -643,10 +643,13 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
     }
 
-    hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+    var sortHoverData = function() {
+        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
-    // move period positioned points and box/bar-like traces to the end of the list
-    hoverData = orderRangePoints(hoverData, hovermode);
+        // move period positioned points and box/bar-like traces to the end of the list
+        hoverData = orderRangePoints(hoverData, hovermode);
+    };
+    sortHoverData();
 
     // If in compare mode, select every point at position
     if(
@@ -654,7 +657,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
-        var initLen = hoverData.length;
         var winningPoint = hoverData[0];
 
         var customXVal = customVal('x', winningPoint, fullLayout);
@@ -662,30 +664,28 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         findHoverPoints(customXVal, customYVal);
 
-        var k;
+        var finalPoints = [];
         var seen = {};
-        for(k = 0; k < initLen; k++) {
-            seen[hoverData[k].trace.index] = true;
-        }
-
-        // remove aditions and traces that seen before
-        for(k = hoverData.length - 1; k >= initLen; k--) {
-            if(
-                seen[hoverData[k].trace.index]
-            ) {
-                hoverData.splice(k, 1);
+        var insert = function(hd) {
+            var type = hd.trace.type;
+            var key = (
+                type === 'ohlc' ||
+                type === 'candlestick'
+            ) ? hoverDataKey(hd) : hd.trace.index;
+            if(!seen[key]) {
+                seen[key] = true;
+                finalPoints.push(hd);
             }
-        }
+        };
 
-        // Remove duplicated hoverData points
-        var repeated = {};
-        hoverData = hoverData.filter(function(hd) {
-            var key = hoverDataKey(hd);
-            if(!repeated[key]) {
-                repeated[key] = true;
-                return repeated[key];
-            }
-        });
+        // insert the winnig point first
+        insert(winningPoint);
+        // override from the end
+        for(var k = hoverData.length - 1; k > 0; k--) {
+            insert(hoverData[k]);
+        }
+        hoverData = finalPoints;
+        sortHoverData();
     }
 
     // lastly, emit custom hover/unhover events
