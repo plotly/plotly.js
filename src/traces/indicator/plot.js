@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -324,7 +316,7 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     }
     fgBullet.exit().remove();
 
-    var data = cd.filter(function() {return trace.gauge.threshold.value;});
+    var data = cd.filter(function() {return trace.gauge.threshold.value || trace.gauge.threshold.value === 0;});
     var threshold = bullet.selectAll('g.threshold-bullet').data(data);
     threshold.enter().append('g').classed('threshold-bullet', true).append('line');
     threshold.select('line')
@@ -402,6 +394,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     ax.type = 'linear';
     ax.range = trace.gauge.axis.range;
     ax._id = 'xangularaxis'; // or 'y', but I don't think this makes a difference here
+    ax.ticklabeloverflow = 'allow';
     ax.setScale();
 
     // 't'ick to 'g'eometric radians is used all over the place here
@@ -497,7 +490,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     // Draw threshold
     arcs = [];
     var v = trace.gauge.threshold.value;
-    if(v) {
+    if(v || v === 0) {
         arcs.push({
             range: [v, v],
             color: trace.gauge.threshold.color,

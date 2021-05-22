@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -13,7 +5,10 @@ var Axes = require('../../plots/cartesian/axes');
 var boxHoverPoints = require('../box/hover');
 var helpers = require('./helpers');
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer) {
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    if(!opts) opts = {};
+    var hoverLayer = opts.hoverLayer;
+
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var hoveron = trace.hoveron;
@@ -58,7 +53,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
                 kdePointData[pLetter + '0'] = pOnPath[0];
                 kdePointData[pLetter + '1'] = pOnPath[1];
                 kdePointData[vLetter + '0'] = kdePointData[vLetter + '1'] = vValPx;
-                kdePointData[vLetter + 'Label'] = vLetter + ': ' + Axes.hoverLabelText(vAxis, vVal) + ', ' + cd[0].t.labels.kde + ' ' + kdeVal.toFixed(3);
+                kdePointData[vLetter + 'Label'] = vLetter + ': ' + Axes.hoverLabelText(vAxis, vVal, trace[vLetter + 'hoverformat']) + ', ' + cd[0].t.labels.kde + ' ' + kdeVal.toFixed(3);
 
                 // move the spike to the KDE point
                 kdePointData.spikeDistance = closeBoxData[0].spikeDistance;

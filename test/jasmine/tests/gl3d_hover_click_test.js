@@ -543,7 +543,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face colors', function(done) {
+    it('@gl should display correct face colors', function(done) {
         var fig = mesh3dcoloringMock;
 
         Plotly.newPlot(gd, fig)
@@ -595,7 +595,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities (uniform grid)', function(done) {
+    it('@gl should display correct face intensities (uniform grid)', function(done) {
         var fig = mesh3dcellIntensityMock;
 
         Plotly.newPlot(gd, fig)
@@ -625,37 +625,32 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities (non-uniform grid)', function(done) {
-        var fig = mesh3dbunnyMock;
+    it('@gl should display correct face intensities (non-uniform grid)', function(done) {
+        var fig = Lib.extendDeep({}, mesh3dbunnyMock);
+
+        fig.layout.scene.camera.eye = {
+            x: 0,
+            y: 0.2,
+            z: 0.05
+        };
 
         Plotly.newPlot(gd, fig)
         .then(delay(20))
-        .then(function() { mouseEvent('mouseover', 300, 200); })
+        .then(function() { mouseEvent('mouseover', 300, 100); })
         .then(delay(20))
         .then(function() {
             assertHoverText(
-                'x: −0.02154988',
-                'y: −0.1181136',
-                'z: 0.9471037',
-                'cell intensity: 8',
-                'trace 0'
-            );
-        })
-        .then(function() { mouseEvent('mouseover', 400, 300); })
-        .then(delay(20))
-        .then(function() {
-            assertHoverText(
-                'x: −0.3543044',
-                'y: 0.4389607',
-                'z: 0.6468034',
-                'cell intensity: 8',
+                'x: 0.0112223',
+                'y: −0.05352963',
+                'z: 0.5941605',
+                'cell intensity: 12',
                 'trace 0'
             );
         })
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities *alpha-hull* case', function(done) {
+    it('@gl should display correct face intensities *alpha-hull* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',
@@ -698,7 +693,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    it('@noCI @gl should display correct face intensities *delaunay* case', function(done) {
+    it('@gl should display correct face intensities *delaunay* case', function(done) {
         var fig = {
             data: [{
                 type: 'mesh3d',
@@ -1264,6 +1259,165 @@ describe('Test gl3d trace click/hover:', function() {
                 })
                 .then(done, done.fail);
             });
+        });
+    });
+});
+
+describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', function() {
+    'use strict';
+
+    var gd, fig;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        fig = {
+            layout: {
+                hovermode: 'closest',
+                width: 400,
+                height: 400,
+                margin: {
+                    t: 0,
+                    b: 0,
+                    l: 0,
+                    r: 0
+                }
+            }
+        };
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    function _hover() {
+        mouseEvent('mouseover', 190, 210);
+    }
+
+    [
+        {type: 'scatter3d', nums: 'x: 0.0\ny: 1.0\nz: 2.0'},
+        {type: 'cone', nums: 'x: 0.0\ny: 1.0\nz: 2.0\nu: 0.0030\nv: 0.00400\nw: 0.005000'},
+        {type: 'streamtube', nums: 'x: 0.0\ny: 1.0\nz: 2.0\nu: 0.0030\nv: 0.00400\nw: 0.005000'},
+    ].forEach(function(t) {
+        it('@gl ' + t.type + ' trace', function(done) {
+            fig.data = [{
+                showscale: false,
+                hoverinfo: 'x+y+z+u+v+w',
+                xhoverformat: '.1f',
+                yhoverformat: '.1f',
+                zhoverformat: '.1f',
+                uhoverformat: '.4f',
+                vhoverformat: '.5f',
+                whoverformat: '.6f',
+                x: [0],
+                y: [1],
+                z: [2],
+                u: [0.003],
+                v: [0.004],
+                w: [0.005]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(delay(20))
+            .then(_hover)
+            .then(delay(20))
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    it('@gl surface trace', function(done) {
+        fig.data = [{
+            showscale: false,
+            xhoverformat: '.1f',
+            yhoverformat: '.2f',
+            zhoverformat: '.3f',
+            x: [0, 1],
+            y: [0, 1],
+            z: [[1, 0], [0, 1]],
+            type: 'surface'
+        }];
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(_hover)
+        .then(delay(20))
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: 'x: 1.0\ny: 1.00\nz: 1.000'
+            });
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl mesh3d trace', function(done) {
+        fig.data = [{
+            showscale: false,
+            xhoverformat: '.1f',
+            yhoverformat: '.2f',
+            zhoverformat: '.3f',
+            x: [0, 1, 2],
+            y: [1, 2, 0],
+            z: [2, 0, 1],
+            i: [0],
+            j: [1],
+            k: [2],
+            type: 'mesh3d'
+        }];
+
+        Plotly.newPlot(gd, fig)
+        .then(delay(20))
+        .then(_hover)
+        .then(delay(20))
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: 'x: 2.0\ny: 0.00\nz: 1.000'
+            });
+        })
+        .then(done, done.fail);
+    });
+
+    [
+        {type: 'isosurface', nums: 'x: 1.0\ny: 1.00\nz: 1.000\nvalue: 8.0000'},
+        {type: 'volume', nums: 'x: 1.0\ny: 1.00\nz: 1.000\nvalue: 8.0000'},
+    ].forEach(function(t) {
+        it('@gl ' + t.type + ' trace', function(done) {
+            fig.data = [{
+                showscale: false,
+                hoverinfo: 'x+y+z+u+v+w+value',
+                xhoverformat: '.1f',
+                yhoverformat: '.2f',
+                zhoverformat: '.3f',
+                valuehoverformat: '.4f',
+                x: [0, 1, 0, 1, 0, 1, 0, 1],
+                y: [0, 0, 1, 1, 0, 0, 1, 1],
+                z: [0, 0, 0, 0, 1, 1, 1, 1],
+                value: [1, 2, 3, 4, 5, 6, 7, 8]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(delay(20))
+            .then(_hover)
+            .then(delay(20))
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
         });
     });
 });

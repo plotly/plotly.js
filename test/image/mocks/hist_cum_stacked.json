@@ -11,7 +11,7 @@
         "x": [3, 3, 4, 5, 6, 7, 7],
         "type": "histogram",
         "cumulative": {"enabled": true, "currentbin": "exclude"},
-        "xbins": {"start": 0.5, "end": 10.5, "size": 1},
+        "xbins": {"start": 0.5, "end": 10.5},
         "marker": {"color": "red", "line": {"width": 2, "color": "#000"}},
         "name": "B"
     },

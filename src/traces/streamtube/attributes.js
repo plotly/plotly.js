@@ -1,14 +1,7 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var mesh3dAttrs = require('../mesh3d/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -137,6 +130,13 @@ var attrs = {
             'norm', 'divergence'
         ]
     }),
+    uhoverformat: axisHoverFormat('u', 1),
+    vhoverformat: axisHoverFormat('v', 1),
+    whoverformat: axisHoverFormat('w', 1),
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 };
 

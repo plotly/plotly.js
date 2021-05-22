@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -59,6 +51,7 @@ plots.redrawText = function(gd) {
 
     return new Promise(function(resolve) {
         setTimeout(function() {
+            if(!gd._fullLayout) return;
             Registry.getComponentMethod('annotations', 'draw')(gd);
             Registry.getComponentMethod('legend', 'draw')(gd);
             Registry.getComponentMethod('colorbar', 'draw')(gd);
@@ -467,12 +460,12 @@ plots.supplyDefaults = function(gd, opts) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    var hadHeatmapgl = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
-    var hasHeatmapgl = !!(newFullLayout._has && newFullLayout._has('gl2d'));
+    var hadGL2D = !!(oldFullLayout._has && oldFullLayout._has('gl2d'));
+    var hasGL2D = !!(newFullLayout._has && newFullLayout._has('gl2d'));
     var hadCartesian = !!(oldFullLayout._has && oldFullLayout._has('cartesian'));
     var hasCartesian = !!(newFullLayout._has && newFullLayout._has('cartesian'));
-    var hadBgLayer = hadCartesian || hadHeatmapgl;
-    var hasBgLayer = hasCartesian || hasHeatmapgl;
+    var hadBgLayer = hadCartesian || hadGL2D;
+    var hasBgLayer = hasCartesian || hasGL2D;
     if(hadBgLayer && !hasBgLayer) {
         // remove bgLayer
         oldFullLayout._bgLayer.remove();
@@ -1524,12 +1517,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('editrevision', uirevision);
     coerce('selectionrevision', uirevision);
 
-    coerce('modebar.orientation');
-    coerce('modebar.bgcolor', Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
-    var modebarDefaultColor = Color.contrast(Color.rgb(layoutOut.modebar.bgcolor));
-    coerce('modebar.color', Color.addOpacity(modebarDefaultColor, 0.3));
-    coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
-    coerce('modebar.uirevision', uirevision);
+    Registry.getComponentMethod(
+        'modebar',
+        'supplyLayoutDefaults'
+    )(layoutIn, layoutOut);
 
     Registry.getComponentMethod(
         'shapes',
@@ -2083,17 +2074,21 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    hideOutOfRangeInsideTickLabels(gd);
+    refineTicks(gd);
 };
 
-function hideOutOfRangeInsideTickLabels(gd) {
+function refineTicks(gd) {
     var axList = axisIDs.list(gd, '', true);
-    for(var i = 0; i < axList.length; i++) {
-        var ax = axList[i];
 
-        var hideFn = ax._hideOutOfRangeInsideTickLabels;
-        if(hideFn) hideFn();
-    }
+    [
+        '_adjustTickLabelsOverflow',
+        '_hideCounterAxisInsideTickLabels'
+    ].forEach(function(k) {
+        for(var i = 0; i < axList.length; i++) {
+            var hideFn = axList[i][k];
+            if(hideFn) hideFn();
+        }
+    });
 }
 
 var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];
@@ -2728,6 +2723,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionAxes() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 if(basePlotModules[j].transitionAxes) {
                     basePlotModules[j].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
@@ -2736,6 +2732,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionTraces() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
             }

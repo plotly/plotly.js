@@ -585,6 +585,7 @@ describe('hover info', function() {
                 {y: [1, 0, 1], type: 'bar', name: 'c'},
                 {y: [2, 1, 0], type: 'bar', name: 'd'}
             ], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0},
@@ -623,6 +624,7 @@ describe('hover info', function() {
                 {x: [1, 0, 1], type: 'bar', name: 'c', orientation: 'h'},
                 {x: [2, 1, 0], type: 'bar', name: 'd', orientation: 'h'}
             ], {
+                hovermode: 'y',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0},
@@ -892,8 +894,10 @@ describe('hover info', function() {
 
         it('should get the right content and color for contour constraints', function(done) {
             var contourConstraints = require('@mocks/contour_constraints.json');
+            var fig = Lib.extendDeep({}, contourConstraints);
+            fig.layout.hovermode = 'x';
 
-            Plotly.newPlot(gd, contourConstraints)
+            Plotly.newPlot(gd, fig)
             .then(function() {
                 _hover(gd, 250, 250);
                 assertHoverLabelContent({
@@ -976,6 +980,7 @@ describe('hover info', function() {
                 name: 'two',
                 showscale: false
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1068,6 +1073,7 @@ describe('hover info', function() {
             var gd = createGraphDiv();
 
             Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, -5, 10]}], {
+                hovermode: 'x',
                 yaxis: {type: 'log'},
                 width: 500,
                 height: 400,
@@ -1093,6 +1099,7 @@ describe('hover info', function() {
                 xbins: {start: -0.5, end: 8.5, size: 3},
                 type: 'histogram'
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1156,6 +1163,7 @@ describe('hover info', function() {
                 xbins: {start: -0.5, end: 8.5, size: 3},
                 type: 'histogram'
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1191,6 +1199,7 @@ describe('hover info', function() {
                 xbins: {start: -0.5, end: 8.5, size: 3},
                 type: 'histogram'
             }], {
+                hovermode: 'x',
                 width: 500,
                 height: 400,
                 margin: {l: 0, t: 0, r: 0, b: 0}
@@ -1221,6 +1230,7 @@ describe('hover info', function() {
                         close: [0, 3, 2]
                     }, traceUpdates || {})],
                     layout: Lib.extendDeep({}, {
+                        hovermode: 'x',
                         width: 400,
                         height: 400,
                         margin: {l: 50, r: 50, t: 50, b: 50}
@@ -1328,7 +1338,7 @@ describe('hover info', function() {
                 .then(done, done.fail);
             });
 
-            it('shows text iff text is in hoverinfo', function(done) {
+            it('shows text if text is in hoverinfo', function(done) {
                 Plotly.newPlot(gd, financeMock({text: ['A', 'B', 'C']}))
                 .then(function() {
                     _hover(gd, 150, 150);
@@ -1366,6 +1376,7 @@ describe('hover info', function() {
             y: [0.12345, 0.23456, 0.34567]
         }];
         var layout = {
+            hovermode: 'x',
             yaxis: { showticklabels: true, hoverformat: ',.2r' },
             width: 600,
             height: 400
@@ -1600,7 +1611,7 @@ describe('hover info', function() {
                 text: ['San Francisco']
             };
             var data = [trace1, trace2];
-            var layout = {width: 600, height: 300, barmode: 'stack'};
+            var layout = {width: 600, height: 300, barmode: 'stack', hovermode: 'x'};
 
             Plotly.newPlot(gd, data, layout)
             .then(function() { _hover(gd, 300, 150); })
@@ -1635,7 +1646,7 @@ describe('hover info', function() {
                 text: ['New York']
             };
             var data = [trace1, trace2, trace3];
-            var layout = {width: 600, height: 300};
+            var layout = {width: 600, height: 300, hovermode: 'x'};
 
             Plotly.newPlot(gd, data, layout)
             .then(function() { _hover(gd, 300, 150); })
@@ -1675,6 +1686,7 @@ describe('hover info', function() {
                 hoverinfo: 'x+y+name',
                 hoverlabel: {namelength: -1}
             }], {
+                hovermode: 'x',
                 width: 600,
                 height: 300
             })
@@ -1709,6 +1721,7 @@ describe('hover info', function() {
                 {name: 'B', x: [8, 9], y: [9, 10]},
                 {name: 'C', x: [9, 10], y: [10, 11]}
             ], {
+                hovermode: 'x',
                 xaxis: {range: [0, 100]},
                 yaxis: {range: [0, 100]},
                 width: 700,
@@ -1768,6 +1781,7 @@ describe('hover info', function() {
                 x: ['2019-01-01', '2019-06-01', '2020-01-01'],
                 y: [2, 5, 10]
             }], {
+                hovermode: 'x',
                 xaxis: {range: ['2019-02-06', '2019-12-01']},
                 margin: {l: 0, r: 0},
                 width: 400,
@@ -1828,6 +1842,7 @@ describe('hover info', function() {
                 y: ['Looong label', 'Loooooger label', 'Waay loooong label', 'a'],
                 x: [2, 5, 10, 2]
             }], {
+                hovermode: 'y',
                 width: 400,
                 height: 400
             })
@@ -2065,6 +2080,7 @@ describe('hover info', function() {
         }, {
             y: [1]
         }], {
+            hovermode: 'x',
             meta: ['yo!'],
             width: 400,
             height: 400
@@ -2211,6 +2227,7 @@ describe('hover info on stacked subplots', function() {
                 // This was the problem in #2370
                 {}, {y: [100, 120, 100]}
             ]});
+        mock.layout.hovermode = 'x';
 
         var gd;
 
@@ -2343,6 +2360,7 @@ describe('hover on many lines+bars', function() {
             {y: values2},
             {y: values, type: 'bar'}
         ], {
+            hovermode: 'x',
             width: 400,
             height: 400,
             margin: {l: 100, r: 100, t: 100, b: 100}
@@ -2366,6 +2384,7 @@ describe('hover info on overlaid subplots', function() {
 
     it('should respond to hover', function(done) {
         var mock = require('@mocks/autorange-tozero-rangemode.json');
+        mock.layout.hovermode = 'x';
 
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
             mouseEvent('mousemove', 768, 345);
@@ -2408,7 +2427,7 @@ describe('hover after resizing', function() {
         gd = createGraphDiv();
 
         var data = [{ y: [2, 1, 2] }];
-        var layout = { width: 600, height: 500 };
+        var layout = { width: 600, height: 500, hovermode: 'x' };
 
         var pos0 = [305, 403];
         var pos1 = [401, 122];
@@ -2468,6 +2487,7 @@ describe('hover on fill', function() {
     it('should always show one label in the right place', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
+        mock.layout.hovermode = 'x';
 
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
             assertLabelsCorrect([242, 142], [252, 133.8], 'trace 2');
@@ -2486,6 +2506,7 @@ describe('hover on fill', function() {
             fill: 'tonext',
             hoveron: 'fills'
         }], {
+            hovermode: 'x',
             width: 500,
             height: 500,
             margin: {l: 50, t: 50, r: 50, b: 50}
@@ -2543,6 +2564,7 @@ describe('hover on fill', function() {
 
     it('should act like closest mode on ternary when cartesian is in compare mode', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        mock.layout.hovermode = 'x';
         var gd = createGraphDiv();
 
         mock.data.push({y: [7, 8, 9]});
@@ -2589,6 +2611,7 @@ describe('Hover on multicategory axes', function() {
             x: [['2018', '2018', '2019', '2019'], ['a', 'b', 'a', 'b']],
             y: [1, 2, -1, 3]
         }], {
+            hovermode: 'x',
             bargap: 0,
             width: 400,
             height: 400
@@ -3495,6 +3518,7 @@ describe('hover updates', function() {
                 {x: [0], y: [0], showlegend: false},
             ],
             layout: {
+                hovermode: 'x',
                 margin: {t: 0, r: 0, b: 0, l: 0},
                 width: 200,
                 height: 200,
@@ -3554,7 +3578,7 @@ describe('hover updates', function() {
                 size: 16,
                 color: colors0.slice()
             }
-        }], { width: 700, height: 450 })
+        }], { width: 700, height: 450, hovermode: 'x' })
         .then(function() {
             gd.on('plotly_hover', function(eventData) {
                 hoverCnt++;
@@ -3597,6 +3621,7 @@ describe('hover updates', function() {
         ];
 
         var layout = {
+            hovermode: 'x',
             xaxis: {domain: [0, 0.5]},
             xaxis2: {anchor: 'y2', domain: [0.5, 1]},
             yaxis2: {anchor: 'x2'},
@@ -3631,6 +3656,55 @@ describe('hover updates', function() {
             expect(Fx.hover).toHaveBeenCalledTimes(2);
         })
         .then(done, done.fail);
+    });
+
+    it('drag should trigger unhover', function(done) {
+        var data = [{y: [1]}];
+
+        var layout = {
+            hovermode: 'x',
+            width: 400,
+            height: 200,
+            margin: {l: 0, t: 0, r: 0, b: 0},
+            showlegend: false
+        };
+
+        var gd = createGraphDiv();
+
+        var hoverHandler = jasmine.createSpy('hover');
+        var unhoverHandler = jasmine.createSpy('unhover');
+
+        var hoverPt = [200, 100];
+        var dragPt = [210, 100];
+
+        function hover() {
+            mouseEvent('mousemove', hoverPt[0], hoverPt[1]);
+            Lib.clearThrottle();
+        }
+
+        function drag() {
+            mouseEvent('mousedown', hoverPt[0], hoverPt[1]);
+            mouseEvent('mousemove', dragPt[0], dragPt[1]);
+            mouseEvent('mouseup', dragPt[0], dragPt[1]);
+            Lib.clearThrottle();
+        }
+
+        Plotly.react(gd, data, layout)
+            .then(function() {
+                gd.on('plotly_hover', hoverHandler);
+                gd.on('plotly_unhover', unhoverHandler);
+            })
+            .then(hover)
+            .then(function() {
+                expect(hoverHandler).toHaveBeenCalled();
+                expect(unhoverHandler).not.toHaveBeenCalled();
+            })
+            .then(drag)
+            .then(function() {
+                expect(hoverHandler).toHaveBeenCalled();
+                expect(unhoverHandler).toHaveBeenCalled();
+            })
+            .then(done, done.fail);
     });
 });
 
@@ -4191,7 +4265,7 @@ describe('hover distance', function() {
             var x = [0, 1, 2];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'linear'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'linear'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4207,7 +4281,7 @@ describe('hover distance', function() {
             var x = [0, 1, 2];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'log'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'log'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4223,7 +4297,7 @@ describe('hover distance', function() {
             var x = ['a', 'b', 'c'];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'category'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'category'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4239,7 +4313,7 @@ describe('hover distance', function() {
             var x = ['2018', '2019', '2020'];
             var mock = {
                 data: [{type: 'bar', x: x, y: [4, 5, 6]}, {x: x, y: [5, 6, 7]}],
-                layout: {width: 400, height: 400, xaxis: {type: 'date'}}
+                layout: {width: 400, height: 400, xaxis: {type: 'date'}, hovermode: 'x'}
             };
 
             Plotly.newPlot(gd, mock)
@@ -4355,51 +4429,6 @@ describe('hover label rotation:', function() {
             })
             .then(done, done.fail);
         });
-    });
-});
-
-describe('hovermode defaults to', function() {
-    var gd;
-
-    beforeEach(function() {
-        gd = createGraphDiv();
-    });
-
-    afterEach(destroyGraphDiv);
-
-    it('\'closest\' for cartesian plots if clickmode includes \'select\'', function(done) {
-        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6] }], { clickmode: 'event+select' })
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('closest');
-          })
-          .then(done, done.fail);
-    });
-
-    it('\'x\' for horizontal cartesian plots if clickmode lacks \'select\'', function(done) {
-        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'h' }], { clickmode: 'event' })
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('y');
-          })
-          .then(done, done.fail);
-    });
-
-    it('\'y\' for vertical cartesian plots if clickmode lacks \'select\'', function(done) {
-        Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [4, 5, 6], type: 'bar', orientation: 'v' }], { clickmode: 'event' })
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('x');
-          })
-          .then(done, done.fail);
-    });
-
-    it('\'closest\' for a non-cartesian plot', function(done) {
-        var mock = require('@mocks/polar_scatter.json');
-        expect(mock.layout.hovermode).toBeUndefined();
-
-        Plotly.newPlot(gd, mock.data, mock.layout)
-          .then(function() {
-              expect(gd._fullLayout.hovermode).toBe('closest');
-          })
-          .then(done, done.fail);
     });
 });
 
@@ -4698,6 +4727,411 @@ describe('hovermode: (x|y)unified', function() {
                 ]});
             })
             .then(done, done.fail);
+    });
+
+    it('case of scatter points on period bars', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    type: 'bar',
+                    name: 'bar',
+                    x: [
+                        '2017-04',
+                        '2017-07',
+                        '2017-10',
+                        '2018-01'
+                    ],
+                    xperiod: 'M3',
+                    y: [10, 5, 10, 5]
+                },
+                {
+                    type: 'scatter',
+                    name: 'scatter',
+                    x: [
+                        '2017-01-01',
+                        '2017-02-01',
+                        '2017-03-01',
+                        '2017-04-01',
+                        '2017-05-01',
+                        '2017-06-01',
+                        '2017-07-01',
+                        '2017-08-01',
+                        '2017-09-01',
+                        '2017-10-01',
+                        '2017-11-01',
+                        '2017-12-01'
+                    ],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                }
+            ],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function(gd) {
+            _hover(gd, { xpx: 50, ypx: 250 });
+            assertLabel({title: 'Feb 1, 2017', items: [
+                'scatter : 2'
+            ]});
+
+            _hover(gd, { xpx: 75, ypx: 250 });
+            assertLabel({title: 'Mar 1, 2017', items: [
+                'scatter : 3'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 250 });
+            assertLabel({title: 'Apr 1, 2017', items: [
+                'bar : 10',
+                'scatter : 4'
+            ]});
+
+            _hover(gd, { xpx: 125, ypx: 250 });
+            assertLabel({title: 'May 1, 2017', items: [
+                'bar : (Apr 1, 2017, 10)',
+                'scatter : 5'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 250 });
+            assertLabel({title: 'Jun 1, 2017', items: [
+                'bar : (Apr 1, 2017, 10)',
+                'scatter : 6'
+            ]});
+
+            _hover(gd, { xpx: 175, ypx: 250 });
+            assertLabel({title: 'Jul 1, 2017', items: [
+                'bar : 5',
+                'scatter : 7'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 250 });
+            assertLabel({title: 'Aug 1, 2017', items: [
+                'bar : (Jul 1, 2017, 5)',
+                'scatter : 8'
+            ]});
+
+            _hover(gd, { xpx: 225, ypx: 250 });
+            assertLabel({title: 'Sep 1, 2017', items: [
+                'bar : (Jul 1, 2017, 5)',
+                'scatter : 9'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 250 });
+            assertLabel({title: 'Oct 1, 2017', items: [
+                'bar : 10',
+                'scatter : 10'
+            ]});
+
+            _hover(gd, { xpx: 275, ypx: 250 });
+            assertLabel({title: 'Nov 1, 2017', items: [
+                'bar : (Oct 1, 2017, 10)',
+                'scatter : 11'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 250 });
+            assertLabel({title: 'Dec 1, 2017', items: [
+                'bar : (Oct 1, 2017, 10)',
+                'scatter : 12'
+            ]});
+
+            _hover(gd, { xpx: 350, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2018', items: [
+                'bar : 5'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('case of M1 period bars overlaid on M3 period bars', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    type: 'bar',
+                    name: 'M3',
+                    xperiod: 'M3',
+                    x: [
+                        '2017-04',
+                        '2017-07',
+                        '2017-10',
+                        '2018-01'
+                    ],
+                    y: [10, 5, 10, 5]
+                },
+                {
+                    type: 'bar',
+                    name: 'M1',
+                    xperiod: 'M1',
+                    x: [
+                        '2017-01',
+                        '2017-02',
+                        '2017-03',
+                        '2017-04',
+                        '2017-05',
+                        '2017-06',
+                        '2017-07',
+                        '2017-08',
+                        '2017-09',
+                        '2017-10',
+                        '2017-11',
+                        '2017-12'
+                    ],
+                    y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+                }
+            ],
+            layout: {
+                barmode: 'overlay',
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function(gd) {
+            _hover(gd, { xpx: 25, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2017', items: [
+                'M1 : 1'
+            ]});
+
+            _hover(gd, { xpx: 50, ypx: 250 });
+            assertLabel({title: 'Feb 1, 2017', items: [
+                'M1 : 2'
+            ]});
+
+            _hover(gd, { xpx: 75, ypx: 250 });
+            assertLabel({title: 'Mar 1, 2017', items: [
+                'M1 : 3'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 250 });
+            assertLabel({title: 'Apr 1, 2017', items: [
+                'M3 : 10',
+                'M1 : 4'
+            ]});
+
+            _hover(gd, { xpx: 125, ypx: 250 });
+            assertLabel({title: 'May 1, 2017', items: [
+                'M3 : (Apr 1, 2017, 10)',
+                'M1 : 5'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 250 });
+            assertLabel({title: 'Jun 1, 2017', items: [
+                'M3 : (Apr 1, 2017, 10)',
+                'M1 : 6'
+            ]});
+
+            _hover(gd, { xpx: 175, ypx: 250 });
+            assertLabel({title: 'Jul 1, 2017', items: [
+                'M3 : 5',
+                'M1 : 7'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 250 });
+            assertLabel({title: 'Aug 1, 2017', items: [
+                'M3 : (Jul 1, 2017, 5)',
+                'M1 : 8'
+            ]});
+
+            _hover(gd, { xpx: 225, ypx: 250 });
+            assertLabel({title: 'Sep 1, 2017', items: [
+                'M3 : (Jul 1, 2017, 5)',
+                'M1 : 9'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 250 });
+            assertLabel({title: 'Oct 1, 2017', items: [
+                'M3 : 10',
+                'M1 : 10'
+            ]});
+
+            _hover(gd, { xpx: 275, ypx: 250 });
+            assertLabel({title: 'Nov 1, 2017', items: [
+                'M3 : (Oct 1, 2017, 10)',
+                'M1 : 11'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 250 });
+            assertLabel({title: 'Dec 1, 2017', items: [
+                'M3 : (Oct 1, 2017, 10)',
+                'M1 : 12'
+            ]});
+
+            _hover(gd, { xpx: 350, ypx: 250 });
+            assertLabel({title: 'Jan 1, 2018', items: [
+                'M3 : 5'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    [{
+        xperiod: 0,
+        desc: 'non-period scatter points and period bars'
+    }, {
+        xperiod: 24 * 3600 * 1000,
+        desc: 'period scatter points and period bars'
+    }].forEach(function(t) {
+        it(t.desc, function(done) {
+            var fig = {
+                data: [
+                    {
+                        name: 'bar',
+                        type: 'bar',
+                        x: ['1999-12', '2000-01', '2000-02'],
+                        y: [2, 1, 3],
+                        xhoverformat: '%b',
+                        xperiod: 'M1'
+                    },
+                    {
+                        xperiod: t.xperiod,
+                        name: 'scatter',
+                        type: 'scatter',
+                        x: [
+                            '2000-01-01', '2000-01-06', '2000-01-11', '2000-01-16', '2000-01-21', '2000-01-26',
+                            '2000-02-01', '2000-02-06', '2000-02-11', '2000-02-16', '2000-02-21', '2000-02-26',
+                            '2000-03-01', '2000-03-06', '2000-03-11', '2000-03-16', '2000-03-21', '2000-03-26'
+                        ],
+                        y: [
+                            1.1, 1.2, 1.3, 1.4, 1.5, 1.6,
+                            2.1, 2.2, 2.3, 2.4, 2.5, 2.6,
+                            3.1, 3.2, 3.3, 3.4, 3.5, 3.6,
+                        ]
+                    }
+                ],
+                layout: {
+                    showlegend: false,
+                    width: 600,
+                    height: 400,
+                    hovermode: 'x unified'
+                }
+            };
+
+            Plotly.newPlot(gd, fig)
+            .then(function(gd) {
+                _hover(gd, { xpx: 50, ypx: 200 });
+                assertLabel({title: 'Dec', items: [
+                    'bar : 2'
+                ]});
+
+                _hover(gd, { xpx: 100, ypx: 200 });
+                assertLabel({title: 'Jan 1, 2000', items: [
+                    'scatter : 1.1'
+                ]});
+
+                _hover(gd, { xpx: 150, ypx: 200 });
+                assertLabel({title: 'Jan 11, 2000', items: [
+                    'bar : (Jan, 1)',
+                    'scatter : 1.3'
+                ]});
+
+                _hover(gd, { xpx: 200, ypx: 200 });
+                assertLabel({title: 'Jan 26, 2000', items: [
+                    'bar : (Jan, 1)',
+                    'scatter : 1.6'
+                ]});
+
+                _hover(gd, { xpx: 250, ypx: 200 });
+                assertLabel({title: 'Feb 11, 2000', items: [
+                    'bar : (Feb, 3)',
+                    'scatter : 2.3'
+                ]});
+
+                _hover(gd, { xpx: 300, ypx: 200 });
+                assertLabel({title: 'Feb 21, 2000', items: [
+                    'bar : (Feb, 3)',
+                    'scatter : 2.5'
+                ]});
+
+                _hover(gd, { xpx: 350, ypx: 200 });
+                assertLabel({title: 'Mar 6, 2000', items: [
+                    'scatter : 3.2'
+                ]});
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    it('period points alignments', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    name: 'bar',
+                    type: 'bar',
+                    x: ['2000-01', '2000-02'],
+                    y: [1, 2],
+                    xhoverfrmat: '%b',
+                    xperiod: 'M1'
+                },
+                {
+                    name: 'start',
+                    type: 'scatter',
+                    x: ['2000-01', '2000-02'],
+                    y: [1, 2],
+                    xhoverformat: '%b',
+                    xperiod: 'M1',
+                    xperiodalignment: 'start'
+                },
+                {
+                    name: 'end',
+                    type: 'scatter',
+                    x: ['2000-01', '2000-02'],
+                    y: [1, 2],
+                    xhoverformat: '%b',
+                    xperiod: 'M1',
+                    xperiodalignment: 'end'
+                },
+            ],
+            layout: {
+                showlegend: false,
+                width: 600,
+                height: 400,
+                hovermode: 'x unified'
+            }
+        })
+        .then(function(gd) {
+            _hover(gd, { xpx: 40, ypx: 200 });
+            assertLabel({title: 'Jan', items: [
+                'bar : (Jan 1, 2000, 1)',
+                'start : 1',
+                'end : 1'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: 'Jan 1, 2000', items: [
+                'bar : 1',
+                'start : (Jan, 1)',
+                'end : (Jan, 1)'
+            ]});
+
+            _hover(gd, { xpx: 360, ypx: 200 });
+            assertLabel({title: 'Feb 1, 2000', items: [
+                'bar : 2',
+                'start : (Feb, 2)',
+                'end : (Feb, 2)'
+            ]});
+
+            _hover(gd, { xpx: 400, ypx: 200 });
+            assertLabel({title: 'Feb', items: [
+                'bar : (Feb 1, 2000, 2)',
+                'start : 2',
+                'end : 2'
+            ]});
+        })
+        .then(done, done.fail);
     });
 
     it('should have the same traceorder as the legend', function(done) {
@@ -5035,5 +5469,130 @@ describe('hovermode: (x|y)unified', function() {
                 assertElementCount('g.legend', 1);
             })
             .then(done, done.fail);
+    });
+});
+
+describe('hover on traces with (x|y)hoverformat', function() {
+    'use strict';
+
+    var gd, fig;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        fig = {
+            layout: {
+                hovermode: 'closest',
+                width: 400,
+                height: 400,
+                margin: {
+                    t: 0,
+                    b: 0,
+                    l: 0,
+                    r: 0
+                }
+            }
+        };
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function _hover(x, y) {
+        delete gd._hoverdata;
+        Lib.clearThrottle();
+        mouseEvent('mousemove', x, y);
+    }
+
+    [
+        {type: 'scatter', nums: '(02/01/2000, 1.00)'},
+        {type: 'scattergl', nums: '(02/01/2000, 1.00)'},
+        {type: 'histogram', nums: '(02/01/2000, 1.00)'},
+        {type: 'bar', nums: '(02/01/2000, 1.00)'},
+        {type: 'box', nums: '(02/01/2000, median: 1.00)'},
+        {type: 'ohlc', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
+        {type: 'candlestick', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
+        {type: 'waterfall', nums: '(02/01/2000, 1.00)\n1.00 ▲\nInitial: 0.00'},
+        {type: 'funnel', nums: '(02/01/2000, 1.00)\n100% of initial\n100% of previous\n100% of total'},
+    ].forEach(function(t) {
+        it(t.type + ' trace', function(done) {
+            fig.data = [{
+                xhoverformat: '%x',
+                yhoverformat: '.2f',
+                x: ['2000-02'],
+                y: [1],
+                low: [2],
+                high: [5],
+                open: [4],
+                close: [3]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(function() { _hover(200, 200); })
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    [
+        {type: 'contour', nums: 'x: 02/01/2000\ny: 1.00\nz: 4.000'},
+        {type: 'heatmap', nums: 'x: 02/01/2000\ny: 1.00\nz: 4.000'},
+        {type: 'histogram2d', nums: 'x: 02/01/2000\ny: 1.00\nz: 1.000'},
+        {type: 'histogram2dcontour', nums: 'x: 01/31/2000\ny: 1.00\nz: 1.000'},
+    ].forEach(function(t) {
+        it(t.type + ' trace', function(done) {
+            fig.data = [{
+                xhoverformat: '%x',
+                yhoverformat: '.2f',
+                zhoverformat: '.3f',
+                x: ['2000-01', '2000-02'],
+                y: [1, 1],
+                z: [[1, 2], [3, 4]]
+            }];
+
+            fig.data[0].type = t.type;
+
+            Plotly.newPlot(gd, fig)
+            .then(function() { _hover(200, 200); })
+            .then(function() {
+                assertHoverLabelContent({
+                    name: '',
+                    nums: t.nums
+                });
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    it('splom trace', function(done) {
+        fig.data = [{
+            xhoverformat: '%x',
+            yhoverformat: '.2f',
+            dimensions: [{
+                label: 'A',
+                values: ['2000-01', '2000-02'],
+                type: 'date'
+            }, {
+                label: 'B',
+                values: [3, 4]
+            }],
+            type: 'splom'
+        }];
+
+        Plotly.newPlot(gd, fig)
+        .then(function() { _hover(180, 220); })
+        .then(function() {
+            assertHoverLabelContent({
+                name: '',
+                nums: '(02/01/2000, 4.00)'
+            });
+        })
+        .then(done, done.fail);
     });
 });

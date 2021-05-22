@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -22,6 +14,7 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
+var alignPeriod = require('../../plots/cartesian/align_period');
 var Registry = require('../../registry');
 
 var helpers = require('./helpers');
@@ -256,8 +249,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return dragElement.unhoverRaw(gd, evt);
     }
 
-    var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
-    var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
+    var hoverdistance = fullLayout.hoverdistance;
+    if(hoverdistance === -1) hoverdistance = Infinity;
+
+    var spikedistance = fullLayout.spikedistance;
+    if(spikedistance === -1) spikedistance = Infinity;
 
     // hoverData: the set of candidate points we've found to highlight
     var hoverData = [];
@@ -272,7 +268,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     // mapped onto each of the currently selected overlaid subplots
     var xvalArray, yvalArray;
 
-    var itemnum, curvenum, cd, trace, subplotId, subploti, mode,
+    var itemnum, curvenum, cd, trace, subplotId, subploti, _mode,
         xval, yval, pointData, closedataPreviousLength;
 
     // spikePoints: the set of candidate points we've found to draw spikes to
@@ -407,9 +403,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
 
             // within one trace mode can sometimes be overridden
-            mode = hovermode;
-            if(helpers.isUnifiedHover(mode)) {
-                mode = mode.charAt(0);
+            _mode = hovermode;
+            if(helpers.isUnifiedHover(_mode)) {
+                _mode = _mode.charAt(0);
             }
 
             // container for new point, also used to pass info into module.hoverPoints
@@ -467,20 +463,20 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // for a highlighting array, figure out what
             // we're searching for with this element
-            if(mode === 'array') {
+            if(_mode === 'array') {
                 var selection = evt[curvenum];
                 if('pointNumber' in selection) {
                     pointData.index = selection.pointNumber;
-                    mode = 'closest';
+                    _mode = 'closest';
                 } else {
-                    mode = '';
+                    _mode = '';
                     if('xval' in selection) {
                         xval = selection.xval;
-                        mode = 'x';
+                        _mode = 'x';
                     }
                     if('yval' in selection) {
                         yval = selection.yval;
-                        mode = mode ? 'closest' : 'y';
+                        _mode = _mode ? 'closest' : 'y';
                     }
                 }
             } else if(customXVal !== undefined && customYVal !== undefined) {
@@ -494,7 +490,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
-                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
+
                     if(newPoints) {
                         var newPoint;
                         for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
@@ -523,7 +522,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 if(hoverData.length === 0) {
                     pointData.distance = spikedistance;
                     pointData.index = false;
-                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
+                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
                     if(closestPoints) {
                         closestPoints = closestPoints.filter(function(point) {
                             // some hover points, like scatter fills, do not allow spikes,
@@ -644,33 +645,67 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
+    // move period positioned points to the end of list
+    hoverData = orderPeriod(hoverData, hovermode);
+
     // If in compare mode, select every point at position
     if(
-        helpers.isXYhover(mode) &&
+        helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
-        var hd = hoverData[0];
-        var cd0 = hd.cd[hd.index];
-        var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
+        var initLen = hoverData.length;
+        var winningPoint = hoverData[0];
 
-        var xVal = hd.xVal;
-        var ax = hd.xa;
-        if(ax.type === 'category') xVal = ax._categoriesMap[xVal];
-        if(ax.type === 'date') xVal = ax.d2c(xVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            xVal += cd0.t.dPos;
+        var customXVal = customVal('x', winningPoint, fullLayout);
+        var customYVal = customVal('y', winningPoint, fullLayout);
+
+        findHoverPoints(customXVal, customYVal);
+
+        // also find start, middle and end point for period
+        var axLetter = hovermode.charAt(0);
+        if(winningPoint.trace[axLetter + 'period']) {
+            var v = winningPoint[axLetter + 'LabelVal'];
+            var ax = winningPoint[axLetter + 'a'];
+            var T = {};
+            T[axLetter + 'period'] = winningPoint.trace[axLetter + 'period'];
+            T[axLetter + 'period0'] = winningPoint.trace[axLetter + 'period0'];
+
+            T[axLetter + 'periodalignment'] = 'start';
+            var start = alignPeriod(T, ax, axLetter, [v])[0];
+
+            T[axLetter + 'periodalignment'] = 'middle';
+            var middle = alignPeriod(T, ax, axLetter, [v])[0];
+
+            T[axLetter + 'periodalignment'] = 'end';
+            var end = alignPeriod(T, ax, axLetter, [v])[0];
+
+            if(axLetter === 'x') {
+                findHoverPoints(start, customYVal);
+                findHoverPoints(middle, customYVal);
+                findHoverPoints(end, customYVal);
+            } else {
+                findHoverPoints(customXVal, start);
+                findHoverPoints(customXVal, middle);
+                findHoverPoints(customXVal, end);
+            }
+
+            var k;
+            var seen = {};
+            for(k = 0; k < initLen; k++) {
+                seen[hoverData[k].trace.index] = true;
+            }
+
+            // remove non-period aditions and traces that seen before
+            for(k = hoverData.length - 1; k >= initLen; k--) {
+                if(
+                    seen[hoverData[k].trace.index] ||
+                    !hoverData[k].trace[axLetter + 'period']
+                ) {
+                    hoverData.splice(k, 1);
+                }
+            }
         }
-
-        var yVal = hd.yVal;
-        ax = hd.ya;
-        if(ax.type === 'category') yVal = ax._categoriesMap[yVal];
-        if(ax.type === 'date') yVal = ax.d2c(yVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            yVal += cd0.t.dPos;
-        }
-
-        findHoverPoints(xVal, yVal);
 
         // Remove duplicated hoverData points
         // note that d3 also filters identical points in the rendering steps
@@ -784,8 +819,9 @@ function createHoverText(hoverData, opts, gd) {
     var c0 = hoverData[0];
     var xa = c0.xa;
     var ya = c0.ya;
-    var commonAttr = hovermode.charAt(0) === 'y' ? 'yLabel' : 'xLabel';
-    var t0 = c0[commonAttr];
+    var axLetter = hovermode.charAt(0);
+    var v0 = c0[axLetter + 'LabelVal'];
+    var t0 = c0[axLetter + 'Label'];
     var t00 = (String(t0) || '').split(' ')[0];
     var outerContainerBB = outerContainer.node().getBoundingClientRect();
     var outerTop = outerContainerBB.top;
@@ -983,8 +1019,25 @@ function createHoverText(hoverData, opts, gd) {
 
     function filterClosePoints(hoverData) {
         return hoverData.filter(function(d) {
-            return (d.zLabelVal !== undefined) ||
-                (d[commonAttr] || '').split(' ')[0] === t00;
+            if(d.zLabelVal !== undefined) return true;
+            if((d[axLetter + 'Label'] || '').split(' ')[0] === t00) return true;
+            if(d.trace[axLetter + 'period']) {
+                var v = d[axLetter + 'LabelVal'];
+                var ax = d[axLetter + 'a'];
+                var trace = {};
+                trace[axLetter + 'period'] = d.trace[axLetter + 'period'];
+                trace[axLetter + 'period0'] = d.trace[axLetter + 'period0'];
+
+                trace[axLetter + 'periodalignment'] = 'start';
+                var start = alignPeriod(trace, ax, axLetter, [v])[0];
+
+                trace[axLetter + 'periodalignment'] = 'end';
+                var end = alignPeriod(trace, ax, axLetter, [v])[0];
+
+                if(v0 >= start && v0 < end) return true;
+            }
+
+            return false;
         });
     }
 
@@ -1015,10 +1068,10 @@ function createHoverText(hoverData, opts, gd) {
         };
         var mockLayoutOut = {};
         legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
-        var legendOpts = mockLayoutOut.legend;
+        var mockLegend = mockLayoutOut.legend;
 
         // prepare items for the legend
-        legendOpts.entries = [];
+        mockLegend.entries = [];
         for(var j = 0; j < hoverData.length; j++) {
             var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
@@ -1044,13 +1097,14 @@ function createHoverText(hoverData, opts, gd) {
             }
             pt._distinct = true;
 
-            legendOpts.entries.push([pt]);
+            mockLegend.entries.push([pt]);
         }
-        legendOpts.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
-        legendOpts.layer = container;
+        mockLegend.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
+        mockLegend.layer = container;
 
         // Draw unified hover label
-        legendDraw(gd, legendOpts);
+        mockLegend._inHover = true;
+        legendDraw(gd, mockLegend);
 
         // Position the hover
         var ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
@@ -1613,11 +1667,11 @@ function cleanPoint(d, hovermode) {
 
     // and convert the x and y label values into formatted text
     if(d.xLabelVal !== undefined) {
-        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal);
+        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal, trace.xhoverformat);
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
     if(d.yLabelVal !== undefined) {
-        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal);
+        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal, trace.yhoverformat);
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
 
@@ -1873,4 +1927,43 @@ function plainText(s, len) {
         len: len,
         allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
     });
+}
+
+function orderPeriod(hoverData, hovermode) {
+    var axLetter = hovermode.charAt(0);
+
+    var first = [];
+    var last = [];
+
+    for(var i = 0; i < hoverData.length; i++) {
+        var d = hoverData[i];
+
+        if(d.trace[axLetter + 'period']) {
+            last.push(d);
+        } else {
+            first.push(d);
+        }
+    }
+
+    return first.concat(last);
+}
+
+function customVal(axLetter, winningPoint, fullLayout) {
+    var ax = winningPoint[axLetter + 'a'];
+    var val = winningPoint[axLetter + 'Val'];
+
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    else if(ax.type === 'date') val = ax.d2c(val);
+
+    var cd0 = winningPoint.cd[winningPoint.index];
+    if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
+        if(
+            fullLayout.boxmode === 'group' ||
+            fullLayout.violinmode === 'group'
+        ) {
+            val += cd0.t.dPos;
+        }
+    }
+
+    return val;
 }

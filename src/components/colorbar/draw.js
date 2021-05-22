@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -685,6 +677,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         tickcolor: opts.tickcolor,
         showticklabels: opts.showticklabels,
         ticklabelposition: opts.ticklabelposition,
+        ticklabeloverflow: opts.ticklabeloverflow,
         tickfont: opts.tickfont,
         tickangle: opts.tickangle,
         tickformat: opts.tickformat,

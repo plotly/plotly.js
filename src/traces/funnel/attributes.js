@@ -1,16 +1,9 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var constants = require('./constants');
@@ -31,6 +24,8 @@ module.exports = {
     yperiod0: barAttrs.yperiod0,
     xperiodalignment: barAttrs.xperiodalignment,
     yperiodalignment: barAttrs.yperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     hovertext: barAttrs.hovertext,
     hovertemplate: hovertemplateAttrs({}, {
@@ -59,7 +54,7 @@ module.exports = {
     }),
 
     text: barAttrs.text,
-    textposition: extendFlat({}, barAttrs.textposition, {dflt: 'auto'}),
+    textposition: barAttrs.textposition,
     insidetextanchor: extendFlat({}, barAttrs.insidetextanchor, {dflt: 'middle'}),
     textangle: extendFlat({}, barAttrs.textangle, {dflt: 0}),
     textfont: barAttrs.textfont,
@@ -83,7 +78,7 @@ module.exports = {
     offset: extendFlat({}, barAttrs.offset, {arrayOk: false}),
     width: extendFlat({}, barAttrs.width, {arrayOk: false}),
 
-    marker: barAttrs.marker,
+    marker: funnelMarker(),
 
     connector: {
         fillcolor: {
@@ -116,3 +111,9 @@ module.exports = {
     offsetgroup: barAttrs.offsetgroup,
     alignmentgroup: barAttrs.alignmentgroup
 };
+
+function funnelMarker() {
+    var marker = extendFlat({}, barAttrs.marker);
+    delete marker.pattern;
+    return marker;
+}

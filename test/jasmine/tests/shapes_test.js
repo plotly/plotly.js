@@ -1124,8 +1124,8 @@ describe('A fixed size shape', function() {
                                 var shapeNodeAfterDrag = getFirstShapeNode();
                                 var bBoxAfterDrag = shapeNodeAfterDrag.getBoundingClientRect();
                                 var resizeFactor = shallShrink ? -1 : 1;
-                                expect(bBoxAfterDrag.height).toBe(bBoxBeforeDrag.height + resizeFactor * Math.abs(dy));
-                                expect(bBoxAfterDrag.width).toBe(bBoxBeforeDrag.width + resizeFactor * Math.abs(dx));
+                                expect(bBoxAfterDrag.height).toBeCloseTo(bBoxBeforeDrag.height + resizeFactor * Math.abs(dy));
+                                expect(bBoxAfterDrag.width).toBeCloseTo(bBoxBeforeDrag.width + resizeFactor * Math.abs(dx));
                                 assertShapeFullyVisible(shapeNodeAfterDrag);
                             })
                             .then(done, done.fail);

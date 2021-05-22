@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 /**
@@ -295,7 +287,13 @@ var configAttributes = {
         dflt: [],
         description: [
             'Add mode bar button using config objects',
-            'See ./components/modebar/buttons.js for list of arguments.'
+            'See ./components/modebar/buttons.js for list of arguments.',
+            'To enable predefined modebar buttons e.g. shape drawing, hover and spikelines,',
+            'simply provide their string name(s). This could include:',
+            '*v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*,',
+            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*.',
+            'Please note that these predefined buttons will only be shown if they are compatible',
+            'with all trace types used in a graph.'
         ].join(' ')
     },
     modeBarButtons: {

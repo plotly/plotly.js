@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var fontAttrs = require('./font_attributes');
@@ -395,40 +387,6 @@ module.exports = {
             'or a logo image, for example. To omit one of these items on the plot,',
             'make an item with matching `templateitemname` and `visible: false`.'
         ].join(' ')
-    },
-    modebar: {
-        orientation: {
-            valType: 'enumerated',
-            values: ['v', 'h'],
-            dflt: 'h',
-            editType: 'modebar',
-            description: 'Sets the orientation of the modebar.'
-        },
-        bgcolor: {
-            valType: 'color',
-            editType: 'modebar',
-            description: 'Sets the background color of the modebar.'
-        },
-        color: {
-            valType: 'color',
-            editType: 'modebar',
-            description: 'Sets the color of the icons in the modebar.'
-        },
-        activecolor: {
-            valType: 'color',
-            editType: 'modebar',
-            description: 'Sets the color of the active or hovered on icons in the modebar.'
-        },
-        uirevision: {
-            valType: 'any',
-            editType: 'none',
-            description: [
-                'Controls persistence of user-driven changes related to the modebar,',
-                'including `hovermode`, `dragmode`, and `showspikes` at both the',
-                'root level and inside subplots. Defaults to `layout.uirevision`.'
-            ].join(' ')
-        },
-        editType: 'modebar'
     },
 
     newshape: drawNewShapeAttrs.newshape,

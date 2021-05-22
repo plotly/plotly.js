@@ -1,16 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
 var delta = require('../../constants/delta.js');
@@ -37,6 +29,8 @@ module.exports = {
     xperiod: scatterAttrs.xperiod,
     xperiod0: scatterAttrs.xperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     x: {
         valType: 'data_array',

@@ -1,19 +1,13 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var constants = require('./constants');
+var pattern = require('../../components/drawing/attributes').pattern;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -47,7 +41,8 @@ var marker = extendFlat({
         max: 1,
         editType: 'style',
         description: 'Sets the opacity of the bars.'
-    }
+    },
+    pattern: pattern
 });
 
 module.exports = {
@@ -64,6 +59,8 @@ module.exports = {
     yperiod0: scatterAttrs.yperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
     yperiodalignment: scatterAttrs.yperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     text: scatterAttrs.text,
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
@@ -77,7 +74,7 @@ module.exports = {
     textposition: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'auto', 'none'],
-        dflt: 'none',
+        dflt: 'auto',
         arrayOk: true,
         editType: 'calc',
         description: [
@@ -89,7 +86,8 @@ module.exports = {
             'this one, then the text gets pushed inside.',
             '*auto* tries to position `text` inside the bar, but if',
             'the bar is too small and no bar is stacked on this one',
-            'the text is moved outside.'
+            'the text is moved outside.',
+            'If *none*, no text appears.'
         ].join(' ')
     },
 

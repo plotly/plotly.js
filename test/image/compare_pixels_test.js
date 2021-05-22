@@ -80,6 +80,20 @@ function unique(value, index, self) {
 }
 allMockList = allMockList.filter(unique);
 
+// Skip MathJax mocks that are tested using orca in noci_test
+var MATHJAX_LIST = [
+    'mathjax',
+    'ternary-mathjax',
+    'table_plain_birds',
+    'table_wrapped_birds',
+    'parcats_grid_subplots',
+    'legend_mathjax_title_and_items',
+    'table_latex_multitrace_scatter'
+];
+allMockList = allMockList.filter(function(e) {
+    return MATHJAX_LIST.indexOf(e) === -1;
+});
+
 // filter out untestable mocks if no pattern is specified (ie. we're testing all mocks)
 // or if flag '--filter' is provided
 console.log('');
@@ -121,7 +135,7 @@ if(argv['skip-flaky']) {
     });
 }
 
-/* non-regl mock(s) i.e. heatmapgl
+/* gl2d pointcloud and other non-regl gl2d mock(s)
  * must be tested first on in order to work;
  * sort them here.
  *
@@ -136,8 +150,8 @@ if(argv['skip-flaky']) {
  * More info here:
  * https://github.com/plotly/plotly.js/pull/1037
  */
-function sortHeatmapglMockList(mockList) {
-    var mockNames = ['gl2d_heatmapgl'];
+function sortGl2dMockList(mockList) {
+    var mockNames = ['gl2d_pointcloud-basic', 'gl2d_heatmapgl'];
     var pos = 0;
 
     mockNames.forEach(function(m) {
@@ -256,6 +270,7 @@ function comparePixels(mockName, cb) {
         }
         if(isEqual) {
             fs.unlinkSync(imagePaths.diff);
+            fs.unlinkSync(imagePaths.test);
         }
 
         cb(isEqual, mockName);
@@ -283,7 +298,7 @@ function comparePixels(mockName, cb) {
         .on('close', checkImage);
 }
 
-sortHeatmapglMockList(allMockList);
+sortGl2dMockList(allMockList);
 console.log('');
 
 // main

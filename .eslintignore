@@ -2,5 +2,5 @@ node_modules
 dist
 build
 
+tasks/test_requirejs.js
 test/jasmine/assets/jquery-1.8.3.min.js
-src/plots/polar/legacy/micropolar.js

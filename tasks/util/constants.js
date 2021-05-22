@@ -1,3 +1,4 @@
+var fs = require('fs');
 var path = require('path');
 var pkg = require('../../package.json');
 
@@ -8,6 +9,20 @@ var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
+
+function startsWithLowerCase(v) {
+    return v.charAt(0) !== v.charAt(0).toUpperCase();
+}
+
+var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
+var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
+var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
+    .filter(startsWithLowerCase);
+var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
+    .filter(function(v) {
+        return startsWithLowerCase(v) && v !== 'helpers.js';
+    })
+    .map(function(e) { return e.replace('.js', ''); });
 
 var pathToTopojsonSrc;
 try {
@@ -28,28 +43,141 @@ var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
 ];
 
-var partialBundlePaths = partialBundleNames.map(function(name) {
+var partialBundleTraces = {
+    basic: [
+        'bar',
+        'pie',
+        'scatter'
+    ],
+    cartesian: [
+        'bar',
+        'box',
+        'contour',
+        'heatmap',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'image',
+        'pie',
+        'scatter',
+        'scatterternary',
+        'violin'
+    ],
+    finance: [
+        'bar',
+        'candlestick',
+        'funnel',
+        'funnelarea',
+        'histogram',
+        'indicator',
+        'ohlc',
+        'pie',
+        'scatter',
+        'waterfall'
+    ],
+    geo: [
+        'choropleth',
+        'scatter',
+        'scattergeo'
+    ],
+    gl2d: [
+        'heatmapgl',
+        'parcoords',
+        'pointcloud',
+        'scatter',
+        'scattergl',
+        'splom'
+    ],
+    gl3d: [
+        'cone',
+        'isosurface',
+        'mesh3d',
+        'scatter',
+        'scatter3d',
+        'streamtube',
+        'surface',
+        'volume'
+    ],
+    mapbox: [
+        'choroplethmapbox',
+        'densitymapbox',
+        'scatter',
+        'scattermapbox'
+    ],
+    strict: [
+        'bar',
+        'barpolar',
+        'box',
+        'candlestick',
+        'carpet',
+        'choropleth',
+        'choroplethmapbox',
+        'contour',
+        'contourcarpet',
+        'densitymapbox',
+        'funnel',
+        'funnelarea',
+        'heatmap',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'image',
+        'indicator',
+        'ohlc',
+        'parcats',
+        'parcoords',
+        'pie',
+        'sankey',
+        'scatter',
+        'scattercarpet',
+        'scattergeo',
+        'scattergl',
+        'scattermapbox',
+        'scatterpolar',
+        'scatterpolargl',
+        'scatterternary',
+        'splom',
+        'sunburst',
+        'table',
+        'treemap',
+        'violin',
+        'waterfall'
+    ]
+};
+
+function makePartialBundleOpts(name) {
     return {
         name: name,
+        traceList: partialBundleTraces[name],
+        transformList: allTransforms,
+        calendars: true,
         index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
     };
-});
+}
 
 var year = (new Date()).getFullYear();
 
 module.exports = {
+    makePartialBundleOpts: makePartialBundleOpts,
+
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
     pathToDist: pathToDist,
 
-    pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
+    partialBundleTraces: partialBundleTraces,
+
+    allTransforms: allTransforms,
+    allTraces: allTraces,
+    mainIndex: mainIndex,
+    pathToPlotlyIndex: pathToPlotlyIndex,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyVersion: path.join(pathToSrc, 'version.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
+    pathToPlotlyBuildMin: path.join(pathToBuild, 'plotly.min.js'),
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
@@ -58,7 +186,6 @@ module.exports = {
     pathToTranslationKeys: path.join(pathToDist, 'translation-keys.txt'),
 
     partialBundleNames: partialBundleNames,
-    partialBundlePaths: partialBundlePaths,
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
@@ -82,8 +209,6 @@ module.exports = {
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
-    pathToRequireJS: path.join(pathToRoot, 'node_modules', 'requirejs', 'require.js'),
-    pathToRequireJSFixture: path.join(pathToBuild, 'requirejs_fixture.js'),
 
     // this mapbox access token is 'public', no need to hide it
     // more info: https://www.mapbox.com/help/define-access-token/
@@ -96,26 +221,6 @@ module.exports = {
     testContainerUrl: 'http://localhost:9010/',
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
-    uglifyOptions: {
-        ecma: 5,
-        mangle: true,
-        compress: {
-            // see full list of compress option
-            // https://github.com/fabiosantoscode/terser#compress-options
-            //
-            // need to turn off 'typeofs' to make mapbox-gl work in
-            // minified bundles, for more info see:
-            // https://github.com/plotly/plotly.js/issues/2787
-            typeofs: false
-        },
-        output: {
-            beautify: false,
-            ascii_only: true
-        },
-
-        sourceMap: false
-    },
-
     licenseDist: [
         '/**',
         '* plotly.js v' + pkg.version,
@@ -124,14 +229,4 @@ module.exports = {
         '* Licensed under the MIT license',
         '*/'
     ].join('\n'),
-
-    licenseSrc: [
-        '/**',
-        '* Copyright 2012-' + year + ', Plotly, Inc.',
-        '* All rights reserved.',
-        '*',
-        '* This source code is licensed under the MIT license found in the',
-        '* LICENSE file in the root directory of this source tree.',
-        '*/'
-    ].join('\n')
 };

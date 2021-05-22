@@ -11,20 +11,20 @@ describe('Test MathJax:', function() {
     // N.B. we have to load MathJax "dynamically" as Karam
     // does not undefined the MathJax's `?config=` parameter.
     //
-    // Eventually, it might be nice to move these tests in the "regular" test
+    // Now with the mathjax_config no longer needed,
+    // it might be nice to move these tests in the "regular" test
     // suites, but to do that we'll need to find a way to remove MathJax from
     // page without breaking things downstream.
     beforeAll(function(done) {
         mathJaxScriptTag = document.createElement('script');
         mathJaxScriptTag.type = 'text/javascript';
         mathJaxScriptTag.onload = function() {
-            require('@src/fonts/mathjax_config')();
             done();
         };
         mathJaxScriptTag.onerror = function() {
             fail('MathJax failed to load');
         };
-        mathJaxScriptTag.src = '/base/dist/extras/mathjax/MathJax.js?config=TeX-AMS-MML_SVG';
+        mathJaxScriptTag.src = '/base/node_modules/mathjax/MathJax.js?config=TeX-AMS-MML_SVG';
         document.body.appendChild(mathJaxScriptTag);
     });
 

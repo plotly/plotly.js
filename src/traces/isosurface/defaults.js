@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -51,7 +43,10 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
+    coerce('valuehoverformat');
     ['x', 'y', 'z'].forEach(function(dim) {
+        coerce(dim + 'hoverformat');
+
         var capDim = 'caps.' + dim;
         var showCap = coerce(capDim + '.show');
         if(showCap) {

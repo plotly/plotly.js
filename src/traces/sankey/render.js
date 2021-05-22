@@ -1,30 +1,30 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var c = require('./constants');
+var d3Force = require('d3-force');
+var interpolateNumber = require('d3-interpolate').interpolateNumber;
 var d3 = require('@plotly/d3');
+var d3Sankey = require('@plotly/d3-sankey');
+var d3SankeyCircular = require('@plotly/d3-sankey-circular');
+
+var c = require('./constants');
 var tinycolor = require('tinycolor2');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-var d3Sankey = require('@plotly/d3-sankey');
-var d3SankeyCircular = require('@plotly/d3-sankey-circular');
-var d3Force = require('d3-force');
 var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
+var strRotate = Lib.strRotate;
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
 var unwrap = gup.unwrap;
-var interpolateNumber = require('d3-interpolate').interpolateNumber;
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 var Registry = require('../../registry');
+
+var alignmentConstants = require('../../constants/alignment');
+var CAP_SHIFT = alignmentConstants.CAP_SHIFT;
+var LINE_SPACING = alignmentConstants.LINE_SPACING;
+var TEXTPAD = 3;
 
 // view models
 
@@ -554,22 +554,6 @@ function sankeyTransform(d) {
     return offset + (d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)');
 }
 
-function nodeCentering(d) {
-    return strTranslate(d.horizontal ? 0 : d.labelY, d.horizontal ? d.labelY : 0);
-}
-
-function textGuidePath(d) {
-    return d3.svg.line()([
-        [d.horizontal ? (d.left ? -d.sizeAcross : d.visibleWidth + c.nodeTextOffsetHorizontal) : c.nodeTextOffsetHorizontal, 0],
-        [d.horizontal ? (d.left ? - c.nodeTextOffsetHorizontal : d.sizeAcross) : d.visibleHeight - c.nodeTextOffsetHorizontal, 0]
-    ]);
-}
-
-function sankeyInverseTransform(d) {return d.horizontal ? 'matrix(1 0 0 1 0 0)' : 'matrix(0 1 1 0 0 0)';}
-function textFlip(d) {return d.horizontal ? 'scale(1 1)' : 'scale(-1 1)';}
-function nodeTextColor(d) {return d.darkBackground && !d.horizontal ? 'rgb(255,255,255)' : 'rgb(0,0,0)';}
-function nodeTextOffset(d) {return d.horizontal && d.left ? '100%' : '0%';}
-
 // event handling
 
 function attachPointerEvents(selection, sankey, eventSet) {
@@ -977,88 +961,55 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .call(sizeNode);
 
-    var nodeCapture = sankeyNode.selectAll('.' + c.cn.nodeCapture)
-        .data(repeat);
-
-    nodeCapture.enter()
-        .append('rect')
-        .classed(c.cn.nodeCapture, true)
-        .style('fill-opacity', 0);
-
-    nodeCapture
-        .attr('x', function(d) {return d.zoneX;})
-        .attr('y', function(d) {return d.zoneY;})
-        .attr('width', function(d) {return d.zoneWidth;})
-        .attr('height', function(d) {return d.zoneHeight;});
-
-    var nodeCentered = sankeyNode.selectAll('.' + c.cn.nodeCentered)
-        .data(repeat);
-
-    nodeCentered.enter()
-        .append('g')
-        .classed(c.cn.nodeCentered, true)
-        .attr('transform', nodeCentering);
-
-    nodeCentered
-        .transition()
-        .ease(c.ease).duration(c.duration)
-        .attr('transform', nodeCentering);
-
-    var nodeLabelGuide = nodeCentered.selectAll('.' + c.cn.nodeLabelGuide)
-        .data(repeat);
-
-    nodeLabelGuide.enter()
-        .append('path')
-        .classed(c.cn.nodeLabelGuide, true)
-        .attr('id', function(d) {return d.uniqueNodeLabelPathId;})
-        .attr('d', textGuidePath)
-        .attr('transform', sankeyInverseTransform);
-
-    nodeLabelGuide
-        .transition()
-        .ease(c.ease).duration(c.duration)
-        .attr('d', textGuidePath)
-        .attr('transform', sankeyInverseTransform);
-
-    var nodeLabel = nodeCentered.selectAll('.' + c.cn.nodeLabel)
+    var nodeLabel = sankeyNode.selectAll('.' + c.cn.nodeLabel)
         .data(repeat);
 
     nodeLabel.enter()
         .append('text')
         .classed(c.cn.nodeLabel, true)
-        .attr('transform', textFlip)
-        .style('cursor', 'default')
-        .style('fill', 'black');
+        .style('cursor', 'default');
 
     nodeLabel
-        .style('text-shadow', function(d) {
-            return d.horizontal ? '-1px 1px 1px #fff, 1px 1px 1px #fff, 1px -1px 1px #fff, -1px -1px 1px #fff' : 'none';
+        .attr('data-notex', 1) // prohibit tex interpretation until we can handle tex and regular text together
+        .text(function(d) { return d.node.label; })
+        .each(function(d) {
+            var e = d3.select(this);
+            Drawing.font(e, d.textFont);
+            svgTextUtils.convertToTspans(e, gd);
         })
-        .each(function(d) {Drawing.font(nodeLabel, d.textFont);});
+        .style('text-shadow', svgTextUtils.makeTextShadow(gd._fullLayout.paper_bgcolor))
+        .attr('text-anchor', function(d) {
+            return (d.horizontal && d.left) ? 'end' : 'start';
+        })
+        .attr('transform', function(d) {
+            var e = d3.select(this);
+            // how much to shift a multi-line label to center it vertically.
+            var nLines = svgTextUtils.lineCount(e);
+            var blockHeight = d.textFont.size * (
+                (nLines - 1) * LINE_SPACING - CAP_SHIFT
+            );
+
+            var posX = d.nodeLineWidth / 2 + TEXTPAD;
+            var posY = ((d.horizontal ? d.visibleHeight : d.visibleWidth) - blockHeight) / 2;
+            if(d.horizontal) {
+                if(d.left) {
+                    posX = -posX;
+                } else {
+                    posX += d.visibleWidth;
+                }
+            }
+
+            var flipText = d.horizontal ? '' : (
+                'scale(-1,1)' + strRotate(90)
+            );
+
+            return strTranslate(
+                d.horizontal ? posX : posY,
+                d.horizontal ? posY : posX
+            ) + flipText;
+        });
 
     nodeLabel
         .transition()
-        .ease(c.ease).duration(c.duration)
-        .attr('transform', textFlip);
-
-    var nodeLabelTextPath = nodeLabel.selectAll('.' + c.cn.nodeLabelTextPath)
-        .data(repeat);
-
-    nodeLabelTextPath.enter()
-        .append('textPath')
-        .classed(c.cn.nodeLabelTextPath, true)
-        .attr('alignment-baseline', 'middle')
-        .attr('xlink:href', function(d) {return '#' + d.uniqueNodeLabelPathId;})
-        .attr('startOffset', nodeTextOffset)
-        .style('fill', nodeTextColor);
-
-    nodeLabelTextPath
-        .text(function(d) {return d.horizontal || d.node.dy > 5 ? d.node.label : '';})
-        .attr('text-anchor', function(d) {return d.horizontal && d.left ? 'end' : 'start';});
-
-    nodeLabelTextPath
-        .transition()
-        .ease(c.ease).duration(c.duration)
-        .attr('startOffset', nodeTextOffset)
-        .style('fill', nodeTextColor);
+        .ease(c.ease).duration(c.duration);
 };

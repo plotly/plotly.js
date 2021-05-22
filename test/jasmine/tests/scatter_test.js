@@ -1245,6 +1245,22 @@ describe('Text templates on scatter traces:', function() {
         data: [{
             type: 'scatter',
             mode: 'text',
+            x: [1, 2, 3],
+            y: [3, 2, 1],
+            texttemplate: '%{x}-%{y}'
+        }],
+        layout: {
+            xaxis: {type: 'log'},
+            yaxis: {type: 'log'},
+        }
+    }, '.textpoint', [
+      ['%{x}-%{y}', ['1-3', '2-2', '3-1']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scatter',
+            mode: 'text',
             x: ['a', 'b'],
             y: ['1000', '1200']
         }],
@@ -1967,6 +1983,7 @@ describe('Test scatter *clipnaxis*:', function() {
 describe('event data', function() {
     var mock = require('@mocks/scatter-colorscale-colorbar');
     var mockCopy = Lib.extendDeep({}, mock);
+    mockCopy.layout.hovermode = 'x';
 
     var marker = mockCopy.data[0].marker;
     marker.opacity = [];

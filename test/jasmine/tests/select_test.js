@@ -1420,7 +1420,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done, done.fail);
     });
 
-    it('should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
+    it('@flaky should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
 
@@ -2010,7 +2010,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@noCI @gl should work on choroplethmapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on choroplethmapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
             var assertRanges = makeAssertRanges('mapbox');
             var assertLassoPoints = makeAssertLassoPoints('mapbox');
@@ -2034,7 +2034,7 @@ describe('Test select box and lasso per trace:', function() {
                     [[150, 150], [300, 300]],
                     function() {
                         assertPoints([['NY', 10]]);
-                        assertRanges([[-83.29, 46.13], [-73.97, 39.29]]);
+                        assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                         assertSelectedPoints({0: [0]});
                     },
                     null, BOXEVENTS, 'choroplethmapbox select'
@@ -2050,8 +2050,8 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([['MA', 20]]);
                         assertSelectedPoints({0: [1]});
                         assertLassoPoints([
-                            [-73.97, 43.936], [-73.97, 39.293], [-67.756, 39.293],
-                            [-67.756, 43.936], [-73.971, 43.936]
+                            [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
+                            [-67.84, 43.936], [-74.06, 43.936]
                         ]);
                     },
                     null, LASSOEVENTS, 'choroplethmapbox lasso'
@@ -2456,7 +2456,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false].forEach(function(hasCssTransform) {
-        it('should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@flaky should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();

@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -330,7 +330,7 @@ describe('Test densitymapbox hover:', function() {
 
     var specs = [{
         desc: 'basic',
-        nums: '3\n(20°, 25°)',
+        nums: '3\n(25°, 20°)',
         name: '',
         evtPts: [{lon: 20, lat: 25, z: 3, pointNumber: 1, curveNumber: 0}]
     }, {
@@ -352,7 +352,7 @@ describe('Test densitymapbox hover:', function() {
             });
             return fig;
         },
-        nums: '(20°, 25°)',
+        nums: '(25°, 20°)',
         name: 'trace 0',
         evtPts: [{lon: 20, lat: 25, z: 3, pointNumber: 1, curveNumber: 0}]
     }, {
@@ -363,7 +363,7 @@ describe('Test densitymapbox hover:', function() {
             });
             return fig;
         },
-        nums: '(20°, 25°)',
+        nums: '(25°, 20°)',
         name: '',
         evtPts: [{lon: 20, lat: 25, pointNumber: 1, curveNumber: 0}]
     }];

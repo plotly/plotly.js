@@ -1,20 +1,14 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var Color = require('../../components/color');
 
 var heatmapHoverPoints = require('../heatmap/hover');
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer) {
-    var hoverData = heatmapHoverPoints(pointData, xval, yval, hovermode, hoverLayer, true);
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    if(!opts) opts = {};
+    opts.isContour = true;
+
+    var hoverData = heatmapHoverPoints(pointData, xval, yval, hovermode, opts);
 
     if(hoverData) {
         hoverData.forEach(function(hoverPt) {

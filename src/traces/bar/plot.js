@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -655,11 +647,11 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     }
 
     function formatLabel(u) {
-        return tickText(pAxis, u, true).text;
+        return tickText(pAxis, pAxis.c2l(u), true).text;
     }
 
     function formatNumber(v) {
-        return tickText(vAxis, +v, true).text;
+        return tickText(vAxis, vAxis.c2l(v), true).text;
     }
 
     var cdi = cd[index];

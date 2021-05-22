@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -37,8 +37,8 @@ describe('Plotly w/o WebGL support:', function() {
         .then(done, done.fail);
     });
 
-    it('heatmapgl subplots', function(done) {
-        Plotly.react(gd, require('@mocks/gl2d_heatmapgl.json'))
+    it('gl2d subplots', function(done) {
+        Plotly.react(gd, require('@mocks/gl2d_pointcloud-basic.json'))
         .then(function() {
             checkNoWebGLMsg(true);
             return Plotly.react(gd, require('@mocks/10.json'));

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Fx = require('../../components/fx');
@@ -13,7 +5,10 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 var extractOpts = require('../../components/colorscale').extractOpts;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLayer, contour) {
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    if(!opts) opts = {};
+    var isContour = opts.isContour;
+
     var cd0 = pointData.cd[0];
     var trace = cd0.trace;
     var xa = pointData.xa;
@@ -46,7 +41,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
             Fx.inbox(yval - y[0], yval - y[y.length - 1], 0) > 0) {
         return;
     } else {
-        if(contour) {
+        if(isContour) {
             var i2;
             x2 = [2 * x[0] - x[1]];
 
@@ -71,7 +66,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, hoverLay
     var y1 = ya.c2p(y[ny + 1]);
 
     var _x, _y;
-    if(contour) {
+    if(isContour) {
         _x = cd0.orig_x || x;
         _y = cd0.orig_y || y;
 

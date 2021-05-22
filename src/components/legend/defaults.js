@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -85,12 +77,13 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
-    Lib.coerceFont(coerce, 'font', layoutOut.font);
+    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     var orientation = coerce('orientation');
+    var isHorizontal = orientation === 'h';
     var defaultX, defaultY, defaultYAnchor;
 
-    if(orientation === 'h') {
+    if(isHorizontal) {
         defaultX = 0;
 
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
@@ -127,7 +120,11 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     var titleText = coerce('title.text');
     if(titleText) {
-        coerce('title.side', orientation === 'h' ? 'left' : 'top');
-        Lib.coerceFont(coerce, 'title.font', layoutOut.font);
+        coerce('title.side', isHorizontal ? 'left' : 'top');
+        var dfltTitleFont = Lib.extendFlat({}, itemFont, {
+            size: Lib.bigFont(itemFont.size)
+        });
+
+        Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     }
 };

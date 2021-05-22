@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -92,10 +84,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.pad.l', headerSize / 4);
     coerce('marker.pad.r', headerSize / 4);
     coerce('marker.pad.b', bottomText ? headerSize : headerSize / 4);
-
-    if(withColorscale) {
-        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
-    }
 
     traceOut._hovered = {
         marker: {

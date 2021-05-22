@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -41,6 +33,11 @@ var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
+
+var ZERO_PATH = { K: 'zeroline' };
+var GRID_PATH = { K: 'gridline', L: 'path' };
+var TICK_PATH = { K: 'tick', L: 'path' };
+var TICK_TEXT = { K: 'tick', L: 'text' };
 
 var alignmentConstants = require('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
@@ -102,7 +99,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, attr, dflt, extraOption
     if(!extraOption) extraOption = dflt;
     axlist = axlist.concat(axlist.map(function(x) { return x + ' domain'; }));
 
-    // data-ref annotations are not supported in heatmapgl yet
+    // data-ref annotations are not supported in gl2d yet
 
     attrDef[refAttr] = {
         valType: 'enumerated',
@@ -557,7 +554,7 @@ axes.prepTicks = function(ax, opts) {
 
         if(!nt) {
             if(ax.type === 'category' || ax.type === 'multicategory') {
-                minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
+                minPx = ax.tickfont ? Lib.bigFont(ax.tickfont.size || 12) : 15;
                 nt = ax._length / minPx;
             } else {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
@@ -1364,16 +1361,23 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
  * log axes (where negative values can't be displayed but can appear in hover text)
  *
  * @param {object} ax: the axis to format text for
- * @param {number} val: calcdata value to format
- * @param {Optional(number)} val2: a second value to display
+ * @param {number or array of numbers} values: calcdata value(s) to format
+ * @param {Optional(string)} hoverformat: trace (x|y)hoverformat to override axis.hoverformat
  *
  * @returns {string} `val` formatted as a string appropriate to this axis, or
- *     `val` and `val2` as a range (ie '<val> - <val2>') if `val2` is provided and
- *     it's different from `val`.
+ *     first value and second value as a range (ie '<val1> - <val2>') if the second value is provided and
+ *     it's different from the first value.
  */
-axes.hoverLabelText = function(ax, val, val2) {
-    if(val2 !== BADNUM && val2 !== val) {
-        return axes.hoverLabelText(ax, val) + ' - ' + axes.hoverLabelText(ax, val2);
+axes.hoverLabelText = function(ax, values, hoverformat) {
+    if(hoverformat) ax = Lib.extendFlat({}, ax, {hoverformat: hoverformat});
+
+    var val = Array.isArray(values) ? values[0] : values;
+    var val2 = Array.isArray(values) ? values[1] : undefined;
+    if(val2 !== undefined && val2 !== val) {
+        return (
+            axes.hoverLabelText(ax, val, hoverformat) + ' - ' +
+            axes.hoverLabelText(ax, val2, hoverformat)
+        );
     }
 
     var logOffScale = (ax.type === 'log' && val <= 0);
@@ -1457,7 +1461,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 ax._prevDateHead = headStr;
                 dateStr += '<br>' + headStr;
             } else {
-                var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+                var isInside = insideTicklabelposition(ax);
                 var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
                 if(
                     (!isInside && side === 'top') ||
@@ -2188,6 +2192,7 @@ axes.drawOne = function(gd, ax, opts) {
         return axes.drawLabels(gd, ax, {
             vals: vals,
             layer: mainAxLayer,
+            plotinfo: plotinfo,
             transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
         });
@@ -2806,7 +2811,10 @@ axes.drawTicks = function(gd, ax, opts) {
         .classed('crisp', opts.crisp !== false)
         .call(Color.stroke, ax.tickcolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
-        .attr('d', opts.path);
+        .attr('d', opts.path)
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_PATH]);
 
     ticks.attr('transform', opts.transFn);
 };
@@ -2869,7 +2877,10 @@ axes.drawGrid = function(gd, ax, opts) {
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
-        .style('stroke-width', ax._gw + 'px');
+        .style('stroke-width', ax._gw + 'px')
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -2918,7 +2929,10 @@ axes.drawZeroLine = function(gd, ax, opts) {
     zl.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
 };
 
 /**
@@ -2991,7 +3005,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     // sync label: just position it now.
                     positionLabels(thisLabel, tickAngle);
                 }
-            });
+            })
+            .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_TEXT]);
 
     tickLabels.exit().remove();
 
@@ -3003,8 +3020,6 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     function positionLabels(s, angle) {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
-
         s.each(function(d) {
             var thisLabel = d3.select(this);
             var mathjaxGroup = thisLabel.select('.text-math-group');
@@ -3032,13 +3047,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     'text-anchor': anchor
                 });
 
-                if(isInside) {
-                    // ensure visible
-                    thisText.style({ opacity: 100 });
+                thisText.style('opacity', 1); // visible
 
-                    if(ax._hideOutOfRangeInsideTickLabels) {
-                        ax._hideOutOfRangeInsideTickLabels();
-                    }
+                if(ax._adjustTickLabelsOverflow) {
+                    ax._adjustTickLabelsOverflow();
                 }
             } else {
                 var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
@@ -3048,39 +3060,135 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    ax._hideOutOfRangeInsideTickLabels = undefined;
-    if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
-        ax._hideOutOfRangeInsideTickLabels = function() {
+    ax._adjustTickLabelsOverflow = function() {
+        var ticklabeloverflow = ax.ticklabeloverflow;
+        if(!ticklabeloverflow || ticklabeloverflow === 'allow') return;
+
+        var hideOverflow = ticklabeloverflow.indexOf('hide') !== -1;
+
+        var isX = ax._id.charAt(0) === 'x';
+        // div positions
+        var p0 = 0;
+        var p1 = isX ?
+            gd._fullLayout.width :
+            gd._fullLayout.height;
+
+        if(ticklabeloverflow.indexOf('domain') !== -1) {
+            // domain positions
             var rl = Lib.simpleMap(ax.range, ax.r2l);
+            p0 = ax.l2p(rl[0]) + ax._offset;
+            p1 = ax.l2p(rl[1]) + ax._offset;
+        }
 
-            // hide inside tick labels that go outside axis end points
-            var p0 = ax.l2p(rl[0]);
-            var p1 = ax.l2p(rl[1]);
+        var min = Math.min(p0, p1);
+        var max = Math.max(p0, p1);
 
-            var min = Math.min(p0, p1) + ax._offset;
-            var max = Math.max(p0, p1) + ax._offset;
+        var side = ax.side;
 
-            var isX = ax._id.charAt(0) === 'x';
+        var visibleLabelMin = Infinity;
+        var visibleLabelMax = -Infinity;
 
-            tickLabels.each(function(d) {
-                var thisLabel = d3.select(this);
-                var mathjaxGroup = thisLabel.select('.text-math-group');
+        tickLabels.each(function(d) {
+            var thisLabel = d3.select(this);
+            var mathjaxGroup = thisLabel.select('.text-math-group');
 
-                if(mathjaxGroup.empty()) {
-                    var bb = Drawing.bBox(thisLabel.node());
-                    var hide = false;
-                    if(isX) {
-                        if(bb.right > max) hide = true;
-                        else if(bb.left < min) hide = true;
+            if(mathjaxGroup.empty()) {
+                var bb = Drawing.bBox(thisLabel.node());
+                var adjust = 0;
+                if(isX) {
+                    if(bb.right > max) adjust = 1;
+                    else if(bb.left < min) adjust = 1;
+                } else {
+                    if(bb.bottom > max) adjust = 1;
+                    else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) adjust = 1;
+                }
+
+                var t = thisLabel.select('text');
+                if(adjust) {
+                    if(hideOverflow) t.style('opacity', 0); // hidden
+                } else {
+                    t.style('opacity', 1); // visible
+
+                    if(side === 'bottom' || side === 'right') {
+                        visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                     } else {
-                        if(bb.bottom > max) hide = true;
-                        else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
+                        visibleLabelMin = -Infinity;
                     }
-                    if(hide) thisLabel.select('text').style({ opacity: 0 });
-                } // TODO: hide mathjax?
-            });
-        };
-    }
+
+                    if(side === 'top' || side === 'left') {
+                        visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
+                    } else {
+                        visibleLabelMax = Infinity;
+                    }
+                }
+            } // TODO: hide mathjax?
+        });
+
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            var anchorAx = isX ? plotinfo.yaxis : plotinfo.xaxis;
+            if(anchorAx) {
+                anchorAx['_visibleLabelMin_' + ax._id] = visibleLabelMin;
+                anchorAx['_visibleLabelMax_' + ax._id] = visibleLabelMax;
+            }
+        }
+    };
+
+    ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
+        var isX = ax._id.charAt(0) === 'x';
+
+        var anchoredAxes = [];
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            anchoredAxes.push(isX ? plotinfo.yaxis : plotinfo.xaxis);
+        }
+
+        anchoredAxes.forEach(function(anchorAx, idx) {
+            if(anchorAx && insideTicklabelposition(anchorAx)) {
+                (partialOpts || [
+                    ZERO_PATH,
+                    GRID_PATH,
+                    TICK_PATH,
+                    TICK_TEXT
+                ]).forEach(function(e) {
+                    var isPeriodLabel =
+                        e.K === 'tick' &&
+                        e.L === 'text' &&
+                        ax.ticklabelmode === 'period';
+
+                    var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+
+                    var sel;
+                    if(e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                    else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);
+                    else sel = mainPlotinfo[ax._id.charAt(0) + 'axislayer'];
+
+                    sel.each(function() {
+                        var w = d3.select(this);
+                        if(e.L) w = w.selectAll(e.L);
+
+                        w.each(function(d) {
+                            var q = ax.l2p(
+                                isPeriodLabel ? getPosX(d) : d.x
+                            ) + ax._offset;
+
+                            var t = d3.select(this);
+                            if(
+                                q < ax['_visibleLabelMax_' + anchorAx._id] &&
+                                q > ax['_visibleLabelMin_' + anchorAx._id]
+                            ) {
+                                t.style('display', 'none'); // hidden
+                            } else if(e.K === 'tick' && !idx) {
+                                t.style('display', null); // visible
+                            }
+                        });
+                    });
+                });
+            }
+        });
+    };
 
     // make sure all labels are correctly positioned at their base angle
     // the positionLabels call above is only for newly drawn labels.
@@ -3209,7 +3317,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var anchorAx = ax._anchorAxis;
     if(
         anchorAx && anchorAx.autorange &&
-        (ax.ticklabelposition || '').indexOf('inside') !== -1 &&
+        insideTicklabelposition(ax) &&
         !isLinked(fullLayout, ax._id)
     ) {
         if(!fullLayout._insideTickLabelsAutorange) {
@@ -3221,7 +3329,10 @@ axes.drawLabels = function(gd, ax, opts) {
             function computeFinalTickLabelBoundingBoxes() {
                 tickLabels.each(function(d, i) {
                     var thisLabel = selectTickLabel(this);
-                    ax._vals[i].bb = Drawing.bBox(thisLabel.node());
+                    var mathjaxGroup = thisLabel.select('.text-math-group');
+                    if(mathjaxGroup.empty()) {
+                        ax._vals[i].bb = Drawing.bBox(thisLabel.node());
+                    }
                 });
             }
         );
@@ -3358,7 +3469,7 @@ function drawTitle(gd, ax) {
     if(ax.title.hasOwnProperty('standoff')) {
         titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
     } else {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+        var isInside = insideTicklabelposition(ax);
 
         if(ax.type === 'multicategory') {
             titleStandoff = ax._depth;
@@ -3715,4 +3826,16 @@ function moveOutsideBreak(v, ax) {
         }
     }
     return v;
+}
+
+function insideTicklabelposition(ax) {
+    return ((ax.ticklabelposition || '').indexOf('inside') !== -1);
+}
+
+function hideCounterAxisInsideTickLabels(ax, opts) {
+    if(insideTicklabelposition(ax._anchorAxis || {})) {
+        if(ax._hideCounterAxisInsideTickLabels) {
+            ax._hideCounterAxisInsideTickLabels(opts);
+        }
+    }
 }

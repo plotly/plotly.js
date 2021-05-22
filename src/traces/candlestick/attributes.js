@@ -1,15 +1,7 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var extendFlat = require('../../lib').extendFlat;
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
 
@@ -30,6 +22,8 @@ module.exports = {
     xperiod: OHLCattrs.xperiod,
     xperiod0: OHLCattrs.xperiod0,
     xperiodalignment: OHLCattrs.xperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     x: OHLCattrs.x,
     open: OHLCattrs.open,
@@ -55,6 +49,7 @@ module.exports = {
 
     text: OHLCattrs.text,
     hovertext: OHLCattrs.hovertext,
+
     whiskerwidth: extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
 
     hoverlabel: OHLCattrs.hoverlabel,

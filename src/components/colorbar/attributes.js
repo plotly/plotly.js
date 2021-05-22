@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
@@ -144,6 +136,13 @@ module.exports = overrideAll({
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
     ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
+    ticklabeloverflow: extendFlat({}, axesAttrs.ticklabeloverflow, {
+        description: [
+            'Determines how we handle tick labels that would overflow either the graph div or the domain of the axis.',
+            'The default value for inside tick labels is *hide past domain*.',
+            'In other cases the default is *hide past div*.'
+        ].join(' ')
+    }),
     ticklabelposition: {
         valType: 'enumerated',
         values: [

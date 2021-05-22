@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -15,7 +7,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     var arrayOut = [];
     var isContour = Registry.traceIs(trace, 'contour');
     var isHist = Registry.traceIs(trace, 'histogram');
-    var isHeatmapgl = Registry.traceIs(trace, 'gl2d');
+    var isGL2D = Registry.traceIs(trace, 'gl2d');
     var v0;
     var dv;
     var i;
@@ -30,7 +22,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(isContour || isHeatmapgl) arrayOut = arrayIn.slice(0, numbricks);
+            if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
             else if(numbricks === 1) {
                 arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
             } else {
@@ -77,7 +69,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
 
         dv = dvIn || 1;
 
-        for(i = (isContour || isHeatmapgl) ? 0 : -0.5; i < numbricks; i++) {
+        for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
             arrayOut.push(v0 + dv * i);
         }
     }

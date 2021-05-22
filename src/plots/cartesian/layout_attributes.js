@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var fontAttrs = require('../font_attributes');
@@ -14,8 +6,10 @@ var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
+var docs = require('../../constants/docs');
+var FORMAT_LINK = docs.FORMAT_LINK;
+var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
+
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;
@@ -501,6 +495,21 @@ module.exports = {
             'so that the scales could match.'
         ].join(' ')
     },
+    ticklabeloverflow: {
+        valType: 'enumerated',
+        values: [
+            'allow',
+            'hide past div',
+            'hide past domain'
+        ],
+        editType: 'calc',
+        description: [
+            'Determines how we handle tick labels that would overflow either the graph div or the domain of the axis.',
+            'The default value for inside tick labels is *hide past domain*.',
+            'Otherwise on *category* and *multicategory* axes the default is *allow*.',
+            'In other cases the default is *hide past div*.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
@@ -594,7 +603,7 @@ module.exports = {
     spikesnap: {
         valType: 'enumerated',
         values: ['data', 'cursor', 'hovered data'],
-        dflt: 'data',
+        dflt: 'hovered data',
         editType: 'none',
         description: 'Determines whether spikelines are stuck to the cursor or to the closest datapoints.'
     },

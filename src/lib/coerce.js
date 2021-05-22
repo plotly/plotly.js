@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -430,6 +422,18 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     out.color = coerce(attr + '.color', dfltObj.color);
 
     return out;
+};
+
+/*
+ * Shortcut to coerce the pattern attributes
+ */
+exports.coercePattern = function(coerce, attr) {
+    var shape = coerce(attr + '.shape');
+    if(shape) {
+        coerce(attr + '.size');
+        coerce(attr + '.bgcolor');
+        coerce(attr + '.solidity');
+    }
 };
 
 /** Coerce shortcut for 'hoverinfo'

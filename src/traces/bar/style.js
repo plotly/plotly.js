@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -166,7 +158,7 @@ function getBarColor(cd, trace) {
     if(trace.type === 'waterfall') {
         return trace[cd.dir].marker.color;
     }
-    return cd.mc || trace.marker.color;
+    return cd.mcc || cd.mc || trace.marker.color;
 }
 
 module.exports = {

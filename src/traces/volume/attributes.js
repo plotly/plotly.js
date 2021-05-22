@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
@@ -51,6 +43,10 @@ var attrs = module.exports = overrideAll(extendFlat({
     caps: isosurfaceAttrs.caps,
     text: isosurfaceAttrs.text,
     hovertext: isosurfaceAttrs.hovertext,
+    xhoverformat: isosurfaceAttrs.xhoverformat,
+    yhoverformat: isosurfaceAttrs.yhoverformat,
+    zhoverformat: isosurfaceAttrs.zhoverformat,
+    valuehoverformat: isosurfaceAttrs.valuehoverformat,
     hovertemplate: isosurfaceAttrs.hovertemplate
 },
 

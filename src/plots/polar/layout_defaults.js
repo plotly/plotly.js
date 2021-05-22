@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -106,7 +98,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     coerceAxis('title.text');
                     Lib.coerceFont(coerceAxis, 'title.font', {
                         family: opts.font.family,
-                        size: Math.round(opts.font.size * 1.2),
+                        size: Lib.bigFont(opts.font.size),
                         color: dfltFontColor
                     });
                 }

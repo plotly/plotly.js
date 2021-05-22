@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -51,11 +42,14 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('bordercolor');
     coerce('borderwidth');
     coerce('bgcolor');
+
     var ticklabelposition = coerce('ticklabelposition');
+    coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : 'hide past div');
 
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    var opts = {outerTicks: false, font: layout.font};
+    var font = layout.font;
+    var opts = {outerTicks: false, font: font};
     if(ticklabelposition.indexOf('inside') !== -1) {
         opts.bgColor = 'black'; // could we instead use the average of colors in the scale?
     }
@@ -63,6 +57,12 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
 
     coerce('title.text', layout._dfltTitle.colorbar);
-    Lib.coerceFont(coerce, 'title.font', layout.font);
+
+    var tickFont = colorbarOut.tickfont;
+    var dfltTitleFont = Lib.extendFlat({}, tickFont, {
+        color: font.color,
+        size: Lib.bigFont(tickFont.size)
+    });
+    Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     coerce('title.side');
 };

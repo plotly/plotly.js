@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -365,8 +357,23 @@ module.exports = function style(s, gd, legend) {
             var d0 = d[0];
             var w = boundLineWidth(d0.mlw, marker.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            p.style('stroke-width', w + 'px')
-                .call(Color.fill, d0.mc || marker.color);
+            p.style('stroke-width', w + 'px');
+
+            var fillColor = d0.mc || marker.color;
+
+            var markerPattern = marker.pattern;
+            var patternShape = markerPattern && Drawing.getPatternAttr(markerPattern.shape, 0, '');
+
+            if(patternShape) {
+                var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
+                var patternSize = Math.min(12, Drawing.getPatternAttr(markerPattern.size, 0, 8));
+                var patternSolidity = Drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
+                var patternID = 'legend-' + trace.uid;
+                p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
+                       fillColor, patternSize, patternSolidity, 'fill');
+            } else {
+                p.call(Color.fill, fillColor);
+            }
 
             if(w) Color.stroke(p, d0.mlc || markerLine.color);
         });

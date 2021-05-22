@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Registry = require('../registry');
@@ -63,7 +55,7 @@ exports.get = function() {
     return {
         defs: {
             valObjects: valObjectMeta,
-            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'editType', 'impliedEdits']),
+            metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role', 'editType', 'impliedEdits']),
             editType: {
                 traces: editTypes.traces,
                 layout: editTypes.layout
@@ -332,7 +324,7 @@ function layoutHeadAttr(fullLayout, head) {
             _module = basePlotModules[i];
             if(_module.attrRegex && _module.attrRegex.test(head)) {
                 // if a module defines overrides, these take precedence
-                // initially this was to allow heatmapgl different editTypes from svg cartesian
+                // initially this is to allow gl2d different editTypes from svg cartesian
                 if(_module.layoutAttrOverrides) return _module.layoutAttrOverrides;
 
                 // otherwise take the first attributes we find
@@ -340,7 +332,7 @@ function layoutHeadAttr(fullLayout, head) {
             }
 
             // a module can also override the behavior of base (and component) module layout attrs
-            // again see heatmapgl for initial use case
+            // again see gl2d for initial use case
             var baseOverrides = _module.baseLayoutAttrOverrides;
             if(baseOverrides && head in baseOverrides) return baseOverrides[head];
         }
@@ -600,14 +592,14 @@ function getFramesAttributes() {
 }
 
 function formatAttributes(attrs) {
-    mergeValType(attrs);
+    mergeValTypeAndRole(attrs);
     formatArrayContainers(attrs);
     stringify(attrs);
 
     return attrs;
 }
 
-function mergeValType(attrs) {
+function mergeValTypeAndRole(attrs) {
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
@@ -621,13 +613,13 @@ function mergeValType(attrs) {
 
     function callback(attr, attrName, attrs) {
         if(exports.isValObject(attr)) {
-            if(attr.valType === 'data_array') {
-                // all 'data_array' attrs have a corresponding 'src' attr
-                attrs[attrName + 'src'] = makeSrcAttr(attrName);
-            } else if(attr.arrayOk === true) {
-                // all 'arrayOk' attrs have a corresponding 'src' attr
+            if(attr.arrayOk === true || attr.valType === 'data_array') {
+                // all 'arrayOk' and 'data_array' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
             }
+        } else if(isPlainObject(attr)) {
+            // all attrs container objects get role 'object'
+            attr.role = 'object';
         }
     }
 
@@ -646,6 +638,7 @@ function formatArrayContainers(attrs) {
 
         attrs[attrName] = { items: {} };
         attrs[attrName].items[itemName] = attr;
+        attrs[attrName].role = 'object';
     }
 
     exports.crawl(attrs, callback);

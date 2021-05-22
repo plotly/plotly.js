@@ -124,7 +124,7 @@
         },
         "legend": {
             "title": {
-                "text": "<b>pie uniform text</b><br>with <i>horizontal</i> orientation<br>minsize=20"
+                "text": "pie uniform text<br>with <i>horizontal</i> orientation<br>minsize=20"
             }
         },
         "uniformtext": {

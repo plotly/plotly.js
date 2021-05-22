@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
@@ -26,10 +18,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
+    var vLetter = isHorizontal ? 'x' : 'y';
     var vAxis = isHorizontal ? pointData.xa : pointData.ya;
 
     function formatNumber(a) {
-        return hoverLabelText(vAxis, a);
+        return hoverLabelText(vAxis, a, trace[vLetter + 'hoverformat']);
     }
 
     // the closest data point

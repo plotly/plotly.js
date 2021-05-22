@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
@@ -197,7 +189,8 @@ module.exports = {
         font: fontAttrs({
             editType: 'legend',
             description: [
-                'Sets this legend\'s title font.'
+                'Sets this legend\'s title font.',
+                'Defaults to `legend.font` with its size increased about 20%.'
             ].join(' '),
         }),
         side: {

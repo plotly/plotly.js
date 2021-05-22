@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Color = require('../../components/color');
@@ -90,7 +82,7 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
 
     Lib.coerceFont(coerce, 'title.font', {
         family: options.font.family,
-        size: Math.round(options.font.size * 1.2),
+        size: Lib.bigFont(options.font.size),
         color: dfltFontColor
     });
 

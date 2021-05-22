@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -246,11 +238,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
             })
         .attr('alignment-baseline', 'middle')
 
-        .style('text-shadow',
-            paperColor + ' -1px  1px 2px, ' +
-            paperColor + ' 1px  1px 2px, ' +
-            paperColor + '  1px -1px 2px, ' +
-            paperColor + ' -1px -1px 2px')
+        .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('fill', 'rgb(0, 0, 0)')
         .attr('x',
             function(d) {

@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var axisIds = require('../../plots/cartesian/axis_ids');
@@ -16,6 +7,7 @@ var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
+var DRAW_MODES = require('./constants').DRAW_MODES;
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -67,29 +59,54 @@ module.exports = function manageModeBar(gd) {
     else fullLayout._modeBar = createModeBar(gd, buttonGroups);
 };
 
-var DRAW_MODES = [
-    'drawline',
-    'drawopenpath',
-    'drawclosedpath',
-    'drawcircle',
-    'drawrect',
-    'eraseshape'
-];
-
 // logic behind which buttons are displayed by default
 function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var context = gd._context;
-    var buttonsToRemove = context.modeBarButtonsToRemove;
-    var buttonsToAdd = context.modeBarButtonsToAdd;
+
+    function match(name, B) {
+        if(typeof B === 'string') {
+            if(B.toLowerCase() === name.toLowerCase()) return true;
+        } else {
+            var v0 = B.name;
+            var v1 = (B._cat || B.name);
+
+            if(v0 === name || v1 === name.toLowerCase()) return true;
+        }
+        return false;
+    }
+
+    var layoutAdd = fullLayout.modebar.add;
+    if(typeof layoutAdd === 'string') layoutAdd = [layoutAdd];
+
+    var layoutRemove = fullLayout.modebar.remove;
+    if(typeof layoutRemove === 'string') layoutRemove = [layoutRemove];
+
+    var buttonsToAdd = context.modeBarButtonsToAdd.concat(
+        layoutAdd.filter(function(e) {
+            for(var i = 0; i < context.modeBarButtonsToRemove.length; i++) {
+                if(match(e, context.modeBarButtonsToRemove[i])) return false;
+            }
+            return true;
+        })
+    );
+
+    var buttonsToRemove = context.modeBarButtonsToRemove.concat(
+        layoutRemove.filter(function(e) {
+            for(var i = 0; i < context.modeBarButtonsToAdd.length; i++) {
+                if(match(e, context.modeBarButtonsToAdd[i])) return false;
+            }
+            return true;
+        })
+    );
 
     var hasCartesian = fullLayout._has('cartesian');
     var hasGL3D = fullLayout._has('gl3d');
     var hasGeo = fullLayout._has('geo');
     var hasPie = fullLayout._has('pie');
     var hasFunnelarea = fullLayout._has('funnelarea');
-    var hasHeatmapgl = fullLayout._has('gl2d');
+    var hasGL2D = fullLayout._has('gl2d');
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasPolar = fullLayout._has('polar');
@@ -105,9 +122,20 @@ function getButtonGroups(gd) {
         var out = [];
 
         for(var i = 0; i < newGroup.length; i++) {
-            var button = newGroup[i];
-            if(buttonsToRemove.indexOf(button) !== -1) continue;
-            out.push(modeBarButtons[button]);
+            var name = newGroup[i];
+            var B = modeBarButtons[name];
+            var v0 = B.name.toLowerCase();
+            var v1 = (B._cat || B.name).toLowerCase();
+            var found = false;
+            for(var q = 0; q < buttonsToRemove.length; q++) {
+                var t = buttonsToRemove[q].toLowerCase();
+                if(t === v0 || t === v1) {
+                    found = true;
+                    break;
+                }
+            }
+            if(found) continue;
+            out.push(modeBarButtons[name]);
         }
 
         groups.push(out);
@@ -124,7 +152,7 @@ function getButtonGroups(gd) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasHeatmapgl || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
+    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
@@ -140,7 +168,7 @@ function getButtonGroups(gd) {
         zoomGroup = ['zoomInMapbox', 'zoomOutMapbox'];
         hoverGroup = ['toggleHover'];
         resetGroup = ['resetViewMapbox'];
-    } else if(hasHeatmapgl) {
+    } else if(hasGL2D) {
         hoverGroup = ['hoverClosestGl2d'];
     } else if(hasPie) {
         hoverGroup = ['hoverClosestPie'];
@@ -161,14 +189,14 @@ function getButtonGroups(gd) {
         hoverGroup = [];
     }
 
-    if((hasCartesian || hasHeatmapgl) && !allAxesFixed) {
+    if((hasCartesian || hasGL2D) && !allAxesFixed) {
         zoomGroup = ['zoomIn2d', 'zoomOut2d', 'autoScale2d'];
         if(resetGroup[0] !== 'resetViews') resetGroup = ['resetScale2d'];
     }
 
     if(hasGL3D) {
         dragModeGroup = ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'];
-    } else if(((hasCartesian || hasHeatmapgl) && !allAxesFixed) || hasTernary) {
+    } else if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     } else if(hasMapbox || hasGeo) {
         dragModeGroup = ['pan2d'];
@@ -179,19 +207,50 @@ function getButtonGroups(gd) {
         dragModeGroup.push('select2d', 'lasso2d');
     }
 
-    // accept pre-defined buttons as string
+    var enabledHoverGroup = [];
+    var enableHover = function(a) {
+        // return if already added
+        if(enabledHoverGroup.indexOf(a) !== -1) return;
+        // should be in hoverGroup
+        if(hoverGroup.indexOf(a) !== -1) {
+            enabledHoverGroup.push(a);
+        }
+    };
     if(Array.isArray(buttonsToAdd)) {
         var newList = [];
         for(var i = 0; i < buttonsToAdd.length; i++) {
             var b = buttonsToAdd[i];
             if(typeof b === 'string') {
+                b = b.toLowerCase();
+
                 if(DRAW_MODES.indexOf(b) !== -1) {
+                    // accept pre-defined drag modes i.e. shape drawing features as string
                     if(
                         fullLayout._has('mapbox') || // draw shapes in paper coordinate (could be improved in future to support data coordinate, when there is no pitch)
                         fullLayout._has('cartesian') // draw shapes in data coordinate
                     ) {
                         dragModeGroup.push(b);
                     }
+                } else if(b === 'togglespikelines') {
+                    enableHover('toggleSpikelines');
+                } else if(b === 'togglehover') {
+                    enableHover('toggleHover');
+                } else if(b === 'hovercompare') {
+                    enableHover('hoverCompareCartesian');
+                } else if(b === 'hoverclosest') {
+                    enableHover('hoverClosestCartesian');
+                    enableHover('hoverClosestGeo');
+                    enableHover('hoverClosest3d');
+                    enableHover('hoverClosestGl2d');
+                    enableHover('hoverClosestPie');
+                } else if(b === 'v1hovermode') {
+                    enableHover('toggleHover');
+                    enableHover('hoverClosestCartesian');
+                    enableHover('hoverCompareCartesian');
+                    enableHover('hoverClosestGeo');
+                    enableHover('hoverClosest3d');
+                    enableHover('hoverClosestGl2d');
+                    enableHover('hoverClosestPie');
                 }
             } else newList.push(b);
         }
@@ -200,7 +259,7 @@ function getButtonGroups(gd) {
 
     addGroup(dragModeGroup);
     addGroup(zoomGroup.concat(resetGroup));
-    addGroup(hoverGroup);
+    addGroup(enabledHoverGroup);
 
     return appendButtonsToGroups(groups, buttonsToAdd);
 }

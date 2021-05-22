@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
@@ -13,8 +5,9 @@ var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = require('../../constants/docs').TIME_FORMAT_LINK;
+var docs = require('../../constants/docs');
+var FORMAT_LINK = docs.FORMAT_LINK;
+var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
 
 module.exports = {
     color: {

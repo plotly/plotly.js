@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var subTypes = require('../scatter/subtypes');
@@ -13,6 +5,8 @@ var styleTextSelection = require('./edit_style').styleTextSelection;
 
 module.exports = function select(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
+    var xa = searchInfo.xaxis;
+    var ya = searchInfo.yaxis;
     var selection = [];
     var trace = cd[0].trace;
     var stash = cd[0].t;
@@ -41,8 +35,8 @@ module.exports = function select(searchInfo, selectionTester) {
                 els.push(i);
                 selection.push({
                     pointNumber: i,
-                    x: x[i],
-                    y: y[i]
+                    x: xa.c2d(x[i]),
+                    y: ya.c2d(y[i])
                 });
             } else {
                 unels.push(i);

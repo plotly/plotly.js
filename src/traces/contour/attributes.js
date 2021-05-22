@@ -1,15 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fontAttrs = require('../../plots/font_attributes');
@@ -44,7 +37,9 @@ module.exports = extendFlat({
     transpose: heatmapAttrs.transpose,
     xtype: heatmapAttrs.xtype,
     ytype: heatmapAttrs.ytype,
-    zhoverformat: heatmapAttrs.zhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: heatmapAttrs.hovertemplate,
     hoverongaps: heatmapAttrs.hoverongaps,
     connectgaps: extendFlat({}, heatmapAttrs.connectgaps, {

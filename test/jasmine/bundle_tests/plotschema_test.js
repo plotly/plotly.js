@@ -4,9 +4,9 @@ var Lib = require('@src/lib');
 var Registry = require('@src/registry');
 
 var baseAttrs = require('@src/plots/attributes');
-var scatter = require('@src/traces/scatter');
-var parcoords = require('@src/traces/parcoords');
-var surface = require('@src/traces/surface');
+var scatter = require('@lib/scatter');
+var parcoords = require('@lib/parcoords');
+var surface = require('@lib/surface');
 
 var baseLayoutAttrs = require('@src/plots/layout_attributes');
 var cartesianAttrs = require('@src/plots/cartesian').layoutAttributes;
@@ -25,6 +25,7 @@ describe('plot schema', function() {
     var isPlainObject = Lib.isPlainObject;
 
     var VALTYPES = Object.keys(valObjects);
+    var formerRoles = ['info', 'style', 'data'];
     var editType = plotSchema.defs.editType;
 
     function assertTraceSchema(callback) {
@@ -72,6 +73,27 @@ describe('plot schema', function() {
         );
     });
 
+    it('all attributes should not have a former `role`', function() {
+        assertPlotSchema(
+            function(attr) {
+                if(isValObject(attr)) {
+                    expect(formerRoles.indexOf(attr.role) === -1).toBe(true, attr);
+                    expect(attr.role).toBeUndefined(attr);
+                }
+            }
+        );
+    });
+
+    it('all nested objects should have the *object* `role`', function() {
+        assertPlotSchema(
+            function(attr, attrName) {
+                if(!isValObject(attr) && isPlainObject(attr) && attrName !== 'items') {
+                    expect(attr.role === 'object').toBe(true);
+                }
+            }
+        );
+    });
+
     it('all attributes should have the required options', function() {
         assertPlotSchema(
             function(attr) {
@@ -94,7 +116,7 @@ describe('plot schema', function() {
                     var opts = valObject.requiredOpts
                         .concat(valObject.otherOpts)
                         .concat([
-                            'valType', 'description',
+                            'valType', 'description', 'role',
                             'editType', 'impliedEdits', 'anim',
                             '_compareAsJSON', '_noTemplating'
                         ]);
@@ -164,8 +186,13 @@ describe('plot schema', function() {
 
             // N.B. the specs below must be satisfied for plotly.py
             expect(isPlainObject(itemsObj)).toBe(true);
+            expect(itemsObj.role).toBeUndefined();
             expect(Object.keys(itemsObj).length).toEqual(1);
             expect(isPlainObject(itemObj)).toBe(true);
+            expect(itemObj.role).toBe('object');
+
+            var role = np.get().role;
+            expect(role).toEqual('object');
         });
     });
 
@@ -197,7 +224,7 @@ describe('plot schema', function() {
         );
     });
 
-    it('deprecated attributes should have a `valType`', function() {
+    it('deprecated attributes should have a `valType` and not any former roles', function() {
         var DEPRECATED = '_deprecated';
 
         assertPlotSchema(
@@ -206,8 +233,10 @@ describe('plot schema', function() {
                     Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
                         var dAttr = attr[DEPRECATED][dAttrName];
 
-                        expect(VALTYPES.indexOf(dAttr.valType) !== -1)
-                            .toBe(true, attrString + ': ' + dAttrName);
+                        var msg = attrString + ': ' + dAttrName;
+                        expect(VALTYPES.indexOf(dAttr.valType) !== -1).toBe(true, msg);
+                        expect(formerRoles.indexOf(dAttr.role) === -1).toBe(true, msg);
+                        expect(dAttr.role).toBeUndefined(msg);
                     });
                 }
             }
@@ -289,13 +318,15 @@ describe('plot schema', function() {
         expect(plotSchema.defs.metaKeys)
             .toEqual([
                 '_isSubplotObj', '_isLinkedToArray', '_arrayAttrRegexps',
-                '_deprecated', 'description', 'editType', 'impliedEdits'
+                '_deprecated', 'description', 'role', 'editType', 'impliedEdits'
             ]);
     });
 
     it('should list the correct frame attributes', function() {
         expect(plotSchema.frames).toBeDefined();
+        expect(plotSchema.frames.role).toEqual('object');
         expect(plotSchema.frames.items.frames_entry).toBeDefined();
+        expect(plotSchema.frames.items.frames_entry.role).toEqual('object');
     });
 
     it('should list config attributes', function() {
@@ -413,7 +444,7 @@ describe('getTraceValObject', function() {
             {type: 'groupby'}
         ]};
 
-        var filterAttrs = require('@src/transforms/filter').attributes;
+        var filterAttrs = require('@lib/filter').attributes;
         expect(getTraceValObject(mockTrace, ['transforms', 0, 'operation']))
             .toBe(filterAttrs.operation);
         // check a component-provided attr
@@ -421,7 +452,7 @@ describe('getTraceValObject', function() {
             .toBe(filterAttrs.valuecalendar);
 
         expect(getTraceValObject(mockTrace, ['transforms', 1, 'styles', 13, 'value', 'line', 'color']))
-            .toBe(require('@src/transforms/groupby').attributes.styles.value);
+            .toBe(require('@lib/groupby').attributes.styles.value);
 
         [
             ['transforms', 0],
@@ -439,7 +470,7 @@ describe('getTraceValObject', function() {
         // it still returns the attribute itself - but maybe we should only do this
         // for valType: any? (or data_array/arrayOk with just an index)
         [
-            'valType', 'dflt', 'description', 'arrayOk',
+            'valType', 'dflt', 'role', 'description', 'arrayOk',
             'editType', 'min', 'max', 'values'
         ].forEach(function(prop) {
             expect(getTraceValObject({}, ['x', prop]))
@@ -467,13 +498,13 @@ describe('getLayoutValObject', function() {
     it('finds trace layout attributes', function() {
         var layoutBar = {_modules: [Registry.modules.bar._module]};
         expect(getLayoutValObject(layoutBar, ['barmode']))
-            .toBe(require('@src/traces/bar').layoutAttributes.barmode);
+            .toBe(require('@lib/bar').layoutAttributes.barmode);
         var layoutBox = {_modules: [Registry.modules.box._module]};
         expect(getLayoutValObject(layoutBox, ['boxgap']))
-            .toBe(require('@src/traces/box').layoutAttributes.boxgap);
+            .toBe(require('@lib/box').layoutAttributes.boxgap);
         var layoutPie = {_modules: [Registry.modules.pie._module]};
         expect(getLayoutValObject(layoutPie, ['hiddenlabels']))
-            .toBe(require('@src/traces/pie').layoutAttributes.hiddenlabels);
+            .toBe(require('@lib/pie').layoutAttributes.hiddenlabels);
 
         // not found when these traces are unused on the plot
         expect(getLayoutValObject(blankLayout, ['barmode'])).toBe(false);

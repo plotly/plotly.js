@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var carpetAttrs = require('./attributes');
@@ -118,7 +110,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     if(title) {
         Lib.coerceFont(coerce, 'title.font', {
             family: font.family,
-            size: Math.round(font.size * 1.2),
+            size: Lib.bigFont(font.size),
             color: dfltFontColor
         });
         coerce('title.offset');

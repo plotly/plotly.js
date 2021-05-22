@@ -2687,7 +2687,7 @@ describe('Test plot api', function() {
                     var modebars = document.getElementsByClassName('modebar-container');
                     expect(modebars.length).toBe(1, msg + ' # of modebar container');
                     var groups = document.getElementsByClassName('modebar-group');
-                    expect(groups.length).toBe(5, msg + ' # of modebar button groups');
+                    expect(groups.length).toBe(4, msg + ' # of modebar button groups');
                 };
             }
 

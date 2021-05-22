@@ -42,6 +42,8 @@ describe('ModeBar', function() {
                 _has: Plots._hasPlotType,
                 _subplots: {xaxis: xaxes || [], yaxis: yaxes || []},
                 modebar: {
+                    add: '',
+                    remove: '',
                     orientation: 'h',
                     bgcolor: 'rgba(255,255,255,0.7)',
                     color: 'rgba(0, 31, 95, 0.3)',
@@ -342,8 +344,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -361,8 +362,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -385,8 +385,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -407,8 +406,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (cartesian fixed-axes version)', function() {
             var buttons = getButtons([
-                ['toImage'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['toImage']
             ]);
 
             var gd = getMockGraphInfo();
@@ -425,8 +423,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
-                ['resetCameraDefault3d', 'resetCameraLastSave3d'],
-                ['hoverClosest3d']
+                ['resetCameraDefault3d', 'resetCameraLastSave3d']
             ]);
 
             var gd = getMockGraphInfo();
@@ -443,8 +440,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d'],
-                ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
-                ['hoverClosestGeo']
+                ['zoomInGeo', 'zoomOutGeo', 'resetGeo']
             ]);
 
             var gd = getMockGraphInfo();
@@ -461,8 +457,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
-                ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
-                ['hoverClosestGeo']
+                ['zoomInGeo', 'zoomOutGeo', 'resetGeo']
             ]);
 
             var gd = getMockGraphInfo();
@@ -484,8 +479,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d'],
-                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
-                ['toggleHover']
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox']
             ]);
 
             var gd = getMockGraphInfo();
@@ -502,8 +496,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['pan2d', 'select2d', 'lasso2d'],
-                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox'],
-                ['toggleHover']
+                ['zoomInMapbox', 'zoomOutMapbox', 'resetViewMapbox']
             ]);
 
             var gd = getMockGraphInfo();
@@ -521,12 +514,11 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
-        it('creates mode bar (heatmapgl version)', function() {
+        it('creates mode bar (gl2d version)', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['hoverClosestGl2d']
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -542,8 +534,7 @@ describe('ModeBar', function() {
 
         it('creates mode bar (pie version)', function() {
             var buttons = getButtons([
-                ['toImage'],
-                ['hoverClosestPie']
+                ['toImage']
             ]);
 
             var gd = getMockGraphInfo();
@@ -560,8 +551,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
-                ['resetViews'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['resetViews']
             ]);
 
             var gd = getMockGraphInfo();
@@ -578,8 +568,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -597,8 +586,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetViews']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -621,8 +609,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
-                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']
             ]);
 
             var gd = getMockGraphInfo(['x'], ['y']);
@@ -645,8 +632,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
-                ['resetViews'],
-                ['toggleHover']
+                ['resetViews']
             ]);
 
             var gd = getMockGraphInfo();
@@ -662,8 +648,7 @@ describe('ModeBar', function() {
         it('creates mode bar (un-selectable ternary version)', function() {
             var buttons = getButtons([
                 ['toImage'],
-                ['zoom2d', 'pan2d'],
-                ['toggleHover']
+                ['zoom2d', 'pan2d']
             ]);
 
             var gd = getMockGraphInfo();
@@ -679,8 +664,7 @@ describe('ModeBar', function() {
         it('creates mode bar (selectable ternary version)', function() {
             var buttons = getButtons([
                 ['toImage'],
-                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
-                ['toggleHover']
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d']
             ]);
 
             var gd = getMockGraphInfo();
@@ -701,8 +685,7 @@ describe('ModeBar', function() {
         it('creates mode bar (ternary + cartesian version)', function() {
             var buttons = getButtons([
                 ['toImage'],
-                ['zoom2d', 'pan2d'],
-                ['toggleSpikelines', 'hoverClosestCartesian', 'hoverCompareCartesian']
+                ['zoom2d', 'pan2d']
             ]);
 
             var gd = getMockGraphInfo();
@@ -719,8 +702,7 @@ describe('ModeBar', function() {
             var buttons = getButtons([
                 ['toImage'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
-                ['resetViews'],
-                ['toggleHover']
+                ['resetViews']
             ]);
 
             var gd = getMockGraphInfo();
@@ -739,6 +721,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
+            gd._context.modeBarButtonsToAdd = ['hoverclosest'];
             gd._fullData = [{ type: 'indicator' }];
 
             manageModeBar(gd);
@@ -754,6 +737,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
+            gd._context.modeBarButtonsToAdd = ['hoverclosest'];
             gd._fullLayout._basePlotModules = [{ name: 'pie' }];
             gd._fullData = [{ type: 'indicator' }, {type: 'pie'}];
 
@@ -811,32 +795,28 @@ describe('ModeBar', function() {
             gd._fullData = [{type: 'pie'}];
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
-                ['toImage'],
-                ['hoverClosestPie']
+                ['toImage']
             ]), 1);
 
             gd._context.showSendToCloud = true;
             gd._context.showEditInChartStudio = false;
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
-                ['toImage', 'sendDataToCloud'],
-                ['hoverClosestPie']
+                ['toImage', 'sendDataToCloud']
             ]), 1);
 
             gd._context.showSendToCloud = false;
             gd._context.showEditInChartStudio = true;
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
-                ['toImage', 'editInChartStudio'],
-                ['hoverClosestPie']
+                ['toImage', 'editInChartStudio']
             ]), 1);
 
             gd._context.showSendToCloud = true;
             gd._context.showEditInChartStudio = true;
             manageModeBar(gd);
             checkButtons(gd._fullLayout._modeBar, getButtons([
-                ['toImage', 'editInChartStudio'],
-                ['hoverClosestPie']
+                ['toImage', 'editInChartStudio']
             ]), 1);
         });
 
@@ -863,21 +843,33 @@ describe('ModeBar', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
 
-            expect(countButtons(gd._fullLayout._modeBar)).toEqual(11);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(8);
 
-            gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
-            gd._fullData = [{type: 'scatter3d'}];
+            gd._fullLayout._basePlotModules = [{ name: 'geo' }];
+            gd._fullData = [{type: 'scattergeo'}];
             manageModeBar(gd);
 
-            expect(countButtons(gd._fullLayout._modeBar)).toEqual(9);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(6);
         });
 
-        it('updates mode bar buttons if modeBarButtonsToRemove changes', function() {
+        it('updates mode bar buttons if modeBarButtonsToRemove changes (exact camel case)', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
             var initialButtonCount = countButtons(gd._fullLayout._modeBar);
 
             gd._context.modeBarButtonsToRemove = ['toImage', 'zoom2d'];
+            manageModeBar(gd);
+
+            expect(countButtons(gd._fullLayout._modeBar))
+                .toEqual(initialButtonCount - 2);
+        });
+
+        it('updates mode bar buttons if modeBarButtonsToRemove changes (lowercase and short names)', function() {
+            var gd = setupGraphInfo();
+            manageModeBar(gd);
+            var initialButtonCount = countButtons(gd._fullLayout._modeBar);
+
+            gd._context.modeBarButtonsToRemove = ['toimage', 'zoom'];
             manageModeBar(gd);
 
             expect(countButtons(gd._fullLayout._modeBar))
@@ -906,7 +898,7 @@ describe('ModeBar', function() {
         it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove', function() {
             var gd = setupGraphInfo();
             gd._context.modeBarButtonsToRemove = [
-                'toImage', 'pan2d', 'hoverCompareCartesian'
+                'toImage', 'pan2d'
             ];
             gd._context.modeBarButtonsToAdd = [
                 { name: 'some button', click: noop },
@@ -916,14 +908,14 @@ describe('ModeBar', function() {
             manageModeBar(gd);
 
             var modeBar = gd._fullLayout._modeBar;
-            expect(countGroups(modeBar)).toEqual(6);
-            expect(countButtons(modeBar)).toEqual(10);
+            expect(countGroups(modeBar)).toEqual(5);
+            expect(countButtons(modeBar)).toEqual(8);
         });
 
         it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove (2)', function() {
             var gd = setupGraphInfo();
             gd._context.modeBarButtonsToRemove = [
-                'toImage', 'pan2d', 'hoverCompareCartesian'
+                'toImage', 'pan2d'
             ];
             gd._context.modeBarButtonsToAdd = [[
                 { name: 'some button', click: noop },
@@ -936,8 +928,8 @@ describe('ModeBar', function() {
             manageModeBar(gd);
 
             var modeBar = gd._fullLayout._modeBar;
-            expect(countGroups(modeBar)).toEqual(7);
-            expect(countButtons(modeBar)).toEqual(12);
+            expect(countGroups(modeBar)).toEqual(6);
+            expect(countButtons(modeBar)).toEqual(10);
         });
 
         it('sets up buttons with fully custom modeBarButtons', function() {
@@ -1119,7 +1111,12 @@ describe('ModeBar', function() {
                 };
 
                 gd = createGraphDiv();
-                Plotly.newPlot(gd, mockData, mockLayout).then(function() {
+                Plotly.newPlot(gd, mockData, mockLayout, {
+                    modeBarButtonsToAdd: [
+                        'togglespikelines',
+                        'v1hovermode'
+                    ]
+                }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     buttonToggle = selectButton(modeBar, 'toggleSpikelines');
                     buttonCompare = selectButton(modeBar, 'hoverCompareCartesian');
@@ -1197,29 +1194,29 @@ describe('ModeBar', function() {
                 });
             });
 
-            describe('buttons hoverCompareCartesian and hoverClosestCartesian ', function() {
+            describe('buttons hoverCompareCartesian and hoverClosestCartesian', function() {
                 it('should update layout hovermode', function() {
-                    expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(hovermodeButtons, buttonCompare);
-
-                    buttonClosest.click();
                     expect(gd._fullLayout.hovermode).toBe('closest');
                     assertActive(hovermodeButtons, buttonClosest);
 
                     buttonCompare.click();
                     expect(gd._fullLayout.hovermode).toBe('x');
                     assertActive(hovermodeButtons, buttonCompare);
+
+                    buttonClosest.click();
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(hovermodeButtons, buttonClosest);
                 });
             });
 
             describe('button toggleSpikelines', function() {
                 it('should not change layout hovermode', function() {
-                    expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(hovermodeButtons, buttonCompare);
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(hovermodeButtons, buttonClosest);
 
                     buttonToggle.click();
-                    expect(gd._fullLayout.hovermode).toBe('x');
-                    assertActive(hovermodeButtons, buttonCompare);
+                    expect(gd._fullLayout.hovermode).toBe('closest');
+                    assertActive(hovermodeButtons, buttonClosest);
                 });
 
                 it('should makes spikelines visible', function() {
@@ -1293,7 +1290,9 @@ describe('ModeBar', function() {
                 }];
 
                 gd = createGraphDiv();
-                Plotly.newPlot(gd, mockData).then(function() {
+                Plotly.newPlot(gd, mockData, {}, {
+                    modeBarButtonsToAdd: ['hoverclosest']
+                }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
                 });
@@ -1326,7 +1325,9 @@ describe('ModeBar', function() {
                 }];
 
                 gd = createGraphDiv();
-                Plotly.newPlot(gd, mockData).then(function() {
+                Plotly.newPlot(gd, mockData, {}, {
+                    modeBarButtonsToAdd: ['hoverclosest']
+                }).then(function() {
                     modeBar = gd._fullLayout._modeBar;
                     done();
                 });
@@ -1410,7 +1411,9 @@ describe('ModeBar', function() {
 
                 Plotly.newPlot(gd, [
                     {type: 'scatterternary', a: [1], b: [2], c: [3]}
-                ])
+                ], {}, {
+                    modeBarButtonsToAdd: ['togglehover']
+                })
                 .then(function() {
                     _run('base');
 
@@ -1445,7 +1448,7 @@ describe('ModeBar', function() {
         });
     });
 
-    describe('modebar styling', function() {
+    describe('modebar relayout', function() {
         var gd;
         var colors = ['rgba(128, 128, 128, 0.7)', 'rgba(255, 0, 128, 0.2)'];
         var targetBtn = 'pan2d';
@@ -1566,6 +1569,229 @@ describe('ModeBar', function() {
             .then(function() {
                 size = modeBarEl.getBoundingClientRect();
                 expect(size.width > size.height).toBeTruthy();
+            })
+            .then(done, done.fail);
+        });
+
+        it('add predefined shape drawing and hover buttons via layout.modebar.add', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {})
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.add', [
+                    'drawline',
+                    'drawopenpath',
+                    'drawclosedpath',
+                    'drawcircle',
+                    'drawrect',
+                    'eraseshape'
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 6);
+
+                return Plotly.relayout(gd, 'modebar.add', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.add', [
+                    'hovercompare',
+                    'hoverclosest',
+                    'togglespikelines'
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 3);
+
+                return Plotly.relayout(gd, 'modebar.add', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.add', [
+                    'v1hovermode',
+                    'togglespikelines'
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 3);
+
+                return Plotly.relayout(gd, 'modebar.add', [
+                    'v1hovermode',
+                    'togglespikelines',
+                    'togglehover',
+                    'hovercompare',
+                    'hoverclosest',
+                    'eraseshape'
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 4, 'skip duplicates');
+
+                return Plotly.relayout(gd, 'modebar.add', [
+                    'drawline',
+                    'invalid'
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 1, 'skip invalid');
+
+                return Plotly.relayout(gd, 'modebar.add', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+            })
+            .then(done, done.fail);
+        });
+
+        it('remove buttons using exact (camel case) and short (lower case) names via layout.modebar.remove and template', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {})
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.remove', [
+                    'zoom',
+                    'zoomin',
+                    'zoomout',
+                    'pan',
+                    'select',
+                    'lasso',
+                    'autoscale',
+                    'resetscale',
+                    'toimage',
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial - 9);
+
+                return Plotly.relayout(gd, 'modebar.remove', '');
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
+
+                return Plotly.relayout(gd, 'modebar.remove', [
+                    'zoom2d',
+                    'zoomIn2d',
+                    'zoomOut2d',
+                    'pan2d',
+                    'select2d',
+                    'lasso2d',
+                    'autoScale2d',
+                    'resetScale2d',
+                    'toImage',
+                ]);
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial - 9);
+            })
+            .then(done, done.fail);
+        });
+
+        it('remove buttons using template', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {
+                template: {
+                    layout: {
+                        modebar: {
+                            remove: [
+                                'zoom',
+                                'zoomin',
+                                'zoomout',
+                                'pan',
+                                'select',
+                                'lasso',
+                                'autoscale',
+                                'resetscale',
+                                'toimage',
+                            ]
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial - 9);
+            })
+            .then(done, done.fail);
+        });
+
+        it('add buttons using template', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {
+                template: {
+                    layout: {
+                        modebar: {
+                            add: 'drawcircle'
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial + 1);
+            })
+            .then(done, done.fail);
+        });
+
+        ['zoom', 'zoomin', 'zoomOut'].forEach(function(t) {
+            it('add ' + t + ' button if removed by layout and added by config', function(done) {
+                function countButtons() {
+                    var modeBarEl = gd._fullLayout._modeBar.element;
+                    return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+                }
+
+                var initial = 10;
+                Plotly.newPlot(gd, [{y: [1, 2]}], {
+                    modebar: {
+                        remove: t
+                    }
+                }, {
+                    modeBarButtonsToAdd: [t]
+                })
+                .then(function() {
+                    expect(countButtons()).toBe(initial);
+                })
+                .then(done, done.fail);
+            });
+        });
+
+        it('remove button if added by layout and removed by config', function(done) {
+            function countButtons() {
+                var modeBarEl = gd._fullLayout._modeBar.element;
+                return d3Select(modeBarEl).selectAll('a.modebar-btn').size();
+            }
+
+            var initial = 10;
+            Plotly.newPlot(gd, [{y: [1, 2]}], {
+                modebar: {
+                    add: 'drawline'
+                }
+            }, {
+                modeBarButtonsToRemove: ['drawline']
+            })
+            .then(function() {
+                expect(countButtons()).toBe(initial);
             })
             .then(done, done.fail);
         });

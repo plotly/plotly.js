@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -441,6 +433,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
+    var paperColor = gd._fullLayout.paper_bgcolor;
 
     calcAllTicks(cdModule);
 
@@ -459,6 +452,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
+            d.viewModel.paperColor = paperColor;
             d.model = d.viewModel ? d.viewModel.model : null;
         });
 
@@ -655,7 +649,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .attr('stroke-width', '1px');
 
     axis.selectAll('text')
-        .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
+        .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('cursor', 'default');
 
     var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)
@@ -757,5 +751,5 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .text(function(d) { return extremeText(d, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
-    brush.ensureAxisBrush(axisOverlays);
+    brush.ensureAxisBrush(axisOverlays, paperColor);
 };

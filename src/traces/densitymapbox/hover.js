@@ -1,16 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var scatterMapboxHoverPoints = require('../scattermapbox/hover');
+var scatterMapboxHoverPoints = require('../scattermapbox/hover').hoverPoints;
+var getExtraText = require('../scattermapbox/hover').getExtraText;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var pts = scatterMapboxHoverPoints(pointData, xval, yval);
@@ -34,33 +26,3 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     return [newPointData];
 };
-
-function getExtraText(trace, di, labels) {
-    if(trace.hovertemplate) return;
-
-    var hoverinfo = di.hi || trace.hoverinfo;
-    var parts = hoverinfo.split('+');
-    var isAll = parts.indexOf('all') !== -1;
-    var hasLon = parts.indexOf('lon') !== -1;
-    var hasLat = parts.indexOf('lat') !== -1;
-    var lonlat = di.lonlat;
-    var text = [];
-
-    function format(v) {
-        return v + '\u00B0';
-    }
-
-    if(isAll || (hasLon && hasLat)) {
-        text.push('(' + format(lonlat[0]) + ', ' + format(lonlat[1]) + ')');
-    } else if(hasLon) {
-        text.push(labels.lon + format(lonlat[0]));
-    } else if(hasLat) {
-        text.push(labels.lat + format(lonlat[1]));
-    }
-
-    if(isAll || parts.indexOf('text') !== -1) {
-        Lib.fillText(di, trace, text);
-    }
-
-    return text.join('<br>');
-}

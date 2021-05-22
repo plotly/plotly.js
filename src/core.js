@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 exports.version = require('./version').version;
@@ -15,9 +7,6 @@ require('native-promise-only');
 
 // inject plot css
 require('../build/plotcss');
-
-// inject default MathJax config
-require('./fonts/mathjax_config')();
 
 // include registry module and expose register method
 var Registry = require('./registry');
@@ -55,7 +44,8 @@ register([
     require('./components/grid'),
     require('./components/errorbars'),
     require('./components/colorscale'),
-    require('./components/colorbar')
+    require('./components/colorbar'),
+    require('./components/modebar')
 ]);
 
 // locales en and en-US are required for default behavior

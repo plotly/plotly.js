@@ -1,14 +1,7 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var makeBinAttrs = require('./bin_attributes');
 var constants = require('./constants');
@@ -29,6 +22,9 @@ module.exports = {
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
     },
+
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     text: extendFlat({}, barAttrs.text, {
         description: [

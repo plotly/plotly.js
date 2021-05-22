@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -35,7 +26,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
         var xaList = subplots.xaxis;
         var yaList = subplots.yaxis;
         var cartesianList = subplots.cartesian;
-        var hasCartesianOrHeatmapgl = layoutOut._has('cartesian') || layoutOut._has('gl2d');
+        var hasCartesianOrGL2D = layoutOut._has('cartesian') || layoutOut._has('gl2d');
 
         for(var i = 0; i < array.length; i++) {
             var itemi = array[i];
@@ -49,7 +40,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
             var hasXref = idRegex.x.test(xref);
             var hasYref = idRegex.y.test(yref);
             if(hasXref || hasYref) {
-                if(!hasCartesianOrHeatmapgl) Lib.pushUnique(layoutOut._basePlotModules, Cartesian);
+                if(!hasCartesianOrGL2D) Lib.pushUnique(layoutOut._basePlotModules, Cartesian);
 
                 var newAxis = false;
                 if(hasXref && xaList.indexOf(xref) === -1) {

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
@@ -174,7 +166,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         pointData2.attr = attr;
         pointData2[vLetter + '0'] = pointData2[vLetter + '1'] = valPx;
         pointData2[vLetter + 'LabelVal'] = val;
-        pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val);
+        pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val, trace[vLetter + 'hoverformat']);
 
         // Note: introduced to be able to distinguish a
         // clicked point from a box during click-to-select

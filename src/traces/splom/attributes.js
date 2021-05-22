@@ -1,15 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var scatterGlAttrs = require('../scattergl/attributes');
 var cartesianIdRegex = require('../../plots/cartesian/constants').idRegex;
@@ -137,6 +130,9 @@ module.exports = {
     }),
 
     hovertemplate: hovertemplateAttrs(),
+
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     marker: markerAttrs,
 

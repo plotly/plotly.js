@@ -1,16 +1,9 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var barAttrs = require('../bar/attributes');
 var lineAttrs = require('../scatter/attributes').line;
 var baseAttrs = require('../../plots/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var constants = require('./constants');
@@ -81,6 +74,8 @@ module.exports = {
     yperiod0: barAttrs.yperiod0,
     xperiodalignment: barAttrs.xperiodalignment,
     yperiodalignment: barAttrs.yperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     hovertext: barAttrs.hovertext,
     hovertemplate: hovertemplateAttrs({}, {

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -152,8 +144,9 @@ function _doPlot(gd, data, layout, config) {
         }
     }
 
-    // clear gradient defs on each .plot call, because we know we'll loop through all traces
+    // clear gradient and pattern defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
+    Drawing.initPatterns(gd);
 
     // save initial show spikes once per graph
     if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);

@@ -22,13 +22,17 @@ describe('spikeline hover', function() {
 
     function makeMock(spikemode, hovermode) {
         var _mock = Lib.extendDeep({}, require('@mocks/19.json'));
+        _mock.layout.xaxis.spikesnap = 'data';
         _mock.layout.xaxis.showspikes = true;
         _mock.layout.xaxis.spikemode = spikemode;
+        _mock.layout.yaxis.spikesnap = 'data';
         _mock.layout.yaxis.showspikes = true;
         _mock.layout.yaxis.spikemode = spikemode + '+marker';
+        _mock.layout.xaxis2.spikesnap = 'data';
         _mock.layout.xaxis2.showspikes = true;
         _mock.layout.xaxis2.spikemode = spikemode;
         _mock.layout.hovermode = hovermode;
+
         return _mock;
     }
 
@@ -294,9 +298,6 @@ describe('spikeline hover', function() {
         var _mock = makeMock('toaxis', 'x');
         Plotly.newPlot(gd, _mock)
         .then(function() {
-            _setSpikedistance(-1);
-        })
-        .then(function() {
             _hover({xval: 1.5});
             _assert(
                 [[558, 401, 558, 251], [80, 251, 558, 251]], [[83, 251]]
@@ -352,6 +353,7 @@ describe('spikeline hover', function() {
 
     it('increase the range of search for points to draw the spikelines on spikedistance change', function(done) {
         var _mock = makeMock('toaxis', 'closest');
+        _mock.layout.spikedistance = 20;
 
         Plotly.newPlot(gd, _mock).then(function() {
             _hover({xval: 1.6, yval: 2.6});
@@ -391,21 +393,6 @@ describe('spikeline hover', function() {
         Plotly.newPlot(gd, _mock).then(function() {
             _hover({xval: 1.6, yval: 2.6});
             _assert(
-                [],
-                []
-            );
-
-            _hover({xval: 26, yval: 36}, 'x2y2');
-            _assert(
-                [],
-                []
-            );
-
-            _setSpikedistance(-1);
-        })
-        .then(function() {
-            _hover({xval: 1.6, yval: 2.6});
-            _assert(
                 [[557, 401, 557, 250], [80, 250, 557, 250]],
                 [[83, 250]]
             );
@@ -415,16 +402,32 @@ describe('spikeline hover', function() {
                 [[820, 220, 820, 167]],
                 []
             );
+
+            _setSpikedistance(20);
+        })
+        .then(function() {
+            _hover({xval: 1.6, yval: 2.6});
+            _assert(
+                [],
+                []
+            );
+
+            _hover({xval: 26, yval: 36}, 'x2y2');
+            _assert(
+                [],
+                []
+            );
         })
         .then(done, done.fail);
     });
 
-    it('correctly select the closest bar even when setting spikedistance to -1', function(done) {
+    it('correctly select the closest bar even when setting spikedistance to -1 (case of x hovermode)', function(done) {
         var mock = require('@mocks/bar_stack-with-gaps');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.xaxis.showspikes = true;
         mockCopy.layout.yaxis.showspikes = true;
         mockCopy.layout.spikedistance = -1;
+        mockCopy.layout.hovermode = 'x';
 
         Plotly.newPlot(gd, mockCopy)
         .then(function() {
@@ -433,10 +436,99 @@ describe('spikeline hover', function() {
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
 
-            _hover({xpx: 600, ypx: 200});
+            _hover({xpx: 600, ypx: 100});
             lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
+        })
+        .then(done, done.fail);
+    });
+
+    it('correctly select the closest bar even when setting spikedistance to -1 (case of closest hovermode)', function(done) {
+        var mock = require('@mocks/bar_stack-with-gaps');
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.xaxis.showspikes = true;
+        mockCopy.layout.yaxis.showspikes = true;
+        mockCopy.layout.xaxis.spikesnap = 'data';
+        mockCopy.layout.yaxis.spikesnap = 'data';
+        mockCopy.layout.spikedistance = -1;
+        mockCopy.layout.hovermode = 'closest';
+
+        Plotly.newPlot(gd, mockCopy)
+        .then(function() {
+            _hover({xpx: 600, ypx: 400});
+            var lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('#1f77b4');
+
+            _hover({xpx: 600, ypx: 100});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('#2ca02c');
+        })
+        .then(done, done.fail);
+    });
+
+    it('could select the closest scatter point inside bar', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                type: 'scatter',
+                marker: { color: 'green' },
+                x: [
+                    -1,
+                    0,
+                    0.5,
+                    1
+                ],
+                y: [
+                    0.1,
+                    0.2,
+                    0.25,
+                    0.3
+                ]
+            },
+            {
+                type: 'bar',
+                marker: { color: 'blue' },
+                x: [
+                    -1,
+                    -0.2,
+                    1
+                ],
+                y: [
+                    1,
+                    2,
+                    0.5
+                ]
+            }],
+            layout: {
+                spikedistance: 20,
+                hovermode: 'x',
+                xaxis: { showspikes: true },
+                yaxis: { showspikes: true },
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50,
+                }
+            }
+        })
+        .then(function() {
+            var lines;
+
+            _hover({xpx: 200, ypx: 200});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('blue');
+
+            _hover({xpx: 200, ypx: 350});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('green');
         })
         .then(done, done.fail);
     });
@@ -480,6 +572,7 @@ describe('spikeline hover', function() {
         return {
             width: 600, height: 600, margin: {l: 100, r: 100, t: 100, b: 100},
             showlegend: false,
+            spikedistance: 20,
             xaxis: {range: [-0.5, 1.5], showspikes: true, spikemode: 'toaxis+marker'},
             yaxis: {range: [-1, 3], showspikes: true, spikemode: 'toaxis+marker'},
             hovermode: 'x',
@@ -630,6 +723,7 @@ describe('spikeline hover', function() {
             {y: [5, 7, 9, 6, 4, 3]},
             {y: [5, 7, 9, 6, 4, 3], marker: {color: 'red'}}
         ], {
+            hovermode: 'x',
             xaxis: {showspikes: true},
             yaxis: {showspikes: true},
             spikedistance: -1,
@@ -737,9 +831,9 @@ describe('spikeline hover', function() {
                     data: [makeData(type, 'xaxis', x, data)],
                     layout: {
                         spikedistance: -1,
-                        xaxis: {showspikes: true},
-                        yaxis: {showspikes: true},
-                        zaxis: {showspikes: true},
+                        xaxis: {showspikes: true, spikesnap: 'data'},
+                        yaxis: {showspikes: true, spikesnap: 'data'},
+                        zaxis: {showspikes: true, spikesnap: 'data'},
                         title: {text: trace.type},
                         width: 400, height: 400
                     }

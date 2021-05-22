@@ -1,15 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var FORMAT_LINK = require('../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = require('../constants/docs').DATE_FORMAT_LINK;
+var docs = require('../constants/docs');
+var FORMAT_LINK = docs.FORMAT_LINK;
+var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
 
 var templateFormatStringDescription = [
     'Variables are inserted using %{variable}, for example "y: %{y}".',

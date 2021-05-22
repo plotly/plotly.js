@@ -1,13 +1,6 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
@@ -126,6 +119,8 @@ module.exports = {
     yperiod0: axisPeriod0('y0'),
     xperiodalignment: axisPeriodAlignment('x'),
     yperiodalignment: axisPeriodAlignment('y'),
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     stackgroup: {
         valType: 'string',
@@ -256,6 +251,7 @@ module.exports = {
     hovertemplate: hovertemplateAttrs({}, {
         keys: constants.eventDataKeys
     }),
+
     line: {
         color: {
             valType: 'color',

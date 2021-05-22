@@ -1,15 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var baseAttrs = require('../../plots/attributes');
 var scatterAttrs = require('../scatter/attributes');
+var axisHoverFormat = require('../../plots/hoverformat_attributes');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -34,6 +27,8 @@ var attrs = module.exports = overrideAll({
     yperiod0: scatterAttrs.yperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
     yperiodalignment: scatterAttrs.yperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     text: scatterAttrs.text,
     hovertext: scatterAttrs.hovertext,
