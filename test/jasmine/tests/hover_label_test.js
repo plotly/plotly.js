@@ -920,19 +920,13 @@ describe('hover info', function() {
                     fontFamily: 'Arial',
                     fontColor: 'rgb(0, 100, 200)'
                 }, {
-                    bgcolor: 'rgb(255, 127, 14)',
+                    bgcolor: 'rgb(227, 119, 194)',
                     bordercolor: 'rgb(68, 68, 68)',
                     fontSize: 13,
                     fontFamily: 'Arial',
                     fontColor: 'rgb(68, 68, 68)'
                 }, {
-                    bgcolor: 'rgb(0, 200, 0)',
-                    bordercolor: 'rgb(255, 255, 255)',
-                    fontSize: 13,
-                    fontFamily: 'Arial',
-                    fontColor: 'rgb(255, 255, 255)'
-                }, {
-                    bgcolor: 'rgb(150, 0, 0)',
+                    bgcolor: 'rgb(140, 86, 75)',
                     bordercolor: 'rgb(255, 255, 255)',
                     fontSize: 13,
                     fontFamily: 'Arial',
@@ -944,13 +938,19 @@ describe('hover info', function() {
                     fontFamily: 'Arial',
                     fontColor: 'rgb(255, 255, 255)'
                 }, {
-                    bgcolor: 'rgb(140, 86, 75)',
+                    bgcolor: 'rgb(150, 0, 0)',
                     bordercolor: 'rgb(255, 255, 255)',
                     fontSize: 13,
                     fontFamily: 'Arial',
                     fontColor: 'rgb(255, 255, 255)'
                 }, {
-                    bgcolor: 'rgb(227, 119, 194)',
+                    bgcolor: 'rgb(0, 200, 0)',
+                    bordercolor: 'rgb(255, 255, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(255, 255, 255)'
+                }, {
+                    bgcolor: 'rgb(255, 127, 14)',
                     bordercolor: 'rgb(68, 68, 68)',
                     fontSize: 13,
                     fontFamily: 'Arial',
@@ -2278,7 +2278,7 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
+            expect(gd._hoverdata[2]).toEqual(jasmine.objectContaining(
                 {
                     curveNumber: 1,
                     pointNumber: 0,
@@ -2286,7 +2286,7 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            expect(gd._hoverdata[2]).toEqual(jasmine.objectContaining(
+            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
                 {
                     curveNumber: 2,
                     pointNumber: 0,
@@ -5225,16 +5225,16 @@ describe('hovermode: (x|y)unified', function() {
             ]});
 
             _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: 'Jan 1, 2000', items: [
-                'bar : 1',
-                'start : (Jan, 1)'
+            assertLabel({title: 'Jan', items: [
+                'bar : (Jan 1, 2000, 1)',
+                'start : 1'
             ]});
 
             _hover(gd, { xpx: 360, ypx: 200 });
-            assertLabel({title: 'Feb 1, 2000', items: [
-                'bar : 2',
+            assertLabel({title: 'Jan', items: [
+                'bar : (Feb 1, 2000, 2)',
                 'start : (Feb, 2)',
-                'end : (Jan, 1)'
+                'end : 1'
             ]});
 
             _hover(gd, { xpx: 400, ypx: 200 });
@@ -5275,10 +5275,10 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, {curveNumber: 0});
 
-                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
+                assertLabel({title: 'Apr 13, 2014, 15:21:15', items: [
                     'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
-                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
-                    '2nd Floor (R... : 73.625',
+                    '1st Floor (N... : 74.8',
+                    '2nd Floor (R... : (Apr 13, 2014, 15:21:11, 73.625)',
                     'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
                 ]});
             })

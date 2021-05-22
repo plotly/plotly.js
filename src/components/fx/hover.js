@@ -669,6 +669,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var insert = function(hd) {
             var type = hd.trace.type;
             var key = (
+                type === 'box' ||
+                type === 'violin' ||
                 type === 'ohlc' ||
                 type === 'candlestick'
             ) ? hoverDataKey(hd) : hd.trace.index;
