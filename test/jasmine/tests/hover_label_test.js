@@ -4773,6 +4773,78 @@ describe('hovermode: (x|y)unified', function() {
         .then(done, done.fail);
     });
 
+    it('should pick the bar which is closest to the winning point no the bar that close to the cursor', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 20, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.49, 1, 1.51, 2],
+                y: [21, 22, 23, 24, 25]
+            }],
+            layout: {
+                hoverdistance: -1,
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 0, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0.49', items: [
+                'bar : (0, 10)',
+                'scatter : 22'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 200 });
+            assertLabel({title: '0.49', items: [
+                'bar : (0, 10)',
+                'scatter : 22'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 20',
+                'scatter : 23'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 200 });
+            assertLabel({title: '1.51', items: [
+                'bar : (2, 30)',
+                'scatter : 24'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1.51', items: [
+                'bar : (2, 30)',
+                'scatter : 24'
+            ]});
+
+            _hover(gd, { xpx: 400, ypx: 200 });
+            assertLabel({title: '2', items: [
+                'bar : 30',
+                'scatter : 25'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
     it('should display hover for two high-res scatter at different various intervals', function(done) {
         var x1 = [];
         var y1 = [];
