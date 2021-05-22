@@ -1362,8 +1362,8 @@ describe('Test geo interactions', function() {
                 .toBe(hoverLabelCnt, msg);
         }
 
-        var px = 390;
-        var py = 290;
+        var px = 200;
+        var py = 200;
         var cnt = 0;
 
         Plotly.newPlot(gd, fig).then(function() {
@@ -1374,14 +1374,14 @@ describe('Test geo interactions', function() {
 
             return new Promise(function(resolve) {
                 var interval = setInterval(function() {
-                    px += 2;
+                    py -= 2;
                     mouseEvent('mousemove', px, py);
 
-                    if(px < 402) {
-                        _assert('- px ' + px, 1);
+                    if(py > 175) {
+                        _assert('- py ' + py, 1);
                         expect(cnt).toBe(0, 'no plotly_unhover event so far');
                     } else {
-                        _assert('- px ' + px, 0);
+                        _assert('- py ' + py, 0);
                         expect(cnt).toBe(1, 'plotly_unhover event count');
 
                         clearInterval(interval);
