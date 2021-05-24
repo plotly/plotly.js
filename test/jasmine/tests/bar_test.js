@@ -2296,7 +2296,7 @@ describe('bar hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Bar.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Bar.hoverPoints(pointData, xval, yval, hovermode, {});
         if(!pts) return false;
 
         var pt = pts[0];
@@ -2663,8 +2663,8 @@ describe('bar hover', function() {
                     barmode: m
                 })
                 .then(function() {
-                    var pt0 = Bar.hoverPoints(getPointData(gd, 0), 0, 1, 'x')[0];
-                    var pt1 = Bar.hoverPoints(getPointData(gd, 1), 0, 1, 'x')[0];
+                    var pt0 = Bar.hoverPoints(getPointData(gd, 0), 0, 1, 'x', {})[0];
+                    var pt1 = Bar.hoverPoints(getPointData(gd, 1), 0, 1, 'x', {})[0];
 
                     expect(pt0.yLabelVal).toBe(0, 'y label value for data[0]');
                     expect(pt1.yLabelVal).toBe(1, 'y label value for data[1]');

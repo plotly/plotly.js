@@ -9,8 +9,8 @@ var getLineWidth = require('./helpers').getLineWidth;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-function hoverPoints(pointData, xval, yval, hovermode) {
-    var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
+function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    var barPointData = hoverOnBars(pointData, xval, yval, hovermode, opts);
 
     if(barPointData) {
         var cd = barPointData.cd;
@@ -24,7 +24,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     }
 }
 
-function hoverOnBars(pointData, xval, yval, hovermode) {
+function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var t = cd[0].t;
@@ -67,6 +67,8 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
         };
 
     function inbox(_minPos, _maxPos, maxDistance) {
+        if(opts.finiteRange) maxDistance = 0;
+
         // add a little to the pseudo-distance for wider bars, so that like scatter,
         // if you are over two overlapping bars, the narrower one wins.
         return Fx.inbox(_minPos - posVal, _maxPos - posVal,

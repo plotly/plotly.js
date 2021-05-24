@@ -920,19 +920,13 @@ describe('hover info', function() {
                     fontFamily: 'Arial',
                     fontColor: 'rgb(0, 100, 200)'
                 }, {
-                    bgcolor: 'rgb(255, 127, 14)',
+                    bgcolor: 'rgb(227, 119, 194)',
                     bordercolor: 'rgb(68, 68, 68)',
                     fontSize: 13,
                     fontFamily: 'Arial',
                     fontColor: 'rgb(68, 68, 68)'
                 }, {
-                    bgcolor: 'rgb(0, 200, 0)',
-                    bordercolor: 'rgb(255, 255, 255)',
-                    fontSize: 13,
-                    fontFamily: 'Arial',
-                    fontColor: 'rgb(255, 255, 255)'
-                }, {
-                    bgcolor: 'rgb(150, 0, 0)',
+                    bgcolor: 'rgb(140, 86, 75)',
                     bordercolor: 'rgb(255, 255, 255)',
                     fontSize: 13,
                     fontFamily: 'Arial',
@@ -944,13 +938,19 @@ describe('hover info', function() {
                     fontFamily: 'Arial',
                     fontColor: 'rgb(255, 255, 255)'
                 }, {
-                    bgcolor: 'rgb(140, 86, 75)',
+                    bgcolor: 'rgb(150, 0, 0)',
                     bordercolor: 'rgb(255, 255, 255)',
                     fontSize: 13,
                     fontFamily: 'Arial',
                     fontColor: 'rgb(255, 255, 255)'
                 }, {
-                    bgcolor: 'rgb(227, 119, 194)',
+                    bgcolor: 'rgb(0, 200, 0)',
+                    bordercolor: 'rgb(255, 255, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(255, 255, 255)'
+                }, {
+                    bgcolor: 'rgb(255, 127, 14)',
                     bordercolor: 'rgb(68, 68, 68)',
                     fontSize: 13,
                     fontFamily: 'Arial',
@@ -1714,40 +1714,6 @@ describe('hover info', function() {
             })
             .then(done, done.fail);
         });
-
-        it('should avoid overlaps on *too close* pts are filtered out', function(done) {
-            Plotly.newPlot(gd, [
-                {name: 'A', x: [9, 10], y: [9, 10]},
-                {name: 'B', x: [8, 9], y: [9, 10]},
-                {name: 'C', x: [9, 10], y: [10, 11]}
-            ], {
-                hovermode: 'x',
-                xaxis: {range: [0, 100]},
-                yaxis: {range: [0, 100]},
-                width: 700,
-                height: 450
-            })
-            .then(function() { _hover(gd, 67, 239); })
-            .then(function() {
-                var nodesA = hoverInfoNodes('A');
-                var nodesC = hoverInfoNodes('C');
-
-                // Ensure layout correct
-                assertLabelsInsideBoxes(nodesA, 'A');
-                assertLabelsInsideBoxes(nodesC, 'C');
-                assertSecondaryRightToPrimaryBox(nodesA, 'A');
-                assertSecondaryRightToPrimaryBox(nodesC, 'C');
-
-                // Ensure stacking, finally
-                var boxA = nodesA.primaryBox.getBoundingClientRect();
-                var boxC = nodesC.primaryBox.getBoundingClientRect();
-
-                // Be robust against floating point arithmetic and subtle future layout changes
-                expect(calcLineOverlap(boxA.top, boxA.bottom, boxC.top, boxC.bottom))
-                  .toBeWithin(0, 1);
-            })
-            .then(done, done.fail);
-        });
     });
 
     describe('constraints info graph viewport', function() {
@@ -2312,7 +2278,7 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
+            expect(gd._hoverdata[2]).toEqual(jasmine.objectContaining(
                 {
                     curveNumber: 1,
                     pointNumber: 0,
@@ -2320,7 +2286,7 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            expect(gd._hoverdata[2]).toEqual(jasmine.objectContaining(
+            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
                 {
                     curveNumber: 2,
                     pointNumber: 0,
@@ -4708,25 +4674,245 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
-    it('shares filtering logic with compare mode x', function(done) {
-        var mock = require('@mocks/27.json');
-        var mockCopy = Lib.extendDeep({}, mock);
+    it('should display hover for scatter and bars at various intervals (default hoverdistance)', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                y: [21, 22, 23, 24, 25, 26]
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0.6', items: [
+                'bar : (1, 30)',
+                'scatter : 24'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 30',
+                'scatter : 26'
+            ]});
+        })
+        .then(done, done.fail);
+    });
 
-        Plotly.newPlot(gd, mockCopy)
-            .then(function(gd) {
-                _hover(gd, { xval: '2002' });
-                assertElementCount('g.hovertext', 2);
+    it('should display hover for scatter and bars at various intervals (case of hoverdistance: -1) tests finitRange', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                y: [21, 22, 23, 24, 25, 26]
+            }],
+            layout: {
+                hoverdistance: -1,
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0.6', items: [
+                'bar : (1, 30)',
+                'scatter : 24'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 30',
+                'scatter : 26'
+            ]});
+        })
+        .then(done, done.fail);
+    });
 
-                return Plotly.relayout(gd, 'hovermode', 'x unified');
-            })
-            .then(function() {
-                _hover(gd, { xval: '2002' });
-                assertLabel({title: '2002.042', items: [
-                    'Market income : 0.5537845',
-                    'Market incom... : 0.4420997'
-                ]});
-            })
-            .then(done, done.fail);
+    it('should pick the bar which is closest to the winning point no the bar that close to the cursor', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 20, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.49, 1, 1.51, 2],
+                y: [21, 22, 23, 24, 25]
+            }],
+            layout: {
+                hoverdistance: -1,
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 0, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0.49', items: [
+                'bar : (0, 10)',
+                'scatter : 22'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 200 });
+            assertLabel({title: '0.49', items: [
+                'bar : (0, 10)',
+                'scatter : 22'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 20',
+                'scatter : 23'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 200 });
+            assertLabel({title: '1.51', items: [
+                'bar : (2, 30)',
+                'scatter : 24'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1.51', items: [
+                'bar : (2, 30)',
+                'scatter : 24'
+            ]});
+
+            _hover(gd, { xpx: 400, ypx: 200 });
+            assertLabel({title: '2', items: [
+                'bar : 30',
+                'scatter : 25'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display hover for two high-res scatter at different various intervals', function(done) {
+        var x1 = [];
+        var y1 = [];
+        var x2 = [];
+        var y2 = [];
+        var i, t;
+
+        function r100(v) {
+            return Math.round(v * 100);
+        }
+
+        for(i = 0; i <= 1800; i++) {
+            t = i / 180 * Math.PI;
+            x1.push(r100(t / 5));
+            y1.push(r100(Math.sin(t)));
+        }
+
+        for(i = 0; i <= 360; i++) {
+            t = i / 180 * Math.PI;
+            x2.push(r100(t));
+            y2.push(r100(Math.sin(t)));
+        }
+
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'high',
+                x: x1,
+                y: y1
+            }, {
+                name: 'low',
+                x: x2,
+                y: y2
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '157', items: [
+                'high : 100',
+                'low : 100'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 175, ypx: 200 });
+            assertLabel({title: '275', items: [
+                'high : 93',
+                'low : (274, 39)'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 350, ypx: 200 });
+            assertLabel({title: '550', items: [
+                'high : 68',
+                'low : −71'
+            ]});
+        })
+        .then(done, done.fail);
     });
 
     it('case of scatter points on period bars', function(done) {
@@ -5029,6 +5215,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 _hover(gd, { xpx: 100, ypx: 200 });
                 assertLabel({title: 'Jan 1, 2000', items: [
+                    'bar : (Dec, 2)',
                     'scatter : 1.1'
                 ]});
 
@@ -5106,22 +5293,20 @@ describe('hovermode: (x|y)unified', function() {
             _hover(gd, { xpx: 40, ypx: 200 });
             assertLabel({title: 'Jan', items: [
                 'bar : (Jan 1, 2000, 1)',
-                'start : 1',
-                'end : 1'
+                'start : 1'
             ]});
 
             _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: 'Jan 1, 2000', items: [
-                'bar : 1',
-                'start : (Jan, 1)',
-                'end : (Jan, 1)'
+            assertLabel({title: 'Jan', items: [
+                'bar : (Jan 1, 2000, 1)',
+                'start : 1'
             ]});
 
             _hover(gd, { xpx: 360, ypx: 200 });
-            assertLabel({title: 'Feb 1, 2000', items: [
-                'bar : 2',
+            assertLabel({title: 'Jan', items: [
+                'bar : (Feb 1, 2000, 2)',
                 'start : (Feb, 2)',
-                'end : (Feb, 2)'
+                'end : 1'
             ]});
 
             _hover(gd, { xpx: 400, ypx: 200 });
@@ -5162,10 +5347,10 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, {curveNumber: 0});
 
-                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
+                assertLabel({title: 'Apr 13, 2014, 15:21:15', items: [
                     'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
-                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
-                    '2nd Floor (R... : 73.625',
+                    '1st Floor (N... : 74.8',
+                    '2nd Floor (R... : (Apr 13, 2014, 15:21:11, 73.625)',
                     'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
                 ]});
             })

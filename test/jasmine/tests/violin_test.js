@@ -537,8 +537,8 @@ describe('Test violin hover:', function() {
         name: ['', '', '', '', '', ''],
         axis: 'Sat',
         hoverLabelPos: [
-            [364, 270], [352, 270], [339, 270],
-            [346, 270], [349, 270], [387, 270]
+            [364, 270], [387, 270], [339, 270],
+            [346, 270], [349, 270], [352, 270]
         ]
     }, {
         desc: 'single horizontal violin',

@@ -14,7 +14,6 @@ var Drawing = require('../drawing');
 var Color = require('../color');
 var dragElement = require('../dragelement');
 var Axes = require('../../plots/cartesian/axes');
-var alignPeriod = require('../../plots/cartesian/align_period');
 var Registry = require('../../registry');
 
 var helpers = require('./helpers');
@@ -491,6 +490,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
                     var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
+                        finiteRange: true,
                         hoverLayer: fullLayout._hoverlayer
                     });
 
@@ -643,10 +643,13 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
     }
 
-    hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+    var sortHoverData = function() {
+        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
-    // move period positioned points to the end of list
-    hoverData = orderPeriod(hoverData, hovermode);
+        // move period positioned points and box/bar-like traces to the end of the list
+        hoverData = orderRangePoints(hoverData, hovermode);
+    };
+    sortHoverData();
 
     // If in compare mode, select every point at position
     if(
@@ -654,7 +657,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
-        var initLen = hoverData.length;
         var winningPoint = hoverData[0];
 
         var customXVal = customVal('x', winningPoint, fullLayout);
@@ -662,61 +664,30 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         findHoverPoints(customXVal, customYVal);
 
-        // also find start, middle and end point for period
-        var axLetter = hovermode.charAt(0);
-        if(winningPoint.trace[axLetter + 'period']) {
-            var v = winningPoint[axLetter + 'LabelVal'];
-            var ax = winningPoint[axLetter + 'a'];
-            var T = {};
-            T[axLetter + 'period'] = winningPoint.trace[axLetter + 'period'];
-            T[axLetter + 'period0'] = winningPoint.trace[axLetter + 'period0'];
-
-            T[axLetter + 'periodalignment'] = 'start';
-            var start = alignPeriod(T, ax, axLetter, [v])[0];
-
-            T[axLetter + 'periodalignment'] = 'middle';
-            var middle = alignPeriod(T, ax, axLetter, [v])[0];
-
-            T[axLetter + 'periodalignment'] = 'end';
-            var end = alignPeriod(T, ax, axLetter, [v])[0];
-
-            if(axLetter === 'x') {
-                findHoverPoints(start, customYVal);
-                findHoverPoints(middle, customYVal);
-                findHoverPoints(end, customYVal);
-            } else {
-                findHoverPoints(customXVal, start);
-                findHoverPoints(customXVal, middle);
-                findHoverPoints(customXVal, end);
+        var finalPoints = [];
+        var seen = {};
+        var insert = function(hd) {
+            var type = hd.trace.type;
+            var key = (
+                type === 'box' ||
+                type === 'violin' ||
+                type === 'ohlc' ||
+                type === 'candlestick'
+            ) ? hoverDataKey(hd) : hd.trace.index;
+            if(!seen[key]) {
+                seen[key] = true;
+                finalPoints.push(hd);
             }
+        };
 
-            var k;
-            var seen = {};
-            for(k = 0; k < initLen; k++) {
-                seen[hoverData[k].trace.index] = true;
-            }
-
-            // remove non-period aditions and traces that seen before
-            for(k = hoverData.length - 1; k >= initLen; k--) {
-                if(
-                    seen[hoverData[k].trace.index] ||
-                    !hoverData[k].trace[axLetter + 'period']
-                ) {
-                    hoverData.splice(k, 1);
-                }
-            }
+        // insert the winnig point first
+        insert(winningPoint);
+        // override from the end
+        for(var k = hoverData.length - 1; k > 0; k--) {
+            insert(hoverData[k]);
         }
-
-        // Remove duplicated hoverData points
-        // note that d3 also filters identical points in the rendering steps
-        var repeated = {};
-        hoverData = hoverData.filter(function(hd) {
-            var key = hoverDataKey(hd);
-            if(!repeated[key]) {
-                repeated[key] = true;
-                return repeated[key];
-            }
-        });
+        hoverData = finalPoints;
+        sortHoverData();
     }
 
     // lastly, emit custom hover/unhover events
@@ -820,9 +791,7 @@ function createHoverText(hoverData, opts, gd) {
     var xa = c0.xa;
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
-    var v0 = c0[axLetter + 'LabelVal'];
     var t0 = c0[axLetter + 'Label'];
-    var t00 = (String(t0) || '').split(' ')[0];
     var outerContainerBB = outerContainer.node().getBoundingClientRect();
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
@@ -1011,43 +980,12 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         label.attr('transform', strTranslate(lx, ly));
-
-        // remove the "close but not quite" points
-        // because of error bars, only take up to a space
-        hoverData = filterClosePoints(hoverData);
     });
-
-    function filterClosePoints(hoverData) {
-        return hoverData.filter(function(d) {
-            if(d.zLabelVal !== undefined) return true;
-            if((d[axLetter + 'Label'] || '').split(' ')[0] === t00) return true;
-            if(d.trace[axLetter + 'period']) {
-                var v = d[axLetter + 'LabelVal'];
-                var ax = d[axLetter + 'a'];
-                var trace = {};
-                trace[axLetter + 'period'] = d.trace[axLetter + 'period'];
-                trace[axLetter + 'period0'] = d.trace[axLetter + 'period0'];
-
-                trace[axLetter + 'periodalignment'] = 'start';
-                var start = alignPeriod(trace, ax, axLetter, [v])[0];
-
-                trace[axLetter + 'periodalignment'] = 'end';
-                var end = alignPeriod(trace, ax, axLetter, [v])[0];
-
-                if(v0 >= start && v0 < end) return true;
-            }
-
-            return false;
-        });
-    }
 
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
-
-        // similarly to compare mode, we remove the "close but not quite together" points
-        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
 
         // Return early if nothing is hovered on
         if(hoverData.length === 0) return;
@@ -1929,23 +1867,29 @@ function plainText(s, len) {
     });
 }
 
-function orderPeriod(hoverData, hovermode) {
+function orderRangePoints(hoverData, hovermode) {
     var axLetter = hovermode.charAt(0);
 
     var first = [];
+    var second = [];
     var last = [];
 
     for(var i = 0; i < hoverData.length; i++) {
         var d = hoverData[i];
 
-        if(d.trace[axLetter + 'period']) {
+        if(
+            Registry.traceIs(d.trace, 'bar-like') ||
+            Registry.traceIs(d.trace, 'box-violin')
+        ) {
             last.push(d);
+        } else if(d.trace[axLetter + 'period']) {
+            second.push(d);
         } else {
             first.push(d);
         }
     }
 
-    return first.concat(last);
+    return first.concat(second).concat(last);
 }
 
 function customVal(axLetter, winningPoint, fullLayout) {
