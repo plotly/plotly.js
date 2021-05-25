@@ -1059,8 +1059,9 @@ function createHoverText(hoverData, opts, gd) {
         legendDraw(gd, mockLegend);
 
         // Position the hover
-        var ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
-        var lx = Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
+        var winningPoint = hoverData[0];
+        var ly = (winningPoint.y0 + winningPoint.y1) / 2;
+        var lx = (winningPoint.x0 + winningPoint.x1) / 2;
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
         lx += xa._offset;
