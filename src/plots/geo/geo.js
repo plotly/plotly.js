@@ -4,8 +4,8 @@
 
 var d3 = require('@plotly/d3');
 var geo = require('d3-geo');
-var geoPath = require('d3-geo').geoPath;
-var geoDistance = require('d3-geo').geoDistance;
+var geoPath = geo.geoPath;
+var geoDistance = geo.geoDistance;
 var geoProjection = require('d3-geo-projection');
 
 var Registry = require('../../registry');
