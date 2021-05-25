@@ -145,7 +145,7 @@ module.exports = function style(s, gd, legend) {
 
         // with fill and no markers or text, move the line and fill up a bit
         // so it's more centered
-        var markersOrText = subTypes.hasMarkers(trace) || subTypes.hasText(trace);
+        var markersOrText = subTypes.hasMarkers(trace) || subTypes.isText(trace);
         var anyFill = showFill || showGradientFill;
         var anyLine = showLine || showGradientLine;
         var pathStart = (markersOrText || !anyFill) ? 'M5,0' :
@@ -187,7 +187,7 @@ module.exports = function style(s, gd, legend) {
         var d0 = d[0];
         var trace = d0.trace;
         var showMarkers = subTypes.hasMarkers(trace);
-        var showText = subTypes.hasText(trace);
+        var showText = subTypes.isText(trace);
         var showLines = subTypes.hasLines(trace);
         var dMod, tMod;
 
