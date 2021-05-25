@@ -667,8 +667,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var finalPoints = [];
         var seen = {};
         var id = 0;
-        var insert = function(hd) {
-            var type = hd.trace.type;
+        var insert = function(newHd) {
+            var type = newHd.trace.type;
             var multiplePoints = (
                 type === 'box' ||
                 type === 'violin' ||
@@ -676,19 +676,20 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 type === 'candlestick'
             );
 
-            var key = multiplePoints ? hoverDataKey(hd) : hd.trace.index;
+            var key = multiplePoints ? hoverDataKey(newHd) : newHd.trace.index;
             if(!seen[key]) {
                 id++;
                 seen[key] = id;
-                finalPoints.push(hd);
+                finalPoints.push(newHd);
             } else {
                 var oldId = seen[key] - 1;
+                var oldHd = finalPoints[oldId];
                 if(
-                    Math.abs(winningPoint.distance - hd.distance) <
-                    Math.abs(winningPoint.distance - finalPoints[oldId].distance)
+                    Math.abs(winningPoint.distance - newHd.distance) <
+                    Math.abs(winningPoint.distance - oldHd.distance)
                 ) {
                     // replace with closest
-                    finalPoints[oldId] = hd;
+                    finalPoints[oldId] = newHd;
                 }
             }
         };
