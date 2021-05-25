@@ -2967,13 +2967,6 @@ describe('hover on traces with (x|y)period positioning', function() {
                 nums: '(Q1, 1)'
             });
         })
-        .then(function() { _hover(380, 395); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'middle (M3)',
-                nums: '(Q1, 2)'
-            });
-        })
         .then(function() { _hover(415, 425); })
         .then(function() {
             assertHoverLabelContent({
@@ -3008,13 +3001,6 @@ describe('hover on traces with (x|y)period positioning', function() {
             assertHoverLabelContent({
                 name: 'middle (M12)',
                 nums: '(Jan 2001, 1)'
-            });
-        })
-        .then(function() { _hover(665, 395); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'middle (M12)',
-                nums: '(Jul 2001, 2)'
             });
         })
         .then(function() { _hover(700, 425); })
@@ -5215,7 +5201,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 _hover(gd, { xpx: 100, ypx: 200 });
                 assertLabel({title: 'Jan 1, 2000', items: [
-                    'bar : (Dec, 2)',
+                    'bar : (Jan, 1)',
                     'scatter : 1.1'
                 ]});
 
@@ -5326,31 +5312,41 @@ describe('hovermode: (x|y)unified', function() {
                     name: 'bar',
                     type: 'bar',
                     x: [
-                        '2017-07-01',
-                        '2017-10-01',
-                        '2018-01-01',
+                        '2017-01',
+                        '2017-04',
+                        '2017-07',
+                        '2017-10',
+                        '2018-01',
                     ],
                     xhoverformat: 'Q%q',
                     xperiod: 'M3',
                     y: [
-                        12,
-                        15,
-                        18
+                        0,
+                        3,
+                        6,
+                        9,
+                        12
                     ]
                 },
                 {
                     name: 'scatter',
                     type: 'scatter',
                     x: [
-                        '2017-07-01',
-                        '2017-08-01',
-                        '2017-09-01',
-                        '2017-10-01',
-                        '2017-11-01',
-                        '2017-12-01',
-                        '2018-01-01',
-                        '2018-02-01',
-                        '2018-03-01',
+                        '2017-01',
+                        '2017-02',
+                        '2017-03',
+                        '2017-04',
+                        '2017-05',
+                        '2017-06',
+                        '2017-07',
+                        '2017-08',
+                        '2017-09',
+                        '2017-10',
+                        '2017-11',
+                        '2017-12',
+                        '2018-01',
+                        '2018-02',
+                        '2018-03'
                     ],
                     xhoverformat: '%b',
                     xperiod: 'M1',
@@ -5364,6 +5360,12 @@ describe('hovermode: (x|y)unified', function() {
                         7,
                         8,
                         9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15
                     ]
                 }
             ],
@@ -5382,58 +5384,76 @@ describe('hovermode: (x|y)unified', function() {
             }
         })
         .then(function(gd) {
-            _hover(gd, { xpx: 50, ypx: 200 });
-            assertLabel({title: 'Jul', items: [
-                'bar : (Q3, 12)',
+            _hover(gd, { xpx: 25, ypx: 200 });
+            assertLabel({title: 'Jan', items: [
+                'bar : (Q1, 0)',
                 'scatter : 1'
             ]});
 
-            _hover(gd, { xpx: 75, ypx: 200 });
-            assertLabel({title: 'Aug', items: [
-                'bar : (Q3, 12)',
+            _hover(gd, { xpx: 50, ypx: 200 });
+            assertLabel({title: 'Feb', items: [
+                'bar : (Q1, 0)',
                 'scatter : 2'
             ]});
 
-            _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: 'Sep', items: [
-                'bar : (Q3, 12)',
+            _hover(gd, { xpx: 75, ypx: 200 });
+            assertLabel({title: 'Mar', items: [
+                'bar : (Q1, 0)',
                 'scatter : 3'
             ]});
 
-            _hover(gd, { xpx: 150, ypx: 200 });
-            assertLabel({title: 'Oct', items: [
-                'bar : (Q4, 15)',
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: 'Apr', items: [
+                'bar : (Q2, 3)',
                 'scatter : 4'
             ]});
 
-            _hover(gd, { xpx: 200, ypx: 200 });
-            assertLabel({title: 'Nov', items: [
-                'bar : (Q4, 15)',
+            _hover(gd, { xpx: 125, ypx: 200 });
+            assertLabel({title: 'May', items: [
+                'bar : (Q2, 3)',
                 'scatter : 5'
             ]});
 
-            _hover(gd, { xpx: 250, ypx: 200 });
-            assertLabel({title: 'Dec', items: [
-                'bar : (Q4, 15)',
+            _hover(gd, { xpx: 150, ypx: 200 });
+            assertLabel({title: 'Jun', items: [
+                'bar : (Q2, 3)',
                 'scatter : 6'
             ]});
 
-            _hover(gd, { xpx: 300, ypx: 200 });
-            assertLabel({title: 'Jan', items: [
-                'bar : (Q1, 18)',
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'Jul', items: [
+                'bar : (Q3, 6)',
                 'scatter : 7'
             ]});
 
-            _hover(gd, { xpx: 350, ypx: 200 });
-            assertLabel({title: 'Feb', items: [
-                'bar : (Q1, 18)',
+            _hover(gd, { xpx: 225, ypx: 200 });
+            assertLabel({title: 'Aug', items: [
+                'bar : (Q3, 6)',
                 'scatter : 8'
             ]});
 
-            _hover(gd, { xpx: 400, ypx: 200 });
-            assertLabel({title: 'Mar', items: [
-                'bar : (Q1, 18)',
+            _hover(gd, { xpx: 250, ypx: 200 });
+            assertLabel({title: 'Sep', items: [
+                'bar : (Q3, 6)',
                 'scatter : 9'
+            ]});
+
+            _hover(gd, { xpx: 275, ypx: 200 });
+            assertLabel({title: 'Oct', items: [
+                'bar : (Q4, 9)',
+                'scatter : 10'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: 'Nov', items: [
+                'bar : (Q4, 9)',
+                'scatter : 11'
+            ]});
+
+            _hover(gd, { xpx: 325, ypx: 200 });
+            assertLabel({title: 'Dec', items: [
+                'bar : (Q4, 9)',
+                'scatter : 12'
             ]});
         })
         .then(done, done.fail);

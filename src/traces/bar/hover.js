@@ -39,10 +39,13 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        return di[posLetter] + 0.5 * sgn * di.w;
+        if(di.orig_p !== undefined) {
+            return di.p + sgn * Math.abs(di.p - di.orig_p);
+        }
+        return di[posLetter] + sgn * di.w / 2;
     }
 
-    var minPos = isClosest ?
+    var minPos = isClosest || trace[posLetter + 'period'] ?
         thisBarMinPos :
         function(di) {
             /*
@@ -60,7 +63,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosest ?
+    var maxPos = isClosest || trace[posLetter + 'period'] ?
         thisBarMaxPos :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
