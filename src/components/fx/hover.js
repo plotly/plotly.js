@@ -666,17 +666,30 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
         var finalPoints = [];
         var seen = {};
+        var id = 0;
         var insert = function(hd) {
             var type = hd.trace.type;
-            var key = (
+            var multiplePoints = (
                 type === 'box' ||
                 type === 'violin' ||
                 type === 'ohlc' ||
                 type === 'candlestick'
-            ) ? hoverDataKey(hd) : hd.trace.index;
+            );
+
+            var key = multiplePoints ? hoverDataKey(hd) : hd.trace.index;
             if(!seen[key]) {
-                seen[key] = true;
+                id++;
+                seen[key] = id;
                 finalPoints.push(hd);
+            } else {
+                var oldId = seen[key] - 1;
+                if(
+                    Math.abs(winningPoint.distance - hd.distance) <
+                    Math.abs(winningPoint.distance - finalPoints[oldId].distance)
+                ) {
+                    // replace with closest
+                    finalPoints[oldId] = hd;
+                }
             }
         };
 

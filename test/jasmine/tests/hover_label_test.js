@@ -5319,6 +5319,126 @@ describe('hovermode: (x|y)unified', function() {
         .then(done, done.fail);
     });
 
+    it('period with hover distance -1 include closest not farthest', function(done) {
+        Plotly.newPlot(gd, {
+            data: [
+                {
+                    name: 'bar',
+                    type: 'bar',
+                    x: [
+                        '2017-07-01',
+                        '2017-10-01',
+                        '2018-01-01',
+                    ],
+                    xhoverformat: 'Q%q',
+                    xperiod: 'M3',
+                    y: [
+                        12,
+                        15,
+                        18
+                    ]
+                },
+                {
+                    name: 'scatter',
+                    type: 'scatter',
+                    x: [
+                        '2017-07-01',
+                        '2017-08-01',
+                        '2017-09-01',
+                        '2017-10-01',
+                        '2017-11-01',
+                        '2017-12-01',
+                        '2018-01-01',
+                        '2018-02-01',
+                        '2018-03-01',
+                    ],
+                    xhoverformat: '%b',
+                    xperiod: 'M1',
+                    y: [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                    ]
+                }
+            ],
+            layout: {
+                showlegend: false,
+                width: 600,
+                height: 400,
+                hovermode: 'x unified',
+                hoverdistance: -1,
+                xaxis: {
+                    dtick: 'M1',
+                    showgrid: true,
+                    ticklabelmode: 'period',
+                    type: 'date'
+                }
+            }
+        })
+        .then(function(gd) {
+            _hover(gd, { xpx: 50, ypx: 200 });
+            assertLabel({title: 'Jul', items: [
+                'bar : (Q3, 12)',
+                'scatter : 1'
+            ]});
+
+            _hover(gd, { xpx: 75, ypx: 200 });
+            assertLabel({title: 'Aug', items: [
+                'bar : (Q3, 12)',
+                'scatter : 2'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: 'Sep', items: [
+                'bar : (Q3, 12)',
+                'scatter : 3'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 200 });
+            assertLabel({title: 'Oct', items: [
+                'bar : (Q4, 15)',
+                'scatter : 4'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'Nov', items: [
+                'bar : (Q4, 15)',
+                'scatter : 5'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 200 });
+            assertLabel({title: 'Dec', items: [
+                'bar : (Q4, 15)',
+                'scatter : 6'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: 'Jan', items: [
+                'bar : (Q1, 18)',
+                'scatter : 7'
+            ]});
+
+            _hover(gd, { xpx: 350, ypx: 200 });
+            assertLabel({title: 'Feb', items: [
+                'bar : (Q1, 18)',
+                'scatter : 8'
+            ]});
+
+            _hover(gd, { xpx: 400, ypx: 200 });
+            assertLabel({title: 'Mar', items: [
+                'bar : (Q1, 18)',
+                'scatter : 9'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
     it('should have the same traceorder as the legend', function(done) {
         var mock = require('@mocks/stacked_area.json');
         var mockCopy = Lib.extendDeep({}, mock);
@@ -5347,10 +5467,10 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, {curveNumber: 0});
 
-                assertLabel({title: 'Apr 13, 2014, 15:21:15', items: [
+                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
                     'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
-                    '1st Floor (N... : 74.8',
-                    '2nd Floor (R... : (Apr 13, 2014, 15:21:11, 73.625)',
+                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
+                    '2nd Floor (R... : 73.625',
                     'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
                 ]});
             })
