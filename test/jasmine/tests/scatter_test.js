@@ -796,7 +796,6 @@ describe('end-to-end scatter tests', function() {
                 var hasFills = name.indexOf('fill') !== -1;
                 var hasLines = name.indexOf('lines') !== -1;
                 var hasMarkers = name.indexOf('markers') !== -1;
-                var hasText = name.indexOf('text') !== -1;
                 var tracei, prefix;
 
             // construct the expected ordering based on case name
@@ -814,7 +813,6 @@ describe('end-to-end scatter tests', function() {
                     }
                     if(hasLines) selectorArray.push(prefix + '.js-line');
                     if(hasMarkers) selectorArray.push(prefix + '.point');
-                    if(hasText) selectorArray.push(prefix + '.textpoint');
                 }
 
             // ordering in the legend
@@ -823,7 +821,6 @@ describe('end-to-end scatter tests', function() {
                     if(hasFills) selectorArray.push(prefix + '.js-fill');
                     if(hasLines) selectorArray.push(prefix + '.js-line');
                     if(hasMarkers) selectorArray.push(prefix + '.scatterpts');
-                    if(hasText) selectorArray.push(prefix + '.pointtext');
                 }
 
                 var msg = i ? ('from ' + cases[indices[i - 1]].name + ' to ') : 'from default to ';
