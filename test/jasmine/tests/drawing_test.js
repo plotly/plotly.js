@@ -25,7 +25,7 @@ describe('Drawing', function() {
 
             Drawing.setClipUrl(this.g, 'id1', {_context: {}});
 
-            expect(this.g.attr('clip-path')).toEqual('url(\'#id1\')');
+            expect(this.g.attr('clip-path')).toEqual('url(#id1)');
         });
 
         it('should unset the clip-path if arg is falsy', function() {

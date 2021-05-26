@@ -545,8 +545,8 @@ describe('plot svg clip paths', function() {
             d3SelectAll('[clip-path]').each(function() {
                 var cp = d3Select(this).attr('clip-path');
 
-                expect(cp.substring(0, 6)).toEqual('url(\'#');
-                expect(cp.substring(cp.length - 2)).toEqual('\')');
+                expect(cp.substring(0, 5)).toEqual('url(#');
+                expect(cp.substring(cp.length - 1)).toEqual(')');
             });
         })
         .then(done, done.fail);

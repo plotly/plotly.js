@@ -524,14 +524,14 @@ describe('images log/linear axis changes', function() {
         // automatically when you change xref / yref, we leave it to the caller.
 
         // initial clip path should end in 'xy' to match xref/yref
-        expect(d3Select('image').attr('clip-path') || '').toMatch(/xy\'\)$/);
+        expect(d3Select('image').attr('clip-path') || '').toMatch(/xy\)$/);
 
         // linear to log
         Plotly.relayout(gd, {'images[0].yref': 'y2'})
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
 
-            expect(d3Select('image').attr('clip-path') || '').toMatch(/xy2\'\)$/);
+            expect(d3Select('image').attr('clip-path') || '').toMatch(/xy2\)$/);
 
             // log to paper
             return Plotly.relayout(gd, {'images[0].yref': 'paper'});
@@ -539,7 +539,7 @@ describe('images log/linear axis changes', function() {
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
 
-            expect(d3Select('image').attr('clip-path') || '').toMatch(/x\'\)$/);
+            expect(d3Select('image').attr('clip-path') || '').toMatch(/x\)$/);
 
             // change to full paper-referenced, to make sure the clip path disappears
             return Plotly.relayout(gd, {'images[0].xref': 'paper'});
@@ -553,7 +553,7 @@ describe('images log/linear axis changes', function() {
         .then(function() {
             expect(gd.layout.images[0].y).toBe(1);
 
-            expect(d3Select('image').attr('clip-path') || '').toMatch(/^[^x]+y2\'\)$/);
+            expect(d3Select('image').attr('clip-path') || '').toMatch(/^[^x]+y2\)$/);
 
             // log to linear
             return Plotly.relayout(gd, {'images[0].yref': 'y'});

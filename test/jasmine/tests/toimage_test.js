@@ -239,10 +239,10 @@ describe('Plotly.toImage', function() {
             var clipPath = gSubplot.getAttribute('clip-path');
             var len = clipPath.length;
 
-            var head = clipPath.substr(0, 5);
-            var tail = clipPath.substr(len - 8, len);
-            expect(head).toBe('url(\'', 'subplot clipPath head');
-            expect(tail).toBe('xyplot\')', 'subplot clipPath tail');
+            var head = clipPath.substr(0, 4);
+            var tail = clipPath.substr(len - 7, len);
+            expect(head).toBe('url(', 'subplot clipPath head');
+            expect(tail).toBe('xyplot)', 'subplot clipPath tail');
 
             var middle = clipPath.substr(4, 10);
             expect(middle.length).toBe(10, 'subplot clipPath uid length');
