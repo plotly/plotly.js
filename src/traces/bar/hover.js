@@ -35,17 +35,35 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
 
     var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
+    if(trace.orientation === 'h') {
+        posVal = yval;
+        sizeVal = xval;
+        posLetter = 'y';
+        sizeLetter = 'x';
+        dx = sizeFn;
+        dy = positionFn;
+    } else {
+        posVal = xval;
+        sizeVal = yval;
+        posLetter = 'x';
+        sizeLetter = 'y';
+        dy = sizeFn;
+        dx = positionFn;
+    }
+
+    var period = trace[posLetter + 'period'];
+
     function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        if(di.orig_p !== undefined) {
+        if(period) {
             return di.p + sgn * Math.abs(di.p - di.orig_p);
         }
         return di[posLetter] + sgn * di.w / 2;
     }
 
-    var minPos = isClosest || trace[posLetter + 'period'] ?
+    var minPos = isClosest || period ?
         thisBarMinPos :
         function(di) {
             /*
@@ -63,7 +81,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosest || trace[posLetter + 'period'] ?
+    var maxPos = isClosest || period ?
         thisBarMaxPos :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
@@ -119,22 +137,6 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
         // add a gradient so hovering near the end of a
         // bar makes it a little closer match
         return Fx.inbox(b - v, s - v, maxSpikeDistance + (s - v) / (s - b) - 1);
-    }
-
-    if(trace.orientation === 'h') {
-        posVal = yval;
-        sizeVal = xval;
-        posLetter = 'y';
-        sizeLetter = 'x';
-        dx = sizeFn;
-        dy = positionFn;
-    } else {
-        posVal = xval;
-        sizeVal = yval;
-        posLetter = 'x';
-        sizeLetter = 'y';
-        dy = sizeFn;
-        dx = positionFn;
     }
 
     var pa = pointData[posLetter + 'a'];
