@@ -651,19 +651,21 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     };
     sortHoverData();
 
-    // If in compare mode, select every point at position
     if(
         helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
+        // pick winning point
         var winningPoint = hoverData[0];
+        // discard other points
         hoverData = [winningPoint];
 
-        var customXVal = customVal('x', winningPoint, fullLayout);
-        var customYVal = customVal('y', winningPoint, fullLayout);
+        var winX = getCoord('x', winningPoint, fullLayout);
+        var winY = getCoord('y', winningPoint, fullLayout);
 
-        findHoverPoints(customXVal, customYVal);
+        // in compare mode, select every point at position
+        findHoverPoints(winX, winY);
 
         var finalPoints = [];
         var seen = {};
@@ -1908,7 +1910,7 @@ function orderRangePoints(hoverData, hovermode) {
     return first.concat(second).concat(last);
 }
 
-function customVal(axLetter, winningPoint, fullLayout) {
+function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
