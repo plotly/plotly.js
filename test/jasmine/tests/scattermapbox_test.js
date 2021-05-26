@@ -731,7 +731,7 @@ describe('scattermapbox hover', function() {
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
             1122.33, 1124.33, 105.41, 107.41
         ]);
-        expect(out.extraText).toEqual('(300°, 10°)<br>D');
+        expect(out.extraText).toEqual('(10°, 300°)<br>D');
         expect(out.color).toEqual('#1f77b4');
     });
 

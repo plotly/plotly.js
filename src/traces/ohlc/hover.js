@@ -23,7 +23,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     return hoverOnPoints(pointData, xval, yval, hovermode);
 }
 
-function getClosestPoint(pointData, xval, yval, hovermode) {
+function _getClosestPoint(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var xa = pointData.xa;
     var trace = cd[0].trace;
@@ -95,7 +95,7 @@ function hoverSplit(pointData, xval, yval, hovermode) {
     var t = cd[0].t;
     var closeBoxData = [];
 
-    var closestPoint = getClosestPoint(pointData, xval, yval, hovermode);
+    var closestPoint = _getClosestPoint(pointData, xval, yval, hovermode);
     // skip the rest (for this trace) if we didn't find a close point
     if(!closestPoint) return [];
 
@@ -150,7 +150,7 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
 
-    var closestPoint = getClosestPoint(pointData, xval, yval, hovermode);
+    var closestPoint = _getClosestPoint(pointData, xval, yval, hovermode);
     // skip the rest (for this trace) if we didn't find a close point
     if(!closestPoint) return [];
 

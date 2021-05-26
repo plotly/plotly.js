@@ -1345,7 +1345,7 @@ describe('waterfall hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Waterfall.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Waterfall.hoverPoints(pointData, xval, yval, hovermode, {});
         if(!pts) return false;
 
         var pt = pts[0];
