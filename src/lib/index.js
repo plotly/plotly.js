@@ -1280,17 +1280,16 @@ lib.bigFont = function(size) {
     return Math.round(1.2 * size);
 };
 
+var firefoxVersion = lib.getFirefoxVersion();
+// see https://bugzilla.mozilla.org/show_bug.cgi?id=1684973
+var isProblematicFirefox = firefoxVersion !== null && firefoxVersion < 86;
+
 /**
  * Return the mouse position from the last event registered by D3.
  * @returns An array with two numbers, representing the x and y coordinates of the mouse pointer
  *   at the event relative to the targeted node.
  */
 lib.getPositionFromD3Event = function() {
-    var firefoxVersion = lib.getFirefoxVersion();
-
-    // see https://bugzilla.mozilla.org/show_bug.cgi?id=1684973
-    var isProblematicFirefox = firefoxVersion && firefoxVersion < 86;
-
     if(isProblematicFirefox) {
         // layerX and layerY are non-standard, so we only fallback to them when we have to:
         return [
