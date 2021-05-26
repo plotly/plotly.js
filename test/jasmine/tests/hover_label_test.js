@@ -5487,10 +5487,10 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, {curveNumber: 0});
 
-                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
+                assertLabel({title: 'Apr 13, 2014, 15:21:15', items: [
                     'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
-                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
-                    '2nd Floor (R... : 73.625',
+                    '1st Floor (N... : 74.8',
+                    '2nd Floor (R... : (Apr 13, 2014, 15:21:11, 73.625)',
                     'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
                 ]});
             })

@@ -658,6 +658,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
         var winningPoint = hoverData[0];
+        hoverData = [winningPoint];
 
         var customXVal = customVal('x', winningPoint, fullLayout);
         var customYVal = customVal('y', winningPoint, fullLayout);
@@ -684,9 +685,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             } else {
                 var oldId = seen[key] - 1;
                 var oldHd = finalPoints[oldId];
-                if(
-                    Math.abs(winningPoint.distance - newHd.distance) <
-                    Math.abs(winningPoint.distance - oldHd.distance)
+                if(oldId > 0 &&
+                    Math.abs(newHd.distance) <
+                    Math.abs(oldHd.distance)
                 ) {
                     // replace with closest
                     finalPoints[oldId] = newHd;
