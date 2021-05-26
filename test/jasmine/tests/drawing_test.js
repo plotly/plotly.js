@@ -29,7 +29,7 @@ describe('Drawing', function() {
         });
 
         it('should unset the clip-path if arg is falsy', function() {
-            this.g.attr('clip-path', 'url(#id2)');
+            this.g.attr('clip-path', 'url(\'#id2\')');
 
             Drawing.setClipUrl(this.g, false);
 
@@ -48,7 +48,7 @@ describe('Drawing', function() {
             Drawing.setClipUrl(this.g, 'id3', {_context: {_baseUrl: href}});
 
             expect(this.g.attr('clip-path'))
-                .toEqual('url(' + href + '#id3)');
+                .toEqual('url(\'' + href + '#id3\')');
 
             base.remove();
         });
@@ -64,7 +64,7 @@ describe('Drawing', function() {
 
             Drawing.setClipUrl(this.g, 'id4', {_context: {_baseUrl: href2}});
 
-            var expected = 'url(' + href2 + '#id4)';
+            var expected = 'url(\'' + href2 + '#id4\')';
 
             expect(this.g.attr('clip-path')).toEqual(expected);
 
