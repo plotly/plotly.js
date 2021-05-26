@@ -48,9 +48,11 @@ function hoverPoints(pointData, xval, yval, hovermode) {
         for(i = 0; i < ids.length; i++) {
             ptx = x[ids[i]];
             dx = Math.abs(xa.c2p(ptx) - xpx);
+            if(trace._origX && trace._origX[i] !== undefined) dx += xa.c2p(trace._origX[i]) - xa.c2p(ptx);
             if(dx < minDist) {
                 minDist = dx;
                 dy = ya.c2p(y[ids[i]]) - ypx;
+                if(trace._origY && trace._origY[i] !== undefined) dy += ya.c2p(trace._origY[i]) - ya.c2p(pty);
                 dxy = Math.sqrt(dx * dx + dy * dy);
                 id = ids[i];
             }

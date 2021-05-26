@@ -5266,73 +5266,75 @@ describe('hovermode: (x|y)unified', function() {
         });
     });
 
-    it('period points alignments', function(done) {
-        Plotly.newPlot(gd, {
-            data: [
-                {
-                    name: 'bar',
-                    type: 'bar',
-                    x: ['2000-01', '2000-02'],
-                    y: [1, 2],
-                    xhoverfrmat: '%b',
-                    xperiod: 'M1'
-                },
-                {
-                    name: 'start',
-                    type: 'scatter',
-                    x: ['2000-01', '2000-02'],
-                    y: [1, 2],
-                    xhoverformat: '%b',
-                    xperiod: 'M1',
-                    xperiodalignment: 'start'
-                },
-                {
-                    name: 'end',
-                    type: 'scatter',
-                    x: ['2000-01', '2000-02'],
-                    y: [1, 2],
-                    xhoverformat: '%b',
-                    xperiod: 'M1',
-                    xperiodalignment: 'end'
-                },
-            ],
-            layout: {
-                showlegend: false,
-                width: 600,
-                height: 400,
-                hovermode: 'x unified'
-            }
-        })
-        .then(function(gd) {
-            _hover(gd, { xpx: 40, ypx: 200 });
-            assertLabel({title: 'Jan', items: [
-                'bar : (Jan 1, 2000, 1)',
-                'start : 1',
-                'end : 1'
-            ]});
+    ['scatter', 'scattergl'].forEach(function(scatterType) {
+        it(scatterType + ' period points alignments', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        name: 'bar',
+                        type: 'bar',
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverfrmat: '%b',
+                        xperiod: 'M1'
+                    },
+                    {
+                        name: 'start',
+                        type: scatterType,
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'start'
+                    },
+                    {
+                        name: 'end',
+                        type: 'scatter',
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                ],
+                layout: {
+                    showlegend: false,
+                    width: 600,
+                    height: 400,
+                    hovermode: 'x unified'
+                }
+            })
+            .then(function(gd) {
+                _hover(gd, { xpx: 40, ypx: 200 });
+                assertLabel({title: 'Jan', items: [
+                    'bar : (Jan 1, 2000, 1)',
+                    'start : 1',
+                    'end : 1'
+                ]});
 
-            _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: 'Jan', items: [
-                'bar : (Jan 1, 2000, 1)',
-                'start : 1',
-                'end : 1'
-            ]});
+                _hover(gd, { xpx: 100, ypx: 200 });
+                assertLabel({title: 'Jan', items: [
+                    'bar : (Jan 1, 2000, 1)',
+                    'start : 1',
+                    'end : 1'
+                ]});
 
-            _hover(gd, { xpx: 360, ypx: 200 });
-            assertLabel({title: 'Feb', items: [
-                'bar : (Feb 1, 2000, 2)',
-                'start : 2',
-                'end : 2'
-            ]});
+                _hover(gd, { xpx: 360, ypx: 200 });
+                assertLabel({title: 'Feb', items: [
+                    'bar : (Feb 1, 2000, 2)',
+                    'start : 2',
+                    'end : 2'
+                ]});
 
-            _hover(gd, { xpx: 400, ypx: 200 });
-            assertLabel({title: 'Feb', items: [
-                'bar : (Feb 1, 2000, 2)',
-                'start : 2',
-                'end : 2'
-            ]});
-        })
-        .then(done, done.fail);
+                _hover(gd, { xpx: 400, ypx: 200 });
+                assertLabel({title: 'Feb', items: [
+                    'bar : (Feb 1, 2000, 2)',
+                    'start : 2',
+                    'end : 2'
+                ]});
+            })
+            .then(done, done.fail);
+        });
     });
 
     it('period with hover distance -1 include closest not farthest', function(done) {
