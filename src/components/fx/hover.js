@@ -39,6 +39,13 @@ var YSHIFTY = Math.sin(YA_RADIANS);
 var HOVERARROWSIZE = constants.HOVERARROWSIZE;
 var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 
+var multipleHoverPoints = {
+    box: true,
+    ohlc: true,
+    violin: true,
+    candlestick: true
+};
+
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -659,7 +666,14 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // pick winning point
         var winningPoint = hoverData[0];
         // discard other points
-        hoverData = [winningPoint];
+        if(multipleHoverPoints[winningPoint.trace.type]) {
+            hoverData = hoverData.filter(function(d) {
+                return d.trace.index === winningPoint.trace.index;
+            });
+        } else {
+            hoverData = [winningPoint];
+        }
+        var initLen = hoverData.length;
 
         var winX = getCoord('x', winningPoint, fullLayout);
         var winY = getCoord('y', winningPoint, fullLayout);
@@ -671,15 +685,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var seen = {};
         var id = 0;
         var insert = function(newHd) {
-            var type = newHd.trace.type;
-            var multiplePoints = (
-                type === 'box' ||
-                type === 'violin' ||
-                type === 'ohlc' ||
-                type === 'candlestick'
-            );
-
-            var key = multiplePoints ? hoverDataKey(newHd) : newHd.trace.index;
+            var key = multipleHoverPoints[newHd.trace.type] ? hoverDataKey(newHd) : newHd.trace.index;
             if(!seen[key]) {
                 id++;
                 seen[key] = id;
@@ -697,10 +703,13 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
         };
 
-        // insert the winnig point first
-        insert(winningPoint);
+        var k;
+        // insert the winnig point(s) first
+        for(k = 0; k < initLen; k++) {
+            insert(hoverData[k]);
+        }
         // override from the end
-        for(var k = hoverData.length - 1; k > 0; k--) {
+        for(k = hoverData.length - 1; k > initLen - 1; k--) {
             insert(hoverData[k]);
         }
         hoverData = finalPoints;
