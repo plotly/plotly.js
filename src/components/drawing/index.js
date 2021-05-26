@@ -1270,7 +1270,7 @@ function getFullUrl(localId, gd) {
 
     var context = gd._context;
     var baseUrl = context._exportedPlot ? '' : (context._baseUrl || '');
-    return 'url(\'' + baseUrl + '#' + localId + '\')';
+    return 'url(' + baseUrl + '#' + localId + ')';
 }
 
 drawing.getTranslate = function(element) {

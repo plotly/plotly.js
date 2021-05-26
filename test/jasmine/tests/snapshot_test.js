@@ -251,7 +251,7 @@ describe('Plotly.Snapshot', function() {
 
         describe('should handle quoted style properties', function() {
             function checkURL(actual, msg) {
-                // which is enough tot check that toSVG did its job right
+                // which is enough to check that toSVG did its job right
                 expect((actual || '').substr(0, 6)).toBe('url(\"#', msg);
             }
 
