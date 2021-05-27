@@ -21,10 +21,6 @@ module.exports = {
             trace.mode.indexOf('text') !== -1;
     },
 
-    isText: function(trace) {
-        return trace.visible && trace.mode === 'text';
-    },
-
     isBubble: function(trace) {
         return Lib.isPlainObject(trace.marker) &&
             Lib.isArrayOrTypedArray(trace.marker.size);

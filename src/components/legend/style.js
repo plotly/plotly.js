@@ -95,13 +95,16 @@ module.exports = function style(s, gd, legend) {
     .each(styleOHLC);
 
     function styleLines(d) {
+        var styleGuide = getStyleGuide(d);
+        var showFill = styleGuide.showFill;
+        var showLine = styleGuide.showLine;
+        var showGradientLine = styleGuide.showGradientLine;
+        var showGradientFill = styleGuide.showGradientFill;
+        var anyFill = styleGuide.anyFill;
+        var anyLine = styleGuide.anyLine;
+
         var d0 = d[0];
         var trace = d0.trace;
-        var showFill = trace.visible && trace.fill && trace.fill !== 'none';
-        var showLine = subTypes.hasLines(trace);
-        var contours = trace.contours;
-        var showGradientLine = false;
-        var showGradientFill = false;
         var dMod, tMod;
 
         var cOpts = extractOpts(trace);
@@ -127,28 +130,10 @@ module.exports = function style(s, gd, legend) {
             }
         };
 
-        if(contours) {
-            var coloring = contours.coloring;
-
-            if(coloring === 'lines') {
-                showGradientLine = true;
-            } else {
-                showLine = coloring === 'none' || coloring === 'heatmap' || contours.showlines;
-            }
-
-            if(contours.type === 'constraint') {
-                showFill = contours._operation !== '=';
-            } else if(coloring === 'fill' || coloring === 'heatmap') {
-                showGradientFill = true;
-            }
-        }
-
         // with fill and no markers or text, move the line and fill up a bit
         // so it's more centered
-        var markersOrText = subTypes.hasMarkers(trace) || subTypes.isText(trace);
-        var anyFill = showFill || showGradientFill;
-        var anyLine = showLine || showGradientLine;
-        var pathStart = (markersOrText || !anyFill) ? 'M5,0' :
+
+        var pathStart = (subTypes.hasMarkers(trace) || !anyFill) ? 'M5,0' :
             // with a line leave it slightly below center, to leave room for the
             // line thickness and because the line is usually more prominent
             anyLine ? 'M5,-2' : 'M5,-3';
@@ -184,11 +169,15 @@ module.exports = function style(s, gd, legend) {
     }
 
     function stylePoints(d) {
+        var styleGuide = getStyleGuide(d);
+        var anyFill = styleGuide.anyFill;
+        var anyLine = styleGuide.anyLine;
+        var showLine = styleGuide.showLine;
+        var showMarker = styleGuide.showMarker;
+
         var d0 = d[0];
         var trace = d0.trace;
-        var showMarkers = subTypes.hasMarkers(trace);
-        var showText = subTypes.isText(trace);
-        var showLines = subTypes.hasLines(trace);
+        var showText = !showMarker && !anyLine && !anyFill && subTypes.hasText(trace);
         var dMod, tMod;
 
         // 'scatter3d' don't use gd.calcdata,
@@ -217,11 +206,11 @@ module.exports = function style(s, gd, legend) {
         }
 
         // constrain text, markers, etc so they'll fit on the legend
-        if(showMarkers || showText || showLines) {
+        if(showMarker || showText || showLine) {
             var dEdit = {};
             var tEdit = {};
 
-            if(showMarkers) {
+            if(showMarker) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
                 dEdit.mx = boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
@@ -238,7 +227,7 @@ module.exports = function style(s, gd, legend) {
                 tEdit.marker.size = ms;
             }
 
-            if(showLines) {
+            if(showLine) {
                 tEdit.line = {
                     width: boundVal('line.width', pickFirst, [0, 10], CST_LINE_WIDTH)
                 };
@@ -265,7 +254,7 @@ module.exports = function style(s, gd, legend) {
         var ptgroup = d3.select(this).select('g.legendpoints');
 
         var pts = ptgroup.selectAll('path.scatterpts')
-            .data(showMarkers ? dMod : []);
+            .data(showMarker ? dMod : []);
         // make sure marker is on the bottom, in case it enters after text
         pts.enter().insert('path', ':first-child')
             .classed('scatterpts', true)
@@ -275,7 +264,7 @@ module.exports = function style(s, gd, legend) {
 
         // 'mrc' is set in pointStyle and used in textPointStyle:
         // constrain it here
-        if(showMarkers) dMod[0].mrc = 3;
+        if(showMarker) dMod[0].mrc = 3;
 
         var txt = ptgroup.selectAll('g.pointtext')
             .data(showText ? dMod : []);
@@ -635,4 +624,41 @@ module.exports = function style(s, gd, legend) {
 function getGradientDirection(reversescale, isRadial) {
     var str = isRadial ? 'radial' : 'horizontal';
     return str + (reversescale ? '' : 'reversed');
+}
+
+function getStyleGuide(d) {
+    var trace = d[0].trace;
+    var contours = trace.contours;
+    var showLine = subTypes.hasLines(trace);
+    var showMarker = subTypes.hasMarkers(trace);
+
+    var showFill = trace.visible && trace.fill && trace.fill !== 'none';
+    var showGradientLine = false;
+    var showGradientFill = false;
+
+    if(contours) {
+        var coloring = contours.coloring;
+
+        if(coloring === 'lines') {
+            showGradientLine = true;
+        } else {
+            showLine = coloring === 'none' || coloring === 'heatmap' || contours.showlines;
+        }
+
+        if(contours.type === 'constraint') {
+            showFill = contours._operation !== '=';
+        } else if(coloring === 'fill' || coloring === 'heatmap') {
+            showGradientFill = true;
+        }
+    }
+
+    return {
+        showMarker: showMarker,
+        showLine: showLine,
+        showFill: showFill,
+        showGradientLine: showGradientLine,
+        showGradientFill: showGradientFill,
+        anyLine: showLine || showGradientLine,
+        anyFill: showFill || showGradientFill,
+    };
 }
