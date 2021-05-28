@@ -1,5 +1,5 @@
-Autoscale                                              // components/modebar/buttons.js:201
-Box Select                                             // components/modebar/buttons.js:113
+Autoscale                                              // components/modebar/buttons.js:208
+Box Select                                             // components/modebar/buttons.js:116
 Click to enter Colorscale title                        // plots/plots.js:321
 Click to enter Component A title                       // plots/ternary/ternary.js:372
 Click to enter Component B title                       // plots/ternary/ternary.js:382
@@ -8,39 +8,39 @@ Click to enter Plot title                              // plots/plots.js:318
 Click to enter X axis title                            // plots/plots.js:319
 Click to enter Y axis title                            // plots/plots.js:320
 Click to enter radial axis title                       // plots/polar/polar.js:488
-Compare data on hover                                  // components/modebar/buttons.js:229
+Compare data on hover                                  // components/modebar/buttons.js:239
 Double-click on legend to isolate one trace            // components/legend/handle_click.js:19
 Double-click to zoom back out                          // plots/cartesian/dragbox.js:1165
 Download plot                                          // components/modebar/buttons.js:45
 Download plot as a png                                 // components/modebar/buttons.js:44
-Draw circle                                            // components/modebar/buttons.js:167
-Draw closed freeform                                   // components/modebar/buttons.js:131
-Draw line                                              // components/modebar/buttons.js:149
-Draw open freeform                                     // components/modebar/buttons.js:140
-Draw rectangle                                         // components/modebar/buttons.js:158
+Draw circle                                            // components/modebar/buttons.js:171
+Draw closed freeform                                   // components/modebar/buttons.js:135
+Draw line                                              // components/modebar/buttons.js:153
+Draw open freeform                                     // components/modebar/buttons.js:144
+Draw rectangle                                         // components/modebar/buttons.js:162
 Edit in Chart Studio                                   // components/modebar/buttons.js:77
-Erase active shape                                     // components/modebar/buttons.js:176
+Erase active shape                                     // components/modebar/buttons.js:180
 IE only supports svg.  Changing format to svg.         // components/modebar/buttons.js:55
-Lasso Select                                           // components/modebar/buttons.js:122
-Orbital rotation                                       // components/modebar/buttons.js:330
-Pan                                                    // components/modebar/buttons.js:104
+Lasso Select                                           // components/modebar/buttons.js:126
+Orbital rotation                                       // components/modebar/buttons.js:342
+Pan                                                    // components/modebar/buttons.js:106
 Produced with Plotly                                   // components/modebar/modebar.js:295
-Reset                                                  // components/modebar/buttons.js:497
-Reset axes                                             // components/modebar/buttons.js:210
-Reset camera to default                                // components/modebar/buttons.js:368
-Reset camera to last save                              // components/modebar/buttons.js:376
-Reset view                                             // components/modebar/buttons.js:578
-Reset views                                            // components/modebar/buttons.js:616
-Show closest data on hover                             // components/modebar/buttons.js:219
+Reset                                                  // components/modebar/buttons.js:515
+Reset axes                                             // components/modebar/buttons.js:218
+Reset camera to default                                // components/modebar/buttons.js:381
+Reset camera to last save                              // components/modebar/buttons.js:390
+Reset view                                             // components/modebar/buttons.js:599
+Reset views                                            // components/modebar/buttons.js:637
+Show closest data on hover                             // components/modebar/buttons.js:228
 Snapshot succeeded                                     // components/modebar/buttons.js:67
 Sorry, there was a problem downloading your snapshot!  // components/modebar/buttons.js:70
 Taking snapshot - this may take a few seconds          // components/modebar/buttons.js:52
-Toggle Spike Lines                                     // components/modebar/buttons.js:635
-Toggle show closest data on hover                      // components/modebar/buttons.js:425
-Turntable rotation                                     // components/modebar/buttons.js:339
-Zoom                                                   // components/modebar/buttons.js:95
-Zoom in                                                // components/modebar/buttons.js:183
-Zoom out                                               // components/modebar/buttons.js:192
+Toggle Spike Lines                                     // components/modebar/buttons.js:656
+Toggle show closest data on hover                      // components/modebar/buttons.js:440
+Turntable rotation                                     // components/modebar/buttons.js:351
+Zoom                                                   // components/modebar/buttons.js:96
+Zoom in                                                // components/modebar/buttons.js:188
+Zoom out                                               // components/modebar/buttons.js:198
 close:                                                 // traces/ohlc/calc.js:108
 concentration:                                         // traces/sankey/plot.js:159
 high:                                                  // traces/ohlc/calc.js:106
