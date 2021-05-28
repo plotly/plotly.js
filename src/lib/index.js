@@ -1043,21 +1043,33 @@ function templateFormatString(string, labels, d3locale) {
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
-        var obj, value, i;
-        for(i = 3; i < args.length; i++) {
-            obj = args[i];
-            if(!obj) continue;
-            if(obj.hasOwnProperty(key)) {
-                value = obj[key];
-                break;
-            }
 
-            if(!SIMPLE_PROPERTY_REGEX.test(key)) {
-                value = getterCache[key] || lib.nestedProperty(obj, key).get();
-                if(value) getterCache[key] = value;
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
+        var isOther =
+            key === 'xother' ||
+            key === 'yother';
+
+        var value;
+        if(isOther) {
+            value = labels[key];
+            if(value === undefined) return '';
+        } else {
+            var obj, i;
+            for(i = 3; i < args.length; i++) {
+                obj = args[i];
+                if(!obj) continue;
+                if(obj.hasOwnProperty(key)) {
+                    value = obj[key];
+                    break;
+                }
+
+                if(!SIMPLE_PROPERTY_REGEX.test(key)) {
+                    value = lib.nestedProperty(obj, key).get();
+                    value = getterCache[key] || lib.nestedProperty(obj, key).get();
+                    if(value) getterCache[key] = value;
+                }
+                if(value !== undefined) break;
             }
-            if(value !== undefined) break;
         }
 
         if(value === undefined && opts) {
@@ -1087,8 +1099,14 @@ function templateFormatString(string, labels, d3locale) {
                 value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''), false, fmt);
             }
         } else {
-            if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
+            var keyLabel = key + 'Label';
+            if(labels.hasOwnProperty(keyLabel)) value = labels[keyLabel];
         }
+
+        if(isOther) {
+            value = '(' + value + ')';
+        }
+
         return value;
     });
 }
