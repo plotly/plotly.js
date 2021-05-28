@@ -39,6 +39,13 @@ var YSHIFTY = Math.sin(YA_RADIANS);
 var HOVERARROWSIZE = constants.HOVERARROWSIZE;
 var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 
+var multipleHoverPoints = {
+    box: true,
+    ohlc: true,
+    violin: true,
+    candlestick: true
+};
+
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -651,39 +658,58 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     };
     sortHoverData();
 
-    // If in compare mode, select every point at position
     if(
         helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
+        // pick winning point
         var winningPoint = hoverData[0];
+        // discard other points
+        if(multipleHoverPoints[winningPoint.trace.type]) {
+            hoverData = hoverData.filter(function(d) {
+                return d.trace.index === winningPoint.trace.index;
+            });
+        } else {
+            hoverData = [winningPoint];
+        }
+        var initLen = hoverData.length;
 
-        var customXVal = customVal('x', winningPoint, fullLayout);
-        var customYVal = customVal('y', winningPoint, fullLayout);
+        var winX = getCoord('x', winningPoint, fullLayout);
+        var winY = getCoord('y', winningPoint, fullLayout);
 
-        findHoverPoints(customXVal, customYVal);
+        // in compare mode, select every point at position
+        findHoverPoints(winX, winY);
 
         var finalPoints = [];
         var seen = {};
-        var insert = function(hd) {
-            var type = hd.trace.type;
-            var key = (
-                type === 'box' ||
-                type === 'violin' ||
-                type === 'ohlc' ||
-                type === 'candlestick'
-            ) ? hoverDataKey(hd) : hd.trace.index;
+        var id = 0;
+        var insert = function(newHd) {
+            var key = multipleHoverPoints[newHd.trace.type] ? hoverDataKey(newHd) : newHd.trace.index;
             if(!seen[key]) {
-                seen[key] = true;
-                finalPoints.push(hd);
+                id++;
+                seen[key] = id;
+                finalPoints.push(newHd);
+            } else {
+                var oldId = seen[key] - 1;
+                var oldHd = finalPoints[oldId];
+                if(oldId > 0 &&
+                    Math.abs(newHd.distance) <
+                    Math.abs(oldHd.distance)
+                ) {
+                    // replace with closest
+                    finalPoints[oldId] = newHd;
+                }
             }
         };
 
-        // insert the winnig point first
-        insert(winningPoint);
+        var k;
+        // insert the winnig point(s) first
+        for(k = 0; k < initLen; k++) {
+            insert(hoverData[k]);
+        }
         // override from the end
-        for(var k = hoverData.length - 1; k > 0; k--) {
+        for(k = hoverData.length - 1; k > initLen - 1; k--) {
             insert(hoverData[k]);
         }
         hoverData = finalPoints;
@@ -1045,8 +1071,9 @@ function createHoverText(hoverData, opts, gd) {
         legendDraw(gd, mockLegend);
 
         // Position the hover
-        var ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
-        var lx = Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
+        var winningPoint = hoverData[0];
+        var ly = (winningPoint.y0 + winningPoint.y1) / 2;
+        var lx = (winningPoint.x0 + winningPoint.x1) / 2;
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
         lx += xa._offset;
@@ -1892,7 +1919,7 @@ function orderRangePoints(hoverData, hovermode) {
     return first.concat(second).concat(last);
 }
 
-function customVal(axLetter, winningPoint, fullLayout) {
+function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
