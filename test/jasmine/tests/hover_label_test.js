@@ -4834,14 +4834,14 @@ describe('hovermode: (x|y)unified', function() {
     it('should format differing position using *xother* `hovertemplate` and in respect to `xhoverformat`', function(done) {
         Plotly.newPlot(gd, [{
             type: 'bar',
-            hovertemplate: '%{y:.1f} %{xother:.2f}',
+            hovertemplate: '%{y:.1f}%{xother:.2f}',
             x: [0, 1.001],
             y: [1.001, 2.001]
         }, {
             x: [0, 0.749],
             y: [1.999, 0.999]
         }, {
-            hovertemplate: '%{y:.1f} %{xother}',
+            hovertemplate: '%{y:.1f}%{xother}',
             xhoverformat: '.1f',
             x: [0, 1.251],
             y: [2.001, 3.001]
@@ -4861,25 +4861,25 @@ describe('hovermode: (x|y)unified', function() {
         .then(function() {
             _hover(gd, { xpx: 100, ypx: 200 });
             assertLabel({title: '0', items: [
-                'trace 0 : 1.0 ',
+                'trace 0 : 1.0',
                 'trace 1 : 1.999',
-                'trace 2 : 2.0 (0.0)'
+                'trace 2 : 2.0 (0.0) '
             ]});
         })
         .then(function() {
             _hover(gd, { xpx: 250, ypx: 200 });
             assertLabel({title: '0.749', items: [
-                'trace 0 : 2.0 (1.00)',
+                'trace 0 : 2.0 (1.00) ',
                 'trace 1 : 0.999',
-                'trace 2 : 3.0 (1.3)'
+                'trace 2 : 3.0 (1.3) '
             ]});
         })
         .then(function() {
             _hover(gd, { xpx: 350, ypx: 200 });
             assertLabel({title: '1.3', items: [
-                'trace 0 : 2.0 (1.00)',
+                'trace 0 : 2.0 (1.00) ',
                 'trace 1 : (0.749, 0.999)',
-                'trace 2 : 3.0 '
+                'trace 2 : 3.0'
             ]});
         })
         .then(done, done.fail);

@@ -1104,7 +1104,7 @@ function templateFormatString(string, labels, d3locale) {
         }
 
         if(isOther) {
-            value = '(' + value + ')';
+            value = ' (' + value + ') ';
         }
 
         return value;
