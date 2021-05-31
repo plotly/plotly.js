@@ -2,9 +2,9 @@
 
 var requiredVersion = '1.10.1';
 
-var OSM = '<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors';
-var carto = '<a href="https://carto.com/" target="_blank">© CARTO</a>';
-var stamen = '<a href="https://stamen.com" target="_blank">© Stamen Design LLC</a>';
+var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+var carto = '© <a target="_blank" href="https://carto.com/">CARTO</a>';
+var stamen = '© <a target="_blank" href="https://stamen.com">Stamen Design LLC</a>';
 
 var stylesNonMapbox = {
     'open-street-map': {
