@@ -3,6 +3,7 @@
 var requiredVersion = '1.10.1';
 
 var OSM = '<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors';
+var carto = '<a href="https://carto.com/" target="_blank">© CARTO</a>';
 var stamen = 'Map tiles by <a href="https://stamen.com">Stamen Design</a>, under <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>';
 
 var stylesNonMapbox = {
@@ -48,7 +49,7 @@ var stylesNonMapbox = {
                 type: 'raster',
                 attribution: [
                     OSM,
-                    '<a href="https://carto.com/" target="_blank">© CARTO</a>'
+                    carto
                 ].join(', '),
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
                 tileSize: 256
@@ -70,7 +71,7 @@ var stylesNonMapbox = {
                 type: 'raster',
                 attribution: [
                     OSM,
-                    '<a href="https://carto.com/" target="_blank">© CARTO</a>'
+                    carto
                 ].join(', '),
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
                 tileSize: 256
