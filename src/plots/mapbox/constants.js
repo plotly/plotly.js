@@ -9,7 +9,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-osm-tiles': {
                 type: 'raster',
-                attribution: '<a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>',
+                attribution: '<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors',
                 tiles: [
                     'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -81,7 +81,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-terrain': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="https://www.openstreetmap.org/copyright">ODbL</a>.',
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -100,7 +100,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-toner': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="https://www.openstreetmap.org/copyright">ODbL</a>.',
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
