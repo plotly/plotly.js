@@ -2,6 +2,8 @@
 
 var requiredVersion = '1.10.1';
 
+var OSM = '<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors';
+
 var stylesNonMapbox = {
     'open-street-map': {
         id: 'osm',
@@ -9,7 +11,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-osm-tiles': {
                 type: 'raster',
-                attribution: '<a href="https://www.openstreetmap.org/copyright" target="_blank">© OpenStreetMap</a> contributors',
+                attribution: OSM,
                 tiles: [
                     'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -43,7 +45,10 @@ var stylesNonMapbox = {
         sources: {
             'plotly-carto-positron': {
                 type: 'raster',
-                attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
+                attribution: [
+                    OSM,
+                    '<a href="https://carto.com/" target="_blank">© CARTO</a>'
+                ].join(', '),
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -62,7 +67,10 @@ var stylesNonMapbox = {
         sources: {
             'plotly-carto-darkmatter': {
                 type: 'raster',
-                attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
+                attribution: [
+                    OSM,
+                    '<a href="https://carto.com/" target="_blank">© CARTO</a>'
+                ].join(', '),
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -81,7 +89,10 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-terrain': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="https://www.openstreetmap.org/copyright">ODbL</a>.',
+                attribution: [
+                    OSM,
+                    'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>'
+                ].join(', '),
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -100,7 +111,10 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-toner': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="https://www.openstreetmap.org/copyright">ODbL</a>.',
+                attribution: [
+                    OSM,
+                    'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>'
+                ].join(', '),
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -119,7 +133,10 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-watercolor': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
+                attribution: [
+                    OSM,
+                    'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>'
+                ].join(', '),
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
