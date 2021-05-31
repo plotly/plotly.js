@@ -1471,12 +1471,26 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     describe('attributions', function() {
+        function assertLinks(s, exp) {
+            var elements = s[0][0].getElementsByTagName('a');
+            expect(elements.length).toEqual(exp.length);
+            for(var i = 0; i < elements.length; i++) {
+                var e = elements[i];
+                expect(e.href).toEqual(exp[i]);
+                expect(e.target).toEqual('_blank');
+            }
+        }
+
         it('@gl should be displayed for style "Carto"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'carto-darkmatter'}})
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© Carto © OpenStreetMap');
+                assertLinks(s, [
+                    'https://carto.com/',
+                    'https://www.openstreetmap.org/copyright'
+                ]);
             })
             .then(done, done.fail);
         });
@@ -1487,6 +1501,10 @@ describe('mapbox plots', function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© Stamen Design LLC © OpenStreetMap');
+                assertLinks(s, [
+                    'https://stamen.com/',
+                    'https://www.openstreetmap.org/copyright'
+                ]);
             })
             .then(done, done.fail);
         });
@@ -1497,6 +1515,9 @@ describe('mapbox plots', function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© OpenStreetMap');
+                assertLinks(s, [
+                    'https://www.openstreetmap.org/copyright'
+                ]);
             })
             .then(done, done.fail);
         });
@@ -1507,6 +1528,11 @@ describe('mapbox plots', function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© Mapbox © OpenStreetMap Improve this map');
+                assertLinks(s, [
+                    'https://www.mapbox.com/about/maps/',
+                    'http://www.openstreetmap.org/about/',
+                    'https://www.mapbox.com/map-feedback/' // Improve this map
+                ]);
             })
             .then(done, done.fail);
         });
