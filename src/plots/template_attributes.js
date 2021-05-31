@@ -9,7 +9,11 @@ function templateFormatStringDescription(opts) {
 
     return [
         'Variables are inserted using %{variable},',
-        'for example "y: %{y}".' + (supportOther ? ' as well as %{xother} when positions do not match' : ''),
+        'for example "y: %{y}"' + (
+            supportOther ?
+                ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}, when positions do not match. Please note that underscore could be used before or after *(x|y)other* to provide optional space.' :
+                '.'
+        ),
         'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
         FORMAT_LINK,
         'for details on the formatting syntax.',

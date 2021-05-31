@@ -1043,14 +1043,31 @@ function templateFormatString(string, labels, d3locale) {
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-
-    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, rawKey, format) {
         var isOther =
-            key === 'xother' ||
-            key === 'yother';
+            rawKey === 'xother' ||
+            rawKey === 'yother';
+
+        var isSpaceOther =
+            rawKey === '_xother' ||
+            rawKey === '_yother';
+
+        var isSpaceOtherSpace =
+            rawKey === '_xother_' ||
+            rawKey === '_yother_';
+
+        var isOtherSpace =
+            rawKey === 'xother_' ||
+            rawKey === 'yother_';
+
+        var hasOther = isOther || isSpaceOther || isOtherSpace || isSpaceOtherSpace;
+
+        var key = rawKey;
+        if(isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
+        if(isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
 
         var value;
-        if(isOther) {
+        if(hasOther) {
             value = labels[key];
             if(value === undefined) return '';
         } else {
@@ -1103,8 +1120,10 @@ function templateFormatString(string, labels, d3locale) {
             if(labels.hasOwnProperty(keyLabel)) value = labels[keyLabel];
         }
 
-        if(isOther) {
-            value = ' (' + value + ') ';
+        if(hasOther) {
+            value = '(' + value + ')';
+            if(isSpaceOther || isSpaceOtherSpace) value = ' ' + value;
+            if(isOtherSpace || isSpaceOtherSpace) value = value + ' ';
         }
 
         return value;

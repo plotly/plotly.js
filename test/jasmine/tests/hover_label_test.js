@@ -4834,17 +4834,27 @@ describe('hovermode: (x|y)unified', function() {
     it('should format differing position using *xother* `hovertemplate` and in respect to `xhoverformat`', function(done) {
         Plotly.newPlot(gd, [{
             type: 'bar',
-            hovertemplate: '%{y:.1f}%{xother:.2f}',
+            hovertemplate: '%{y}%{_xother:.2f}',
             x: [0, 1.001],
-            y: [1.001, 2.001]
+            y: [2, 1]
         }, {
             x: [0, 0.749],
-            y: [1.999, 0.999]
+            y: [1, 2]
         }, {
-            hovertemplate: '%{y:.1f}%{xother}',
+            hovertemplate: '(x)y:%{xother}%{y}',
             xhoverformat: '.1f',
             x: [0, 1.251],
-            y: [2.001, 3.001]
+            y: [2, 3]
+        }, {
+            hovertemplate: '(x)y:%{xother_}%{y}',
+            xhoverformat: '.2f',
+            x: [0, 1.351],
+            y: [3, 4]
+        }, {
+            hovertemplate: '(x)y:%{_xother_}%{y}',
+            xhoverformat: '.3f',
+            x: [0, 1.451],
+            y: [4, 5]
         }], {
             hoverdistance: -1,
             hovermode: 'x unified',
@@ -4860,26 +4870,32 @@ describe('hovermode: (x|y)unified', function() {
         })
         .then(function() {
             _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: '0', items: [
-                'trace 0 : 1.0',
-                'trace 1 : 1.999',
-                'trace 2 : 2.0 (0.0) '
+            assertLabel({title: '0.000', items: [
+                'trace 0 : 2 (0.00)',
+                'trace 1 : (0, 1)',
+                'trace 2 : (x)y:(0.0)2',
+                'trace 3 : (x)y:(0.00) 3',
+                'trace 4 : (x)y:4',
             ]});
         })
         .then(function() {
             _hover(gd, { xpx: 250, ypx: 200 });
             assertLabel({title: '0.749', items: [
-                'trace 0 : 2.0 (1.00) ',
-                'trace 1 : 0.999',
-                'trace 2 : 3.0 (1.3) '
+                'trace 0 : 1 (1.00)',
+                'trace 1 : 2',
+                'trace 2 : (x)y:(1.3)3',
+                'trace 3 : (x)y:(1.35) 4',
+                'trace 4 : (x)y: (1.451) 5',
             ]});
         })
         .then(function() {
             _hover(gd, { xpx: 350, ypx: 200 });
-            assertLabel({title: '1.3', items: [
-                'trace 0 : 2.0 (1.00) ',
-                'trace 1 : (0.749, 0.999)',
-                'trace 2 : 3.0'
+            assertLabel({title: '1.35', items: [
+                'trace 0 : 1 (1.00)',
+                'trace 1 : (0.749, 2)',
+                'trace 2 : (x)y:(1.3)3',
+                'trace 3 : (x)y:4',
+                'trace 4 : (x)y: (1.451) 5',
             ]});
         })
         .then(done, done.fail);
