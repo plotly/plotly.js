@@ -1471,6 +1471,26 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     describe('attributions', function() {
+        it('@gl should be displayed for style "Carto"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'carto-darkmatter'}})
+            .then(function() {
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('© Carto © OpenStreetMap');
+            })
+            .then(done, done.fail);
+        });
+
+        it('@gl should be displayed for style "Stamen"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-terrain'}})
+            .then(function() {
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('© Stamen Design LLC © OpenStreetMap');
+            })
+            .then(done, done.fail);
+        });
+
         it('@gl should be displayed for style "open-street-map"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'open-street-map'}})
             .then(function() {
