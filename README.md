@@ -62,7 +62,7 @@ and use the `Plotly` object in the window scope.
 
 Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>
 
-### Download the latest release or a release candidates (rc)
+### Download the latest release or a release candidate (rc)
 
 [Latest and rc releases on GitHub](https://github.com/plotly/plotly.js/releases/)
 
