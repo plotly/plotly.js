@@ -58,7 +58,7 @@ var Plotly = require('plotly.js-dist')
 
 and use the `Plotly` object in the window scope.
 
-##### Please note that after v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN and stay at last v1 patch i.e. v1.58.4. Therefore, in order to upgrade to plotly.js v2 and higher, you may consider switching to a specific plotly.js version.
+##### Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.4. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
 
 Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>
 
