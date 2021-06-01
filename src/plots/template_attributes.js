@@ -11,7 +11,7 @@ function templateFormatStringDescription(opts) {
         'Variables are inserted using %{variable},',
         'for example "y: %{y}"' + (
             supportOther ?
-                ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}, when positions do not match. Please note that underscore could be used before or after *(x|y)other* to provide optional space.' :
+                ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.' :
                 '.'
         ),
         'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
