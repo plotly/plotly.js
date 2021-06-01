@@ -70,36 +70,53 @@ and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly
 
 #### Read the [Getting started page](https://plotly.com/javascript/getting-started/) for more examples.
 
-## Modules
+## Partial bundles
 
-Starting in `v1.15.0`, plotly.js ships with several _partial_ bundles (more info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md#partial-bundles)).
+There are two kinds of plotly.js partial bundles:
+1. The official partial bundles that are distributed to `npm` and `CDN` covered by [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+2. The custom ones that could be created by the user, if none of the distributed packages meet your needs.
 
-Starting in `v1.39.0`, plotly.js publishes _distributed_ npm packages with no dependencies. For example, run `npm install plotly.js-geo-dist` and add `import Plotly from 'plotly.js-geo-dist';` to your code to start using the plotly.js geo package.
+Use `traces` option to create a custom bundle of desired traces.
+```
+npm run partial-bundle -- --traces scatter,scattergl,scatter3d
+```
+Please note that `scatter` trace is currently added to the bundle by default.
+[Whereas this behaviour may be subject to change in future](https://github.com/plotly/plotly.js/pull/5535), we recommend that you explicitly include `scatter` trace in your scripts in case `scatter` trace is needed in your bundle.
 
-If none of the distributed npm packages meet your needs, and you would like to manually pick which plotly.js modules to include, you'll first need to run `npm install plotly.js` and then create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*. For example, in CommonJS:
-
-```javascript
-// in custom-plotly.js
-var Plotly = require('plotly.js/lib/core');
-
-// Load in the trace types for pie, and choropleth
-Plotly.register([
-    require('plotly.js/lib/pie'),
-    require('plotly.js/lib/choropleth')
-]);
-
-module.exports = Plotly;
+If not specified otherwise all transforms are included in the bundle.
+Use `transforms` option to specify which transforms should be included.
+```
+npm run partial-bundle -- --transforms sort,filter
 ```
 
-Then elsewhere in your code:
-
-```javascript
-var Plotly = require('./path/to/custom-plotly');
+Use `transforms none` option to exclude all transforms.
+```
+npm run partial-bundle -- --transforms none
 ```
 
-Alternatively you could browserify a custom bundle of desired trace modules e.g. `pie` and `choropleth` using
-`npm run partial-bundle pie choropleth --name=custom`
+Use `out` option to change default `custom` bundle name.
+```
+npm run partial-bundle -- --out myBundleName
+```
 
+Use `unminified` option to create an `unminified` bundle.
+```
+npm run partial-bundle -- --unminified
+```
+
+### Example illustrating use of different options together
+To create `unminified` custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces without any transforms:
+```
+npm run partial-bundle -- \
+    --unminified \
+    --out myScatters \
+    --traces scatter,scattergl,scatter3d \
+    --transforms none
+```
+Or simply on one line:
+```
+npm run partial-bundle -- --unminified --out myScatters --traces scatter,scattergl,scatter3d --transforms none
+```
 
 ## Building plotly.js
 
