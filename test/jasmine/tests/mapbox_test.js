@@ -1486,7 +1486,7 @@ describe('mapbox plots', function() {
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© Carto © OpenStreetMap');
+                expect(s.text()).toEqual('© Carto © OpenStreetMap contributors');
                 assertLinks(s, [
                     'https://carto.com/',
                     'https://www.openstreetmap.org/copyright'
@@ -1495,15 +1495,35 @@ describe('mapbox plots', function() {
             .then(done, done.fail);
         });
 
-        it('@gl should be displayed for style "Stamen"', function(done) {
-            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-terrain'}})
+        ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
+            it('@gl should be displayed for style "' + style + '"', function(done) {
+                Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: style}})
+                .then(function() {
+                    var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                    expect(s.size()).toBe(1);
+                    expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under ODbL');
+                    assertLinks(s, [
+                        'https://stamen.com/',
+                        'https://creativecommons.org/licenses/by/3.0',
+                        'https://openstreetmap.org/',
+                        'https://www.openstreetmap.org/copyright'
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+        });
+
+        it('@gl should be displayed for style "stamen-watercolor"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-watercolor'}})
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© Stamen Design LLC © OpenStreetMap');
+                expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under CC BY SA');
                 assertLinks(s, [
                     'https://stamen.com/',
-                    'https://www.openstreetmap.org/copyright'
+                    'https://creativecommons.org/licenses/by/3.0',
+                    'https://openstreetmap.org/',
+                    'https://creativecommons.org/licenses/by-sa/3.0'
                 ]);
             })
             .then(done, done.fail);
@@ -1514,7 +1534,7 @@ describe('mapbox plots', function() {
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© OpenStreetMap');
+                expect(s.text()).toEqual('© OpenStreetMap contributors');
                 assertLinks(s, [
                     'https://www.openstreetmap.org/copyright'
                 ]);

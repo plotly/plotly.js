@@ -2,9 +2,27 @@
 
 var requiredVersion = '1.10.1';
 
-var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>';
-var Carto = '© <a target="_blank" href="https://carto.com/">Carto</a>';
-var Stamen = '© <a target="_blank" href="https://stamen.com">Stamen Design LLC</a>';
+var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+var carto = [
+    '© <a target="_blank" href="https://carto.com/">Carto</a>',
+    OSM
+].join(' ');
+
+var stamenTerrainOrToner = [
+    'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>',
+    'under <a target="_blank" href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>',
+    '|',
+    'Data by <a target="_blank" href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    'under <a target="_blank" href="https://www.openstreetmap.org/copyright">ODbL</a>'
+].join(' ');
+
+var stamenWaterColor = [
+    'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>',
+    'under <a target="_blank" href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>',
+    '|',
+    'Data by <a target="_blank" href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    'under <a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'
+].join(' ');
 
 var stylesNonMapbox = {
     'open-street-map': {
@@ -47,7 +65,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-carto-positron': {
                 type: 'raster',
-                attribution: [Carto, OSM].join(' '),
+                attribution: carto,
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -66,7 +84,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-carto-darkmatter': {
                 type: 'raster',
-                attribution: [Carto, OSM].join(' '),
+                attribution: carto,
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -85,7 +103,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-terrain': {
                 type: 'raster',
-                attribution: [Stamen, OSM].join(' '),
+                attribution: stamenTerrainOrToner,
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -104,7 +122,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-toner': {
                 type: 'raster',
-                attribution: [Stamen, OSM].join(' '),
+                attribution: stamenTerrainOrToner,
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -123,7 +141,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-watercolor': {
                 type: 'raster',
-                attribution: [Stamen, OSM].join(' '),
+                attribution: stamenWaterColor,
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
