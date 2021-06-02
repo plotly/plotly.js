@@ -35,15 +35,15 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 ### Install with npm
 
 ```sh
-npm install plotly.js-dist
+npm install plotly.js-dist-min
 ```
 
 and import plotly.js as
 
 ```js
-import Plotly from 'plotly.js-dist'
+import Plotly from 'plotly.js-dist-min'
 // Or using require,
-var Plotly = require('plotly.js-dist')
+var Plotly = require('plotly.js-dist-min')
 ```
 
 ### Use the plotly.js CDN hosted by Fastly
