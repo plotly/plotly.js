@@ -2,6 +2,28 @@
 
 var requiredVersion = '1.10.1';
 
+var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
+var carto = [
+    '© <a target="_blank" href="https://carto.com/">Carto</a>',
+    OSM
+].join(' ');
+
+var stamenTerrainOrToner = [
+    'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>',
+    'under <a target="_blank" href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>',
+    '|',
+    'Data by <a target="_blank" href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    'under <a target="_blank" href="https://www.openstreetmap.org/copyright">ODbL</a>'
+].join(' ');
+
+var stamenWaterColor = [
+    'Map tiles by <a target="_blank" href="https://stamen.com">Stamen Design</a>',
+    'under <a target="_blank" href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>',
+    '|',
+    'Data by <a target="_blank" href="https://openstreetmap.org">OpenStreetMap</a> contributors',
+    'under <a target="_blank" href="https://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>'
+].join(' ');
+
 var stylesNonMapbox = {
     'open-street-map': {
         id: 'osm',
@@ -9,7 +31,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-osm-tiles': {
                 type: 'raster',
-                attribution: '<a href="http://www.openstreetmap.org/about/" target="_blank">© OpenStreetMap</a>',
+                attribution: OSM,
                 tiles: [
                     'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
                     'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -43,7 +65,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-carto-positron': {
                 type: 'raster',
-                attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
+                attribution: carto,
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/light_all/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -62,7 +84,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-carto-darkmatter': {
                 type: 'raster',
-                attribution: '<a href="https://carto.com/" target="_blank">© CARTO</a>',
+                attribution: carto,
                 tiles: ['https://cartodb-basemaps-c.global.ssl.fastly.net/dark_all/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -81,7 +103,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-terrain': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                attribution: stamenTerrainOrToner,
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -100,7 +122,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-toner': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+                attribution: stamenTerrainOrToner,
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/toner/{z}/{x}/{y}.png'],
                 tileSize: 256
             }
@@ -119,7 +141,7 @@ var stylesNonMapbox = {
         sources: {
             'plotly-stamen-watercolor': {
                 type: 'raster',
-                attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> | Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://creativecommons.org/licenses/by-sa/3.0">CC BY SA</a>.',
+                attribution: stamenWaterColor,
                 tiles: ['https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.png'],
                 tileSize: 256
             }

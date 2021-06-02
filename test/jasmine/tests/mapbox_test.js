@@ -1471,12 +1471,73 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     describe('attributions', function() {
+        function assertLinks(s, exp) {
+            var elements = s[0][0].getElementsByTagName('a');
+            expect(elements.length).toEqual(exp.length);
+            for(var i = 0; i < elements.length; i++) {
+                var e = elements[i];
+                expect(e.href).toEqual(exp[i]);
+                expect(e.target).toEqual('_blank');
+            }
+        }
+
+        it('@gl should be displayed for style "Carto"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'carto-darkmatter'}})
+            .then(function() {
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('© Carto © OpenStreetMap contributors');
+                assertLinks(s, [
+                    'https://carto.com/',
+                    'https://www.openstreetmap.org/copyright'
+                ]);
+            })
+            .then(done, done.fail);
+        });
+
+        ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
+            it('@gl should be displayed for style "' + style + '"', function(done) {
+                Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: style}})
+                .then(function() {
+                    var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                    expect(s.size()).toBe(1);
+                    expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under ODbL');
+                    assertLinks(s, [
+                        'https://stamen.com/',
+                        'https://creativecommons.org/licenses/by/3.0',
+                        'https://openstreetmap.org/',
+                        'https://www.openstreetmap.org/copyright'
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+        });
+
+        it('@gl should be displayed for style "stamen-watercolor"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-watercolor'}})
+            .then(function() {
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under CC BY SA');
+                assertLinks(s, [
+                    'https://stamen.com/',
+                    'https://creativecommons.org/licenses/by/3.0',
+                    'https://openstreetmap.org/',
+                    'https://creativecommons.org/licenses/by-sa/3.0'
+                ]);
+            })
+            .then(done, done.fail);
+        });
+
         it('@gl should be displayed for style "open-street-map"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'open-street-map'}})
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© OpenStreetMap');
+                expect(s.text()).toEqual('© OpenStreetMap contributors');
+                assertLinks(s, [
+                    'https://www.openstreetmap.org/copyright'
+                ]);
             })
             .then(done, done.fail);
         });
@@ -1487,6 +1548,11 @@ describe('mapbox plots', function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© Mapbox © OpenStreetMap Improve this map');
+                assertLinks(s, [
+                    'https://www.mapbox.com/about/maps/',
+                    'http://www.openstreetmap.org/about/',
+                    'https://www.mapbox.com/map-feedback/' // Improve this map
+                ]);
             })
             .then(done, done.fail);
         });
