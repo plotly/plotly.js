@@ -89,7 +89,7 @@ Use the `transforms` option to specify which should be included.
 npm run partial-bundle -- --transforms sort,filter
 ```
 
-Use `transforms none` option to exclude all transforms.
+Or use `transforms none` to exclude them all.
 ```
 npm run partial-bundle -- --transforms none
 ```
