@@ -80,8 +80,8 @@ Use the `traces` option to include just the trace types you need.
 ```
 npm run partial-bundle -- --traces scatter,scattergl,scatter3d
 ```
-Please note that `scatter` trace is currently added to the bundle by default.
-[Whereas this behaviour may be subject to change in future](https://github.com/plotly/plotly.js/pull/5535), we recommend that you explicitly include `scatter` trace in your scripts in case `scatter` trace is needed in your bundle.
+Please note that the `scatter` trace is currently included in all bundles and cannot be removed.
+[This behaviour may change in the future](https://github.com/plotly/plotly.js/pull/5535), so we recommend that you explicitly include `scatter` anyway if you need it in your bundle.
 
 If not specified otherwise all transforms are included in the bundle.
 Use `transforms` option to specify which transforms should be included.
