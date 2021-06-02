@@ -14,36 +14,11 @@ or the un-minified version as:
 <script src="plotly.js" charset="utf-8"></script>
 ```
 
-### To support MathJax
-
-*Before* the plotly.js script tag, add:
-
-```html
-<script src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-```
-
-You can get the relevant MathJax files from the internet e.g.
-"https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js"
-
-By default, plotly.js will modify the global MathJax configuration on load.
-This can lead to undesirable behavior if plotly.js is loaded alongside
-other libraries that also rely on MathJax. To disable this global configuration
-process, set the `MathJaxConfig` property to `'local'` in the `window.PlotlyConfig`
-object.  This property must be set before the plotly.js script tag, for example:
-
-```html
-<script>
-   window.PlotlyConfig = {MathJaxConfig: 'local'}
-</script>
-<script src="plotly.min.js"></script>
-```
-
 ### To include localization
 
 Plotly.js defaults to US English (en-US) and includes British English (en) in the standard bundle.
 Many other localizations are available - here is an example using Swiss-German (de-CH),
 see the contents of this directory for the full list.
-They are also available on our CDN as https://cdn.plot.ly/plotly-locale-de-ch-latest-v2.js OR https://cdn.plot.ly/plotly-locale-de-ch-2.0.0-rc.2.js
 Note that the file names are all lowercase, even though the region is uppercase when you apply a locale.
 
 *After* the plotly.js script tag, add:
@@ -66,12 +41,12 @@ The main plotly.js bundle includes all the official (non-beta) trace modules.
 
 It be can imported as minified javascript
 - using dist file `dist/plotly.min.js`
-- using CDN URL https://cdn.plot.ly/plotly-latest-v2.min.js OR https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js
+- using CDN URL https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js
 
 or as raw javascript:
 - using the `plotly.js-dist` npm package (starting in `v1.39.0`)
 - using dist file `dist/plotly.js`
-- using CDN URL https://cdn.plot.ly/plotly-latest-v2.js OR https://cdn.plot.ly/plotly-2.0.0-rc.2.js
+- using CDN URL https://cdn.plot.ly/plotly-2.0.0-rc.2.js
 - using CommonJS with `require('plotly.js')`
 
 If you would like to have access to the attribute meta information (including attribute descriptions as on the [schema reference page](https://plotly.com/javascript/reference/)), use dist file `dist/plotly-with-meta.js`
@@ -117,8 +92,6 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-basic-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-basic-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-basic-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-basic-2.0.0-rc.2.min.js |
 
@@ -170,8 +143,6 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-cartesian-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-cartesian-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-cartesian-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-cartesian-2.0.0-rc.2.min.js |
 
@@ -223,8 +194,6 @@ The `geo` partial bundle contains trace modules `choropleth`, `scatter` and `sca
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-geo-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-geo-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-geo-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-geo-2.0.0-rc.2.min.js |
 
@@ -276,8 +245,6 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-gl3d-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-gl3d-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-gl3d-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-gl3d-2.0.0-rc.2.min.js |
 
@@ -329,8 +296,6 @@ The `gl2d` partial bundle contains trace modules `heatmapgl`, `parcoords`, `poin
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-gl2d-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-gl2d-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-gl2d-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-gl2d-2.0.0-rc.2.min.js |
 
@@ -382,8 +347,6 @@ The `mapbox` partial bundle contains trace modules `choroplethmapbox`, `densitym
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-mapbox-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-mapbox-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-mapbox-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-mapbox-2.0.0-rc.2.min.js |
 
@@ -435,8 +398,6 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-finance-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-finance-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-finance-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-finance-2.0.0-rc.2.min.js |
 
@@ -488,8 +449,6 @@ The `strict` partial bundle contains trace modules `bar`, `barpolar`, `box`, `ca
 
 | Flavor | URL |
 | ------ | --- |
-| Latest | https://cdn.plot.ly/plotly-strict-latest-v2.js |
-| Latest minified | https://cdn.plot.ly/plotly-strict-latest-v2.min.js |
 | Tagged | https://cdn.plot.ly/plotly-strict-2.0.0-rc.2.js |
 | Tagged minified | https://cdn.plot.ly/plotly-strict-2.0.0-rc.2.min.js |
 
