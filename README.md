@@ -94,7 +94,8 @@ Use `transforms none` option to exclude all transforms.
 npm run partial-bundle -- --transforms none
 ```
 
-Use `out` option to change default `custom` bundle name.
+Use the `out` option to change the bundle filename (default `custom`).
+The new bundle will be created in the `dist/` directory and named `plotly-<out>.min.js` or `plotly-<out>.js` if unminified.
 ```
 npm run partial-bundle -- --out myBundleName
 ```
