@@ -22,12 +22,12 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 * [Load from Content Delivery Network (CDN)](#load-from-content-delivery-network-cdn)
 * [Partial bundles](#partial-bundles)
 * [Alternative ways to require or build plotly.js](#alternative-ways-to-require-or-build-plotlyjs)
-* [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
+* [Bugs and feature requests](#bugs-and-feature-requests)
 * [Contributing](#contributing)
-* [Community](#community)
-* [Notable contributors](#creators)
+* [Notable contributors](#notable-contributors)
 * [Copyright and license](#copyright-and-license)
+* [Community](#community)
 
 ---
 ## Load from npm (Node.js Package Manager)
@@ -138,11 +138,6 @@ npm run partial-bundle -- --unminified --out myScatters --traces scatter,scatter
 If your library needs to bundle or directly require [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations of `browserify` or `webpack`, etc. then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
 
 ---
-## Bugs and feature requests
-
-Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/master/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md)
-
----
 ## Documentation
 
 Official plotly.js documentation is hosted at [https://plotly.com/javascript](https://plotly.com/javascript).
@@ -158,17 +153,15 @@ Load relevant MathJax (v2) files *Before* the plotly.js script tag:
 ```
 
 ---
+## Bugs and feature requests
+
+Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/master/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md)
+
+
+---
 ## Contributing
 
 Please read through our [contributing guidelines](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md). Included are directions for opening issues, using plotly.js in your project and notes on development.
-
----
-## Community
-
-* Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for the latest Plotly news.
-* Implementation help may be found on community.plot.com (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
-  on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
-* Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
 
 ---
 ## Notable contributors
@@ -207,3 +200,11 @@ Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/m
 This project is maintained under the [Semantic Versioning guidelines](https://semver.org/).
 
 See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
+
+---
+## Community
+
+* Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for the latest Plotly news.
+* Implementation help may be found on community.plot.com (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
+  on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
+* Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
