@@ -1,6 +1,24 @@
-# Building plotly.js
+# Alternative ways to require or build plotly.js
+Depending on your needs, to bundle plotly.js into your application one of [the browserified distributed plotly.js packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) on npm could be used.
 
-The easiest way to bundle plotly.js into your application is to use one of the distributed plotly.js packages on npm. These distributed packages should just work with **any** build framework. That said, if you're looking to save a few bytes, read the section below corresponding to your building framework.
+## Browserify example
+
+Given source file:
+```js
+// file: index.js
+var Plotly = require('plotly.js-dist-min');
+// ....
+```
+
+then simply run
+
+```sh
+browserify index.js > bundle.js
+```
+
+
+
+The section below provide additional info in respect to alternative building frameworks.
 
 ## Webpack
 
@@ -19,24 +37,6 @@ A repo that demonstrates how to build plotly.js with Webpack can be found [here]
         ]
     },
 ...
-```
-
-## Browserify
-
-Given source file:
-
-```js
-// file: index.js
-
-var Plotly = require('plotly.js');
-
-// ....
-```
-
-then simply run,
-
-```
-browserify index.js > bundle.js
 ```
 
 ## Angular CLI
