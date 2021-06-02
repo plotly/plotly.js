@@ -18,21 +18,58 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 ## Table of contents
 
-* [Quick start options](#quick-start-options)
+* [Load from CDN](#load-from-cdn)
+* [Load from npm](#load-from-npm)
+* [Versioning](#versioning)
 * [Partial bundles](#partial-bundles)
 * [Alternative ways to require or build plotly.js](#alternative-ways-to-require-or-build-plotlyjs)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
 * [Community](#community)
-* [Versioning](#versioning)
 * [Notable contributors](#creators)
 * [Copyright and license](#copyright-and-license)
 
 ---
-## Quick start options
+## Load from CDN
+Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>.
 
-### Install with npm
+### Minified plotly.js X.Y.Z bundles
+```html
+<head>
+    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js"></script>
+</head>
+<body>
+    <div id="gd"></div>
+
+    <script>
+        Plotly.newPlot("gd", {
+            "data": [{
+                "y": [1, 2, 3]
+            }],
+            "layout": {
+                "width": 600,
+                "height": 400
+            }
+        });
+    </script>
+</body>
+```
+In the example above `Plotly` object is added to the window scope by the script in the `head` section.
+The `newPlot` method is then used to draw an interactive figure as described by `data` and `layout` into the desired `div` here named `gd`.
+As demonstrated in the example above basic knowledge of `html` and [JSON](https://en.wikipedia.org/wiki/JSON) syntax is enough to get started i.e. with/without JavaScript!
+To learn and build more with plotly.js please visit [plotly.js documentation](https://plotly.com/javascript).
+
+### Un-minified versions are also available on CDN
+While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
+```html
+    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.js" charset="utf-8"></script>
+```
+
+#### Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.4. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
+
+
+## Load from npm
 
 ```sh
 npm install plotly.js-dist-min
@@ -42,37 +79,19 @@ and import plotly.js as
 
 ```js
 import Plotly from 'plotly.js-dist-min'
-// Or using require,
+```
+Or
+```js
 var Plotly = require('plotly.js-dist-min')
 ```
 
-### Use the plotly.js CDN hosted by Fastly
-
-#### A minified plotly.js X.Y.Z release
-```html
-<script src="https://cdn.plot.ly/plotly-1.58.4.min.js" charset="utf-8"></script>
-```
-
-#### An un-minified version is also available
-```html
-<script src="https://cdn.plot.ly/plotly-1.58.4.js" charset="utf-8"></script>
-```
-
-and use the `Plotly` object in the window scope.
-
-##### Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.4. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
-
-Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>
-
-### Download the latest release or a release candidate (rc)
-
-[Latest and rc releases on GitHub](https://github.com/plotly/plotly.js/releases/)
-
-and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-
-#### Read the [Getting started page](https://plotly.com/javascript/getting-started/) for more examples.
-
 ---
+## Versioning
+
+This project is maintained under the [Semantic Versioning guidelines](https://semver.org/).
+
+See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
+
 ## Partial bundles
 
 There are two kinds of plotly.js partial bundles:
@@ -158,13 +177,6 @@ Please read through our [contributing guidelines](https://github.com/plotly/plot
 * Implementation help may be found on community.plot.com (tagged [`plotly-js`](https://community.plotly.com/c/plotly-js)) or
   on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
 * Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
-
----
-## Versioning
-
-This project is maintained under the [Semantic Versioning guidelines](https://semver.org/).
-
-See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
 
 ---
 ## Notable contributors
