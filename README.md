@@ -106,7 +106,7 @@ npm run partial-bundle -- --unminified
 ```
 
 ### Example illustrating use of different options together
-To create `unminified` custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces without any transforms:
+To create an unminified custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces without any transforms:
 ```
 npm run partial-bundle -- \
     --unminified \
