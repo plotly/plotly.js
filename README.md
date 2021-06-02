@@ -100,7 +100,7 @@ The new bundle will be created in the `dist/` directory and named `plotly-<out>.
 npm run partial-bundle -- --out myBundleName
 ```
 
-Use `unminified` option to create an `unminified` bundle.
+Use the `unminified` option to disable compression.
 ```
 npm run partial-bundle -- --unminified
 ```
