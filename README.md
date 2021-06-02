@@ -73,8 +73,8 @@ and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly
 ## Partial bundles
 
 There are two kinds of plotly.js partial bundles:
-1. The official partial bundles that are distributed to `npm` and `CDN` covered by [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-2. The custom ones that could be created by the user, if none of the distributed packages meet your needs.
+1. The official partial bundles that are distributed to `npm` and the CDN, described in [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+2. Custom bundles you can create yourself, if none of the distributed packages meet your needs.
 
 Use the `traces` option to include just the trace types you need.
 ```
