@@ -119,9 +119,8 @@ Or simply on one line:
 npm run partial-bundle -- --unminified --out myScatters --traces scatter,scattergl,scatter3d --transforms none
 ```
 
-## Building plotly.js
-
-Building instructions using `webpack`, `browserify` and other build frameworks are in [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md)
+## Alternative ways to require or build plotly.js
+If your library needs to bundle or directly require [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations of `browserify` or `webpack`, etc. then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
 
 ## Bugs and feature requests
 
