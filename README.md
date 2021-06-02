@@ -18,9 +18,8 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 ## Table of contents
 
-* [Load from CDN](#load-from-cdn)
-* [Load from npm](#load-from-npm)
-* [Versioning](#versioning)
+* [Load from npm (Node.js Package Manager)](#load-from-npm-nodejs-package-manager)
+* [Load from Content Delivery Network (CDN)](#load-from-content-delivery-network-cdn)
 * [Partial bundles](#partial-bundles)
 * [Alternative ways to require or build plotly.js](#alternative-ways-to-require-or-build-plotlyjs)
 * [Bugs and feature requests](#bugs-and-feature-requests)
@@ -31,10 +30,27 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 * [Copyright and license](#copyright-and-license)
 
 ---
-## Load from CDN
+## Load from npm (Node.js Package Manager)
+
+```sh
+npm install plotly.js-dist-min
+```
+
+and import plotly.js as
+
+```js
+import Plotly from 'plotly.js-dist-min'
+```
+Or
+```js
+var Plotly = require('plotly.js-dist-min')
+```
+
+---
+## Load from Content Delivery Network (CDN)
 Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>.
 
-### Minified plotly.js X.Y.Z bundles
+### Usage example
 ```html
 <head>
     <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js"></script>
@@ -66,31 +82,7 @@ While non-minified source files may contain characters outside UTF-8, it is reco
     <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.js" charset="utf-8"></script>
 ```
 
-#### Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.4. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
-
-
-## Load from npm
-
-```sh
-npm install plotly.js-dist-min
-```
-
-and import plotly.js as
-
-```js
-import Plotly from 'plotly.js-dist-min'
-```
-Or
-```js
-var Plotly = require('plotly.js-dist-min')
-```
-
----
-## Versioning
-
-This project is maintained under the [Semantic Versioning guidelines](https://semver.org/).
-
-See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
+> Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.4. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
 
 ## Partial bundles
 
@@ -209,3 +201,9 @@ Plotly.js is at the core of a large and dynamic ecosystem with many contributors
 Code and documentation copyright 2021 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
+
+### Versioning
+
+This project is maintained under the [Semantic Versioning guidelines](https://semver.org/).
+
+See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
