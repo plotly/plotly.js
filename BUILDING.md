@@ -18,7 +18,7 @@ browserify index.js > bundle.js
 
 
 
-The section below provide additional info in respect to alternative building frameworks.
+The sections below provide additional info in respect to alternative building frameworks.
 
 ## Webpack
 
