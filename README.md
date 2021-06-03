@@ -53,7 +53,7 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Usage example
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -79,7 +79,7 @@ To learn and build more with plotly.js please visit [plotly.js documentation](ht
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.js" charset="utf-8"></script>
+    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.3.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.4. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
@@ -88,7 +88,7 @@ While non-minified source files may contain characters outside UTF-8, it is reco
 Load relevant MathJax (v2) files *Before* the plotly.js script tag:
 ```html
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_SVG.js"></script>
-    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"></script>
 ```
 
 ## Bundles
