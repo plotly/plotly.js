@@ -1,6 +1,6 @@
 # Using distributed files
 
-All plotly.js dist bundles inject an object `Plotly` into the global scope.
+All plotly.js bundles inject an object `Plotly` into the global scope.
 
 Import plotly.js as:
 
@@ -39,17 +39,28 @@ Plotly.newPlot(graphDiv, data, layout, {locale: 'de-CH'})
 
 The main plotly.js bundle includes all trace modules.
 
-It be can be imported as minified javascript
-- using dist file `dist/plotly.min.js`
-- using CDN URL https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js
-
-If you would like to have access to the attribute meta information (including attribute descriptions as on the [schema reference page](https://plotly.com/javascript/reference/)), use dist file `dist/plotly-with-meta.js`
-
 The main plotly.js bundles weight in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
 | 7.9 MB | 3.3 MB | 1015.1 kB | 8.2 MB |
+
+#### CDN links
+> https://cdn.plot.ly/plotly-2.0.0-rc.2.js
+
+> https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js
+
+
+#### npm packages
+> [plotly.js](https://www.npmjs.com/package/plotly.js)
+
+> [plotly.js-dist](https://www.npmjs.com/package/plotly.js-dist)
+
+> [plotly.js-dist-min](https://www.npmjs.com/package/plotly.js-dist-min)
+
+#### Meta information
+> If you would like to have access to the attribute meta information (including attribute descriptions as on the [schema reference page](https://plotly.com/javascript/reference/)), use dist file `dist/plotly-with-meta.js`
+---
 
 ## Partial bundles
 
