@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.0.0-rc.2
+* plotly.js (cartesian) v2.0.0-rc.3
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -191,7 +191,7 @@ module.exports = _dereq_('../src/traces/violin');
 },{"../src/traces/violin":536}],20:[function(_dereq_,module,exports){
 !function() {
   var d3 = {
-    version: "3.5.18"
+    version: "3.6.0"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
@@ -9747,7 +9747,7 @@ module.exports = _dereq_('../src/traces/violin');
     return request.responseXML;
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
-}();
+}.apply(self);
 },{}],21:[function(_dereq_,module,exports){
 (function (global){(function (){
 'use strict';
@@ -39743,14 +39743,17 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
         name = plainText(d.name, d.nameLength);
     }
 
+    var h0 = hovermode.charAt(0);
+    var h1 = h0 === 'x' ? 'y' : 'x';
+
     if(d.zLabel !== undefined) {
         if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
         if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
         if(d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox') {
             text += (text ? 'z: ' : '') + d.zLabel;
         }
-    } else if(showCommonLabel && d[hovermode.charAt(0) + 'Label'] === t0) {
-        text = d[(hovermode.charAt(0) === 'x' ? 'y' : 'x') + 'Label'] || '';
+    } else if(showCommonLabel && d[h0 + 'Label'] === t0) {
+        text = d[h1 + 'Label'] || '';
     } else if(d.xLabel === undefined) {
         if(d.yLabel !== undefined && d.trace.type !== 'scattercarpet') {
             text = d.yLabel;
@@ -39779,16 +39782,20 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     }
 
     // hovertemplate
-    var d3locale = fullLayout._d3locale;
     var hovertemplate = d.hovertemplate || false;
-    var hovertemplateLabels = d.hovertemplateLabels || d;
-    var eventData = d.eventData[0] || {};
     if(hovertemplate) {
+        var labels = d.hovertemplateLabels || d;
+
+        if(d[h0 + 'Label'] !== t0) {
+            labels[h0 + 'other'] = labels[h0 + 'Val'];
+            labels[h0 + 'otherLabel'] = labels[h0 + 'Label'];
+        }
+
         text = Lib.hovertemplateString(
             hovertemplate,
-            hovertemplateLabels,
-            d3locale,
-            eventData,
+            labels,
+            fullLayout._d3locale,
+            d.eventData[0] || {},
             d.trace._meta
         );
 
@@ -55110,6 +55117,18 @@ lib.isIOS = function() {
     return IS_IOS_REGEX.test(window.navigator.userAgent);
 };
 
+var FIREFOX_VERSION_REGEX = /Firefox\/(\d+)\.\d+/;
+lib.getFirefoxVersion = function() {
+    var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);
+    if(match && match.length === 2) {
+        var versionInt = parseInt(match[1]);
+        if(!isNaN(versionInt)) {
+            return versionInt;
+        }
+    }
+    return null;
+};
+
 lib.isD3Selection = function(obj) {
     return obj instanceof d3.selection;
 };
@@ -55438,21 +55457,50 @@ function templateFormatString(string, labels, d3locale) {
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
-        var obj, value, i;
-        for(i = 3; i < args.length; i++) {
-            obj = args[i];
-            if(!obj) continue;
-            if(obj.hasOwnProperty(key)) {
-                value = obj[key];
-                break;
-            }
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, rawKey, format) {
+        var isOther =
+            rawKey === 'xother' ||
+            rawKey === 'yother';
 
-            if(!SIMPLE_PROPERTY_REGEX.test(key)) {
-                value = getterCache[key] || lib.nestedProperty(obj, key).get();
-                if(value) getterCache[key] = value;
+        var isSpaceOther =
+            rawKey === '_xother' ||
+            rawKey === '_yother';
+
+        var isSpaceOtherSpace =
+            rawKey === '_xother_' ||
+            rawKey === '_yother_';
+
+        var isOtherSpace =
+            rawKey === 'xother_' ||
+            rawKey === 'yother_';
+
+        var hasOther = isOther || isSpaceOther || isOtherSpace || isSpaceOtherSpace;
+
+        var key = rawKey;
+        if(isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
+        if(isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
+
+        var value;
+        if(hasOther) {
+            value = labels[key];
+            if(value === undefined) return '';
+        } else {
+            var obj, i;
+            for(i = 3; i < args.length; i++) {
+                obj = args[i];
+                if(!obj) continue;
+                if(obj.hasOwnProperty(key)) {
+                    value = obj[key];
+                    break;
+                }
+
+                if(!SIMPLE_PROPERTY_REGEX.test(key)) {
+                    value = lib.nestedProperty(obj, key).get();
+                    value = getterCache[key] || lib.nestedProperty(obj, key).get();
+                    if(value) getterCache[key] = value;
+                }
+                if(value !== undefined) break;
             }
-            if(value !== undefined) break;
         }
 
         if(value === undefined && opts) {
@@ -55482,8 +55530,16 @@ function templateFormatString(string, labels, d3locale) {
                 value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''), false, fmt);
             }
         } else {
-            if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
+            var keyLabel = key + 'Label';
+            if(labels.hasOwnProperty(keyLabel)) value = labels[keyLabel];
         }
+
+        if(hasOther) {
+            value = '(' + value + ')';
+            if(isSpaceOther || isSpaceOtherSpace) value = ' ' + value;
+            if(isOtherSpace || isSpaceOtherSpace) value = value + ' ';
+        }
+
         return value;
     });
 }
@@ -55661,6 +55717,30 @@ lib.join2 = function(arr, mainSeparator, lastSeparator) {
 
 lib.bigFont = function(size) {
     return Math.round(1.2 * size);
+};
+
+var firefoxVersion = lib.getFirefoxVersion();
+// see https://bugzilla.mozilla.org/show_bug.cgi?id=1684973
+var isProblematicFirefox = firefoxVersion !== null && firefoxVersion < 86;
+
+/**
+ * Return the mouse position from the last event registered by D3.
+ * @returns An array with two numbers, representing the x and y coordinates of the mouse pointer
+ *   at the event relative to the targeted node.
+ */
+lib.getPositionFromD3Event = function() {
+    if(isProblematicFirefox) {
+        // layerX and layerY are non-standard, so we only fallback to them when we have to:
+        return [
+            d3.event.layerX,
+            d3.event.layerY
+        ];
+    } else {
+        return [
+            d3.event.offsetX,
+            d3.event.offsetY
+        ];
+    }
 };
 
 },{"../constants/numerical":265,"./anchor_utils":269,"./angles":270,"./array":271,"./clean_number":272,"./clear_responsive":274,"./coerce":275,"./dates":276,"./dom":277,"./extend":279,"./filter_unique":280,"./filter_visible":281,"./geometry2d":282,"./identity":283,"./increment":284,"./is_plain_object":286,"./keyed_container":287,"./localize":288,"./loggers":289,"./make_trace_groups":290,"./matrix":291,"./mod":292,"./nested_property":293,"./noop":294,"./notifier":295,"./preserve_drawing_buffer":298,"./push_unique":299,"./regex":301,"./relative_attr":302,"./relink_private":303,"./search":304,"./stats":306,"./throttle":308,"./to_log_range":309,"@plotly/d3":20,"d3-time-format":29,"fast-isnumeric":31}],286:[function(_dereq_,module,exports){
@@ -83077,15 +83157,24 @@ var docs = _dereq_('../constants/docs');
 var FORMAT_LINK = docs.FORMAT_LINK;
 var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
 
-var templateFormatStringDescription = [
-    'Variables are inserted using %{variable}, for example "y: %{y}".',
-    'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
-    FORMAT_LINK,
-    'for details on the formatting syntax.',
-    'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".',
-    DATE_FORMAT_LINK,
-    'for details on the date formatting syntax.'
-].join(' ');
+function templateFormatStringDescription(opts) {
+    var supportOther = opts && opts.supportOther;
+
+    return [
+        'Variables are inserted using %{variable},',
+        'for example "y: %{y}"' + (
+            supportOther ?
+                ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.' :
+                '.'
+        ),
+        'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
+        FORMAT_LINK,
+        'for details on the formatting syntax.',
+        'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".',
+        DATE_FORMAT_LINK,
+        'for details on the date formatting syntax.'
+    ].join(' ');
+}
 
 function describeVariables(extra) {
     var descPart = extra.description ? ' ' + extra.description : '';
@@ -103722,7 +103811,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.0.0-rc.2';
+exports.version = '2.0.0-rc.3';
 
 },{}]},{},[15])(15)
 });
