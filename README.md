@@ -94,50 +94,7 @@ Load relevant MathJax (v2) files *Before* the plotly.js script tag:
 ## Bundles
 There are two kinds of plotly.js bundles:
 1. Complete and partial official bundles that are distributed to `npm` and the `CDN`, described in [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
-2. Custom bundles you can create yourself, if none of the distributed packages meet your needs.
-
-Use the `traces` option to include just the trace types you need.
-```sh
-npm run partial-bundle -- --traces scatter,scattergl,scatter3d
-```
-Please note that the `scatter` trace is currently included in all bundles and cannot be removed.
-[This behaviour may change in the future](https://github.com/plotly/plotly.js/pull/5535), so we recommend that you explicitly include `scatter` anyway if you need it in your bundle.
-
-By default all transforms are included in the bundle.
-Use the `transforms` option to specify which should be included.
-```sh
-npm run partial-bundle -- --transforms sort,filter
-```
-
-Or use `transforms none` to exclude them all.
-```sh
-npm run partial-bundle -- --transforms none
-```
-
-Use the `out` option to change the bundle filename (default `custom`).
-The new bundle will be created in the `dist/` directory and named `plotly-<out>.min.js` or `plotly-<out>.js` if unminified.
-```sh
-npm run partial-bundle -- --out myBundleName
-```
-
-Use the `unminified` option to disable compression.
-```sh
-npm run partial-bundle -- --unminified
-```
-
-### Example illustrating use of different options together
-To create an unminified custom bundle named `myScatters` including `scatter`, `scattergl` and `scatter3d` traces without any transforms:
-```sh
-npm run partial-bundle -- \
-    --unminified \
-    --out myScatters \
-    --traces scatter,scattergl,scatter3d \
-    --transforms none
-```
-Or simply on one line:
-```sh
-npm run partial-bundle -- --unminified --out myScatters --traces scatter,scattergl,scatter3d --transforms none
-```
+2. Custom bundles you can create yourself to optimize the size of bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/master/CUSTOM_BUNDLE.md) for more information.
 
 ---
 ## Alternative ways to require or build plotly.js
