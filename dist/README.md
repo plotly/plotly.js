@@ -37,21 +37,15 @@ Plotly.newPlot(graphDiv, data, layout, {locale: 'de-CH'})
 
 # Bundle information
 
-The main plotly.js bundle includes all the official (non-beta) trace modules.
+The main plotly.js bundle includes all trace modules.
 
 It be can be imported as minified javascript
 - using dist file `dist/plotly.min.js`
 - using CDN URL https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js
 
-or as raw javascript:
-- using the `plotly.js-dist` npm package
-- using dist file `dist/plotly.js`
-- using CDN URL https://cdn.plot.ly/plotly-2.0.0-rc.2.js
-- using CommonJS with `require('plotly.js')`
-
 If you would like to have access to the attribute meta information (including attribute descriptions as on the [schema reference page](https://plotly.com/javascript/reference/)), use dist file `dist/plotly-with-meta.js`
 
-The main plotly.js bundle weights in at:
+The main plotly.js bundles weight in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
@@ -76,6 +70,8 @@ plotly.js also ships with several _partial_ bundles:
 
 > The strict partial bundle includes everything except the traces that require function constructors. Over time we hope to include more of the remaining trace types here, after which we intend to work on other strict CSP issues such as inline CSS that we may not be able to include in the main bundle.
 
+---
+
 ### plotly.js basic
 
 The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
@@ -87,35 +83,17 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 | 2.7 MB | 1003.6 kB | 325.9 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-basic-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-basic-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-basic-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-basic-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-basic-dist](https://www.npmjs.com/package/plotly.js-basic-dist)
 
-Install [`plotly.js-basic-dist-min`](https://www.npmjs.com/package/plotly.js-basic-dist-min) with
-```
-npm install plotly.js-basic-dist-min
-```
-#### npm package
+> [plotly.js-basic-dist-min](https://www.npmjs.com/package/plotly.js-basic-dist-min)
 
-Install [`plotly.js-basic-dist`](https://www.npmjs.com/package/plotly.js-basic-dist) with
-```
-npm install plotly.js-basic-dist
-```
-
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-basic-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-basic-dist')
-```
+---
 
 ### plotly.js cartesian
 
@@ -128,35 +106,17 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 | 3.3 MB | 1.2 MB | 397.1 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-cartesian-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-cartesian-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-cartesian-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-cartesian-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-cartesian-dist](https://www.npmjs.com/package/plotly.js-cartesian-dist)
 
-Install [`plotly.js-cartesian-dist-min`](https://www.npmjs.com/package/plotly.js-cartesian-dist-min) with
-```
-npm install plotly.js-cartesian-dist-min
-```
-#### npm package
+> [plotly.js-cartesian-dist-min](https://www.npmjs.com/package/plotly.js-cartesian-dist-min)
 
-Install [`plotly.js-cartesian-dist`](https://www.npmjs.com/package/plotly.js-cartesian-dist) with
-```
-npm install plotly.js-cartesian-dist
-```
-
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-cartesian-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-cartesian-dist')
-```
+---
 
 ### plotly.js geo
 
@@ -169,35 +129,17 @@ The `geo` partial bundle contains trace modules `choropleth`, `scatter` and `sca
 | 2.8 MB | 1 MB | 335.7 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-geo-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-geo-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-geo-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-geo-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-geo-dist](https://www.npmjs.com/package/plotly.js-geo-dist)
 
-Install [`plotly.js-geo-dist-min`](https://www.npmjs.com/package/plotly.js-geo-dist-min) with
-```
-npm install plotly.js-geo-dist-min
-```
-#### npm package
+> [plotly.js-geo-dist-min](https://www.npmjs.com/package/plotly.js-geo-dist-min)
 
-Install [`plotly.js-geo-dist`](https://www.npmjs.com/package/plotly.js-geo-dist) with
-```
-npm install plotly.js-geo-dist
-```
-
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-geo-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-geo-dist')
-```
+---
 
 ### plotly.js gl3d
 
@@ -210,35 +152,17 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 | 3.8 MB | 1.5 MB | 481.3 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-gl3d-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-gl3d-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-gl3d-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-gl3d-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-gl3d-dist](https://www.npmjs.com/package/plotly.js-gl3d-dist)
 
-Install [`plotly.js-gl3d-dist-min`](https://www.npmjs.com/package/plotly.js-gl3d-dist-min) with
-```
-npm install plotly.js-gl3d-dist-min
-```
-#### npm package
+> [plotly.js-gl3d-dist-min](https://www.npmjs.com/package/plotly.js-gl3d-dist-min)
 
-Install [`plotly.js-gl3d-dist`](https://www.npmjs.com/package/plotly.js-gl3d-dist) with
-```
-npm install plotly.js-gl3d-dist
-```
-
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-gl3d-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-gl3d-dist')
-```
+---
 
 ### plotly.js gl2d
 
@@ -251,35 +175,17 @@ The `gl2d` partial bundle contains trace modules `heatmapgl`, `parcoords`, `poin
 | 3.8 MB | 1.5 MB | 501.8 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-gl2d-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-gl2d-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-gl2d-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-gl2d-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-gl2d-dist](https://www.npmjs.com/package/plotly.js-gl2d-dist)
 
-Install [`plotly.js-gl2d-dist-min`](https://www.npmjs.com/package/plotly.js-gl2d-dist-min) with
-```
-npm install plotly.js-gl2d-dist-min
-```
-#### npm package
+> [plotly.js-gl2d-dist-min](https://www.npmjs.com/package/plotly.js-gl2d-dist-min)
 
-Install [`plotly.js-gl2d-dist`](https://www.npmjs.com/package/plotly.js-gl2d-dist) with
-```
-npm install plotly.js-gl2d-dist
-```
-
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-gl2d-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-gl2d-dist')
-```
+---
 
 ### plotly.js mapbox
 
@@ -292,35 +198,17 @@ The `mapbox` partial bundle contains trace modules `choroplethmapbox`, `densitym
 | 4.3 MB | 1.7 MB | 523.4 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-mapbox-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-mapbox-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-mapbox-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-mapbox-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-mapbox-dist](https://www.npmjs.com/package/plotly.js-mapbox-dist)
 
-Install [`plotly.js-mapbox-dist-min`](https://www.npmjs.com/package/plotly.js-mapbox-dist-min) with
-```
-npm install plotly.js-mapbox-dist-min
-```
-#### npm package
+> [plotly.js-mapbox-dist-min](https://www.npmjs.com/package/plotly.js-mapbox-dist-min)
 
-Install [`plotly.js-mapbox-dist`](https://www.npmjs.com/package/plotly.js-mapbox-dist) with
-```
-npm install plotly.js-mapbox-dist
-```
-
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-mapbox-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-mapbox-dist')
-```
+---
 
 ### plotly.js finance
 
@@ -333,35 +221,17 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 | 2.9 MB | 1.1 MB | 352 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-finance-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-finance-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-finance-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-finance-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-finance-dist](https://www.npmjs.com/package/plotly.js-finance-dist)
 
-Install [`plotly.js-finance-dist-min`](https://www.npmjs.com/package/plotly.js-finance-dist-min) with
-```
-npm install plotly.js-finance-dist-min
-```
-#### npm package
+> [plotly.js-finance-dist-min](https://www.npmjs.com/package/plotly.js-finance-dist-min)
 
-Install [`plotly.js-finance-dist`](https://www.npmjs.com/package/plotly.js-finance-dist) with
-```
-npm install plotly.js-finance-dist
-```
-
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-finance-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-finance-dist')
-```
+---
 
 ### plotly.js strict
 
@@ -374,36 +244,17 @@ The `strict` partial bundle contains trace modules `bar`, `barpolar`, `box`, `ca
 | 6.6 MB | 2.8 MB | 835.8 kB |
 
 #### CDN links
+> https://cdn.plot.ly/plotly-strict-2.0.0-rc.2.js
 
-| Flavor | URL |
-| ------ | --- |
-| Tagged | https://cdn.plot.ly/plotly-strict-2.0.0-rc.2.js |
-| Tagged minified | https://cdn.plot.ly/plotly-strict-2.0.0-rc.2.min.js |
+> https://cdn.plot.ly/plotly-strict-2.0.0-rc.2.min.js
 
 
-#### dist-min npm package
+#### npm packages
+> [plotly.js-strict-dist](https://www.npmjs.com/package/plotly.js-strict-dist)
 
-Install [`plotly.js-strict-dist-min`](https://www.npmjs.com/package/plotly.js-strict-dist-min) with
-```
-npm install plotly.js-strict-dist-min
-```
-#### npm package
+> [plotly.js-strict-dist-min](https://www.npmjs.com/package/plotly.js-strict-dist-min)
 
-Install [`plotly.js-strict-dist`](https://www.npmjs.com/package/plotly.js-strict-dist) with
-```
-npm install plotly.js-strict-dist
-```
+---
 
-ES6 module usage:
-```js
-import Plotly from 'plotly.js-strict-dist'
-```
-
-CommonJS usage:
-```js
-var Plotly = require('plotly.js-strict-dist')
-```
-
-----------------
 
 _This file is auto-generated by `npm run stats`. Please do not edit this file directly._
