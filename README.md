@@ -20,7 +20,7 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 * [Load from npm (Node.js Package Manager)](#load-from-npm-nodejs-package-manager)
 * [Load from Content Delivery Network (CDN)](#load-from-content-delivery-network-cdn)
-* [Partial bundles](#partial-bundles)
+* [Bundles](#bundles)
 * [Alternative ways to require or build plotly.js](#alternative-ways-to-require-or-build-plotlyjs)
 * [Documentation](#documentation)
 * [Bugs and feature requests](#bugs-and-feature-requests)
@@ -91,10 +91,9 @@ Load relevant MathJax (v2) files *Before* the plotly.js script tag:
     <script src="https://cdn.plot.ly/plotly-2.0.0-rc.2.min.js"></script>
 ```
 
-## Partial bundles
-
-There are two kinds of plotly.js partial bundles:
-1. The official partial bundles that are distributed to `npm` and the CDN, described in [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+## Bundles
+There are two kinds of plotly.js bundles:
+1. Complete and partial official bundles that are distributed to `npm` and the `CDN`, described in [the dist README](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
 2. Custom bundles you can create yourself, if none of the distributed packages meet your needs.
 
 Use the `traces` option to include just the trace types you need.
