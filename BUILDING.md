@@ -1,5 +1,7 @@
 # Alternative ways to require or build plotly.js
-Depending on your needs, to bundle plotly.js into your application one of [the browserified distributed plotly.js packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) on npm could be used.
+Depending on your needs you may require/import one of [the distributed plotly.js packages](https://github.com/plotly/plotly.js/blob/master/dist/README.md) or [a plotly.js/lib index file](https://github.com/plotly/plotly.js/tree/master/lib) and integrate it into your application.
+
+The sections below provide additional info in respect to alternative building frameworks.
 
 ## Browserify example
 
@@ -16,10 +18,7 @@ then simply run
 browserify index.js > bundle.js
 ```
 
-
-
-The sections below provide additional info in respect to alternative building frameworks.
-
+---
 ## Webpack
 
 For plotly.js to build with Webpack you will need to install [ify-loader@v1.1.0+](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json`. This adds Browserify transform compatibility to Webpack which is necessary for some plotly.js dependencies.
@@ -39,6 +38,7 @@ A repo that demonstrates how to build plotly.js with Webpack can be found [here]
 ...
 ```
 
+---
 ## Angular CLI
 
 Since Angular uses webpack under the hood and doesn't allow easily to change it's webpack configuration, there is some work needed using a `custom-webpack` builder to get things going.
@@ -99,3 +99,4 @@ module.exports = {
 
 It's important to set `projects.x.architect.build.builder` and `projects.x.architect.build.options.customWebpackConfig`.
 If you have more projects in your `angular.json` make sure to adjust their settings accordingly.
+---
