@@ -122,7 +122,7 @@ function getMainBundleInfo() {
 
 // info about partial bundles
 function getPartialBundleInfo() {
-    return partialBundlePaths.map(makeBundleInfo);
+    return partialBundlePaths.map(distBundleInfo);
 }
 
 // footer info
@@ -143,11 +143,11 @@ function createLink(base, name) {
     return '[' + name + '](' + base + name + ')';
 }
 
-function makeBundleInfo(pathObj) {
+function distBundleInfo(pathObj) {
     var name = pathObj.name;
     var sizes = findSizes(pathObj);
     var traceList = pathObj.traceList;
-    var pkgName = 'plotly.js-' + name + '-dist';
+    var nameDist = 'plotly.js-' + name + '-dist';
     var nameVersion = name + '-' + pkgVersion;
 
     return [
@@ -168,9 +168,9 @@ function makeBundleInfo(pathObj) {
         '',
         '',
         '#### npm packages',
-        '> ' + createLink('https://www.npmjs.com/package/', pkgName),
+        '> ' + createLink('https://www.npmjs.com/package/', nameDist),
         '',
-        '> ' + createLink('https://www.npmjs.com/package/', pkgName + '-min'),
+        '> ' + createLink('https://www.npmjs.com/package/', nameDist + '-min'),
         '',
         '---',
         ''
