@@ -18,7 +18,7 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 ## Table of contents
 
-* [Load via node.js](#load-via-nodejs)
+* [Load as a node module](#load-as-a-node-module)
 * [Load via script tag](#load-via-script-tag)
 * [Bundles](#bundles)
 * [Alternative ways to require or build plotly.js](#alternative-ways-to-require-or-build-plotlyjs)
@@ -30,8 +30,8 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 * [Community](#community)
 
 ---
-## Load via node.js
-install plotly.js source
+## Load as a node module
+Install plotly.js source
 ```sh
 npm i --save plotly.js
 ```
