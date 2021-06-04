@@ -31,11 +31,7 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 ---
 ## Load as a node module
-Install plotly.js source
-```sh
-npm i --save plotly.js
-```
-Or [a ready-to-use distributed bundle](https://github.com/plotly/plotly.js/blob/master/dist/README.md)
+Install [a ready-to-use distributed bundle](https://github.com/plotly/plotly.js/blob/master/dist/README.md)
 ```sh
 npm i --save plotly.js-dist-min
 ```
@@ -43,10 +39,10 @@ npm i --save plotly.js-dist-min
 and use import or require in node.js
 ```js
 // ES6 module
-import Plotly from 'plotly.js-dist-dist';
+import Plotly from 'plotly.js-dist-min';
 
 // CommonJS
-var Plotly = require('plotly.js-dist-dist');
+var Plotly = require('plotly.js-dist-min');
 ```
 
 ---
@@ -71,25 +67,6 @@ var Plotly = require('plotly.js-dist-dist');
 </body>
 ```
 
-### Native ES6 JavaScript import
-```html
-<body>
-    <div id="gd"></div>
-
-    <script>
-        import "https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"
-
-        Plotly.newPlot("gd", /* JSON object */ {
-            "data": [{ "y": [1, 2, 3] }],
-            "layout": { "width": 600, "height": 400}
-        })
-    </script>
-</body>
-```
-
-To learn more about native imports please visit [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules). Also please note that ES6 import is not supported by IE-11.
-
-### Content Delivery Network (CDN)
 Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>.
 
 ### Un-minified versions are also available on CDN
