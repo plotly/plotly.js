@@ -21,7 +21,7 @@
     "plotly"
   ],
   "scripts": {
-    "partial-bundle": "node tasks/partial_bundle.js",
+    "custom-bundle": "node tasks/custom_bundle.js",
     "bundle": "node tasks/bundle.js",
     "extra-bundles": "node tasks/extra_bundles.js",
     "stats": "node tasks/stats.js",
