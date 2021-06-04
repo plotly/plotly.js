@@ -89,6 +89,9 @@ var Plotly = require('plotly.js-dist-dist');
 
 To learn more about native imports please visit [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules). Also please note that ES6 import is not supported by IE-11.
 
+### Content Delivery Network (CDN)
+Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>.
+
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
