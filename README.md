@@ -18,8 +18,8 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 
 ## Table of contents
 
-* [Load from npm (Node.js Package Manager)](#load-from-npm-nodejs-package-manager)
-* [Load from Content Delivery Network (CDN)](#load-from-content-delivery-network-cdn)
+* [Load via node.js](#load-via-nodejs)
+* [Load via script tag](#load-via-script-tag)
 * [Bundles](#bundles)
 * [Alternative ways to require or build plotly.js](#alternative-ways-to-require-or-build-plotlyjs)
 * [Documentation](#documentation)
@@ -30,27 +30,31 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 * [Community](#community)
 
 ---
-## Load from npm (Node.js Package Manager)
-
+## Load via node.js
+install plotly.js source
 ```sh
-npm install plotly.js-dist-min
+npm i --save plotly.js
+```
+Or [a ready-to-use distributed bundle](https://github.com/plotly/plotly.js/blob/master/dist/README.md)
+```sh
+npm i --save plotly.js-dist-min
 ```
 
-and import plotly.js as
+and use import or require in node.js
+```js
+// ES6 module
+import Plotly from 'plotly.js-dist-dist';
 
-```js
-import Plotly from 'plotly.js-dist-min'
-```
-Or
-```js
-var Plotly = require('plotly.js-dist-min')
+// CommonJS
+var Plotly = require('plotly.js-dist-dist');
 ```
 
 ---
-## Load from Content Delivery Network (CDN)
-Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>.
+## Load via script tag
 
-### Usage example
+### The script HTML element
+> In the examples below `Plotly` object is added to the window scope by `script` and `import`. The `newPlot` method is then used to draw an interactive figure as described by `data` and `layout` into the desired `div` here named `gd`. As demonstrated in the example above basic knowledge of `html` and [JSON](https://en.wikipedia.org/wiki/JSON) syntax is enough to get started i.e. with/without JavaScript! To learn and build more with plotly.js please visit [plotly.js documentation](https://plotly.com/javascript).
+
 ```html
 <head>
     <script src="https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"></script>
@@ -59,22 +63,31 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
     <div id="gd"></div>
 
     <script>
-        Plotly.newPlot("gd", {
-            "data": [{
-                "y": [1, 2, 3]
-            }],
-            "layout": {
-                "width": 600,
-                "height": 400
-            }
-        });
+        Plotly.newPlot("gd", /* JSON object */ {
+            "data": [{ "y": [1, 2, 3] }],
+            "layout": { "width": 600, "height": 400}
+        })
     </script>
 </body>
 ```
-In the example above `Plotly` object is added to the window scope by the script in the `head` section.
-The `newPlot` method is then used to draw an interactive figure as described by `data` and `layout` into the desired `div` here named `gd`.
-As demonstrated in the example above basic knowledge of `html` and [JSON](https://en.wikipedia.org/wiki/JSON) syntax is enough to get started i.e. with/without JavaScript!
-To learn and build more with plotly.js please visit [plotly.js documentation](https://plotly.com/javascript).
+
+### Native ES6 JavaScript import
+```html
+<body>
+    <div id="gd"></div>
+
+    <script>
+        import "https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"
+
+        Plotly.newPlot("gd", /* JSON object */ {
+            "data": [{ "y": [1, 2, 3] }],
+            "layout": { "width": 600, "height": 400}
+        })
+    </script>
+</body>
+```
+
+To learn more about native imports please visit [here](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules). Also please note that ES6 import is not supported by IE-11.
 
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
@@ -112,7 +125,6 @@ For more info about contributing to Plotly documentation, please read through [c
 ## Bugs and feature requests
 
 Have a bug or a feature request? Please [open a Github issue](https://github.com/plotly/plotly.js/issues/new) keeping in mind the [issue guidelines](https://github.com/plotly/plotly.js/blob/master/.github/ISSUE_TEMPLATE.md). You may also want to read about [how changes get made to Plotly.js](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md)
-
 
 ---
 ## Contributing
