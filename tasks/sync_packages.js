@@ -116,7 +116,7 @@ function syncPartialBundlePkg(d) {
             '',
             'Contains trace modules ' + common.formatEnumeration(d.traceList) + '.',
             '',
-            'For more info on plotly.js, go to https://github.com/plotly/plotly.js',
+            'For more info on plotly.js, go to https://github.com/plotly/plotly.js#readme',
             '',
             '## Installation',
             '',
@@ -127,13 +127,14 @@ function syncPartialBundlePkg(d) {
             '',
             '```js',
             '// ES6 module',
-            'import Plotly from \'' + d.name + '\';',
+            'import Plotly from \'' + d.name + '\'',
             '',
             '// CommonJS',
-            'var Plotly = require(\'' + d.name + '\');',
+            'var Plotly = require(\'' + d.name + '\')',
             '```',
             '',
-            copyrightAndLicense
+            copyrightAndLicense,
+            'Please visit [complete list of dependencies](https://www.npmjs.com/package/plotly.js/v/' + pkg.version + '?activeTab=dependencies).'
         ];
 
         fs.writeFile(
@@ -209,7 +210,7 @@ function syncLocalesPkg(d) {
             '',
             d.desc,
             '',
-            'For more info on plotly.js, go to https://github.com/plotly/plotly.js',
+            'For more info on plotly.js, go to https://github.com/plotly/plotly.js#readme',
             '',
             '## Installation',
             '',
@@ -222,15 +223,15 @@ function syncLocalesPkg(d) {
             '',
             '```js',
             '// ES6 module',
-            'import Plotly from \'plotly.js\';',
-            'import locale from \'' + d.name + '/fr' + '\';',
+            'import Plotly from \'plotly.js\'',
+            'import locale from \'' + d.name + '/fr' + '\'',
             '',
             '// CommonJS',
-            'var Plotly = require(\'plotly.js\');',
-            'var locale = require(\'' + d.name + '/fr\');',
+            'var Plotly = require(\'plotly.js\')',
+            'var locale = require(\'' + d.name + '/fr\')',
             '',
             '// then',
-            'Plotly.register(locale);',
+            'Plotly.register(locale)',
             'Plotly.setPlotConfig({locale: \'fr\'})',
             '```',
             '',
@@ -248,7 +249,7 @@ function syncLocalesPkg(d) {
         var cnt = [constants.licenseDist, ''];
         localeFiles.forEach(function(f) {
             var n = path.basename(f, '.js');
-            cnt.push('exports[\'' + n + '\'] = require(\'./' + n + '.js\');');
+            cnt.push('exports[\'' + n + '\'] = require(\'./' + n + '.js\')');
         });
         cnt.push('');
 
