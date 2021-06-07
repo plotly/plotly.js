@@ -21,7 +21,7 @@ Plotly.js can be used to produce dozens of chart types and visualizations, inclu
 * [Load as a node module](#load-as-a-node-module)
 * [Load via script tag](#load-via-script-tag)
 * [Bundles](#bundles)
-* [Alternative ways to require or build plotly.js](#alternative-ways-to-require-or-build-plotlyjs)
+* [Alternative ways to load and build plotly.js](#alternative-ways-to-load-and-build-plotlyjs)
 * [Documentation](#documentation)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Contributing](#contributing)
@@ -39,17 +39,17 @@ npm i --save plotly.js-dist-min
 and use import or require in node.js
 ```js
 // ES6 module
-import Plotly from 'plotly.js-dist-min';
+import Plotly from 'plotly.js-dist-min'
 
 // CommonJS
-var Plotly = require('plotly.js-dist-min');
+var Plotly = require('plotly.js-dist-min')
 ```
 
 ---
 ## Load via script tag
 
 ### The script HTML element
-> In the examples below `Plotly` object is added to the window scope by `script` and `import`. The `newPlot` method is then used to draw an interactive figure as described by `data` and `layout` into the desired `div` here named `gd`. As demonstrated in the example above basic knowledge of `html` and [JSON](https://en.wikipedia.org/wiki/JSON) syntax is enough to get started i.e. with/without JavaScript! To learn and build more with plotly.js please visit [plotly.js documentation](https://plotly.com/javascript).
+> In the examples below `Plotly` object is added to the window scope by `script`. The `newPlot` method is then used to draw an interactive figure as described by `data` and `layout` into the desired `div` here named `gd`. As demonstrated in the example above basic knowledge of `html` and [JSON](https://en.wikipedia.org/wiki/JSON) syntax is enough to get started i.e. with/without JavaScript! To learn and build more with plotly.js please visit [plotly.js documentation](https://plotly.com/javascript).
 
 ```html
 <head>
@@ -65,6 +65,14 @@ var Plotly = require('plotly.js-dist-min');
         })
     </script>
 </body>
+```
+
+Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
+```html
+<script>
+    import "https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"
+    Plotly.newPlot("gd", [{ y: [1, 2, 3] }]);
+</script>
 ```
 
 Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastly.com/open-source>.
@@ -90,8 +98,8 @@ There are two kinds of plotly.js bundles:
 2. Custom bundles you can create yourself to optimize the size of bundle depending on your needs. Please visit [CUSTOM_BUNDLE](https://github.com/plotly/plotly.js/blob/master/CUSTOM_BUNDLE.md) for more information.
 
 ---
-## Alternative ways to require or build plotly.js
-If your library needs to bundle or directly require [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations of `browserify` or `webpack`, etc. then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
+## Alternative ways to load and build plotly.js
+If your library needs to bundle or directly load [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations of `browserify` or `webpack`, etc. then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
 
 ---
 ## Documentation
