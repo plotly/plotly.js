@@ -45,6 +45,8 @@ import Plotly from 'plotly.js-dist-min'
 var Plotly = require('plotly.js-dist-min')
 ```
 
+You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plotly.js-dist) if you prefer using an unminified package.
+
 ---
 ## Load via script tag
 
