@@ -3,7 +3,7 @@ You can simply make custom bundles yourself, if none of the [distributed package
 
 Install plotly.js, move to plotly.js folder then install plotly.js dependencies:
 ```sh
-npm i plotly.js@2.0.0-rc.3
+npm i plotly.js
 cd node_modules/plotly.js
 npm i
 ```

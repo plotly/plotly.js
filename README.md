@@ -55,7 +55,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.0.0.min.js"></script>
 </head>
 <body>
     <div id="gd"></div>
@@ -72,7 +72,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
 <script>
-    import "https://cdn.plot.ly/plotly-2.0.0-rc.3.min.js"
+    import "https://cdn.plot.ly/plotly-2.0.0.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }]);
 </script>
 ```
@@ -82,7 +82,7 @@ Fastly supports Plotly.js with free CDN service. Read more at <https://www.fastl
 ### Un-minified versions are also available on CDN
 While non-minified source files may contain characters outside UTF-8, it is recommended that you specify the `charset` when loading those bundles.
 ```html
-<script src="https://cdn.plot.ly/plotly-2.0.0-rc.3.js" charset="utf-8"></script>
+<script src="https://cdn.plot.ly/plotly-2.0.0.js" charset="utf-8"></script>
 ```
 
 > Please note that as of v2 the "plotly-latest" outputs (e.g. https://cdn.plot.ly/plotly-latest.min.js) will no longer be updated on the CDN, and will stay at the last v1 patch v1.58.4. Therefore, to use the CDN with plotly.js v2 and higher, you must specify an exact plotly.js version.
