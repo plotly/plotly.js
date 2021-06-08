@@ -93,7 +93,7 @@ jobs:
             npm run docker -- setup
       - run:
           name: Run image tests (part A)
-          command: ./.circleci/test.sh stable-image || { tar -cvf build/baselines.tar build/test_images/ ; return 1; } ; find build -maxdepth 1 -type f -delete
+          command: ./.circleci/test.sh stable-image || { tar -cvf build/baselines.tar build/test_images/ ; exit 1; } ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
