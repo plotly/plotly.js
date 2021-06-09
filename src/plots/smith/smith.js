@@ -444,14 +444,15 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         // var valsClipped = Axes.clipEnds(ax, vals);
         var tickSign = Axes.getTickSigns(ax)[2];
 
-        Axes.drawTicks(gd, ax, {
-            vals: vals,
-            layer: layers['radial-axis'],
-            path: Axes.makeTickPath(ax, 0, tickSign),
-            transFn: transFn,
-            crisp: false
-        });
+        // Axes.drawTicks(gd, ax, {
+            // vals: vals,
+            // layer: layers['radial-axis'],
+            // path: Axes.makeTickPath(ax, 0, tickSign),
+            // transFn: transFn,
+            // crisp: false
+        // });
 
+        // circular grid lines
         Axes.drawGrid(gd, ax, {
             vals: [{x: 0.2 }, {x: 0.5 }, {x: 1.0 }, {x: 2.0 }, {x: 5.0 } ],
             layer: layers['radial-grid'],
@@ -460,13 +461,13 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             crisp: false
         });
 
-        Axes.drawLabels(gd, ax, {
-            vals: vals,
-            layer: layers['radial-axis'],
-            transFn: transFn,
-            // labelFns: Axes.makeLabelFns(ax, 0)
-            labelFns: labelFns
-        });
+        // Axes.drawLabels(gd, ax, {
+            // vals: vals,
+            // layer: layers['radial-axis'],
+            // transFn: transFn,
+            // // labelFns: Axes.makeLabelFns(ax, 0)
+            // labelFns: labelFns
+        // });
     }
 
     // stash 'actual' radial axis angle for drag handlers (in degrees)
@@ -691,14 +692,10 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     };
 
     var gridPathFn = function(d) {
-        var rad = t2g(d);
-        var cosRad = Math.cos(rad);
-        var sinRad = Math.sin(rad);
-        return 'M' + [cx + innerRadius * cosRad, cy - innerRadius * sinRad] +
-            'L' + [cx + radius * cosRad, cy - radius * sinRad];
+        var value = d.x;
+        var radius = _this.radius / d.x;
 
-      // var h = 2.0 / d.y;
-      // var radius = h;
+        return Lib.pathArc(Math.abs(radius), Math.PI / 2.0, 3.0 * Math.PI / 2.0, cx + _this.radius, cy - radius);
     };
 
     var out = Axes.makeLabelFns(ax, 0);
@@ -767,29 +764,34 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         var tickSign = ax.ticks === 'inside' ? -1 : 1;
         var pad = (ax.linewidth || 1) / 2;
 
-        Axes.drawTicks(gd, ax, {
-            vals: vals,
-            layer: layers['angular-axis'],
-            path: 'M' + (tickSign * pad) + ',0h' + (tickSign * ax.ticklen),
-            transFn: transFn2,
-            crisp: false
-        });
+        // Axes.drawTicks(gd, ax, {
+            // vals: vals,
+            // layer: layers['angular-axis'],
+            // path: 'M' + (tickSign * pad) + ',0h' + (tickSign * ax.ticklen),
+            // transFn: transFn2,
+            // crisp: false
+        // });
 
         Axes.drawGrid(gd, ax, {
-            vals: vals,
+            // vals: vals,
+            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.2, 0.5, 1.0, 2.0, 5.0].map(function (v) {
+              return {
+                x: v,
+              };
+            }),
             layer: layers['angular-grid'],
             path: gridPathFn,
             transFn: Lib.noop,
             crisp: false
         });
 
-        Axes.drawLabels(gd, ax, {
-            vals: vals,
-            layer: layers['angular-axis'],
-            repositionOnUpdate: true,
-            transFn: transFn,
-            labelFns: labelFns
-        });
+        // Axes.drawLabels(gd, ax, {
+            // vals: vals,
+            // layer: layers['angular-axis'],
+            // repositionOnUpdate: true,
+            // transFn: transFn,
+            // labelFns: labelFns
+        // });
     }
 
     // TODO maybe two arcs is better here?
