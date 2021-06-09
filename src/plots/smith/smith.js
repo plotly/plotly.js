@@ -695,7 +695,11 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         var value = d.x;
         var radius = _this.radius / d.x;
 
-        return Lib.pathArc(Math.abs(radius), Math.PI / 2.0, 3.0 * Math.PI / 2.0, cx + _this.radius, cy - radius);
+        var arc = 2.0 * Math.atan(Math.abs(d.x));
+        var startAngle = value > 0.0 ? 1.5 * Math.PI - arc : Math.PI / 2.0;
+        var endAngle = value > 0.0 ? 1.5 * Math.PI : Math.PI / 2.0 + arc;
+
+        return Lib.pathArc(Math.abs(radius), startAngle, endAngle, cx + _this.radius, cy - radius);
     };
 
     var out = Axes.makeLabelFns(ax, 0);
