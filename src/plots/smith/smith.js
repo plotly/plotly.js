@@ -494,7 +494,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         layers['radial-line'].select('line'),
         hasRoomForIt && radialLayout.showline,
         {
-            x1: innerRadius,
+            x1: -radius,
             y1: 0,
             x2: radius,
             y2: 0,
