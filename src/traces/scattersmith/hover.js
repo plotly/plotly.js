@@ -29,8 +29,8 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 function makeHoverPointText(cdi, trace, subplot, pointData) {
     var radialAxis = subplot.radialAxis;
     var angularAxis = subplot.angularAxis;
-    radialAxis._hovertitle = 'r';
-    angularAxis._hovertitle = 'θ';
+    radialAxis._hovertitle = 're';
+    angularAxis._hovertitle = 'im';
 
     var fullLayout = {};
     fullLayout[trace.subplot] = {_subplot: subplot};

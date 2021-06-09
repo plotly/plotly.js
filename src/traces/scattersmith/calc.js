@@ -14,28 +14,6 @@ function sq(x) {
   return x * x;
 }
 
-function gammaTransformReal(re, im) {
-  var denom = sq(re + 1.0) + sq(im);
-  var result = (sq(re) + sq(im) - 1.0) / denom;
-  return result;
-}
-
-function gammaTransformImaginary(re, im) {
-  var denom = sq(re + 1.0) + sq(im);
-  var result = (2 * im) / denom;
-  return result;
-}
-
-function cart2pol(re, im) {
-  var r = Math.sqrt(sq(re) + sq(im));
-  var theta = Math.atan2(im, re);
-
-  return {
-    r: r,
-    theta: theta,
-  };
-}
-
 module.exports = function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
     var subplotId = trace.subplot;
@@ -52,10 +30,8 @@ module.exports = function calc(gd, trace) {
         var cdi = cd[i] = {};
 
         if(isNumeric(re) && isNumeric(im)) {
-            var pol = cart2pol(gammaTransformReal(re, im), gammaTransformImaginary(re, im));
-
-            cdi.re = pol.r;
-            cdi.im = pol.theta;
+            cdi.re = re;
+            cdi.im = im;
         } else {
             cdi.re = BADNUM;
         }

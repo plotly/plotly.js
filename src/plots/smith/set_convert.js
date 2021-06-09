@@ -49,8 +49,40 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
         case 'angularaxis':
             setConvertAngular(ax, polarLayout);
             break;
+        case 'realaxis':
+            setConvertReal(ax, polarLayout);
+            break;
     }
 };
+
+function setConvertReal(ax, polarLayout) {
+    var subplot = polarLayout._subplot;
+    var radius = subplot.radius;
+
+    ax.setGeometry = function () {
+      ax.c2g = function(v) {
+        var sq = function (x) { return x * x; };
+        var gammaX = function(re) {
+          var denom = sq(re + 1.0);
+          var result = (sq(re) - 1.0) / denom;
+          return result;
+        }
+        // console.log(v, gammaX(v));
+
+        return gammaX(v);
+      };
+
+      ax.g2c = function(v) {
+        return (v + 1.0) / (1.0 - v);
+      };
+
+      ax.g2p = function(v) {
+        return v * radius;
+      };
+
+      ax.c2p = function(v) { return ax.g2p(ax.c2g(v)); };
+    };
+}
 
 function setConvertRadial(ax, polarLayout) {
     var subplot = polarLayout._subplot;

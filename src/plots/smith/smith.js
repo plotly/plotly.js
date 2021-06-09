@@ -240,18 +240,29 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var cyy = _this.cyy = cy - yOffset2;
 
     _this.radialAxis = _this.mockAxis(fullLayout, polarLayout, radialLayout, {
-        // make this an 'x' axis to make positioning (especially rotation) easier
-        _id: 'x',
-        // convert to 'x' axis equivalent
+      _id: 'realaxis',
         side: {
             counterclockwise: 'top',
             clockwise: 'bottom'
         }[radialLayout.side],
         // keep track of real side
         _realSide: radialLayout.side,
-        // spans length 1 radius
-        domain: [innerRadius / gs.w, radius / gs.w]
+      domain: [0, 100]
     });
+
+    // _this.radialAxis = _this.mockAxis(fullLayout, polarLayout, radialLayout, {
+        // // make this an 'x' axis to make positioning (especially rotation) easier
+        // _id: 'x',
+        // // convert to 'x' axis equivalent
+        // side: {
+            // counterclockwise: 'top',
+            // clockwise: 'bottom'
+        // }[radialLayout.side],
+        // // keep track of real side
+        // _realSide: radialLayout.side,
+        // // spans length 1 radius
+        // domain: [innerRadius / gs.w, radius / gs.w]
+    // });
 
     _this.angularAxis = _this.mockAxis(fullLayout, polarLayout, angularLayout, {
         side: 'right',
@@ -380,16 +391,20 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     // set special grid path function
     var gridPathFn = function(d) {
-        var sq = function (x) { return x * x; };
-        var gammaX = function(re) {
-          var denom = sq(re + 1.0);
-          var result = (sq(re) - 1.0) / denom;
-          return result;
-        }
-        var gamma_x = gammaX(d.x);
+        // var sq = function (x) { return x * x; };
+        // var gammaX = function(re) {
+          // var denom = sq(re + 1.0);
+          // var result = (sq(re) - 1.0) / denom;
+          // return result;
+        // }
+        // var gamma_x = gammaX(d.x);
 
-        var gridRadius = 0.5 * (_this.radius - ax.r2p(gamma_x));
-        var gridCenter = gridRadius + ax.r2p(gamma_x);
+      // console.log(d);
+
+        var value = 5 * d.x
+
+        var gridRadius = 0.5 * (_this.radius - ax.c2p(value));
+        var gridCenter = gridRadius + ax.c2p(value);
         return Lib.pathArc(gridRadius, 0, 2 * Math.PI, gridCenter, 0);
     };
 
@@ -398,6 +413,39 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         layers['radial-axis'].selectAll('.xtick').remove();
         _this.radialTickLayout = newTickLayout;
     }
+
+    var out = Axes.makeLabelFns(ax, 0);
+    var labelStandoff = out.labelStandoff;
+    var labelFns = {};
+
+    labelFns.xFn = function(d) {
+        // var rad = t2g(d);
+        // return Math.cos(rad) * labelStandoff;
+      return ax.c2g(d);
+    };
+
+    labelFns.yFn = function(d) {
+        // var rad = t2g(d);
+        // var ff = Math.sin(rad) > 0 ? 0.2 : 1;
+        // return -Math.sin(rad) * (labelStandoff + d.fontSize * ff) +
+            // Math.abs(Math.cos(rad)) * (d.fontSize * MID_SHIFT);
+      return 0;
+    };
+
+    labelFns.anchorFn = function(d) {
+        // var rad = t2g(d);
+        // var cos = Math.cos(rad);
+        // return Math.abs(cos) < 0.1 ?
+            // 'middle' :
+            // (cos > 0 ? 'start' : 'end');
+      return 'middle';
+    };
+
+    labelFns.heightFn = function(d, a, h) {
+        // var rad = t2g(d);
+        // return -0.5 * (1 + Math.sin(rad)) * h;
+      return 0;
+    };
 
     if(hasRoomForIt) {
         ax.setScale();
@@ -426,7 +474,8 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             vals: vals,
             layer: layers['radial-axis'],
             transFn: transFn,
-            labelFns: Axes.makeLabelFns(ax, 0)
+            // labelFns: Axes.makeLabelFns(ax, 0)
+            labelFns: labelFns
         });
     }
 
@@ -657,6 +706,9 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         var sinRad = Math.sin(rad);
         return 'M' + [cx + innerRadius * cosRad, cy - innerRadius * sinRad] +
             'L' + [cx + radius * cosRad, cy - radius * sinRad];
+
+      // var h = 2.0 / d.y;
+      // var radius = h;
     };
 
     var out = Axes.makeLabelFns(ax, 0);
@@ -1431,15 +1483,8 @@ proto.updateAngularDrag = function(fullLayout) {
 };
 
 proto.isPtInside = function(d) {
-    var sectorInRad = this.sectorInRad;
-    var vangles = this.vangles;
-    var thetag = this.angularAxis.c2g(d.im);
-    var radialAxis = this.radialAxis;
-    var r = radialAxis.c2l(d.re);
-    var rl = radialAxis._rl;
-
-    var fn = vangles ? helpers.isPtInsidePolygon : Lib.isPtInsideSector;
-    return fn(r, thetag, rl, sectorInRad, vangles);
+    // return d.re >= 0;
+    return true;
 };
 
 proto.pathArc = function(r) {
