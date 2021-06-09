@@ -391,17 +391,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     // set special grid path function
     var gridPathFn = function(d) {
-        // var sq = function (x) { return x * x; };
-        // var gammaX = function(re) {
-          // var denom = sq(re + 1.0);
-          // var result = (sq(re) - 1.0) / denom;
-          // return result;
-        // }
-        // var gamma_x = gammaX(d.x);
-
-      // console.log(d);
-
-        var value = 5 * d.x
+        var value = d.x
 
         var gridRadius = 0.5 * (_this.radius - ax.c2p(value));
         var gridCenter = gridRadius + ax.c2p(value);
@@ -451,7 +441,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         ax.setScale();
 
         var vals = Axes.calcTicks(ax);
-        var valsClipped = Axes.clipEnds(ax, vals);
+        // var valsClipped = Axes.clipEnds(ax, vals);
         var tickSign = Axes.getTickSigns(ax)[2];
 
         Axes.drawTicks(gd, ax, {
@@ -463,7 +453,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         });
 
         Axes.drawGrid(gd, ax, {
-            vals: valsClipped,
+            vals: [{x: 0.2 }, {x: 0.5 }, {x: 1.0 }, {x: 2.0 }, {x: 5.0 } ],
             layer: layers['radial-grid'],
             path: gridPathFn,
             transFn: Lib.noop,
