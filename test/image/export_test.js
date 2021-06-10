@@ -1,40 +1,36 @@
-var fs = require('fs');
 var probeSync = require('probe-image-size/sync');
+var PNG = require('pngjs').PNG;
+var fs = require('fs');
 
 var getMockList = require('./assets/get_mock_list');
-var getRequestOpts = require('./assets/get_image_request_options');
 var getImagePaths = require('./assets/get_image_paths');
-
-// packages inside the image server docker
-var request = require('request');
-var test = require('tape');
 
 // image formats to test
 //
 // N.B. 'png' is tested in `npm run test-image, no need to duplicate here
-//
-// N.B. 'jpeg' and 'webp' lead to errors because of the image server code
-//      is looking for Plotly.Color which isn't exposed anymore
-var FORMATS = ['svg', 'pdf', 'eps'];
+var FORMATS = ['svg', 'jpg', 'jpeg', 'webp', 'pdf']; // exporting 'esp' requires additional dependency on CircleCI
 
-// non-exhaustive list of mocks to test
-var DEFAULT_LIST = [
-    '0', 'geo_first', 'gl3d_z-range', 'text_export', 'layout_image', 'gl2d_12',
-    'range_slider_initial_valid'
-];
-
-// return dimensions [in px]
-var WIDTH = 700;
-var HEIGHT = 500;
+var ONLY_FILE_SIZE = ['pdf', 'esp'];
 
 // minimum satisfactory file size [in bytes]
 var MIN_SIZE = 100;
 
-// wait time between each test batch
-var BATCH_WAIT = 500;
-
-// number of tests in each test batch
-var BATCH_SIZE = 5;
+// non-exhaustive list of mocks to test
+var DEFAULT_LIST = [
+    'plot_types',
+    'annotations',
+    'shapes',
+    'range_slider',
+    'contour_legend-colorscale',
+    'layout_image',
+    'image_astronaut_source',
+    'gl2d_no-clustering2',
+    'gl3d_surface-heatmap-treemap_transparent-colorscale',
+    'mapbox_stamen-style',
+    'zsmooth_methods',
+    'fonts',
+    'mathjax'
+];
 
 /**
  *  Image export test script.
@@ -47,7 +43,7 @@ var BATCH_SIZE = 5;
  *
  *  Examples:
  *
- *  Run the export test on the default mock list (in batch):
+ *  Run the export test on the default mock list:
  *
  *      npm run test-image
  *
@@ -55,7 +51,7 @@ var BATCH_SIZE = 5;
  *
  *      npm run test-image -- contour_nolines
  *
- *  Run the export test on all gl3d mocks (in batch):
+ *  Run the export test on all gl3d mocks:
  *
  *      npm run test-image -- gl3d_*
  */
@@ -64,74 +60,48 @@ var pattern = process.argv[2];
 var mockList = pattern ? getMockList(pattern) : DEFAULT_LIST;
 
 if(mockList.length === 0) {
-    throw new Error('No mocks found with pattern ' + pattern);
+    throw 'No mocks found with pattern ' + pattern;
 }
 
-// main
-runInBatch(mockList);
+var failed = 0;
+for(var i = 0; i < mockList.length; i++) {
+    for(var j = 0; j < FORMATS.length; j++) {
+        var mockName = mockList[i];
+        var format = FORMATS[j];
+        var base = getImagePaths(mockName).baseline;
+        var test = getImagePaths(mockName, format).test;
+        console.log('testing sizes of' + mockName + '.' + format);
 
-function runInBatch(mockList) {
-    var running = 0;
+        var fileSize = fs.statSync(test).size;
+        if(!(fileSize >= MIN_SIZE)) {
+            console.error('invalid file size: ' + fileSize);
+            failed++;
+        }
 
-    test('testing image export formats', function(t) {
-        t.plan(mockList.length * FORMATS.length);
+        if(ONLY_FILE_SIZE.indexOf(format) === -1) {
+            var img0 = PNG.sync.read(fs.readFileSync(base));
+            var img1 = probeSync(fs.readFileSync(test));
+            var s0, s1, key;
 
-        for(var i = 0; i < mockList.length; i++) {
-            for(var j = 0; j < FORMATS.length; j++) {
-                run(mockList[i], FORMATS[j], t);
+            key = 'width';
+            s0 = img0[key];
+            s1 = img1[key];
+            if(s0 !== s1) {
+                console.error(key + 's do not match: ' + s0 + ' vs ' + s1);
+                failed++;
+            }
+
+            key = 'height';
+            s0 = img0[key];
+            s1 = img1[key];
+            if(s0 !== s1) {
+                console.error(key + 's do not match: ' + s0 + ' vs ' + s1);
+                failed++;
             }
         }
-    });
-
-    function run(mockName, format, t) {
-        if(running >= BATCH_SIZE) {
-            setTimeout(function() {
-                run(mockName, format, t);
-            }, BATCH_WAIT);
-            return;
-        }
-        running++;
-
-        // throttle the number of tests running concurrently
-
-        testExport(mockName, format, function(didExport, mockName, format) {
-            running--;
-            t.ok(didExport, mockName + ' should be properly exported as a ' + format);
-        });
     }
 }
 
-// The tests below determine whether the images are properly
-// exported by (only) checking the file size of the generated images.
-function testExport(mockName, format, cb) {
-    var specs = {
-        mockName: mockName,
-        format: format,
-        width: WIDTH,
-        height: HEIGHT
-    };
-
-    var requestOpts = getRequestOpts(specs);
-    var imagePaths = getImagePaths(mockName, format);
-    var saveImageStream = fs.createWriteStream(imagePaths.test);
-
-    function checkExport(err) {
-        if(err) throw err;
-
-        var didExport;
-
-        if(format === 'svg') {
-            var dims = probeSync(fs.readFileSync(imagePaths.test));
-            didExport = (dims.width === WIDTH) && (dims.height === HEIGHT);
-        } else {
-            var stats = fs.statSync(imagePaths.test);
-            didExport = stats.size > MIN_SIZE;
-        }
-
-        cb(didExport, mockName, format);
-    }
-
-    request(requestOpts)
-        .pipe(saveImageStream)
-        .on('close', checkExport);
+if(failed) {
+    throw 'Problem during export.';
 }

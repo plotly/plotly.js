@@ -78,41 +78,90 @@ jobs:
           name: Run jasmine tests (part C)
           command: ./.circleci/test.sh no-gl-flaky-jasmine
 
-  stable-image:
-    docker:
-      - image: plotly/testbed:latest
+  make-baselines:
     parallelism: 4
-    working_directory: /var/www/streambed/image_server/plotly.js/
+    docker:
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
     steps:
       - attach_workspace:
-          at: /var/www/streambed/image_server/
+          at: ~/
       - run:
-          name: Run and setup container
+          name: which pip3 version
+          command: which pip3 && pip3 --version
+      - run:
+          name: install kaleido v0.2.1
+          command: python3 -m pip install kaleido==0.2.1
+      - run:
+          name: install plotly.io v4.14.3
+          command: python3 -m pip install plotly==4.14.3
+      - run:
+          name: install fonts
           command: |
-            supervisord &
-            npm run docker -- setup
+            sudo cp -r .circleci/fonts/ /usr/share/
+            sudo fc-cache -f
       - run:
-          name: Run image tests (part A)
-          command: ./.circleci/test.sh stable-image || { tar -cvf build/baselines.tar build/test_images/ ; exit 1; } ; find build -maxdepth 1 -type f -delete
+          name: create all png files
+          command: ./.circleci/test.sh make-baselines
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
+  test-baselines:
+    docker:
+      - image: circleci/node:12.22.1
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: compare pixels
+          command: ./.circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
 
-  flaky-image:
+  make-exports:
     docker:
-      - image: plotly/testbed:latest
-    working_directory: /var/www/streambed/image_server/plotly.js/
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
     steps:
       - attach_workspace:
-          at: /var/www/streambed/image_server/
+          at: ~/
       - run:
-          name: Run and setup container
-          command: |
-            supervisord &
-            npm run docker -- setup
+          name: which pip3 before upgrade
+          command: which pip3 && pip3 --version
       - run:
-          name: Run image tests (part B)
-          command: ./.circleci/test.sh flaky-image ; find build -maxdepth 1 -type f -delete
+          name: upgrade pip3
+          command: python3 -m pip install --upgrade pip
+      - run:
+          name: which pip3 after upgrade
+          command: which pip3 && pip3 --version
+      - run:
+          name: install kaleido
+          command: python3 -m pip install kaleido
+      - run:
+          name: install plotly.io
+          command: python3 -m pip install plotly
+      - run:
+          name: create svg, jpg, jpeg, webp and pdf files
+          command: python3 test/image/make_exports.py
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
+  test-exports:
+    docker:
+      - image: circleci/node:12.22.1
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: test export sizes
+          command: node test/image/export_test.js ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
@@ -237,12 +286,18 @@ workflows:
       - no-gl-flaky-jasmine:
           requires:
             - install-and-cibuild
-      - stable-image:
+      - make-baselines:
           requires:
             - install-and-cibuild
-      - flaky-image:
+      - test-baselines:
+          requires:
+            - make-baselines
+      - make-exports:
           requires:
             - install-and-cibuild
+      - test-exports:
+          requires:
+            - make-exports
       - mock-validation:
           requires:
             - install-and-cibuild
