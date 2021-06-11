@@ -130,20 +130,14 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: which pip3 before upgrade
+          name: which pip3 version
           command: which pip3 && pip3 --version
       - run:
-          name: upgrade pip3
-          command: python3 -m pip install --upgrade pip
+          name: install kaleido v0.2.1
+          command: python3 -m pip install kaleido==0.2.1
       - run:
-          name: which pip3 after upgrade
-          command: which pip3 && pip3 --version
-      - run:
-          name: install kaleido
-          command: python3 -m pip install kaleido
-      - run:
-          name: install plotly.io
-          command: python3 -m pip install plotly
+          name: install plotly.io v4.14.3
+          command: python3 -m pip install plotly==4.14.3
       - run:
           name: create svg, jpg, jpeg, webp and pdf files
           command: python3 test/image/make_exports.py
