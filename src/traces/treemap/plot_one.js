@@ -24,6 +24,8 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
     var cd0 = cd[0];
     var trace = cd0.trace;
     var type = trace.type;
+    var isIcicle = type === 'icicle';
+
     var hierarchy = cd0.hierarchy;
     var entry = helpers.findEntryWithLevel(hierarchy, trace.level);
 
@@ -260,10 +262,10 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
 
         // Note that `pad` is just an integer for `icicle`` traces where
         // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
-        var pad = trace[type === 'icicle' ? 'tiling' : 'marker'].pad;
+        var pad = trace[isIcicle ? 'tiling' : 'marker'].pad;
         if(opts.isHeader) {
-            x0 += (type === 'icicle' ? pad : pad.l) - TEXTPAD;
-            x1 -= (type === 'icicle' ? pad : pad.r) - TEXTPAD;
+            x0 += (isIcicle ? pad : pad.l) - TEXTPAD;
+            x1 -= (isIcicle ? pad : pad.r) - TEXTPAD;
             if(x0 >= x1) {
                 var mid = (x0 + x1) / 2;
                 x0 = mid;
@@ -273,10 +275,10 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             // limit the drawing area for headers
             var limY;
             if(hasBottom) {
-                limY = y1 - (type === 'icicle' ? pad : pad.b);
+                limY = y1 - (isIcicle ? pad : pad.b);
                 if(y0 < limY && limY < y1) y0 = limY;
             } else {
-                limY = y0 + (type === 'icicle' ? pad : pad.t);
+                limY = y0 + (isIcicle ? pad : pad.t);
                 if(y0 < limY && limY < y1) y1 = limY;
             }
         }
@@ -377,7 +379,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
                         }
                     } else {
                         prev = Lib.extendFlat({}, pt);
-                        if(type === 'icicle') {
+                        if(isIcicle) {
                             if(opts.orientation === 'h') {
                                 if(opts.flipX) prev.x0 = pt.x1;
                                 else prev.x1 = 0;
