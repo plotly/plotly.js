@@ -133,6 +133,7 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
+    "amdefine": "^1.0.1",
     "brfs": "^2.0.2",
     "browserify": "^17.0.0",
     "browserify-transform-tools": "^1.7.0",
