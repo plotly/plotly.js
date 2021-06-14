@@ -229,24 +229,6 @@ Please note that image pixel comparison tests run using circleci/python:3.8.9 do
 Therefore the final baselines may need updates.
 This could simply be done by downloading the `baselines.tar` stored in the `ARTIFACTS` tab of `test-baselines` job (if the test failed).
 
-### Image pixel comparison tests
-
-Image pixel comparison tests are run in a docker container. For more
-information on how to run them locally, please refer to [image test
-README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
-
-Running the test locally outputs the generated png images in `build/test_images/` and the png diffs in `build/test_images_diff/` (two git-ignored directories).
-
-To view the image pixel comparison test results, run
-
-```
-npm run start-image_viewer
-```
-
-which shows the baseline image, the generated image, the diff and the json mocks of test cases that failed.
-
-To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
-
 ### Using the developer console in karma to write/debug jasmine tests
 
 - Click on the `DEBUG` button

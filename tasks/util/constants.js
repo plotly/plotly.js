@@ -196,7 +196,6 @@ module.exports = {
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
-    pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
 
     pathToImageTest: pathToImageTest,
     pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),
