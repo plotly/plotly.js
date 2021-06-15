@@ -54,11 +54,7 @@ LAST = [
     'gl2d_heatmapgl_discrete'
 ]
 
-HAD = [
-    LAST[0] in allNames,
-    LAST[1] in allNames,
-    LAST[2] in allNames
-]
+HAD = [item in allNames for item in LAST]
 
 allNames = [a for a in allNames if all(b not in a for b in LAST)]
 
