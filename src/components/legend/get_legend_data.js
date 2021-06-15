@@ -87,10 +87,14 @@ module.exports = function getLegendData(calcdata, opts) {
     if(shouldCollapse) legendData = [legendData];
 
     var orderFn = function(a, b) {
-        return a.trace.legendrank - b.trace.legendrank;
+        return (
+            (a.trace.legendrank - b.trace.legendrank) ||
+            (a._preSort - b._preSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
+        );
     };
     for(i = 0; i < legendData.length; i++) {
         // sort considering trace.legendrank and legend.traceorder
+        legendData[i].forEach(function(a, i) { a._preSort = i; });
         legendData[i].sort(orderFn);
         if(reversed) legendData[i].reverse();
 

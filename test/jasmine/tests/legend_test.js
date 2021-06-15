@@ -285,14 +285,14 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 1, trace: {
                     legendrank: 1,
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 0, trace: {
                     legendrank: 3,
                     type: 'scatter',
                     visible: true,
@@ -301,7 +301,7 @@ describe('legend getLegendData user-defined legendrank', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     legendrank: 2,
                     type: 'bar',
                     visible: 'legendonly',
@@ -347,21 +347,21 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 2, trace: {
                     legendrank: 1,
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     legendrank: 2,
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 0, trace: {
                     legendrank: 3,
                     type: 'scatter',
                     visible: true,
@@ -439,21 +439,21 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     legendrank: 3,
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     legendrank: 2,
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 2, trace: {
                     legendrank: 1,
                     type: 'box',
                     visible: true,
@@ -499,14 +499,14 @@ describe('legend getLegendData user-defined legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     legendrank: 3,
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     legendrank: 1,
                     type: 'box',
                     visible: true,
@@ -515,7 +515,7 @@ describe('legend getLegendData user-defined legendrank', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     legendrank: 2,
                     type: 'bar',
                     visible: 'legendonly',
@@ -564,13 +564,13 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
@@ -578,7 +578,7 @@ describe('legend getLegendData default legendrank', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
@@ -620,19 +620,19 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 2, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
@@ -703,19 +703,19 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 2, trace: {
                     type: 'box',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
@@ -757,13 +757,13 @@ describe('legend getLegendData default legendrank', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'box',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
@@ -771,7 +771,7 @@ describe('legend getLegendData default legendrank', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_preSort: 0, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
