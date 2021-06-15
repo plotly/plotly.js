@@ -14,8 +14,7 @@ _credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
 pio.kaleido.scope.mapbox_access_token = json.load(_credentials)['MAPBOX_ACCESS_TOKEN']
 _credentials.close()
 
-allFormats = ['svg', 'jpg', 'jpeg', 'webp', 'pdf']
-# 'eps' require additional dependency
+allFormats = ['svg', 'jpg', 'jpeg', 'webp', 'eps', 'pdf']
 # 'png' is tested by image-test
 
 allNames = [
