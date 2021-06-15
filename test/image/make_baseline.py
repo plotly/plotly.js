@@ -14,10 +14,7 @@ dirIn = os.path.join(root, 'test', 'image', 'mocks')
 dirOut = os.path.join(root, 'build', 'test_images')
 
 if '=' in args :
-    newArgs = []
-    for i in range(args.index('=') + 1, len(args)) :
-        newArgs.append(args[i])
-    args = newArgs
+    args = args[args.index('=') + 1:]
     dirOut = os.path.join(root, 'test', 'image', 'baselines')
     print('output to', dirOut)
 
