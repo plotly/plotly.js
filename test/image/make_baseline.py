@@ -58,9 +58,7 @@ HAD = [item in allNames for item in LAST]
 
 allNames = [a for a in allNames if all(b not in a for b in LAST)]
 
-if HAD[0] : allNames.append(LAST[0])
-if HAD[1] : allNames.append(LAST[1])
-if HAD[2] : allNames.append(LAST[2])
+allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
 # unable to generate baselines for the following mocks
 blacklist = [
