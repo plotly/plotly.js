@@ -981,16 +981,28 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
     it('should set unit width for categories in overlay mode', function() {
         var gd = mockBarPlot([{
-            type: 'bar',
             x: ['a', 'b', 'c'],
             y: [2, 2, 2]
         },
         {
-            type: 'bar',
             x: ['a', 'c'],
             y: [1, 1]
         }], {
             barmode: 'overlay'
+        });
+
+        expect(gd.calcdata[1][0].t.bardelta).toBe(1);
+    });
+
+    it('should set unit width for categories case of missing data for defined category', function() {
+        var gd = mockBarPlot([{
+            x: ['a', 'c'],
+            y: [1, 2]
+        }, {
+            x: ['a', 'c'],
+            y: [1, 2],
+        }], {
+            xaxis: { categoryarray: ['a', 'b', 'c'] }
         });
 
         expect(gd.calcdata[1][0].t.bardelta).toBe(1);
