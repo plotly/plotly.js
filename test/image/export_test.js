@@ -8,9 +8,9 @@ var getImagePaths = require('./assets/get_image_paths');
 // image formats to test
 //
 // N.B. 'png' is tested in `npm run test-image, no need to duplicate here
-var FORMATS = ['svg', 'jpg', 'jpeg', 'webp', 'pdf']; // exporting 'esp' requires additional dependency on CircleCI
+var FORMATS = ['svg', 'jpg', 'jpeg', 'webp', 'pdf']; // exporting 'eps' requires additional dependency on CircleCI
 
-var ONLY_FILE_SIZE = ['pdf', 'esp'];
+var ONLY_FILE_SIZE = ['pdf', 'eps'];
 
 // minimum satisfactory file size [in bytes]
 var MIN_SIZE = 100;
