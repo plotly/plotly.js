@@ -56,7 +56,7 @@ LAST = [
 
 HAD = [item in allNames for item in LAST]
 
-allNames = [a for a in allNames if all(b not in a for b in LAST)]
+allNames = [a for a in allNames if a not in LAST]
 
 allNames += [item for item, had_item in zip(LAST, HAD) if had_item]
 
@@ -65,7 +65,7 @@ blacklist = [
     'mapbox_density0-legend',
     'mapbox_osm-style'
 ]
-allNames = [a for a in allNames if all(b not in a for b in blacklist)]
+allNames = [a for a in allNames if a not in blacklist]
 
 if len(allNames) == 0 :
     print('error: Nothing to create!')
