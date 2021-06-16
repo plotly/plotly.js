@@ -248,7 +248,289 @@ describe('legend defaults', function() {
     });
 });
 
-describe('legend getLegendData', function() {
+describe('legend getLegendData user-defined legendrank', function() {
+    'use strict';
+
+    var calcdata, opts, legendData, expected;
+
+    it('should group legendgroup traces', function() {
+        calcdata = [
+            [{trace: {
+                legendrank: 3,
+                type: 'scatter',
+                visible: true,
+                legendgroup: 'group',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 2,
+                type: 'bar',
+                visible: 'legendonly',
+                legendgroup: '',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 1,
+                type: 'scatter',
+                visible: true,
+                legendgroup: 'group',
+                showlegend: true
+            }}]
+        ];
+        opts = {
+            traceorder: 'grouped'
+        };
+
+        legendData = getLegendData(calcdata, opts);
+
+        expected = [
+            [
+                [{_preSort: 1, trace: {
+                    legendrank: 1,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }}],
+                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }}]
+            ],
+            [
+                [{_groupMinRank: 2, _preGroupSort: 1, _preSort: 0, trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }}]
+            ]
+        ];
+
+        expect(legendData).toEqual(expected);
+        expect(opts._lgroupsLength).toEqual(2);
+    });
+
+    it('should collapse when data has only one group', function() {
+        calcdata = [
+            [{trace: {
+                legendrank: 3,
+                type: 'scatter',
+                visible: true,
+                legendgroup: '',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 2,
+                type: 'bar',
+                visible: 'legendonly',
+                legendgroup: '',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 1,
+                type: 'scatter',
+                visible: true,
+                legendgroup: '',
+                showlegend: true
+            }}]
+        ];
+        opts = {
+            traceorder: 'grouped'
+        };
+
+        legendData = getLegendData(calcdata, opts);
+
+        expected = [
+            [
+                [{_preSort: 2, trace: {
+                    legendrank: 1,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }}],
+                [{_preSort: 1, trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }}],
+                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }}]
+            ]
+        ];
+
+        expect(legendData).toEqual(expected);
+        expect(opts._lgroupsLength).toEqual(1);
+    });
+
+    it('should return empty array when legend data has no traces', function() {
+        calcdata = [
+            [{trace: {
+                legendrank: 3,
+                type: 'histogram',
+                visible: true,
+                legendgroup: '',
+                showlegend: false
+            }}],
+            [{trace: {
+                legendrank: 2,
+                type: 'box',
+                visible: 'legendonly',
+                legendgroup: '',
+                showlegend: false
+            }}],
+            [{trace: {
+                legendrank: 1,
+                type: 'heatmap',
+                visible: true,
+                legendgroup: ''
+            }}]
+        ];
+        opts = {
+            _main: true,
+            traceorder: 'normal'
+        };
+
+        legendData = getLegendData(calcdata, opts);
+        expect(legendData).toEqual([]);
+    });
+
+    it('should reverse the order when legend.traceorder is set', function() {
+        calcdata = [
+            [{trace: {
+                legendrank: 3,
+                type: 'scatter',
+                visible: true,
+                legendgroup: '',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 2,
+                type: 'bar',
+                visible: 'legendonly',
+                legendgroup: '',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 1,
+                type: 'box',
+                visible: true,
+                legendgroup: '',
+                showlegend: true
+            }}]
+        ];
+        opts = {
+            traceorder: 'reversed'
+        };
+
+        legendData = getLegendData(calcdata, opts);
+
+        expected = [
+            [
+                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }}],
+                [{_preSort: 1, trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }}],
+                [{_preSort: 2, trace: {
+                    legendrank: 1,
+                    type: 'box',
+                    visible: true,
+                    legendgroup: '',
+                    showlegend: true
+                }}]
+            ]
+        ];
+
+        expect(legendData).toEqual(expected);
+        expect(opts._lgroupsLength).toEqual(1);
+    });
+
+    it('should reverse the trace order within groups when reversed+grouped', function() {
+        calcdata = [
+            [{trace: {
+                legendrank: 3,
+                type: 'scatter',
+                visible: true,
+                legendgroup: 'group',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 2,
+                type: 'bar',
+                visible: 'legendonly',
+                legendgroup: '',
+                showlegend: true
+            }}],
+            [{trace: {
+                legendrank: 1,
+                type: 'box',
+                visible: true,
+                legendgroup: 'group',
+                showlegend: true
+            }}]
+        ];
+        opts = {
+            traceorder: 'reversed+grouped'
+        };
+
+        legendData = getLegendData(calcdata, opts);
+
+        expected = [
+            [
+                [{_groupMinRank: 1, _preGroupSort: 0, _preSort: 0, trace: {
+                    legendrank: 3,
+                    type: 'scatter',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }}],
+                [{_preSort: 1, trace: {
+                    legendrank: 1,
+                    type: 'box',
+                    visible: true,
+                    legendgroup: 'group',
+                    showlegend: true
+                }}]
+            ],
+            [
+                [{_groupMinRank: 2, _preGroupSort: 1, _preSort: 0, trace: {
+                    legendrank: 2,
+                    type: 'bar',
+                    visible: 'legendonly',
+                    legendgroup: '',
+                    showlegend: true
+                }}]
+            ]
+        ];
+
+        expect(legendData).toEqual(expected);
+        expect(opts._lgroupsLength).toEqual(2);
+    });
+});
+
+describe('legend getLegendData default legendrank', function() {
     'use strict';
 
     var calcdata, opts, legendData, expected;
@@ -260,7 +542,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: 'group',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -283,14 +564,13 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
-
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
@@ -298,7 +578,7 @@ describe('legend getLegendData', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_groupMinRank: Infinity, _preGroupSort: 1, _preSort: 0, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
@@ -318,7 +598,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: '',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -341,20 +620,19 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
-
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_preSort: 2, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
@@ -374,7 +652,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: '',
                 showlegend: false
-
             }}],
             [{trace: {
                 type: 'box',
@@ -404,7 +681,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: '',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -427,20 +703,19 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 2, trace: {
                     type: 'box',
                     visible: true,
                     legendgroup: '',
                     showlegend: true
-
                 }}],
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
                     showlegend: true
                 }}],
-                [{trace: {
+                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: '',
@@ -460,7 +735,6 @@ describe('legend getLegendData', function() {
                 visible: true,
                 legendgroup: 'group',
                 showlegend: true
-
             }}],
             [{trace: {
                 type: 'bar',
@@ -483,14 +757,13 @@ describe('legend getLegendData', function() {
 
         expected = [
             [
-                [{trace: {
+                [{_preSort: 1, trace: {
                     type: 'box',
                     visible: true,
                     legendgroup: 'group',
                     showlegend: true
-
                 }}],
-                [{trace: {
+                [{_groupMinRank: Infinity, _preGroupSort: 0, _preSort: 0, trace: {
                     type: 'scatter',
                     visible: true,
                     legendgroup: 'group',
@@ -498,7 +771,7 @@ describe('legend getLegendData', function() {
                 }}]
             ],
             [
-                [{trace: {
+                [{_groupMinRank: Infinity, _preGroupSort: 1, _preSort: 0, trace: {
                     type: 'bar',
                     visible: 'legendonly',
                     legendgroup: '',
