@@ -29,15 +29,29 @@ module.exports = {
             dflt: 'h',
             editType: 'plot',
             description: [
-                'Sets the orientation of the icicle.',
-                'With *v* the icicle grows vertically.',
-                'With *h* the icicle grows horizontally.',
+                'When set in conjunction with `tiling.flip`, determines on',
+                'which side the root nodes are drawn in the chart. If',
+                '`tiling.orientation` is *v* and `tiling.flip` is **, the root',
+                'nodes appear at the top. If `tiling.orientation` is *v* and',
+                '`tiling.flip` is *y*, the root nodes appear at the bottom. If',
+                '`tiling.orientation` is *h* and `tiling.flip` is **, the',
+                'root nodes appear at the left. If `tiling.orientation` is *h*',
+                'and `tiling.flip` is *x*, the root nodes appear at the right.',
             ].join(' ')
         },
 
         flip: treemapAttrs.tiling.flip,
 
-        pad: treemapAttrs.tiling.pad,
+        pad: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: [
+                'Sets the inner padding (in px).'
+            ].join(' ')
+        },
+
 
         editType: 'calc',
     },
