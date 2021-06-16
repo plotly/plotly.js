@@ -72,10 +72,7 @@ module.exports = function getLegendData(calcdata, opts) {
     // collapse all groups into one if all groups are blank
     var shouldCollapse = !hasOneNonBlankGroup || !grouped;
 
-    // rearrange lgroupToTraces into a d3-friendly array of arrays
-    var legendData;
-
-    legendData = [];
+    var legendData = [];
     for(i = 0; i < lgroups.length; i++) {
         var t = lgroupToTraces[lgroups[i]];
         if(shouldCollapse) {
@@ -86,19 +83,43 @@ module.exports = function getLegendData(calcdata, opts) {
     }
     if(shouldCollapse) legendData = [legendData];
 
-    var orderFn = function(a, b) {
+    for(i = 0; i < legendData.length; i++) {
+        // find minimum rank within group
+        var groupMinRank = Infinity;
+        for(j = 0; j < legendData[i].length; j++) {
+            var rank = legendData[i][j].trace.legendrank;
+            if(groupMinRank > rank) groupMinRank = rank;
+        }
+
+        // record on first group element
+        legendData[i][0]._groupMinRank = groupMinRank;
+        legendData[i][0]._preGroupSort = i;
+    }
+
+    var orderFn1 = function(a, b) {
+        return (
+            (a[0]._groupMinRank - b[0]._groupMinRank) ||
+            (a[0]._preGroupSort - b[0]._preGroupSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
+        );
+    };
+
+    var orderFn2 = function(a, b) {
         return (
             (a.trace.legendrank - b.trace.legendrank) ||
             (a._preSort - b._preSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
         );
     };
+
+    // sort considering minimum group legendrank
+    legendData.forEach(function(a, k) { a[0]._preGroupSort = k; });
+    legendData.sort(orderFn1);
     for(i = 0; i < legendData.length; i++) {
         // sort considering trace.legendrank and legend.traceorder
-        legendData[i].forEach(function(a, i) { a._preSort = i; });
-        legendData[i].sort(orderFn);
+        legendData[i].forEach(function(a, k) { a._preSort = k; });
+        legendData[i].sort(orderFn2);
         if(reversed) legendData[i].reverse();
 
-        // add extra dim
+        // rearrange lgroupToTraces into a d3-friendly array of arrays
         for(j = 0; j < legendData[i].length; j++) {
             legendData[i][j] = [
                 legendData[i][j]
