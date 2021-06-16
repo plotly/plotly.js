@@ -789,13 +789,24 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
             crisp: false
         });
 
-        // Axes.drawLabels(gd, ax, {
-            // vals: vals,
-            // layer: layers['angular-axis'],
-            // repositionOnUpdate: true,
-            // transFn: transFn,
-            // labelFns: labelFns
-        // });
+        Axes.drawLabels(gd, ax, {
+            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 1.0, 2.0, 5.0, Infinity].map(function (v) {
+              var radius = _this.radius / v;
+              var theta = 2.0 * Math.atan2(radius, _this.radius);
+
+              return {
+                x: theta * 360.0 / (2 * Math.PI),
+                text: v === Infinity ? '∞' : ((v === 0.0 ? '0 + 0' : v) + 'j'),
+                font: '"Open Sans", verdana, arial, sans-serif',
+                fontColor: '#444',
+                fontSize: v === Infinity ? 16 : 12,
+              };
+            }),
+            layer: layers['angular-axis'],
+            repositionOnUpdate: true,
+            transFn: transFn,
+            labelFns: labelFns
+        });
     }
 
     // TODO maybe two arcs is better here?
