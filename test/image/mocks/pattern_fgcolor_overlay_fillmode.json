@@ -1,0 +1,221 @@
+{
+  "data": [
+    {
+      "x": ["a", "b", "c", "d", "e"],
+      "y": [1, 2, 3, 4, 5],
+      "name": "Bar 1",
+      "type": "bar",
+      "textposition": "outside",
+      "text": "bg+fg<br><br>color",
+      "marker": {
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": "/",
+          "bgcolor": ["white", "lightblue", "blue", "darkblue", "black"],
+          "fgcolor": ["black", "darkblue", "blue", "lightblue", "white"]
+        }
+      }
+    },
+    {
+      "x": ["a", "b", "c", "d", "e"],
+      "y": [2, 3, 4, 5, 6],
+      "name": "Bar 2",
+      "type": "bar",
+      "textposition": "outside",
+      "text": "shape",
+      "marker": {
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": ["|", "/", "-", "\\", "|"]
+        }
+      }
+    },
+    {
+      "x": ["a", "b", "c", "d", "e"],
+      "y": [3, 4, 5, 6, 7],
+      "name": "Bar 3",
+      "type": "bar",
+      "textposition": "outside",
+      "text": "size",
+      "marker": {
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": "x",
+          "size": [4, 6, 8, 10, 12]
+        }
+      }
+    },
+    {
+      "x": ["a", "b", "c", "d", "e"],
+      "y": [6, 7, 8, 9, 10],
+      "name": "Bar 4",
+      "type": "bar",
+      "textposition": "outside",
+      "text": "solidity",
+      "marker": {
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": ".",
+          "bgcolor": "yellow",
+          "solidity": [0.1, 0.3, 0.5, 0.7, 0.9]
+        }
+      }
+    },
+
+    {
+      "t": ["M", "N", "O", "P"],
+      "r": [1, 2, 3, 4],
+      "type": "barpolar",
+      "name": "Barpolar 1",
+      "marker": {
+        "color": "red",
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": "+",
+          "size": [1, 2, 3, 4]
+        }
+      }
+    },
+    {
+      "t": ["M", "N", "O", "P"],
+      "r": [2, 3, 4, 1],
+      "type": "barpolar",
+      "name": "Barpolar 2",
+      "marker": {
+        "color": "rgba(0,127,0,0.5)",
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": "x",
+          "solidity": 0.75
+        }
+      }
+    },
+    {
+      "t": ["M", "N", "O", "P"],
+      "r": [3, 4, 1, 2],
+      "type": "barpolar",
+      "name": "Barpolar 3",
+      "marker": {
+        "color": "blue",
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": ["|", "-", "|", "-"],
+          "solidity": 0.5
+        }
+      }
+    },
+    {
+      "t": ["M", "N", "O", "P"],
+      "r": [4, 1, 2, 3],
+      "type": "barpolar",
+      "name": "Barpolar 4",
+      "marker": {
+        "color": "orange",
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": ".",
+          "bgcolor": "yellow",
+          "solidity": [0.2, 0.8, 0.6, 0.4]
+        }
+      }
+    },
+
+    {
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "y": ["A", "A", "A", "A", "B", "B", "C"],
+      "name": "Histogram 1",
+      "type": "histogram",
+      "marker": {
+        "color": "yellow",
+        "line": {
+          "color": "black",
+          "width": 2
+        },
+        "pattern": {
+          "fillmode": "overlay",
+          "fgcolor": "blue",
+          "shape": "."
+        }
+      }
+    },
+    {
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "y": ["C", "C", "C", "C", "B", "B", "A"],
+      "name": "Histogram 2",
+      "type": "histogram",
+      "marker": {
+        "color": "yellow",
+        "line": {
+          "color": "red",
+          "width": 4
+        },
+        "pattern": {
+          "fillmode": "replace",
+          "fgcolor": "green",
+          "shape": "x"
+        }
+      }
+    },
+
+    {
+      "xaxis": "x3",
+      "yaxis": "y3",
+      "x": [3, 2, 1],
+      "y": ["U", "V", "W"],
+      "name": "Funnel",
+      "type": "funnel",
+      "marker": {
+        "pattern": {
+          "fillmode": "overlay",
+          "solidity": [0.25, 0.5, 0.75],
+          "shape": ["|", "", "-"],
+          "bgcolor": "black"
+        }
+      }
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "pattern options - fillmode: 'overlay'"
+    },
+    "width": 1000,
+    "height": 600,
+
+    "xaxis": {
+      "domain": [0, 1]
+    },
+    "yaxis": {
+      "range": [0, 11],
+      "domain": [0, 0.475]
+    },
+
+    "polar": {
+      "domain": {
+        "x": [0.35, 0.65],
+        "y": [0.525, 1]
+      }
+    },
+
+    "xaxis2": {
+      "anchor": "y2",
+      "gridcolor": "black",
+      "gridwidth": 2,
+      "domain": [0, 0.3]
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [0.525, 1]
+    },
+
+    "xaxis3": {
+      "anchor": "y3",
+      "domain": [0.7, 1]
+    },
+    "yaxis3": {
+      "anchor": "x3",
+      "domain": [0.525, 1]
+    }
+  }
+}

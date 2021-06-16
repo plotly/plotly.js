@@ -693,6 +693,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
             var perPointPattern = Lib.isArrayOrTypedArray(markerPattern.shape) ||
@@ -703,7 +704,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
 
-            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, fillColor,
+            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, patternFGColor,
                             patternSize, patternSolidity, 'fill');
         } else {
             Color.fill(sel, fillColor);

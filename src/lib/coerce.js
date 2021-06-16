@@ -5,6 +5,7 @@ var tinycolor = require('tinycolor2');
 
 var baseTraceAttrs = require('../plots/attributes');
 var colorscales = require('../components/colorscale/scales');
+var Color = require('../components/color');
 var DESELECTDIM = require('../constants/interactions').DESELECTDIM;
 
 var nestedProperty = require('./nested_property');
@@ -427,12 +428,23 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
 /*
  * Shortcut to coerce the pattern attributes
  */
-exports.coercePattern = function(coerce, attr) {
+exports.coercePattern = function(coerce, attr, markerColor) {
     var shape = coerce(attr + '.shape');
     if(shape) {
-        coerce(attr + '.size');
-        coerce(attr + '.bgcolor');
         coerce(attr + '.solidity');
+        coerce(attr + '.size');
+        var fillmode = coerce(attr + '.fillmode');
+        var isOverlay = fillmode === 'overlay';
+
+        var bgcolor = coerce(attr + '.bgcolor', isOverlay ?
+            markerColor :
+            undefined
+        );
+
+        coerce(attr + '.fgcolor', isOverlay ?
+            Color.contrast(bgcolor) :
+            markerColor
+        );
     }
 };
 

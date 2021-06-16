@@ -253,6 +253,47 @@ describe('Bar.supplyDefaults', function() {
         supplyAllDefaults(gd);
         expect(gd._fullLayout.barmode).toBe('group', '`barmode` should be set to its default ');
     });
+
+    it('bgcolor & fgcolor defaults with *replace* pattern.fillmode', function() {
+        traceIn = {
+            marker: {
+                color: 'green',
+                pattern: {
+                    shape: '+'
+                }
+            },
+            y: [1]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBeUndefined('transparent background');
+        expect(traceOut.marker.pattern.fgcolor).toBe('green');
+    });
+
+    it('bgcolor & fgcolor defaults with *overlay* pattern.fillmode', function() {
+        traceIn = {
+            marker: {
+                color: 'green',
+                pattern: {
+                    fillmode: 'overlay',
+                    shape: '+'
+                }
+            },
+            y: [1]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBe('green');
+        expect(traceOut.marker.pattern.fgcolor).toBe('#fff');
+    });
 });
 
 describe('bar calc / crossTraceCalc (formerly known as setPositions)', function() {

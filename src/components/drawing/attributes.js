@@ -28,13 +28,35 @@ exports.pattern = {
             'By default, no pattern is used for filling the area.',
         ].join(' ')
     },
+    fillmode: {
+        valType: 'enumerated',
+        values: ['replace', 'overlay'],
+        dflt: 'replace',
+        editType: 'style',
+        description: [
+            'Determines whether `marker.color` should be used',
+            'as a default to `bgcolor` or a `fgcolor`.'
+        ].join(' ')
+    },
     bgcolor: {
         valType: 'color',
         arrayOk: true,
         editType: 'style',
         description: [
             'Sets the background color of the pattern fill.',
-            'Defaults to a transparent background.',
+            'Defaults to a `marker.color` background when `fillmode` is *overlay*.',
+            'Otherwise, defaults to a transparent background.'
+        ].join(' ')
+    },
+    fgcolor: {
+        valType: 'color',
+        arrayOk: true,
+        editType: 'style',
+        description: [
+            'Sets the foreground color of the pattern fill.',
+            'Defaults to a `marker.color` background when `fillmode` is *replace*.',
+            'Otherwise, defaults to dark grey or white',
+            'to increase contrast with the `bgcolor`.',
         ].join(' ')
     },
     size: {

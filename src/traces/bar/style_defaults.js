@@ -6,7 +6,7 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var coercePattern = require('../../lib').coercePattern;
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout) {
-    coerce('marker.color', defaultColor);
+    var markerColor = coerce('marker.color', defaultColor);
 
     if(hasColorscale(traceIn, 'marker')) {
         colorscaleDefaults(
@@ -24,7 +24,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
 
     coerce('marker.line.width');
     coerce('marker.opacity');
-    coercePattern(coerce, 'marker.pattern');
+    coercePattern(coerce, 'marker.pattern', markerColor);
 
     coerce('selected.marker.color');
     coerce('unselected.marker.color');
