@@ -48,7 +48,7 @@ function Sieve(traces, opts) {
 
     var type = (opts.posAxis || {}).type;
     if(type === 'category' || type === 'multicategory') {
-        this.minDiff = Math.min(1, this.minDiff);
+        this.minDiff = 1;
     }
 
     this.binWidth = this.minDiff;
