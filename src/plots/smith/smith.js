@@ -389,6 +389,10 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         return strTranslate(ax.l2p(d.x) + innerRadius, 0);
     };
 
+    var transFn2 = function(d) {
+        return strTranslate(ax.c2p(d.x), 12);
+    };
+
     // set special grid path function
     var gridPathFn = function(d) {
         var value = d.x
@@ -461,13 +465,21 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
             crisp: false
         });
 
-        // Axes.drawLabels(gd, ax, {
-            // vals: vals,
-            // layer: layers['radial-axis'],
-            // transFn: transFn,
-            // // labelFns: Axes.makeLabelFns(ax, 0)
-            // labelFns: labelFns
-        // });
+        Axes.drawLabels(gd, ax, {
+            vals: [0.2, 0.5, 1.0, 2.0, 5.0].map(function (d) {
+              return {
+                x: d,
+                text: d,
+                font: '"Open Sans", verdana, arial, sans-serif',
+                fontColor: '#444',
+                fontSize: 12,
+              };
+            }),
+            layer: layers['radial-axis'],
+            transFn: transFn2,
+            // labelFns: Axes.makeLabelFns(ax, 0),
+            labelFns: labelFns
+        });
     }
 
     // stash 'actual' radial axis angle for drag handlers (in degrees)
