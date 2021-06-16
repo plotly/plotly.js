@@ -47,8 +47,6 @@ module.exports = function plot(gd, subplot, moduleCalcData) {
             } else {
                 cd.x = gammaTransformReal(re, im);
                 cd.y = gammaTransformImaginary(re, im);
-
-              console.log(cd.im, cd.y, 2.0 / cd.im);
             }
         }
     }

@@ -45,18 +45,7 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
     }
 
     if(!trace.hovertemplate) {
-        var parts = hoverinfo.split('+');
-
-        if(parts.indexOf('all') !== -1) parts = ['re', 'im', 'text'];
-        if(parts.indexOf('re') !== -1) textPart(radialAxis, pointData.rLabel);
-        if(parts.indexOf('im') !== -1) textPart(angularAxis, pointData.thetaLabel);
-
-        if(parts.indexOf('text') !== -1 && pointData.text) {
-            text.push(pointData.text);
-            delete pointData.text;
-        }
-
-        pointData.extraText = text.join('<br>');
+      pointData.extraText = cdi.re + ' + ' + cdi.im + 'j';
     }
 }
 
