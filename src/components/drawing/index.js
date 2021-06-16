@@ -368,7 +368,17 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  * @param {number} solidity: how solid lines of this pattern are
  * @param {string} prop: the property to apply to, 'fill' or 'stroke'
  */
-drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, solidity, prop) {
+drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, solidity, mcc, fillmode, prop) {
+    if(mcc) {
+        if(fillmode === 'overlay') {
+            bgcolor = mcc;
+            fgcolor = Color.contrast(bgcolor);
+        } else {
+            bgcolor = undefined;
+            fgcolor = mcc;
+        }
+    }
+
     var fullLayout = gd._fullLayout;
     var fullID = 'p' + fullLayout._uid + '-' + patternID;
     var width, height;
@@ -704,16 +714,17 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            var perPointPattern = Lib.isArrayOrTypedArray(markerPattern.shape) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.size) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.solidity);
+            var perPointPattern = d.mcc ||
+                Lib.isArrayOrTypedArray(markerPattern.shape) ||
+                Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                Lib.isArrayOrTypedArray(markerPattern.size) ||
+                Lib.isArrayOrTypedArray(markerPattern.solidity);
 
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
 
             drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, patternFGColor,
-                            patternSize, patternSolidity, 'fill');
+                            patternSize, patternSolidity, d.mcc, markerPattern.fillmode, 'fill');
         } else {
             Color.fill(sel, fillColor);
         }

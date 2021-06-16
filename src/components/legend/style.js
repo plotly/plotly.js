@@ -348,7 +348,11 @@ module.exports = function style(s, gd, legend) {
 
             p.style('stroke-width', w + 'px');
 
-            var fillColor = d0.mc || marker.color;
+            var mcc;
+            if('mc' in d0) {
+                mcc = Drawing.tryColorscale(marker, '')(d0.mc);
+            }
+            var fillColor = mcc || d0.mc || marker.color;
 
             var markerPattern = marker.pattern;
             var patternShape = markerPattern && Drawing.getPatternAttr(markerPattern.shape, 0, '');
@@ -360,7 +364,7 @@ module.exports = function style(s, gd, legend) {
                 var patternSolidity = Drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
                 var patternID = 'legend-' + trace.uid;
                 p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
-                    patternFGColor, patternSize, patternSolidity, 'fill');
+                    patternFGColor, patternSize, patternSolidity, mcc, markerPattern.fillmode, 'fill');
             } else {
                 p.call(Color.fill, fillColor);
             }

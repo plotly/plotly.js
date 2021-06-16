@@ -428,7 +428,7 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
 /*
  * Shortcut to coerce the pattern attributes
  */
-exports.coercePattern = function(coerce, attr, markerColor) {
+exports.coercePattern = function(coerce, attr, markerColor, hasMarkerColorscale) {
     var shape = coerce(attr + '.shape');
     if(shape) {
         coerce(attr + '.solidity');
@@ -436,15 +436,17 @@ exports.coercePattern = function(coerce, attr, markerColor) {
         var fillmode = coerce(attr + '.fillmode');
         var isOverlay = fillmode === 'overlay';
 
-        var bgcolor = coerce(attr + '.bgcolor', isOverlay ?
-            markerColor :
-            undefined
-        );
+        if(!hasMarkerColorscale) {
+            var bgcolor = coerce(attr + '.bgcolor', isOverlay ?
+                markerColor :
+                undefined
+            );
 
-        coerce(attr + '.fgcolor', isOverlay ?
-            Color.contrast(bgcolor) :
-            markerColor
-        );
+            coerce(attr + '.fgcolor', isOverlay ?
+                Color.contrast(bgcolor) :
+                markerColor
+            );
+        }
     }
 };
 

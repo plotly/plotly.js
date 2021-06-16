@@ -294,6 +294,25 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.marker.pattern.bgcolor).toBe('green');
         expect(traceOut.marker.pattern.fgcolor).toBe('#fff');
     });
+
+    it('should not coerce marker.pattern.bgcolor and marker.pattern.fgcolor when marker.colorscale is present', function() {
+        traceIn = {
+            marker: {
+                colorscale: 'Blues',
+                pattern: {
+                    shape: '+'
+                }
+            },
+            color: [1, 2, 3],
+            y: [1, 2, 3]
+        };
+        var layout = {};
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgcolor).toBeUndefined();
+    });
 });
 
 describe('bar calc / crossTraceCalc (formerly known as setPositions)', function() {

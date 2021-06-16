@@ -227,6 +227,7 @@ function notBlackListed(name) {
         'ohlc_first',
         'pattern_bars',
         'pattern_fgcolor_overlay_fillmode',
+        'pattern_with_colorscale',
         'plot_types',
         'polar_blank',
         'polar_dates',
