@@ -1,0 +1,44 @@
+{
+    "data": [
+        {
+            "name": "A",
+            "legendrank": 2,
+            "y": [-2]
+        },
+        {
+            "name": "D",
+            "legendrank": 4,
+            "y": [-4],
+            "legendgroup": "bottom"
+        },
+        {
+            "name": "E",
+            "legendrank": 4,
+            "y": [-4],
+            "legendgroup": "bottom"
+        },
+        {
+            "name": "B",
+            "legendrank": 1,
+            "y": [-1],
+            "legendgroup": "top"
+        },
+        {
+            "name": "C",
+            "legendrank": 3,
+            "y": [-3],
+            "legendgroup": "top"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "rank groups using<br>minimum of the group"
+        },
+        "width": 300,
+        "height": 300,
+        "margin": {
+            "b": 25
+        },
+        "hovermode": "x unified"
+    }
+}
