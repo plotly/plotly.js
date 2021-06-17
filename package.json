@@ -138,7 +138,7 @@
     "browserify": "^17.0.0",
     "browserify-transform-tools": "^1.7.0",
     "bubleify": "^2.0.0",
-    "canvas": "^2.7.0",
+    "canvas": "^2.8.0",
     "check-node-version": "^4.1.0",
     "chttps": "^1.0.6",
     "deep-equal": "^2.0.5",
