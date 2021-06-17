@@ -504,6 +504,8 @@ drawing.pattern = function(sel, gd, patternID, shape, size, solidity, mcc, fillm
             break;
     }
 
+    var isLegend = patternID.substr(0, 6) === 'legend';
+
     var str = [
         shape || 'noSh',
         bgcolor || 'noBg',
@@ -527,7 +529,8 @@ drawing.pattern = function(sel, gd, patternID, shape, size, solidity, mcc, fillm
                 'id': fullID,
                 'width': width + 'px',
                 'height': height + 'px',
-                'patternUnits': 'userSpaceOnUse'
+                'patternUnits': 'userSpaceOnUse',
+                'patternTransform': isLegend ? 'scale(0.7)' : ''
             });
 
             if(bgcolor) {
