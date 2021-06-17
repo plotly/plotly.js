@@ -600,6 +600,13 @@ drawing.getPatternAttr = function(mp, i, dflt) {
     return mp;
 };
 
+drawing.getPatternLegendDim = function(mp, i, dflt) {
+    if(mp && Lib.isArrayOrTypedArray(mp)) {
+        return dflt;
+    }
+    return mp;
+};
+
 drawing.pointStyle = function(s, trace, gd) {
     if(!s.size()) return;
 
@@ -725,7 +732,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         } else if(patternShape) {
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
             var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
-            var patternFGOpacity = drawing.getPatternAttr(markerPattern.fgopacity, d.i, 1);
+            var patternFGOpacity = markerPattern.fgopacity;
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
             var perPointPattern = d.mcc ||
