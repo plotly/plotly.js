@@ -40,13 +40,16 @@ function Sieve(traces, opts) {
     }
     this.positions = positions;
 
-    var dv = distinctVals(positions, {
-        unitMinDiff: opts.unitMinDiff
-    });
+    var dv = distinctVals(positions);
 
     this.distinctPositions = dv.vals;
     if(dv.vals.length === 1 && width1 !== Infinity) this.minDiff = width1;
     else this.minDiff = Math.min(dv.minDiff, width1);
+
+    var type = (opts.posAxis || {}).type;
+    if(type === 'category' || type === 'multicategory') {
+        this.minDiff = 1;
+    }
 
     this.binWidth = this.minDiff;
 
