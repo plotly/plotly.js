@@ -2,6 +2,7 @@
     "data": [
         {
             "tiling": {
+                "pad": 3,
                 "orientation": "v"
             },
             "marker": {
@@ -79,6 +80,7 @@
         },
         {
             "tiling": {
+                "pad": 3,
                 "orientation": "v"
             },
             "marker": {
@@ -161,6 +163,9 @@
             }
         },
         {
+            "tiling": {
+                "pad": 3
+            },
             "marker": {
                 "coloraxis": "coloraxis"
             },
@@ -248,6 +253,9 @@
             }
         },
         {
+            "tiling": {
+                "pad": 3
+            },
             "marker": {
                 "coloraxis": "coloraxis"
             },
