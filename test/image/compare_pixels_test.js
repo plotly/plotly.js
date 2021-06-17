@@ -114,13 +114,17 @@ for(var i = 0; i < allMockList.length; i++) {
         height: height
     });
 
-    var numDiffPixels = pixelmatch(img0.data, img1.data, diff.data, width, height, {threshold: 0.1});
+    var shouldBePixelPerfect = mockName.substr(0, 7) !== 'mapbox_' && [
+        // list flaky mocks other than mapbox:
+        'gl3d_bunny-hull'
+    ].indexOf(mockName) === -1;
+
+    var numDiffPixels = pixelmatch(img0.data, img1.data, diff.data, width, height, {
+        threshold: shouldBePixelPerfect ? 0 : 0.2
+    });
+
     if(numDiffPixels) {
         fs.writeFileSync(imagePaths.diff, PNG.sync.write(diff));
-
-        // mapbox behave differently from run-to-run
-        // skip error on mapbox diff
-        if(mockName.substr(7) === 'mapbox_') continue;
 
         console.error('pixels do not match: ' + numDiffPixels);
         fail(mockName);
