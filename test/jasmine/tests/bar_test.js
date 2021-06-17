@@ -272,6 +272,7 @@ describe('Bar.supplyDefaults', function() {
 
         expect(traceOut.marker.pattern.bgcolor).toBeUndefined('transparent background');
         expect(traceOut.marker.pattern.fgcolor).toBe('green');
+        expect(traceOut.marker.pattern.fgopacity).toBe(1);
     });
 
     it('bgcolor & fgcolor defaults with *overlay* pattern.fillmode', function() {
@@ -293,9 +294,10 @@ describe('Bar.supplyDefaults', function() {
 
         expect(traceOut.marker.pattern.bgcolor).toBe('green');
         expect(traceOut.marker.pattern.fgcolor).toBe('#fff');
+        expect(traceOut.marker.pattern.fgopacity).toBe(0.5);
     });
 
-    it('should not coerce marker.pattern.bgcolor and marker.pattern.fgcolor when marker.colorscale is present', function() {
+    it('should not coerce marker.pattern.bgcolor and marker.pattern.fgcolor when marker.colorscale is present - case of *replace* fillmode', function() {
         traceIn = {
             marker: {
                 colorscale: 'Blues',
@@ -312,6 +314,28 @@ describe('Bar.supplyDefaults', function() {
 
         expect(traceOut.marker.pattern.bgcolor).toBeUndefined();
         expect(traceOut.marker.pattern.fgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgopacity).toBe(1);
+    });
+
+    it('should not coerce marker.pattern.bgcolor and marker.pattern.fgcolor when marker.colorscale is present - case of *overlay* fillmode', function() {
+        traceIn = {
+            marker: {
+                colorscale: 'Blues',
+                pattern: {
+                    fillmode: 'overlay',
+                    shape: '+'
+                }
+            },
+            color: [1, 2, 3],
+            y: [1, 2, 3]
+        };
+        var layout = {};
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgopacity).toBe(0.5);
     });
 });
 

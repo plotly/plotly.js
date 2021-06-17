@@ -447,6 +447,11 @@ exports.coercePattern = function(coerce, attr, markerColor, hasMarkerColorscale)
                 markerColor
             );
         }
+
+        coerce(attr + '.fgopacity', isOverlay ?
+            0.5 :
+            1
+        );
     }
 };
 

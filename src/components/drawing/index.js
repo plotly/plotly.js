@@ -368,7 +368,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  * @param {number} solidity: how solid lines of this pattern are
  * @param {string} prop: the property to apply to, 'fill' or 'stroke'
  */
-drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, solidity, mcc, fillmode, prop) {
+drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, fgopacity, size, solidity, mcc, fillmode, prop) {
     if(mcc) {
         if(fillmode === 'overlay') {
             bgcolor = mcc;
@@ -402,6 +402,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -416,6 +417,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -433,6 +435,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -446,6 +449,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -459,6 +463,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -473,6 +478,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -490,6 +496,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
                 'cx': width / 2,
                 'cy': height / 2,
                 'r': radius,
+                'opacity': fgopacity,
                 'fill': fgcolor
             };
             break;
@@ -712,6 +719,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         } else if(patternShape) {
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
             var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
+            var patternFGOpacity = drawing.getPatternAttr(markerPattern.fgopacity, d.i, 1);
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
             var perPointPattern = d.mcc ||
@@ -723,7 +731,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
 
-            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, patternFGColor,
+            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, patternFGColor, patternFGOpacity,
                             patternSize, patternSolidity, d.mcc, markerPattern.fillmode, 'fill');
         } else {
             Color.fill(sel, fillColor);

@@ -360,11 +360,12 @@ module.exports = function style(s, gd, legend) {
             if(patternShape) {
                 var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
                 var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+                var patternFGOpacity = Drawing.getPatternAttr(markerPattern.fgopacity, 0, 1);
                 var patternSize = Math.min(12, Drawing.getPatternAttr(markerPattern.size, 0, 8));
                 var patternSolidity = Drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
                 var patternID = 'legend-' + trace.uid;
-                p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
-                    patternFGColor, patternSize, patternSolidity, mcc, markerPattern.fillmode, 'fill');
+                p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor, patternFGColor, patternFGOpacity,
+                    patternSize, patternSolidity, mcc, markerPattern.fillmode, 'fill');
             } else {
                 p.call(Color.fill, fillColor);
             }

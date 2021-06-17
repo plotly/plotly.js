@@ -43,7 +43,7 @@ exports.pattern = {
         arrayOk: true,
         editType: 'style',
         description: [
-            'When there is no colorscale sets the background color of the pattern fill.',
+            'When there is no colorscale sets the color of background pattern fill.',
             'Defaults to a `marker.color` background when `fillmode` is *overlay*.',
             'Otherwise, defaults to a transparent background.'
         ].join(' ')
@@ -53,10 +53,21 @@ exports.pattern = {
         arrayOk: true,
         editType: 'style',
         description: [
-            'When there is no colorscale sets the foreground color of the pattern fill.',
+            'When there is no colorscale sets the color of foreground pattern fill.',
             'Defaults to a `marker.color` background when `fillmode` is *replace*.',
             'Otherwise, defaults to dark grey or white',
             'to increase contrast with the `bgcolor`.',
+        ].join(' ')
+    },
+    fgopacity: {
+        valType: 'number',
+        editType: 'style',
+        min: 0,
+        max: 1,
+        description: [
+            'Sets the opacity of the foreground pattern fill.',
+            'Defaults to a 0.5 when `fillmode` is *overlay*.',
+            'Otherwise, defaults to 1.'
         ].join(' ')
     },
     size: {
