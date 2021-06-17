@@ -62,7 +62,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
     // box plots - update dPos based on multiple traces
     var boxdv = Lib.distinctVals(pointList);
     if(posAxis.type === 'category' || posAxis.type === 'multicategory') {
-        boxdv.minDiff = Math.min(1, boxdv.minDiff);
+        boxdv.minDiff = 1;
     }
 
     var dPos0 = boxdv.minDiff / 2;
