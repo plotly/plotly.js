@@ -359,6 +359,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  *
  * @param {object} sel: d3 selection to apply this pattern to
  *     You can use `selection.call(Drawing.pattern, ...)`
+ * @param {string} calledBy: option to know the caller component
  * @param {DOM element} gd: the graph div `sel` is part of
  * @param {string} patternID: a unique (within this plot) identifier
  *     for this pattern, so that we don't create unnecessary definitions
@@ -370,7 +371,9 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  * @param {string} fgcolor: foreground color for this pattern
  * @param {number} fgopacity: foreground opacity for this pattern
  */
-drawing.pattern = function(sel, gd, patternID, shape, size, solidity, mcc, fillmode, bgcolor, fgcolor, fgopacity) {
+drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, mcc, fillmode, bgcolor, fgcolor, fgopacity) {
+    var isLegend = calledBy === 'legend';
+
     if(mcc) {
         if(fillmode === 'overlay') {
             bgcolor = mcc;
@@ -503,8 +506,6 @@ drawing.pattern = function(sel, gd, patternID, shape, size, solidity, mcc, fillm
             };
             break;
     }
-
-    var isLegend = patternID.substr(0, 6) === 'legend';
 
     var str = [
         shape || 'noSh',
@@ -737,7 +738,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             if(perPointPattern) patternID += '-' + d.i;
 
             drawing.pattern(
-                sel, gd, patternID,
+                sel, 'point', gd, patternID,
                 patternShape, patternSize, patternSolidity,
                 d.mcc, markerPattern.fillmode,
                 patternBGColor, patternFGColor, patternFGOpacity

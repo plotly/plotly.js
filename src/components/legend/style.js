@@ -365,7 +365,7 @@ module.exports = function style(s, gd, legend) {
                 var patternSolidity = Drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
                 var patternID = 'legend-' + trace.uid;
                 p.call(
-                    Drawing.pattern, gd, patternID,
+                    Drawing.pattern, 'legend', gd, patternID,
                     patternShape, patternSize, patternSolidity,
                     mcc, markerPattern.fillmode,
                     patternBGColor, patternFGColor, patternFGOpacity
