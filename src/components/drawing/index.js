@@ -364,8 +364,11 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  *     for this pattern, so that we don't create unnecessary definitions
  * @param {string} bgcolor: background color for this pattern
  * @param {string} fgcolor: foreground color for this pattern
+ * @param {number} fgopacity: foreground opacity for this pattern
  * @param {number} size: size of unit squares for repetition of this pattern
  * @param {number} solidity: how solid lines of this pattern are
+ * @param {string} mcc: color when painted with colorscale
+ * @param {string} fillmode: fillmode for this pattern
  * @param {string} prop: the property to apply to, 'fill' or 'stroke'
  */
 drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, fgopacity, size, solidity, mcc, fillmode, prop) {
