@@ -362,16 +362,15 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  * @param {DOM element} gd: the graph div `sel` is part of
  * @param {string} patternID: a unique (within this plot) identifier
  *     for this pattern, so that we don't create unnecessary definitions
- * @param {string} bgcolor: background color for this pattern
- * @param {string} fgcolor: foreground color for this pattern
- * @param {number} fgopacity: foreground opacity for this pattern
  * @param {number} size: size of unit squares for repetition of this pattern
  * @param {number} solidity: how solid lines of this pattern are
  * @param {string} mcc: color when painted with colorscale
  * @param {string} fillmode: fillmode for this pattern
- * @param {string} prop: the property to apply to, 'fill' or 'stroke'
+ * @param {string} bgcolor: background color for this pattern
+ * @param {string} fgcolor: foreground color for this pattern
+ * @param {number} fgopacity: foreground opacity for this pattern
  */
-drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, fgopacity, size, solidity, mcc, fillmode, prop) {
+drawing.pattern = function(sel, gd, patternID, shape, size, solidity, mcc, fillmode, bgcolor, fgcolor, fgopacity) {
     if(mcc) {
         if(fillmode === 'overlay') {
             bgcolor = mcc;
@@ -550,8 +549,8 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, fgopacit
                 .attr(patternAttrs);
         });
 
-    sel.style(prop, getFullUrl(fullID, gd))
-        .style(prop + '-opacity', null);
+    sel.style('fill', getFullUrl(fullID, gd))
+        .style('fill-opacity', null);
 
     sel.classed('pattern_filled', true);
     var className2query = function(s) {
@@ -734,8 +733,12 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
 
-            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, patternFGColor, patternFGOpacity,
-                            patternSize, patternSolidity, d.mcc, markerPattern.fillmode, 'fill');
+            drawing.pattern(
+                sel, gd, patternID,
+                patternShape, patternSize, patternSolidity,
+                d.mcc, markerPattern.fillmode,
+                patternBGColor, patternFGColor, patternFGOpacity
+            );
         } else {
             Color.fill(sel, fillColor);
         }
