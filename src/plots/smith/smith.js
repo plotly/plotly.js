@@ -1365,8 +1365,7 @@ proto.updateAngularDrag = function(fullLayout) {
 };
 
 proto.isPtInside = function(d) {
-    // return d.re >= 0;
-    return true;
+    return d.re >= 0;
 };
 
 proto.pathArc = function(r) {
