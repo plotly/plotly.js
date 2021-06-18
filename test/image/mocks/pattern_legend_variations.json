@@ -1,0 +1,108 @@
+{
+  "data": [
+    {
+      "name": "size: 4",
+      "type": "bar",
+      "x": ["A", "B", "C", "D", "E"],
+      "y": [1, 1, 1, 1, 1],
+      "marker": {
+        "colorscale": "Greens", "reversescale": true,
+        "line": { "color": "#444", "width": 1 },
+        "color": [1, 2, 3, 4, 5],
+        "pattern": {
+          "fillmode": "replace",
+          "size": 4,
+          "shape": "."
+        }
+      }
+    },
+    {
+      "name": "size: 6",
+      "type": "bar",
+      "x": ["A", "B", "C", "D", "E"],
+      "y": [1, 1, 1, 1, 1],
+      "marker": {
+        "colorscale": "Greens", "reversescale": true,
+        "line": { "color": "#444", "width": 1 },
+        "color": [1, 2, 3, 4, 5],
+        "pattern": {
+          "fillmode": "overlay", "fgopacity": 1,
+          "size": 6,
+          "shape": "."
+        }
+      }
+    },
+    {
+      "name": "size: 8",
+      "type": "bar",
+      "x": ["A", "B", "C", "D", "E"],
+      "y": [1, 1, 1, 1, 1],
+      "marker": {
+        "colorscale": "Reds",
+        "line": { "color": "#444", "width": 1 },
+        "color": [1, 2, 3, 4, 5],
+        "pattern": {
+          "fillmode": "replace",
+          "size": 8,
+          "shape": "."
+        }
+      }
+    },
+    {
+      "name": "size: 10",
+      "type": "bar",
+      "x": ["A", "B", "C", "D", "E"],
+      "y": [1, 1, 1, 1, 1],
+      "marker": {
+        "colorscale": "Reds",
+        "line": { "color": "#444", "width": 1 },
+        "color": [1, 2, 3, 4, 5],
+        "pattern": {
+          "fillmode": "overlay", "fgopacity": 1,
+          "size": 10,
+          "shape": "."
+        }
+      }
+    },
+    {
+      "name": "size: 12",
+      "type": "bar",
+      "x": ["A", "B", "C", "D", "E"],
+      "y": [1, 1, 1, 1, 1],
+      "marker": {
+        "colorscale": "Blues", "reversescale": true,
+        "line": { "color": "#444", "width": 1 },
+        "color": [1, 2, 3, 4, 5],
+        "pattern": {
+          "fillmode": "replace",
+          "size": 12,
+          "shape": "."
+        }
+      }
+    },
+    {
+      "name": "size: [ ]",
+      "type": "bar",
+      "x": ["A", "B", "C", "D", "E"],
+      "y": [1, 1, 1, 1, 1],
+      "marker": {
+        "colorscale": "Blues", "reversescale": true,
+        "line": { "color": "#444", "width": 1 },
+        "color": [1, 2, 3, 4, 5],
+        "pattern": {
+          "fillmode": "overlay", "fgopacity": 1,
+          "size": [4, 6, 8, 10, 12],
+          "shape": "."
+        }
+      }
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "legend pattern size range"
+    },
+    "width": 800,
+    "height": 400,
+    "hovermode": "x unified"
+  }
+}

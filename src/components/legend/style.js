@@ -366,11 +366,11 @@ module.exports = function style(s, gd, legend) {
                 var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
                 var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
                 var patternFGOpacity = markerPattern.fgopacity;
-                var patternSize = Math.min(12, Drawing.getPatternLegendDim(markerPattern.size, 0, 8));
-                var patternSolidity = Drawing.getPatternLegendDim(markerPattern.solidity, 0, 0.3);
+                var patternSize = dimAttr(markerPattern.size, 6, 8);
+                var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
                 var patternID = 'legend-' + trace.uid;
                 p.call(
-                    Drawing.pattern, 'legend', gd, patternID,
+                    Drawing.pattern, gd, patternID,
                     patternShape, patternSize, patternSolidity,
                     mcc, markerPattern.fillmode,
                     patternBGColor, patternFGColor, patternFGOpacity
@@ -676,4 +676,10 @@ function getStyleGuide(d) {
         anyLine: showLine || showGradientLine,
         anyFill: showFill || showGradientFill,
     };
+}
+
+function dimAttr(v, dflt, max) {
+    if(v && Lib.isArrayOrTypedArray(v)) return dflt;
+    if(v > max) return max;
+    return v;
 }

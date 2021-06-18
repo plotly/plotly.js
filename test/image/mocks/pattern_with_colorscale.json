@@ -6,7 +6,6 @@
       "y": [4, 3, 2, 1],
       "name": "replace bar",
       "type": "bar",
-      "textposition": "outside",
       "marker": {
         "line": { "color": "lightblue", "width": 2 },
         "color": [4, 3, 2, 1],
@@ -24,7 +23,6 @@
       "y": [4, 3, 2, 1],
       "name": "overlay bar",
       "type": "bar",
-      "textposition": "outside",
       "marker": {
         "line": { "color": "lightblue", "width": 2 },
         "color": [4, 3, 2, 1],
