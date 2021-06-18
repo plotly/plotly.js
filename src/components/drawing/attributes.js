@@ -28,13 +28,46 @@ exports.pattern = {
             'By default, no pattern is used for filling the area.',
         ].join(' ')
     },
+    fillmode: {
+        valType: 'enumerated',
+        values: ['replace', 'overlay'],
+        dflt: 'replace',
+        editType: 'style',
+        description: [
+            'Determines whether `marker.color` should be used',
+            'as a default to `bgcolor` or a `fgcolor`.'
+        ].join(' ')
+    },
     bgcolor: {
         valType: 'color',
         arrayOk: true,
         editType: 'style',
         description: [
-            'Sets the background color of the pattern fill.',
-            'Defaults to a transparent background.',
+            'When there is no colorscale sets the color of background pattern fill.',
+            'Defaults to a `marker.color` background when `fillmode` is *overlay*.',
+            'Otherwise, defaults to a transparent background.'
+        ].join(' ')
+    },
+    fgcolor: {
+        valType: 'color',
+        arrayOk: true,
+        editType: 'style',
+        description: [
+            'When there is no colorscale sets the color of foreground pattern fill.',
+            'Defaults to a `marker.color` background when `fillmode` is *replace*.',
+            'Otherwise, defaults to dark grey or white',
+            'to increase contrast with the `bgcolor`.',
+        ].join(' ')
+    },
+    fgopacity: {
+        valType: 'number',
+        editType: 'style',
+        min: 0,
+        max: 1,
+        description: [
+            'Sets the opacity of the foreground pattern fill.',
+            'Defaults to a 0.5 when `fillmode` is *overlay*.',
+            'Otherwise, defaults to 1.'
         ].join(' ')
     },
     size: {
@@ -62,5 +95,8 @@ exports.pattern = {
             'and solidty of 1 shows only the foreground color without pattern.',
         ].join(' ')
     },
-    editType: 'style'
+    editType: 'style',
+    description: [
+        'Sets the pattern within the marker.'
+    ].join(' '),
 };

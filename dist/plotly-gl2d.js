@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v2.0.0
+* plotly.js (gl2d) v2.1.0
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -9,8 +9,8 @@
 
 var Lib = _dereq_('../src/lib');
 var rules = {
-    "X,X div": "direction:ltr;font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
-    "X input,X button": "font-family:'Open Sans', verdana, arial, sans-serif;",
+    "X,X div": "direction:ltr;font-family:\"Open Sans\",verdana,arial,sans-serif;margin:0;padding:0;",
+    "X input,X button": "font-family:\"Open Sans\",verdana,arial,sans-serif;",
     "X input:focus,X button:focus": "outline:none;",
     "X a": "text-decoration:none;",
     "X a:hover": "text-decoration:none;",
@@ -39,8 +39,8 @@ var rules = {
     "X .cursor-ne-resize": "cursor:ne-resize;",
     "X .cursor-grab": "cursor:-webkit-grab;cursor:grab;",
     "X .modebar": "position:absolute;top:2px;right:2px;",
-    "X .ease-bg": "-webkit-transition:background-color 0.3s ease 0s;-moz-transition:background-color 0.3s ease 0s;-ms-transition:background-color 0.3s ease 0s;-o-transition:background-color 0.3s ease 0s;transition:background-color 0.3s ease 0s;",
-    "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity 0.3s ease 0s;-moz-transition:opacity 0.3s ease 0s;-ms-transition:opacity 0.3s ease 0s;-o-transition:opacity 0.3s ease 0s;transition:opacity 0.3s ease 0s;",
+    "X .ease-bg": "-webkit-transition:background-color .3s ease 0s;-moz-transition:background-color .3s ease 0s;-ms-transition:background-color .3s ease 0s;-o-transition:background-color .3s ease 0s;transition:background-color .3s ease 0s;",
+    "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity .3s ease 0s;-moz-transition:opacity .3s ease 0s;-ms-transition:opacity .3s ease 0s;-o-transition:opacity .3s ease 0s;transition:opacity .3s ease 0s;",
     "X:hover .modebar--hover .modebar-group": "opacity:1;",
     "X .modebar-group": "float:left;display:inline-block;box-sizing:border-box;padding-left:8px;position:relative;vertical-align:middle;white-space:nowrap;",
     "X .modebar-btn": "position:relative;font-size:16px;padding:3px 4px;height:22px;cursor:pointer;line-height:normal;box-sizing:border-box;",
@@ -51,17 +51,17 @@ var rules = {
     "X .modebar.vertical .modebar-group .modebar-btn": "display:block;text-align:center;",
     "X [data-title]:before,X [data-title]:after": "position:absolute;-webkit-transform:translate3d(0, 0, 0);-moz-transform:translate3d(0, 0, 0);-ms-transform:translate3d(0, 0, 0);-o-transform:translate3d(0, 0, 0);transform:translate3d(0, 0, 0);display:none;opacity:0;z-index:1001;pointer-events:none;top:110%;right:50%;",
     "X [data-title]:hover:before,X [data-title]:hover:after": "display:block;opacity:1;",
-    "X [data-title]:before": "content:'';position:absolute;background:transparent;border:6px solid transparent;z-index:1002;margin-top:-12px;border-bottom-color:#69738a;margin-right:-6px;",
-    "X [data-title]:after": "content:attr(data-title);background:#69738a;color:white;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
+    "X [data-title]:before": "content:\"\";position:absolute;background:transparent;border:6px solid transparent;z-index:1002;margin-top:-12px;border-bottom-color:#69738a;margin-right:-6px;",
+    "X [data-title]:after": "content:attr(data-title);background:#69738a;color:#fff;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
     "X .vertical [data-title]:before,X .vertical [data-title]:after": "top:0%;right:200%;",
     "X .vertical [data-title]:before": "border:6px solid transparent;border-left-color:#69738a;margin-top:8px;margin-right:-30px;",
     "X .select-outline": "fill:none;stroke-width:1;shape-rendering:crispEdges;",
-    "X .select-outline-1": "stroke:white;",
-    "X .select-outline-2": "stroke:black;stroke-dasharray:2px 2px;",
-    Y: "font-family:'Open Sans', verdana, arial, sans-serif;position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;",
+    "X .select-outline-1": "stroke:#fff;",
+    "X .select-outline-2": "stroke:#000;stroke-dasharray:2px 2px;",
+    Y: "font-family:\"Open Sans\",verdana,arial,sans-serif;position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;",
     "Y p": "margin:0;",
-    "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,0.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
-    "Y .notifier-close": "color:#fff;opacity:0.8;float:right;padding:0 5px;background:none;border:none;font-size:20px;font-weight:bold;line-height:20px;",
+    "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
+    "Y .notifier-close": "color:#fff;opacity:.8;float:right;padding:0 5px;background:none;border:none;font-size:20px;font-weight:bold;line-height:20px;",
     "Y .notifier-close:hover": "color:#444;text-decoration:none;cursor:pointer;"
 };
 
@@ -59609,10 +59609,27 @@ exports.pattern = {
         arrayOk: true,
         editType: 'style',
     },
+    fillmode: {
+        valType: 'enumerated',
+        values: ['replace', 'overlay'],
+        dflt: 'replace',
+        editType: 'style',
+    },
     bgcolor: {
         valType: 'color',
         arrayOk: true,
         editType: 'style',
+    },
+    fgcolor: {
+        valType: 'color',
+        arrayOk: true,
+        editType: 'style',
+    },
+    fgopacity: {
+        valType: 'number',
+        editType: 'style',
+        min: 0,
+        max: 1,
     },
     size: {
         valType: 'number',
@@ -59629,7 +59646,7 @@ exports.pattern = {
         arrayOk: true,
         editType: 'style',
     },
-    editType: 'style'
+    editType: 'style',
 };
 
 },{}],407:[function(_dereq_,module,exports){
@@ -59994,16 +60011,31 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  *
  * @param {object} sel: d3 selection to apply this pattern to
  *     You can use `selection.call(Drawing.pattern, ...)`
+ * @param {string} calledBy: option to know the caller component
  * @param {DOM element} gd: the graph div `sel` is part of
  * @param {string} patternID: a unique (within this plot) identifier
  *     for this pattern, so that we don't create unnecessary definitions
- * @param {string} bgcolor: background color for this pattern
- * @param {string} fgcolor: foreground color for this pattern
  * @param {number} size: size of unit squares for repetition of this pattern
  * @param {number} solidity: how solid lines of this pattern are
- * @param {string} prop: the property to apply to, 'fill' or 'stroke'
+ * @param {string} mcc: color when painted with colorscale
+ * @param {string} fillmode: fillmode for this pattern
+ * @param {string} bgcolor: background color for this pattern
+ * @param {string} fgcolor: foreground color for this pattern
+ * @param {number} fgopacity: foreground opacity for this pattern
  */
-drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, solidity, prop) {
+drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, mcc, fillmode, bgcolor, fgcolor, fgopacity) {
+    var isLegend = calledBy === 'legend';
+
+    if(mcc) {
+        if(fillmode === 'overlay') {
+            bgcolor = mcc;
+            fgcolor = Color.contrast(bgcolor);
+        } else {
+            bgcolor = undefined;
+            fgcolor = mcc;
+        }
+    }
+
     var fullLayout = gd._fullLayout;
     var fullID = 'p' + fullLayout._uid + '-' + patternID;
     var width, height;
@@ -60027,6 +60059,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -60041,6 +60074,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -60058,6 +60092,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -60071,6 +60106,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -60084,6 +60120,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -60098,6 +60135,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -60115,14 +60153,23 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
                 'cx': width / 2,
                 'cy': height / 2,
                 'r': radius,
+                'opacity': fgopacity,
                 'fill': fgcolor
             };
             break;
     }
 
+    var str = [
+        shape || 'noSh',
+        bgcolor || 'noBg',
+        fgcolor || 'noFg',
+        size,
+        solidity
+    ].join(';');
+
     var pattern = fullLayout._defs.select('.patterns')
         .selectAll('#' + fullID)
-        .data([shape + ';' + bgcolor + ';' + fgcolor + ';' + size + ';' + solidity], Lib.identity);
+        .data([str], Lib.identity);
 
     pattern.exit().remove();
 
@@ -60135,7 +60182,9 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
                 'id': fullID,
                 'width': width + 'px',
                 'height': height + 'px',
-                'patternUnits': 'userSpaceOnUse'
+                'patternUnits': 'userSpaceOnUse',
+                // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
+                'patternTransform': isLegend ? 'scale(0.8)' : ''
             });
 
             if(bgcolor) {
@@ -60157,8 +60206,8 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
                 .attr(patternAttrs);
         });
 
-    sel.style(prop, getFullUrl(fullID, gd))
-        .style(prop + '-opacity', null);
+    sel.style('fill', getFullUrl(fullID, gd))
+        .style('fill-opacity', null);
 
     sel.classed('pattern_filled', true);
     var className2query = function(s) {
@@ -60328,18 +60377,25 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
+            var patternFGOpacity = markerPattern.fgopacity;
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            var perPointPattern = Lib.isArrayOrTypedArray(markerPattern.shape) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.size) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.solidity);
+            var perPointPattern = d.mcc ||
+                Lib.isArrayOrTypedArray(markerPattern.shape) ||
+                Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                Lib.isArrayOrTypedArray(markerPattern.size) ||
+                Lib.isArrayOrTypedArray(markerPattern.solidity);
 
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
 
-            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, fillColor,
-                            patternSize, patternSolidity, 'fill');
+            drawing.pattern(
+                sel, 'point', gd, patternID,
+                patternShape, patternSize, patternSolidity,
+                d.mcc, markerPattern.fillmode,
+                patternBGColor, patternFGColor, patternFGOpacity
+            );
         } else {
             Color.fill(sel, fillColor);
         }
@@ -66705,6 +66761,9 @@ var Registry = _dereq_('../../registry');
 var helpers = _dereq_('./helpers');
 
 module.exports = function getLegendData(calcdata, opts) {
+    var grouped = helpers.isGrouped(opts);
+    var reversed = helpers.isReversed(opts);
+
     var lgroupToTraces = {};
     var lgroups = [];
     var hasOneNonBlankGroup = false;
@@ -66719,14 +66778,14 @@ module.exports = function getLegendData(calcdata, opts) {
             // TODO: check this against fullData legendgroups?
             var uniqueGroup = '~~i' + lgroupi;
             lgroups.push(uniqueGroup);
-            lgroupToTraces[uniqueGroup] = [[legendItem]];
+            lgroupToTraces[uniqueGroup] = [legendItem];
             lgroupi++;
         } else if(lgroups.indexOf(legendGroup) === -1) {
             lgroups.push(legendGroup);
             hasOneNonBlankGroup = true;
-            lgroupToTraces[legendGroup] = [[legendItem]];
+            lgroupToTraces[legendGroup] = [legendItem];
         } else {
-            lgroupToTraces[legendGroup].push([legendItem]);
+            lgroupToTraces[legendGroup].push(legendItem);
         }
     }
 
@@ -66767,31 +66826,66 @@ module.exports = function getLegendData(calcdata, opts) {
     // won't draw a legend in this case
     if(!lgroups.length) return [];
 
-    // rearrange lgroupToTraces into a d3-friendly array of arrays
-    var lgroupsLength = lgroups.length;
-    var ltraces;
-    var legendData;
+    // collapse all groups into one if all groups are blank
+    var shouldCollapse = !hasOneNonBlankGroup || !grouped;
 
-    if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
-        legendData = new Array(lgroupsLength);
-
-        for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]];
-            legendData[i] = helpers.isReversed(opts) ? ltraces.reverse() : ltraces;
+    var legendData = [];
+    for(i = 0; i < lgroups.length; i++) {
+        var t = lgroupToTraces[lgroups[i]];
+        if(shouldCollapse) {
+            legendData.push(t[0]);
+        } else {
+            legendData.push(t);
         }
-    } else {
-        // collapse all groups into one if all groups are blank
-        legendData = [new Array(lgroupsLength)];
+    }
+    if(shouldCollapse) legendData = [legendData];
 
-        for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]][0];
-            legendData[0][helpers.isReversed(opts) ? lgroupsLength - i - 1 : i] = ltraces;
+    for(i = 0; i < legendData.length; i++) {
+        // find minimum rank within group
+        var groupMinRank = Infinity;
+        for(j = 0; j < legendData[i].length; j++) {
+            var rank = legendData[i][j].trace.legendrank;
+            if(groupMinRank > rank) groupMinRank = rank;
         }
-        lgroupsLength = 1;
+
+        // record on first group element
+        legendData[i][0]._groupMinRank = groupMinRank;
+        legendData[i][0]._preGroupSort = i;
+    }
+
+    var orderFn1 = function(a, b) {
+        return (
+            (a[0]._groupMinRank - b[0]._groupMinRank) ||
+            (a[0]._preGroupSort - b[0]._preGroupSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
+        );
+    };
+
+    var orderFn2 = function(a, b) {
+        return (
+            (a.trace.legendrank - b.trace.legendrank) ||
+            (a._preSort - b._preSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
+        );
+    };
+
+    // sort considering minimum group legendrank
+    legendData.forEach(function(a, k) { a[0]._preGroupSort = k; });
+    legendData.sort(orderFn1);
+    for(i = 0; i < legendData.length; i++) {
+        // sort considering trace.legendrank and legend.traceorder
+        legendData[i].forEach(function(a, k) { a._preSort = k; });
+        legendData[i].sort(orderFn2);
+        if(reversed) legendData[i].reverse();
+
+        // rearrange lgroupToTraces into a d3-friendly array of arrays
+        for(j = 0; j < legendData[i].length; j++) {
+            legendData[i][j] = [
+                legendData[i][j]
+            ];
+        }
     }
 
     // number of legend groups - needed in legend/draw.js
-    opts._lgroupsLength = lgroupsLength;
+    opts._lgroupsLength = legendData.length;
     // maximum name/label length - needed in legend/draw.js
     opts._maxNameLength = maxNameLength;
 
@@ -67410,18 +67504,33 @@ module.exports = function style(s, gd, legend) {
 
             p.style('stroke-width', w + 'px');
 
-            var fillColor = d0.mc || marker.color;
+            var mcc = d0.mcc;
+            if(!legend._inHover && 'mc' in d0) {
+                // not in unified hover but
+                // for legend use the color in the middle of scale
+                var cOpts = extractOpts(marker);
+                var mid = cOpts.mid;
+                if(mid === undefined) mid = (cOpts.max + cOpts.min) / 2;
+                mcc = Drawing.tryColorscale(marker, '')(mid);
+            }
+            var fillColor = mcc || d0.mc || marker.color;
 
             var markerPattern = marker.pattern;
             var patternShape = markerPattern && Drawing.getPatternAttr(markerPattern.shape, 0, '');
 
             if(patternShape) {
                 var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
-                var patternSize = Math.min(12, Drawing.getPatternAttr(markerPattern.size, 0, 8));
-                var patternSolidity = Drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
+                var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+                var patternFGOpacity = markerPattern.fgopacity;
+                var patternSize = dimAttr(markerPattern.size, 8, 10);
+                var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
                 var patternID = 'legend-' + trace.uid;
-                p.call(Drawing.pattern, gd, patternID, patternShape, patternBGColor,
-                       fillColor, patternSize, patternSolidity, 'fill');
+                p.call(
+                    Drawing.pattern, 'legend', gd, patternID,
+                    patternShape, patternSize, patternSolidity,
+                    mcc, markerPattern.fillmode,
+                    patternBGColor, patternFGColor, patternFGOpacity
+                );
             } else {
                 p.call(Color.fill, fillColor);
             }
@@ -67723,6 +67832,12 @@ function getStyleGuide(d) {
         anyLine: showLine || showGradientLine,
         anyFill: showFill || showGradientFill,
     };
+}
+
+function dimAttr(v, dflt, max) {
+    if(v && Lib.isArrayOrTypedArray(v)) return dflt;
+    if(v > max) return max;
+    return v;
 }
 
 },{"../../lib":517,"../../registry":607,"../../traces/pie/helpers":648,"../../traces/pie/style_one":649,"../../traces/scatter/subtypes":680,"../color":385,"../colorscale/helpers":396,"../drawing":407,"./constants":436,"@plotly/d3":14}],444:[function(_dereq_,module,exports){
@@ -76685,6 +76800,7 @@ var tinycolor = _dereq_('tinycolor2');
 
 var baseTraceAttrs = _dereq_('../plots/attributes');
 var colorscales = _dereq_('../components/colorscale/scales');
+var Color = _dereq_('../components/color');
 var DESELECTDIM = _dereq_('../constants/interactions').DESELECTDIM;
 
 var nestedProperty = _dereq_('./nested_property');
@@ -77012,12 +77128,30 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
 /*
  * Shortcut to coerce the pattern attributes
  */
-exports.coercePattern = function(coerce, attr) {
+exports.coercePattern = function(coerce, attr, markerColor, hasMarkerColorscale) {
     var shape = coerce(attr + '.shape');
     if(shape) {
-        coerce(attr + '.size');
-        coerce(attr + '.bgcolor');
         coerce(attr + '.solidity');
+        coerce(attr + '.size');
+        var fillmode = coerce(attr + '.fillmode');
+        var isOverlay = fillmode === 'overlay';
+
+        if(!hasMarkerColorscale) {
+            var bgcolor = coerce(attr + '.bgcolor', isOverlay ?
+                markerColor :
+                undefined
+            );
+
+            coerce(attr + '.fgcolor', isOverlay ?
+                Color.contrast(bgcolor) :
+                markerColor
+            );
+        }
+
+        coerce(attr + '.fgopacity', isOverlay ?
+            0.5 :
+            1
+        );
     }
 };
 
@@ -77103,7 +77237,7 @@ function validate(value, opts) {
 }
 exports.validate = validate;
 
-},{"../components/colorscale/scales":400,"../constants/interactions":494,"../plots/attributes":562,"./array":501,"./mod":524,"./nested_property":525,"./regex":534,"fast-isnumeric":159,"tinycolor2":321}],506:[function(_dereq_,module,exports){
+},{"../components/color":385,"../components/colorscale/scales":400,"../constants/interactions":494,"../plots/attributes":562,"./array":501,"./mod":524,"./nested_property":525,"./regex":534,"fast-isnumeric":159,"tinycolor2":321}],506:[function(_dereq_,module,exports){
 'use strict';
 
 var timeFormat = _dereq_('d3-time-format').timeFormat;
@@ -81626,9 +81760,7 @@ exports.sorterDes = function(a, b) { return b - a; };
  * just be off by a rounding error
  * return the distinct values and the minimum difference between any two
  */
-exports.distinctVals = function(valsIn, opts) {
-    var unitMinDiff = (opts || {}).unitMinDiff;
-
+exports.distinctVals = function(valsIn) {
     var vals = valsIn.slice();  // otherwise we sort the original array...
     vals.sort(exports.sorterAsc); // undefined listed in the end - also works on IE11
 
@@ -81637,9 +81769,7 @@ exports.distinctVals = function(valsIn, opts) {
         if(vals[last] !== BADNUM) break;
     }
 
-    var minDiff = 1;
-    if(!unitMinDiff) minDiff = (vals[last] - vals[0]) || 1;
-
+    var minDiff = (vals[last] - vals[0]) || 1;
     var errDiff = minDiff / (last || 1) / 10000;
     var newVals = [];
     var preV;
@@ -86471,7 +86601,7 @@ var traceUIControlPatterns = [
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
     {pattern: /^node\.(x|y|groups)/}, // for Sankey nodes
-    {pattern: /^level$/}, // for Sunburst & Treemap traces
+    {pattern: /^level$/}, // for Sunburst, Treemap and Icicle traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -87834,6 +87964,9 @@ function makePlotFramework(gd) {
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
+
+    // single treemap layer for the whole plot
+    fullLayout._iciclelayer = fullLayout._paper.append('g').classed('iciclelayer', true);
 
     // single treemap layer for the whole plot
     fullLayout._treemaplayer = fullLayout._paper.append('g').classed('treemaplayer', true);
@@ -91128,6 +91261,11 @@ module.exports = {
     legendgroup: {
         valType: 'string',
         dflt: '',
+        editType: 'style',
+    },
+    legendrank: {
+        valType: 'number',
+        dflt: 1000,
         editType: 'style',
     },
     opacity: {
@@ -106703,6 +106841,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
+            coerce('legendrank');
 
             traceOut._dfltShowLegend = true;
         } else {
@@ -108321,10 +108460,11 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies / sunbursts / treemap / funnelarea (and for legend)
+    // for sharing colors across pies / sunbursts / treemap / icicle / funnelarea (and for legend)
     fullLayout._piecolormap = {};
     fullLayout._sunburstcolormap = {};
     fullLayout._treemapcolormap = {};
+    fullLayout._iciclecolormap = {};
     fullLayout._funnelareacolormap = {};
 
     // If traces were specified and this trace was not included,
@@ -121950,7 +122090,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.0.0';
+exports.version = '2.1.0';
 
 },{}]},{},[8])(8)
 });
