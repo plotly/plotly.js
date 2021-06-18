@@ -71,8 +71,8 @@ function handleReImDefaults(traceIn, traceOut, layout, coerce) {
     var im = coerce('im');
     var len = 0;
 
-    if (re && im) {
-      len = Math.min(re.length, im.length);
+    if(re && im) {
+        len = Math.min(re.length, im.length);
     }
 
     traceOut._length = len;

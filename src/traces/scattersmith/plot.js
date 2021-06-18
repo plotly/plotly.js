@@ -4,19 +4,19 @@ var scatterPlot = require('../scatter/plot');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 function sq(x) {
-  return x * x;
+    return x * x;
 }
 
 function gammaTransformReal(re, im) {
-  var denom = sq(re + 1.0) + sq(im);
-  var result = (sq(re) + sq(im) - 1.0) / denom;
-  return result;
+    var denom = sq(re + 1.0) + sq(im);
+    var result = (sq(re) + sq(im) - 1.0) / denom;
+    return result;
 }
 
 function gammaTransformImaginary(re, im) {
-  var denom = sq(re + 1.0) + sq(im);
-  var result = (2 * im) / denom;
-  return result;
+    var denom = sq(re + 1.0) + sq(im);
+    var result = (2 * im) / denom;
+    return result;
 }
 
 module.exports = function plot(gd, subplot, moduleCalcData) {

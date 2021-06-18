@@ -240,14 +240,14 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var cyy = _this.cyy = cy - yOffset2;
 
     _this.radialAxis = _this.mockAxis(fullLayout, polarLayout, radialLayout, {
-      _id: 'realaxis',
+        _id: 'realaxis',
         side: {
             counterclockwise: 'top',
             clockwise: 'bottom'
         }[radialLayout.side],
         // keep track of real side
         _realSide: radialLayout.side,
-      domain: [0, 100]
+        domain: [0, 100]
     });
 
     // _this.radialAxis = _this.mockAxis(fullLayout, polarLayout, radialLayout, {
@@ -395,7 +395,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 
     // set special grid path function
     var gridPathFn = function(d) {
-        var value = d.x
+        var value = d.x;
 
         var gridRadius = 0.5 * (_this.radius - ax.c2p(value));
         var gridCenter = gridRadius + ax.c2p(value);
@@ -413,19 +413,19 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var labelFns = {};
 
     labelFns.xFn = function(d) {
-      return 0;
+        return 0;
     };
 
     labelFns.yFn = function(d) {
-      return 0;
+        return 0;
     };
 
     labelFns.anchorFn = function(d) {
-      return 'end';
+        return 'end';
     };
 
     labelFns.heightFn = function(d, a, h) {
-      return 0;
+        return 0;
     };
 
     if(hasRoomForIt) {
@@ -445,14 +445,14 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         });
 
         Axes.drawLabels(gd, ax, {
-            vals: [0.2, 0.5, 1.0, 2.0, 5.0].map(function (d) {
-              return {
-                x: d,
-                text: d,
-                font: '"Open Sans", verdana, arial, sans-serif',
-                fontColor: '#444',
-                fontSize: 12,
-              };
+            vals: [0.2, 0.5, 1.0, 2.0, 5.0].map(function(d) {
+                return {
+                    x: d,
+                    text: d,
+                    font: '"Open Sans", verdana, arial, sans-serif',
+                    fontColor: '#444',
+                    fontSize: 12,
+                };
             }),
             layer: layers['radial-axis'],
             transFn: transFn2,
@@ -494,7 +494,7 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     )
     .attr('stroke-width', radialLayout.linewidth)
     .call(Color.stroke, radialLayout.linecolor);
-}
+};
 
 proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var _this = this;
@@ -653,10 +653,10 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
         Axes.drawGrid(gd, ax, {
             // vals: vals,
-            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.2, 0.5, 1.0, 2.0, 5.0].map(function (v) {
-              return {
-                x: v,
-              };
+            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.2, 0.5, 1.0, 2.0, 5.0].map(function(v) {
+                return {
+                    x: v,
+                };
             }),
             layer: layers['angular-grid'],
             path: gridPathFn,
@@ -665,17 +665,17 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         });
 
         Axes.drawLabels(gd, ax, {
-            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 1.0, 2.0, 5.0, Infinity].map(function (v) {
-              var radius = _this.radius / v;
-              var theta = 2.0 * Math.atan2(radius, _this.radius);
+            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 1.0, 2.0, 5.0, Infinity].map(function(v) {
+                var radius = _this.radius / v;
+                var theta = 2.0 * Math.atan2(radius, _this.radius);
 
-              return {
-                x: theta * 360.0 / (2 * Math.PI),
-                text: v === Infinity ? '∞' : ((v === 0.0 ? '0 + 0' : v) + 'j'),
-                font: '"Open Sans", verdana, arial, sans-serif',
-                fontColor: '#444',
-                fontSize: v === Infinity ? 16 : 12,
-              };
+                return {
+                    x: theta * 360.0 / (2 * Math.PI),
+                    text: v === Infinity ? '∞' : ((v === 0.0 ? '0 + 0' : v) + 'j'),
+                    font: '"Open Sans", verdana, arial, sans-serif',
+                    fontColor: '#444',
+                    fontSize: v === Infinity ? 16 : 12,
+                };
             }),
             layer: layers['angular-axis'],
             repositionOnUpdate: true,

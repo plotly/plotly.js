@@ -45,7 +45,7 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
     }
 
     if(!trace.hovertemplate) {
-      pointData.extraText = cdi.re + ' + ' + cdi.im + 'j';
+        pointData.extraText = cdi.re + ' + ' + cdi.im + 'j';
     }
 }
 

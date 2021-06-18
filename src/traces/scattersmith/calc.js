@@ -11,7 +11,7 @@ var calcSelection = require('../scatter/calc_selection');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 
 function sq(x) {
-  return x * x;
+    return x * x;
 }
 
 module.exports = function calc(gd, trace) {
