@@ -115,6 +115,7 @@ if(allMock || argv.filter) {
 }
 
 var FLAKY_LIST = [
+    'uniformtext_pie_8_tangential',
     'treemap_coffee',
     'treemap_textposition',
     'treemap_with-without_values',
