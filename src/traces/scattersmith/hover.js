@@ -38,12 +38,6 @@ function makeHoverPointText(cdi, trace, subplot, pointData) {
     pointData.rLabel = labels.rLabel;
     pointData.thetaLabel = labels.thetaLabel;
 
-    var hoverinfo = cdi.hi || trace.hoverinfo;
-    var text = [];
-    function textPart(ax, val) {
-        text.push(ax._hovertitle + ': ' + val);
-    }
-
     if(!trace.hovertemplate) {
         pointData.extraText = cdi.re + ' + ' + cdi.im + 'j';
     }

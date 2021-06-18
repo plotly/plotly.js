@@ -29,9 +29,6 @@ module.exports = function plot(gd, subplot, moduleCalcData) {
         layerClipId: subplot._hasClipOnAxisFalse ? subplot.clipIds.forTraces : null
     };
 
-    var radialAxis = subplot.radialAxis;
-    var angularAxis = subplot.angularAxis;
-
     // convert:
     // 'c' (r,theta) -> 'geometric' (r,theta) -> (x,y)
     for(var i = 0; i < moduleCalcData.length; i++) {

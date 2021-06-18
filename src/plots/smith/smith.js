@@ -230,8 +230,6 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var yOffset2 = _this.yOffset2 = gs.t + gs.h * (1 - yDomain2[1]);
     // circle radius in px
     var radius = _this.radius = xLength2 / dxSectorBBox;
-    // 'inner' radius in px (when polar.hole is set)
-    var innerRadius = _this.innerRadius = polarLayout.hole * radius;
     // circle center position in px
     var cx = _this.cx = xOffset2 - radius * sectorBBox[0];
     var cy = _this.cy = yOffset2 + radius * sectorBBox[3];
@@ -363,7 +361,6 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var gd = _this.gd;
     var layers = _this.layers;
     var radius = _this.radius;
-    var innerRadius = _this.innerRadius;
     var cx = _this.cx;
     var cy = _this.cy;
     var radialLayout = polarLayout.radialaxis;
@@ -384,11 +381,6 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         ax.tickangle = 180;
     }
 
-    // easier to set rotate angle with custom translate function
-    var transFn = function(d) {
-        return strTranslate(ax.l2p(d.x) + innerRadius, 0);
-    };
-
     var transFn2 = function(d) {
         return strTranslate(ax.c2p(d.x), -2);
     };
@@ -408,32 +400,26 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
         _this.radialTickLayout = newTickLayout;
     }
 
-    var out = Axes.makeLabelFns(ax, 0);
-    var labelStandoff = out.labelStandoff;
     var labelFns = {};
 
-    labelFns.xFn = function(d) {
+    labelFns.xFn = function() {
         return 0;
     };
 
-    labelFns.yFn = function(d) {
+    labelFns.yFn = function() {
         return 0;
     };
 
-    labelFns.anchorFn = function(d) {
+    labelFns.anchorFn = function() {
         return 'end';
     };
 
-    labelFns.heightFn = function(d, a, h) {
+    labelFns.heightFn = function() {
         return 0;
     };
 
     if(hasRoomForIt) {
         ax.setScale();
-
-        var vals = Axes.calcTicks(ax);
-        // var valsClipped = Axes.clipEnds(ax, vals);
-        var tickSign = Axes.getTickSigns(ax)[2];
 
         // circular grid lines
         Axes.drawGrid(gd, ax, {
@@ -541,7 +527,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var gd = _this.gd;
     var layers = _this.layers;
     var radius = _this.radius;
-    var innerRadius = _this.innerRadius;
     var cx = _this.cx;
     var cy = _this.cy;
     var angularLayout = polarLayout.angularaxis;
@@ -567,11 +552,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     var transFn = function(d) {
         return _transFn(t2g(d));
-    };
-
-    var transFn2 = function(d) {
-        var rad = t2g(d);
-        return _transFn(rad) + strRotate(-rad2deg(rad));
     };
 
     var gridPathFn = function(d) {
@@ -648,9 +628,6 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     }
 
     if(ax.visible) {
-        var tickSign = ax.ticks === 'inside' ? -1 : 1;
-        var pad = (ax.linewidth || 1) / 2;
-
         Axes.drawGrid(gd, ax, {
             // vals: vals,
             vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.2, 0.5, 1.0, 2.0, 5.0].map(function(v) {

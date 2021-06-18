@@ -10,10 +10,6 @@ var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
 var calcSelection = require('../scatter/calc_selection');
 var calcMarkerSize = require('../scatter/calc').calcMarkerSize;
 
-function sq(x) {
-    return x * x;
-}
-
 module.exports = function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
     var subplotId = trace.subplot;
