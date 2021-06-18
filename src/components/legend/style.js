@@ -366,11 +366,11 @@ module.exports = function style(s, gd, legend) {
                 var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
                 var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
                 var patternFGOpacity = markerPattern.fgopacity;
-                var patternSize = dimAttr(markerPattern.size, 6, 8);
+                var patternSize = dimAttr(markerPattern.size, 8, 10);
                 var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
                 var patternID = 'legend-' + trace.uid;
                 p.call(
-                    Drawing.pattern, gd, patternID,
+                    Drawing.pattern, 'legend', gd, patternID,
                     patternShape, patternSize, patternSolidity,
                     mcc, markerPattern.fillmode,
                     patternBGColor, patternFGColor, patternFGOpacity
