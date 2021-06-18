@@ -9,6 +9,24 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.1.0] -- 2021-06-18
+
+### Added
+ - Add `icicle` trace type [[#5546](https://github.com/plotly/plotly.js/pull/5546)]
+   with thanks to @Kully and @mtwichan of [Zyphr](https://www.zyphr.ca/) for their contribution!
+ - Implement `legendrank` attribute in traces [[#5591](https://github.com/plotly/plotly.js/pull/5591)]
+ - Implement `fgopacity`, `fgcolor` & "overlay" `fillmode` for bars and
+   handle bar `pattern` and `legend` when `marker.colorscale` is present [[#5733](https://github.com/plotly/plotly.js/pull/5733)]
+
+### Changed
+ - Replace deprecated [node-sass](https://www.npmjs.com/package/node-sass) modules with [Sass](https://www.npmjs.com/package/sass) and update plot CSS [[#5729](https://github.com/plotly/plotly.js/pull/5729)]
+ - Bump `probe-image-size` to v7.2.1 [[#5739](https://github.com/plotly/plotly.js/pull/5739)]
+ - More maintenance work listed under [the v2.1.0 milestone](https://github.com/plotly/plotly.js/milestone/61)
+
+### Fixed
+ - Fix setting the width of categorical bars & boxes to unit [[#5732](https://github.com/plotly/plotly.js/pull/5732)]
+
+
 ## [2.0.0] -- 2021-06-07
 
 ### Added
@@ -72,7 +90,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
    dist files at build time [[#5436](https://github.com/plotly/plotly.js/pull/5436), [#5446](https://github.com/plotly/plotly.js/pull/5446)]
  - Guard against unexpected characters at build time [[#5424](https://github.com/plotly/plotly.js/pull/5424)]
  - Minimize indentation in plot-schema [[#5663](https://github.com/plotly/plotly.js/pull/5663)]
- - More maintenance work listed under the [the 60th milestone](https://github.com/plotly/plotly.js/milestone/60)!
+ - More maintenance work listed under [the 60th milestone](https://github.com/plotly/plotly.js/milestone/60)!
 
 ### Fixed
  - Fix "toself" `fill` for `scattergl` traces to handle multiple polygons [[#5355](https://github.com/plotly/plotly.js/pull/5355)],
