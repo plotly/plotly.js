@@ -2,7 +2,7 @@
     "data": [
         {
             "type": "bar",
-            "width": 0.004,
+            "width": 0.001,
             "x": [
                 "A",
                 "B",
@@ -18,7 +18,7 @@
         },
         {
             "type": "bar",
-            "width": 0.004,
+            "width": 0.001,
             "x": [
                 "A",
                 "B",
@@ -36,7 +36,7 @@
         },
         {
             "type": "bar",
-            "width": 0.004,
+            "width": 0.001,
             "orientation": "h",
             "x": [
                 0.001,
@@ -61,7 +61,7 @@
         },
         {
             "type": "bar",
-            "width": 0.004,
+            "width": 0.001,
             "orientation": "h",
             "x": [
                 0.001,
