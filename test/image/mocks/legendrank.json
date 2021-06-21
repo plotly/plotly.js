@@ -4,6 +4,7 @@
     {
       "legendrank": 2,
       "legendgroup": "pie",
+      "legendgrouptitle": { "text": "Next pie" },
       "type": "pie",
       "labels": ["a","b","c","c","c","a"],
       "textinfo": "none",
@@ -15,6 +16,7 @@
     {
       "legendrank": 1,
       "legendgroup": "pie",
+      "legendgrouptitle": { "text": "Pie" },
       "type": "pie",
       "labels": ["z","x","x","x","y", "y"],
       "sort": false,
@@ -25,9 +27,9 @@
       }
     },
     {"type": "scatter", "name": "2", "y": [2], "yaxis": "y", "legendgroup": "one", "legendrank": 2},
-    {"type": "scatter", "name": "1", "y": [1], "yaxis": "y", "legendgroup": "one", "legendrank": 1},
-    {"type": "bar", "name": "2", "y": [2], "yaxis": "y2", "legendgroup": "two", "legendrank": 2},
-    {"type": "scatter", "name": "3", "y": [3], "yaxis": "y", "legendgroup": "one", "legendrank": 3},
+    {"type": "scatter", "name": "1", "y": [1], "yaxis": "y", "legendgroup": "one", "legendrank": 1, "legendgrouptitle": { "text": "Down" }},
+    {"type": "bar", "name": "2", "y": [2], "yaxis": "y2", "legendgroup": "two", "legendrank": 2, "legendgrouptitle": { "text": "Up" }},
+    {"type": "scatter", "name": "3", "y": [3], "yaxis": "y", "legendgroup": "one", "legendrank": 3, "legendgrouptitle": { "text": "IGNORE ME!" }},
     {"type": "bar", "name": "3", "y": [3], "yaxis": "y2", "legendgroup": "two", "legendrank": 1}
   ],
   "layout": {
@@ -36,7 +38,8 @@
     },
     "hovermode": "x unified",
     "margin": {
-      "t": 50
+      "t": 50,
+      "b": 25
     },
     "width": 300,
     "height": 400,
