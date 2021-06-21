@@ -119,6 +119,28 @@ module.exports = function getLegendData(calcdata, opts) {
         legendData[i].sort(orderFn2);
         if(reversed) legendData[i].reverse();
 
+        var firstItem = legendData[i][0];
+
+        var groupTitle = null;
+        // set group title text
+        for(j = 0; j < legendData[i].length; j++) {
+            var gt = legendData[i][j].trace.legendgrouptitle;
+            if(gt && gt.text) {
+                groupTitle = gt;
+                break;
+            }
+        }
+
+        if(groupTitle) {
+            legendData[i].unshift({
+                i: -1,
+                groupTitle: groupTitle,
+                trace: {
+                    showlegend: firstItem.trace.showlegend
+                }
+            });
+        }
+
         // rearrange lgroupToTraces into a d3-friendly array of arrays
         for(j = 0; j < legendData[i].length; j++) {
             legendData[i][j] = [
