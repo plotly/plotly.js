@@ -70,7 +70,7 @@
     "@plotly/d3-sankey-circular": "0.33.1",
     "@plotly/point-cluster": "^3.1.9",
     "@turf/area": "^6.0.1",
-    "@turf/bbox": "^6.0.1",
+    "@turf/bbox": "^6.4.0",
     "@turf/centroid": "^6.0.2",
     "alpha-shape": "^1.0.0",
     "canvas-fit": "^1.5.0",
