@@ -1,17 +1,9 @@
 var minimist = require('minimist');
 var path = require('path');
 var fs = require('fs');
-var JSDOM = require('jsdom').JSDOM;
 
-var window = new JSDOM('', {runScripts: 'dangerously'}).window;
-
-// Mock a few things that jsdom doesn't support out-of-the-box
-window.URL.createObjectURL = function() {};
-
-var scriptEl = window.document.createElement('script');
-scriptEl.textContent = fs.readFileSync('build/plotly.js', { encoding: 'utf-8' });
-window.document.body.appendChild(scriptEl);
-var Plotly = window.Plotly;
+var plotlyNode = require('./util/plotly_node');
+var Plotly = plotlyNode('build/plotly.js');
 
 var pathToRoot = path.join(__dirname, '..');
 var pathToMocks = path.join(pathToRoot, 'test', 'image', 'mocks');
