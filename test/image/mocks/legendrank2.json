@@ -3,31 +3,36 @@
         {
             "name": "A",
             "legendrank": 2,
-            "y": [-2]
+            "y": [-2],
+            "legendgrouptitle": { "text": "Middle" }
         },
         {
             "name": "D",
             "legendrank": 4,
             "y": [-4],
-            "legendgroup": "bottom"
+            "legendgroup": "bottom",
+            "legendgrouptitle": { "text": "Bottom" }
         },
         {
             "name": "E",
             "legendrank": 4,
             "y": [-4],
-            "legendgroup": "bottom"
+            "legendgroup": "bottom",
+            "legendgrouptitle": { "text": "Second" }
         },
         {
             "name": "B",
             "legendrank": 1,
             "y": [-1],
-            "legendgroup": "top"
+            "legendgroup": "top",
+            "legendgrouptitle": { "text": "Top" }
         },
         {
             "name": "C",
             "legendrank": 3,
             "y": [-3],
-            "legendgroup": "top"
+            "legendgroup": "top",
+            "legendgrouptitle": { "text": "Not first" }
         }
     ],
     "layout": {

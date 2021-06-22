@@ -117,7 +117,32 @@ module.exports = function getLegendData(calcdata, opts) {
         // sort considering trace.legendrank and legend.traceorder
         legendData[i].forEach(function(a, k) { a._preSort = k; });
         legendData[i].sort(orderFn2);
+
+        var firstItem = legendData[i][0];
+
+        var groupTitle = null;
+        // get group title text
+        for(j = 0; j < legendData[i].length; j++) {
+            var gt = legendData[i][j].trace.legendgrouptitle;
+            if(gt && gt.text) {
+                groupTitle = gt;
+                break;
+            }
+        }
+
+        // reverse order
         if(reversed) legendData[i].reverse();
+
+        if(groupTitle) {
+            // set group title text
+            legendData[i].unshift({
+                i: -1,
+                groupTitle: groupTitle,
+                trace: {
+                    showlegend: firstItem.trace.showlegend
+                }
+            });
+        }
 
         // rearrange lgroupToTraces into a d3-friendly array of arrays
         for(j = 0; j < legendData[i].length; j++) {

@@ -1,5 +1,6 @@
 'use strict';
 
+var fontAttrs = require('./font_attributes');
 var fxAttrs = require('../components/fx/attributes');
 
 module.exports = {
@@ -40,6 +41,23 @@ module.exports = {
             'Traces part of the same legend group hide/show at the same time',
             'when toggling legend items.'
         ].join(' ')
+    },
+    legendgrouptitle: {
+        text: {
+            valType: 'string',
+            dflt: '',
+            editType: 'style',
+            description: [
+                'Sets the title of the legend group.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'style',
+            description: [
+                'Sets this legend group\'s title font.'
+            ].join(' '),
+        }),
+        editType: 'style',
     },
     legendrank: {
         valType: 'number',

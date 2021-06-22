@@ -1309,6 +1309,13 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
+            var titleText = coerce('legendgrouptitle.text');
+            if(titleText) {
+                Lib.coerceFont(coerce, 'legendgrouptitle.font', Lib.extendFlat({}, layout.font, {
+                    size: Math.round(layout.font.size * 1.1) // default to larger font size
+                }));
+            }
+
             coerce('legendrank');
 
             traceOut._dfltShowLegend = true;

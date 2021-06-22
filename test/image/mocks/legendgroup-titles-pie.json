@@ -1,0 +1,73 @@
+{
+    "data": [
+        {
+            "type": "pie",
+            "domain": {
+                "y": [0.8, 1]
+            },
+            "labels": [0],
+            "legendgroup": "G1"
+        },
+        {
+            "type": "pie",
+            "domain": {
+                "y": [0.6, 0.8]
+            },
+            "labels": [1],
+            "legendgroup": "G1"
+        },
+        {
+            "type": "pie",
+            "domain": {
+                "y": [0.4, 0.6]
+            },
+            "labels": [2],
+            "legendgroup": "G1",
+            "legendgrouptitle": {
+                "text": "First group"
+            }
+        },
+        {
+            "type": "pie",
+            "domain": {
+                "y": [0.2, 0.4]
+            },
+            "labels": [3],
+            "legendgroup": "G2",
+            "legendgrouptitle": {
+                "text": "Second group"
+            }
+        },
+        {
+            "domain": {
+                "y": [0, 0.2]
+            },
+            "type": "pie",
+            "labels": [4, 5],
+            "legendgroup": "G3",
+            "legendgrouptitle": {
+                "text": "Third group"
+            }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "legend group titles"
+        },
+        "margin": {
+            "t": 50,
+            "b": 25,
+            "l": 25,
+            "r": 25
+        },
+        "width": 300,
+        "height": 300,
+        "legend": {
+            "bgcolor": "lightblue",
+            "title": {
+                "text": ""
+            }
+        },
+        "hovermode": "x unified"
+    }
+}
