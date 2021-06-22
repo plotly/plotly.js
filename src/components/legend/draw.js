@@ -598,6 +598,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     if(!legendObj) legendObj = fullLayout.legend;
     var gs = fullLayout._size;
 
+    var hSpacing = helpers.hSpacing(legendObj);
     var isVertical = helpers.isVertical(legendObj);
     var isGrouped = helpers.isGrouped(legendObj);
 
@@ -626,25 +627,75 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var titleSize = getTitleSize(legendObj);
 
     if(isVertical) {
-        traces.each(function(d) {
-            var h = d[0].height;
-            Drawing.setTranslate(this,
-                bw + titleSize[0],
-                bw + titleSize[1] + legendObj._height + h / 2 + itemGap
-            );
-            legendObj._height += h;
-            legendObj._width = Math.max(legendObj._width, d[0].width);
-        });
+        if(hSpacing) { // case of horizontal group-orientation
+            var totalWidth = 0;
+            var totalHeight = 0;
+            var xStart = bw + titleSize[0];
+            var yStart = bw + titleSize[1];
+            var x0;
+            var y0 = yStart;
+            if(isGrouped) {
+                y0 -= legendObj.tracegroupgap;
+            }
+            traces.each(function(d, i) {
+                if(i === 0) {
+                    x0 = xStart;
+                }
 
-        toggleRectWidth = textGap + legendObj._width;
-        legendObj._width += itemGap + textGap + bw2;
-        legendObj._height += endPad;
+                var w = d[0].width;
+                var h = d[0].height;
 
-        if(isGrouped) {
-            groups.each(function(d, i) {
-                Drawing.setTranslate(this, 0, i * legendObj.tracegroupgap);
+                var dx = w + textGap + hSpacing;
+                var dy = h / 2 + itemGap;
+
+                var x = x0 + dx;
+                var y = y0;
+                if(i === 0 || x + w + itemGap - hSpacing > gs.w) {
+                    if(i === 0 && isGrouped) {
+                        dy += legendObj.tracegroupgap;
+                    }
+
+                    y0 += dy;
+                    y = y0;
+
+                    x0 = xStart;
+                    x = x0;
+
+                    totalHeight += dy;
+                } else {
+                    x0 += dx;
+
+                    totalWidth += dx;
+                }
+
+                Drawing.setTranslate(this, x, y);
             });
-            legendObj._height += (legendObj._lgroupsLength - 1) * legendObj.tracegroupgap;
+
+            toggleRectWidth = textGap + legendObj._width;
+            legendObj._width += totalWidth + itemGap - hSpacing;
+            legendObj._height += totalHeight;
+        } else { // case of vertical group-orientation
+            traces.each(function(d) {
+                var h = d[0].height;
+
+                Drawing.setTranslate(this,
+                    bw + titleSize[0],
+                    bw + titleSize[1] + legendObj._height + h / 2 + itemGap
+                );
+                legendObj._height += h;
+                legendObj._width = Math.max(legendObj._width, d[0].width);
+            });
+
+            toggleRectWidth = textGap + legendObj._width;
+            legendObj._width += itemGap + textGap + bw2;
+            legendObj._height += endPad;
+
+            if(isGrouped) {
+                groups.each(function(d, i) {
+                    Drawing.setTranslate(this, 0, i * legendObj.tracegroupgap);
+                });
+                legendObj._height += (legendObj._lgroupsLength - 1) * legendObj.tracegroupgap;
+            }
         }
     } else {
         var xanchor = getXanchor(legendObj);

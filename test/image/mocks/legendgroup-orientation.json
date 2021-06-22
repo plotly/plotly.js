@@ -1,0 +1,85 @@
+{
+    "data": [
+        {
+            "x": [0],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [1],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [2],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [3],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [4],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [5],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [6],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [7],
+            "legendgroup": "G1"
+        },
+        {
+            "x": [8],
+            "legendgroup": "G2"
+        },
+        {
+            "x": [9],
+            "name": "9",
+            "legendgroup": "G3"
+        },
+        {
+            "x": [10],
+            "name": "10",
+            "legendgroup": "G3"
+        },
+        {
+            "x": [11],
+            "name": "11",
+            "legendgroup": "G3"
+        },
+        {
+            "x": [12],
+            "name": "12",
+            "legendgroup": "G3"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "legend group orientation"
+        },
+        "margin": {
+            "t": 50,
+            "b": 25,
+            "l": 25,
+            "r": 25
+        },
+        "width": 320,
+        "height": 320,
+        "legend": {
+            "title": {
+                "text": "Title",
+                "side": "left"
+            },
+            "bgcolor": "lightblue",
+            "grouporientation": "h",
+            "orientation": "v",
+            "x": 0,
+            "y": -1
+        },
+        "hovermode": "y unified"
+    }
+}

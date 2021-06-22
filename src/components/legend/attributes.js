@@ -35,7 +35,17 @@ module.exports = {
         values: ['v', 'h'],
         dflt: 'v',
         editType: 'legend',
-        description: 'Sets the orientation of the legend.'
+        description: 'Sets the orientation of the legend groups.'
+    },
+    grouporientation: {
+        valType: 'enumerated',
+        values: ['v', 'h'],
+        dflt: 'v',
+        editType: 'legend',
+        description: [
+            'Sets the orientation of the legend items within the group.',
+            'Only available when `orientation` is *v*.'
+        ].join(' ')
     },
     traceorder: {
         valType: 'flaglist',

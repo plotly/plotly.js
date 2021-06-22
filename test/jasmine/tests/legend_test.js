@@ -245,6 +245,11 @@ describe('legend defaults', function() {
             expect(layoutOut.legend.y).toEqual(1.1);
             expect(layoutOut.legend.yanchor).toEqual('bottom');
         });
+
+        it('should not coerce `grouporientation`', function() {
+            supplyLayoutDefaults(layoutInForHorizontalLegends, layoutOut, []);
+            expect(layoutOut.legend.grouporientation).toEqual(undefined);
+        });
     });
 });
 
