@@ -2048,109 +2048,41 @@ describe('Plotly.react and uirevision attributes', function() {
         _run(fig, editComponents, checkInitial, checkEdited).then(done);
     });
 
-    it('preserves sunburst level changes', function(done) {
-        function assertLevel(msg, exp) {
-            expect(gd._fullData[0].level).toBe(exp, msg);
-        }
+    ['sunburst', 'icicle', 'treemap'].forEach(function(type) {
+        it('preserves ' + type + ' level changes', function(done) {
+            function assertLevel(msg, exp) {
+                expect(gd._fullData[0].level).toBe(exp, msg);
+            }
 
-        Plotly.react(gd, [{
-            type: 'sunburst',
-            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
-            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
-            uirevision: 1
-        }])
-        .then(function() {
-            assertLevel('no set level at start', undefined);
-        })
-        .then(function() {
-            var nodeSeth = d3Select('.slice:nth-child(2)').node();
-            mouseEvent('click', 0, 0, {element: nodeSeth});
-        })
-        .then(function() {
-            assertLevel('after clicking on Seth sector', 'Seth');
-        })
-        .then(function() {
-            return Plotly.react(gd, [{
-                type: 'sunburst',
-                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura', 'Joe'],
-                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve', 'Seth'],
+            Plotly.react(gd, [{
+                type: type,
+                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
+                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
                 uirevision: 1
-            }]);
-        })
-        .then(function() {
-            assertLevel('after reacting with new data, but with same uirevision', 'Seth');
-        })
-        .then(done, done.fail);
-    });
-
-    it('preserves treemap level changes', function(done) {
-        function assertLevel(msg, exp) {
-            expect(gd._fullData[0].level).toBe(exp, msg);
-        }
-
-        Plotly.react(gd, [{
-            type: 'treemap',
-            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
-            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
-            uirevision: 1
-        }])
-        .then(function() {
-            assertLevel('no set level at start', undefined);
-        })
-        .then(function() {
-            var nodeSeth = d3Select('.slice:nth-child(2)').node();
-            mouseEvent('click', 0, 0, {element: nodeSeth});
-        })
-        .then(function() {
-            assertLevel('after clicking on Seth sector', 'Seth');
-        })
-        .then(function() {
-            return Plotly.react(gd, [{
-                type: 'treemap',
-                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura', 'Joe'],
-                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve', 'Seth'],
-                uirevision: 1
-            }]);
-        })
-        .then(function() {
-            assertLevel('after reacting with new data, but with same uirevision', 'Seth');
-        })
-        .then(done, done.fail);
-    });
-
-    it('preserves icicle level changes', function(done) {
-        function assertLevel(msg, exp) {
-            expect(gd._fullData[0].level).toBe(exp, msg);
-        }
-
-        Plotly.react(gd, [{
-            type: 'icicle',
-            labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura'],
-            parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve'],
-            uirevision: 1
-        }])
-        .then(function() {
-            assertLevel('no set level at start', undefined);
-        })
-        .then(function() {
-            var nodeSeth = d3Select('.slice:nth-child(2)').node();
-            mouseEvent('click', 0, 0, {element: nodeSeth});
-        })
-        .then(function() {
-            assertLevel('after clicking on Seth sector', 'Seth');
-        })
-        .then(function() {
-            return Plotly.react(gd, [{
-                type: 'icicle',
-                labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura', 'Joe'],
-                parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve', 'Seth'],
-                uirevision: 1
-            }]);
-        })
-        .then(function() {
-            assertLevel('after reacting with new data, but with same uirevision', 'Seth');
-        })
-        .then(done, done.fail);
+            }])
+            .then(function() {
+                assertLevel('no set level at start', undefined);
+            })
+            .then(function() {
+                var nodeSeth = d3Select('.slice:nth-child(2)').node();
+                mouseEvent('click', 0, 0, {element: nodeSeth});
+            })
+            .then(function() {
+                assertLevel('after clicking on Seth sector', 'Seth');
+            })
+            .then(function() {
+                return Plotly.react(gd, [{
+                    type: type,
+                    labels: ['Eve', 'Cain', 'Seth', 'Enos', 'Noam', 'Abel', 'Awan', 'Enoch', 'Azura', 'Joe'],
+                    parents: ['', 'Eve', 'Eve', 'Seth', 'Seth', 'Eve', 'Eve', 'Awan', 'Eve', 'Seth'],
+                    uirevision: 1
+                }]);
+            })
+            .then(function() {
+                assertLevel('after reacting with new data, but with same uirevision', 'Seth');
+            })
+            .then(done, done.fail);
+        });
     });
 });
 
