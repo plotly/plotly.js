@@ -1,16 +1,17 @@
 var minimist = require('minimist');
-var jsdom = require('jsdom');
 var path = require('path');
 var fs = require('fs');
+var JSDOM = require('jsdom').JSDOM;
 
-var plotlyServerDom = new jsdom.JSDOM('', { runScripts: 'dangerously'});
+var window = new JSDOM('', {runScripts: 'dangerously'}).window;
+
 // Mock a few things that jsdom doesn't support out-of-the-box
-plotlyServerDom.window.URL.createObjectURL = function() {};
+window.URL.createObjectURL = function() {};
 
-// Run Plotly inside jsdom
-var plotlyJsPath = require.resolve('../build/plotly.js');
-var plotlyJsSource = fs.readFileSync(plotlyJsPath, 'utf-8');
-plotlyServerDom.window.eval(plotlyJsSource);
+var scriptEl = window.document.createElement('script');
+scriptEl.textContent = fs.readFileSync('build/plotly.js', { encoding: 'utf-8' });
+window.document.body.appendChild(scriptEl);
+var Plotly = window.Plotly;
 
 var pathToRoot = path.join(__dirname, '..');
 var pathToMocks = path.join(pathToRoot, 'test', 'image', 'mocks');
@@ -39,7 +40,7 @@ for(var i = 0; i < list.length; i++) {
 
     var filename = path.join(pathToMocks, name + '.json');
     var fig = JSON.parse(fs.readFileSync(filename));
-    var out = plotlyServerDom.window.Plotly.validate(fig.data, fig.layout);
+    var out = Plotly.validate(fig.data, fig.layout);
 
     fail = false;
     assert(name, out);
