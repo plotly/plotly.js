@@ -96,7 +96,10 @@ jobs:
           name: install plotly.io v4.14.3
           command: python3 -m pip install plotly==4.14.3
       - run:
-          name: install fonts
+          name: install liberation2 fonts
+          command: sudo apt-get install fonts-liberation2
+      - run:
+          name: install other fonts
           command: |
             sudo cp -r .circleci/fonts/ /usr/share/
             sudo fc-cache -f
