@@ -99,7 +99,10 @@ jobs:
           name: install liberation2 fonts
           command: sudo apt-get install fonts-liberation2
       - run:
-          name: install other fonts
+          name: install NotoSansCJK fonts
+          command: sudo apt install fonts-noto-cjk
+      - run:
+          name: install google fonts
           command: |
             sudo cp -r .circleci/fonts/ /usr/share/
             sudo fc-cache -f
