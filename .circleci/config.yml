@@ -102,7 +102,7 @@ jobs:
           name: install NotoSansCJK fonts
           command: sudo apt install fonts-noto-cjk
       - run:
-          name: download google fonts e.g. Raleway
+          name: download google fonts e.g. Raleway, Roboto
           command: python3 ./.circleci/download_google_fonts.py
       - run:
           name: install all google fonts
