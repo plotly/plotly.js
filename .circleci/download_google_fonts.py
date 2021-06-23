@@ -10,6 +10,25 @@ def download(repo, family, types) :
         req = requests.get(url, allow_redirects=True)
         open(dirOut + name, 'wb').write(req.content)
 
+"""
+download(
+    'https://github.com/googlefonts/opensans/blob/main/fonts/ttf/',
+    'OpenSans',
+    [
+        'Bold',
+        'BoldItalic',
+        'ExtraBold',
+        'ExtraBoldItalic',
+        'Italic',
+        'Light',
+        'LightItalic',
+        'Regular',
+        'Semibold',
+        'SemiboldItalic',
+    ]
+)
+"""
+
 download(
     'https://github.com/google/fonts/blob/main/ofl/ptsansnarrow/',
     'PT_Sans-Narrow-Web',
