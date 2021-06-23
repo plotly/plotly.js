@@ -665,7 +665,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 } else {
                     x0 += dx;
 
-                    totalWidth += dx;
+                    totalWidth = Math.max(totalWidth, x + dx - xStart);
                 }
 
                 Drawing.setTranslate(this, x, y);
