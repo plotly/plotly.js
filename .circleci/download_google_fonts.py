@@ -11,6 +11,15 @@ def download(repo, family, types) :
         open(dirOut + name, 'wb').write(req.content)
 
 download(
+    'https://github.com/google/fonts/blob/main/ofl/ptsansnarrow/',
+    'PT_Sans-Narrow-Web',
+    [
+        '-Regular',
+        '-Bold'
+    ]
+)
+
+download(
     'https://github.com/impallari/Raleway/blob/master/fonts/v3.000%20Fontlab/TTF/',
     'Raleway',
     [
