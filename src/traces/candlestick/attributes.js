@@ -1,7 +1,7 @@
 'use strict';
 
 var extendFlat = require('../../lib').extendFlat;
-var axisHoverFormat = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
 

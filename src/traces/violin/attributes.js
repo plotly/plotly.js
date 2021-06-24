@@ -2,7 +2,7 @@
 
 var boxAttrs = require('../box/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
-var axisHoverFormat = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 
 module.exports = {
     y: boxAttrs.y,

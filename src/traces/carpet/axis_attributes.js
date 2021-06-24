@@ -3,11 +3,8 @@
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
+var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-
-var docs = require('../../constants/docs');
-var FORMAT_LINK = docs.FORMAT_LINK;
-var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
 
 module.exports = {
     color: {
@@ -279,16 +276,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         editType: 'calc',
-        description: [
-            'Sets the tick label formatting rule using d3 formatting mini-languages',
-            'which are very similar to those in Python. For numbers, see:',
-            FORMAT_LINK,
-            'And for dates see:',
-            DATE_FORMAT_LINK,
-            'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
-            'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
-            '*%H~%M~%S.%2f* would display *09~15~23.46*'
-        ].join(' ')
+        description: descriptionWithDates('tick label')
     },
     tickformatstops: overrideAll(axesAttrs.tickformatstops, 'calc', 'from-root'),
     categoryorder: {

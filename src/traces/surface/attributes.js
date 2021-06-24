@@ -2,7 +2,7 @@
 
 var Color = require('../../components/color');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
-var axisHoverFormat = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var baseAttrs = require('../../plots/attributes');
 
