@@ -9,14 +9,9 @@ function axisHoverFormat(x, noDates) {
         valType: 'string',
         dflt: '',
         editType: 'none',
-        description: [
-            'Sets the hover text formatting rule for `' + x + '`',
-            ' using d3 formatting mini-languages which are very similar to those in Python.',
-            'See: ' + FORMAT_LINK + (
-                noDates ?
-                    '' :
-                    ' And for dates see: ' + DATE_FORMAT_LINK
-                ),
+        description: (
+            noDates ? descriptionOnlyNumbers : descriptionWithDates
+        )('hover text', x) + [
             'By default the values are formatted using ' + (
                 noDates ?
                     'generic number format' :
@@ -26,15 +21,16 @@ function axisHoverFormat(x, noDates) {
     };
 }
 
-function descriptionOnlyNumbers(label) {
+function descriptionOnlyNumbers(label, x) {
     return [
-        'Sets the ' + label + ' formatting rule using d3 formatting mini-languages',
+        'Sets the ' + label + ' formatting rule' + (x ? 'for `' + x + '` ' : ''),
+        'using d3 formatting mini-languages',
         'which are very similar to those in Python. For numbers, see: ' + FORMAT_LINK
     ].join(' ');
 }
 
-function descriptionWithDates(label) {
-    return descriptionOnlyNumbers(label) + [
+function descriptionWithDates(label, x) {
+    return descriptionOnlyNumbers(label, x) + [
         ' And for dates see: ' + DATE_FORMAT_LINK,
         'We add two items to d3\'s date formatter:',
         '*%h* for half of the year as a decimal number as well as',
