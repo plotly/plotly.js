@@ -39,10 +39,10 @@
                 "y": 1,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "<i>Droid Sans Italic</i>",
+                "text": "<i>Noto Sans Italic</i>",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Sans, sans-serif",
+                    "family": "Noto Sans, sans-serif",
                     "size": 28
                 },
                 "xanchor": "left",

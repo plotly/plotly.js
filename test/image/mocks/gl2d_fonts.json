@@ -219,10 +219,10 @@
                 "y": 0.7272727272727273,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans <b>Bold</b>",
+                "text": "Noto Sans <b>Bold</b>",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Sans, sans-serif",
+                    "family": "Noto Sans, sans-serif",
                     "size": 20
                 },
                 "xanchor": "left",

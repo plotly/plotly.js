@@ -163,14 +163,14 @@
             },
             {
                 "yanchor":"middle",
-                "text":"Droid Sans <b>Bold</b>",
+                "text":"Noto Sans <b>Bold</b>",
                 "arrowsize":1,
                 "textangle":0,
                 "borderwidth":1,
                 "ay":-27.0390625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Sans, sans-serif",
+                    "family":"Noto Sans, sans-serif",
                     "size":20
                 },
                 "arrowcolor":"",
