@@ -11,6 +11,16 @@ def download(repo, family, types) :
         open(dirOut + name, 'wb').write(req.content)
 
 download(
+    'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSans/',
+    'NotoSans',
+    [
+        '-Regular',
+        '-Italic',
+        '-Bold'
+    ]
+)
+
+download(
     'https://github.com/google/fonts/blob/main/ofl/oldstandardtt/',
     'OldStandard',
     [
