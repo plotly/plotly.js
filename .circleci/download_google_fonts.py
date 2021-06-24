@@ -21,6 +21,17 @@ download(
 )
 
 download(
+    'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSerif/',
+    'NotoSerif',
+    [
+        '-Regular',
+        '-Italic',
+        '-Bold',
+        '-BoldItalic',
+    ]
+)
+
+download(
     'https://github.com/google/fonts/blob/main/ofl/oldstandardtt/',
     'OldStandard',
     [
