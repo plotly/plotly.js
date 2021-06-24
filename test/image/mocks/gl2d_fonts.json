@@ -165,10 +165,10 @@
                 "y": 0.9090909090909091,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Balto <b>Bold</b> <i>Italic</i>",
+                "text": "Roboto <b>Bold</b> <i>Italic</i>",
                 "showarrow": false,
                 "font": {
-                    "family": "Balto, sans-serif",
+                    "family": "Roboto, sans-serif",
                     "size": 20
                 },
                 "xanchor": "left",
