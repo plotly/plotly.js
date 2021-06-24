@@ -2,7 +2,7 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
-var axisFormat = require('../../plots/cartesian/axis_format');
+var axisFormat = require('../../plots/cartesian/axis_format_attributes');
 var axisHoverFormat = axisFormat.axisHoverFormat;
 var descriptionOnlyNumbers = axisFormat.descriptionOnlyNumbers;
 var colorScaleAttrs = require('../../components/colorscale/attributes');

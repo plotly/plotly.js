@@ -9,7 +9,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var delta = require('../../constants/delta.js');
-var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format').descriptionOnlyNumbers;
+var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
 
 var textFontAttrs = fontAttrs({
     editType: 'plot',

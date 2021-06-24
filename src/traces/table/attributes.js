@@ -5,7 +5,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format').descriptionOnlyNumbers;
+var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
 
 var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),

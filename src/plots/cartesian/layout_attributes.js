@@ -5,7 +5,7 @@ var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
-var descriptionWithDates = require('../../plots/cartesian/axis_format').descriptionWithDates;
+var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
