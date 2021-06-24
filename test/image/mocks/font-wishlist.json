@@ -57,10 +57,10 @@
                 "y": 0.875,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "<b>Droid Sans Mono Bold</b>",
+                "text": "<b>Noto Sans Mono Bold</b>",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Sans Mono, sans-serif",
+                    "family": "Noto Sans Mono, sans-serif",
                     "size": 28
                 },
                 "xanchor": "left",
@@ -75,10 +75,10 @@
                 "y": 0.75,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "<i>Droid Sans Mono Italic</i>",
+                "text": "<i>Noto Sans Mono Italic</i>",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Sans Mono, sans-serif",
+                    "family": "Noto Sans Mono, sans-serif",
                     "size": 28
                 },
                 "xanchor": "left",

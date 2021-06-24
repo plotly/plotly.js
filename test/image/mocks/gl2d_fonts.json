@@ -273,10 +273,10 @@
                 "y": 0.5454545454545454,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans Mono",
+                "text": "Noto Sans Mono",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Sans Mono, sans-serif",
+                    "family": "Noto Sans Mono, sans-serif",
                     "size": 20
                 },
                 "xanchor": "left",
