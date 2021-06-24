@@ -99,3 +99,11 @@ download(
         '-BoldItalic'
     ]
 )
+
+download(
+    'https://github.com/expo/google-fonts/blob/master/font-packages/gravitas-one/',
+    'GravitasOne',
+    [
+        '_400Regular'
+    ]
+)
