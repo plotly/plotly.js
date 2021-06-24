@@ -1,6 +1,6 @@
 'use strict';
 
-var axisHoverFormat = require('../../plots/hoverformat_attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
