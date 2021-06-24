@@ -10,6 +10,16 @@ def download(repo, family, types) :
         req = requests.get(url, allow_redirects=True)
         open(dirOut + name, 'wb').write(req.content)
 
+download(
+    'https://github.com/google/fonts/blob/main/ofl/oldstandardtt/',
+    'OldStandard',
+    [
+        '-Regular',
+        '-Italic',
+        '-Bold'
+    ]
+)
+
 """
 download(
     'https://github.com/googlefonts/opensans/blob/main/fonts/ttf/',
