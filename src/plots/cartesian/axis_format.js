@@ -36,7 +36,9 @@ function descriptionOnlyNumbers(label) {
 function descriptionWithDates(label) {
     return descriptionOnlyNumbers(label) + [
         ' And for dates see: ' + DATE_FORMAT_LINK,
-        'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
+        'We add two items to d3\'s date formatter:',
+        '*%h* for half of the year as a decimal number as well as',
+        '*%{n}f* for fractional seconds',
         'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
         '*%H~%M~%S.%2f* would display *09~15~23.46*'
     ].join(' ');
