@@ -25,13 +25,13 @@ function descriptionOnlyNumbers(label, x) {
     return [
         'Sets the ' + label + ' formatting rule' + (x ? 'for `' + x + '` ' : ''),
         'using d3 formatting mini-languages',
-        'which are very similar to those in Python. For numbers, see: ' + FORMAT_LINK
+        'which are very similar to those in Python. For numbers, see: ' + FORMAT_LINK + '.'
     ].join(' ');
 }
 
 function descriptionWithDates(label, x) {
     return descriptionOnlyNumbers(label, x) + [
-        ' And for dates see: ' + DATE_FORMAT_LINK,
+        ' And for dates see: ' + DATE_FORMAT_LINK + '.',
         'We add two items to d3\'s date formatter:',
         '*%h* for half of the year as a decimal number as well as',
         '*%{n}f* for fractional seconds',
