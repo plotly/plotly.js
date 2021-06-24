@@ -190,14 +190,14 @@
             },
             {
                 "yanchor":"middle",
-                "text":"Droid Serif <b>Bold</b> <i>Italic</i>",
+                "text":"Noto Serif <b>Bold</b> <i>Italic</i>",
                 "arrowsize":1,
                 "textangle":0,
                 "borderwidth":1,
                 "ay":-27.0390625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Serif, serif",
+                    "family":"Noto Serif, serif",
                     "size":20
                 },
                 "arrowcolor":"",

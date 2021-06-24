@@ -246,10 +246,10 @@
                 "y": 0.6363636363636364,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Serif <b>Bold</b> <i>Italic</i>",
+                "text": "Noto Serif <b>Bold</b> <i>Italic</i>",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Serif, serif",
+                    "family": "Noto Serif, serif",
                     "size": 20
                 },
                 "xanchor": "left",
