@@ -51,23 +51,6 @@ download(
 )
 
 download(
-    'https://github.com/googlefonts/opensans/blob/main/fonts/ttf/',
-    'OpenSans',
-    [
-        'Bold',
-        'BoldItalic',
-        'ExtraBold',
-        'ExtraBoldItalic',
-        'Italic',
-        'Light',
-        'LightItalic',
-        'Regular',
-        'Semibold',
-        'SemiboldItalic',
-    ]
-)
-
-download(
     'https://github.com/google/fonts/blob/main/ofl/ptsansnarrow/',
     'PT_Sans-Narrow-Web',
     [
