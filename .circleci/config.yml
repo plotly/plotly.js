@@ -102,10 +102,10 @@ jobs:
           name: install NotoSansCJK fonts
           command: sudo apt install fonts-noto-cjk
       - run:
-          name: download google fonts e.g. GravitasOne, NotoSansMono, NotoSans, NotoSerif, Old_Standard_TT, PT_Sans_Narrow, Raleway and Roboto
+          name: download google fonts e.g. GravitasOne, NotoSansMono, NotoSans, NotoSerif, Old_Standard_TT, OpenSans, PT_Sans_Narrow, Raleway and Roboto
           command: python3 ./.circleci/download_google_fonts.py
       - run:
-          name: install OpenSans as well as downloaded google fonts
+          name: install downloaded google fonts
           command: |
             sudo cp -r .circleci/fonts/ /usr/share/
             sudo fc-cache -f

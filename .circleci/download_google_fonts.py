@@ -50,7 +50,6 @@ download(
     ]
 )
 
-"""
 download(
     'https://github.com/googlefonts/opensans/blob/main/fonts/ttf/',
     'OpenSans',
@@ -67,7 +66,6 @@ download(
         'SemiboldItalic',
     ]
 )
-"""
 
 download(
     'https://github.com/google/fonts/blob/main/ofl/ptsansnarrow/',
