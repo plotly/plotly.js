@@ -93,8 +93,8 @@ jobs:
           name: install kaleido v0.2.1
           command: python3 -m pip install kaleido==0.2.1
       - run:
-          name: install plotly.io v4.14.3
-          command: python3 -m pip install plotly==4.14.3
+          name: install plotly.io v5.0.0
+          command: python3 -m pip install plotly==5.0.0
       - run:
           name: install liberation2 fonts
           command: sudo apt-get install fonts-liberation2
@@ -145,8 +145,8 @@ jobs:
           name: install kaleido v0.2.1
           command: python3 -m pip install kaleido==0.2.1
       - run:
-          name: install plotly.io v4.14.3
-          command: python3 -m pip install plotly==4.14.3
+          name: install plotly.io v5.0.0
+          command: python3 -m pip install plotly==5.0.0
       - run:
           name: install poppler-utils to have pdftops for exporting eps
           command: sudo apt-get install poppler-utils
