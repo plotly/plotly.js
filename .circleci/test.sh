@@ -63,7 +63,7 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    no-gl-flaky-jasmine)
+    flaky-no-gl-jasmine)
         set_tz
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))

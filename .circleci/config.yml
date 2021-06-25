@@ -66,7 +66,7 @@ jobs:
           name: Run jasmine tests (part B)
           command: ./.circleci/test.sh webgl-jasmine
 
-  no-gl-flaky-jasmine:
+  flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.22.1-browsers
@@ -76,7 +76,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part C)
-          command: ./.circleci/test.sh no-gl-flaky-jasmine
+          command: ./.circleci/test.sh flaky-no-gl-jasmine
 
   make-baselines:
     parallelism: 4
@@ -292,7 +292,7 @@ workflows:
       - webgl-jasmine:
           requires:
             - install-and-cibuild
-      - no-gl-flaky-jasmine:
+      - flaky-no-gl-jasmine:
           requires:
             - install-and-cibuild
       - make-baselines:
