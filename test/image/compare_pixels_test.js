@@ -114,13 +114,17 @@ for(var i = 0; i < allMockList.length; i++) {
         height: height
     });
 
-    var shouldBePixelPerfect = mockName.substr(0, 7) !== 'mapbox_' && [
+    var isMapbox = mockName.substr(0, 7) === 'mapbox_';
+    var isOtherFlaky = [
         // list flaky mocks other than mapbox:
         'gl3d_bunny-hull'
-    ].indexOf(mockName) === -1;
+    ].indexOf(mockName) !== -1;
+
+    var shouldBePixelPerfect = !(isMapbox || isOtherFlaky);
 
     var numDiffPixels = pixelmatch(img0.data, img1.data, diff.data, width, height, {
-        threshold: shouldBePixelPerfect ? 0 : 0.2
+        threshold: shouldBePixelPerfect ? 0 :
+            mockName === 'mapbox_geojson-attributes' ? 0.2 : 0.15
     });
 
     if(numDiffPixels) {
