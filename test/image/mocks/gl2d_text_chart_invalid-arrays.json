@@ -20,7 +20,7 @@
             ],
             "textfont": {
                 "family": [
-                    "Droid Sans, sans-serif",
+                    "Noto Sans, sans-serif",
                     "Old Standard TT, serif",
                     "PT Sans Narrow, sans-serif"
                 ],
@@ -62,7 +62,7 @@
             ],
             "textfont": {
                 "family": [
-                    "Droid Sans Mono, sans-serif",
+                    "Noto Sans Mono, sans-serif",
                     "Raleway, sans-serif",
                     "Times New Roman, Times, serif"
                 ],

@@ -76,16 +76,14 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    stable-image)
-        SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | circleci tests split)
-        npm run test-image -- $SUITE --filter --skip-flaky || EXIT_STATE=$?
+    make-baselines)
+        SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | sed 's/\.json$//1' | circleci tests split)
+        python3 test/image/make_baseline.py $SUITE || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
-    flaky-image)
-        MAX_AUTO_RETRY=5
-        retry npm run test-image -- --just-flaky
-        npm run test-export     || EXIT_STATE=$?
+    test-image)
+        node test/image/compare_pixels_test.js || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
