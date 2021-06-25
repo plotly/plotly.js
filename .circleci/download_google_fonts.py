@@ -11,6 +11,15 @@ def download(repo, family, types) :
         open(dirOut + name, 'wb').write(req.content)
 
 download(
+    'https://github.com/eliheuer/dosis-vf/blob/master/fonts/static-fonts/',
+    'Dosis',
+    [
+        '-Regular',
+        '-Bold'
+    ]
+)
+
+download(
     'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSansMono/',
     'NotoSansMono',
     [
