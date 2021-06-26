@@ -75,7 +75,7 @@ tasks.push(function(done) {
     }, function() {
         prependFile(pathToPlotlyDistWithMeta, header, common.throwOnError);
 
-        makeSchema(pathToPlotlyDistWithMeta, pathToSchema)();
+        makeSchema(pathToPlotlyDistWithMeta, pathToSchema);
         done();
     });
 });
