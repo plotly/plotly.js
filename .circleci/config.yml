@@ -51,7 +51,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part A)
-          command: ./.circleci/test.sh no-gl-jasmine
+          command: .circleci/test.sh no-gl-jasmine
 
   webgl-jasmine:
     docker:
@@ -64,7 +64,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part B)
-          command: ./.circleci/test.sh webgl-jasmine
+          command: .circleci/test.sh webgl-jasmine
 
   flaky-no-gl-jasmine:
     docker:
@@ -76,7 +76,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part C)
-          command: ./.circleci/test.sh flaky-no-gl-jasmine
+          command: .circleci/test.sh flaky-no-gl-jasmine
 
   make-baselines:
     parallelism: 4
@@ -106,7 +106,7 @@ jobs:
           command: sudo apt install fonts-noto-cjk
       - run:
           name: download google fonts e.g. Dosis, GravitasOne, NotoSansMono, NotoSans, NotoSerif, Old_Standard_TT, PT_Sans_Narrow, Raleway and Roboto
-          command: python3 ./.circleci/download_google_fonts.py
+          command: python3 .circleci/download_google_fonts.py
       - run:
           name: install downloaded google fonts
           command: |
@@ -114,7 +114,7 @@ jobs:
             sudo fc-cache -f
       - run:
           name: create all png files
-          command: ./.circleci/test.sh make-baselines
+          command: .circleci/test.sh make-baselines
       - persist_to_workspace:
           root: ~/
           paths:
@@ -129,7 +129,7 @@ jobs:
           at: ~/
       - run:
           name: compare pixels
-          command: ./.circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
+          command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
@@ -198,7 +198,7 @@ jobs:
           at: ~/
       - run:
           name: Run syntax tests on source files
-          command: ./.circleci/test.sh source-syntax
+          command: .circleci/test.sh source-syntax
 
   jasmine-bundle:
     docker:
@@ -210,7 +210,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part D)
-          command: ./.circleci/test.sh jasmine-bundle
+          command: .circleci/test.sh jasmine-bundle
 
   publish-dist:
     docker:
