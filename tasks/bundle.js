@@ -6,7 +6,7 @@ var prependFile = require('prepend-file');
 var constants = require('./util/constants');
 var common = require('./util/common');
 var _bundle = require('./util/browserify_wrapper');
-var makeSchema = require('./util/make_schema');
+var makeSchema = require('./make_schema');
 var wrapLocale = require('./util/wrap_locale');
 
 var header = constants.licenseDist + '\n';

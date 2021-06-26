@@ -1,6 +1,6 @@
 var fs = require('fs');
 var path = require('path');
-var plotlyNode = require('./plotly_node');
+var plotlyNode = require('./util/plotly_node');
 
 module.exports = function makeSchema(plotlyPath, schemaPath) {
     var Plotly = plotlyNode(plotlyPath);
