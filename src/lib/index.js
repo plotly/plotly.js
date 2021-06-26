@@ -11,6 +11,31 @@ var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
 
+lib.adjustFormat = function(a) {
+    if(!a) return a;
+    var b = a;
+    if(b === '0.f') return '~f';
+    if(/^[0123456789].[0123456789]f/.test(b)) return a;
+    if(/.[0123456789]%/.test(b)) return a;
+    if(/^[0123456789]%/.test(b)) return '~%';
+    if(/^[0123456789]s/.test(b)) return '~s';
+    if(!(/^[~,.0$]/.test(b)) && /[&fps]/.test(b)) {
+        // try adding tilde to the start of format in order to trim
+        b = '~' + b;
+    }
+    return b;
+};
+
+var d3Format = require('d3-format').format;
+var numberFormat = function(a) {
+    var b = lib.adjustFormat(a);
+
+    // console.log('"' + a + '" > "' + b + '"');
+
+    return d3Format(b);
+};
+lib.numberFormat = numberFormat;
+
 lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
 lib.relativeAttr = require('./relative_attr');
@@ -1118,7 +1143,7 @@ function templateFormatString(string, labels, d3locale) {
         if(format) {
             var fmt;
             if(format[0] === ':') {
-                fmt = d3locale ? d3locale.numberFormat : d3.format;
+                fmt = d3locale ? d3locale.numberFormat : numberFormat;
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
 

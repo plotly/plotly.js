@@ -84,6 +84,7 @@
     "d3-force": "^1.2.1",
     "d3-geo": "^1.12.1",
     "d3-geo-projection": "^2.9.0",
+    "d3-format": "^1.4.5",
     "d3-hierarchy": "^1.1.9",
     "d3-interpolate": "^1.4.0",
     "d3-time-format": "^2.2.3",
