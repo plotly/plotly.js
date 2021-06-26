@@ -2,6 +2,9 @@
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
+var axisFormat = require('../../plots/cartesian/axis_format_attributes');
+var axisHoverFormat = axisFormat.axisHoverFormat;
+var descriptionOnlyNumbers = axisFormat.descriptionOnlyNumbers;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fontAttrs = require('../../plots/font_attributes');
@@ -11,7 +14,6 @@ var filterOps = require('../../constants/filter_ops');
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 var INTERVAL_OPS = filterOps.INTERVAL_OPS;
 
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var scatterLineAttrs = scatterAttrs.line;
 
@@ -36,7 +38,9 @@ module.exports = extendFlat({
     transpose: heatmapAttrs.transpose,
     xtype: heatmapAttrs.xtype,
     ytype: heatmapAttrs.ytype,
-    zhoverformat: heatmapAttrs.zhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: heatmapAttrs.hovertemplate,
     hoverongaps: heatmapAttrs.hoverongaps,
     connectgaps: extendFlat({}, heatmapAttrs.connectgaps, {
@@ -178,11 +182,7 @@ module.exports = extendFlat({
             valType: 'string',
             dflt: '',
             editType: 'plot',
-            description: [
-                'Sets the contour label formatting rule using d3 formatting',
-                'mini-language which is very similar to Python, see:',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('contour label')
         },
         operation: {
             valType: 'enumerated',

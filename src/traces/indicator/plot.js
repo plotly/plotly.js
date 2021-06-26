@@ -394,6 +394,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     ax.type = 'linear';
     ax.range = trace.gauge.axis.range;
     ax._id = 'xangularaxis'; // or 'y', but I don't think this makes a difference here
+    ax.ticklabeloverflow = 'allow';
     ax.setScale();
 
     // 't'ick to 'g'eometric radians is used all over the place here

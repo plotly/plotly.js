@@ -23,7 +23,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     return hoverOnPoints(pointData, xval, yval, hovermode);
 }
 
-function getClosestPoint(pointData, xval, yval, hovermode) {
+function _getClosestPoint(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var xa = pointData.xa;
     var trace = cd[0].trace;
@@ -95,7 +95,7 @@ function hoverSplit(pointData, xval, yval, hovermode) {
     var t = cd[0].t;
     var closeBoxData = [];
 
-    var closestPoint = getClosestPoint(pointData, xval, yval, hovermode);
+    var closestPoint = _getClosestPoint(pointData, xval, yval, hovermode);
     // skip the rest (for this trace) if we didn't find a close point
     if(!closestPoint) return [];
 
@@ -125,14 +125,14 @@ function hoverSplit(pointData, xval, yval, hovermode) {
         var pointData2;
         if(val in usedVals) {
             pointData2 = usedVals[val];
-            pointData2.yLabel += '<br>' + t.labels[attr] + Axes.hoverLabelText(ya, val);
+            pointData2.yLabel += '<br>' + t.labels[attr] + Axes.hoverLabelText(ya, val, trace.yhoverformat);
         } else {
             // copy out to a new object for each new y-value to label
             pointData2 = Lib.extendFlat({}, closestPoint);
 
             pointData2.y0 = pointData2.y1 = valPx;
             pointData2.yLabelVal = val;
-            pointData2.yLabel = t.labels[attr] + Axes.hoverLabelText(ya, val);
+            pointData2.yLabel = t.labels[attr] + Axes.hoverLabelText(ya, val, trace.yhoverformat);
 
             pointData2.name = '';
 
@@ -150,7 +150,7 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
 
-    var closestPoint = getClosestPoint(pointData, xval, yval, hovermode);
+    var closestPoint = _getClosestPoint(pointData, xval, yval, hovermode);
     // skip the rest (for this trace) if we didn't find a close point
     if(!closestPoint) return [];
 
@@ -162,7 +162,7 @@ function hoverOnPoints(pointData, xval, yval, hovermode) {
     var dir = di.dir;
 
     function getLabelLine(attr) {
-        return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i]);
+        return t.labels[attr] + Axes.hoverLabelText(ya, trace[attr][i], trace.yhoverformat);
     }
 
     var hoverinfo = di.hi || trace.hoverinfo;

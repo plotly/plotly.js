@@ -8,9 +8,6 @@ require('native-promise-only');
 // inject plot css
 require('../build/plotcss');
 
-// inject default MathJax config
-require('./fonts/mathjax_config')();
-
 // include registry module and expose register method
 var Registry = require('./registry');
 var register = exports.register = Registry.register;
@@ -47,7 +44,8 @@ register([
     require('./components/grid'),
     require('./components/errorbars'),
     require('./components/colorscale'),
-    require('./components/colorbar')
+    require('./components/colorbar'),
+    require('./components/modebar')
 ]);
 
 // locales en and en-US are required for default behavior

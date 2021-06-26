@@ -189,7 +189,8 @@ module.exports = {
         font: fontAttrs({
             editType: 'legend',
             description: [
-                'Sets this legend\'s title font.'
+                'Sets this legend\'s title font.',
+                'Defaults to `legend.font` with its size increased about 20%.'
             ].join(' '),
         }),
         side: {

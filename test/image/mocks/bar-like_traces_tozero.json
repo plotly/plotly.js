@@ -20,7 +20,6 @@
                 "-11",
                 "+1"
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "base": 10
         },
@@ -43,7 +42,6 @@
                 "+11",
                 "-1"
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "base": -10
         },
@@ -66,7 +64,6 @@
                 "-12",
                 "+1"
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "base": 10
         },
@@ -90,7 +87,6 @@
                 "+12",
                 "-1"
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "base": -10
         }

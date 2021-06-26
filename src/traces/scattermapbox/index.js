@@ -7,7 +7,7 @@ module.exports = {
     formatLabels: require('./format_labels'),
     calc: require('../scattergeo/calc'),
     plot: require('./plot'),
-    hoverPoints: require('./hover'),
+    hoverPoints: require('./hover').hoverPoints,
     eventData: require('./event_data'),
     selectPoints: require('./select'),
 

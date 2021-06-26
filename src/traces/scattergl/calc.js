@@ -27,7 +27,7 @@ module.exports = function calc(gd, trace) {
     var hasTooManyPoints = len >= TOO_MANY_POINTS;
     var len2 = len * 2;
     var stash = {};
-    var i, xx, yy;
+    var i;
 
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
@@ -42,11 +42,12 @@ module.exports = function calc(gd, trace) {
     // we need hi-precision for scatter2d,
     // regl-scatter2d uses NaNs for bad/missing values
     var positions = new Array(len2);
+    var _ids = new Array(len);
     for(i = 0; i < len; i++) {
-        xx = x[i];
-        yy = y[i];
-        positions[i * 2] = xx === BADNUM ? NaN : xx;
-        positions[i * 2 + 1] = yy === BADNUM ? NaN : yy;
+        positions[i * 2] = x[i] === BADNUM ? NaN : x[i];
+        positions[i * 2 + 1] = y[i] === BADNUM ? NaN : y[i];
+        // Pre-compute ids.
+        _ids[i] = i;
     }
 
     if(xa.type === 'log') {
@@ -66,10 +67,7 @@ module.exports = function calc(gd, trace) {
         // FIXME: delegate this to webworker
         stash.tree = cluster(positions);
     } else {
-        var ids = stash.ids = new Array(len);
-        for(i = 0; i < len; i++) {
-            ids[i] = i;
-        }
+        stash.ids = _ids;
     }
 
     // create scene options and scene

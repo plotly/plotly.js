@@ -4,8 +4,8 @@ var opacity = require('../../components/color').opacity;
 var hoverOnBars = require('../bar/hover').hoverOnBars;
 var formatPercent = require('../../lib').formatPercent;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    var point = hoverOnBars(pointData, xval, yval, hovermode);
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    var point = hoverOnBars(pointData, xval, yval, hovermode, opts);
     if(!point) return;
 
     var cd = point.cd;

@@ -1,0 +1,64 @@
+{
+    "data": [
+        {
+            "y": [0],
+            "legendgroup": "G1"
+        },
+        {
+            "y": [1],
+            "legendgroup": "G1"
+        },
+        {
+            "y": [2],
+            "legendgroup": "G1",
+            "legendgrouptitle": {
+                "text": "First group"
+            }
+        },
+        {
+            "y": [3],
+            "legendgroup": "G2",
+            "legendgrouptitle": {
+                "text": "Second<br>group",
+                "font": {
+                    "family": "Raleway",
+                    "size": 14
+                }
+            }
+        },
+        {
+            "y": [4],
+            "legendgroup": "G3",
+            "legendgrouptitle": {
+                "text": "Third group"
+            }
+        },
+        {
+            "y": [5],
+            "legendgroup": "G3"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "legend group titles"
+        },
+        "margin": {
+            "t": 50,
+            "b": 25,
+            "l": 25,
+            "r": 25
+        },
+        "width": 300,
+        "height": 300,
+        "yaxis": {
+            "autorange": "reversed"
+        },
+        "legend": {
+            "bgcolor": "lightblue",
+            "title": {
+                "text": ""
+            }
+        },
+        "hovermode": "x unified"
+    }
+}

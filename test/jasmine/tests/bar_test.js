@@ -125,8 +125,17 @@ describe('Bar.supplyDefaults', function() {
         expect(traceOut.width).toBeUndefined();
     });
 
-    it('should coerce textposition to none', function() {
+    it('should coerce textposition to auto', function() {
         traceIn = {
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textposition).toBe('auto');
+    });
+
+    it('should not coerce text styling attributes when textposition is set to none', function() {
+        traceIn = {
+            textposition: 'none',
             y: [1, 2, 3]
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
@@ -243,6 +252,90 @@ describe('Bar.supplyDefaults', function() {
         gd.data[0].visible = true;
         supplyAllDefaults(gd);
         expect(gd._fullLayout.barmode).toBe('group', '`barmode` should be set to its default ');
+    });
+
+    it('bgcolor & fgcolor defaults with *replace* pattern.fillmode', function() {
+        traceIn = {
+            marker: {
+                color: 'green',
+                pattern: {
+                    shape: '+'
+                }
+            },
+            y: [1]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBeUndefined('transparent background');
+        expect(traceOut.marker.pattern.fgcolor).toBe('green');
+        expect(traceOut.marker.pattern.fgopacity).toBe(1);
+    });
+
+    it('bgcolor & fgcolor defaults with *overlay* pattern.fillmode', function() {
+        traceIn = {
+            marker: {
+                color: 'green',
+                pattern: {
+                    fillmode: 'overlay',
+                    shape: '+'
+                }
+            },
+            y: [1]
+        };
+        var layout = {
+            font: {family: 'arial', color: '#AAA', size: 13}
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBe('green');
+        expect(traceOut.marker.pattern.fgcolor).toBe('#fff');
+        expect(traceOut.marker.pattern.fgopacity).toBe(0.5);
+    });
+
+    it('should not coerce marker.pattern.bgcolor and marker.pattern.fgcolor when marker.colorscale is present - case of *replace* fillmode', function() {
+        traceIn = {
+            marker: {
+                colorscale: 'Blues',
+                pattern: {
+                    shape: '+'
+                }
+            },
+            color: [1, 2, 3],
+            y: [1, 2, 3]
+        };
+        var layout = {};
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgopacity).toBe(1);
+    });
+
+    it('should not coerce marker.pattern.bgcolor and marker.pattern.fgcolor when marker.colorscale is present - case of *overlay* fillmode', function() {
+        traceIn = {
+            marker: {
+                colorscale: 'Blues',
+                pattern: {
+                    fillmode: 'overlay',
+                    shape: '+'
+                }
+            },
+            color: [1, 2, 3],
+            y: [1, 2, 3]
+        };
+        var layout = {};
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        expect(traceOut.marker.pattern.bgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgcolor).toBeUndefined();
+        expect(traceOut.marker.pattern.fgopacity).toBe(0.5);
     });
 });
 
@@ -972,16 +1065,28 @@ describe('Bar.crossTraceCalc (formerly known as setPositions)', function() {
 
     it('should set unit width for categories in overlay mode', function() {
         var gd = mockBarPlot([{
-            type: 'bar',
             x: ['a', 'b', 'c'],
             y: [2, 2, 2]
         },
         {
-            type: 'bar',
             x: ['a', 'c'],
             y: [1, 1]
         }], {
             barmode: 'overlay'
+        });
+
+        expect(gd.calcdata[1][0].t.bardelta).toBe(1);
+    });
+
+    it('should set unit width for categories case of missing data for defined category', function() {
+        var gd = mockBarPlot([{
+            x: ['a', 'c'],
+            y: [1, 2]
+        }, {
+            x: ['a', 'c'],
+            y: [1, 2],
+        }], {
+            xaxis: { categoryarray: ['a', 'b', 'c'] }
         });
 
         expect(gd.calcdata[1][0].t.bardelta).toBe(1);
@@ -1355,7 +1460,6 @@ describe('A bar plot', function() {
         y: [20, 14, 23, 10, 59, 15],
         text: [20, 14, 23, 10, 59, 15],
         type: 'bar',
-        textposition: 'auto',
         marker: {
             color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
         }
@@ -1715,7 +1819,7 @@ describe('A bar plot', function() {
             y: [10, 20, 30, 40],
             type: 'bar',
             text: ['T1P1', 'T1P2', 13, 14],
-            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textposition: ['inside', 'outside', 'BADVALUE', 'none'],
             textfont: {
                 family: ['"comic sans"'],
                 color: ['red', 'green'],
@@ -1739,7 +1843,7 @@ describe('A bar plot', function() {
             y: [10, 20, 30, 40],
             type: 'bar',
             text: ['T1P1', 'T1P2', '13', '14'],
-            textposition: ['inside', 'outside', 'none'],
+            textposition: ['inside', 'outside', 'auto', 'none'],
             textfont: {
                 family: ['"comic sans"', 'arial'],
                 color: ['red', 'green'],
@@ -1868,8 +1972,7 @@ describe('A bar plot', function() {
             type: 'bar',
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
-            text: [20, 14, 23],
-            textposition: 'auto'
+            text: [20, 14, 23]
         }])
         .then(function() {
             _assertNumberOfBarTextNodes(3);
@@ -2289,7 +2392,7 @@ describe('bar hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Bar.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Bar.hoverPoints(pointData, xval, yval, hovermode, {});
         if(!pts) return false;
 
         var pt = pts[0];
@@ -2416,6 +2519,7 @@ describe('bar hover', function() {
                 t.type = 'bar';
                 t.hovertemplate = '%{y}<extra></extra>';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -2655,8 +2759,8 @@ describe('bar hover', function() {
                     barmode: m
                 })
                 .then(function() {
-                    var pt0 = Bar.hoverPoints(getPointData(gd, 0), 0, 1, 'x')[0];
-                    var pt1 = Bar.hoverPoints(getPointData(gd, 1), 0, 1, 'x')[0];
+                    var pt0 = Bar.hoverPoints(getPointData(gd, 0), 0, 1, 'x', {})[0];
+                    var pt1 = Bar.hoverPoints(getPointData(gd, 1), 0, 1, 'x', {})[0];
 
                     expect(pt0.yLabelVal).toBe(0, 'y label value for data[0]');
                     expect(pt1.yLabelVal).toBe(1, 'y label value for data[1]');
@@ -2707,6 +2811,23 @@ describe('Text templates on bar traces:', function() {
         texttemplate: '%{x}'
     }], 'text.bartext', [
       ['%{x}', ['Jan 1, 2019', 'Feb 1, 2019']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'bar',
+            textposition: 'outside',
+            x: [1, 2, 3],
+            y: [3, 2, 1],
+            hovertemplate: '%{x}-%{y}',
+            texttemplate: '%{x}-%{y}'
+        }],
+        layout: {
+            xaxis: {type: 'log'},
+            yaxis: {type: 'log'},
+        }
+    }, 'text.bartext', [
+      ['%{x}-%{y}', ['1-3', '2-2', '3-1']]
     ]);
 
     checkTextTemplate({
