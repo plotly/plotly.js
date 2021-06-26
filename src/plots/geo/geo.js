@@ -485,7 +485,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
     }
 
     bgRect.on('mousemove', function() {
-        var lonlat = _this.projection.invert(d3.mouse(this));
+        var lonlat = _this.projection.invert(Lib.getPositionFromD3Event());
 
         if(!lonlat) {
             return dragElement.unhover(gd, d3.event);

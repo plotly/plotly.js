@@ -24,25 +24,12 @@ test_jasmine () {
     npm run test-jasmine -- --tags=noCI,noCIdep --nowatch || EXIT_STATE=$?
 }
 
-# mapbox image tests take too much resources on CI
-#
-# since the update to mapbox-gl@0.44.0, we must use orca
-# as mapbox-gl versions >0.22.1 aren't supported on nw.js@0.12 used in the
-# 'old' image server
-#
-# due to mathjax upgrade to v2.7.5, we are unable to test mathjax mocks in the
-# 'old' image server and we use orca
-#
+# having problem creating baselines for 2 mapbox mocks using kaleido
+# we must use orca
 test_image () {
     $root/../orca/bin/orca.js graph \
-        $root/test/image/mocks/mapbox_* \
-        $root/test/image/mocks/mathjax.json \
-        $root/test/image/mocks/ternary-mathjax.json \
-        $root/test/image/mocks/table_plain_birds.json \
-        $root/test/image/mocks/table_wrapped_birds.json \
-        $root/test/image/mocks/parcats_grid_subplots.json \
-        $root/test/image/mocks/legend_mathjax_title_and_items.json \
-        $root/test/image/mocks/table_latex_multitrace_scatter.json \
+        $root/test/image/mocks/mapbox_osm-style.json \
+        $root/test/image/mocks/mapbox_density0-legend.json \
         --mathjax $root/node_modules/mathjax/MathJax.js \
         --plotly $root/build/plotly.js \
         --mapbox-access-token "pk.eyJ1IjoicGxvdGx5LWpzLXRlc3RzIiwiYSI6ImNrNG9meTJmOTAxa3UzZm10dWdteDQ2eWMifQ.2REjOFyIrleMqwS8H8y1-A" \

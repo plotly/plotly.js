@@ -1,5 +1,6 @@
 'use strict';
 
+var fontAttrs = require('./font_attributes');
 var fxAttrs = require('../components/fx/attributes');
 
 module.exports = {
@@ -39,6 +40,36 @@ module.exports = {
             'Sets the legend group for this trace.',
             'Traces part of the same legend group hide/show at the same time',
             'when toggling legend items.'
+        ].join(' ')
+    },
+    legendgrouptitle: {
+        text: {
+            valType: 'string',
+            dflt: '',
+            editType: 'style',
+            description: [
+                'Sets the title of the legend group.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'style',
+            description: [
+                'Sets this legend group\'s title font.'
+            ].join(' '),
+        }),
+        editType: 'style',
+    },
+    legendrank: {
+        valType: 'number',
+        dflt: 1000,
+        editType: 'style',
+        description: [
+            'Sets the legend rank for this trace.',
+            'Items and groups with smaller ranks are presented on top/left side while',
+            'with `*reversed* `legend.traceorder` they are on bottom/right side.',
+            'The default legendrank is 1000,',
+            'so that you can use ranks less than 1000 to place certain items before all unranked items,',
+            'and ranks greater than 1000 to go after all unranked items.'
         ].join(' ')
     },
     opacity: {

@@ -1309,7 +1309,7 @@ describe('funnel hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Funnel.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Funnel.hoverPoints(pointData, xval, yval, hovermode, {});
         if(!pts) return false;
 
         var pt = pts[0];

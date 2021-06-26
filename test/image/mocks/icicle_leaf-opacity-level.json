@@ -1,0 +1,84 @@
+{
+  "data": [
+    {
+      "type": "icicle",
+      "labels": ["Eve", "Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+      "parents": ["", "Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+      "domain": {"x": [0, 0.20], "y": [0, 0.9]},
+      "root": {"color": "limegreen"},
+      "level": "",
+      "leaf": {
+        "opacity": 1
+      }
+    },
+    {
+      "type": "icicle",
+      "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+      "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+      "domain": {"x": [0.25, 0.45], "y": [0, 0.9]},
+      "root": {"color": "limegreen"},
+      "level": "Seth",
+      "leaf": {
+        "opacity": 0.7
+      }
+    },
+    {
+      "type": "icicle",
+      "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+      "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+      "domain": {"x": [0.5, 0.70], "y": [0, 0.9]},
+      "root": {"color": "limegreen"},
+      "level": "Enos",
+      "leaf": {
+        "opacity": 0.3
+      }
+    },
+    {
+      "type": "icicle",
+      "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+      "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+      "domain": {"x": [0.75, 0.95], "y": [0, 0.9]},
+      "root": {"color": "limegreen"},
+      "level": "Enos",
+      "leaf": {
+        "opacity": 0.1
+      }
+    }
+  ],
+  "layout": {
+    "annotations": [
+      {
+        "showarrow": false,
+        "text": "opacity=<b>0.1</b>, level=<b>'Enos'</b>",
+        "x": 0.75,
+        "xanchor": "left",
+        "y": 1,
+        "yanchor": "bottom"
+      },
+      {
+        "showarrow": false,
+        "text": "opacity=<b>0.3</b>, level=<b>'Enos'</b>",
+        "x": 0.5,
+        "xanchor": "left",
+        "y": 1,
+        "yanchor": "bottom"
+      },
+      {
+        "showarrow": false,
+        "text": "opacity=<b>0.7</b>, level=<b>'Seth'</b>",
+        "x": 0.25,
+        "xanchor": "left",
+        "y": 1,
+        "yanchor": "bottom"
+      },
+      {
+        "showarrow": false,
+        "text": "opacity=<b>1</b>, level=<b>''</b>",
+        "x": 0.0,
+        "xanchor": "left",
+        "y": 1,
+        "yanchor": "bottom"
+      }
+    ]
+  }
+}

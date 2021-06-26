@@ -1,19 +1,10 @@
-var jsdom = require('jsdom');
-var fs = require('fs');
-
-var plotlyServerDom = new jsdom.JSDOM('', { runScripts: 'dangerously'});
-// Mock a few things that jsdom doesn't support out-of-the-box
-plotlyServerDom.window.URL.createObjectURL = function() {};
-
-// Run Plotly inside jsdom
-var plotlyJsPath = require.resolve('../build/plotly.js');
-var plotlyJsSource = fs.readFileSync(plotlyJsPath, 'utf-8');
-plotlyServerDom.window.eval(plotlyJsSource);
+var plotlyNode = require('./util/plotly_node');
+var Plotly = plotlyNode('build/plotly.js');
 
 var assertValidate = function(fig, exp) {
     console.log(fig);
 
-    var errorList = plotlyServerDom.window.Plotly.validate(fig.data, fig.layout);
+    var errorList = Plotly.validate(fig.data, fig.layout);
 
     if(exp) {
         if(errorList !== undefined) throw 'should be valid:';

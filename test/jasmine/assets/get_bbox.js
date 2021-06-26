@@ -15,7 +15,7 @@ module.exports = function getBBox(element) {
     if(!clipPathAttr) return elementBBox;
 
     // only supports 'url(#<id>)' at the moment
-    var clipPathId = clipPathAttr.substring(6, clipPathAttr.length - 2);
+    var clipPathId = clipPathAttr.substring(5, clipPathAttr.length - 1);
     var clipBBox = getClipBBox(clipPathId);
 
     return minBBox(elementBBox, clipBBox);

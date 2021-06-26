@@ -3,8 +3,8 @@
 var barHover = require('../bar/hover').hoverPoints;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    var pts = barHover(pointData, xval, yval, hovermode);
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    var pts = barHover(pointData, xval, yval, hovermode, opts);
 
     if(!pts) return;
 

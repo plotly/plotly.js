@@ -1,6 +1,6 @@
 var fs = require('fs-extra');
 var path = require('path');
-var sass = require('node-sass');
+var sass = require('sass');
 
 var constants = require('./util/constants');
 var common = require('./util/common');

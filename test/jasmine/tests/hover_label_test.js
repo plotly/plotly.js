@@ -920,19 +920,13 @@ describe('hover info', function() {
                     fontFamily: 'Arial',
                     fontColor: 'rgb(0, 100, 200)'
                 }, {
-                    bgcolor: 'rgb(255, 127, 14)',
+                    bgcolor: 'rgb(227, 119, 194)',
                     bordercolor: 'rgb(68, 68, 68)',
                     fontSize: 13,
                     fontFamily: 'Arial',
                     fontColor: 'rgb(68, 68, 68)'
                 }, {
-                    bgcolor: 'rgb(0, 200, 0)',
-                    bordercolor: 'rgb(255, 255, 255)',
-                    fontSize: 13,
-                    fontFamily: 'Arial',
-                    fontColor: 'rgb(255, 255, 255)'
-                }, {
-                    bgcolor: 'rgb(150, 0, 0)',
+                    bgcolor: 'rgb(140, 86, 75)',
                     bordercolor: 'rgb(255, 255, 255)',
                     fontSize: 13,
                     fontFamily: 'Arial',
@@ -944,13 +938,19 @@ describe('hover info', function() {
                     fontFamily: 'Arial',
                     fontColor: 'rgb(255, 255, 255)'
                 }, {
-                    bgcolor: 'rgb(140, 86, 75)',
+                    bgcolor: 'rgb(150, 0, 0)',
                     bordercolor: 'rgb(255, 255, 255)',
                     fontSize: 13,
                     fontFamily: 'Arial',
                     fontColor: 'rgb(255, 255, 255)'
                 }, {
-                    bgcolor: 'rgb(227, 119, 194)',
+                    bgcolor: 'rgb(0, 200, 0)',
+                    bordercolor: 'rgb(255, 255, 255)',
+                    fontSize: 13,
+                    fontFamily: 'Arial',
+                    fontColor: 'rgb(255, 255, 255)'
+                }, {
+                    bgcolor: 'rgb(255, 127, 14)',
                     bordercolor: 'rgb(68, 68, 68)',
                     fontSize: 13,
                     fontFamily: 'Arial',
@@ -1714,40 +1714,6 @@ describe('hover info', function() {
             })
             .then(done, done.fail);
         });
-
-        it('should avoid overlaps on *too close* pts are filtered out', function(done) {
-            Plotly.newPlot(gd, [
-                {name: 'A', x: [9, 10], y: [9, 10]},
-                {name: 'B', x: [8, 9], y: [9, 10]},
-                {name: 'C', x: [9, 10], y: [10, 11]}
-            ], {
-                hovermode: 'x',
-                xaxis: {range: [0, 100]},
-                yaxis: {range: [0, 100]},
-                width: 700,
-                height: 450
-            })
-            .then(function() { _hover(gd, 67, 239); })
-            .then(function() {
-                var nodesA = hoverInfoNodes('A');
-                var nodesC = hoverInfoNodes('C');
-
-                // Ensure layout correct
-                assertLabelsInsideBoxes(nodesA, 'A');
-                assertLabelsInsideBoxes(nodesC, 'C');
-                assertSecondaryRightToPrimaryBox(nodesA, 'A');
-                assertSecondaryRightToPrimaryBox(nodesC, 'C');
-
-                // Ensure stacking, finally
-                var boxA = nodesA.primaryBox.getBoundingClientRect();
-                var boxC = nodesC.primaryBox.getBoundingClientRect();
-
-                // Be robust against floating point arithmetic and subtle future layout changes
-                expect(calcLineOverlap(boxA.top, boxA.bottom, boxC.top, boxC.bottom))
-                  .toBeWithin(0, 1);
-            })
-            .then(done, done.fail);
-        });
     });
 
     describe('constraints info graph viewport', function() {
@@ -2312,7 +2278,7 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
+            expect(gd._hoverdata[2]).toEqual(jasmine.objectContaining(
                 {
                     curveNumber: 1,
                     pointNumber: 0,
@@ -2320,7 +2286,7 @@ describe('hover info on stacked subplots', function() {
                     y: 0
                 }));
 
-            expect(gd._hoverdata[2]).toEqual(jasmine.objectContaining(
+            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
                 {
                     curveNumber: 2,
                     pointNumber: 0,
@@ -3001,13 +2967,6 @@ describe('hover on traces with (x|y)period positioning', function() {
                 nums: '(Q1, 1)'
             });
         })
-        .then(function() { _hover(380, 395); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'middle (M3)',
-                nums: '(Q1, 2)'
-            });
-        })
         .then(function() { _hover(415, 425); })
         .then(function() {
             assertHoverLabelContent({
@@ -3042,13 +3001,6 @@ describe('hover on traces with (x|y)period positioning', function() {
             assertHoverLabelContent({
                 name: 'middle (M12)',
                 nums: '(Jan 2001, 1)'
-            });
-        })
-        .then(function() { _hover(665, 395); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: 'middle (M12)',
-                nums: '(Jul 2001, 2)'
             });
         })
         .then(function() { _hover(700, 425); })
@@ -4708,25 +4660,315 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
-    it('shares filtering logic with compare mode x', function(done) {
-        var mock = require('@mocks/27.json');
-        var mockCopy = Lib.extendDeep({}, mock);
+    it('should display hover for scatter and bars at various intervals (default hoverdistance)', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                y: [21, 22, 23, 24, 25, 26]
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0.6', items: [
+                'bar : (1, 30)',
+                'scatter : 24'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 30',
+                'scatter : 26'
+            ]});
+        })
+        .then(done, done.fail);
+    });
 
-        Plotly.newPlot(gd, mockCopy)
-            .then(function(gd) {
-                _hover(gd, { xval: '2002' });
-                assertElementCount('g.hovertext', 2);
+    it('should display hover for scatter and bars at various intervals (case of hoverdistance: -1) tests finitRange', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.2, 0.4, 0.6, 0.8, 1],
+                y: [21, 22, 23, 24, 25, 26]
+            }],
+            layout: {
+                hoverdistance: -1,
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0.6', items: [
+                'bar : (1, 30)',
+                'scatter : 24'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 30',
+                'scatter : 26'
+            ]});
+        })
+        .then(done, done.fail);
+    });
 
-                return Plotly.relayout(gd, 'hovermode', 'x unified');
-            })
-            .then(function() {
-                _hover(gd, { xval: '2002' });
-                assertLabel({title: '2002.042', items: [
-                    'Market income : 0.5537845',
-                    'Market incom... : 0.4420997'
-                ]});
-            })
-            .then(done, done.fail);
+    it('should pick the bar which is closest to the winning point no the bar that close to the cursor', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'bar',
+                type: 'bar',
+                y: [10, 20, 30]
+            }, {
+                name: 'scatter',
+                type: 'scatter',
+                x: [0, 0.49, 1, 1.51, 2],
+                y: [21, 22, 23, 24, 25]
+            }],
+            layout: {
+                hoverdistance: -1,
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 0, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'bar : 10',
+                'scatter : 21'
+            ]});
+
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0.49', items: [
+                'bar : (0, 10)',
+                'scatter : 22'
+            ]});
+
+            _hover(gd, { xpx: 150, ypx: 200 });
+            assertLabel({title: '0.49', items: [
+                'bar : (0, 10)',
+                'scatter : 22'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '1', items: [
+                'bar : 20',
+                'scatter : 23'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 200 });
+            assertLabel({title: '1.51', items: [
+                'bar : (2, 30)',
+                'scatter : 24'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: '1.51', items: [
+                'bar : (2, 30)',
+                'scatter : 24'
+            ]});
+
+            _hover(gd, { xpx: 400, ypx: 200 });
+            assertLabel({title: '2', items: [
+                'bar : 30',
+                'scatter : 25'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should format differing position using *xother* `hovertemplate` and in respect to `xhoverformat`', function(done) {
+        Plotly.newPlot(gd, [{
+            type: 'bar',
+            hovertemplate: 'y(_x):%{y}%{_xother:.2f}',
+            x: [0, 1.001],
+            y: [2, 1]
+        }, {
+            x: [0, 0.749],
+            y: [1, 2]
+        }, {
+            hovertemplate: '(x)y:%{xother}%{y}',
+            xhoverformat: '.1f',
+            x: [0, 1.251],
+            y: [2, 3]
+        }, {
+            hovertemplate: '(x_)y:%{xother_}%{y}',
+            xhoverformat: '.2f',
+            x: [0, 1.351],
+            y: [3, 4]
+        }, {
+            hovertemplate: '(_x_)y:%{_xother_}%{y}',
+            xhoverformat: '.3f',
+            x: [0, 1.451],
+            y: [4, 5]
+        }], {
+            hoverdistance: -1,
+            hovermode: 'x unified',
+            showlegend: false,
+            width: 500,
+            height: 500,
+            margin: {
+                t: 50,
+                b: 50,
+                l: 50,
+                r: 50
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '0.000', items: [
+                'trace 0 : y(_x):2 (0.00)',
+                'trace 1 : (0, 1)',
+                'trace 2 : (x)y:(0.0)2',
+                'trace 3 : (x_)y:(0.00) 3',
+                'trace 4 : (_x_)y:4',
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 250, ypx: 200 });
+            assertLabel({title: '0.749', items: [
+                'trace 0 : y(_x):1 (1.00)',
+                'trace 1 : 2',
+                'trace 2 : (x)y:(1.3)3',
+                'trace 3 : (x_)y:(1.35) 4',
+                'trace 4 : (_x_)y: (1.451) 5',
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 350, ypx: 200 });
+            assertLabel({title: '1.35', items: [
+                'trace 0 : y(_x):1 (1.00)',
+                'trace 1 : (0.749, 2)',
+                'trace 2 : (x)y:(1.3)3',
+                'trace 3 : (x_)y:4',
+                'trace 4 : (_x_)y: (1.451) 5',
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
+    it('should display hover for two high-res scatter at different various intervals', function(done) {
+        var x1 = [];
+        var y1 = [];
+        var x2 = [];
+        var y2 = [];
+        var i, t;
+
+        function r100(v) {
+            return Math.round(v * 100);
+        }
+
+        for(i = 0; i <= 1800; i++) {
+            t = i / 180 * Math.PI;
+            x1.push(r100(t / 5));
+            y1.push(r100(Math.sin(t)));
+        }
+
+        for(i = 0; i <= 360; i++) {
+            t = i / 180 * Math.PI;
+            x2.push(r100(t));
+            y2.push(r100(Math.sin(t)));
+        }
+
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'high',
+                x: x1,
+                y: y1
+            }, {
+                name: 'low',
+                x: x2,
+                y: y2
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 100, ypx: 200 });
+            assertLabel({title: '157', items: [
+                'high : 100',
+                'low : 100'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 175, ypx: 200 });
+            assertLabel({title: '275', items: [
+                'high : 93',
+                'low : (274, 39)'
+            ]});
+        })
+        .then(function() {
+            _hover(gd, { xpx: 350, ypx: 200 });
+            assertLabel({title: '550', items: [
+                'high : 68',
+                'low : −71'
+            ]});
+        })
+        .then(done, done.fail);
     });
 
     it('case of scatter points on period bars', function(done) {
@@ -4982,7 +5224,7 @@ describe('hovermode: (x|y)unified', function() {
         xperiod: 0,
         desc: 'non-period scatter points and period bars'
     }, {
-        xperiod: 24 * 3600 * 1000,
+        xperiod: 5 * 24 * 3600 * 1000,
         desc: 'period scatter points and period bars'
     }].forEach(function(t) {
         it(t.desc, function(done) {
@@ -5027,9 +5269,21 @@ describe('hovermode: (x|y)unified', function() {
                     'bar : 2'
                 ]});
 
+                _hover(gd, { xpx: 75, ypx: 200 });
+                assertLabel({title: 'Dec', items: [
+                    'bar : 2'
+                ]});
+
                 _hover(gd, { xpx: 100, ypx: 200 });
                 assertLabel({title: 'Jan 1, 2000', items: [
+                    'bar : (Jan, 1)',
                     'scatter : 1.1'
+                ]});
+
+                _hover(gd, { xpx: 125, ypx: 200 });
+                assertLabel({title: 'Jan 6, 2000', items: [
+                    'bar : (Jan, 1)',
+                    'scatter : 1.2'
                 ]});
 
                 _hover(gd, { xpx: 150, ypx: 200 });
@@ -5044,16 +5298,33 @@ describe('hovermode: (x|y)unified', function() {
                     'scatter : 1.6'
                 ]});
 
+                _hover(gd, { xpx: 225, ypx: 200 });
+                assertLabel({title: 'Feb 1, 2000', items: [
+                    'bar : (Feb, 3)',
+                    'scatter : 2.1'
+                ]});
+
                 _hover(gd, { xpx: 250, ypx: 200 });
                 assertLabel({title: 'Feb 11, 2000', items: [
                     'bar : (Feb, 3)',
                     'scatter : 2.3'
                 ]});
 
+                _hover(gd, { xpx: 275, ypx: 200 });
+                assertLabel({title: 'Feb 16, 2000', items: [
+                    'bar : (Feb, 3)',
+                    'scatter : 2.4'
+                ]});
+
                 _hover(gd, { xpx: 300, ypx: 200 });
                 assertLabel({title: 'Feb 21, 2000', items: [
                     'bar : (Feb, 3)',
                     'scatter : 2.5'
+                ]});
+
+                _hover(gd, { xpx: 325, ypx: 200 });
+                assertLabel({title: 'Mar 1, 2000', items: [
+                    'scatter : 3.1'
                 ]});
 
                 _hover(gd, { xpx: 350, ypx: 200 });
@@ -5065,70 +5336,226 @@ describe('hovermode: (x|y)unified', function() {
         });
     });
 
-    it('period points alignments', function(done) {
+    ['scatter', 'scattergl'].forEach(function(scatterType) {
+        it(scatterType + ' period points alignments', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        name: 'bar',
+                        type: 'bar',
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverfrmat: '%b',
+                        xperiod: 'M1'
+                    },
+                    {
+                        name: 'start',
+                        type: scatterType,
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'start'
+                    },
+                    {
+                        name: 'end',
+                        type: 'scatter',
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                ],
+                layout: {
+                    showlegend: false,
+                    width: 600,
+                    height: 400,
+                    hovermode: 'x unified'
+                }
+            })
+            .then(function(gd) {
+                _hover(gd, { xpx: 40, ypx: 200 });
+                assertLabel({title: 'Jan', items: [
+                    'bar : (Jan 1, 2000, 1)',
+                    'start : 1',
+                    'end : 1'
+                ]});
+
+                _hover(gd, { xpx: 100, ypx: 200 });
+                assertLabel({title: 'Jan', items: [
+                    'bar : (Jan 1, 2000, 1)',
+                    'start : 1',
+                    'end : 1'
+                ]});
+
+                _hover(gd, { xpx: 360, ypx: 200 });
+                assertLabel({title: 'Feb', items: [
+                    'bar : (Feb 1, 2000, 2)',
+                    'start : 2',
+                    'end : 2'
+                ]});
+
+                _hover(gd, { xpx: 400, ypx: 200 });
+                assertLabel({title: 'Feb', items: [
+                    'bar : (Feb 1, 2000, 2)',
+                    'start : 2',
+                    'end : 2'
+                ]});
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    it('period with hover distance -1 include closest not farthest', function(done) {
         Plotly.newPlot(gd, {
             data: [
                 {
                     name: 'bar',
                     type: 'bar',
-                    x: ['2000-01', '2000-02'],
-                    y: [1, 2],
-                    xhoverfrmat: '%b',
-                    xperiod: 'M1'
+                    x: [
+                        '2017-01',
+                        '2017-04',
+                        '2017-07',
+                        '2017-10',
+                        '2018-01',
+                    ],
+                    xhoverformat: 'Q%q',
+                    xperiod: 'M3',
+                    y: [
+                        0,
+                        3,
+                        6,
+                        9,
+                        12
+                    ]
                 },
                 {
-                    name: 'start',
+                    name: 'scatter',
                     type: 'scatter',
-                    x: ['2000-01', '2000-02'],
-                    y: [1, 2],
+                    x: [
+                        '2017-01',
+                        '2017-02',
+                        '2017-03',
+                        '2017-04',
+                        '2017-05',
+                        '2017-06',
+                        '2017-07',
+                        '2017-08',
+                        '2017-09',
+                        '2017-10',
+                        '2017-11',
+                        '2017-12',
+                        '2018-01',
+                        '2018-02',
+                        '2018-03'
+                    ],
                     xhoverformat: '%b',
                     xperiod: 'M1',
-                    xperiodalignment: 'start'
-                },
-                {
-                    name: 'end',
-                    type: 'scatter',
-                    x: ['2000-01', '2000-02'],
-                    y: [1, 2],
-                    xhoverformat: '%b',
-                    xperiod: 'M1',
-                    xperiodalignment: 'end'
-                },
+                    y: [
+                        1,
+                        2,
+                        3,
+                        4,
+                        5,
+                        6,
+                        7,
+                        8,
+                        9,
+                        10,
+                        11,
+                        12,
+                        13,
+                        14,
+                        15
+                    ]
+                }
             ],
             layout: {
                 showlegend: false,
                 width: 600,
                 height: 400,
-                hovermode: 'x unified'
+                hovermode: 'x unified',
+                hoverdistance: -1,
+                xaxis: {
+                    dtick: 'M1',
+                    showgrid: true,
+                    ticklabelmode: 'period',
+                    type: 'date'
+                }
             }
         })
         .then(function(gd) {
-            _hover(gd, { xpx: 40, ypx: 200 });
+            _hover(gd, { xpx: 25, ypx: 200 });
             assertLabel({title: 'Jan', items: [
-                'bar : (Jan 1, 2000, 1)',
-                'start : 1',
-                'end : 1'
+                'bar : (Q1, 0)',
+                'scatter : 1'
+            ]});
+
+            _hover(gd, { xpx: 50, ypx: 200 });
+            assertLabel({title: 'Feb', items: [
+                'bar : (Q1, 0)',
+                'scatter : 2'
+            ]});
+
+            _hover(gd, { xpx: 75, ypx: 200 });
+            assertLabel({title: 'Mar', items: [
+                'bar : (Q1, 0)',
+                'scatter : 3'
             ]});
 
             _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: 'Jan 1, 2000', items: [
-                'bar : 1',
-                'start : (Jan, 1)',
-                'end : (Jan, 1)'
+            assertLabel({title: 'Apr', items: [
+                'bar : (Q2, 3)',
+                'scatter : 4'
             ]});
 
-            _hover(gd, { xpx: 360, ypx: 200 });
-            assertLabel({title: 'Feb 1, 2000', items: [
-                'bar : 2',
-                'start : (Feb, 2)',
-                'end : (Feb, 2)'
+            _hover(gd, { xpx: 125, ypx: 200 });
+            assertLabel({title: 'May', items: [
+                'bar : (Q2, 3)',
+                'scatter : 5'
             ]});
 
-            _hover(gd, { xpx: 400, ypx: 200 });
-            assertLabel({title: 'Feb', items: [
-                'bar : (Feb 1, 2000, 2)',
-                'start : 2',
-                'end : 2'
+            _hover(gd, { xpx: 150, ypx: 200 });
+            assertLabel({title: 'Jun', items: [
+                'bar : (Q2, 3)',
+                'scatter : 6'
+            ]});
+
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'Jul', items: [
+                'bar : (Q3, 6)',
+                'scatter : 7'
+            ]});
+
+            _hover(gd, { xpx: 225, ypx: 200 });
+            assertLabel({title: 'Aug', items: [
+                'bar : (Q3, 6)',
+                'scatter : 8'
+            ]});
+
+            _hover(gd, { xpx: 250, ypx: 200 });
+            assertLabel({title: 'Sep', items: [
+                'bar : (Q3, 6)',
+                'scatter : 9'
+            ]});
+
+            _hover(gd, { xpx: 275, ypx: 200 });
+            assertLabel({title: 'Oct', items: [
+                'bar : (Q4, 9)',
+                'scatter : 10'
+            ]});
+
+            _hover(gd, { xpx: 300, ypx: 200 });
+            assertLabel({title: 'Nov', items: [
+                'bar : (Q4, 9)',
+                'scatter : 11'
+            ]});
+
+            _hover(gd, { xpx: 325, ypx: 200 });
+            assertLabel({title: 'Dec', items: [
+                'bar : (Q4, 9)',
+                'scatter : 12'
             ]});
         })
         .then(done, done.fail);
@@ -5162,10 +5589,10 @@ describe('hovermode: (x|y)unified', function() {
             .then(function(gd) {
                 _hover(gd, {curveNumber: 0});
 
-                assertLabel({title: 'Apr 13, 2014, 15:21:11', items: [
+                assertLabel({title: 'Apr 13, 2014, 15:21:15', items: [
                     'Outdoor (wun... : (Apr 13, 2014, 15:26:12, 69.4)',
-                    '1st Floor (N... : (Apr 13, 2014, 15:21:15, 74.8)',
-                    '2nd Floor (R... : 73.625',
+                    '1st Floor (N... : 74.8',
+                    '2nd Floor (R... : (Apr 13, 2014, 15:21:11, 73.625)',
                     'Attic (Ardui... : (Apr 13, 2014, 15:26:34, 98.49)'
                 ]});
             })

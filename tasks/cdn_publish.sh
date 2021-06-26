@@ -8,16 +8,6 @@ fi
 
 # get plotly.js version from its package json
 version=$(node -e "console.log(require('./package.json').version);")
-major=$(node -e "console.log(require('./package.json').version.split('.')[0]);")
-
-# read tag either latest or rc
-baseTag=$(node -e "var rc = require('./package.json').version.split('-')[1]; console.log(rc ? rc.split('.')[0] : 'latest');")
-
-# if not v1 add major version to the tag e.g. latest-v2
-tag=$baseTag
-if [ $major -ne 1 ]; then tag=$tag-v$major; fi
-echo $tag
-
 dist=dist
 sync=build/sync
 
@@ -36,10 +26,6 @@ for path in `ls $dist/plotly*`; do
     fi
 
     cp $path "$sync/${name}-${version}.$ext"
-
-    if [ $baseTag = "latest" ]; then
-        cp $path "$sync/${name}-${tag}.$ext"
-    fi
 done
 
 # copy topojson files over to the sync folder

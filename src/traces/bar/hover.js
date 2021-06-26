@@ -9,8 +9,8 @@ var getLineWidth = require('./helpers').getLineWidth;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
-function hoverPoints(pointData, xval, yval, hovermode) {
-    var barPointData = hoverOnBars(pointData, xval, yval, hovermode);
+function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    var barPointData = hoverOnBars(pointData, xval, yval, hovermode, opts);
 
     if(barPointData) {
         var cd = barPointData.cd;
@@ -24,7 +24,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
     }
 }
 
-function hoverOnBars(pointData, xval, yval, hovermode) {
+function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var t = cd[0].t;
@@ -35,14 +35,35 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
 
     var posVal, sizeVal, posLetter, sizeLetter, dx, dy, pRangeCalc;
 
+    if(trace.orientation === 'h') {
+        posVal = yval;
+        sizeVal = xval;
+        posLetter = 'y';
+        sizeLetter = 'x';
+        dx = sizeFn;
+        dy = positionFn;
+    } else {
+        posVal = xval;
+        sizeVal = yval;
+        posLetter = 'x';
+        sizeLetter = 'y';
+        dy = sizeFn;
+        dx = positionFn;
+    }
+
+    var period = trace[posLetter + 'period'];
+
     function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        return di[posLetter] + 0.5 * sgn * di.w;
+        if(period) {
+            return di.p + sgn * Math.abs(di.p - di.orig_p);
+        }
+        return di[posLetter] + sgn * di.w / 2;
     }
 
-    var minPos = isClosest ?
+    var minPos = isClosest || period ?
         thisBarMinPos :
         function(di) {
             /*
@@ -60,13 +81,15 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosest ?
+    var maxPos = isClosest || period ?
         thisBarMaxPos :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
 
     function inbox(_minPos, _maxPos, maxDistance) {
+        if(opts.finiteRange) maxDistance = 0;
+
         // add a little to the pseudo-distance for wider bars, so that like scatter,
         // if you are over two overlapping bars, the narrower one wins.
         return Fx.inbox(_minPos - posVal, _maxPos - posVal,
@@ -114,22 +137,6 @@ function hoverOnBars(pointData, xval, yval, hovermode) {
         // add a gradient so hovering near the end of a
         // bar makes it a little closer match
         return Fx.inbox(b - v, s - v, maxSpikeDistance + (s - v) / (s - b) - 1);
-    }
-
-    if(trace.orientation === 'h') {
-        posVal = yval;
-        sizeVal = xval;
-        posLetter = 'y';
-        sizeLetter = 'x';
-        dx = sizeFn;
-        dy = positionFn;
-    } else {
-        posVal = xval;
-        sizeVal = yval;
-        posLetter = 'x';
-        sizeLetter = 'y';
-        dy = sizeFn;
-        dx = positionFn;
     }
 
     var pa = pointData[posLetter + 'a'];
