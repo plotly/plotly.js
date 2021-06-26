@@ -2,25 +2,21 @@
     "data": [{
         "xaxis": "x",
         "yaxis": "y",
-        "orientation": "h",
         "x": [0.4, 0.5, 0.6, 0.7, 0.8],
         "y": ["Oo", "Pp", "Qq", "Rr", "Ss"]
     }, {
         "xaxis": "x2",
         "yaxis": "y2",
-        "orientation": "h",
         "x": [0.4, 0.5, 0.6, 0.7, 0.8],
         "y": ["Oo", "Pp", "Qq", "Rr", "Ss"]
     }, {
         "xaxis": "x3",
         "yaxis": "y3",
-        "orientation": "v",
         "y": [0.4, 0.5, 0.6, 0.7, 0.8],
         "x": ["Oo", "Pp", "Qq", "Rr", "Ss"]
     }, {
         "xaxis": "x4",
         "yaxis": "y4",
-        "orientation": "v",
         "y": [0.4, 0.5, 0.6, 0.7, 0.8],
         "x": ["Oo", "Pp", "Qq", "Rr", "Ss"]
     }],

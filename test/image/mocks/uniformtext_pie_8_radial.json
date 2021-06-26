@@ -237,7 +237,7 @@
         "legend": {
             "orientation": "h",
             "title": {
-                "text": "<b>pie uniform text</b><br>with <i>radial</i> orientation<br>minsize=8"
+                "text": "pie uniform text<br>with <i>radial</i> orientation<br>minsize=8"
             }
         },
         "uniformtext": {

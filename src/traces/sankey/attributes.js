@@ -8,11 +8,10 @@ var domainAttrs = require('../../plots/domain').attributes;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var colorAttributes = require('../../components/colorscale/attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var attrs = module.exports = overrideAll({
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
@@ -39,11 +38,7 @@ var attrs = module.exports = overrideAll({
     valueformat: {
         valType: 'string',
         dflt: '.3s',
-        description: [
-            'Sets the value formatting rule using d3 formatting mini-language',
-            'which is similar to those of Python. See',
-            FORMAT_LINK
-        ].join(' ')
+        description: descriptionOnlyNumbers('value')
     },
 
     valuesuffix: {

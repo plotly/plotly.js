@@ -361,6 +361,10 @@ describe('Test violin hover:', function() {
 
     [{
         desc: 'base',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: [
             'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
             'y: 0.9266848, kde: 0.182'
@@ -373,6 +377,7 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.meanline = {visible: true};
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
@@ -385,6 +390,7 @@ describe('Test violin hover:', function() {
         desc: 'with overlaid violins',
         patch: function(fig) {
             fig.layout.violinmode = 'overlay';
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
@@ -404,7 +410,6 @@ describe('Test violin hover:', function() {
                 trace.points = 'all';
                 trace.hoveron = 'points';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [220, 200],
@@ -460,7 +465,6 @@ describe('Test violin hover:', function() {
                 trace.hoveron = 'points';
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -475,7 +479,6 @@ describe('Test violin hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -491,7 +494,6 @@ describe('Test violin hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'NOT THIS:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -500,7 +502,6 @@ describe('Test violin hover:', function() {
     }, {
         desc: 'one-sided violin under hovermode closest',
         // hoveron: 'kde+points'
-        // hovermode: 'closest'
         // width: 400
         // height: 700
         mock: require('@mocks/violin_side-by-side.json'),
@@ -542,6 +543,10 @@ describe('Test violin hover:', function() {
     }, {
         desc: 'single horizontal violin',
         mock: require('@mocks/violin_non-linear.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'y';
+            return fig;
+        },
         pos: [310, 160],
         nums: ['median: C', 'min: A', 'q1: B', 'q3: D', 'max: G', 'upper fence: D', 'x: C, kde: 1.005'],
         name: ['categories', '', '', '', '', '', ''],
@@ -557,6 +562,7 @@ describe('Test violin hover:', function() {
                 t.hoveron = 'violins';
             });
             fig.layout.violinmode = 'group';
+            fig.layout.hovermode = 'y';
             return fig;
         },
         nums: ['median: 0.4', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'max: 0.9'],
@@ -573,7 +579,6 @@ describe('Test violin hover:', function() {
                 t.hoveron = 'violins';
             });
             fig.layout.violinmode = 'group';
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [200, 175],
@@ -591,7 +596,6 @@ describe('Test violin hover:', function() {
             fig.data[0].x = fig.data[0].y;
             delete fig.data[0].y;
             fig.layout = {
-                hovermode: 'closest',
                 yaxis: {range: [-0.696, 0.5]}
             };
             return fig;
@@ -608,6 +612,7 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(t) {
                 t.hoveron = 'violins';
             });
+            fig.layout.hovermode = 'y';
             return fig;
         },
         pos: [430, 130],
@@ -623,7 +628,6 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(t) {
                 t.hoveron = 'violins';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [430, 130],
@@ -644,8 +648,7 @@ describe('Test violin hover:', function() {
                 orientation: 'h',
                 y: [2, 2, 2, 2, 2],
                 x: [13.1, 14.2, 14, 13, 13.3]
-            }],
-            layout: {hovermode: 'closest'}
+            }]
         },
         pos: [417, 309],
         nums: '(14, 2)',
@@ -658,7 +661,6 @@ describe('Test violin hover:', function() {
                 trace.hoveron = 'points';
                 trace.hovertemplate = 'Sample pt %{pointNumber}: %{y:.3f}<extra></extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [220, 200],

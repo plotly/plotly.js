@@ -24,8 +24,7 @@
         },
         "xaxis": {
             "type": "category",
-            "categoryorder": "category descending",
-            "categoryarray": [2,4,5,1]
+            "categoryorder": "category descending"
         },
         "yaxis": {
             "type": "linear",

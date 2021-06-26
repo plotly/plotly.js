@@ -1,0 +1,106 @@
+{
+  "data": [
+    {
+      "legendrank": 4,
+      "x": ["a", "b", "c", "d"],
+      "y": [4, 3, 2, 1],
+      "name": "replace bar",
+      "type": "bar",
+      "marker": {
+        "line": { "color": "lightblue", "width": 2 },
+        "color": [4, 3, 2, 1],
+        "pattern": {
+          "fillmode": "replace",
+          "shape": "/"
+        }
+      }
+    },
+    {
+      "legendrank": 3,
+      "xaxis": "x2",
+      "yaxis": "y2",
+      "x": ["a", "b", "c", "d"],
+      "y": [4, 3, 2, 1],
+      "name": "overlay bar",
+      "type": "bar",
+      "marker": {
+        "line": { "color": "lightblue", "width": 2 },
+        "color": [4, 3, 2, 1],
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": "/"
+        }
+      }
+    },
+
+    {
+      "legendrank": 2,
+      "t": ["M", "N", "O", "P"],
+      "r": [4, 3, 2, 1],
+      "type": "barpolar",
+      "name": "replace polar",
+      "marker": {
+        "line": { "color": "lightblue", "width": 2 },
+        "color": [4, 3, 2, 1],
+        "pattern": {
+          "fillmode": "replace",
+          "shape": "."
+        }
+      }
+    },
+
+    {
+      "legendrank": 1,
+      "subplot": "polar2",
+      "t": ["M", "N", "O", "P"],
+      "r": [4, 3, 2, 1],
+      "type": "barpolar",
+      "name": "overlay polar",
+      "marker": {
+        "line": { "color": "lightblue", "width": 2 },
+        "color": [4, 3, 2, 1],
+        "pattern": {
+          "fillmode": "overlay",
+          "shape": "."
+        }
+      }
+    }
+  ],
+  "layout": {
+    "title": {
+      "text": "pattern with colorscale and different fillmodes"
+    },
+    "width": 600,
+    "height": 600,
+
+    "xaxis": {
+      "domain": [0, 1]
+    },
+    "yaxis": {
+      "domain": [0, 0.3]
+    },
+
+    "xaxis2": {
+      "anchor": "y2",
+      "domain": [0, 1]
+    },
+    "yaxis2": {
+      "anchor": "x2",
+      "domain": [0.35, 0.65]
+    },
+
+    "polar": {
+      "domain": {
+        "x": [0, 0.475],
+        "y": [0.7, 1]
+      }
+    },
+
+    "polar2": {
+      "domain": {
+        "x": [0.525, 1],
+        "y": [0.7, 1]
+      }
+    }
+  }
+}

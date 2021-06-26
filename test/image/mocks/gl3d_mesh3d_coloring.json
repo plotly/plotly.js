@@ -103,7 +103,7 @@
       "bgcolor": "#eee",
       "orientation": "h",
       "title": {
-        "text": "<b>mesh3d with different coloring:</b>",
+        "text": "mesh3d with different coloring:",
         "side": "top left"
       }
     },

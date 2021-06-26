@@ -3,8 +3,8 @@
 Thanks for your interest in contributing to Plotly.js! We are actively looking for
 diverse contributors, with diverse background and skills.
 
-This document outlines the general way that changes get made to this library and by whom, 
-and then provides specific technical information about how to set up a development 
+This document outlines the general way that changes get made to this library and by whom,
+and then provides specific technical information about how to set up a development
 environment for doing development and running tests.
 
 ## Code of Conduct
@@ -25,7 +25,7 @@ The basic architecture of Plotly.js is to accept [JSON](https://json.org/) repre
 The basic process for adding new features or fixing bugs is as follows. Please note that this is a bit of an idealized outline and that things often don't proceed in a clean/linear fashion and that's ok :)
 
 1. **Discussion** - A community member or maintainer creates an issue to discuss the use-case for the new feature. This usually entails describing the desired graphical output and discussing how close the current system can get to specifying or drawing such a figure. If the issue is perceived to be a bug, the discussion revolves around understanding how the current behaviour is incorrect or problematic, and how existing users of the system would be impacted by a change in this behaviour.
-2. **Proposal** - If the current system cannot specify or draw such a figure, or if the way to do it is too onerous, a good next step would be to discuss or propose a specific change to the schema: new attributes to be added or new accepted values to new attributes, along with a prose description of the proposed drawing code. If the issue is determined to be a bug rather than a feature, the same type of proposal is required: a definition of which attributes and values will be impacted by the proposed change. A good proposal includes discussion of whether or not existing attributes can be modified rather than adding new attributes and details about which trace types or subplot types are impacted by the change. Note: sometimes community contributors skip this step and go straight to development & review (below), but going through a proposal can help speed along the review process! 
+2. **Proposal** - If the current system cannot specify or draw such a figure, or if the way to do it is too onerous, a good next step would be to discuss or propose a specific change to the schema: new attributes to be added or new accepted values to new attributes, along with a prose description of the proposed drawing code. If the issue is determined to be a bug rather than a feature, the same type of proposal is required: a definition of which attributes and values will be impacted by the proposed change. A good proposal includes discussion of whether or not existing attributes can be modified rather than adding new attributes and details about which trace types or subplot types are impacted by the change. Note: sometimes community contributors skip this step and go straight to development & review (below), but going through a proposal can help speed along the review process!
 3. **Iteration** - The maintainers of the library or any other interested community member will then give feedback on the proposal, usually focused on consistency with the rest of the schema, and helping define a test plan to further elaborate potential edge cases.
 4. **Approval** - After a number of iterations, the maintainers of the library will generally approve a proposal with an informal "this seems like something we would accept a pull request for" comment in the issue.
 5. **Development** - A community member or maintainer creates a branch and makes the appropriate modifications to the code and tests and opens a pull request. This can be more or less time-consuming and challenging, depending on the nature of the change.
@@ -207,23 +207,35 @@ npm run test-jasmine -- --help
 npm run test-jasmine -- --info
 ```
 
-### Image pixel comparison tests
-
-Image pixel comparison tests are run in a docker container. For more
-information on how to run them locally, please refer to [image test
-README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
-
-Running the test locally outputs the generated png images in `build/test_images/` and the png diffs in `build/test_images_diff/` (two git-ignored directories).
-
-To view the image pixel comparison test results, run
-
+### Draft new baseline
+Install fonts and tools
+```sh
+# install required fonts (if missing) on ubuntu
+sudo cp -r .circleci/fonts/ /usr/share/ && sudo fc-cache -f
+# upgrade pip (if needed)
+python3 -m pip install --upgrade pip
+# install kaleido
+python3 -m pip install kaleido
+# install plotly
+python3 -m pip install plotly
 ```
-npm run start-image_viewer
+
+**IMPORTANT:** the `baseline`, `test-image` and `test-export` scripts do **not** bundle the source files before
+running the image tests. We recommend running `npm run watch` or `npm start` in
+a separate tab to ensure that the most up-to-date code is used.
+Also if you are adding a new mock, you may need to re-run `npm start` or `npm run watch`
+to be able to find the new mock in the browser.
+To help ensure valid attributes are used in your new mock(s), please run `npm run test-mock`
+or `npm run test-mock mock_name(s)` after adding new mocks or implementing any new attributes.
+
+If you added new mocks to test/image/mocks folder, to generate draft baselines run
+```sh
+python3 test/image/make_baseline.py = mockFilename1 mockFilename2
 ```
-
-which shows the baseline image, the generated image, the diff and the json mocks of test cases that failed.
-
-To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
+Then commit the new baselines and push.
+Please note that image pixel comparison tests run using circleci/python:3.8.9 docker container.
+Therefore the final baselines may need updates.
+This could simply be done by downloading the `baselines.tar` stored in the `ARTIFACTS` tab of `test-baselines` job (if the test failed).
 
 ### Using the developer console in karma to write/debug jasmine tests
 

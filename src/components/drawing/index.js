@@ -359,16 +359,31 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
  *
  * @param {object} sel: d3 selection to apply this pattern to
  *     You can use `selection.call(Drawing.pattern, ...)`
+ * @param {string} calledBy: option to know the caller component
  * @param {DOM element} gd: the graph div `sel` is part of
  * @param {string} patternID: a unique (within this plot) identifier
  *     for this pattern, so that we don't create unnecessary definitions
- * @param {string} bgcolor: background color for this pattern
- * @param {string} fgcolor: foreground color for this pattern
  * @param {number} size: size of unit squares for repetition of this pattern
  * @param {number} solidity: how solid lines of this pattern are
- * @param {string} prop: the property to apply to, 'fill' or 'stroke'
+ * @param {string} mcc: color when painted with colorscale
+ * @param {string} fillmode: fillmode for this pattern
+ * @param {string} bgcolor: background color for this pattern
+ * @param {string} fgcolor: foreground color for this pattern
+ * @param {number} fgopacity: foreground opacity for this pattern
  */
-drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, solidity, prop) {
+drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, mcc, fillmode, bgcolor, fgcolor, fgopacity) {
+    var isLegend = calledBy === 'legend';
+
+    if(mcc) {
+        if(fillmode === 'overlay') {
+            bgcolor = mcc;
+            fgcolor = Color.contrast(bgcolor);
+        } else {
+            bgcolor = undefined;
+            fgcolor = mcc;
+        }
+    }
+
     var fullLayout = gd._fullLayout;
     var fullID = 'p' + fullLayout._uid + '-' + patternID;
     var width, height;
@@ -392,6 +407,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -406,6 +422,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -423,6 +440,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -436,6 +454,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -449,6 +468,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -463,6 +483,7 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
+                'opacity': fgopacity,
                 'stroke': fgcolor,
                 'stroke-width': linewidth + 'px'
             };
@@ -480,14 +501,23 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
                 'cx': width / 2,
                 'cy': height / 2,
                 'r': radius,
+                'opacity': fgopacity,
                 'fill': fgcolor
             };
             break;
     }
 
+    var str = [
+        shape || 'noSh',
+        bgcolor || 'noBg',
+        fgcolor || 'noFg',
+        size,
+        solidity
+    ].join(';');
+
     var pattern = fullLayout._defs.select('.patterns')
         .selectAll('#' + fullID)
-        .data([shape + ';' + bgcolor + ';' + fgcolor + ';' + size + ';' + solidity], Lib.identity);
+        .data([str], Lib.identity);
 
     pattern.exit().remove();
 
@@ -500,7 +530,9 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
                 'id': fullID,
                 'width': width + 'px',
                 'height': height + 'px',
-                'patternUnits': 'userSpaceOnUse'
+                'patternUnits': 'userSpaceOnUse',
+                // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
+                'patternTransform': isLegend ? 'scale(0.8)' : ''
             });
 
             if(bgcolor) {
@@ -522,8 +554,8 @@ drawing.pattern = function(sel, gd, patternID, shape, bgcolor, fgcolor, size, so
                 .attr(patternAttrs);
         });
 
-    sel.style(prop, getFullUrl(fullID, gd))
-        .style(prop + '-opacity', null);
+    sel.style('fill', getFullUrl(fullID, gd))
+        .style('fill-opacity', null);
 
     sel.classed('pattern_filled', true);
     var className2query = function(s) {
@@ -693,18 +725,25 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
+            var patternFGOpacity = markerPattern.fgopacity;
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            var perPointPattern = Lib.isArrayOrTypedArray(markerPattern.shape) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.size) ||
-                                  Lib.isArrayOrTypedArray(markerPattern.solidity);
+            var perPointPattern = d.mcc ||
+                Lib.isArrayOrTypedArray(markerPattern.shape) ||
+                Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                Lib.isArrayOrTypedArray(markerPattern.size) ||
+                Lib.isArrayOrTypedArray(markerPattern.solidity);
 
             var patternID = trace.uid;
             if(perPointPattern) patternID += '-' + d.i;
 
-            drawing.pattern(sel, gd, patternID, patternShape, patternBGColor, fillColor,
-                            patternSize, patternSolidity, 'fill');
+            drawing.pattern(
+                sel, 'point', gd, patternID,
+                patternShape, patternSize, patternSolidity,
+                d.mcc, markerPattern.fillmode,
+                patternBGColor, patternFGColor, patternFGOpacity
+            );
         } else {
             Color.fill(sel, fillColor);
         }
@@ -943,7 +982,8 @@ drawing.textPointStyle = function(s, trace, gd) {
         }
 
         if(texttemplate) {
-            var labels = trace._module.formatLabels ? trace._module.formatLabels(d, trace, fullLayout) : {};
+            var fn = trace._module.formatLabels;
+            var labels = fn ? fn(d, trace, fullLayout) : {};
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, d.i);
             var meta = trace._meta || {};
@@ -1269,7 +1309,9 @@ function getFullUrl(localId, gd) {
 
     var context = gd._context;
     var baseUrl = context._exportedPlot ? '' : (context._baseUrl || '');
-    return 'url(\'' + baseUrl + '#' + localId + '\')';
+    return baseUrl ?
+        'url(\'' + baseUrl + '#' + localId + '\')' :
+        'url(#' + localId + ')';
 }
 
 drawing.getTranslate = function(element) {

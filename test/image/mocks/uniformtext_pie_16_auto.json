@@ -181,7 +181,7 @@
         "legend": {
             "orientation": "h",
             "title": {
-                "text": "<b>pie uniform text</b><br>with <i>auto</i> orientation<br>minsize=16"
+                "text": "pie uniform text<br>with <i>auto</i> orientation<br>minsize=16"
             }
         },
         "uniformtext": {

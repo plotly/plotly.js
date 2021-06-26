@@ -121,6 +121,7 @@ var partialBundleTraces = {
         'histogram',
         'histogram2d',
         'histogram2dcontour',
+        'icicle',
         'image',
         'indicator',
         'ohlc',
@@ -168,6 +169,8 @@ module.exports = {
     pathToBuild: pathToBuild,
     pathToDist: pathToDist,
 
+    partialBundleTraces: partialBundleTraces,
+
     allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,
@@ -194,7 +197,6 @@ module.exports = {
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
-    pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
 
     pathToImageTest: pathToImageTest,
     pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),

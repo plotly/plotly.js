@@ -5,9 +5,8 @@ var colorAttrs = require('../../components/color/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
+var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = require('../../constants/docs').DATE_FORMAT_LINK;
 var ONEDAY = require('../../constants/numerical').ONEDAY;
 var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;
@@ -493,6 +492,21 @@ module.exports = {
             'so that the scales could match.'
         ].join(' ')
     },
+    ticklabeloverflow: {
+        valType: 'enumerated',
+        values: [
+            'allow',
+            'hide past div',
+            'hide past domain'
+        ],
+        editType: 'calc',
+        description: [
+            'Determines how we handle tick labels that would overflow either the graph div or the domain of the axis.',
+            'The default value for inside tick labels is *hide past domain*.',
+            'Otherwise on *category* and *multicategory* axes the default is *allow*.',
+            'In other cases the default is *hide past div*.'
+        ].join(' ')
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
@@ -586,7 +600,7 @@ module.exports = {
     spikesnap: {
         valType: 'enumerated',
         values: ['data', 'cursor', 'hovered data'],
-        dflt: 'data',
+        dflt: 'hovered data',
         editType: 'none',
         description: 'Determines whether spikelines are stuck to the cursor or to the closest datapoints.'
     },
@@ -685,16 +699,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         editType: 'ticks',
-        description: [
-            'Sets the tick label formatting rule using d3 formatting mini-languages',
-            'which are very similar to those in Python. For numbers, see:',
-            FORMAT_LINK,
-            'And for dates see:',
-            DATE_FORMAT_LINK,
-            'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
-            'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
-            '*%H~%M~%S.%2f* would display *09~15~23.46*'
-        ].join(' ')
+        description: descriptionWithDates('tick label')
     },
     tickformatstops: templatedArray('tickformatstop', {
         enabled: {
@@ -733,16 +738,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         editType: 'none',
-        description: [
-            'Sets the hover text formatting rule using d3 formatting mini-languages',
-            'which are very similar to those in Python. For numbers, see:',
-            FORMAT_LINK,
-            'And for dates see:',
-            DATE_FORMAT_LINK,
-            'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
-            'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
-            '*%H~%M~%S.%2f* would display *09~15~23.46*'
-        ].join(' ')
+        description: descriptionWithDates('hover text')
     },
     // lines and grids
     showline: {

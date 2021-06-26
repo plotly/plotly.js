@@ -739,6 +739,10 @@ describe('Test box hover:', function() {
 
     [{
         desc: 'base',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
         name: ['radishes', '', '', '', ''],
         axis: 'day 1'
@@ -748,6 +752,7 @@ describe('Test box hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.boxmean = true;
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45'],
@@ -759,6 +764,7 @@ describe('Test box hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.boxmean = 'sd';
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
@@ -770,6 +776,10 @@ describe('Test box hover:', function() {
     }, {
         desc: 'with boxpoints fences',
         mock: require('@mocks/boxplots_outliercolordflt.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         pos: [350, 200],
         nums: [
             'median: 8.15', 'min: 0.75', 'q1: 6.8',
@@ -780,6 +790,7 @@ describe('Test box hover:', function() {
     }, {
         desc: 'with overlaid boxes',
         patch: function(fig) {
+            fig.layout.hovermode = 'x';
             fig.layout.boxmode = 'overlay';
             return fig;
         },
@@ -799,7 +810,6 @@ describe('Test box hover:', function() {
                 trace.boxpoints = 'all';
                 trace.hoveron = 'points';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -856,7 +866,6 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -871,7 +880,6 @@ describe('Test box hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -887,7 +895,6 @@ describe('Test box hover:', function() {
                 trace.hovertext = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -896,6 +903,10 @@ describe('Test box hover:', function() {
     }, {
         desc: 'orientation:h | hovermode:y',
         mock: require('@mocks/box_grouped_horz.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'y';
+            return fig;
+        },
         pos: [430, 130],
         nums: [
             'max: 1', 'mean ± σ: 0.6833333 ± 0.2409472', 'min: 0.3',
@@ -906,10 +917,6 @@ describe('Test box hover:', function() {
     }, {
         desc: 'orientation:h | hovermode:closest',
         mock: require('@mocks/box_grouped_horz.json'),
-        patch: function(fig) {
-            fig.layout.hovermode = 'closest';
-            return fig;
-        },
         pos: [430, 130],
         nums: [
             '(max: 1, day 2)', '(mean ± σ: 0.6833333 ± 0.2409472, day 2)', '(min: 0.3, day 2)',
@@ -927,7 +934,6 @@ describe('Test box hover:', function() {
                 y: [13.1, 14.2, 14, 13, 13.3]
             }],
             layout: {
-                hovermode: 'closest',
                 xaxis: {range: [1.3775, 2.5]}
             }
         },
@@ -942,7 +948,6 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
                 trace.hovertemplate = '%{y}<extra>pt #%{pointNumber}</extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '0.6',
@@ -955,6 +960,7 @@ describe('Test box hover:', function() {
                 y: [1, 2, 2, 3]
             }],
             layout: {
+                hovermode: 'x',
                 yaxis: {range: [1.6, 2.4]},
                 width: 400,
                 height: 400
@@ -975,6 +981,7 @@ describe('Test box hover:', function() {
                 q3: [3]
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400
             }
@@ -997,6 +1004,7 @@ describe('Test box hover:', function() {
                 pointpos: 0
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400,
                 margin: {l: 0, t: 0, b: 0, r: 0}
@@ -1021,6 +1029,7 @@ describe('Test box hover:', function() {
                 hovertemplate: '%{x} | %{y}<extra>%{pointNumber[0]} | %{pointNumber[1]}</extra>'
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400,
                 margin: {l: 0, t: 0, b: 0, r: 0}

@@ -165,10 +165,10 @@
                 "y": 0.9090909090909091,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Balto <b>Bold</b> <i>Italic</i>",
+                "text": "Roboto <b>Bold</b> <i>Italic</i>",
                 "showarrow": false,
                 "font": {
-                    "family": "Balto, sans-serif",
+                    "family": "Roboto, sans-serif",
                     "size": 20
                 },
                 "xanchor": "left",
@@ -219,10 +219,10 @@
                 "y": 0.7272727272727273,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans <b>Bold</b>",
+                "text": "Noto Sans <b>Bold</b>",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Sans, sans-serif",
+                    "family": "Noto Sans, sans-serif",
                     "size": 20
                 },
                 "xanchor": "left",
@@ -246,10 +246,10 @@
                 "y": 0.6363636363636364,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Serif <b>Bold</b> <i>Italic</i>",
+                "text": "Noto Serif <b>Bold</b> <i>Italic</i>",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Serif, serif",
+                    "family": "Noto Serif, serif",
                     "size": 20
                 },
                 "xanchor": "left",
@@ -273,10 +273,10 @@
                 "y": 0.5454545454545454,
                 "xref": "paper",
                 "yref": "paper",
-                "text": "Droid Sans Mono",
+                "text": "Noto Sans Mono",
                 "showarrow": false,
                 "font": {
-                    "family": "Droid Sans Mono, sans-serif",
+                    "family": "Noto Sans Mono, sans-serif",
                     "size": 20
                 },
                 "xanchor": "left",

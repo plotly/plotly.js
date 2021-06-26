@@ -236,9 +236,11 @@ module.exports = {
         transforms: {
             filter: {
                 valuecalendar: makeAttrs([
+                    'WARNING: All transforms are deprecated and may be removed from the API in next major version.',
                     'Sets the calendar system to use for `value`, if it is a date.'
                 ].join(' ')),
                 targetcalendar: makeAttrs([
+                    'WARNING: All transforms are deprecated and may be removed from the API in next major version.',
                     'Sets the calendar system to use for `target`, if it is an',
                     'array of dates. If `target` is a string (eg *x*) we use the',
                     'corresponding trace attribute (eg `xcalendar`) if it exists,',
