@@ -1,0 +1,96 @@
+{
+    "data": [
+        {
+            "hovertemplate": "labels=%{label}<br>sales=%{value}<br>parent=%{parent}<br>id=%{id}<extra></extra>",
+            "ids": [
+                "all/North/Tech/A",
+                "all/North/Tech/B",
+                "all/North/Finance/C",
+                "all/North/Finance/D",
+                "all/South/Tech/E",
+                "all/South/Tech/F",
+                "all/South/Finance/G",
+                "all/South/Finance/H",
+                "all/North/Finance",
+                "all/South/Finance",
+                "all/North/Other",
+                "all/South/Other",
+                "all/North/Tech",
+                "all/South/Tech",
+                "all/North",
+                "all/South",
+                "all"
+            ],
+            "labels": [
+                "A",
+                "B",
+                "C",
+                "D",
+                "E",
+                "F",
+                "G",
+                "H",
+                "Finance",
+                "Finance",
+                "Other",
+                "Other",
+                "Tech",
+                "Tech",
+                "North",
+                "South",
+                "all"
+            ],
+            "name": "",
+            "parents": [
+                "all/North/Tech",
+                "all/North/Tech",
+                "all/North/Finance",
+                "all/North/Finance",
+                "all/South/Tech",
+                "all/South/Tech",
+                "all/South/Finance",
+                "all/South/Finance",
+                "all/North",
+                "all/South",
+                "all/North",
+                "all/South",
+                "all/North",
+                "all/South",
+                "all",
+                "all",
+                ""
+            ],
+            "type": "treemap",
+            "branchvalues": "total",
+            "values": [
+                1,
+                3,
+                2,
+                4,
+                2,
+                2,
+                1,
+                4,
+                6,
+                5,
+                1,
+                1,
+                4,
+                4,
+                11,
+                10,
+                21
+            ]
+        }
+    ],
+    "layout": {
+        "width": 320,
+        "height": 200,
+        "margin": {
+            "t": 20,
+            "l": 20,
+            "r": 20,
+            "b": 20
+        }
+    }
+}

@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('aggregate', function() {
     var gd;
@@ -11,7 +11,7 @@ describe('aggregate', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('handles all funcs for numeric data', function() {
+    it('handles all funcs for numeric data', function(done) {
         // throw in some non-numbers, they should get discarded except first/last
         Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 'fail'],
@@ -51,25 +51,27 @@ describe('aggregate', function() {
         }], {
             // log axis doesn't change how sum (or avg but not tested) works
             xaxis: {type: 'log'}
-        });
+        })
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
+            expect(traceOut.x).toEqual([8, 2]);
+            expect(traceOut.y).toBeCloseToArray([3.3, 2.2], 5);
+            expect(traceOut.customdata).toEqual([-3, undefined]);
+            expect(traceOut.marker.size).toEqual([0.1, 0.2]);
+            expect(traceOut.marker.color).toEqual([10, 4]);
+            expect(traceOut.marker.opacity).toEqual([0.6, 'boo']);
+            expect(traceOut.marker.line.color).toEqual(['the end', 3.3]);
+            expect(traceOut.marker.line.width).toEqual([4, 1]);
 
-        expect(traceOut.x).toEqual([8, 2]);
-        expect(traceOut.y).toBeCloseToArray([3.3, 2.2], 5);
-        expect(traceOut.customdata).toEqual([-3, undefined]);
-        expect(traceOut.marker.size).toEqual([0.1, 0.2]);
-        expect(traceOut.marker.color).toEqual([10, 4]);
-        expect(traceOut.marker.opacity).toEqual([0.6, 'boo']);
-        expect(traceOut.marker.line.color).toEqual(['the end', 3.3]);
-        expect(traceOut.marker.line.width).toEqual([4, 1]);
-
-        var transform = traceOut.transforms[0];
-        var inverseMapping = transform._indexToPoints;
-        expect(inverseMapping).toEqual({0: [0, 2, 3, 4], 1: [1]});
+            var transform = traceOut.transforms[0];
+            var inverseMapping = transform._indexToPoints;
+            expect(inverseMapping).toEqual({0: [0, 2, 3, 4], 1: [1]});
+        })
+        .then(done, done.fail);
     });
 
-    it('handles all funcs except sum for date data', function() {
+    it('handles all funcs except sum for date data', function(done) {
         // weird cases handled in another test
         Plotly.newPlot(gd, [{
             x: ['2001-01-01', '', '2001-01-03', '2001-01-05', '2001-01-07'],
@@ -95,19 +97,21 @@ describe('aggregate', function() {
                     {target: 'x', func: 'min'}
                 ]
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
-
-        expect(traceOut.x).toEqual(['2001-01-04', undefined]);
-        expect(traceOut.y).toEqual(['1990-12-23', '2005-03-15']);
-        expect(traceOut.text).toEqual(['2001-01-01 12:37', '2001-01-01 12:35']);
-        expect(traceOut.hovertext).toEqual(['a', '2001-01-02']);
-        expect(traceOut.customdata).toEqual(['2001-05', 'b']);
-        expect(traceOut.marker.line.width).toEqual([4, 1]);
+            expect(traceOut.x).toEqual(['2001-01-04', undefined]);
+            expect(traceOut.y).toEqual(['1990-12-23', '2005-03-15']);
+            expect(traceOut.text).toEqual(['2001-01-01 12:37', '2001-01-01 12:35']);
+            expect(traceOut.hovertext).toEqual(['a', '2001-01-02']);
+            expect(traceOut.customdata).toEqual(['2001-05', 'b']);
+            expect(traceOut.marker.line.width).toEqual([4, 1]);
+        })
+        .then(done, done.fail);
     });
 
-    it('handles all funcs except sum and avg for category data', function() {
+    it('handles all funcs except sum and avg for category data', function(done) {
         // weird cases handled in another test
         Plotly.newPlot(gd, [{
             x: ['a', 'b', 'c', 'aa', 'd'],
@@ -130,20 +134,22 @@ describe('aggregate', function() {
             }]
         }], {
             xaxis: {categoryarray: ['aaa', 'aa', 'a', 'b', 'c']}
-        });
+        })
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
-
-        // explicit order (only possible for axis data)
-        expect(traceOut.x).toEqual(['aa', 'b']);
-        // implied order from data
-        expect(traceOut.y).toEqual(['t', 'w']);
-        expect(traceOut.text).toEqual(['a', 'b']);
-        expect(traceOut.hovertext).toEqual(['c', 'b']);
-        expect(traceOut.marker.line.width).toEqual([4, 1]);
+            // explicit order (only possible for axis data)
+            expect(traceOut.x).toEqual(['aa', 'b']);
+            // implied order from data
+            expect(traceOut.y).toEqual(['t', 'w']);
+            expect(traceOut.text).toEqual(['a', 'b']);
+            expect(traceOut.hovertext).toEqual(['c', 'b']);
+            expect(traceOut.marker.line.width).toEqual([4, 1]);
+        })
+        .then(done, done.fail);
     });
 
-    it('allows date and category sums, and category avg, with weird output', function() {
+    it('allows date and category sums, and category avg, with weird output', function(done) {
         // this test is more of an FYI than anything else - it doesn't break but
         // these results are usually meaningless.
 
@@ -160,24 +166,26 @@ describe('aggregate', function() {
                     {target: 'text', func: 'avg'}
                 ]
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
+            // date sums: 1970-01-01 is "zero", there are shifts due to # of leap years
+            // without that shift these would be 2032-01-02 and 2032-01-06
+            expect(traceOut.x).toEqual(['2032-01-03', '2032-01-07']);
+            // category sums: can go off the end of the category array -> gives undefined
+            expect(traceOut.y).toEqual(['b', undefined]);
+            // category average: can result in fractional categories -> rounds (0.5 rounds to 1)
+            expect(traceOut.text).toEqual(['b', 'b']);
 
-        // date sums: 1970-01-01 is "zero", there are shifts due to # of leap years
-        // without that shift these would be 2032-01-02 and 2032-01-06
-        expect(traceOut.x).toEqual(['2032-01-03', '2032-01-07']);
-        // category sums: can go off the end of the category array -> gives undefined
-        expect(traceOut.y).toEqual(['b', undefined]);
-        // category average: can result in fractional categories -> rounds (0.5 rounds to 1)
-        expect(traceOut.text).toEqual(['b', 'b']);
-
-        var transform = traceOut.transforms[0];
-        var inverseMapping = transform._indexToPoints;
-        expect(inverseMapping).toEqual({0: [0, 1], 1: [2, 3]});
+            var transform = traceOut.transforms[0];
+            var inverseMapping = transform._indexToPoints;
+            expect(inverseMapping).toEqual({0: [0, 1], 1: [2, 3]});
+        })
+        .then(done, done.fail);
     });
 
-    it('can aggregate on an existing data array', function() {
+    it('can aggregate on an existing data array', function(done) {
         Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 5],
             y: [2, 4, 6, 8, 10],
@@ -190,20 +198,22 @@ describe('aggregate', function() {
                     {target: 'y', func: 'avg'}
                 ]
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
+            expect(traceOut.x).toEqual([8, 7]);
+            expect(traceOut.y).toBeCloseToArray([16 / 3, 7], 5);
+            expect(traceOut.marker.size).toEqual([10, 20]);
 
-        expect(traceOut.x).toEqual([8, 7]);
-        expect(traceOut.y).toBeCloseToArray([16 / 3, 7], 5);
-        expect(traceOut.marker.size).toEqual([10, 20]);
-
-        var transform = traceOut.transforms[0];
-        var inverseMapping = transform._indexToPoints;
-        expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
+            var transform = traceOut.transforms[0];
+            var inverseMapping = transform._indexToPoints;
+            expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
+        })
+        .then(done, done.fail);
     });
 
-    it('can handle case where aggregation array is missing', function() {
+    it('can handle case where aggregation array is missing', function(done) {
         Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 5],
             y: [2, 4, 6, 8, 10],
@@ -212,20 +222,22 @@ describe('aggregate', function() {
                 type: 'aggregate',
                 groups: 'marker.size'
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
+            expect(traceOut.x).toEqual([1, 3]);
+            expect(traceOut.y).toEqual([2, 6]);
+            expect(traceOut.marker.size).toEqual([10, 20]);
 
-        expect(traceOut.x).toEqual([1, 3]);
-        expect(traceOut.y).toEqual([2, 6]);
-        expect(traceOut.marker.size).toEqual([10, 20]);
-
-        var transform = traceOut.transforms[0];
-        var inverseMapping = transform._indexToPoints;
-        expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
+            var transform = traceOut.transforms[0];
+            var inverseMapping = transform._indexToPoints;
+            expect(inverseMapping).toEqual({0: [0, 1, 4], 1: [2, 3]});
+        })
+        .then(done, done.fail);
     });
 
-    it('handles median, mode, rms, stddev, change & range for numeric data', function() {
+    it('handles median, mode, rms, stddev, change & range for numeric data', function(done) {
         // again, nothing is going to barf with non-numeric data, but sometimes it
         // won't make much sense.
 
@@ -252,22 +264,24 @@ describe('aggregate', function() {
                     {target: 'marker.color', func: 'stddev'}
                 ]
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
-
-        // 1 and 2 both have count of 2 in the first group,
-        // but 2 gets to that count first
-        expect(traceOut.x).toEqual([2, 1]);
-        expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
-        expect(traceOut.customdata).toEqual([-4, 0]);
-        expect(traceOut.marker.size).toBeCloseToArray([Math.sqrt(51 / 4), 2], 5);
-        expect(traceOut.marker.opacity).toEqual([0.8, 0]);
-        expect(traceOut.marker.line.width).toBeCloseToArray([0.5, 0], 5);
-        expect(traceOut.marker.color).toBeCloseToArray([Math.sqrt(1 / 3), 0], 5);
+            // 1 and 2 both have count of 2 in the first group,
+            // but 2 gets to that count first
+            expect(traceOut.x).toEqual([2, 1]);
+            expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+            expect(traceOut.customdata).toEqual([-4, 0]);
+            expect(traceOut.marker.size).toBeCloseToArray([Math.sqrt(51 / 4), 2], 5);
+            expect(traceOut.marker.opacity).toEqual([0.8, 0]);
+            expect(traceOut.marker.line.width).toBeCloseToArray([0.5, 0], 5);
+            expect(traceOut.marker.color).toBeCloseToArray([Math.sqrt(1 / 3), 0], 5);
+        })
+        .then(done, done.fail);
     });
 
-    it('handles ragged data - extra groups are ignored', function() {
+    it('handles ragged data - extra groups are ignored', function(done) {
         Plotly.newPlot(gd, [{
             x: [1, 1, 2, 2, 1, 3, 4],
             y: [1, 2, 3, 4, 5], // shortest array controls all
@@ -279,15 +293,17 @@ describe('aggregate', function() {
                     {target: 'y', func: 'median'},
                 ]
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
-
-        expect(traceOut.x).toEqual([2, 1]);
-        expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+            expect(traceOut.x).toEqual([2, 1]);
+            expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+        })
+        .then(done, done.fail);
     });
 
-    it('handles ragged data - groups is the shortest, others are ignored', function() {
+    it('handles ragged data - groups is the shortest, others are ignored', function(done) {
         Plotly.newPlot(gd, [{
             x: [1, 1, 2, 2, 1, 3, 4],
             y: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -299,15 +315,17 @@ describe('aggregate', function() {
                     {target: 'y', func: 'median'},
                 ]
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
 
-        var traceOut = gd._fullData[0];
-
-        expect(traceOut.x).toEqual([2, 1]);
-        expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+            expect(traceOut.x).toEqual([2, 1]);
+            expect(traceOut.y).toBeCloseToArray([3.5, 2], 5);
+        })
+        .then(done, done.fail);
     });
 
-    it('links fullData aggregations to userData via _index', function() {
+    it('links fullData aggregations to userData via _index', function(done) {
         Plotly.newPlot(gd, [{
             x: [1, 2, 3, 4, 5],
             y: [2, 4, 6, 8, 10],
@@ -324,23 +342,25 @@ describe('aggregate', function() {
                     {target: 'y', func: 'avg'}
                 ]
             }]
-        }]);
+        }])
+        .then(function() {
+            var traceOut = gd._fullData[0];
+            var fullAggregation = traceOut.transforms[0];
+            var fullAggregations = fullAggregation.aggregations;
+            var enabledAggregations = fullAggregations.filter(function(agg) {
+                return agg.enabled;
+            });
 
-        var traceOut = gd._fullData[0];
-        var fullAggregation = traceOut.transforms[0];
-        var fullAggregations = fullAggregation.aggregations;
-        var enabledAggregations = fullAggregations.filter(function(agg) {
-            return agg.enabled;
-        });
+            expect(enabledAggregations[0].target).toEqual('x');
+            expect(enabledAggregations[0]._index).toEqual(0);
 
-        expect(enabledAggregations[0].target).toEqual('x');
-        expect(enabledAggregations[0]._index).toEqual(0);
+            expect(enabledAggregations[1].target).toEqual('y');
+            expect(enabledAggregations[1]._index).toEqual(2);
 
-        expect(enabledAggregations[1].target).toEqual('y');
-        expect(enabledAggregations[1]._index).toEqual(2);
-
-        expect(enabledAggregations[2].target).toEqual('marker.color');
-        expect(enabledAggregations[2]._index).toEqual(-1);
+            expect(enabledAggregations[2].target).toEqual('marker.color');
+            expect(enabledAggregations[2]._index).toEqual(-1);
+        })
+        .then(done, done.fail);
     });
 
     it('does not error out on bad *group* value', function(done) {
@@ -357,11 +377,10 @@ describe('aggregate', function() {
             expect(tOut.groups).toBe('x', 'the *groups* default');
             expect(tOut.enabled).toBe(false, 'should not be *enabled*');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
-    it('use numeric sort function for median', function() {
+    it('use numeric sort function for median', function(done) {
         var subject = ['M', 'M', 'M'];
         var score = [2, 10, 11];
 
@@ -379,9 +398,11 @@ describe('aggregate', function() {
             }]
         }];
 
-        Plotly.newPlot(gd, data);
-
-        var traceOut = gd._fullData[0];
-        expect(traceOut.y[0]).toBe(10);
+        Plotly.newPlot(gd, data)
+        .then(function() {
+            var traceOut = gd._fullData[0];
+            expect(traceOut.y[0]).toBe(10);
+        })
+        .then(done, done.fail);
     });
 });

@@ -3,9 +3,10 @@ var parseSvgPath = require('parse-svg-path');
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var selectButton = require('../assets/modebar_button');
 var mouseEvent = require('../assets/mouse_event');
 var touchEvent = require('../assets/touch_event');
@@ -939,8 +940,7 @@ describe('Draw new shapes to layout', function() {
                         });
                     })
 
-                    .catch(failTest)
-                    .then(done);
+                    .then(done, done.fail);
             });
         });
     });
@@ -1089,7 +1089,7 @@ describe('Activate and edit editable shapes', function() {
     afterEach(destroyGraphDiv);
 
     ['mouse'].forEach(function(device) {
-        it('@flaky reactangle using ' + device, function(done) {
+        it('reactangle using ' + device, function(done) {
             var i = 0; // shape index
 
             Plotly.newPlot(gd, {
@@ -1220,11 +1220,10 @@ describe('Activate and edit editable shapes', function() {
                 expect(id).toEqual(undefined, 'deactivate shape by clicking inside');
             })
 
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('@flaky circle using ' + device, function(done) {
+        it('circle using ' + device, function(done) {
             var i = 1; // shape index
 
             Plotly.newPlot(gd, {
@@ -1277,11 +1276,10 @@ describe('Activate and edit editable shapes', function() {
                 });
             })
 
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('@flaky closed-path using ' + device, function(done) {
+        it('closed-path using ' + device, function(done) {
             var i = 2; // shape index
 
             Plotly.newPlot(gd, {
@@ -1322,11 +1320,10 @@ describe('Activate and edit editable shapes', function() {
                 assertPos(obj.path, 'M250,25L225,75L275,75Z');
             })
 
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('@flaky bezier curves using ' + device, function(done) {
+        it('bezier curves using ' + device, function(done) {
             var i = 5; // shape index
 
             Plotly.newPlot(gd, {
@@ -1367,11 +1364,10 @@ describe('Activate and edit editable shapes', function() {
                 assertPos(obj.path, 'M0,100.00237388724034L0,199.99762611275966L50.00310077519379,199.99762611275966L0,300Q100,300,100,199.9976261127597T150.0031007751938,199.99762611275966C100,300,200,300,200,199.99762611275966S150.0031007751938,199.99762611275966,150.0031007751938,100.00237388724034Z');
             })
 
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('@flaky multi-cell path using ' + device, function(done) {
+        it('multi-cell path using ' + device, function(done) {
             var i = 6; // shape index
 
             Plotly.newPlot(gd, {
@@ -1421,8 +1417,7 @@ describe('Activate and edit editable shapes', function() {
                 expect(gd._fullLayout._activeShapeIndex).toEqual(undefined, 'clear active shape index');
             })
 
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -1499,33 +1494,32 @@ describe('Activate and edit editable shapes', function() {
         })
 
         .then(function() {
-            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            var el = d3SelectAll('.shapelayer path')[0][0];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('0px'); // no pixel
 
-            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
+            el = d3SelectAll('.shapelayer path')[0][1];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('0px'); // no pixel
 
-            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
+            el = d3SelectAll('.shapelayer path')[0][2];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
 
-            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
+            el = d3SelectAll('.shapelayer path')[0][3];
             expect(el.style['pointer-events']).toBe('');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
         })
 
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should provide invisible border & set pointer-events (depending on fill transparency) for editable shapes i.e. to allow shape activation', function(done) {
@@ -1590,33 +1584,32 @@ describe('Activate and edit editable shapes', function() {
         })
 
         .then(function() {
-            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            var el = d3SelectAll('.shapelayer path')[0][0];
             expect(el.style['pointer-events']).toBe('stroke');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
 
-            el = Plotly.d3.selectAll('.shapelayer path')[0][1];
+            el = d3SelectAll('.shapelayer path')[0][1];
             expect(el.style['pointer-events']).toBe('stroke');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('5px'); // some pixels to activate shape
 
-            el = Plotly.d3.selectAll('.shapelayer path')[0][2];
+            el = d3SelectAll('.shapelayer path')[0][2];
             expect(el.style['pointer-events']).toBe('all');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
 
-            el = Plotly.d3.selectAll('.shapelayer path')[0][3];
+            el = d3SelectAll('.shapelayer path')[0][3];
             expect(el.style['pointer-events']).toBe('stroke');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('3px'); // custom pixel
         })
 
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not provide invisible border & set pointer-events to "stroke" for shapes made editable via config', function(done) {
@@ -1648,14 +1641,13 @@ describe('Activate and edit editable shapes', function() {
         })
 
         .then(function() {
-            var el = Plotly.d3.selectAll('.shapelayer path')[0][0];
+            var el = d3SelectAll('.shapelayer path')[0][0];
             expect(el.style['pointer-events']).toBe('all');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('0'); // invisible
             expect(el.style['stroke-width']).toBe('0px'); // no extra pixels
         })
 
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

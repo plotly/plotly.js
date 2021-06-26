@@ -1,4 +1,5 @@
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -6,7 +7,7 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var assertD3Data = require('../assets/custom_assertions').assertD3Data;
 
 describe('restyle', function() {
@@ -23,10 +24,10 @@ describe('restyle', function() {
             var fills, firstToZero, secondToZero, firstToNext, secondToNext;
             var mock = Lib.extendDeep({}, require('@mocks/basic_area.json'));
             function getFills() {
-                return d3.selectAll('g.trace.scatter .fills>g');
+                return d3SelectAll('g.trace.scatter .fills>g');
             }
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
                 fills = getFills();
 
                 // Assert there are two fills, first is tozero, second is tonext
@@ -60,18 +61,17 @@ describe('restyle', function() {
 
                 return Plotly.restyle(gd, 'visible', false);
             }).then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toBe(0);
+                expect(d3SelectAll('g.trace.scatter').size()).toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('reuses SVG lines', function(done) {
             var lines, firstLine1, secondLine1, firstLine2, secondLine2;
             var mock = Lib.extendDeep({}, require('@mocks/basic_line.json'));
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
-                lines = d3.selectAll('g.scatter.trace .js-line');
+            Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
+                lines = d3SelectAll('g.scatter.trace .js-line');
 
                 firstLine1 = lines[0][0];
                 firstLine2 = lines[0][1];
@@ -81,7 +81,7 @@ describe('restyle', function() {
             }).then(function() {
                 return Plotly.restyle(gd, {visible: [false]}, [0]);
             }).then(function() {
-                lines = d3.selectAll('g.scatter.trace .js-line');
+                lines = d3SelectAll('g.scatter.trace .js-line');
 
                 // Only one line now and it's equal to the second trace's line from above:
                 expect(lines.size()).toEqual(1);
@@ -89,7 +89,7 @@ describe('restyle', function() {
             }).then(function() {
                 return Plotly.restyle(gd, {visible: [true]}, [0]);
             }).then(function() {
-                lines = d3.selectAll('g.scatter.trace .js-line');
+                lines = d3SelectAll('g.scatter.trace .js-line');
                 secondLine1 = lines[0][0];
                 secondLine2 = lines[0][1];
 
@@ -102,15 +102,14 @@ describe('restyle', function() {
                 // Second line was persisted:
                 expect(firstLine2).toBe(secondLine2);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can change scatter mode', function(done) {
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_basic.json'));
 
             function assertScatterModeSizes(lineSize, pointSize, textSize) {
-                var gd3 = d3.select(gd);
+                var gd3 = d3Select(gd);
                 var lines = gd3.selectAll('g.scatter.trace .js-line');
                 var points = gd3.selectAll('g.scatter.trace path.point');
                 var texts = gd3.selectAll('g.scatter.trace text');
@@ -120,7 +119,7 @@ describe('restyle', function() {
                 expect(texts.size()).toEqual(textSize);
             }
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
                 assertScatterModeSizes(2, 6, 9);
 
                 return Plotly.restyle(gd, 'mode', 'lines');
@@ -148,12 +147,11 @@ describe('restyle', function() {
             .then(function() {
                 assertScatterModeSizes(3, 9, 9);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can legend-hide the second and only scatter trace', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {y: [1, 2, 3], type: 'bar'},
                 {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scatter'}
             ], {
@@ -164,22 +162,21 @@ describe('restyle', function() {
                 height: 400
             })
             .then(function() {
-                expect(d3.select('.scatter').size()).toBe(1);
+                expect(d3Select('.scatter').size()).toBe(1);
                 return Plotly.restyle(gd, {visible: 'legendonly'}, 1);
             })
             .then(function() {
-                expect(d3.select('.scatter').size()).toBe(0);
+                expect(d3Select('.scatter').size()).toBe(0);
                 return Plotly.restyle(gd, {visible: true}, 1);
             })
             .then(function() {
-                expect(d3.select('.scatter').size()).toBe(1);
+                expect(d3Select('.scatter').size()).toBe(1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl can legend-hide the second and only scattergl trace', function(done) {
-            Plotly.plot(gd, [
+            Plotly.newPlot(gd, [
                 {y: [1, 2, 3], type: 'bar'},
                 {y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2', type: 'scattergl'}
             ], {
@@ -200,8 +197,7 @@ describe('restyle', function() {
             .then(function() {
                 expect(!!gd._fullLayout._plots.x2y2._scene).toBe(true);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -221,13 +217,13 @@ describe('relayout', function() {
 
         it('should response to \'categoryarray\' and \'categoryorder\' updates', function(done) {
             function assertCategories(list) {
-                d3.selectAll('g.xtick').each(function(_, i) {
-                    var tick = d3.select(this).select('text');
+                d3SelectAll('g.xtick').each(function(_, i) {
+                    var tick = d3Select(this).select('text');
                     expect(tick.html()).toEqual(list[i]);
                 });
             }
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 assertCategories(['giraffes', 'orangutans', 'monkeys']);
 
                 return Plotly.relayout(gd, 'xaxis.categoryorder', 'category descending');
@@ -252,8 +248,7 @@ describe('relayout', function() {
                 expect(gd._fullLayout.xaxis._initialCategories).toEqual(list);
                 assertCategories(list);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -277,7 +272,7 @@ describe('relayout', function() {
             function assertPointTranslate(pointT, textT) {
                 var TOLERANCE = 10;
 
-                var gd3 = d3.select(gd);
+                var gd3 = d3Select(gd);
                 var points = gd3.selectAll('g.scatter.trace path.point');
                 var texts = gd3.selectAll('g.scatter.trace text');
 
@@ -296,7 +291,7 @@ describe('relayout', function() {
                 expect(Math.abs(texts.attr('y') - textT[1])).toBeLessThan(TOLERANCE);
             }
 
-            Plotly.plot(gd, mockData).then(function() {
+            Plotly.newPlot(gd, mockData).then(function() {
                 assertPointTranslate([270, 135], [270, 135]);
 
                 return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
@@ -304,8 +299,7 @@ describe('relayout', function() {
             .then(function() {
                 assertPointTranslate([-540, 135], [-540, 135]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should autorange correctly with margin pushers', function(done) {
@@ -340,8 +334,7 @@ describe('relayout', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(foundXRange, 5);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(foundYRange, 5);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -372,8 +365,7 @@ describe('relayout', function() {
                 expect(gd.querySelector('.xlines-above').attributes.d.value).toBe('M0,0');
                 expect(gd.querySelector('.ylines-above').attributes.d.value).toBe('M0,0');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -389,17 +381,17 @@ describe('subplot creation / deletion:', function() {
 
     it('should clear orphan subplot when adding traces to blank graph', function(done) {
         function assertOrphanSubplot(len) {
-            expect(d3.select('.subplot.xy').size()).toEqual(len);
-            expect(d3.select('.ytitle').size()).toEqual(len);
-            expect(d3.select('.ytitle').size()).toEqual(len);
+            expect(d3Select('.subplot.xy').size()).toEqual(len);
+            expect(d3Select('.ytitle').size()).toEqual(len);
+            expect(d3Select('.ytitle').size()).toEqual(len);
 
             // we only make one orphan subplot now
-            expect(d3.select('.subplot.x2y2').size()).toEqual(0);
-            expect(d3.select('.x2title').size()).toEqual(0);
-            expect(d3.select('.x2title').size()).toEqual(0);
+            expect(d3Select('.subplot.x2y2').size()).toEqual(0);
+            expect(d3Select('.x2title').size()).toEqual(0);
+            expect(d3Select('.x2title').size()).toEqual(0);
         }
 
-        Plotly.plot(gd, [], {
+        Plotly.newPlot(gd, [], {
             xaxis: { title: 'X' },
             yaxis: { title: 'Y' },
             xaxis2: { title: 'X2', anchor: 'y2' },
@@ -417,8 +409,7 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             assertOrphanSubplot(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should remove unused axes when deleting traces', function(done) {
@@ -440,8 +431,7 @@ describe('subplot creation / deletion:', function() {
             expect(gd._fullLayout._subplots.cartesian).toEqual(['xy']);
             expect(gd._fullLayout._subplots.yaxis).toEqual(['y']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     function checkBGLayers(behindCount, x2y2Count, subplots) {
@@ -500,12 +490,11 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             checkBGLayers(1, 1, ['xy', 'x2y2']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('puts plot backgrounds behind everything except if they overlap', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [2, 3, 1], xaxis: 'x2', yaxis: 'y2'},
             {y: [3, 1, 2], yaxis: 'y3'}
@@ -546,12 +535,11 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('puts not have backgrounds nodes when plot and paper color match', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {y: [1, 2, 3]},
             {y: [2, 3, 1], xaxis: 'x2', yaxis: 'y2'},
             {y: [3, 1, 2], yaxis: 'y3'}
@@ -574,7 +562,7 @@ describe('subplot creation / deletion:', function() {
             return Plotly.relayout(gd, {'xaxis2.domain': [0.49, 1]});
         })
         .then(function() {
-            // need to draw one backgroud <rect>
+            // need to draw one background <rect>
             checkBGLayers(0, 1, ['xy', 'x2y2', 'xy3']);
 
             // x ranges overlap, but now y ranges are disjoint
@@ -593,14 +581,14 @@ describe('subplot creation / deletion:', function() {
             });
         })
         .then(function() {
-            // need to draw one backgroud <rect>
+            // need to draw one background <rect>
             checkBGLayers(0, 1, ['xy', 'x2y2', 'xy3']);
 
             // change paper color
             return Plotly.relayout(gd, 'paper_bgcolor', 'black');
         })
         .then(function() {
-            // need a backgroud <rect> on main subplot to distinguish plot from
+            // need a background <rect> on main subplot to distinguish plot from
             // paper color
             checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
 
@@ -614,21 +602,20 @@ describe('subplot creation / deletion:', function() {
             // still need a <rect.bg> to get correct semi-transparent look
             checkBGLayers(1, 1, ['xy', 'x2y2', 'xy3']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should clear overlaid subplot trace layers on restyle', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/overlaying-axis-lines.json'));
 
         function _assert(xyCnt, x2y2Cnt) {
-            expect(d3.select('.subplot.xy').select('.plot').selectAll('.trace').size())
+            expect(d3Select('.subplot.xy').select('.plot').selectAll('.trace').size())
                 .toBe(xyCnt, 'has correct xy subplot trace count');
-            expect(d3.select('.overplot').select('.x2y2').selectAll('.trace').size())
+            expect(d3Select('.overplot').select('.x2y2').selectAll('.trace').size())
                 .toBe(x2y2Cnt, 'has correct x2y2 oveylaid subplot trace count');
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert(1, 1);
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
@@ -643,8 +630,7 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             _assert(0, 0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should clear obsolete content out of axis layers when relayout\'ing *layer*', function(done) {
@@ -659,7 +645,7 @@ describe('subplot creation / deletion:', function() {
         }
 
         function _assert(xBelow, yBelow, xAbove, yAbove) {
-            var g = d3.select('.subplot.xy');
+            var g = d3Select('.subplot.xy');
 
             assertPathDatum(g.select('.xlines-below'), xBelow[0], 'xlines below');
             assertChildrenCnt(g.select('.xaxislayer-below'), xBelow[1], 'xaxislayer below');
@@ -674,7 +660,7 @@ describe('subplot creation / deletion:', function() {
             assertChildrenCnt(g.select('.yaxislayer-above'), yAbove[1], 'yaxislayer above');
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assert(
                 [false, 0],
                 [false, 0],
@@ -718,8 +704,7 @@ describe('subplot creation / deletion:', function() {
                 [false, 0]
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should clear obsolete content out of axis layers when changing overlaying configuation', function(done) {
@@ -800,14 +785,13 @@ describe('subplot creation / deletion:', function() {
                 trace1Parent: 'x2y2'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('clear axis ticks, labels and title when relayout an axis to `*visible:false*', function(done) {
         function _assert(xaxis, yaxis) {
-            var g = d3.select('.subplot.xy');
-            var info = d3.select('.infolayer');
+            var g = d3Select('.subplot.xy');
+            var info = d3Select('.infolayer');
 
             expect(g.selectAll('.xtick').size()).toBe(xaxis[0], 'x tick cnt');
             expect(g.selectAll('.gridlayer .xgrid').size()).toBe(xaxis[1], 'x gridline cnt');
@@ -818,7 +802,7 @@ describe('subplot creation / deletion:', function() {
             expect(info.selectAll('.g-ytitle').size()).toBe(yaxis[2], 'y title cnt');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 1]
         }], {
             xaxis: {title: 'X'},
@@ -842,13 +826,12 @@ describe('subplot creation / deletion:', function() {
         .then(function() {
             _assert([5, 4, 1], [6, 6, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('clears secondary labels and divider when updating out of axis type multicategory', function(done) {
         function _assert(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.selectAll('.xtick > text').size())
                 .toBe(exp.tickCnt, msg + ' # labels');
             expect(gd3.selectAll('.xtick2 > text').size())
@@ -900,13 +883,12 @@ describe('subplot creation / deletion:', function() {
                 dividerCnt: 0
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('clears secondary labels and divider when updating out of axis type multicategory (y-axis case)', function(done) {
         function _assert(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.selectAll('.ytick > text').size())
                 .toBe(exp.tickCnt, msg + ' # labels');
             expect(gd3.selectAll('.ytick2 > text').size())
@@ -961,7 +943,6 @@ describe('subplot creation / deletion:', function() {
                 dividerCnt: 0
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

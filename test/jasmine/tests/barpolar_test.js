@@ -1,10 +1,10 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Test barpolar defaults:', function() {
     var gd;
@@ -58,7 +58,7 @@ describe('Test barpolar hover:', function() {
             margin: {t: 0, b: 0, l: 0, r: 0, pad: 0}
         }, specs.layout || {});
 
-        return Plotly.plot(gd, data, layout).then(function() {
+        return Plotly.newPlot(gd, data, layout).then(function() {
             var subplot = gd._fullLayout.polar._subplot;
 
             var results = gd.calcdata.map(function(cd) {
@@ -456,7 +456,7 @@ describe('Test barpolar hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(failTest).then(done);
+            run(specs).then(done, done.fail);
         });
     });
 });

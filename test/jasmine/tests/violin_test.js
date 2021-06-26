@@ -1,13 +1,14 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 
 var Violin = require('@src/traces/violin');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -344,12 +345,12 @@ describe('Test violin hover:', function() {
 
         var pos = specs.pos || [200, 200];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent(specs);
 
             if(specs.hoverLabelPos) {
-                d3.selectAll('g.hovertext').each(function(_, i) {
+                d3SelectAll('g.hovertext').each(function(_, i) {
                     var bbox = this.getBoundingClientRect();
                     expect([bbox.bottom, bbox.top])
                         .toBeWithinArray(specs.hoverLabelPos[i], 10, 'bottom--top hover label ' + i);
@@ -360,6 +361,10 @@ describe('Test violin hover:', function() {
 
     [{
         desc: 'base',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: [
             'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
             'y: 0.9266848, kde: 0.182'
@@ -372,6 +377,7 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.meanline = {visible: true};
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
@@ -384,6 +390,7 @@ describe('Test violin hover:', function() {
         desc: 'with overlaid violins',
         patch: function(fig) {
             fig.layout.violinmode = 'overlay';
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
@@ -403,7 +410,6 @@ describe('Test violin hover:', function() {
                 trace.points = 'all';
                 trace.hoveron = 'points';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [220, 200],
@@ -459,7 +465,6 @@ describe('Test violin hover:', function() {
                 trace.hoveron = 'points';
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -474,7 +479,6 @@ describe('Test violin hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -490,7 +494,6 @@ describe('Test violin hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'NOT THIS:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -499,7 +502,6 @@ describe('Test violin hover:', function() {
     }, {
         desc: 'one-sided violin under hovermode closest',
         // hoveron: 'kde+points'
-        // hovermode: 'closest'
         // width: 400
         // height: 700
         mock: require('@mocks/violin_side-by-side.json'),
@@ -541,6 +543,10 @@ describe('Test violin hover:', function() {
     }, {
         desc: 'single horizontal violin',
         mock: require('@mocks/violin_non-linear.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'y';
+            return fig;
+        },
         pos: [310, 160],
         nums: ['median: C', 'min: A', 'q1: B', 'q3: D', 'max: G', 'upper fence: D', 'x: C, kde: 1.005'],
         name: ['categories', '', '', '', '', '', ''],
@@ -556,6 +562,7 @@ describe('Test violin hover:', function() {
                 t.hoveron = 'violins';
             });
             fig.layout.violinmode = 'group';
+            fig.layout.hovermode = 'y';
             return fig;
         },
         nums: ['median: 0.4', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'max: 0.9'],
@@ -572,7 +579,6 @@ describe('Test violin hover:', function() {
                 t.hoveron = 'violins';
             });
             fig.layout.violinmode = 'group';
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [200, 175],
@@ -590,7 +596,6 @@ describe('Test violin hover:', function() {
             fig.data[0].x = fig.data[0].y;
             delete fig.data[0].y;
             fig.layout = {
-                hovermode: 'closest',
                 yaxis: {range: [-0.696, 0.5]}
             };
             return fig;
@@ -607,6 +612,7 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(t) {
                 t.hoveron = 'violins';
             });
+            fig.layout.hovermode = 'y';
             return fig;
         },
         pos: [430, 130],
@@ -622,7 +628,6 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(t) {
                 t.hoveron = 'violins';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [430, 130],
@@ -643,8 +648,7 @@ describe('Test violin hover:', function() {
                 orientation: 'h',
                 y: [2, 2, 2, 2, 2],
                 x: [13.1, 14.2, 14, 13, 13.3]
-            }],
-            layout: {hovermode: 'closest'}
+            }]
         },
         pos: [417, 309],
         nums: '(14, 2)',
@@ -657,7 +661,6 @@ describe('Test violin hover:', function() {
                 trace.hoveron = 'points';
                 trace.hovertemplate = 'Sample pt %{pointNumber}: %{y:.3f}<extra></extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [220, 200],
@@ -666,7 +669,7 @@ describe('Test violin hover:', function() {
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(failTest).then(done);
+            run(specs).then(done, done.fail);
         });
     });
 
@@ -683,7 +686,7 @@ describe('Test violin hover:', function() {
         });
 
         function assertViolinHoverLine(pos) {
-            var line = d3.select('.hoverlayer').selectAll('line');
+            var line = d3Select('.hoverlayer').selectAll('line');
 
             expect(line.size()).toBe(1, 'only one violin line at a time');
             expect(line.attr('class').indexOf('violinline')).toBe(0, 'correct class name');
@@ -694,34 +697,31 @@ describe('Test violin hover:', function() {
         }
 
         it('should show in two-sided base case', function(done) {
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.newPlot(gd, fig).then(function() {
                 mouseEvent('mousemove', 250, 250);
                 assertViolinHoverLine([299.35, 250, 200.65, 250]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should show in one-sided positive case', function(done) {
             fig.data[0].side = 'positive';
 
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.newPlot(gd, fig).then(function() {
                 mouseEvent('mousemove', 300, 250);
                 assertViolinHoverLine([277.3609, 250, 80, 250]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should show in one-sided negative case', function(done) {
             fig.data[0].side = 'negative';
 
-            Plotly.plot(gd, fig).then(function() {
+            Plotly.newPlot(gd, fig).then(function() {
                 mouseEvent('mousemove', 200, 250);
                 assertViolinHoverLine([222.6391, 250, 420, 250]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -732,14 +732,14 @@ describe('Test violin hover:', function() {
         fig.layout.width = 700;
         fig.layout.height = 450;
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             mouseEvent('mousemove', 350, 225);
 
             var actual = [];
-            d3.selectAll('g.hovertext').each(function() {
+            d3SelectAll('g.hovertext').each(function() {
                 var bbox = this.getBoundingClientRect();
-                var tx = d3.select(this).text();
+                var tx = d3Select(this).text();
                 actual.push([tx, bbox]);
             });
 
@@ -755,8 +755,7 @@ describe('Test violin hover:', function() {
                 }
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -781,7 +780,7 @@ describe('Test violin restyle:', function() {
         }
 
         function _assert(msg, exp) {
-            var trace3 = d3.select(gd).select('.violinlayer > .trace');
+            var trace3 = d3Select(gd).select('.violinlayer > .trace');
             _assertOne(msg, exp, trace3, 'violinCnt', 'path.violin');
             _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
             _assertOne(msg, exp, trace3, 'meanlineInBoxCnt', 'path.mean');
@@ -789,7 +788,7 @@ describe('Test violin restyle:', function() {
             _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert('base', {violinCnt: 1});
         })
@@ -813,7 +812,6 @@ describe('Test violin restyle:', function() {
         .then(function() {
             _assert('with pts', {violinCnt: 1, ptsCnt: 272});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

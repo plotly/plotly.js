@@ -15,7 +15,6 @@
         }, {
             "width": [0.4, 0.6, 0.8, 1],
             "text": ["Three", 2, "inside text", 0],
-            "textposition": "auto",
             "textfont": { "size": [10]},
             "y": [3, -2, 1, -1],
             "x": [1, 2, 3, 4],
@@ -39,7 +38,6 @@
             "type": "waterfall"
         }, {
             "text": [2, "outside text", -3, -2],
-            "textposition": "auto",
             "y": [2, 0.25, -3, -2],
             "x": [1, 2, 3, 4],
             "decreasing": { "marker": { "color": "Red" } },

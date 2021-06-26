@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var modeBarButtons = require('@src/components/modebar/buttons');
 
 module.exports = function selectButton(modeBar, name) {
@@ -12,7 +12,7 @@ module.exports = function selectButton(modeBar, name) {
         title = title(modeBar.graphInfo);
     }
 
-    var node = button.node = d3.select(modeBar.element)
+    var node = button.node = d3Select(modeBar.element)
         .select('[data-title="' + title + '"]')
         .node();
 
@@ -22,7 +22,7 @@ module.exports = function selectButton(modeBar, name) {
     };
 
     button.isActive = function() {
-        return d3.select(node).classed('active');
+        return d3Select(node).classed('active');
     };
 
     return button;

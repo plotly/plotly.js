@@ -1,25 +1,12 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
+var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
 
 var unsupportedBrowsers = Lib.isIOS() || Lib.isSafari() || Lib.isIE();
-
-function compatibleAxis(ax) {
-    return ax.type === 'linear' &&
-        // y axis must be reversed but x axis mustn't be
-        ((ax.range[1] > ax.range[0]) === (ax._id.charAt(0) === 'x'));
-}
 
 module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
@@ -31,8 +18,11 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
-        var fastImage = supportsPixelatedImage && !trace._hasZ && trace._hasSource && compatibleAxis(xa) && compatibleAxis(ya);
-        trace._fastImage = fastImage;
+        var realImage = (
+            ((trace.zsmooth === 'fast') || (trace.zsmooth === false && supportsPixelatedImage)) &&
+            !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear'
+        );
+        trace._realImage = realImage;
 
         var z = cd0.z;
         var x0 = cd0.x0;
@@ -78,7 +68,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         }
 
         // Reduce image size when zoomed in to save memory
-        if(!fastImage) {
+        if(!realImage) {
             var extra = 0.5; // half the axis size
             left = Math.max(-extra * xa._length, left);
             right = Math.min((1 + extra) * xa._length, right);
@@ -141,11 +131,24 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
 
         image3.exit().remove();
 
-        // Pixelated image rendering
-        // http://phrogz.net/tmp/canvas_image_zoom.html
-        // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
-        image3
-            .attr('style', 'image-rendering: optimizeSpeed; image-rendering: -moz-crisp-edges; image-rendering: -o-crisp-edges; image-rendering: -webkit-optimize-contrast; image-rendering: optimize-contrast; image-rendering: crisp-edges; image-rendering: pixelated;');
+        var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
+
+        if(realImage) {
+            var xRange = Lib.simpleMap(xa.range, xa.r2l);
+            var yRange = Lib.simpleMap(ya.range, ya.r2l);
+
+            var flipX = xRange[1] < xRange[0];
+            var flipY = yRange[1] > yRange[0];
+            if(flipX || flipY) {
+                var tx = left + imageWidth / 2;
+                var ty = top + imageHeight / 2;
+                style += 'transform:' +
+                    strTranslate(tx + 'px', ty + 'px') +
+                    'scale(' + (flipX ? -1 : 1) + ',' + (flipY ? -1 : 1) + ')' +
+                    strTranslate(-tx + 'px', -ty + 'px') + ';';
+            }
+        }
+        image3.attr('style', style);
 
         var p = new Promise(function(resolve) {
             if(trace._hasZ) {
@@ -186,7 +189,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {return z[j][i];});
                 href = canvas.toDataURL('image/png');
             } else if(trace._hasSource) {
-                if(fastImage) {
+                if(realImage) {
                     href = trace.source;
                 } else {
                     var context = trace._canvas.el.getContext('2d');

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var heatmapAttrs = require('../heatmap/attributes');
@@ -33,7 +25,6 @@ attrs.zsmooth = {
     valType: 'enumerated',
     values: ['fast', false],
     dflt: 'fast',
-    role: 'style',
     editType: 'calc',
     description: 'Picks a smoothing algorithm use to smooth `z` data.'
 };

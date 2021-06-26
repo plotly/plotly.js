@@ -14,6 +14,7 @@
                     "len": 0.5,
                     "y": 1,
                     "yanchor": "top",
+                    "ticklabelposition": "inside",
                     "title": {"text": "line colorscale", "side": "right"}
                 }
             },
@@ -25,6 +26,7 @@
                     "len": 0.5,
                     "y": 0,
                     "yanchor": "bottom",
+                    "ticklabelposition": "inside",
                     "title": {"text": "marker colorscale", "side": "right"}
                 }
 

@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var constants = require('./constants');
@@ -18,7 +9,7 @@ var Lib = require('../../lib');
 // so these have to be specified in terms of the category serial numbers,
 // but can take fractional values. Other axis types we specify position based on
 // the actual data values.
-// TODO: in V2.0 (when log axis ranges are in data units) range and shape position
+// TODO: in V3.0 (when log axis ranges are in data units) range and shape position
 // will be identical, so rangeToShapePosition and shapePositionToRange can be
 // removed entirely.
 

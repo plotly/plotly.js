@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -229,7 +221,7 @@ function toImage(gd, opts) {
     }
 
     return new Promise(function(resolve, reject) {
-        plotApi.plot(clonedGd, data, layoutImage, configImage)
+        plotApi.newPlot(clonedGd, data, layoutImage, configImage)
             .then(redrawFunc)
             .then(wait)
             .then(convert)

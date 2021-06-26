@@ -1,16 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var extendFlat = require('../../lib').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var dash = require('../../components/drawing/attributes').dash;
 var fxAttrs = require('../../components/fx/attributes');
 var delta = require('../../constants/delta.js');
@@ -37,6 +29,8 @@ module.exports = {
     xperiod: scatterAttrs.xperiod,
     xperiod0: scatterAttrs.xperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     x: {
         valType: 'data_array',
@@ -97,7 +91,6 @@ module.exports = {
 
     text: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -111,7 +104,6 @@ module.exports = {
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -123,7 +115,6 @@ module.exports = {
         min: 0,
         max: 0.5,
         dflt: 0.3,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the width of the open/close tick marks',
@@ -134,7 +125,6 @@ module.exports = {
     hoverlabel: extendFlat({}, fxAttrs.hoverlabel, {
         split: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             editType: 'style',
             description: [

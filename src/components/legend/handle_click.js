@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -40,6 +32,8 @@ module.exports = function handleClick(g, gd, numClicks) {
         [];
 
     var legendItem = g.data()[0][0];
+    if(legendItem.groupTitle) return; // no click on group legends for now
+
     var fullData = gd._fullData;
     var fullTrace = legendItem.trace;
     var legendgroup = fullTrace.legendgroup;

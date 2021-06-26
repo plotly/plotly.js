@@ -9,7 +9,6 @@
         "x": [0, 1],
         "y": [1.4, 0.1],
         "text": ["H1.400 \\pm 0.023H", "H0.100 \\pm 0.002H"],
-        "textposition": "auto",
         "type": "bar",
         "name": "$x=\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}$"
     }, {

@@ -1,17 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var strTranslate = require('../../lib').strTranslate;
 
-// in v2 (once log ranges are fixed),
+// in v3 (once log ranges are fixed),
 // we'll be able to p2r here for all axis types
 function p2r(ax, v) {
     switch(ax.type) {

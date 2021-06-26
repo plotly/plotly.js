@@ -2,7 +2,9 @@
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = require('d3');
+var d3Timer = require('../../strict-d3').timer;
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var delay = require('./delay.js');
 
 var reNumbers = /([\d\.]+)/gm;
@@ -19,7 +21,7 @@ function clockTick(currentNow, milliseconds) {
     Date.now = function() {
         return currentNow + milliseconds;
     };
-    d3.timer.flush();
+    d3Timer.flush();
 }
 
 // Using the methodology from http://eng.wealthfront.com/2017/10/26/testing-d3-transitions/
@@ -87,11 +89,11 @@ module.exports = function checkTransition(gd, mock, animateOpts, transitionOpts,
 function assert(test) {
     var msg = 'at ' + test[0] + 'ms, selection ' + test[1] + ' has ' + test[3];
     var cur = [];
-    d3.selectAll(test[1]).each(function(d, i) {
+    d3SelectAll(test[1]).each(function(d, i) {
         if(test[2] === 'style') cur[i] = this.style[test[3]];
-        else if(test[2] === 'attr') cur[i] = d3.select(this).attr(test[3]);
+        else if(test[2] === 'attr') cur[i] = d3Select(this).attr(test[3]);
         else if(test[2] === 'datum') {
-            cur[i] = d3.select(this).datum()[test[3]];
+            cur[i] = d3Select(this).datum()[test[3]];
         }
     });
     switch(test[3]) {

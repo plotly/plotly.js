@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
@@ -53,7 +45,6 @@ module.exports = extendFlat({
 
     radius: {
         valType: 'number',
-        role: 'info',
         editType: 'plot',
         arrayOk: true,
         min: 1,
@@ -66,7 +57,6 @@ module.exports = extendFlat({
 
     below: {
         valType: 'string',
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines if the densitymapbox trace will be inserted',

@@ -17,7 +17,6 @@
                 44999
             ],
             "texttemplate": "%{y}",
-            "textposition": "auto",
             "insidetextanchor": "end",
             "textangle": -90,
             "textfont": {

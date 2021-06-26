@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var ARROWPATHS = require('./arrow_paths');
@@ -44,7 +36,6 @@ function arrowCoordinateDescription(axis, lower, upper) {
 module.exports = templatedArray('annotation', {
     visible: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         editType: 'calc+arraydraw',
         description: [
@@ -54,7 +45,6 @@ module.exports = templatedArray('annotation', {
 
     text: {
         valType: 'string',
-        role: 'info',
         editType: 'calc+arraydraw',
         description: [
             'Sets the text associated with this annotation.',
@@ -67,7 +57,6 @@ module.exports = templatedArray('annotation', {
     textangle: {
         valType: 'angle',
         dflt: 0,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets the angle at which the `text` is drawn',
@@ -83,7 +72,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 1,
         dflt: null,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets an explicit width for the text box. null (default) lets the',
@@ -95,7 +83,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 1,
         dflt: null,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets an explicit height for the text box. null (default) lets the',
@@ -107,7 +94,6 @@ module.exports = templatedArray('annotation', {
         min: 0,
         max: 1,
         dflt: 1,
-        role: 'style',
         editType: 'arraydraw',
         description: 'Sets the opacity of the annotation (text + arrow).'
     },
@@ -115,7 +101,6 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
         dflt: 'center',
-        role: 'style',
         editType: 'arraydraw',
         description: [
             'Sets the horizontal alignment of the `text` within the box.',
@@ -128,7 +113,6 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
         dflt: 'middle',
-        role: 'style',
         editType: 'arraydraw',
         description: [
             'Sets the vertical alignment of the `text` within the box.',
@@ -139,14 +123,12 @@ module.exports = templatedArray('annotation', {
     bgcolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
-        role: 'style',
         editType: 'arraydraw',
         description: 'Sets the background color of the annotation.'
     },
     bordercolor: {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
-        role: 'style',
         editType: 'arraydraw',
         description: [
             'Sets the color of the border enclosing the annotation `text`.'
@@ -156,7 +138,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets the padding (in px) between the `text`',
@@ -167,7 +148,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets the width (in px) of the border enclosing',
@@ -178,7 +158,6 @@ module.exports = templatedArray('annotation', {
     showarrow: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Determines whether or not the annotation is drawn with an arrow.',
@@ -188,7 +167,6 @@ module.exports = templatedArray('annotation', {
     },
     arrowcolor: {
         valType: 'color',
-        role: 'style',
         editType: 'arraydraw',
         description: 'Sets the color of the annotation arrow.'
     },
@@ -197,7 +175,6 @@ module.exports = templatedArray('annotation', {
         min: 0,
         max: ARROWPATHS.length,
         dflt: 1,
-        role: 'style',
         editType: 'arraydraw',
         description: 'Sets the end annotation arrow head style.'
     },
@@ -206,7 +183,6 @@ module.exports = templatedArray('annotation', {
         min: 0,
         max: ARROWPATHS.length,
         dflt: 1,
-        role: 'style',
         editType: 'arraydraw',
         description: 'Sets the start annotation arrow head style.'
     },
@@ -215,7 +191,6 @@ module.exports = templatedArray('annotation', {
         flags: ['end', 'start'],
         extras: ['none'],
         dflt: 'end',
-        role: 'style',
         editType: 'arraydraw',
         description: 'Sets the annotation arrow head position.'
     },
@@ -223,7 +198,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 0.3,
         dflt: 1,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets the size of the end annotation arrow head, relative to `arrowwidth`.',
@@ -234,7 +208,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 0.3,
         dflt: 1,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets the size of the start annotation arrow head, relative to `arrowwidth`.',
@@ -244,7 +217,6 @@ module.exports = templatedArray('annotation', {
     arrowwidth: {
         valType: 'number',
         min: 0.1,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: 'Sets the width (in px) of annotation arrow line.'
     },
@@ -252,7 +224,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 0,
         dflt: 0,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets a distance, in pixels, to move the end arrowhead away from the',
@@ -266,7 +237,6 @@ module.exports = templatedArray('annotation', {
         valType: 'number',
         min: 0,
         dflt: 0,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Sets a distance, in pixels, to move the start arrowhead away from the',
@@ -278,7 +248,6 @@ module.exports = templatedArray('annotation', {
     },
     ax: {
         valType: 'any',
-        role: 'info',
         editType: 'calc+arraydraw',
         description: [
             arrowCoordinateDescription('x', 'left', 'right')
@@ -286,7 +255,6 @@ module.exports = templatedArray('annotation', {
     },
     ay: {
         valType: 'any',
-        role: 'info',
         editType: 'calc+arraydraw',
         description: [
             arrowCoordinateDescription('y', 'top', 'bottom')
@@ -299,7 +267,6 @@ module.exports = templatedArray('annotation', {
             'pixel',
             cartesianConstants.idRegex.x.toString()
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'Indicates in what coordinates the tail of the',
@@ -315,7 +282,6 @@ module.exports = templatedArray('annotation', {
             'pixel',
             cartesianConstants.idRegex.y.toString()
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'Indicates in what coordinates the tail of the',
@@ -331,7 +297,6 @@ module.exports = templatedArray('annotation', {
             'paper',
             cartesianConstants.idRegex.x.toString()
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the annotation\'s x coordinate axis.',
@@ -340,7 +305,6 @@ module.exports = templatedArray('annotation', {
     },
     x: {
         valType: 'any',
-        role: 'info',
         editType: 'calc+arraydraw',
         description: [
             'Sets the annotation\'s x position.',
@@ -358,7 +322,6 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'auto',
-        role: 'info',
         editType: 'calc+arraydraw',
         description: [
             'Sets the text box\'s horizontal position anchor',
@@ -377,7 +340,6 @@ module.exports = templatedArray('annotation', {
     xshift: {
         valType: 'number',
         dflt: 0,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Shifts the position of the whole annotation and arrow to the',
@@ -390,7 +352,6 @@ module.exports = templatedArray('annotation', {
             'paper',
             cartesianConstants.idRegex.y.toString()
         ],
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the annotation\'s y coordinate axis.',
@@ -399,7 +360,6 @@ module.exports = templatedArray('annotation', {
     },
     y: {
         valType: 'any',
-        role: 'info',
         editType: 'calc+arraydraw',
         description: [
             'Sets the annotation\'s y position.',
@@ -417,7 +377,6 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
-        role: 'info',
         editType: 'calc+arraydraw',
         description: [
             'Sets the text box\'s vertical position anchor',
@@ -436,7 +395,6 @@ module.exports = templatedArray('annotation', {
     yshift: {
         valType: 'number',
         dflt: 0,
-        role: 'style',
         editType: 'calc+arraydraw',
         description: [
             'Shifts the position of the whole annotation and arrow up',
@@ -447,7 +405,6 @@ module.exports = templatedArray('annotation', {
         valType: 'enumerated',
         values: [false, 'onoff', 'onout'],
         dflt: false,
-        role: 'style',
         editType: 'arraydraw',
         description: [
             'Makes this annotation respond to clicks on the plot.',
@@ -466,7 +423,6 @@ module.exports = templatedArray('annotation', {
     },
     xclick: {
         valType: 'any',
-        role: 'info',
         editType: 'arraydraw',
         description: [
             'Toggle this annotation when clicking a data point whose `x` value',
@@ -475,7 +431,6 @@ module.exports = templatedArray('annotation', {
     },
     yclick: {
         valType: 'any',
-        role: 'info',
         editType: 'arraydraw',
         description: [
             'Toggle this annotation when clicking a data point whose `y` value',
@@ -484,7 +439,6 @@ module.exports = templatedArray('annotation', {
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         editType: 'arraydraw',
         description: [
             'Sets text to appear when hovering over this annotation.',
@@ -494,7 +448,6 @@ module.exports = templatedArray('annotation', {
     hoverlabel: {
         bgcolor: {
             valType: 'color',
-            role: 'style',
             editType: 'arraydraw',
             description: [
                 'Sets the background color of the hover label.',
@@ -504,7 +457,6 @@ module.exports = templatedArray('annotation', {
         },
         bordercolor: {
             valType: 'color',
-            role: 'style',
             editType: 'arraydraw',
             description: [
                 'Sets the border color of the hover label.',
@@ -524,7 +476,6 @@ module.exports = templatedArray('annotation', {
     },
     captureevents: {
         valType: 'boolean',
-        role: 'info',
         editType: 'arraydraw',
         description: [
             'Determines whether the annotation text box captures mouse move',
@@ -540,7 +491,6 @@ module.exports = templatedArray('annotation', {
     _deprecated: {
         ref: {
             valType: 'string',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Obsolete. Set `xref` and `yref` separately instead.'

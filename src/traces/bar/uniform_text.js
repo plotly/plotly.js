@@ -1,14 +1,6 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 
 function resizeText(gd, gTrace, traceType) {
@@ -25,6 +17,7 @@ function resizeText(gd, gTrace, traceType) {
                 selector = 'g.slice';
                 break;
             case 'treemap' :
+            case 'icicle' :
                 selector = 'g.slice, g.pathbar';
                 break;
             default :

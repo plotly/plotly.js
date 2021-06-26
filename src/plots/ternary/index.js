@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var Ternary = require('./ternary');
@@ -26,7 +17,6 @@ exports.idRegex = exports.attrRegex = counterRegex(TERNARY);
 var attributes = exports.attributes = {};
 attributes[attr] = {
     valType: 'subplotid',
-    role: 'info',
     dflt: 'ternary',
     editType: 'calc',
     description: [

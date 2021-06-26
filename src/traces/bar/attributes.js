@@ -1,19 +1,13 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var constants = require('./constants');
+var pattern = require('../../components/drawing/attributes').pattern;
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -45,10 +39,10 @@ var marker = extendFlat({
         dflt: 1,
         min: 0,
         max: 1,
-        role: 'style',
         editType: 'style',
         description: 'Sets the opacity of the bars.'
-    }
+    },
+    pattern: pattern
 });
 
 module.exports = {
@@ -65,6 +59,8 @@ module.exports = {
     yperiod0: scatterAttrs.yperiod0,
     xperiodalignment: scatterAttrs.xperiodalignment,
     yperiodalignment: scatterAttrs.yperiodalignment,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     text: scatterAttrs.text,
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
@@ -77,9 +73,8 @@ module.exports = {
 
     textposition: {
         valType: 'enumerated',
-        role: 'info',
         values: ['inside', 'outside', 'auto', 'none'],
-        dflt: 'none',
+        dflt: 'auto',
         arrayOk: true,
         editType: 'calc',
         description: [
@@ -91,7 +86,8 @@ module.exports = {
             'this one, then the text gets pushed inside.',
             '*auto* tries to position `text` inside the bar, but if',
             'the bar is too small and no bar is stacked on this one',
-            'the text is moved outside.'
+            'the text is moved outside.',
+            'If *none*, no text appears.'
         ].join(' ')
     },
 
@@ -99,7 +95,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['end', 'middle', 'start'],
         dflt: 'end',
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines if texts are kept at center or start/end points in `textposition` *inside* mode.'
@@ -109,7 +104,6 @@ module.exports = {
     textangle: {
         valType: 'angle',
         dflt: 'auto',
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the angle of the tick labels with respect to the bar.',
@@ -134,7 +128,6 @@ module.exports = {
     constraintext: {
         valType: 'enumerated',
         values: ['inside', 'outside', 'both', 'none'],
-        role: 'info',
         dflt: 'both',
         editType: 'calc',
         description: [
@@ -154,7 +147,6 @@ module.exports = {
 
     orientation: {
         valType: 'enumerated',
-        role: 'info',
         values: ['v', 'h'],
         editType: 'calc+clearAxisTypes',
         description: [
@@ -168,7 +160,6 @@ module.exports = {
         valType: 'any',
         dflt: null,
         arrayOk: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets where the bar base is drawn (in position axis units).',
@@ -182,7 +173,6 @@ module.exports = {
         valType: 'number',
         dflt: null,
         arrayOk: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Shifts the position where the bar is drawn',
@@ -198,7 +188,6 @@ module.exports = {
         dflt: null,
         min: 0,
         arrayOk: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the bar width (in position axis units).'
@@ -209,7 +198,6 @@ module.exports = {
 
     offsetgroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -220,7 +208,6 @@ module.exports = {
     },
     alignmentgroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -250,13 +237,9 @@ module.exports = {
         editType: 'style'
     },
 
-    r: scatterAttrs.r,
-    t: scatterAttrs.t,
-
     _deprecated: {
         bardir: {
             valType: 'enumerated',
-            role: 'info',
             editType: 'calc',
             values: ['v', 'h'],
             description: 'Renamed to `orientation`.'

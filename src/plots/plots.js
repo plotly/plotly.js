@@ -1,14 +1,6 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var isNumeric = require('fast-isnumeric');
 
@@ -57,15 +49,9 @@ plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 plots.redrawText = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
-    var fullLayout = gd._fullLayout || {};
-    var hasPolar = fullLayout._has && fullLayout._has('polar');
-    var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
-
-    // do not work if polar is present
-    if(hasLegacyPolar) return;
-
     return new Promise(function(resolve) {
         setTimeout(function() {
+            if(!gd._fullLayout) return;
             Registry.getComponentMethod('annotations', 'draw')(gd);
             Registry.getComponentMethod('legend', 'draw')(gd);
             Registry.getComponentMethod('colorbar', 'draw')(gd);
@@ -131,7 +117,7 @@ plots.previousPromises = function(gd) {
 
 /**
  * Adds the 'Edit chart' link.
- * Note that now Plotly.plot() calls this so it can regenerate whenever it replots
+ * Note that now _doPlot calls this so it can regenerate whenever it replots
  *
  * Add source links to your graph inside the 'showSources' config argument.
  */
@@ -468,15 +454,6 @@ plots.supplyDefaults = function(gd, opts) {
         newFullLayout.images.length === 0
     );
 
-    // TODO remove in v2.0.0
-    // add has-plot-type refs to fullLayout for backward compatibility
-    newFullLayout._hasCartesian = newFullLayout._has('cartesian');
-    newFullLayout._hasGeo = newFullLayout._has('geo');
-    newFullLayout._hasGL3D = newFullLayout._has('gl3d');
-    newFullLayout._hasGL2D = newFullLayout._has('gl2d');
-    newFullLayout._hasTernary = newFullLayout._has('ternary');
-    newFullLayout._hasPie = newFullLayout._has('pie');
-
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
@@ -711,7 +688,7 @@ function getFormatObj(gd, formatKeys) {
 /**
  * getFormatter: combine the final separators with the locale formatting object
  * we pulled earlier to generate number and time formatters
- * TODO: remove separators in v2, only use locale, so we don't need this step?
+ * TODO: remove separators in v3, only use locale, so we don't need this step?
  *
  * @param {object} formatObj: d3.locale format object
  * @param {string} separators: length-2 string to override decimal and thousands
@@ -1332,6 +1309,14 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
+            var titleText = coerce('legendgrouptitle.text');
+            if(titleText) {
+                Lib.coerceFont(coerce, 'legendgrouptitle.font', Lib.extendFlat({}, layout.font, {
+                    size: Math.round(layout.font.size * 1.1) // default to larger font size
+                }));
+            }
+
+            coerce('legendrank');
 
             traceOut._dfltShowLegend = true;
         } else {
@@ -1512,7 +1497,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     // layouts with no set width and height were set temporary set to 'initial'
     // to pass through the autosize routine
     //
-    // This behavior is subject to change in v2.
+    // This behavior is subject to change in v3.
     coerce('autosize', !(layoutIn.width && layoutIn.height));
 
     coerce('width');
@@ -1540,12 +1525,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('editrevision', uirevision);
     coerce('selectionrevision', uirevision);
 
-    coerce('modebar.orientation');
-    coerce('modebar.bgcolor', Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
-    var modebarDefaultColor = Color.contrast(Color.rgb(layoutOut.modebar.bgcolor));
-    coerce('modebar.color', Color.addOpacity(modebarDefaultColor, 0.3));
-    coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
-    coerce('modebar.uirevision', uirevision);
+    Registry.getComponentMethod(
+        'modebar',
+        'supplyLayoutDefaults'
+    )(layoutIn, layoutOut);
 
     Registry.getComponentMethod(
         'shapes',
@@ -1756,7 +1739,6 @@ plots.purge = function(gd) {
     delete gd._fullData;
     delete gd._fullLayout;
     delete gd.calcdata;
-    delete gd.framework;
     delete gd.empty;
 
     delete gd.fid;
@@ -1766,7 +1748,7 @@ plots.purge = function(gd) {
     delete gd.autoplay; // are we doing an action that doesn't go in undo queue?
     delete gd.changed;
 
-    // these get recreated on Plotly.plot anyway, but just to be safe
+    // these get recreated on _doPlot anyway, but just to be safe
     // (and to have a record of them...)
     delete gd._promises;
     delete gd._redrawTimer;
@@ -1866,8 +1848,13 @@ function initMargins(fullLayout) {
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
 }
 
-var minFinalWidth = 64; // could possibly be exposed as layout.margin.minfinalwidth
-var minFinalHeight = 64; // could possibly be exposed as layout.margin.minfinalheight
+// non-negotiable - this is the smallest height we will allow users to specify via explicit margins
+var MIN_SPECIFIED_WIDTH = 2;
+var MIN_SPECIFIED_HEIGHT = 2;
+
+// could be exposed as an option - the smallest we will allow automargin to shrink a larger plot
+var MIN_REDUCED_WIDTH = 64;
+var MIN_REDUCED_HEIGHT = 64;
 
 /**
  * autoMargin: called by components that may need to expand the margins to
@@ -1888,20 +1875,33 @@ plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
+    var margin = fullLayout.margin;
+
+    var minFinalWidth = Lib.constrain(
+        width - margin.l - margin.r,
+        MIN_SPECIFIED_WIDTH,
+        MIN_REDUCED_WIDTH
+    );
+
+    var minFinalHeight = Lib.constrain(
+        height - margin.t - margin.b,
+        MIN_SPECIFIED_HEIGHT,
+        MIN_REDUCED_HEIGHT
+    );
+
     var maxSpaceW = Math.max(0, width - minFinalWidth);
     var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
 
-    if(fullLayout.margin.autoexpand !== false) {
+    if(margin.autoexpand !== false) {
         if(!o) {
             delete pushMargin[id];
             delete pushMarginIds[id];
         } else {
             var pad = o.pad;
             if(pad === undefined) {
-                var margin = fullLayout.margin;
                 // if no explicit pad is given, use 12px unless there's a
                 // specified margin that's smaller than that
                 pad = Math.min(12, margin.l, margin.r, margin.t, margin.b);
@@ -1909,15 +1909,19 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            var rW = (o.l + o.r) / maxSpaceW;
-            if(rW > 1) {
-                o.l /= rW;
-                o.r /= rW;
+            if(maxSpaceW) {
+                var rW = (o.l + o.r) / maxSpaceW;
+                if(rW > 1) {
+                    o.l /= rW;
+                    o.r /= rW;
+                }
             }
-            var rH = (o.t + o.b) / maxSpaceH;
-            if(rH > 1) {
-                o.t /= rH;
-                o.b /= rH;
+            if(maxSpaceH) {
+                var rH = (o.t + o.b) / maxSpaceH;
+                if(rH > 1) {
+                    o.t /= rH;
+                    o.b /= rH;
+                }
             }
 
             var xl = o.xl !== undefined ? o.xl : o.x;
@@ -1944,8 +1948,6 @@ plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var maxSpaceW = Math.max(0, width - minFinalWidth);
-    var maxSpaceH = Math.max(0, height - minFinalHeight);
 
     if(!fullLayout._size) fullLayout._size = {};
     initMargins(fullLayout);
@@ -2018,16 +2020,35 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    var rW = (ml + mr) / maxSpaceW;
-    if(rW > 1) {
-        ml /= rW;
-        mr /= rW;
+    var minFinalWidth = Lib.constrain(
+        width - margin.l - margin.r,
+        MIN_SPECIFIED_WIDTH,
+        MIN_REDUCED_WIDTH
+    );
+
+    var minFinalHeight = Lib.constrain(
+        height - margin.t - margin.b,
+        MIN_SPECIFIED_HEIGHT,
+        MIN_REDUCED_HEIGHT
+    );
+
+    var maxSpaceW = Math.max(0, width - minFinalWidth);
+    var maxSpaceH = Math.max(0, height - minFinalHeight);
+
+    if(maxSpaceW) {
+        var rW = (ml + mr) / maxSpaceW;
+        if(rW > 1) {
+            ml /= rW;
+            mr /= rW;
+        }
     }
 
-    var rH = (mb + mt) / maxSpaceH;
-    if(rH > 1) {
-        mb /= rH;
-        mt /= rH;
+    if(maxSpaceH) {
+        var rH = (mb + mt) / maxSpaceH;
+        if(rH > 1) {
+            mb /= rH;
+            mt /= rH;
+        }
     }
 
     gs.l = Math.round(ml);
@@ -2054,13 +2075,29 @@ plots.doAutoMargin = function(gd) {
         var maxNumberOfRedraws = 3 * (1 + Object.keys(pushMarginIds).length);
 
         if(fullLayout._redrawFromAutoMarginCount < maxNumberOfRedraws) {
-            return Registry.call('plot', gd);
+            return Registry.call('_doPlot', gd);
         } else {
             fullLayout._size = oldMargins;
             Lib.warn('Too many auto-margin redraws.');
         }
     }
+
+    refineTicks(gd);
 };
+
+function refineTicks(gd) {
+    var axList = axisIDs.list(gd, '', true);
+
+    [
+        '_adjustTickLabelsOverflow',
+        '_hideCounterAxisInsideTickLabels'
+    ].forEach(function(k) {
+        for(var i = 0; i < axList.length; i++) {
+            var hideFn = axList[i][k];
+            if(hideFn) hideFn();
+        }
+    });
+}
 
 var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];
 
@@ -2199,8 +2236,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             };
         }
     }
-
-    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     if(frames) obj.frames = stripObj(frames);
 
@@ -2696,6 +2731,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionAxes() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 if(basePlotModules[j].transitionAxes) {
                     basePlotModules[j].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
@@ -2704,6 +2740,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionTraces() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
             }
@@ -2898,10 +2935,11 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies / sunbursts / treemap / funnelarea (and for legend)
+    // for sharing colors across pies / sunbursts / treemap / icicle / funnelarea (and for legend)
     fullLayout._piecolormap = {};
     fullLayout._sunburstcolormap = {};
     fullLayout._treemapcolormap = {};
+    fullLayout._iciclecolormap = {};
     fullLayout._funnelareacolormap = {};
 
     // If traces were specified and this trace was not included,

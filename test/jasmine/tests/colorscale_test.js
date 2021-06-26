@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 
 var Colorscale = require('@src/components/colorscale');
 
@@ -7,10 +7,11 @@ var Plots = require('@src/plots/plots');
 var Heatmap = require('@src/traces/heatmap');
 var Scatter = require('@src/traces/scatter');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 
 function _supply(arg, layout) {
@@ -746,14 +747,14 @@ describe('Test colorscale restyle calls:', function() {
     });
 
     function getFill(q) {
-        return d3.select(q).node().style.fill;
+        return d3Select(q).node().style.fill;
     }
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (contour case)', function(done) {
         function _assert(msg, exp) {
             var cc = [];
             cc.push(getFill('.contourbg > path'));
-            d3.selectAll('.contourfill > path').each(function() {
+            d3SelectAll('.contourfill > path').each(function() {
                 cc.push(getFill(this));
             });
             expect(cc).toEqual(exp.contourColors);
@@ -783,7 +784,7 @@ describe('Test colorscale restyle calls:', function() {
         var reds = ['rgb(220, 220, 220)', 'rgb(234, 135, 92)', 'rgb(178, 10, 28)'];
         var grns = ['rgb(0, 68, 27)', 'rgb(116, 196, 118)', 'rgb(247, 252, 245)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'contour',
             z: [
                 [1, 20, 30],
@@ -855,14 +856,13 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (scatter marker case)', function(done) {
         function _assert(msg, exp) {
             var mcc = [];
-            d3.selectAll('path.point').each(function() {
+            d3SelectAll('path.point').each(function() {
                 mcc.push(getFill(this));
             });
             expect(mcc).toEqual(exp.mcc);
@@ -891,7 +891,7 @@ describe('Test colorscale restyle calls:', function() {
         var rdbu = ['rgb(5, 10, 172)', 'rgb(77, 101, 226)', 'rgb(178, 10, 28)'];
         var grns = ['rgb(0, 68, 27)', 'rgb(35, 139, 69)', 'rgb(247, 252, 245)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 3],
             marker: {color: [-1, 0, 3]}
@@ -932,8 +932,7 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (scatter marker line case)', function(done) {
@@ -941,8 +940,8 @@ describe('Test colorscale restyle calls:', function() {
 
         function _assert(msg, exp) {
             var mlcc = [];
-            d3.selectAll('path.point').each(function() {
-                mlcc.push(d3.select(this).node().style.stroke);
+            d3SelectAll('path.point').each(function() {
+                mlcc.push(d3Select(this).node().style.stroke);
             });
             expect(mlcc).toEqual(exp.mlcc);
 
@@ -970,7 +969,7 @@ describe('Test colorscale restyle calls:', function() {
         var blues = ['rgb(220, 220, 220)', 'rgb(70, 100, 245)', 'rgb(5, 10, 172)'];
         var grns = ['rgb(247, 252, 245)', 'rgb(116, 196, 118)', 'rgb(0, 68, 27)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 3],
             marker: {
@@ -1017,14 +1016,13 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to toggle between autocolorscale true/false and set colorscales (coloraxis case)', function(done) {
         function _assert(msg, exp) {
             var mcc = [];
-            d3.selectAll('path.point').each(function() { mcc.push(getFill(this)); });
+            d3SelectAll('path.point').each(function() { mcc.push(getFill(this)); });
             expect(mcc).toEqual(exp.mcc);
 
             expect(gd._fullLayout.coloraxis.colorscale).toEqual(exp.colorscale);
@@ -1052,7 +1050,7 @@ describe('Test colorscale restyle calls:', function() {
         var grns = ['rgb(0, 68, 27)', 'rgb(12, 119, 52)', 'rgb(174, 222, 167)',
             'rgb(12, 119, 52)', 'rgb(12, 119, 52)', 'rgb(247, 252, 245)'];
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             y: [1, 2, 3],
             marker: {color: [-1, 0, 3], coloraxis: 'coloraxis'}
@@ -1097,8 +1095,7 @@ describe('Test colorscale restyle calls:', function() {
                 colorscaleIn: 'Greens'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update coloraxis cmin/cmax on color value changes', function(done) {
@@ -1133,14 +1130,13 @@ describe('Test colorscale restyle calls:', function() {
         .then(_assert('marker.color [-1,2,3]', -1, 3))
         .then(function() { return Plotly.react(gd, fig([1, 2, 3])); })
         .then(_assert('back again to marker.color [1,2,3]', 1, 3))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should work with templates', function(done) {
         function _assert(msg, exp) {
             var mcc = [];
-            d3.selectAll('path.point').each(function() {
+            d3SelectAll('path.point').each(function() {
                 mcc.push(getFill(this));
             });
 
@@ -1155,7 +1151,7 @@ describe('Test colorscale restyle calls:', function() {
             }
         };
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [1, 2, 3],
             marker: {color: [1, 2, 3]}
         }])
@@ -1172,12 +1168,11 @@ describe('Test colorscale restyle calls:', function() {
                 mcc: ['rgb(68, 1, 84)', 'rgb(33, 145, 140)', 'rgb(253, 231, 37)']
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should work with scatter3d', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             x: [1, 2, 3],
             y: [1, 2, 3],
@@ -1201,7 +1196,6 @@ describe('Test colorscale restyle calls:', function() {
             expect(gd._fullData[0].line.cmin).toBe(2);
             expect(gd._fullData[0].line.cmax).toBe(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

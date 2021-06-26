@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -33,7 +25,6 @@ module.exports = {
     r0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Alternate to `r`.',
@@ -45,7 +36,6 @@ module.exports = {
     dr: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: 'Sets the r coordinate step.'
     },
@@ -53,7 +43,6 @@ module.exports = {
     theta0: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Alternate to `theta`.',
@@ -64,7 +53,6 @@ module.exports = {
     },
     dtheta: {
         valType: 'number',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the theta coordinate step.',
@@ -77,7 +65,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['radians', 'degrees', 'gradians'],
         dflt: 'degrees',
-        role: 'info',
         editType: 'calc+clearAxisTypes',
         description: [
             'Sets the unit of input *theta* values.',

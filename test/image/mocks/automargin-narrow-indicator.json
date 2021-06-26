@@ -1,0 +1,50 @@
+{
+    "config": {
+        "displayModeBar": false
+    },
+    "data": [
+        {
+            "type": "indicator",
+            "mode": "number+gauge",
+            "gauge": {
+                "shape": "bullet",
+                "axis": {
+                    "range": [
+                        0,
+                        1
+                    ],
+                    "tickfont": {
+                        "size": 12
+                    }
+                }
+            },
+            "value": 0.5,
+            "number": {
+                "font": {
+                    "size": 48
+                }
+            }
+        }
+    ],
+    "layout": {
+        "width": 300,
+        "height": 60,
+        "margin": {
+            "l": 10,
+            "r": 10,
+            "t": 25,
+            "b": 25
+        },
+        "title": {
+            "text": "Automargin indicator",
+            "xanchor": "left",
+            "x": 0,
+            "yanchor": "top",
+            "y": 1,
+            "pad": {
+                "t": 5,
+                "l": 10
+            }
+        }
+    }
+}

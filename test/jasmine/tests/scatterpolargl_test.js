@@ -1,17 +1,44 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var ScatterPolarGl = require('@src/traces/scatterpolargl');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
+var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
+
+function drag(gd, path) {
+    var len = path.length;
+    var el = d3Select(gd).select('rect.nsewdrag').node();
+    var opts = {element: el};
+
+    Lib.clearThrottle();
+    mouseEvent('mousemove', path[0][0], path[0][1], opts);
+    mouseEvent('mousedown', path[0][0], path[0][1], opts);
+
+    path.slice(1, len).forEach(function(pt) {
+        Lib.clearThrottle();
+        mouseEvent('mousemove', pt[0], pt[1], opts);
+    });
+
+    mouseEvent('mouseup', path[len - 1][0], path[len - 1][1], opts);
+}
+
+function select(gd, path) {
+    return new Promise(function(resolve, reject) {
+        gd.once('plotly_selected', resolve);
+        setTimeout(function() { reject('did not trigger *plotly_selected*');}, 200);
+        drag(gd, path);
+    });
+}
 
 describe('Test scatterpolargl hover:', function() {
     var gd;
@@ -110,7 +137,7 @@ describe('Test scatterpolargl hover:', function() {
     }]
     .forEach(function(specs) {
         it('@gl should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(failTest).then(done);
+            run(specs).then(done, done.fail);
         });
     });
 });
@@ -124,7 +151,7 @@ describe('Test scatterpolargl interactions:', function() {
     });
 
     function countCanvases() {
-        return d3.selectAll('canvas').size();
+        return d3SelectAll('canvas').size();
     }
 
     function totalPixels() {
@@ -132,12 +159,24 @@ describe('Test scatterpolargl interactions:', function() {
             .reduce(function(acc, v) { return acc + v; }, 0);
     }
 
+    function assertEventData(actual, expected) {
+        expect(actual.points.length).toBe(expected.points.length);
+
+        expected.points.forEach(function(e, i) {
+            var a = actual.points[i];
+            if(a) {
+                expect(a.r).toBe(e.r, 'r');
+                expect(a.theta).toBe(e.theta, 'theta');
+            }
+        });
+    }
+
     it('@gl should be able to toggle from svg to gl', function(done) {
         gd = createGraphDiv();
 
         var scene;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatterpolar',
             r: [1, 2, 1],
         }], {
@@ -146,14 +185,14 @@ describe('Test scatterpolargl interactions:', function() {
         })
         .then(function() {
             expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(1);
 
             return Plotly.restyle(gd, 'type', 'scatterpolargl');
         })
         .then(function() {
             expect(countCanvases()).toBe(3);
             expect(totalPixels()).not.toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(0);
 
             scene = gd._fullLayout.polar._subplot._scene;
             spyOn(scene, 'destroy').and.callThrough();
@@ -164,7 +203,7 @@ describe('Test scatterpolargl interactions:', function() {
             expect(countCanvases()).toBe(0);
             expect(scene.destroy).toHaveBeenCalledTimes(1);
             expect(gd._fullLayout.polar._subplot._scene).toBe(null);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(1);
 
             return Plotly.restyle(gd, 'type', 'scatterpolargl');
         })
@@ -174,10 +213,9 @@ describe('Test scatterpolargl interactions:', function() {
             // https://github.com/plotly/plotly.js/issues/3094
             // got fixed
             expect(totalPixels()).not.toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to toggle from svg to gl (on graph with scattergl subplot)', function(done) {
@@ -185,7 +223,7 @@ describe('Test scatterpolargl interactions:', function() {
 
         var sceneXY, scenePolar;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             y: [1, 2, 1]
         }, {
@@ -201,7 +239,7 @@ describe('Test scatterpolargl interactions:', function() {
         .then(function() {
             expect(countCanvases()).toBe(3);
             expect(totalPixels()).not.toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(0);
 
             sceneXY = gd._fullLayout._plots.xy._scene;
             spyOn(sceneXY, 'destroy').and.callThrough();
@@ -214,7 +252,7 @@ describe('Test scatterpolargl interactions:', function() {
         .then(function() {
             expect(countCanvases()).toBe(3);
             expect(totalPixels()).not.toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(1);
 
             expect(sceneXY.destroy).toHaveBeenCalledTimes(0);
             expect(gd._fullLayout._plots.xy._scene).not.toBe(null);
@@ -229,14 +267,14 @@ describe('Test scatterpolargl interactions:', function() {
         .then(function() {
             expect(countCanvases()).toBe(3);
             expect(totalPixels()).not.toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(0);
 
             return Plotly.restyle(gd, 'type', 'scatter', [0]);
         })
         .then(function() {
             expect(countCanvases()).toBe(3);
             expect(totalPixels()).not.toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(1);
 
             // Similarly, does not destroy scene in this case,
             // we don't need as the same gl canvases are still there
@@ -250,15 +288,58 @@ describe('Test scatterpolargl interactions:', function() {
         })
         .then(function() {
             expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(2);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(2);
 
             expect(sceneXY.destroy).toHaveBeenCalledTimes(1);
             expect(gd._fullLayout._plots.xy._scene).toBe(null);
             expect(scenePolar.destroy).toHaveBeenCalledTimes(1);
             expect(gd._fullLayout.polar._subplot._scene).toBe(null);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
+    });
+
+    ['r', 'theta'].forEach(function(ax) {
+        [
+          ['linear', [0, 180]],
+          ['category', ['A', 'B']],
+        ].forEach(function(test) {
+            var axType = test[0];
+            var axNames = {'r': 'radialaxis', 'theta': 'angularaxis'};
+            it('@gl should return the same eventData as scatter on ' + axType + ' ' + ax + ' axis', function(done) {
+                var _mock = {
+                    data: [{type: 'scatterpolar', r: [5, 10], theta: [0, 180]}],
+                    layout: {dragmode: 'select', width: 400, height: 400}
+                };
+                _mock.data[0][ax] = test[1];
+                gd = createGraphDiv();
+                var scatterpolarEventData = {};
+                var selectPath = [[185, 150], [400, 250]];
+
+                Plotly.newPlot(gd, _mock)
+                .then(delay(20))
+                .then(function() {
+                    expect(gd._fullLayout.polar[axNames[ax]].type).toEqual(test[0]);
+                    return select(gd, selectPath);
+                })
+                .then(delay(20))
+                .then(function(eventData) {
+                    scatterpolarEventData = eventData;
+                    // Make sure we selected a point
+                    expect(eventData.points.length).toBe(1);
+                    return Plotly.restyle(gd, 'type', 'scatterpolargl');
+                })
+                .then(delay(20))
+                .then(function() {
+                    expect(gd._fullLayout.polar[axNames[ax]].type).toEqual(test[0]);
+                    return select(gd, selectPath);
+                })
+                .then(delay(20))
+                .then(function(eventData) {
+                    assertEventData(eventData, scatterpolarEventData);
+                })
+                .then(done, done.fail);
+            });
+        });
     });
 });
 
@@ -301,8 +382,7 @@ describe('Test scatterpolargl autorange:', function() {
                     expect(gd._fullLayout.polar.radialaxis.range)
                         .toBeCloseToArray(svgRange, 'gl radial range');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -342,8 +422,7 @@ describe('Test scatterpolargl autorange:', function() {
                     .toBeCloseToArray([0, 1.0799], 2, 'radial range');
                 expect(cnt).toBe(1, '# of plot call');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl - case array marker.size', function(done) {
@@ -358,8 +437,7 @@ describe('Test scatterpolargl autorange:', function() {
                     .toBeCloseToArray([0, 1.0465], 2, 'radial range');
                 expect(cnt).toBe(1, '# of plot call');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl - case mode:lines', function(done) {
@@ -373,8 +451,7 @@ describe('Test scatterpolargl autorange:', function() {
                     .toBeCloseToArray([0, 0.9999], 2, 'radial range');
                 expect(cnt).toBe(1, '# of plot call');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

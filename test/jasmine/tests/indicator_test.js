@@ -2,11 +2,11 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 // var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var delay = require('../assets/delay');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 // var calc = require('@src/traces/indicator/calc').calc;
 var customAssertions = require('../assets/custom_assertions.js');
@@ -150,7 +150,7 @@ describe('Indicator plot', function() {
 
     describe('numbers', function() {
         function checkNumbersScale(value, msg) {
-            var numbers = d3.selectAll('g.numbers');
+            var numbers = d3SelectAll('g.numbers');
             expect(numbers.length).toBe(1);
 
             var transform = numbers.attr('transform');
@@ -170,14 +170,13 @@ describe('Indicator plot', function() {
                 return Plotly.relayout(gd, {width: 200, height: 200});
             })
             .then(function() {
-                checkNumbersScale(0.4794007490636704, 'should scale down');
+                checkNumbersScale(0.2, 'should scale down');
                 return Plotly.relayout(gd, {width: 400, height: 400});
             })
             .then(function() {
                 checkNumbersScale(1, 'should scale up');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('scale down but never back up if domain size is constant', function(done) {
@@ -197,8 +196,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 checkNumbersScale(0.8, 'should not scale up');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         ['number', 'delta'].forEach(function(numberType) {
@@ -222,15 +220,14 @@ describe('Indicator plot', function() {
                 .then(function() {
                     checkNumbersScale(1, 'should not rescale');
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
 
     describe('number', function() {
         function assertContent(txt) {
-            var sel = d3.selectAll('text.number');
+            var sel = d3SelectAll('text.number');
             expect(sel.length).toBe(1);
             expect(sel.text()).toBe(txt);
         }
@@ -251,8 +248,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent('$220');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('supports suffix', function(done) {
@@ -265,8 +261,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent('220 potatoes');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('supports prefix', function(done) {
@@ -279,14 +274,13 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent('Speed: 220');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
     describe('delta', function() {
         function assertContent(txt) {
-            var sel = d3.selectAll('text.delta');
+            var sel = d3SelectAll('text.delta');
             expect(sel.length).toBe(1);
             expect(sel.text()).toBe(txt);
         }
@@ -308,8 +302,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 assertContent(gd._fullData[0].delta.increasing.symbol + '0.100');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -331,8 +324,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 customAssertions.assertMultiNodeOrder(['g.bg-arc', 'g.value-arc', 'g.threshold-arc', 'g.gauge-outline']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -354,8 +346,7 @@ describe('Indicator plot', function() {
             .then(function() {
                 customAssertions.assertMultiNodeOrder(['g.bg-bullet', 'g.value-bullet', 'g.threshold-bullet', 'g.gauge-outline']);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -377,16 +368,15 @@ describe('Indicator plot', function() {
             .then(function() {
                 gd.style.display = 'block';
 
-                var t = d3.selectAll('text.title').node();
+                var t = d3SelectAll('text.title').node();
                 var titleBBox = t.getBoundingClientRect();
 
-                var numbers = d3.selectAll('g.numbers').node();
+                var numbers = d3SelectAll('g.numbers').node();
                 var numbersBBox = numbers.getBoundingClientRect();
 
                 expect(titleBBox.bottom).toBeCloseTo(numbersBBox.top - cn.titlePadding, 0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('position it above angular axes', function(done) {
@@ -399,15 +389,14 @@ describe('Indicator plot', function() {
             }])
             .then(function() {
                 gd.style.display = 'block';
-                var t = d3.selectAll('text.title').node();
+                var t = d3SelectAll('text.title').node();
                 var titleBBox = t.getBoundingClientRect();
 
-                var ax = d3.selectAll('g.angularaxis').node();
+                var ax = d3SelectAll('g.angularaxis').node();
                 var axBBox = ax.getBoundingClientRect();
                 expect(titleBBox.bottom).toBeCloseTo(axBBox.top - cn.titlePadding, 0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('position it left of bullet', function(done) {
@@ -420,21 +409,20 @@ describe('Indicator plot', function() {
             }])
             .then(function() {
                 gd.style.display = 'block';
-                var t = d3.selectAll('text.title').node();
+                var t = d3SelectAll('text.title').node();
                 var titleBBox = t.getBoundingClientRect();
 
-                var ax = d3.selectAll('g.bulletaxis').node();
+                var ax = d3SelectAll('g.bulletaxis').node();
                 var axBBox = ax.getBoundingClientRect();
                 expect(titleBBox.right < axBBox.left).toBe(true);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
     it('restyle between modes', function(done) {
         function assertElementCnt(sel, cnt) {
-            var el = d3.selectAll(sel);
+            var el = d3SelectAll(sel);
             expect(el.size()).toBe(cnt, 'selection "' + sel + '" does not have size ' + cnt);
         }
         function assertGauge(shape, cnt) {
@@ -483,20 +471,19 @@ describe('Indicator plot', function() {
         .then(function() {
             assert([1, 1, 0, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should draw blank path when value is NaN', function(done) {
         function getArcPath() {
-            return d3.selectAll('g.value-arc > path').attr('d');
+            return d3SelectAll('g.value-arc > path').attr('d');
         }
 
         function getBulletRect() {
-            return d3.selectAll('g.value-bullet > rect').attr('width');
+            return d3SelectAll('g.value-bullet > rect').attr('width');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'indicator',
             mode: 'number+delta+gauge',
             value: null
@@ -516,8 +503,7 @@ describe('Indicator plot', function() {
         .then(function() {
             expect(getBulletRect()).toBe('0', 'width-less bullet of value:null');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -541,7 +527,7 @@ describe('Indicator animations', function() {
 
             spyOn(Plots, 'transitionFromReact').and.callThrough();
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(function() {
                 gd.data[0].value = 400;
                 return Plotly.react(gd, gd.data, gd.layout);
@@ -550,8 +536,7 @@ describe('Indicator animations', function() {
             .then(function() {
                 expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -632,7 +617,6 @@ describe('Indicator attributes', function() {
             // expect(gd._fullData[0].gauge.steps[0].range).toEqual([0, 250], 'wrong gauge.steps[0].range');
             // expect(gd._fullData[0].gauge.steps[0].color).toEqual('rgba(255, 255, 0, 0.5)');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

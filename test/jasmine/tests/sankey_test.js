@@ -1,7 +1,8 @@
 var Plotly = require('@lib/index');
 var attributes = require('@src/traces/sankey/attributes');
 var Lib = require('@src/lib');
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var d3sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
 var mock = require('@mocks/sankey_energy.json');
@@ -359,32 +360,32 @@ describe('sankey tests', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mockDark);
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
                     return Plotly.addTraces(gd, mockCopy2.data[0]);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(2);
-                    expect(d3.selectAll('.sankey').size()).toEqual(2);
+                    expect(d3SelectAll('.sankey').size()).toEqual(2);
                     return Plotly.deleteTraces(gd, [0]);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
                     return Plotly.deleteTraces(gd, 0);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(0);
-                    expect(d3.selectAll('.sankey').size()).toEqual(0);
-                    done();
-                });
+                    expect(d3SelectAll('.sankey').size()).toEqual(0);
+                })
+                .then(done, done.fail);
         });
 
         it('Plotly.deleteTraces removes draggers', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
                 .then(function() {
                     expect(document.getElementsByClassName('bgsankey').length).toBe(1);
                     return Plotly.deleteTraces(gd, [0]);
@@ -392,29 +393,28 @@ describe('sankey tests', function() {
                 .then(function() {
                     expect(document.getElementsByClassName('bgsankey').length).toBe(0);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
         });
 
-        it('Plotly.plot does not show Sankey if \'visible\' is false', function(done) {
+        it('Plotly.newPlot does not show Sankey if \'visible\' is false', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
                     return Plotly.restyle(gd, 'visible', false);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(0);
+                    expect(d3SelectAll('.sankey').size()).toEqual(0);
                     return Plotly.restyle(gd, 'visible', true);
                 })
                 .then(function() {
                     expect(gd.data.length).toEqual(1);
-                    expect(d3.selectAll('.sankey').size()).toEqual(1);
-                    done();
-                });
+                    expect(d3SelectAll('.sankey').size()).toEqual(1);
+                })
+                .then(done, done.fail);
         });
 
         it('\'node\' remains visible even if \'value\' is very low', function(done) {
@@ -429,34 +429,34 @@ describe('sankey tests', function() {
                     value: [1000000, 0.001]
                 }
             }];
-            Plotly.plot(gd, minimock)
+            Plotly.newPlot(gd, minimock)
                 .then(function() {
-                    expect(d3.selectAll('.sankey .node-rect')[0].reduce(function(prevMin, rect) {
-                        return Math.min(prevMin, d3.select(rect).attr('height'));
+                    expect(d3SelectAll('.sankey .node-rect')[0].reduce(function(prevMin, rect) {
+                        return Math.min(prevMin, d3Select(rect).attr('height'));
                     }, Infinity)).toEqual(0.5);
-                    done();
-                });
+                })
+                .then(done, done.fail);
         });
 
         it('switch from normal to circular Sankey on react', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCircularCopy = Lib.extendDeep({}, mockCircular);
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
                   return Plotly.react(gd, mockCircularCopy);
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(true);
-                  done();
-              });
+              })
+              .then(done, done.fail);
         });
 
         it('switch from circular to normal Sankey on react', function(done) {
             var mockCircularCopy = Lib.extendDeep({}, mockCircular);
 
-            Plotly.plot(gd, mockCircularCopy)
+            Plotly.newPlot(gd, mockCircularCopy)
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(true);
 
@@ -473,8 +473,8 @@ describe('sankey tests', function() {
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
-                  done();
-              });
+              })
+              .then(done, done.fail);
         });
 
         it('can create groups, restyle groups and properly update DOM', function(done) {
@@ -483,7 +483,7 @@ describe('sankey tests', function() {
             var newGroup = [[2, 3]];
             mockCircularCopy.data[0].node.groups = firstGroup;
 
-            Plotly.plot(gd, mockCircularCopy)
+            Plotly.newPlot(gd, mockCircularCopy)
               .then(function() {
                   expect(gd._fullData[0].node.groups).toEqual(firstGroup);
                   return Plotly.restyle(gd, {'node.groups': [newGroup]});
@@ -492,7 +492,7 @@ describe('sankey tests', function() {
                   expect(gd._fullData[0].node.groups).toEqual(newGroup);
 
                   // Check that all links have updated their links
-                  d3.selectAll('.sankey .sankey-link').each(function(d, i) {
+                  d3SelectAll('.sankey .sankey-link').each(function(d, i) {
                       var path = this.getAttribute('d');
                       expect(path).toBe(d.linkPath()(d), 'link ' + i + ' has wrong `d` attribute');
                   });
@@ -500,7 +500,7 @@ describe('sankey tests', function() {
                   // Check that ghost nodes used for animations:
                   // 1) are drawn first so they apear behind
                   var seeRealNode = false;
-                  var sankeyNodes = d3.selectAll('.sankey .sankey-node');
+                  var sankeyNodes = d3SelectAll('.sankey .sankey-node');
                   sankeyNodes.each(function(d, i) {
                       if(d.partOfGroup) {
                           if(seeRealNode) fail('node ' + i + ' is a ghost node and should be behind');
@@ -512,14 +512,13 @@ describe('sankey tests', function() {
                   var L = sankeyNodes.filter(function(d) { return d.partOfGroup;}).size();
                   expect(L).toBe(newGroup.flat().length, 'does not have the right number of ghost nodes');
               })
-              .catch(failTest)
-              .then(done);
+              .then(done, done.fail);
         });
 
         it('switches from normal to circular Sankey on grouping', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
 
@@ -533,8 +532,8 @@ describe('sankey tests', function() {
               })
               .then(function() {
                   expect(gd.calcdata[0][0].circular).toBe(false);
-                  done();
-              });
+              })
+              .then(done, done.fail);
         });
 
         it('prevents nodes from overlapping in snap arrangement', function(done) {
@@ -548,7 +547,7 @@ describe('sankey tests', function() {
 
             var mockCopy = Lib.extendDeep({}, mockXY);
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
             .then(function() {
                 // Nodes overlap
                 expect(checkElementOverlap(3, 6)).toBeTruthy('nodes do not overlap');
@@ -560,8 +559,7 @@ describe('sankey tests', function() {
                 // Nodes do not overlap in snap
                 expect(checkElementOverlap(3, 6)).not.toBeTruthy('nodes overlap');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('resets each subplot to its initial view (ie. x, y groups) via modebar button', function(done) {
@@ -574,7 +572,7 @@ describe('sankey tests', function() {
             mockCopy.data[0].node.groups = [];
             mockCopy.data[1].node.groups = [[2, 3]];
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
             .then(function() {
                 expect(gd._fullData[0].node.groups).toEqual([]);
                 expect(gd._fullData[1].node.groups).toEqual([[2, 3]]);
@@ -606,8 +604,7 @@ describe('sankey tests', function() {
                 expect(gd._fullData[0].node.groups).toEqual([]);
                 expect(gd._fullData[1].node.groups).toEqual([[2, 3]]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('works as a subplot in the presence of other trace types', function(done) {
@@ -617,9 +614,8 @@ describe('sankey tests', function() {
                 y: [5, 1, 4, 3, 2]
             };
 
-            Plotly.plot(gd, mockCopy)
-            .catch(failTest)
-            .then(done);
+            Plotly.newPlot(gd, mockCopy)
+            .then(done, done.fail);
         });
 
         ['0', '1'].forEach(function(finalUIRevision) {
@@ -629,7 +625,7 @@ describe('sankey tests', function() {
                 var mockCopy = Lib.extendDeep({}, mockCircular);
                 mockCopy.layout.uirevision = uirevisions[0];
 
-                Plotly.plot(gd, mockCopy)
+                Plotly.newPlot(gd, mockCopy)
                       .then(function() {
                           // Create a group via guiRestyle
                           return Registry.call('_guiRestyle', gd, 'node.groups', [[[0, 1]]]);
@@ -659,8 +655,7 @@ describe('sankey tests', function() {
                               );
                           }
                       })
-                      .catch(failTest)
-                      .then(done);
+                      .then(done, done.fail);
             });
         });
     });
@@ -674,15 +669,15 @@ describe('sankey tests', function() {
             Lib.clearThrottle();
         }
 
-        var node = [404, 302];
+        var node = [410, 300];
         var link = [450, 300];
 
         it('should show the correct hover labels', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy).then(function() {
-                _hover(404, 302);
+            Plotly.newPlot(gd, mockCopy).then(function() {
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -702,7 +697,7 @@ describe('sankey tests', function() {
                 return Plotly.relayout(gd, 'hoverlabel.font.family', 'Roboto');
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -727,7 +722,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -758,7 +753,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -773,15 +768,14 @@ describe('sankey tests', function() {
                     ['rgb(255, 255, 0)', 'rgb(255, 0, 255)', 18, 'Roboto', 'rgb(0, 128, 0)']
                 );
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should position hover labels correctly', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
             .then(function() {
                 _hover(900, 230);
 
@@ -790,7 +784,7 @@ describe('sankey tests', function() {
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
 
-                var g = d3.select('.hovertext');
+                var g = d3Select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
                 expect(pos.x).toBeCloseTo(555, -1.5, 'it should have correct x position');
                 expect(pos.y).toBeCloseTo(196, -1.5, 'it should have correct y position');
@@ -804,13 +798,12 @@ describe('sankey tests', function() {
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
 
-                var g = d3.select('.hovertext');
+                var g = d3Select('.hovertext');
                 var pos = g.node().getBoundingClientRect();
                 expect(pos.x).toBeCloseTo(279, -1.5, 'it should have correct x position');
                 expect(pos.y).toBeCloseTo(500, -1.5, 'it should have correct y position');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should show the correct hover labels when hovertemplate is specified', function(done) {
@@ -821,8 +814,8 @@ describe('sankey tests', function() {
             mockCopy.data[0].link.customdata = [];
             mockCopy.data[0].link.customdata[61] = ['linkCustomdata0', 'linkCustomdata1'];
 
-            Plotly.plot(gd, mockCopy).then(function() {
-                _hover(404, 302);
+            Plotly.newPlot(gd, mockCopy).then(function() {
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -845,7 +838,7 @@ describe('sankey tests', function() {
                 });
             })
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     [ 'hovertemplate', '447TWh', '447.48', 'nodeCustomdata0/nodeCustomdata1', 'trace 0'],
@@ -860,8 +853,7 @@ describe('sankey tests', function() {
                     ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                 );
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should show the correct hover labels with the style provided in template', function(done) {
@@ -896,9 +888,9 @@ describe('sankey tests', function() {
                 }
             };
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
             .then(function() {
-                _hover(404, 302);
+                _hover(410, 300);
 
                 assertLabel(
                     ['Solid', 'incoming flow count: 4', 'outgoing flow count: 3', '447TWh'],
@@ -913,8 +905,7 @@ describe('sankey tests', function() {
                     ['rgb(255, 255, 0)', 'rgb(255, 0, 255)', 18, 'Roboto', 'rgb(0, 128, 0)']
                 );
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should show the correct hover labels even if there is no link.label supplied', function(done) {
@@ -922,7 +913,7 @@ describe('sankey tests', function() {
             var mockCopy = Lib.extendDeep({}, mock);
             delete mockCopy.data[0].link.label;
 
-            Plotly.plot(gd, mockCopy)
+            Plotly.newPlot(gd, mockCopy)
                 .then(function() {
                     _hover(450, 300);
 
@@ -931,14 +922,13 @@ describe('sankey tests', function() {
                         ['rgb(0, 0, 96)', 'rgb(255, 255, 255)', 13, 'Arial', 'rgb(255, 255, 255)']
                     );
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
         });
 
         it('should show the multiple hover labels in a flow in hovermode `x`', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
-            Plotly.plot(gd, mockCopy).then(function() {
+            Plotly.newPlot(gd, mockCopy).then(function() {
                 _hover(351, 202);
 
                 assertLabel(
@@ -946,7 +936,7 @@ describe('sankey tests', function() {
                     ['rgb(144, 238, 144)', 'rgb(68, 68, 68)', 13, 'Arial', 'rgb(68, 68, 68)']
                 );
 
-                var g = d3.selectAll('.hovertext');
+                var g = d3SelectAll('.hovertext');
                 expect(g.size()).toBe(1);
                 return Plotly.relayout(gd, 'hovermode', 'x');
             })
@@ -968,19 +958,18 @@ describe('sankey tests', function() {
                     ]
                 );
 
-                var g = d3.select('.hovertext:nth-child(3)');
+                var g = d3Select('.hovertext:nth-child(3)');
                 var domRect = g.node().getBoundingClientRect();
                 expect((domRect.bottom + domRect.top) / 2).toBeCloseTo(203, 0, 'it should center the hoverlabel associated with hovered link');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not show any labels if hovermode is false', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy).then(function() {
+            Plotly.newPlot(gd, mockCopy).then(function() {
                 return Plotly.relayout(gd, 'hovermode', false);
             })
             .then(function() {
@@ -991,8 +980,7 @@ describe('sankey tests', function() {
                 _hover(link[0], link[1]);
                 assertNoLabel();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         ['skip', 'none'].forEach(function(hoverinfoFlag) {
@@ -1000,15 +988,14 @@ describe('sankey tests', function() {
                 var gd = createGraphDiv();
                 var mockCopy = Lib.extendDeep({}, mock);
 
-                Plotly.plot(gd, mockCopy).then(function() {
+                Plotly.newPlot(gd, mockCopy).then(function() {
                     return Plotly.restyle(gd, 'node.hoverinfo', hoverinfoFlag);
                 })
                 .then(function() {
                     _hover(node[0], node[1]);
                     assertNoLabel();
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -1017,15 +1004,14 @@ describe('sankey tests', function() {
                 var gd = createGraphDiv();
                 var mockCopy = Lib.extendDeep({}, mock);
 
-                Plotly.plot(gd, mockCopy).then(function() {
+                Plotly.newPlot(gd, mockCopy).then(function() {
                     return Plotly.restyle(gd, 'link.hoverinfo', hoverinfoFlag);
                 })
                 .then(function() {
                     _hover(link[0], link[1]);
                     assertNoLabel();
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -1034,7 +1020,7 @@ describe('sankey tests', function() {
                 var gd = createGraphDiv();
                 var mockCopy = Lib.extendDeep({}, mock);
 
-                Plotly.plot(gd, mockCopy).then(function() {
+                Plotly.newPlot(gd, mockCopy).then(function() {
                     return Plotly.restyle(gd, 'hoverinfo', hoverinfoFlag);
                 })
                 .then(function() {
@@ -1045,8 +1031,7 @@ describe('sankey tests', function() {
                     _hover(link[0], link[1]);
                     assertNoLabel();
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -1054,23 +1039,22 @@ describe('sankey tests', function() {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy).then(function() {
+            Plotly.newPlot(gd, mockCopy).then(function() {
                 return Plotly.restyle(gd, 'link.hoverinfo', 'skip');
             })
             .then(function() {
                 _hover(link[0], link[1]);
                 assertNoLabel();
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should honor *hoverlabel.namelength*', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy)
-            .then(function() { _hover(404, 302); })
+            Plotly.newPlot(gd, mockCopy)
+            .then(function() { _hover(410, 300); })
             .then(function() {
                 assertHoverLabelContent({
                     nums: 'Solid\nincoming flow count: 4\noutgoing flow count: 3',
@@ -1080,15 +1064,14 @@ describe('sankey tests', function() {
             .then(function() {
                 return Plotly.restyle(gd, 'hoverlabel.namelength', 3);
             })
-            .then(function() { _hover(404, 302); })
+            .then(function() { _hover(410, 300); })
             .then(function() {
                 assertHoverLabelContent({
                     nums: 'Solid\nincoming flow count: 4\noutgoing flow count: 3',
                     name: '447'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1103,7 +1086,7 @@ describe('sankey tests', function() {
 
         function _makeWrapper(eventType, mouseFn) {
             var posByElementType = {
-                node: [404, 302],
+                node: [410, 300],
                 link: [450, 300]
             };
 
@@ -1147,7 +1130,7 @@ describe('sankey tests', function() {
         it('should output correct click event data', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() { return _click('node'); })
             .then(function(d) {
                 _assert(d, {
@@ -1164,14 +1147,13 @@ describe('sankey tests', function() {
                     value: 46.477
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should output correct hover/unhover event data', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() { return Plotly.restyle(gd, 'hoverinfo', 'none'); })
             .then(function() { return _hover('node'); })
             .then(function(d) {
@@ -1218,8 +1200,7 @@ describe('sankey tests', function() {
                     value: 46.477
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         function assertNoHoverEvents(type) {
@@ -1239,43 +1220,39 @@ describe('sankey tests', function() {
         it('should not output hover/unhover event data when hovermode is false', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() { return Plotly.relayout(gd, 'hovermode', false); })
             .then(assertNoHoverEvents('node'))
             .then(assertNoHoverEvents('link'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not output hover/unhover event data when trace hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
             .then(function() { return Plotly.restyle(gd, 'hoverinfo', 'skip'); })
             .then(assertNoHoverEvents('link'))
             .then(assertNoHoverEvents('node'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not output hover/unhover event data when link.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
                   .then(function() { return Plotly.restyle(gd, 'link.hoverinfo', 'skip'); })
                   .then(assertNoHoverEvents('link'))
-                  .catch(failTest)
-                  .then(done);
+                  .then(done, done.fail);
         });
 
         it('@noCI should not output hover/unhover event data when node.hoverinfo is skip', function(done) {
             var fig = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, fig)
+            Plotly.newPlot(gd, fig)
                   .then(function() { return Plotly.restyle(gd, 'node.hoverinfo', 'skip'); })
                   .then(assertNoHoverEvents('node'))
-                  .catch(failTest)
-                  .then(done);
+                  .then(done, done.fail);
         });
     });
 
@@ -1329,8 +1306,7 @@ describe('sankey tests', function() {
 
                     Plotly.newPlot(gd, mockCopy)
                       .then(testDragNode(move))
-                      .catch(failTest)
-                      .then(done);
+                      .then(done, done.fail);
                 });
 
                 it('should not change the position of a node if the mouse does not move', function(done) {
@@ -1339,11 +1315,10 @@ describe('sankey tests', function() {
 
                     Plotly.newPlot(gd, mockCopy)
                       .then(testDragNode(move))
-                      .catch(failTest)
-                      .then(done);
+                      .then(done, done.fail);
                 });
 
-                it('@noCI should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
+                it('@flaky should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
                     var move = [50, -50];
                     var nodes;
@@ -1387,8 +1362,7 @@ describe('sankey tests', function() {
                           }
                           return true;
                       })
-                      .catch(failTest)
-                      .then(done);
+                      .then(done, done.fail);
                 });
             });
         });
@@ -1418,7 +1392,7 @@ describe('sankey tests', function() {
                     var mockCopy = Lib.extendDeep({}, mockCircularFreeform);
                     mockCopy.layout.uirevision = uirevisions[0];
 
-                    Plotly.plot(gd, mockCopy)
+                    Plotly.newPlot(gd, mockCopy)
                       .then(function() {
                           // move a node around
                           nodes = document.getElementsByClassName('sankey-node');
@@ -1461,8 +1435,7 @@ describe('sankey tests', function() {
                           expect(newPosition.x).toBeCloseTo(pos[0], 2, 'x position ' + msg);
                           expect(newPosition.y).toBeCloseTo(pos[1], 2, 'y position ' + msg);
                       })
-                      .catch(failTest)
-                      .then(done);
+                      .then(done, done.fail);
                 });
             });
         });
@@ -1476,7 +1449,7 @@ describe('sankey tests', function() {
         spyOn(Lib, 'warn').and.callFake(function(msg) {
             warnings.push(msg);
         });
-        Plotly.plot(gd, mockCopy).then(function() {
+        Plotly.newPlot(gd, mockCopy).then(function() {
             expect(warnings.length).toEqual(0);
 
             return Plotly.restyle(gd, 'node.pad', 50);
@@ -1495,10 +1468,10 @@ function assertLabel(content, style) {
 }
 
 function assertMultipleLabels(contentArray, styleArray) {
-    var g = d3.selectAll('.hovertext');
+    var g = d3SelectAll('.hovertext');
     expect(g.size()).toEqual(contentArray.length, 'wrong number of hoverlabels, expected to find ' + contentArray.length);
     g.each(function(el, i) {
-        _assertLabelGroup(d3.select(this), contentArray[i], styleArray[i]);
+        _assertLabelGroup(d3Select(this), contentArray[i], styleArray[i]);
     });
 }
 
@@ -1514,7 +1487,7 @@ function _assertLabelGroup(g, content, style) {
     expect(lines.size()).toBe(content.length - 1);
 
     lines.each(function(_, i) {
-        expect(d3.select(this).text()).toBe(content[i]);
+        expect(d3Select(this).text()).toBe(content[i]);
     });
 
     expect(name.text()).toBe(content[content.length - 1]);
@@ -1529,7 +1502,7 @@ function _assertLabelGroup(g, content, style) {
 }
 
 function assertNoLabel() {
-    var g = d3.selectAll('.hovertext');
+    var g = d3SelectAll('.hovertext');
     expect(g.size()).toBe(0);
 }
 

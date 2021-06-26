@@ -1,15 +1,7 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var c = require('./constants');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var keyFun = require('../../lib/gup').keyFun;
 var repeat = require('../../lib/gup').repeat;
 var sortAsc = require('../../lib').sorterAsc;
@@ -362,7 +354,7 @@ function attachDragBehavior(selection) {
 
 function startAsc(a, b) { return a[0] - b[0]; }
 
-function renderAxisBrush(axisBrush) {
+function renderAxisBrush(axisBrush, paperColor) {
     var background = axisBrush.selectAll('.background').data(repeat);
 
     background.enter()
@@ -386,7 +378,7 @@ function renderAxisBrush(axisBrush) {
         .classed('highlight-shadow', true)
         .attr('x', -c.bar.width / 2)
         .attr('stroke-width', c.bar.width + c.bar.strokeWidth)
-        .attr('stroke', c.bar.strokeColor)
+        .attr('stroke', paperColor)
         .attr('opacity', c.bar.strokeOpacity)
         .attr('stroke-linecap', 'butt');
 
@@ -410,7 +402,7 @@ function renderAxisBrush(axisBrush) {
         .call(styleHighlight);
 }
 
-function ensureAxisBrush(axisOverlays) {
+function ensureAxisBrush(axisOverlays, paperColor) {
     var axisBrush = axisOverlays.selectAll('.' + c.cn.axisBrush)
         .data(repeat, keyFun);
 
@@ -418,7 +410,7 @@ function ensureAxisBrush(axisOverlays) {
         .append('g')
         .classed(c.cn.axisBrush, true);
 
-    renderAxisBrush(axisBrush);
+    renderAxisBrush(axisBrush, paperColor);
 }
 
 function getBrushExtent(brush) {

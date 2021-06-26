@@ -1,14 +1,6 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var mapboxgl = require('mapbox-gl');
+var mapboxgl = require('mapbox-gl/dist/mapbox-gl-unminified');
 
 var Lib = require('../../lib');
 var geoUtils = require('../../lib/geo_location_utils');

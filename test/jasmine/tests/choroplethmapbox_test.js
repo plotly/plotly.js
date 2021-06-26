@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var loggers = require('@src/lib/loggers');
@@ -516,7 +516,7 @@ describe('Test choroplethmapbox convert:', function() {
     });
 });
 
-describe('@noCI Test choroplethmapbox hover:', function() {
+describe('Test choroplethmapbox hover:', function() {
     var gd;
 
     afterEach(function(done) {
@@ -554,7 +554,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
 
         var pos = s.pos || [270, 220];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             if(hasCssTransform) transformPlot(gd, 'translate(-25%, -25%) scale(0.5)');
 
             var to = setTimeout(function() {
@@ -653,7 +653,7 @@ describe('@noCI Test choroplethmapbox hover:', function() {
     });
 });
 
-describe('@noCI Test choroplethmapbox interactions:', function() {
+describe('Test choroplethmapbox interactions:', function() {
     var gd;
 
     var geojson = {
@@ -708,7 +708,7 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
             marker: {opacity: 0.3}
         };
 
-        Plotly.plot(gd,
+        Plotly.newPlot(gd,
             [trace0, trace1],
             {mapbox: {style: 'basic'}},
             {mapboxAccessToken: MAPBOX_ACCESS_TOKEN}
@@ -724,8 +724,7 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
         .then(function() {
             _assert('after adding trace0', { layerCnt: 24 });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to restyle *below*', function(done) {
@@ -736,7 +735,7 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
             return layerIds;
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'choroplethmapbox',
             locations: ['AL'],
             z: [10],
@@ -790,7 +789,6 @@ describe('@noCI Test choroplethmapbox interactions:', function() {
                 'place_label_other', 'place_label_city', 'country_label'
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -54,9 +46,45 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     var axTemplate = containerOut._template || {};
     var axType = containerOut.type || axTemplate.type || '-';
 
+    var ticklabelmode;
     if(axType === 'date') {
         var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleDefaults');
         handleCalendarDefaults(containerIn, containerOut, 'calendar', options.calendar);
+
+        if(!options.noTicklabelmode) {
+            ticklabelmode = coerce('ticklabelmode');
+        }
+    }
+
+    var ticklabelposition = '';
+    if(!options.noTicklabelposition || axType === 'multicategory') {
+        ticklabelposition = Lib.coerce(containerIn, containerOut, {
+            ticklabelposition: {
+                valType: 'enumerated',
+                dflt: 'outside',
+                values: ticklabelmode === 'period' ? ['outside', 'inside'] :
+                letter === 'x' ? [
+                    'outside', 'inside',
+                    'outside left', 'inside left',
+                    'outside right', 'inside right'
+                ] : [
+                    'outside', 'inside',
+                    'outside top', 'inside top',
+                    'outside bottom', 'inside bottom'
+                ]
+            }
+        }, 'ticklabelposition');
+    }
+
+    if(!options.noTicklabeloverflow) {
+        coerce('ticklabeloverflow',
+            ticklabelposition.indexOf('inside') !== -1 ?
+                'hide past domain' :
+            axType === 'category' ||
+            axType === 'multicategory' ?
+                'allow' :
+                'hide past div'
+        );
     }
 
     setConvert(containerOut, layoutOut);
@@ -88,7 +116,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('title.text', dfltTitle);
     Lib.coerceFont(coerce, 'title.font', {
         family: font.family,
-        size: Math.round(font.size * 1.2),
+        size: Lib.bigFont(font.size),
         color: dfltFontColor
     });
 
@@ -114,7 +142,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     ) {
         var ticksonDflt;
         if(isMultiCategory) ticksonDflt = 'boundaries';
-        coerce('tickson', ticksonDflt);
+        var tickson = coerce('tickson', ticksonDflt);
+        if(tickson === 'boundaries') {
+            delete containerOut.ticklabelposition;
+        }
     }
 
     if(isMultiCategory) {
@@ -126,8 +157,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     }
 
     if(axType === 'date') {
-        if(!options.noTicklabelmode) coerce('ticklabelmode');
-
         handleArrayContainerDefaults(containerIn, containerOut, {
             name: 'rangebreaks',
             inclusionAttr: 'enabled',

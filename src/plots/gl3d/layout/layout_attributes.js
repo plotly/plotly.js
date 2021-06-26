@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var gl3dAxisAttrs = require('./axis_attributes');
@@ -18,19 +9,16 @@ function makeCameraVector(x, y, z) {
     return {
         x: {
             valType: 'number',
-            role: 'info',
             dflt: x,
             editType: 'camera'
         },
         y: {
             valType: 'number',
-            role: 'info',
             dflt: y,
             editType: 'camera'
         },
         z: {
             valType: 'number',
-            role: 'info',
             dflt: z,
             editType: 'camera'
         },
@@ -43,7 +31,6 @@ module.exports = {
 
     bgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: 'rgba(0,0,0,0)',
         editType: 'plot'
     },
@@ -75,7 +62,6 @@ module.exports = {
         projection: {
             type: {
                 valType: 'enumerated',
-                role: 'info',
                 values: ['perspective', 'orthographic'],
                 dflt: 'perspective',
                 editType: 'calc',
@@ -92,7 +78,6 @@ module.exports = {
     domain: domainAttrs({name: 'scene', editType: 'plot'}),
     aspectmode: {
         valType: 'enumerated',
-        role: 'info',
         values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto',
         editType: 'plot',
@@ -121,21 +106,18 @@ module.exports = {
     aspectratio: { // must be positive (0's are coerced to 1)
         x: {
             valType: 'number',
-            role: 'info',
             min: 0,
             editType: 'plot',
             impliedEdits: {'^aspectmode': 'manual'}
         },
         y: {
             valType: 'number',
-            role: 'info',
             min: 0,
             editType: 'plot',
             impliedEdits: {'^aspectmode': 'manual'}
         },
         z: {
             valType: 'number',
-            role: 'info',
             min: 0,
             editType: 'plot',
             impliedEdits: {'^aspectmode': 'manual'}
@@ -153,7 +135,6 @@ module.exports = {
 
     dragmode: {
         valType: 'enumerated',
-        role: 'info',
         values: ['orbit', 'turntable', 'zoom', 'pan', false],
         editType: 'plot',
         description: [
@@ -162,7 +143,6 @@ module.exports = {
     },
     hovermode: {
         valType: 'enumerated',
-        role: 'info',
         values: ['closest', false],
         dflt: 'closest',
         editType: 'modebar',
@@ -172,7 +152,6 @@ module.exports = {
     },
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in camera attributes.',
@@ -184,7 +163,6 @@ module.exports = {
     _deprecated: {
         cameraposition: {
             valType: 'info_array',
-            role: 'info',
             editType: 'camera',
             description: 'Obsolete. Use `camera` instead.'
         }

@@ -4,6 +4,8 @@ var Plotly = require('@lib/index');
 var Registry = require('@src/registry');
 
 var Lib = require('@src/lib');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var failTest = require('../assets/fail_test');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -127,10 +129,10 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
                 dataCopy[0].texttemplate = test[0];
                 Plotly.newPlot(gd, dataCopy, Lib.extendDeep({}, layout))
                     .then(function() {
-                        var pts = Plotly.d3.selectAll(selector);
+                        var pts = d3SelectAll(selector);
                         expect(pts.size()).toBe(test[1].length);
                         pts.each(function() {
-                            expect(test[1]).toContain(Plotly.d3.select(this).text());
+                            expect(test[1]).toContain(d3Select(this).text());
                         });
                     })
                     .catch(failTest)

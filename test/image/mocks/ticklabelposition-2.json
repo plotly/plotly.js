@@ -1,0 +1,167 @@
+{
+    "data": [{
+        "yaxis": "y",
+        "xaxis": "x",
+        "y": ["20-11", "21-03"],
+        "x": [1e-1, 1e+6]
+    }, {
+        "yaxis": "y2",
+        "xaxis": "x2",
+        "y": ["20-10", "21-04"],
+        "x": [1e-1, 1e+6]
+    }, {
+        "yaxis": "y3",
+        "xaxis": "x3",
+        "y": ["01-01", "01-09"],
+        "x": [1e-1, 1e+6]
+    }, {
+        "yaxis": "y4",
+        "xaxis": "x4",
+        "y": ["01", "10"],
+        "x": [1e-1, 1e+6]
+    }],
+    "layout": {
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "type": "date",
+            "ticklabelmode": "period",
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickfont": { "size": 16 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "xaxis": {
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "autorange": "reversed",
+            "type": "log",
+            "side": "bottom",
+            "ticks": "inside",
+            "ticklabelposition": "inside right",
+            "tickfont": { "size": 20 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0.525, 1],
+            "autorange": "reversed",
+            "type": "date",
+            "side": "left",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "tickfont": { "size": 20 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [0, 0.475],
+            "type": "log",
+            "side": "top",
+            "ticks": "inside",
+            "ticklabelposition": "inside right",
+            "tickfont": { "size": 16 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "type": "date",
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside bottom",
+            "tickfont": { "size": 20 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "autorange": "reversed",
+            "type": "log",
+            "side": "top",
+            "ticks": "inside",
+            "ticklabelposition": "inside left",
+            "tickfont": { "size": 16 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [0, 0.475],
+            "autorange": "reversed",
+            "type": "date",
+            "ticklabelmode": "period",
+            "side": "right",
+            "ticks": "inside",
+            "ticklabelposition": "inside",
+            "tickangle": -45,
+            "tickfont": { "size": 16 },
+            "ticklen": 8,
+            "tickwidth": 4,
+            "linewidth": 4,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0.525, 1],
+            "type": "log",
+            "side": "bottom",
+            "ticks": "inside",
+            "ticklabelposition": "inside left",
+            "tickangle": 45,
+            "tickfont": { "size": 16 },
+            "ticklen": 16,
+            "tickwidth": 8,
+            "linewidth": 1,
+            "linecolor": "yellow",
+            "tickcolor": "yellow",
+            "gridcolor": "rgb(191,191,191)"
+        },
+        "font": {
+            "family": "Raleway"
+        },
+        "paper_bgcolor": "rgb(191,191,191)",
+        "plot_bgcolor": "rgb(63,63,63)",
+        "showlegend": false,
+        "width": 1000,
+        "height": 1000,
+        "margin": {
+            "t": 40,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        }
+    }
+}

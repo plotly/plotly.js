@@ -1,4 +1,5 @@
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var alignmentConstants = require('@src/constants/alignment');
@@ -9,6 +10,7 @@ var rgb = require('@src/components/color').rgb;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+
 
 describe('Plot title', function() {
     'use strict';
@@ -26,7 +28,7 @@ describe('Plot title', function() {
     var containerElemSelector = {
         desc: 'container',
         select: function() {
-            return d3.selectAll('.svg-container').node();
+            return d3SelectAll('.svg-container').node();
         },
         ref: 'container'
     };
@@ -34,7 +36,7 @@ describe('Plot title', function() {
     var paperElemSelector = {
         desc: 'plot area',
         select: function() {
-            var bgLayer = d3.selectAll('.bglayer .bg');
+            var bgLayer = d3SelectAll('.bglayer .bg');
             expect(bgLayer.empty()).toBe(false,
               'No background layer found representing the size of the plot area');
             return bgLayer.node();
@@ -42,28 +44,31 @@ describe('Plot title', function() {
         ref: 'paper'
     };
 
-    it('is centered horizontally and vertically above the plot by default', function() {
-        Plotly.plot(gd, data, {title: {text: 'Plotly line chart'}});
-
-        expectDefaultCenteredPosition(gd);
+    it('is centered horizontally and vertically above the plot by default', function(done) {
+        Plotly.newPlot(gd, data, {title: {text: 'Plotly line chart'}})
+        .then(function() {
+            expectDefaultCenteredPosition(gd);
+        })
+        .then(done, done.fail);
     });
 
-    it('can still be defined as `layout.title` to ensure backwards-compatibility', function() {
-        Plotly.plot(gd, data, {title: 'Plotly line chart'});
-
-        expectTitle('Plotly line chart');
-        expectDefaultCenteredPosition(gd);
+    it('can still be defined as `layout.title` to ensure backwards-compatibility', function(done) {
+        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
+        .then(function() {
+            expectTitle('Plotly line chart');
+            expectDefaultCenteredPosition(gd);
+        })
+        .then(done, done.fail);
     });
 
     it('can be updated via `relayout`', function(done) {
-        Plotly.plot(gd, data, {title: 'Plotly line chart'})
+        Plotly.newPlot(gd, data, {title: 'Plotly line chart'})
           .then(expectTitleFn('Plotly line chart'))
           .then(function() {
               return Plotly.relayout(gd, {title: {text: 'Some other title'}});
           })
           .then(expectTitleFn('Some other title'))
-          .catch(fail)
-          .then(done);
+          .then(done, done.fail);
     });
 
     // Horizontal alignment
@@ -77,34 +82,40 @@ describe('Plot title', function() {
             xref: 'paper'
         }
     ].forEach(function(testCase) {
-        it('can be placed at the left edge of the ' + testCase.selector.desc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed at the left edge of the ' + testCase.selector.desc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: testCase.xref,
                 x: 0,
                 xanchor: 'left'
-            }));
-
-            expectLeftEdgeAlignedTo(testCase.selector);
+            }))
+            .then(function() {
+                expectLeftEdgeAlignedTo(testCase.selector);
+            })
+            .then(done, done.fail);
         });
 
-        it('can be placed at the right edge of the ' + testCase.selector.desc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed at the right edge of the ' + testCase.selector.desc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: testCase.xref,
                 x: 1,
                 xanchor: 'right'
-            }));
-
-            expectRightEdgeAlignedTo(testCase.selector);
+            }))
+            .then(function() {
+                expectRightEdgeAlignedTo(testCase.selector);
+            })
+            .then(done, done.fail);
         });
 
-        it('can be placed at the center of the ' + testCase.selector.desc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed at the center of the ' + testCase.selector.desc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: testCase.xref,
                 x: 0.5,
                 xanchor: 'center'
-            }));
-
-            expectCenteredWithin(testCase.selector);
+            }))
+            .then(function() {
+                expectCenteredWithin(testCase.selector);
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -119,52 +130,61 @@ describe('Plot title', function() {
             yref: 'paper'
         }
     ].forEach(function(testCase) {
-        it('can be placed at the top edge of the ' + testCase.selector.desc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed at the top edge of the ' + testCase.selector.desc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: testCase.yref,
                 y: 1,
                 yanchor: 'top'
-            }));
-
-            expectCapLineAlignsWithTopEdgeOf(testCase.selector);
+            }))
+            .then(function() {
+                expectCapLineAlignsWithTopEdgeOf(testCase.selector);
+            })
+            .then(done, done.fail);
         });
 
-        it('can be placed at the bottom edge of the ' + testCase.selector.desc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed at the bottom edge of the ' + testCase.selector.desc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: testCase.yref,
                 y: 0,
                 yanchor: 'bottom'
-            }));
-
-            expectBaselineAlignsWithBottomEdgeOf(testCase.selector);
+            }))
+            .then(function() {
+                expectBaselineAlignsWithBottomEdgeOf(testCase.selector);
+            })
+            .then(done, done.fail);
         });
 
-        it('can be placed in the vertical center of the ' + testCase.selector.desc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed in the vertical center of the ' + testCase.selector.desc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: testCase.yref,
                 y: 0.5,
                 yanchor: 'middle'
-            }));
-
-            expectCenteredVerticallyWithin(testCase.selector);
+            }))
+            .then(function() {
+                expectCenteredVerticallyWithin(testCase.selector);
+            })
+            .then(done, done.fail);
         });
     });
 
     // y 'auto' value
     it('provides a y \'auto\' value putting title baseline in middle ' +
-      'of top margin irrespective of `yref`', function() {
+      'of top margin irrespective of `yref`', function(done) {
         // yref: 'container'
-        Plotly.plot(gd, data, extendLayout({
+        Plotly.newPlot(gd, data, extendLayout({
             yref: 'container',
             y: 'auto'
-        }));
+        }))
+        .then(function() {
+            expectBaselineInMiddleOfTopMargin(gd);
 
-        expectBaselineInMiddleOfTopMargin(gd);
-
-        // yref: 'paper'
-        Plotly.relayout(gd, {'title.yref': 'paper'});
-
-        expectBaselineInMiddleOfTopMargin(gd);
+            // yref: 'paper'
+            return Plotly.relayout(gd, {'title.yref': 'paper'});
+        })
+        .then(function() {
+            expectBaselineInMiddleOfTopMargin(gd);
+        })
+        .then(done, done.fail);
     });
 
     // xanchor 'auto' test
@@ -184,15 +204,17 @@ describe('Plot title', function() {
     function runXAnchorAutoTest(testCase, xref) {
         var testDesc = 'with {xanchor: \'auto\', x: ' + testCase.x + ', xref: \'' + xref +
           '\'} expected to be aligned ' + testCase.expAlignment;
-        it(testDesc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it(testDesc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: xref,
                 x: testCase.x,
                 xanchor: 'auto'
-            }));
-
-            var textAnchor = titleSel().attr('text-anchor');
-            expect(textAnchor).toBe(testCase.expAlignment, testDesc);
+            }))
+            .then(function() {
+                var textAnchor = titleSel().attr('text-anchor');
+                expect(textAnchor).toBe(testCase.expAlignment, testDesc);
+            })
+            .then(done, done.fail);
         });
     }
 
@@ -215,76 +237,89 @@ describe('Plot title', function() {
     function runYAnchorAutoTest(testCase, yref, elemSelector) {
         var testDesc = 'with {yanchor: \'auto\', y: ' + testCase.y + ', yref: \'' + yref +
           '\'} expected to be aligned ' + testCase.expAlignment;
-        it(testDesc, function() {
-            Plotly.plot(gd, data, extendLayout({
+        it(testDesc, function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: yref,
                 y: testCase.y,
                 yanchor: 'auto'
-            }));
-
-            testCase.expFn(elemSelector);
+            }))
+            .then(function() {
+                testCase.expFn(elemSelector);
+            })
+            .then(done, done.fail);
         });
     }
 
     it('{y: \'auto\'} overrules {yanchor: \'auto\'} to support behavior ' +
-      'before chart title alignment was introduced', function() {
-        Plotly.plot(gd, data, extendLayout({
+      'before chart title alignment was introduced', function(done) {
+        Plotly.newPlot(gd, data, extendLayout({
             y: 'auto',
             yanchor: 'auto'
-        }));
-
-        expectDefaultCenteredPosition(gd);
+        }))
+        .then(function() {
+            expectDefaultCenteredPosition(gd);
+        })
+        .then(done, done.fail);
     });
 
     // Horizontal padding
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
-        it('can be placed x pixels away from left ' + refSelector.desc + ' edge', function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed x pixels away from left ' + refSelector.desc + ' edge', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: refSelector.ref,
                 xanchor: 'left',
                 x: 0,
                 pad: titlePad
-            }));
-
-            expect(titleSel().attr('text-anchor')).toBe('start');
-            expect(titleX() - 10).toBe(leftOf(refSelector));
+            }))
+            .then(function() {
+                expect(titleSel().attr('text-anchor')).toBe('start');
+                expect(titleX() - 10).toBe(leftOf(refSelector));
+            })
+            .then(done, done.fail);
         });
     });
 
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
-        it('can be placed x pixels away from right ' + refSelector.desc + ' edge', function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed x pixels away from right ' + refSelector.desc + ' edge', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: refSelector.ref,
                 xanchor: 'right',
                 x: 1,
                 pad: titlePad
-            }));
-
-            expect(titleSel().attr('text-anchor')).toBe('end');
-            expect(titleX() + 10).toBe(rightOf(refSelector));
+            }))
+            .then(function() {
+                expect(titleSel().attr('text-anchor')).toBe('end');
+                expect(titleX() + 10).toBe(rightOf(refSelector));
+            })
+            .then(done, done.fail);
         });
     });
 
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('figures out for itself which horizontal padding applies when {xanchor: \'auto\'}' +
-          refSelector.desc + ' edge', function() {
-            Plotly.plot(gd, data, extendLayout({
+          refSelector.desc + ' edge', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: refSelector.ref,
                 xanchor: 'auto',
                 x: 1,
                 pad: titlePad
-            }));
+            }))
+            .then(function() {
+                expect(titleSel().attr('text-anchor')).toBe('end');
+                expect(titleX() + 10).toBe(rightOf(refSelector));
 
-            expect(titleSel().attr('text-anchor')).toBe('end');
-            expect(titleX() + 10).toBe(rightOf(refSelector));
+                return Plotly.relayout(gd, 'title.x', 0);
+            })
+            .then(function() {
+                expect(titleSel().attr('text-anchor')).toBe('start');
+                expect(titleX() - 10).toBe(leftOf(refSelector));
 
-            Plotly.relayout(gd, 'title.x', 0);
-
-            expect(titleSel().attr('text-anchor')).toBe('start');
-            expect(titleX() - 10).toBe(leftOf(refSelector));
-
-            Plotly.relayout(gd, 'title.x', 0.5);
-            expectCenteredWithin(refSelector);
+                return Plotly.relayout(gd, 'title.x', 0.5);
+            })
+            .then(function() {
+                expectCenteredWithin(refSelector);
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -294,93 +329,108 @@ describe('Plot title', function() {
         {pad: {l: 20}, dir: 'left'},
         {pad: {r: 20}, dir: 'right'}
     ].forEach(function(testCase) {
-        it('mutes ' + testCase.dir + ' padding for {xanchor: \'center\'}', function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('mutes ' + testCase.dir + ' padding for {xanchor: \'center\'}', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 xref: 'paper',
                 xanchor: 'middle',
                 x: 0.5,
                 pad: testCase.pad
-            }));
-
-            expectCenteredWithin(paperElemSelector);
+            }))
+            .then(function() {
+                expectCenteredWithin(paperElemSelector);
+            })
+            .then(done, done.fail);
         });
     });
 
-    it('mutes left padding when xanchor is right', function() {
-        Plotly.plot(gd, data, extendLayout({
+    it('mutes left padding when xanchor is right', function(done) {
+        Plotly.newPlot(gd, data, extendLayout({
             xref: 'paper',
             x: 1,
             xanchor: 'right',
             pad: {
                 l: 1000
             }
-        }));
-
-        expectRightEdgeAlignedTo(paperElemSelector);
+        }))
+        .then(function() {
+            expectRightEdgeAlignedTo(paperElemSelector);
+        })
+        .then(done, done.fail);
     });
 
-    it('mutes right padding when xanchor is left', function() {
-        Plotly.plot(gd, data, extendLayout({
+    it('mutes right padding when xanchor is left', function(done) {
+        Plotly.newPlot(gd, data, extendLayout({
             xref: 'paper',
             x: 0,
             xanchor: 'left',
             pad: {
                 r: 1000
             }
-        }));
-
-        expectLeftEdgeAlignedTo(paperElemSelector);
+        }))
+        .then(function() {
+            expectLeftEdgeAlignedTo(paperElemSelector);
+        })
+        .then(done, done.fail);
     });
 
     // Vertical padding
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
-        it('can be placed x pixels below top ' + refSelector.desc + ' edge', function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed x pixels below top ' + refSelector.desc + ' edge', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: refSelector.ref,
                 yanchor: 'top',
                 y: 1,
                 pad: titlePad
-            }));
-
-            var capLineY = calcTextCapLineY(titleSel());
-            expect(capLineY).toBe(topOf(refSelector) + 10);
+            }))
+            .then(function() {
+                var capLineY = calcTextCapLineY(titleSel());
+                expect(capLineY).toBe(topOf(refSelector) + 10);
+            })
+            .then(done, done.fail);
         });
     });
 
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
-        it('can be placed x pixels above bottom ' + refSelector.desc + ' edge', function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('can be placed x pixels above bottom ' + refSelector.desc + ' edge', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: refSelector.ref,
                 yanchor: 'bottom',
                 y: 0,
                 pad: titlePad
-            }));
-
-            var baselineY = calcTextBaselineY(titleSel());
-            expect(baselineY).toBe(bottomOf(refSelector) - 10);
+            }))
+            .then(function() {
+                var baselineY = calcTextBaselineY(titleSel());
+                expect(baselineY).toBe(bottomOf(refSelector) - 10);
+            })
+            .then(done, done.fail);
         });
     });
 
     [containerElemSelector, paperElemSelector].forEach(function(refSelector) {
         it('figures out for itself which vertical padding applies when {yanchor: \'auto\'}' +
-          refSelector.desc + ' edge', function() {
-            Plotly.plot(gd, data, extendLayout({
+          refSelector.desc + ' edge', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: refSelector.ref,
                 yanchor: 'auto',
                 y: 1,
                 pad: titlePad
-            }));
+            }))
+            .then(function() {
+                var capLineY = calcTextCapLineY(titleSel());
+                expect(capLineY).toBe(topOf(refSelector) + 10);
 
-            var capLineY = calcTextCapLineY(titleSel());
-            expect(capLineY).toBe(topOf(refSelector) + 10);
+                return Plotly.relayout(gd, 'title.y', 0);
+            })
+            .then(function() {
+                var baselineY = calcTextBaselineY(titleSel());
+                expect(baselineY).toBe(bottomOf(refSelector) - 10);
 
-            Plotly.relayout(gd, 'title.y', 0);
-
-            var baselineY = calcTextBaselineY(titleSel());
-            expect(baselineY).toBe(bottomOf(refSelector) - 10);
-
-            Plotly.relayout(gd, 'title.y', 0.5);
-            expectCenteredVerticallyWithin(refSelector);
+                return Plotly.relayout(gd, 'title.y', 0.5);
+            })
+            .then(function() {
+                expectCenteredVerticallyWithin(refSelector);
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -390,42 +440,48 @@ describe('Plot title', function() {
         {pad: {t: 20}, dir: 'top'},
         {pad: {b: 20}, dir: 'bottom'}
     ].forEach(function(testCase) {
-        it('mutes ' + testCase.dir + ' padding for {yanchor: \'middle\'}', function() {
-            Plotly.plot(gd, data, extendLayout({
+        it('mutes ' + testCase.dir + ' padding for {yanchor: \'middle\'}', function(done) {
+            Plotly.newPlot(gd, data, extendLayout({
                 yref: 'paper',
                 yanchor: 'middle',
                 y: 0.5,
                 pad: testCase.pad
-            }));
-
-            expectCenteredVerticallyWithin(paperElemSelector);
+            }))
+            .then(function() {
+                expectCenteredVerticallyWithin(paperElemSelector);
+            })
+            .then(done, done.fail);
         });
     });
 
-    it('mutes top padding when yanchor is bottom', function() {
-        Plotly.plot(gd, data, extendLayout({
+    it('mutes top padding when yanchor is bottom', function(done) {
+        Plotly.newPlot(gd, data, extendLayout({
             yref: 'paper',
             y: 0,
             yanchor: 'bottom',
             pad: {
                 t: 1000
             }
-        }));
-
-        expectBaselineAlignsWithBottomEdgeOf(paperElemSelector);
+        }))
+        .then(function() {
+            expectBaselineAlignsWithBottomEdgeOf(paperElemSelector);
+        })
+        .then(done, done.fail);
     });
 
-    it('mutes bottom padding when yanchor is top', function() {
-        Plotly.plot(gd, data, extendLayout({
+    it('mutes bottom padding when yanchor is top', function(done) {
+        Plotly.newPlot(gd, data, extendLayout({
             yref: 'paper',
             y: 1,
             yanchor: 'top',
             pad: {
                 b: 1000
             }
-        }));
-
-        expectCapLineAlignsWithTopEdgeOf(paperElemSelector);
+        }))
+        .then(function() {
+            expectCapLineAlignsWithTopEdgeOf(paperElemSelector);
+        })
+        .then(done, done.fail);
     });
 
     function extendLayout(titleAttrs) {
@@ -549,7 +605,7 @@ describe('Titles can be updated', function() {
             yaxis: {title: {text: 'Weight'}}
         };
         gd = createGraphDiv();
-        Plotly.plot(gd, data, Lib.extendDeep({}, layout));
+        Plotly.newPlot(gd, data, Lib.extendDeep({}, layout));
 
         expectTitles('Plotly line chart', 'Age', 'Weight');
     });
@@ -591,16 +647,20 @@ describe('Titles can be updated', function() {
             }
         }
     ].forEach(function(testCase) {
-        it('via `Plotly.relayout` ' + testCase.desc, function() {
-            Plotly.relayout(gd, testCase.update);
-
-            expectChangedTitles();
+        it('via `Plotly.relayout` ' + testCase.desc, function(done) {
+            Plotly.relayout(gd, testCase.update)
+            .then(function() {
+                expectChangedTitles();
+            })
+            .then(done, done.fail);
         });
 
-        it('via `Plotly.update` ' + testCase.desc, function() {
-            Plotly.update(gd, {}, testCase.update);
-
-            expectChangedTitles();
+        it('via `Plotly.update` ' + testCase.desc, function(done) {
+            Plotly.update(gd, {}, testCase.update)
+            .then(function() {
+                expectChangedTitles();
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -648,7 +708,7 @@ describe('Titles and labels', function() {
                 }
             }
         }).then(function() {
-            Plotly.react(gd, {
+            return Plotly.react(gd, {
                 data: [
                     {
                         type: 'bar',
@@ -671,10 +731,9 @@ describe('Titles and labels', function() {
         }).then(function() {
             expectTitle('NEW');
             expect(xTitleSel().text()).toBe('x-new');
-            expect(d3.select('.xtick').text()).toBe('b');
+            expect(d3Select('.xtick').text()).toBe('b');
         })
-        .catch(fail)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -690,7 +749,7 @@ describe('Titles support setting custom font properties', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('through defining a `font` property in the respective title attribute', function() {
+    it('through defining a `font` property in the respective title attribute', function(done) {
         var layout = {
             title: {
                 text: 'Plotly line chart',
@@ -721,14 +780,17 @@ describe('Titles support setting custom font properties', function() {
                 }
             }
         };
-        Plotly.plot(gd, data, layout);
 
-        expectTitleFont('blue', 'serif', 24);
-        expectXAxisTitleFont('#333', 'sans-serif', 20);
-        expectYAxisTitleFont('#666', 'Arial', 16);
+        Plotly.newPlot(gd, data, layout)
+        .then(function() {
+            expectTitleFont('blue', 'serif', 24);
+            expectXAxisTitleFont('#333', 'sans-serif', 20);
+            expectYAxisTitleFont('#666', 'Arial', 16);
+        })
+        .then(done, done.fail);
     });
 
-    it('through using the deprecated `titlefont` properties (backwards-compatibility)', function() {
+    it('through using the deprecated `titlefont` properties (backwards-compatibility)', function(done) {
         var layout = {
             title: {
                 text: 'Plotly line chart',
@@ -759,11 +821,14 @@ describe('Titles support setting custom font properties', function() {
                 }
             }
         };
-        Plotly.plot(gd, data, layout);
 
-        expectTitleFont('blue', 'serif', 24);
-        expectXAxisTitleFont('#333', 'sans-serif', 20);
-        expectYAxisTitleFont('#666', 'Arial', 16);
+        Plotly.newPlot(gd, data, layout)
+        .then(function() {
+            expectTitleFont('blue', 'serif', 24);
+            expectXAxisTitleFont('#333', 'sans-serif', 20);
+            expectYAxisTitleFont('#666', 'Arial', 16);
+        })
+        .then(done, done.fail);
     });
 });
 
@@ -779,7 +844,7 @@ describe('Title fonts can be updated', function() {
     var NEW_YTITLE_FONT = {color: '#999', family: 'serif', size: 12};
     var gd;
 
-    beforeEach(function() {
+    beforeEach(function(done) {
         var layout = {
             title: {
                 text: 'Plotly line chart',
@@ -799,11 +864,13 @@ describe('Title fonts can be updated', function() {
             }
         };
         gd = createGraphDiv();
-        Plotly.plot(gd, data, Lib.extendDeep({}, layout));
-
-        expectTitleFont('black', 'sans-serif', 24);
-        expectXAxisTitleFont('red', 'serif', 20);
-        expectYAxisTitleFont('green', 'monospace', 16);
+        Plotly.newPlot(gd, data, Lib.extendDeep({}, layout))
+        .then(function() {
+            expectTitleFont('black', 'sans-serif', 24);
+            expectXAxisTitleFont('red', 'serif', 20);
+            expectYAxisTitleFont('green', 'monospace', 16);
+        })
+        .then(done);
     });
 
     afterEach(destroyGraphDiv);
@@ -883,16 +950,20 @@ describe('Title fonts can be updated', function() {
             }
         }
     ].forEach(function(testCase) {
-        it('via `Plotly.relayout` ' + testCase.desc, function() {
-            Plotly.relayout(gd, testCase.update);
-
-            expectChangedTitleFonts();
+        it('via `Plotly.relayout` ' + testCase.desc, function(done) {
+            Plotly.relayout(gd, testCase.update)
+            .then(function() {
+                expectChangedTitleFonts();
+            })
+            .then(done, done.fail);
         });
 
-        it('via `Plotly.update` ' + testCase.desc, function() {
-            Plotly.update(gd, {}, testCase.update);
-
-            expectChangedTitleFonts();
+        it('via `Plotly.update` ' + testCase.desc, function(done) {
+            Plotly.update(gd, {}, testCase.update)
+            .then(function() {
+                expectChangedTitleFonts();
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -946,47 +1017,52 @@ describe('Titles for multiple axes', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('still support deprecated `title` and `titlefont` syntax (backwards-compatibility)', function() {
-        Plotly.plot(gd, data, multiAxesLayout);
+    it('still support deprecated `title` and `titlefont` syntax (backwards-compatibility)', function(done) {
+        Plotly.newPlot(gd, data, multiAxesLayout)
+        .then(function() {
+            expect(xTitleSel(1).text()).toBe('X-Axis 1');
+            expect(xTitleSel(1).node().style.fontSize).toBe('30px');
 
-        expect(xTitleSel(1).text()).toBe('X-Axis 1');
-        expect(xTitleSel(1).node().style.fontSize).toBe('30px');
+            expect(xTitleSel(2).text()).toBe('X-Axis 2');
+            expect(xTitleSel(2).node().style.fontFamily).toBe('serif');
 
-        expect(xTitleSel(2).text()).toBe('X-Axis 2');
-        expect(xTitleSel(2).node().style.fontFamily).toBe('serif');
+            expect(yTitleSel(1).text()).toBe('Y-Axis 1');
+            expect(yTitleSel(1).node().style.fontFamily).toBe('Roboto');
 
-        expect(yTitleSel(1).text()).toBe('Y-Axis 1');
-        expect(yTitleSel(1).node().style.fontFamily).toBe('Roboto');
-
-        expect(yTitleSel(2).text()).toBe('Y-Axis 2');
-        expect(yTitleSel(2).node().style.fill).toBe(rgb('blue'));
+            expect(yTitleSel(2).text()).toBe('Y-Axis 2');
+            expect(yTitleSel(2).node().style.fill).toBe(rgb('blue'));
+        })
+        .then(done, done.fail);
     });
 
-    it('can be updated using deprecated `title` and `titlefont` syntax (backwards-compatibility)', function() {
-        Plotly.plot(gd, data, multiAxesLayout);
+    it('can be updated using deprecated `title` and `titlefont` syntax (backwards-compatibility)', function(done) {
+        Plotly.newPlot(gd, data, multiAxesLayout)
+        .then(function() {
+            return Plotly.relayout(gd, {
+                'xaxis2.title': '2nd X-Axis',
+                'xaxis2.titlefont.color': 'pink',
+                'xaxis2.titlefont.family': 'sans-serif',
+                'xaxis2.titlefont.size': '14',
+                'yaxis2.title': '2nd Y-Axis',
+                'yaxis2.titlefont.color': 'yellow',
+                'yaxis2.titlefont.family': 'monospace',
+                'yaxis2.titlefont.size': '5'
+            });
+        })
+        .then(function() {
+            var x2Style = xTitleSel(2).node().style;
+            expect(xTitleSel(2).text()).toBe('2nd X-Axis');
+            expect(x2Style.fill).toBe(rgb('pink'));
+            expect(x2Style.fontFamily).toBe('sans-serif');
+            expect(x2Style.fontSize).toBe('14px');
 
-        Plotly.relayout(gd, {
-            'xaxis2.title': '2nd X-Axis',
-            'xaxis2.titlefont.color': 'pink',
-            'xaxis2.titlefont.family': 'sans-serif',
-            'xaxis2.titlefont.size': '14',
-            'yaxis2.title': '2nd Y-Axis',
-            'yaxis2.titlefont.color': 'yellow',
-            'yaxis2.titlefont.family': 'monospace',
-            'yaxis2.titlefont.size': '5'
-        });
-
-        var x2Style = xTitleSel(2).node().style;
-        expect(xTitleSel(2).text()).toBe('2nd X-Axis');
-        expect(x2Style.fill).toBe(rgb('pink'));
-        expect(x2Style.fontFamily).toBe('sans-serif');
-        expect(x2Style.fontSize).toBe('14px');
-
-        var y2Style = yTitleSel(2).node().style;
-        expect(yTitleSel(2).text()).toBe('2nd Y-Axis');
-        expect(y2Style.fill).toBe(rgb('yellow'));
-        expect(y2Style.fontFamily).toBe('monospace');
-        expect(y2Style.fontSize).toBe('5px');
+            var y2Style = yTitleSel(2).node().style;
+            expect(yTitleSel(2).text()).toBe('2nd Y-Axis');
+            expect(y2Style.fill).toBe(rgb('yellow'));
+            expect(y2Style.fontFamily).toBe('monospace');
+            expect(y2Style.fontSize).toBe('5px');
+        })
+        .then(done, done.fail);
     });
 });
 
@@ -1091,21 +1167,21 @@ function parseFontSizeAttr(fontSizeAttr) {
 }
 
 function titleSel() {
-    var titleSel = d3.select('.infolayer .g-gtitle .gtitle');
+    var titleSel = d3Select('.infolayer .g-gtitle .gtitle');
     expect(titleSel.empty()).toBe(false, 'Plot title element missing');
     return titleSel;
 }
 
 function xTitleSel(num) {
     var axIdx = num === 1 ? '' : (num || '');
-    var xTitleSel = d3.select('.x' + axIdx + 'title');
+    var xTitleSel = d3Select('.x' + axIdx + 'title');
     expect(xTitleSel.empty()).toBe(false, 'X-axis ' + axIdx + ' title element missing');
     return xTitleSel;
 }
 
 function yTitleSel(num) {
     var axIdx = num === 1 ? '' : (num || '');
-    var yTitleSel = d3.select('.y' + axIdx + 'title');
+    var yTitleSel = d3Select('.y' + axIdx + 'title');
     expect(yTitleSel.empty()).toBe(false, 'Y-axis ' + axIdx + ' title element missing');
     return yTitleSel;
 }
@@ -1124,7 +1200,7 @@ describe('Editable titles', function() {
     });
 
     function checkTitle(letter, text, opacityOut, opacityIn) {
-        var titleEl = d3.select('.' + letter + 'title');
+        var titleEl = d3Select('.' + letter + 'title');
         expect(titleEl.text()).toBe(text);
         expect(+(titleEl.node().style.opacity || 1)).toBe(opacityOut);
 
@@ -1167,7 +1243,7 @@ describe('Editable titles', function() {
     }
 
     it('shows default titles semi-opaque with no hover effects', function(done) {
-        Plotly.plot(gd, data, {}, {editable: true})
+        Plotly.newPlot(gd, data, {}, {editable: true})
         .then(function() {
             return Promise.all([
                 // Check all three titles in parallel. This only works because
@@ -1179,11 +1255,11 @@ describe('Editable titles', function() {
                 checkTitle('g', 'Click to enter Plot title', 0.2, 0.2)
             ]);
         })
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('has hover effects for blank titles', function(done) {
-        Plotly.plot(gd, data, {
+        Plotly.newPlot(gd, data, {
             xaxis: {title: {text: ''}},
             yaxis: {title: {text: ''}},
             title: {text: ''}
@@ -1195,11 +1271,11 @@ describe('Editable titles', function() {
                 checkTitle('g', 'Click to enter Plot title', 0, 1)
             ]);
         })
-        .then(done);
+        .then(done, done.fail);
     });
 
-    it('@flaky has no hover effects for titles that used to be blank', function(done) {
-        Plotly.plot(gd, data, {
+    it('has no hover effects for titles that used to be blank', function(done) {
+        Plotly.newPlot(gd, data, {
             xaxis: {title: {text: ''}},
             yaxis: {title: {text: ''}},
             title: {text: ''}
@@ -1220,6 +1296,6 @@ describe('Editable titles', function() {
                 checkTitle('g', 'TTT', 1, 1)
             ]);
         })
-        .then(done);
+        .then(done, done.fail);
     });
 });

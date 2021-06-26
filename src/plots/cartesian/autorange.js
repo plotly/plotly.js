@@ -1,20 +1,16 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
+var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var FP_SAFE = require('../../constants/numerical').FP_SAFE;
 var Registry = require('../../registry');
+var Drawing = require('../../components/drawing');
 
-var getFromId = require('./axis_ids').getFromId;
+var axIds = require('./axis_ids');
+var getFromId = axIds.getFromId;
+var isLinked = axIds.isLinked;
 
 module.exports = {
     getAutoRange: getAutoRange,
@@ -56,7 +52,9 @@ function getAutoRange(gd, ax) {
     var i, j;
     var newRange = [];
 
-    var getPad = makePadFn(ax);
+    var fullLayout = gd._fullLayout;
+    var getPadMin = makePadFn(fullLayout, ax, 0);
+    var getPadMax = makePadFn(fullLayout, ax, 1);
     var extremes = concatExtremes(gd, ax);
     var minArray = extremes.min;
     var maxArray = extremes.max;
@@ -97,19 +95,6 @@ function getAutoRange(gd, ax) {
     // don't allow padding to reduce the data to < 10% of the length
     var minSpan = axLen / 10;
 
-    // find axis rangebreaks in [v0,v1] and compute its length in value space
-    var calcBreaksLength = function(v0, v1) {
-        var lBreaks = 0;
-        if(ax.rangebreaks) {
-            var rangebreaksOut = ax.locateBreaks(v0, v1);
-            for(var i = 0; i < rangebreaksOut.length; i++) {
-                var brk = rangebreaksOut[i];
-                lBreaks += brk.max - brk.min;
-            }
-        }
-        return lBreaks;
-    };
-
     var mbest = 0;
     var minpt, maxpt, minbest, maxbest, dp, dv;
 
@@ -117,9 +102,9 @@ function getAutoRange(gd, ax) {
         minpt = minArray[i];
         for(j = 0; j < maxArray.length; j++) {
             maxpt = maxArray[j];
-            dv = maxpt.val - minpt.val - calcBreaksLength(minpt.val, maxpt.val);
+            dv = maxpt.val - minpt.val - calcBreaksLength(ax, minpt.val, maxpt.val);
             if(dv > 0) {
-                dp = axLen - getPad(minpt) - getPad(maxpt);
+                dp = axLen - getPadMin(minpt) - getPadMax(maxpt);
                 if(dp > minSpan) {
                     if(dv / dp > mbest) {
                         minbest = minpt;
@@ -129,16 +114,16 @@ function getAutoRange(gd, ax) {
                 } else if(dv / axLen > mbest) {
                     // in case of padding longer than the axis
                     // at least include the unpadded data values.
-                    minbest = {val: minpt.val, pad: 0};
-                    maxbest = {val: maxpt.val, pad: 0};
+                    minbest = {val: minpt.val, nopad: 1};
+                    maxbest = {val: maxpt.val, nopad: 1};
                     mbest = dv / axLen;
                 }
             }
         }
     }
 
-    function getMaxPad(prev, pt) {
-        return Math.max(prev, getPad(pt));
+    function maximumPad(prev, pt) {
+        return Math.max(prev, getPadMax(pt));
     }
 
     if(minmin === maxmax) {
@@ -152,7 +137,7 @@ function getAutoRange(gd, ax) {
                 // 'tozero' pins 0 to the low end, so follow that.
                 newRange = [0, 1];
             } else {
-                var maxPad = (minmin > 0 ? maxArray : minArray).reduce(getMaxPad, 0);
+                var maxPad = (minmin > 0 ? maxArray : minArray).reduce(maximumPad, 0);
                 // we're pushing a single value away from the edge due to its
                 // padding, with the other end clamped at zero
                 // 0.5 means don't push it farther than the center.
@@ -167,27 +152,27 @@ function getAutoRange(gd, ax) {
     } else {
         if(toZero) {
             if(minbest.val >= 0) {
-                minbest = {val: 0, pad: 0};
+                minbest = {val: 0, nopad: 1};
             }
             if(maxbest.val <= 0) {
-                maxbest = {val: 0, pad: 0};
+                maxbest = {val: 0, nopad: 1};
             }
         } else if(nonNegative) {
-            if(minbest.val - mbest * getPad(minbest) < 0) {
-                minbest = {val: 0, pad: 0};
+            if(minbest.val - mbest * getPadMin(minbest) < 0) {
+                minbest = {val: 0, nopad: 1};
             }
             if(maxbest.val <= 0) {
-                maxbest = {val: 1, pad: 0};
+                maxbest = {val: 1, nopad: 1};
             }
         }
 
         // in case it changed again...
-        mbest = (maxbest.val - minbest.val - calcBreaksLength(minpt.val, maxpt.val)) /
-            (axLen - getPad(minbest) - getPad(maxbest));
+        mbest = (maxbest.val - minbest.val - calcBreaksLength(ax, minpt.val, maxpt.val)) /
+            (axLen - getPadMin(minbest) - getPadMax(maxbest));
 
         newRange = [
-            minbest.val - mbest * getPad(minbest),
-            maxbest.val + mbest * getPad(maxbest)
+            minbest.val - mbest * getPadMin(minbest),
+            maxbest.val + mbest * getPadMax(maxbest)
         ];
     }
 
@@ -197,13 +182,46 @@ function getAutoRange(gd, ax) {
     return Lib.simpleMap(newRange, ax.l2r || Number);
 }
 
+// find axis rangebreaks in [v0,v1] and compute its length in value space
+function calcBreaksLength(ax, v0, v1) {
+    var lBreaks = 0;
+    if(ax.rangebreaks) {
+        var rangebreaksOut = ax.locateBreaks(v0, v1);
+        for(var i = 0; i < rangebreaksOut.length; i++) {
+            var brk = rangebreaksOut[i];
+            lBreaks += brk.max - brk.min;
+        }
+    }
+    return lBreaks;
+}
+
 /*
  * calculate the pixel padding for ax._min and ax._max entries with
  * optional extrapad as 5% of the total axis length
  */
-function makePadFn(ax) {
+function makePadFn(fullLayout, ax, max) {
     // 5% padding for points that specify extrapad: true
-    var extrappad = ax._length / 20;
+    var extrappad = 0.05 * ax._length;
+
+    var anchorAxis = ax._anchorAxis || {};
+
+    if(
+        (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
+        (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1
+    ) {
+        var axReverse = ax.autorange === 'reversed';
+        if(!axReverse) {
+            var rng = Lib.simpleMap(ax.range, ax.r2l);
+            axReverse = rng[1] < rng[0];
+        }
+        if(axReverse) max = !max;
+    }
+
+    var zero = 0;
+    if(!isLinked(fullLayout, ax._id)) {
+        zero = padInsideLabelsOnAnchorAxis(fullLayout, ax, max);
+    }
+    extrappad = Math.max(zero, extrappad);
 
     // domain-constrained axes: base extrappad on the unconstrained
     // domain so it's consistent as the domain changes
@@ -212,7 +230,82 @@ function makePadFn(ax) {
             (ax.domain[1] - ax.domain[0]);
     }
 
-    return function getPad(pt) { return pt.pad + (pt.extrapad ? extrappad : 0); };
+    return function getPad(pt) {
+        if(pt.nopad) return 0;
+        return pt.pad + (pt.extrapad ? extrappad : zero);
+    };
+}
+
+var TEXTPAD = 3;
+
+function padInsideLabelsOnAnchorAxis(fullLayout, ax, max) {
+    var pad = 0;
+
+    var isX = ax._id.charAt(0) === 'x';
+
+    for(var subplot in fullLayout._plots) {
+        var plotinfo = fullLayout._plots[subplot];
+
+        if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+
+        var anchorAxis = (isX ? plotinfo.yaxis : plotinfo.xaxis) || {};
+
+        if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
+            // increase padding to make more room for inside tick labels of the counter axis
+            if((
+                !max && (
+                    anchorAxis.side === 'left' ||
+                    anchorAxis.side === 'bottom'
+                )
+            ) || (
+                max && (
+                    anchorAxis.side === 'top' ||
+                    anchorAxis.side === 'right'
+                )
+            )) {
+                if(anchorAxis._vals) {
+                    var rad = Lib.deg2rad(anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0);
+                    var cosA = Math.abs(Math.cos(rad));
+                    var sinA = Math.abs(Math.sin(rad));
+
+                    // no stashed bounding boxes - stash bounding boxes
+                    if(!anchorAxis._vals[0].bb) {
+                        var cls = anchorAxis._id + 'tick';
+                        var tickLabels = anchorAxis._selections[cls];
+                        tickLabels.each(function(d) {
+                            var thisLabel = d3.select(this);
+                            var mathjaxGroup = thisLabel.select('.text-math-group');
+                            if(mathjaxGroup.empty()) {
+                                d.bb = Drawing.bBox(thisLabel.node());
+                            }
+                        });
+                    }
+
+                    // use bounding boxes
+                    for(var i = 0; i < anchorAxis._vals.length; i++) {
+                        var t = anchorAxis._vals[i];
+                        var bb = t.bb;
+
+                        if(bb) {
+                            var w = 2 * TEXTPAD + bb.width;
+                            var h = 2 * TEXTPAD + bb.height;
+
+                            pad = Math.max(pad, isX ?
+                                Math.max(w * cosA, h * sinA) :
+                                Math.max(h * cosA, w * sinA)
+                            );
+                        }
+                    }
+                }
+
+                if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
+                    pad += anchorAxis.ticklen || 0;
+                }
+            }
+        }
+    }
+
+    return pad;
 }
 
 function concatExtremes(gd, ax, noMatch) {

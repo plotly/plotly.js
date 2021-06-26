@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var baseAttrs = require('../../plots/attributes');
@@ -39,7 +31,6 @@ module.exports = {
     // equivalent of x0 and dx, if label is missing
     label0: {
         valType: 'number',
-        role: 'info',
         dflt: 0,
         editType: 'calc',
         description: [
@@ -51,7 +42,6 @@ module.exports = {
     },
     dlabel: {
         valType: 'number',
-        role: 'info',
         dflt: 1,
         editType: 'calc',
         description: 'Sets the label step. See `label0` for more info.'
@@ -80,7 +70,6 @@ module.exports = {
         line: {
             color: {
                 valType: 'color',
-                role: 'style',
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
                 editType: 'style',
@@ -90,7 +79,6 @@ module.exports = {
             },
             width: {
                 valType: 'number',
-                role: 'style',
                 min: 0,
                 dflt: 0,
                 arrayOk: true,
@@ -117,7 +105,6 @@ module.exports = {
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'style',
@@ -137,7 +124,6 @@ module.exports = {
 // 'of its own. but the point is the size of the whole pie is important.)'
     scalegroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'calc',
         description: [
@@ -150,7 +136,6 @@ module.exports = {
     // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
     textinfo: {
         valType: 'flaglist',
-        role: 'info',
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         editType: 'calc',
@@ -169,7 +154,6 @@ module.exports = {
     }),
     textposition: {
         valType: 'enumerated',
-        role: 'info',
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
@@ -183,7 +167,6 @@ module.exports = {
     }),
     insidetextorientation: {
         valType: 'enumerated',
-        role: 'info',
         values: ['horizontal', 'radial', 'tangential', 'auto'],
         dflt: 'auto',
         editType: 'plot',
@@ -206,7 +189,6 @@ module.exports = {
     automargin: {
         valType: 'boolean',
         dflt: false,
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines whether outside text labels can push the margins.'
@@ -217,7 +199,6 @@ module.exports = {
         text: {
             valType: 'string',
             dflt: '',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the title of the chart.',
@@ -241,7 +222,6 @@ module.exports = {
                 'middle center',
                 'bottom left', 'bottom center', 'bottom right'
             ],
-            role: 'info',
             editType: 'plot',
             description: [
                 'Specifies the location of the `title`.',
@@ -258,7 +238,6 @@ module.exports = {
 
     hole: {
         valType: 'number',
-        role: 'style',
         min: 0,
         max: 1,
         dflt: 0,
@@ -272,7 +251,6 @@ module.exports = {
     // ordering and direction
     sort: {
         valType: 'boolean',
-        role: 'style',
         dflt: true,
         editType: 'calc',
         description: [
@@ -290,7 +268,6 @@ module.exports = {
          */
         valType: 'enumerated',
         values: ['clockwise', 'counterclockwise'],
-        role: 'style',
         dflt: 'counterclockwise',
         editType: 'calc',
         description: [
@@ -300,7 +277,6 @@ module.exports = {
     },
     rotation: {
         valType: 'number',
-        role: 'style',
         min: -360,
         max: 360,
         dflt: 0,
@@ -313,7 +289,6 @@ module.exports = {
 
     pull: {
         valType: 'number',
-        role: 'style',
         min: 0,
         max: 1,
         dflt: 0,
@@ -331,7 +306,6 @@ module.exports = {
         title: {
             valType: 'string',
             dflt: '',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Deprecated in favor of `title.text`.',
@@ -349,7 +323,6 @@ module.exports = {
                 'middle center',
                 'bottom left', 'bottom center', 'bottom right'
             ],
-            role: 'info',
             editType: 'calc',
             description: 'Deprecated in favor of `title.position`.'
         }

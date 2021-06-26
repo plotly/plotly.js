@@ -1,15 +1,6 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Drawing = require('../../components/drawing');
 var map1dArray = require('./map_1d_array');
 var makepath = require('./makepath');
@@ -45,7 +36,7 @@ module.exports = function plot(gd, plotinfo, cdcarpet, carpetLayer) {
         drawGridLines(xa, ya, minorLayer, aax, 'a', aax._minorgridlines, true);
         drawGridLines(xa, ya, minorLayer, bax, 'b', bax._minorgridlines, true);
 
-        // NB: These are not ommitted if the lines are not active. The joins must be executed
+        // NB: These are not omitted if the lines are not active. The joins must be executed
         // in order for them to get cleaned up without a full redraw
         drawGridLines(xa, ya, boundaryLayer, aax, 'a-boundary', aax._boundarylines);
         drawGridLines(xa, ya, boundaryLayer, bax, 'b-boundary', bax._boundarylines);

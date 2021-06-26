@@ -7,7 +7,7 @@
  *
  * @example
  *
- *       Plotly.plot(...)
+ *       Plotly.newPlot(...)
  *           .then(function(gd) {
  *               assert(...);
  *               assert(...);

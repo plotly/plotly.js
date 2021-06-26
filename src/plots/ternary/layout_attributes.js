@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorAttrs = require('../../components/color/attributes');
@@ -59,7 +51,6 @@ var ternaryAxesAttrs = {
     min: {
         valType: 'number',
         dflt: 0,
-        role: 'info',
         min: 0,
         description: [
             'The minimum value visible on this axis.',
@@ -79,13 +70,11 @@ var attrs = module.exports = overrideAll({
 
     bgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.background,
         description: 'Set the background color of the subplot'
     },
     sum: {
         valType: 'number',
-        role: 'info',
         dflt: 1,
         min: 0,
         description: [
@@ -101,7 +90,6 @@ var attrs = module.exports = overrideAll({
 // set uirevisions outside of `overrideAll` so we can get `editType: none`
 attrs.uirevision = {
     valType: 'any',
-    role: 'info',
     editType: 'none',
     description: [
         'Controls persistence of user-driven changes in axis `min` and `title`,',
@@ -112,7 +100,6 @@ attrs.uirevision = {
 
 attrs.aaxis.uirevision = attrs.baxis.uirevision = attrs.caxis.uirevision = {
     valType: 'any',
-    role: 'info',
     editType: 'none',
     description: [
         'Controls persistence of user-driven changes in axis `min`,',

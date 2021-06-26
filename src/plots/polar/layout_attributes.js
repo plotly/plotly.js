@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorAttrs = require('../../components/color/attributes');
@@ -68,7 +60,6 @@ var radialAxisAttrs = {
         valType: 'enumerated',
         values: ['tozero', 'nonnegative', 'normal'],
         dflt: 'tozero',
-        role: 'style',
         editType: 'calc',
         description: [
             'If *tozero*`, the range extends to 0,',
@@ -93,7 +84,6 @@ var radialAxisAttrs = {
     angle: {
         valType: 'angle',
         editType: 'plot',
-        role: 'info',
         description: [
             'Sets the angle (in degrees) from which the radial axis is drawn.',
             'Note that by default, radial axis line on the theta=0 line',
@@ -108,7 +98,6 @@ var radialAxisAttrs = {
         values: ['clockwise', 'counterclockwise'],
         dflt: 'clockwise',
         editType: 'plot',
-        role: 'info',
         description: [
             'Determines on which side of radial axis line',
             'the tick and tick labels appear.'
@@ -133,7 +122,6 @@ var radialAxisAttrs = {
 
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in axis `range`,',
@@ -171,7 +159,6 @@ var angularAxisAttrs = {
         // no 'log' for now
         values: ['-', 'linear', 'category'],
         dflt: '-',
-        role: 'info',
         editType: 'calc',
         _noTemplating: true,
         description: [
@@ -189,7 +176,6 @@ var angularAxisAttrs = {
         valType: 'enumerated',
         values: ['radians', 'degrees'],
         dflt: 'degrees',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the format unit of the formatted *theta* values.',
@@ -201,7 +187,6 @@ var angularAxisAttrs = {
         valType: 'number',
         editType: 'calc',
         min: 0,
-        role: 'info',
         description: [
             'Set the angular period.',
             'Has an effect only when `angularaxis.type` is *category*.',
@@ -222,7 +207,6 @@ var angularAxisAttrs = {
         valType: 'enumerated',
         values: ['counterclockwise', 'clockwise'],
         dflt: 'counterclockwise',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the direction corresponding to positive angles.'
@@ -232,7 +216,6 @@ var angularAxisAttrs = {
     rotation: {
         valType: 'angle',
         editType: 'calc',
-        role: 'info',
         description: [
             'Sets that start position (in degrees) of the angular axis',
             'By default, polar subplots with `direction` set to *counterclockwise*',
@@ -247,7 +230,6 @@ var angularAxisAttrs = {
 
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in axis `rotation`.',
@@ -284,7 +266,6 @@ module.exports = {
             {valType: 'number', editType: 'plot'}
         ],
         dflt: [0, 360],
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets angular span of this polar subplot with two angles (in degrees).',
@@ -298,7 +279,6 @@ module.exports = {
         max: 1,
         dflt: 0,
         editType: 'plot',
-        role: 'info',
         description: [
             'Sets the fraction of the radius to cut out of the polar subplot.'
         ].join(' ')
@@ -306,7 +286,6 @@ module.exports = {
 
     bgcolor: {
         valType: 'color',
-        role: 'style',
         editType: 'plot',
         dflt: colorAttrs.background,
         description: 'Set the background color of the subplot'
@@ -319,7 +298,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['circular', 'linear'],
         dflt: 'circular',
-        role: 'style',
         editType: 'plot',
         description: [
             'Determines if the radial axis grid lines and angular axis line are drawn',
@@ -336,7 +314,6 @@ module.exports = {
 
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in axis attributes,',

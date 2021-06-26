@@ -1,13 +1,13 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 
 var Box = require('@src/traces/box');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -731,7 +731,7 @@ describe('Test box hover:', function() {
 
         var pos = specs.pos || [200, 200];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent(specs, specs.desc);
         });
@@ -739,6 +739,10 @@ describe('Test box hover:', function() {
 
     [{
         desc: 'base',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
         name: ['radishes', '', '', '', ''],
         axis: 'day 1'
@@ -748,6 +752,7 @@ describe('Test box hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.boxmean = true;
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45'],
@@ -759,6 +764,7 @@ describe('Test box hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.boxmean = 'sd';
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
@@ -770,6 +776,10 @@ describe('Test box hover:', function() {
     }, {
         desc: 'with boxpoints fences',
         mock: require('@mocks/boxplots_outliercolordflt.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         pos: [350, 200],
         nums: [
             'median: 8.15', 'min: 0.75', 'q1: 6.8',
@@ -780,6 +790,7 @@ describe('Test box hover:', function() {
     }, {
         desc: 'with overlaid boxes',
         patch: function(fig) {
+            fig.layout.hovermode = 'x';
             fig.layout.boxmode = 'overlay';
             return fig;
         },
@@ -799,7 +810,6 @@ describe('Test box hover:', function() {
                 trace.boxpoints = 'all';
                 trace.hoveron = 'points';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -856,7 +866,6 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -871,7 +880,6 @@ describe('Test box hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -887,7 +895,6 @@ describe('Test box hover:', function() {
                 trace.hovertext = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -896,6 +903,10 @@ describe('Test box hover:', function() {
     }, {
         desc: 'orientation:h | hovermode:y',
         mock: require('@mocks/box_grouped_horz.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'y';
+            return fig;
+        },
         pos: [430, 130],
         nums: [
             'max: 1', 'mean ± σ: 0.6833333 ± 0.2409472', 'min: 0.3',
@@ -906,10 +917,6 @@ describe('Test box hover:', function() {
     }, {
         desc: 'orientation:h | hovermode:closest',
         mock: require('@mocks/box_grouped_horz.json'),
-        patch: function(fig) {
-            fig.layout.hovermode = 'closest';
-            return fig;
-        },
         pos: [430, 130],
         nums: [
             '(max: 1, day 2)', '(mean ± σ: 0.6833333 ± 0.2409472, day 2)', '(min: 0.3, day 2)',
@@ -927,7 +934,6 @@ describe('Test box hover:', function() {
                 y: [13.1, 14.2, 14, 13, 13.3]
             }],
             layout: {
-                hovermode: 'closest',
                 xaxis: {range: [1.3775, 2.5]}
             }
         },
@@ -942,7 +948,6 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
                 trace.hovertemplate = '%{y}<extra>pt #%{pointNumber}</extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '0.6',
@@ -955,6 +960,7 @@ describe('Test box hover:', function() {
                 y: [1, 2, 2, 3]
             }],
             layout: {
+                hovermode: 'x',
                 yaxis: {range: [1.6, 2.4]},
                 width: 400,
                 height: 400
@@ -975,6 +981,7 @@ describe('Test box hover:', function() {
                 q3: [3]
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400
             }
@@ -997,6 +1004,7 @@ describe('Test box hover:', function() {
                 pointpos: 0
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400,
                 margin: {l: 0, t: 0, b: 0, r: 0}
@@ -1021,6 +1029,7 @@ describe('Test box hover:', function() {
                 hovertemplate: '%{x} | %{y}<extra>%{pointNumber[0]} | %{pointNumber[1]}</extra>'
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400,
                 margin: {l: 0, t: 0, b: 0, r: 0}
@@ -1032,7 +1041,7 @@ describe('Test box hover:', function() {
         axis: 'A'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
-            run(specs).catch(failTest).then(done);
+            run(specs).then(done, done.fail);
         });
     });
 });
@@ -1063,8 +1072,7 @@ describe('Box edge cases', function() {
             expect(outliers.length).toBe(1);
             expect(outliers[0].x).toBe(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1088,13 +1096,13 @@ describe('Test box restyle:', function() {
         }
 
         function _assert(msg, exp) {
-            var trace3 = d3.select(gd).select('.boxlayer > .trace');
+            var trace3 = d3Select(gd).select('.boxlayer > .trace');
             _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
             _assertOne(msg, exp, trace3, 'meanlineCnt', 'path.mean');
             _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert('base', {boxCnt: 1});
         })
@@ -1114,8 +1122,7 @@ describe('Test box restyle:', function() {
         .then(function() {
             _assert('with pts', {boxCnt: 1, ptsCnt: 9});
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update axis range accordingly on calc edits', function(done) {
@@ -1125,7 +1132,7 @@ describe('Test box restyle:', function() {
             expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'box',
             y: [0, 1, 1, 1, 1, 2, 2, 3, 5, 6, 10]
         }], {
@@ -1150,8 +1157,7 @@ describe('Test box restyle:', function() {
         .then(function() {
             _assert('auto rng / no boxpoints', [-0.5, 0.5], [-0.555, 10.555]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to change axis range when the number of distinct positions changes', function(done) {
@@ -1161,7 +1167,7 @@ describe('Test box restyle:', function() {
             expect(fullLayout.yaxis.range).toBeCloseToArray(yrng, 2, msg + ' yrng');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'box',
             width: 0.4,
             y: [0, 5, 7, 8],
@@ -1182,8 +1188,7 @@ describe('Test box restyle:', function() {
         .then(function() {
             _assert('only trace1 visible', [-0.5, 0.5], [-0.444, 8.444]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 

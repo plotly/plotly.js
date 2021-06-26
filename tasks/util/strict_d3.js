@@ -1,13 +1,8 @@
-var path = require('path');
 var transformTools = require('browserify-transform-tools');
-var constants = require('./constants');
+var pathToStrictD3Module = require('./constants').pathToStrictD3Module;
 
-var pathToStrictD3Module = path.join(
-    constants.pathToImageTest,
-    'strict-d3.js'
-);
 /**
- * Transform `require('d3')` expressions to `require(/path/to/strict-d3.js)`
+ * Transform `require('@plotly/d3')` expressions to `require(/path/to/strict-d3.js)`
  */
 
 module.exports = transformTools.makeRequireTransform('requireTransform',
@@ -16,7 +11,7 @@ module.exports = transformTools.makeRequireTransform('requireTransform',
         var pathIn = args[0];
         var pathOut;
 
-        if(pathIn === 'd3' && opts.file !== pathToStrictD3Module) {
+        if(pathIn === '@plotly/d3' && opts.file !== pathToStrictD3Module) {
             // JSON.stringify: fix npm-scripts for windows users, for whom
             // path has \ in it, without stringify that turns into control chars.
             pathOut = 'require(' + JSON.stringify(pathToStrictD3Module) + ')';

@@ -2,13 +2,14 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var hover = require('../assets/hover');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
-var failTest = require('../assets/fail_test');
+
 
 var mock0 = {
     open: [33.01, 33.31, 33.50, 32.06, 34.12, 33.05, 33.31, 33.50],
@@ -664,21 +665,19 @@ describe('finance charts auto-range', function() {
         it('- ohlc case', function(done) {
             var trace = Lib.extendDeep({}, base, {type: 'ohlc'});
 
-            Plotly.plot(gd, [trace]).then(function() {
+            Plotly.newPlot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('- candlestick case', function(done) {
             var trace = Lib.extendDeep({}, base, {type: 'candlestick'});
 
-            Plotly.plot(gd, [trace]).then(function() {
+            Plotly.newPlot(gd, [trace]).then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([-0.5, 2.5], 1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -698,15 +697,15 @@ describe('finance charts updates:', function() {
     });
 
     function countOHLCTraces() {
-        return d3.select('g.cartesianlayer').selectAll('g.trace.ohlc').size();
+        return d3Select('g.cartesianlayer').selectAll('g.trace.ohlc').size();
     }
 
     function countBoxTraces() {
-        return d3.select('g.cartesianlayer').selectAll('g.trace.boxes').size();
+        return d3Select('g.cartesianlayer').selectAll('g.trace.boxes').size();
     }
 
     function countRangeSliders() {
-        return d3.select('g.rangeslider-rangeplot').size();
+        return d3Select('g.rangeslider-rangeplot').size();
     }
 
     it('Plotly.restyle should work', function(done) {
@@ -714,7 +713,7 @@ describe('finance charts updates:', function() {
 
         var path0;
 
-        Plotly.plot(gd, [trace0]).then(function() {
+        Plotly.newPlot(gd, [trace0]).then(function() {
             expect(gd.calcdata[0][0].t.tickLen).toBeCloseTo(0.3, 5);
             expect(gd.calcdata[0][0].o).toEqual(33.01);
 
@@ -734,16 +733,15 @@ describe('finance charts updates:', function() {
             });
         })
         .then(function() {
-            path0 = d3.select('path.box').attr('d');
+            path0 = d3Select('path.box').attr('d');
             expect(path0).toBeDefined();
 
             return Plotly.restyle(gd, 'whiskerwidth', 0.2);
         })
         .then(function() {
-            expect(d3.select('path.box').attr('d')).not.toEqual(path0);
+            expect(d3Select('path.box').attr('d')).not.toEqual(path0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to toggle visibility', function(done) {
@@ -752,7 +750,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, { type: 'candlestick' }),
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
 
@@ -792,14 +790,13 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.relayout should work', function(done) {
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
 
-        Plotly.plot(gd, [trace0]).then(function() {
+        Plotly.newPlot(gd, [trace0]).then(function() {
             expect(countRangeSliders()).toEqual(1);
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
@@ -807,8 +804,7 @@ describe('finance charts updates:', function() {
         .then(function() {
             expect(countRangeSliders()).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -817,7 +813,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, { type: 'candlestick' }),
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd.calcdata[0].length).toEqual(8);
             expect(gd.calcdata[1].length).toEqual(8);
 
@@ -843,8 +839,7 @@ describe('finance charts updates:', function() {
             expect(gd.calcdata[0].length).toEqual(10);
             expect(gd.calcdata[1].length).toEqual(10);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.deleteTraces / addTraces should work', function(done) {
@@ -853,7 +848,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, { type: 'candlestick' }),
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
 
@@ -885,8 +880,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toEqual(1);
             expect(countBoxTraces()).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.addTraces + Plotly.relayout should update candlestick box position values', function(done) {
@@ -907,7 +901,7 @@ describe('finance charts updates:', function() {
             close: [2, 3]
         };
 
-        Plotly.plot(gd, [trace0], {boxmode: 'group'})
+        Plotly.newPlot(gd, [trace0], {boxmode: 'group'})
         .then(function() {
             assertBoxPosFields([0]);
 
@@ -930,18 +924,17 @@ describe('finance charts updates:', function() {
         .then(function() {
             assertBoxPosFields([-30240000, 30240000]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
-    it('Plotly.plot with data-less trace and adding with Plotly.restyle', function(done) {
+    it('Plotly.newPlot with data-less trace and adding with Plotly.restyle', function(done) {
         var data = [
             { type: 'candlestick' },
             { type: 'ohlc' },
             { type: 'bar', y: [2, 1, 2] }
         ];
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(countOHLCTraces()).toEqual(0);
             expect(countBoxTraces()).toEqual(0);
             expect(countRangeSliders()).toEqual(0);
@@ -970,8 +963,7 @@ describe('finance charts updates:', function() {
             expect(countBoxTraces()).toEqual(1);
             expect(countRangeSliders()).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to update ohlc tickwidth', function(done) {
@@ -981,12 +973,12 @@ describe('finance charts updates:', function() {
             var tickLen = gd.calcdata[0][0].t.tickLen;
             expect(tickLen)
                 .toBe(exp.tickLen, 'tickLen val in calcdata - ' + msg);
-            var pathd = d3.select(gd).select('.ohlc > path').attr('d');
+            var pathd = d3Select(gd).select('.ohlc > path').attr('d');
             expect(pathd)
                 .toBe(exp.pathd, 'path d attr - ' + msg);
         }
 
-        Plotly.plot(gd, [trace0], {
+        Plotly.newPlot(gd, [trace0], {
             xaxis: { rangeslider: {visible: false} }
         })
         .then(function() {
@@ -1022,8 +1014,7 @@ describe('finance charts updates:', function() {
                 pathd: 'M0,134.55H0M0,81V193.5M0,85.5H0'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should work with typed array', function(done) {
@@ -1044,7 +1035,7 @@ describe('finance charts updates:', function() {
             Lib.extendDeep({}, mock0, {type: 'candlestick'}),
         ];
 
-        Plotly.plot(gd, dataTA)
+        Plotly.newPlot(gd, dataTA)
         .then(function() {
             expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
             expect(countBoxTraces()).toBe(1, '# of candlestick traces');
@@ -1054,8 +1045,7 @@ describe('finance charts updates:', function() {
             expect(countOHLCTraces()).toBe(1, '# of ohlc traces');
             expect(countBoxTraces()).toBe(1, '# of candlestick traces');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1068,11 +1058,11 @@ describe('finance charts *special* handlers:', function() {
         var gd = createGraphDiv();
 
         function editText(itemNumber, newText) {
-            var textNode = d3.selectAll('text.legendtext')
+            var textNode = d3SelectAll('text.legendtext')
                 .filter(function(_, i) { return i === itemNumber; }).node();
             textNode.dispatchEvent(new window.MouseEvent('click'));
 
-            var editNode = d3.select('.plugin-editable.editable').node();
+            var editNode = d3Select('.plugin-editable.editable').node();
             editNode.dispatchEvent(new window.FocusEvent('focus'));
 
             editNode.textContent = newText;
@@ -1088,7 +1078,7 @@ describe('finance charts *special* handlers:', function() {
             setTimeout(function() { return resolve(gd); }, 0);
         }
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             Lib.extendDeep({}, mock0, { type: 'ohlc' }),
             Lib.extendDeep({}, mock0, { type: 'candlestick' })
         ], {}, {
@@ -1116,8 +1106,7 @@ describe('finance charts *special* handlers:', function() {
                 editText(1, '1');
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1150,7 +1139,7 @@ describe('finance trace hover:', function() {
         var yval = 'yval' in specs ? specs.yval : 1;
         var hovermode = layout.hovermode || 'x';
 
-        return Plotly.plot(gd, data, layout).then(function() {
+        return Plotly.newPlot(gd, data, layout).then(function() {
             var results = gd.calcdata.map(function(cd) {
                 var trace = cd[0].trace;
                 var pointData = {
@@ -1251,7 +1240,7 @@ describe('finance trace hover:', function() {
         }]
         .forEach(function(specs) {
             it('should generate correct hover labels ' + type + ' - ' + specs.desc, function(done) {
-                run(specs).catch(failTest).then(done);
+                run(specs).then(done, done.fail);
             });
         });
     });
@@ -1313,8 +1302,7 @@ describe('finance trace hover via Fx.hover():', function() {
                     name: ''
                 }, 'after removing 2nd trace');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should ignore empty ' + type + ' item', function(done) {
@@ -1333,6 +1321,7 @@ describe('finance trace hover via Fx.hover():', function() {
                 y: [1, 2, 3, 4],
                 type: 'bar'
             }], {
+                hovermode: 'x',
                 xaxis: { rangeslider: {visible: false} },
                 width: 500,
                 height: 500
@@ -1352,8 +1341,7 @@ describe('finance trace hover via Fx.hover():', function() {
                     name: 'trace 1'
                 }, 'hover over 3rd items');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

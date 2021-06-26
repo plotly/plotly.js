@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var scatterglAttrs = require('../scatter/attributes');
@@ -55,7 +47,7 @@ module.exports = {
         color: {
             valType: 'color',
             arrayOk: false,
-            role: 'style',
+
             editType: 'calc',
             description: [
                 'Sets the marker fill color. It accepts a specific color.',
@@ -69,7 +61,7 @@ module.exports = {
             max: 1,
             dflt: 1,
             arrayOk: false,
-            role: 'style',
+
             editType: 'calc',
             description: [
                 'Sets the marker opacity. The default value is `1` (fully opaque).',
@@ -82,7 +74,7 @@ module.exports = {
         blend: {
             valType: 'boolean',
             dflt: null,
-            role: 'style',
+
             editType: 'calc',
             description: [
                 'Determines if colors are blended together for a translucency effect',
@@ -96,7 +88,7 @@ module.exports = {
             min: 0.1,
             max: 2,
             dflt: 0.5,
-            role: 'style',
+
             editType: 'calc',
             description: [
                 'Sets the minimum size (in px) of the rendered marker points, effective when',
@@ -107,7 +99,7 @@ module.exports = {
             valType: 'number',
             min: 0.1,
             dflt: 20,
-            role: 'style',
+
             editType: 'calc',
             description: [
                 'Sets the maximum size (in px) of the rendered marker points.',
@@ -118,7 +110,7 @@ module.exports = {
             color: {
                 valType: 'color',
                 arrayOk: false,
-                role: 'style',
+
                 editType: 'calc',
                 description: [
                     'Sets the stroke color. It accepts a specific color.',
@@ -131,7 +123,7 @@ module.exports = {
                 min: 0,
                 max: 1,
                 dflt: 0,
-                role: 'style',
+
                 editType: 'calc',
                 description: [
                     'Specifies what fraction of the marker area is covered with the',

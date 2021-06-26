@@ -1,17 +1,17 @@
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var Plotly = require('@lib/index');
 var Drawing = require('@src/components/drawing');
 var svgTextUtils = require('@src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('Drawing', function() {
     'use strict';
 
     describe('setClipUrl', function() {
         beforeEach(function() {
-            this.svg = d3.select('body').append('svg');
+            this.svg = d3Select('body').append('svg');
             this.g = this.svg.append('g');
         });
 
@@ -25,7 +25,7 @@ describe('Drawing', function() {
 
             Drawing.setClipUrl(this.g, 'id1', {_context: {}});
 
-            expect(this.g.attr('clip-path')).toEqual('url(\'#id1\')');
+            expect(this.g.attr('clip-path')).toEqual('url(#id1)');
         });
 
         it('should unset the clip-path if arg is falsy', function() {
@@ -38,7 +38,7 @@ describe('Drawing', function() {
 
         it('should append window URL to clip-path if <base> is present', function() {
             // append <base> with href
-            var base = d3.select('body')
+            var base = d3Select('body')
                 .append('base')
                 .attr('href', 'https://chart-studio.plotly.com');
 
@@ -54,7 +54,7 @@ describe('Drawing', function() {
         });
 
         it('should append window URL w/o hash to clip-path if <base> is present', function() {
-            var base = d3.select('body')
+            var base = d3Select('body')
                 .append('base')
                 .attr('href', 'https://chart-studio.plotly.com/#hash');
 
@@ -99,7 +99,7 @@ describe('Drawing', function() {
         });
 
         it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
+            var el = d3Select(document.createElement('div'));
 
             el.attr('transform', 'translate(123.45px,67)');
             expect(Drawing.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
@@ -119,7 +119,7 @@ describe('Drawing', function() {
 
         it('should work with negative values', function() {
             var el = document.createElement('div');
-            var el3 = d3.select(document.createElement('div'));
+            var el3 = d3Select(document.createElement('div'));
 
             expect(Drawing.getTranslate(el)).toEqual({ x: 0, y: 0 });
 
@@ -173,7 +173,7 @@ describe('Drawing', function() {
         });
 
         it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
+            var el = d3Select(document.createElement('div'));
 
             Drawing.setTranslate(el, 5);
             expect(el.attr('transform')).toBe('translate(5,0)');
@@ -216,7 +216,7 @@ describe('Drawing', function() {
         });
 
         it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
+            var el = d3Select(document.createElement('div'));
 
             el.attr('transform', 'scale(1.23,45)');
             expect(Drawing.getScale(el)).toEqual({ x: 1.23, y: 45 });
@@ -254,7 +254,7 @@ describe('Drawing', function() {
         });
 
         it('should work with d3 elements', function() {
-            var el = d3.select(document.createElement('div'));
+            var el = d3Select(document.createElement('div'));
 
             Drawing.setScale(el, 5);
             expect(el.attr('transform')).toBe('scale(5,1)');
@@ -276,7 +276,7 @@ describe('Drawing', function() {
 
         beforeEach(function() {
             el = document.createElement('div');
-            sel = d3.select(el);
+            sel = d3Select(el);
         });
 
         it('sets the scale of a point', function() {
@@ -313,7 +313,7 @@ describe('Drawing', function() {
         var svg, g, text;
 
         beforeEach(function() {
-            svg = d3.select(document.createElement('svg'));
+            svg = d3Select(document.createElement('svg'));
             g = svg.append('g');
             text = g.append('text');
         });
@@ -368,7 +368,7 @@ describe('Drawing', function() {
             // allow page to scroll
             gd.style.position = 'static';
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 y: [1, 2, 1]
             }], {
                 annotations: [{
@@ -378,7 +378,7 @@ describe('Drawing', function() {
                 width: 500
             })
             .then(function() {
-                var node = d3.select('text.annotation-text').node();
+                var node = d3Select('text.annotation-text').node();
                 assertBBox(Drawing.bBox(node), {
                     height: 14,
                     width: 27.671875,
@@ -392,7 +392,7 @@ describe('Drawing', function() {
                 return Plotly.relayout(gd, 'annotations[0].text', 'HELLO');
             })
             .then(function() {
-                var node = d3.select('text.annotation-text').node();
+                var node = d3Select('text.annotation-text').node();
                 assertBBox(Drawing.bBox(node), {
                     height: 14,
                     width: 41.015625,
@@ -406,7 +406,7 @@ describe('Drawing', function() {
                 return Plotly.relayout(gd, 'annotations[0].font.size', 20);
             })
             .then(function() {
-                var node = d3.select('text.annotation-text').node();
+                var node = d3Select('text.annotation-text').node();
                 assertBBox(Drawing.bBox(node), {
                     height: 22,
                     width: 66.015625,
@@ -416,8 +416,7 @@ describe('Drawing', function() {
                     bottom: 4
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('works with dummy nodes created in Drawing.tester', function() {
@@ -462,12 +461,12 @@ describe('gradients', function() {
         var typesOut = [];
         var c1Out = [];
         var c2Out = [];
-        var gradients = d3.select(gd).selectAll('radialGradient,linearGradient');
+        var gradients = d3Select(gd).selectAll('radialGradient,linearGradient');
         gradients.each(function() {
             gids.push(this.id);
             typesOut.push(this.nodeName.replace('Gradient', ''));
-            c1Out.push(d3.select(this).select('stop[offset="100%"]').attr('stop-color'));
-            c2Out.push(d3.select(this).select('stop[offset="0%"]').attr('stop-color'));
+            c1Out.push(d3Select(this).select('stop[offset="100%"]').attr('stop-color'));
+            c2Out.push(d3Select(this).select('stop[offset="0%"]').attr('stop-color'));
         });
         gids.sort();
 
@@ -482,7 +481,7 @@ describe('gradients', function() {
     }
 
     it('clears unused gradients after a replot', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             y: [0, 1, 2],
             mode: 'markers',
             marker: {
@@ -540,23 +539,22 @@ describe('gradients', function() {
             // full replot and no resulting markers at all -> no gradients
             checkGradientIds([], [], [], []);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should append window URL to gradient ref if <base> is present', function(done) {
-        var base = d3.select('body')
+        var base = d3Select('body')
             .append('base')
             .attr('href', 'https://chart-studio.plotly.com');
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'heatmap',
             x: [1, 2],
             y: [2, 3],
             z: [[1, 3], [2, 3]]
         }])
         .then(function() {
-            var cbfills = d3.select(gd).select('.cbfills > rect');
+            var cbfills = d3Select(gd).select('.cbfills > rect');
             expect(cbfills.node().style.fill).toBe([
                 'url("',
                 window.location.href,
@@ -567,10 +565,9 @@ describe('gradients', function() {
                 '")'
             ].join(''));
         })
-        .catch(failTest)
         .then(function() {
             base.remove();
             done();
-        });
+        }, done.fail);
     });
 });

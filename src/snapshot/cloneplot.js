@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Registry = require('../registry');
@@ -58,11 +50,6 @@ function keyIsAxis(keyName) {
 
 
 module.exports = function clonePlot(graphObj, options) {
-    // Polar plot compatibility
-    if(graphObj.framework && graphObj.framework.isPolar) {
-        graphObj = graphObj.framework.getConfig();
-    }
-
     var i;
     var oldData = graphObj.data;
     var oldLayout = graphObj.layout;

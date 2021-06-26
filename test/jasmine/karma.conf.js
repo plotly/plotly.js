@@ -121,7 +121,8 @@ var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
-var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
+var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
+var pathToMathJax = path.join(__dirname, '..', '..', 'node_modules', 'mathjax');
 
 var reporters = [];
 if(argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
@@ -179,11 +180,11 @@ func.defaultConfig = {
     files: [
         pathToCustomMatchers,
         pathToUnpolyfill,
-        // available to fetch from /base/path/to/mathjax
+        // available to fetch from /base/node_modules/mathjax/
         // more info: http://karma-runner.github.io/3.0/config/files.html
         {pattern: pathToMathJax + '/**', included: false, watched: false, served: true},
-        // available to fetch local topojson files
-        {pattern: constants.pathToTopojsonDist + '/**', included: false, watched: false, served: true}
+        // available to fetch from /base/node_modules/sane-topojson/dist/
+        {pattern: pathToSaneTopojsonDist + '/**', included: false, watched: false, served: true}
     ],
 
     // list of files / pattern to exclude
@@ -217,7 +218,10 @@ func.defaultConfig = {
     singleRun: argv.nowatch,
 
     // how long will Karma wait for a message from a browser before disconnecting (30 ms)
-    browserNoActivityTimeout: 30000,
+    browserNoActivityTimeout: 60000,
+
+    // how long does Karma wait for a browser to reconnect (in ms).
+    browserDisconnectTimeout: 60000,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
@@ -306,17 +310,8 @@ func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
 
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
-        case 'requirejs':
-            // browserified custom_matchers doesn't work with this route
-            // so clear them out of the files and preprocessors
-            func.defaultConfig.files = [
-                constants.pathToRequireJS,
-                constants.pathToRequireJSFixture
-            ];
-            delete func.defaultConfig.preprocessors[pathToCustomMatchers];
-            break;
         case 'minified_bundle':
-            func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
+            func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
             func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
         case 'plotschema':
