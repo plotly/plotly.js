@@ -14,8 +14,15 @@ function makeSchema(plotlyPath, schemaPath) {
     console.log('ok ' + path.basename(schemaPath));
 }
 
-var pathToSchema = constants.pathToSchema;
-var pathToPlotlyDistWithMeta = constants.pathToPlotlyDistWithMeta;
+var isDist = process.argv[2] === 'dist';
+
+var pathToSchema = isDist ?
+    constants.pathToSchemaDist :
+    constants.pathToSchemaBuild;
+
+var pathToPlotly = isDist ?
+    constants.pathToPlotlyDistWithMeta :
+    constants.pathToPlotlyBuild;
 
 // output plot-schema JSON
-makeSchema(pathToPlotlyDistWithMeta, pathToSchema);
+makeSchema(pathToPlotly, pathToSchema);

@@ -28,7 +28,7 @@
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
     "preprocess": "node tasks/preprocess.js",
-    "build": "node tasks/empty_dist.js && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run make-schema && npm run stats",
+    "build": "node tasks/empty_dist.js && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run make-schema dist && npm run stats",
     "cibuild": "node tasks/empty_dist.js && npm run preprocess && node tasks/cibundle.js",
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
