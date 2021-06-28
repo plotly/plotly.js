@@ -151,9 +151,31 @@ var attrs = module.exports = overrideAll({
             min: 0,
             dflt: 1,
             description: [
-                'Zooms in or out on the map view.',
-                'A scale of *1* corresponds to the largest zoom level',
-                'that fits the map\'s lon and lat ranges. '
+                'Initial zoom level of the map view.',
+                'A scale of *1* (100%) corresponds to the base zoom level',
+                'that fits the map\'s lon and lat ranges.'
+            ].join(' ')
+        },
+        minscale: {
+            valType: 'number',
+            role: 'info',
+            min: 0,
+            dflt: 0,
+            description: [
+                'Minimal zoom level of the map view.',
+                'A minscale of *0.5* (50%) corresponds to a zoom level',
+                'where the map has half the size of base zoom level.'
+            ].join(' ')
+        },
+        maxscale: {
+            valType: 'number',
+            role: 'info',
+            min: 0,
+            dflt: -1,
+            description: [
+                'Maximal zoom level of the map view.',
+                'A maxscale of *2* (200%) corresponds to a zoom level',
+                'where the map is twice as big as the base layer.'
             ].join(' ')
         },
     },

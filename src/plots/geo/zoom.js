@@ -32,6 +32,7 @@ module.exports = createGeoZoom;
 function initZoom(geo, projection) {
     return d3.behavior.zoom()
         .translate(projection.translate())
+        .scaleExtent(projection.scaleExtent())
         .scale(projection.scale());
 }
 
