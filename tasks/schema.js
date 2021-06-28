@@ -19,7 +19,7 @@ var isDist = process.argv[2] === 'dist';
 
 var pathToSchema = isDist ?
     constants.pathToSchemaDist :
-    constants.pathToSchemaBuild;
+    constants.pathToSchemaDiff;
 
 var pathToPlotly = isDist ?
     constants.pathToPlotlyDistWithMeta :

@@ -255,6 +255,9 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
+          name: Test plot-schema.json diff
+          command: diff --unified --color dist/plot-schema.json test/plot-schema.json
+      - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
       - run:
