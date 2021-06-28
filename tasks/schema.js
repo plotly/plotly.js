@@ -3,11 +3,12 @@ var path = require('path');
 
 var constants = require('./util/constants');
 var plotlyNode = require('./util/plotly_node');
+var sortObject = require('./util/sort_object');
 
 function makeSchema(plotlyPath, schemaPath) {
     var Plotly = plotlyNode(plotlyPath);
 
-    var plotSchema = Plotly.PlotSchema.get();
+    var plotSchema = sortObject(Plotly.PlotSchema.get());
     var plotSchemaStr = JSON.stringify(plotSchema, null, 1);
     fs.writeFileSync(schemaPath, plotSchemaStr);
 
