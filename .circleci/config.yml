@@ -255,7 +255,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Test plot-schema.json diff
+          name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
           command: diff --unified --color dist/plot-schema.json test/plot-schema.json
       - run:
           name: Test plotly.min.js import using requirejs
