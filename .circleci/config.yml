@@ -242,6 +242,9 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
+      - run:
+          name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
+          command: diff --unified --color dist/plot-schema.json test/plot-schema.json
       - persist_to_workspace:
           root: ~/
           paths:
@@ -254,9 +257,6 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
-      - run:
-          name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
-          command: diff --unified --color dist/plot-schema.json test/plot-schema.json
       - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
