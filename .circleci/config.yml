@@ -87,31 +87,8 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: which pip3 version
-          command: which pip3 && pip3 --version
-      - run:
-          name: install kaleido v0.2.1
-          command: python3 -m pip install kaleido==0.2.1
-      - run:
-          name: install plotly.io v5.0.0
-          command: python3 -m pip install plotly==5.0.0
-      - run:
-          name: install liberation2 fonts
-          command: sudo apt-get install fonts-liberation2
-      - run:
-          name: install OpenSans fonts
-          command: sudo apt-get install fonts-open-sans
-      - run:
-          name: install NotoSansCJK fonts
-          command: sudo apt install fonts-noto-cjk
-      - run:
-          name: download google fonts e.g. Dosis, GravitasOne, NotoSansMono, NotoSans, NotoSerif, Old_Standard_TT, PT_Sans_Narrow, Raleway and Roboto
-          command: python3 .circleci/download_google_fonts.py
-      - run:
-          name: install downloaded google fonts
-          command: |
-            sudo cp -r .circleci/fonts/ /usr/share/
-            sudo fc-cache -f
+          name: install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
       - run:
           name: create all png files
           command: .circleci/test.sh make-baselines
