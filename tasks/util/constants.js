@@ -7,6 +7,7 @@ var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToLib = path.join(pathToRoot, 'lib/');
 var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
+var pathToDraftlogs = path.join(pathToRoot, 'draftlogs/');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
@@ -168,6 +169,8 @@ module.exports = {
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
     pathToDist: pathToDist,
+    pathToDraftlogs: pathToDraftlogs,
+    pathToChangelog: path.join(pathToRoot, 'CHANGELOG.md'),
 
     partialBundleTraces: partialBundleTraces,
 

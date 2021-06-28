@@ -7,17 +7,25 @@ module.exports = {
     makeDir: makeDir
 };
 
-function emptyDir(dir) {
+function emptyDir(dir, opts) {
     if(common.doesDirExist(dir)) {
         console.log('empty ' + dir);
         try {
             var allFiles = fs.readdirSync(dir);
+            var hasFilter = false;
+            if(opts && opts.filter) {
+                hasFilter = true;
+                allFiles = allFiles.filter(opts.filter);
+            }
+
             allFiles.forEach(function(file) {
                 // remove file
                 fs.unlinkSync(path.join(dir, file));
             });
 
-            fs.rmdirSync(dir);
+            if(!hasFilter) {
+                fs.rmdirSync(dir);
+            }
         } catch(err) {
             console.error(err);
         }
