@@ -183,8 +183,12 @@ jobs:
       - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
-      - attach_workspace:
-          at: ~/
+      - checkout
+      - run:
+          name: set up build environment
+          command: .circleci/env_build.sh
+      - run:
+          command: rm -rf .git
       - run:
           name: Build dist/
           command: npm run build
@@ -279,9 +283,8 @@ workflows:
       - source-syntax:
           requires:
             - install-and-cibuild
-      - publish-dist:
-          requires:
-            - install-and-cibuild
+
+      - publish-dist
       - test-dist1:
           requires:
             - publish-dist
