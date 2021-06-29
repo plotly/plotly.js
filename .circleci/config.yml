@@ -188,8 +188,6 @@ jobs:
           name: set up build environment
           command: .circleci/env_build.sh
       - run:
-          command: rm -rf .git
-      - run:
           name: Build dist/
           command: npm run build
       - store_artifacts:
@@ -212,18 +210,6 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - plotly.js
-
-  test-dist1:
-    docker:
-      - image: circleci/node:12.22.1
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
@@ -274,6 +260,3 @@ workflows:
             - install-and-cibuild
 
       - publish-dist
-      - test-dist1:
-          requires:
-            - publish-dist
