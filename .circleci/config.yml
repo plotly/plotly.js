@@ -244,9 +244,6 @@ jobs:
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
-      - run:
-          name: Test plotly bundles againt duplicate keys
-          command: npm run no-dup-keys
 
 workflows:
   version: 2
