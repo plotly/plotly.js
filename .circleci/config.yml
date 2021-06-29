@@ -233,14 +233,6 @@ jobs:
       - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func
-
-  test-dist2:
-    docker:
-      - image: circleci/node:12.22.1
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
@@ -283,8 +275,5 @@ workflows:
 
       - publish-dist
       - test-dist1:
-          requires:
-            - publish-dist
-      - test-dist2:
           requires:
             - publish-dist
