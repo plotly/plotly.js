@@ -30,16 +30,7 @@
                 "England",
                 "Spain"
             ],
-            "x": [
-                5,
-                4,
-                4,
-                2,
-                2,
-                2,
-                1,
-                1
-            ]
+            "x": [5, 4, 4, 2, 2, 2, 1, 1]
         }
     ],
     "layout": {
@@ -64,8 +55,7 @@
             "zeroline": false,
             "range": [-1, 6],
             "tickvals": [0, 1, 2, 3, 4, 5],
-            "ticktext": ["😐", "🙂", "😊", "🤨", "😃", "😎"
-            ],
+            "ticktext": ["😐", "🙂", "😊", "🤨", "😃", "😎"],
             "tickfont": { "size": 32 },
             "title": {
                 "text": "<br><b>An interactive Plotly graph</b>"
