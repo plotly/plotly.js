@@ -15,19 +15,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: set heap option before very first node.js call
-          command: |
-            export NODE_OPTIONS='--max-old-space-size=4096'
-      - run:
-          name: Install dependencies
-          command: |
-            npm ci
-      - run:
-          name: List dependency versions
-          command: |
-            echo "npm: $(npm --version)"
-            echo "node: $(node --version)"
-            npm ls || true
+          name: set up build environment
+          command: .circleci/env_build.sh
       - run:
           name: Pretest
           command: |
