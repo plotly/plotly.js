@@ -15,19 +15,8 @@ jobs:
     steps:
       - checkout
       - run:
-          name: set heap option before very first node.js call
-          command: |
-            export NODE_OPTIONS='--max-old-space-size=4096'
-      - run:
-          name: Install dependencies
-          command: |
-            npm ci
-      - run:
-          name: List dependency versions
-          command: |
-            echo "npm: $(npm --version)"
-            echo "node: $(node --version)"
-            npm ls || true
+          name: set up build environment
+          command: .circleci/env_build.sh
       - run:
           name: Pretest
           command: |
@@ -194,8 +183,10 @@ jobs:
       - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
-      - attach_workspace:
-          at: ~/
+      - checkout
+      - run:
+          name: set up build environment
+          command: .circleci/env_build.sh
       - run:
           name: Build dist/
           command: npm run build
@@ -219,18 +210,6 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - plotly.js
-
-  test-dist1:
-    docker:
-      - image: circleci/node:12.22.1
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
@@ -240,20 +219,9 @@ jobs:
       - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func
-
-  test-dist2:
-    docker:
-      - image: circleci/node:12.22.1
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
-      - run:
-          name: Test plotly bundles againt duplicate keys
-          command: npm run no-dup-keys
 
 workflows:
   version: 2
@@ -290,12 +258,5 @@ workflows:
       - source-syntax:
           requires:
             - install-and-cibuild
-      - publish-dist:
-          requires:
-            - install-and-cibuild
-      - test-dist1:
-          requires:
-            - publish-dist
-      - test-dist2:
-          requires:
-            - publish-dist
+
+      - publish-dist
