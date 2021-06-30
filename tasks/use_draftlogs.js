@@ -33,6 +33,7 @@ var all = {
 
 var ENTER = '\n';
 
+var skippedFiles = [];
 for(var i = 0; i < len; i++) {
     var filename = allLogs[i];
     var message = fs.readFileSync(path.join(pathToDraftlogs, filename), { encoding: 'utf-8' }).toString();
@@ -49,6 +50,8 @@ for(var i = 0; i < len; i++) {
         all.Changed.push(message);
     } else if(filename.endsWith('_fix.md')) {
         all.Fixed.push(message);
+    } else {
+        skippedFiles.push(filename);
     }
 }
 
@@ -75,3 +78,9 @@ append('Fixed');
 draftNewChangelog.push(foot);
 
 fs.writeFileSync(pathToChangelog, draftNewChangelog.join(ENTER), { encoding: 'utf-8' });
+
+if(skippedFiles.length) {
+    throw JSON.stringify({
+        'skippedFiles': skippedFiles
+    }, null, 2);
+}
