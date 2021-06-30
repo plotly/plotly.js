@@ -84,10 +84,10 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
   [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
   used and updated correctly.
 
-#### Step 1: Clone the plotly.js repo and install its dependencies
+#### Step 1: Clone the plotly.js repo, download it and install dependencies
 
 ```bash
-git clone https://github.com/plotly/plotly.js.git
+git clone --depth 1 git@github.com:<your-GitHub-username>/plotly.js.git
 cd plotly.js
 npm install
 ```
