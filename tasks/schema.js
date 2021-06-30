@@ -71,7 +71,7 @@ function makeSchema(plotlyPath, schemaPath) {
     }
 }
 
-var isDist = process.argv[2] === 'dist';
+var isDist = process.argv.indexOf('dist') !== -1;
 
 var pathToSchema = isDist ?
     constants.pathToSchemaDist :
