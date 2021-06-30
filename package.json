@@ -62,7 +62,7 @@
     ]
   },
   "dependencies": {
-    "@plotly/d3": "^3.6.1",
+    "@plotly/d3": "3.7.0",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
     "@plotly/point-cluster": "^3.1.9",
@@ -78,6 +78,8 @@
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",
     "d3-force": "^1.2.1",
+    "d3-geo": "^1.12.1",
+    "d3-geo-projection": "^2.9.0",
     "d3-hierarchy": "^1.1.9",
     "d3-interpolate": "^1.4.0",
     "d3-time-format": "^2.2.3",
