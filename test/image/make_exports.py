@@ -30,6 +30,7 @@ allNames = [
     'mapbox_stamen-style',
     'zsmooth_methods',
     'fonts',
+    'worldcup',
     'mathjax'
 ]
 
