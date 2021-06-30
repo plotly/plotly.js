@@ -138,7 +138,19 @@ Three additional helpers exist that are refreshed every second:
 There is also a search bar in the top right of the dashboard. This fuzzy-searches
 image mocks based on their file name and trace type.
 
-#### Other npm scripts
+#### Step 5: Regenerate plot-schema in "test" folder then review & commit potential changes
+
+```bash
+npm run schema
+```
+
+#### Step 6: Review & commit potential changes made to test/plot-schema.json
+
+> If you are editing attribute descriptions or implementing a new feature this file located in test folder would record the proposed changes to the API. This test file is different from the other plot-schema.json file located in the dist folder and should only be updated by maintainers at the release time.
+
+**IMPORTANT:** please do not change and commit any files in the "dist" folder
+
+#### Other npm scripts that may be of interest in development
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
   script must be run manually when updating the css and svg source files.
