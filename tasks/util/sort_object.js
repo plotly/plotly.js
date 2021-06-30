@@ -12,7 +12,7 @@ function sortObject(obj) {
         var v = obj[key];
         newObj[key] = (typeof v === 'object' && v !== null && !(v instanceof Array)) ?
             sortObject(v) :
-            newObj[key] = v;
+            v;
     }
 
     return newObj;
