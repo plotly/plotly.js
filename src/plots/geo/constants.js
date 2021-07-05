@@ -126,7 +126,7 @@ exports.projNames = {
 */
 };
 
-var keys = Object.keys(exports.projNames);
+var keys = Object.keys(exports.projNames).sort();
 var totalN = keys.length;
 var nRow = 8;
 var nCol = Math.ceil(totalN / nRow);

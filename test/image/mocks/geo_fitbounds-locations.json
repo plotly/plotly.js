@@ -1,7 +1,7 @@
 {
   "data": [
     {
-      "name": "equirectangular",
+      "name": "aitoff",
       "geo": "geo",
       "type": "choropleth",
       "locations": [
@@ -11,43 +11,45 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "equirectangular"
+      "hovertemplate": "aitoff"
     },
     {
       "geo": "geo",
       "type": "scattergeo",
       "mode": "text",
-      "text": "equirectangular",
+      "text": "aitoff",
       "locations": [
         "AUS"
       ],
       "hoverinfo": "skip"
     },
     {
-      "name": "mercator",
+      "name": "albers usa",
       "geo": "geo2",
       "type": "choropleth",
+      "locationmode": "USA-states",
       "locations": [
-        "AUS"
+        "WA"
       ],
       "z": [
         10
       ],
       "showscale": false,
-      "hovertemplate": "mercator"
+      "hovertemplate": "albers usa"
     },
     {
       "geo": "geo2",
       "type": "scattergeo",
       "mode": "text",
-      "text": "mercator",
+      "text": "albers<br>usa",
+      "locationmode": "USA-states",
       "locations": [
-        "AUS"
+        "WA"
       ],
       "hoverinfo": "skip"
     },
     {
-      "name": "orthographic",
+      "name": "azimuthal equal area",
       "geo": "geo3",
       "type": "choropleth",
       "locations": [
@@ -57,20 +59,20 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "orthographic"
+      "hovertemplate": "azimuthal equal area"
     },
     {
       "geo": "geo3",
       "type": "scattergeo",
       "mode": "text",
-      "text": "orthographic",
+      "text": "azimuthal<br>equal area",
       "locations": [
         "AUS"
       ],
       "hoverinfo": "skip"
     },
     {
-      "name": "natural earth",
+      "name": "azimuthal equidistant",
       "geo": "geo4",
       "type": "choropleth",
       "locations": [
@@ -80,20 +82,20 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "natural earth"
+      "hovertemplate": "azimuthal equidistant"
     },
     {
       "geo": "geo4",
       "type": "scattergeo",
       "mode": "text",
-      "text": "natural<br>earth",
+      "text": "azimuthal<br>equidistant",
       "locations": [
         "AUS"
       ],
       "hoverinfo": "skip"
     },
     {
-      "name": "kavrayskiy7",
+      "name": "conic conformal",
       "geo": "geo5",
       "type": "choropleth",
       "locations": [
@@ -103,20 +105,20 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "kavrayskiy7"
+      "hovertemplate": "conic conformal"
     },
     {
       "geo": "geo5",
       "type": "scattergeo",
       "mode": "text",
-      "text": "kavrayskiy7",
+      "text": "conic<br>conformal",
       "locations": [
         "AUS"
       ],
       "hoverinfo": "skip"
     },
     {
-      "name": "miller",
+      "name": "conic equal area",
       "geo": "geo6",
       "type": "choropleth",
       "locations": [
@@ -126,20 +128,20 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "miller"
+      "hovertemplate": "conic equal area"
     },
     {
       "geo": "geo6",
       "type": "scattergeo",
       "mode": "text",
-      "text": "miller",
+      "text": "conic<br>equal area",
       "locations": [
         "AUS"
       ],
       "hoverinfo": "skip"
     },
     {
-      "name": "robinson",
+      "name": "conic equidistant",
       "geo": "geo7",
       "type": "choropleth",
       "locations": [
@@ -149,13 +151,13 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "robinson"
+      "hovertemplate": "conic equidistant"
     },
     {
       "geo": "geo7",
       "type": "scattergeo",
       "mode": "text",
-      "text": "robinson",
+      "text": "conic<br>equidistant",
       "locations": [
         "AUS"
       ],
@@ -185,7 +187,7 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "azimuthal equal area",
+      "name": "equirectangular",
       "geo": "geo9",
       "type": "choropleth",
       "locations": [
@@ -195,105 +197,13 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "azimuthal equal area"
+      "hovertemplate": "equirectangular"
     },
     {
       "geo": "geo9",
       "type": "scattergeo",
       "mode": "text",
-      "text": "azimuthal<br>equal area",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "azimuthal equidistant",
-      "geo": "geo10",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "azimuthal equidistant"
-    },
-    {
-      "geo": "geo10",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "azimuthal<br>equidistant",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "conic equal area",
-      "geo": "geo11",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "conic equal area"
-    },
-    {
-      "geo": "geo11",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "conic<br>equal area",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "conic conformal",
-      "geo": "geo12",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "conic conformal"
-    },
-    {
-      "geo": "geo12",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "conic<br>conformal",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "conic equidistant",
-      "geo": "geo13",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "conic equidistant"
-    },
-    {
-      "geo": "geo13",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "conic<br>equidistant",
+      "text": "equirectangular",
       "locations": [
         "AUS"
       ],
@@ -301,7 +211,7 @@
     },
     {
       "name": "gnomonic",
-      "geo": "geo14",
+      "geo": "geo10",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -313,7 +223,7 @@
       "hovertemplate": "gnomonic"
     },
     {
-      "geo": "geo14",
+      "geo": "geo10",
       "type": "scattergeo",
       "mode": "text",
       "text": "gnomonic",
@@ -323,54 +233,8 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "stereographic",
-      "geo": "geo15",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "stereographic"
-    },
-    {
-      "geo": "geo15",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "stereographic",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "mollweide",
-      "geo": "geo16",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "mollweide"
-    },
-    {
-      "geo": "geo16",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "mollweide",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
       "name": "hammer",
-      "geo": "geo17",
+      "geo": "geo11",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -382,7 +246,7 @@
       "hovertemplate": "hammer"
     },
     {
-      "geo": "geo17",
+      "geo": "geo11",
       "type": "scattergeo",
       "mode": "text",
       "text": "hammer",
@@ -392,7 +256,145 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "transverse mercator",
+      "name": "kavrayskiy7",
+      "geo": "geo12",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "kavrayskiy7"
+    },
+    {
+      "geo": "geo12",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "kavrayskiy7",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "mercator",
+      "geo": "geo13",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "mercator"
+    },
+    {
+      "geo": "geo13",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "mercator",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "miller",
+      "geo": "geo14",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "miller"
+    },
+    {
+      "geo": "geo14",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "miller",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "mollweide",
+      "geo": "geo15",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "mollweide"
+    },
+    {
+      "geo": "geo15",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "mollweide",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "natural earth",
+      "geo": "geo16",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "natural earth"
+    },
+    {
+      "geo": "geo16",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "natural<br>earth",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "orthographic",
+      "geo": "geo17",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "orthographic"
+    },
+    {
+      "geo": "geo17",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "orthographic",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "robinson",
       "geo": "geo18",
       "type": "choropleth",
       "locations": [
@@ -402,84 +404,13 @@
         10
       ],
       "showscale": false,
-      "hovertemplate": "transverse mercator"
+      "hovertemplate": "robinson"
     },
     {
       "geo": "geo18",
       "type": "scattergeo",
       "mode": "text",
-      "text": "transverse<br>mercator",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "albers usa",
-      "geo": "geo19",
-      "type": "choropleth",
-      "locationmode": "USA-states",
-      "locations": [
-        "WA"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "albers usa"
-    },
-    {
-      "geo": "geo19",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "albers<br>usa",
-      "locationmode": "USA-states",
-      "locations": [
-        "WA"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "winkel tripel",
-      "geo": "geo20",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "winkel tripel"
-    },
-    {
-      "geo": "geo20",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "winkel<br>tripel",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
-      "name": "aitoff",
-      "geo": "geo21",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "aitoff"
-    },
-    {
-      "geo": "geo21",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "aitoff",
+      "text": "robinson",
       "locations": [
         "AUS"
       ],
@@ -487,7 +418,7 @@
     },
     {
       "name": "sinusoidal",
-      "geo": "geo22",
+      "geo": "geo19",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -499,10 +430,79 @@
       "hovertemplate": "sinusoidal"
     },
     {
-      "geo": "geo22",
+      "geo": "geo19",
       "type": "scattergeo",
       "mode": "text",
       "text": "sinusoidal",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "stereographic",
+      "geo": "geo20",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "stereographic"
+    },
+    {
+      "geo": "geo20",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "stereographic",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "transverse mercator",
+      "geo": "geo21",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "transverse mercator"
+    },
+    {
+      "geo": "geo21",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "transverse<br>mercator",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "winkel tripel",
+      "geo": "geo22",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "winkel tripel"
+    },
+    {
+      "geo": "geo22",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "winkel<br>tripel",
       "locations": [
         "AUS"
       ],
@@ -543,7 +543,7 @@
         "column": 0
       },
       "projection": {
-        "type": "equirectangular"
+        "type": "aitoff"
       },
       "fitbounds": "locations"
     },
@@ -553,7 +553,7 @@
         "column": 0
       },
       "projection": {
-        "type": "mercator"
+        "type": "albers usa"
       },
       "fitbounds": "locations"
     },
@@ -563,7 +563,7 @@
         "column": 0
       },
       "projection": {
-        "type": "orthographic"
+        "type": "azimuthal equal area"
       },
       "fitbounds": "locations"
     },
@@ -573,7 +573,7 @@
         "column": 0
       },
       "projection": {
-        "type": "natural earth"
+        "type": "azimuthal equidistant"
       },
       "fitbounds": "locations"
     },
@@ -583,7 +583,7 @@
         "column": 0
       },
       "projection": {
-        "type": "kavrayskiy7"
+        "type": "conic conformal"
       },
       "fitbounds": "locations"
     },
@@ -593,7 +593,7 @@
         "column": 0
       },
       "projection": {
-        "type": "miller"
+        "type": "conic equal area"
       },
       "fitbounds": "locations"
     },
@@ -603,7 +603,7 @@
         "column": 0
       },
       "projection": {
-        "type": "robinson"
+        "type": "conic equidistant"
       },
       "fitbounds": "locations"
     },
@@ -623,7 +623,7 @@
         "column": 1
       },
       "projection": {
-        "type": "azimuthal equal area"
+        "type": "equirectangular"
       },
       "fitbounds": "locations"
     },
@@ -633,7 +633,7 @@
         "column": 1
       },
       "projection": {
-        "type": "azimuthal equidistant"
+        "type": "gnomonic"
       },
       "fitbounds": "locations"
     },
@@ -643,7 +643,7 @@
         "column": 1
       },
       "projection": {
-        "type": "conic equal area"
+        "type": "hammer"
       },
       "fitbounds": "locations"
     },
@@ -653,7 +653,7 @@
         "column": 1
       },
       "projection": {
-        "type": "conic conformal"
+        "type": "kavrayskiy7"
       },
       "fitbounds": "locations"
     },
@@ -663,7 +663,7 @@
         "column": 1
       },
       "projection": {
-        "type": "conic equidistant"
+        "type": "mercator"
       },
       "fitbounds": "locations"
     },
@@ -673,7 +673,7 @@
         "column": 1
       },
       "projection": {
-        "type": "gnomonic"
+        "type": "miller"
       },
       "fitbounds": "locations"
     },
@@ -683,7 +683,7 @@
         "column": 1
       },
       "projection": {
-        "type": "stereographic"
+        "type": "mollweide"
       },
       "fitbounds": "locations"
     },
@@ -693,7 +693,7 @@
         "column": 1
       },
       "projection": {
-        "type": "mollweide"
+        "type": "natural earth"
       },
       "fitbounds": "locations"
     },
@@ -703,7 +703,7 @@
         "column": 2
       },
       "projection": {
-        "type": "hammer"
+        "type": "orthographic"
       },
       "fitbounds": "locations"
     },
@@ -713,7 +713,7 @@
         "column": 2
       },
       "projection": {
-        "type": "transverse mercator"
+        "type": "robinson"
       },
       "fitbounds": "locations"
     },
@@ -723,7 +723,7 @@
         "column": 2
       },
       "projection": {
-        "type": "albers usa"
+        "type": "sinusoidal"
       },
       "fitbounds": "locations"
     },
@@ -733,7 +733,7 @@
         "column": 2
       },
       "projection": {
-        "type": "winkel tripel"
+        "type": "stereographic"
       },
       "fitbounds": "locations"
     },
@@ -743,7 +743,7 @@
         "column": 2
       },
       "projection": {
-        "type": "aitoff"
+        "type": "transverse mercator"
       },
       "fitbounds": "locations"
     },
@@ -753,7 +753,7 @@
         "column": 2
       },
       "projection": {
-        "type": "sinusoidal"
+        "type": "winkel tripel"
       },
       "fitbounds": "locations"
     }
