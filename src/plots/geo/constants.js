@@ -24,24 +24,22 @@ exports.projNames = {
     'winkel tripel': 'winkel3',
     'aitoff': 'aitoff',
     'sinusoidal': 'sinusoidal',
-/*
-    // potential projections that could be added to the API
 
     'airy': 'airy',
     // 'albers': 'albers',
-    'armadillo': 'armadillo',
+    // 'armadillo': 'armadillo',
     'august': 'august',
-    'baker': 'baker',
-    'berghaus': 'berghaus',
-    'bertin1953': 'bertin1953',
+    // 'baker': 'baker',
+    // 'berghaus': 'berghaus',
+    // 'bertin1953': 'bertin1953',
     'boggs': 'boggs',
-    'bonne': 'bonne',
-    'bottomley': 'bottomley',
+    // 'bonne': 'bonne',
+    // 'bottomley': 'bottomley',
     'bromley': 'bromley',
     // 'chamberlin': 'chamberlin',
-    'chamberlin africa': 'chamberlinAfrica',
+    // 'chamberlin africa': 'chamberlinAfrica',
     'collignon': 'collignon',
-    'craig': 'craig',
+    // 'craig': 'craig',
     'craster': 'craster',
     'cylindrical equal area': 'cylindricalEqualArea',
     'cylindrical stereographic': 'cylindricalStereographic',
@@ -55,31 +53,31 @@ exports.projNames = {
     'foucaut': 'foucaut',
     'foucaut sinusoidal': 'foucautSinusoidal',
     'gilbert': 'gilbert',
-    'gingery': 'gingery',
-    'ginzburg4': 'ginzburg4',
+    // 'gingery': 'gingery',
+    // 'ginzburg4': 'ginzburg4',
     'ginzburg5': 'ginzburg5',
     'ginzburg6': 'ginzburg6',
     'ginzburg8': 'ginzburg8',
     'ginzburg9': 'ginzburg9',
     'gringorten': 'gringorten',
     'guyou': 'guyou',
-    'hammer retroazimuthal': 'hammerRetroazimuthal',
-    'healpix': 'healpix',
+    // 'hammer retroazimuthal': 'hammerRetroazimuthal',
+    // 'healpix': 'healpix',
     'hill': 'hill',
-    'homolosine': 'homolosine',
+    // 'homolosine': 'homolosine',
     'hufnagel': 'hufnagel',
     'hyperelliptical': 'hyperelliptical',
     'lagrange': 'lagrange',
-    'larrivee': 'larrivee',
-    'laskowski': 'laskowski',
-    'littrow': 'littrow',
-    'loximuthal': 'loximuthal',
+    // 'larrivee': 'larrivee',
+    // 'laskowski': 'laskowski',
+    // 'littrow': 'littrow',
+    // 'loximuthal': 'loximuthal',
     // 'modified stereographic': 'modifiedStereographic',
-    'modified stereographic alaska': 'modifiedStereographicAlaska',
-    'modified stereographic gs48': 'modifiedStereographicGs48',
-    'modified stereographic gs50': 'modifiedStereographicGs50',
-    'modified stereographic miller': 'modifiedStereographicMiller',
-    'modified stereographic lee': 'modifiedStereographicLee',
+    // 'modified stereographic alaska': 'modifiedStereographicAlaska',
+    // 'modified stereographic gs48': 'modifiedStereographicGs48',
+    // 'modified stereographic gs50': 'modifiedStereographicGs50',
+    // 'modified stereographic miller': 'modifiedStereographicMiller',
+    // 'modified stereographic lee': 'modifiedStereographicLee',
     'mt flat polar parabolic': 'mtFlatPolarParabolic',
     'mt flat polar quartic': 'mtFlatPolarQuartic',
     'mt flat polar sinusoidal': 'mtFlatPolarSinusoidal',
@@ -88,10 +86,10 @@ exports.projNames = {
     'nell hammer': 'nellHammer',
     'nicolosi': 'nicolosi',
     'patterson': 'patterson',
-    'polyconic': 'polyconic',
+    // 'polyconic': 'polyconic',
     'rectangular polyconic': 'rectangularPolyconic',
     'satellite': 'satellite',
-    'sinu mollweide': 'sinuMollweide',
+    // 'sinu mollweide': 'sinuMollweide',
     'times': 'times',
     // 'two point azimuthal': 'twoPointAzimuthal',
     // 'two point azimuthalUsa': 'twoPointAzimuthalUsa',
@@ -109,21 +107,20 @@ exports.projNames = {
     'winkel3': 'winkel3',
 
     // 'interrupt': 'interrupt',
-    'interrupted homolosine': 'interruptedHomolosine',
-    'interrupted sinusoidal': 'interruptedSinusoidal',
-    'interrupted boggs': 'interruptedBoggs',
-    'interrupted sinu mollweide': 'interruptedSinuMollweide',
-    'interrupted mollweide': 'interruptedMollweide',
-    'interrupted mollweide hemispheres': 'interruptedMollweideHemispheres',
-    'interrupted quartic authalic': 'interruptedQuarticAuthalic',
+    // 'interrupted homolosine': 'interruptedHomolosine',
+    // 'interrupted sinusoidal': 'interruptedSinusoidal',
+    // 'interrupted boggs': 'interruptedBoggs',
+    // 'interrupted sinu mollweide': 'interruptedSinuMollweide',
+    // 'interrupted mollweide': 'interruptedMollweide',
+    // 'interrupted mollweide hemispheres': 'interruptedMollweideHemispheres',
+    // 'interrupted quartic authalic': 'interruptedQuarticAuthalic',
 
-    'polyhedral butterfly': 'polyhedralButterfly',
-    'polyhedral collignon': 'polyhedralCollignon',
-    'polyhedral waterman': 'polyhedralWaterman',
+    // 'polyhedral butterfly': 'polyhedralButterfly',
+    // 'polyhedral collignon': 'polyhedralCollignon',
+    // 'polyhedral waterman': 'polyhedralWaterman',
 
     'gringorten quincuncial': 'gringortenQuincuncial',
     'peirce quincuncial': 'peirceQuincuncial',
-*/
 };
 
 var keys = Object.keys(exports.projNames).sort();
@@ -136,7 +133,7 @@ var layout = {
         columns: nCol
     },
     showlegend: false,
-    width: 650,
+    width: 1800,
     height: 1200,
     margin: {
         l: 20,
@@ -147,11 +144,12 @@ var layout = {
     annotations: [{
         showarrow: false,
         text: 'fitbounds<br>\'locations\'<br>for all<br>projection<br>types',
-        font: { size: 24 },
+        font: { size: 20 },
         x: 1,
         xref: 'paper',
         xanchor: 'right',
-        y: 0.1,
+        yref: 'paper',
+        y: 0,
         yanchor: 'bottom'
     }],
 };
@@ -166,7 +164,7 @@ for(var col = 0; col < nCol; col++) {
         var geo = 'geo' + (n ? n + 1 : '');
         var usa = name.indexOf('usa') !== -1;
         var locationmode = usa ? 'USA-states' : undefined;
-        var locations = [usa ? 'WA' : 'AUS'];
+        var locations = usa ? ['WA'] : ['AUS'];
 
         data.push({
             name: name,
@@ -211,6 +209,7 @@ exports.axesNames = ['lonaxis', 'lataxis'];
 
 // max longitudinal angular span (EXPERIMENTAL)
 exports.lonaxisSpan = {
+    'satellite': 120,
     'orthographic': 180,
     'azimuthal equal area': 360,
     'azimuthal equidistant': 360,
