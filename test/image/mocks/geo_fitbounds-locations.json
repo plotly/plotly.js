@@ -429,15 +429,14 @@
       "hovertemplate": "albers usa"
     },
     {
-      "name": "albers usa",
       "geo": "geo19",
       "type": "scattergeo",
+      "mode": "text",
+      "text": "albers<br>usa",
       "locationmode": "USA-states",
       "locations": [
         "WA"
       ],
-      "mode": "text",
-      "text": "albers<br>usa",
       "hoverinfo": "skip"
     },
     {
@@ -726,8 +725,7 @@
       "projection": {
         "type": "albers usa"
       },
-      "fitbounds": "locations",
-      "scope": "usa"
+      "fitbounds": "locations"
     },
     "geo20": {
       "domain": {

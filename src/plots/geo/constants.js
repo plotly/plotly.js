@@ -126,6 +126,85 @@ exports.projNames = {
 */
 };
 
+var keys = Object.keys(exports.projNames);
+var totalN = keys.length;
+var nRow = 8;
+var nCol = Math.ceil(totalN / nRow);
+var layout = {
+    grid: {
+        rows: nRow,
+        columns: nCol
+    },
+    showlegend: false,
+    width: 650,
+    height: 1200,
+    margin: {
+        l: 20,
+        t: 20,
+        r: 20,
+        b: 20
+    },
+    annotations: [{
+        showarrow: false,
+        text: 'fitbounds<br>\'locations\'<br>for all<br>projection<br>types',
+        font: { size: 24 },
+        x: 1,
+        xref: 'paper',
+        xanchor: 'right',
+        y: 0.1,
+        yanchor: 'bottom'
+    }],
+};
+var data = [];
+var n = -1;
+for(var col = 0; col < nCol; col++) {
+    for(var row = 0; row < nRow; row++) {
+        n++;
+        if(n >= totalN) continue;
+
+        var name = keys[n];
+        var geo = 'geo' + (n ? n + 1 : '');
+        var usa = name.indexOf('usa') !== -1;
+        var locationmode = usa ? 'USA-states' : undefined;
+        var locations = [usa ? 'WA' : 'AUS'];
+
+        data.push({
+            name: name,
+            geo: geo,
+            type: 'choropleth',
+            locationmode: locationmode,
+            locations: locations,
+            z: [10],
+            showscale: false,
+            hovertemplate: name
+        });
+
+        data.push({
+            geo: geo,
+            type: 'scattergeo',
+            mode: 'text',
+            text: name.replace(' ', '<br>'),
+            locationmode: locationmode,
+            locations: locations,
+            hoverinfo: 'skip'
+        });
+
+        layout[geo] = {
+            domain: {
+                row: row,
+                column: col,
+            },
+            projection: { type: name },
+            fitbounds: 'locations'
+        };
+    }
+}
+
+console.log(JSON.stringify({
+    data: data,
+    layout: layout
+}, null, 2));
+
 // name of the axes
 exports.axesNames = ['lonaxis', 'lataxis'];
 
