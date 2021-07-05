@@ -194,6 +194,7 @@ for(var col = 0; col < nCol; col++) {
                 row: row,
                 column: col,
             },
+            showocean: usa ? false : true,
             projection: { type: name },
             fitbounds: 'locations'
         };

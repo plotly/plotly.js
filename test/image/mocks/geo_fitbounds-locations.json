@@ -542,6 +542,7 @@
         "row": 0,
         "column": 0
       },
+      "showocean": true,
       "projection": {
         "type": "aitoff"
       },
@@ -552,6 +553,7 @@
         "row": 1,
         "column": 0
       },
+      "showocean": false,
       "projection": {
         "type": "albers usa"
       },
@@ -562,6 +564,7 @@
         "row": 2,
         "column": 0
       },
+      "showocean": true,
       "projection": {
         "type": "azimuthal equal area"
       },
@@ -572,6 +575,7 @@
         "row": 3,
         "column": 0
       },
+      "showocean": true,
       "projection": {
         "type": "azimuthal equidistant"
       },
@@ -582,6 +586,7 @@
         "row": 4,
         "column": 0
       },
+      "showocean": true,
       "projection": {
         "type": "conic conformal"
       },
@@ -592,6 +597,7 @@
         "row": 5,
         "column": 0
       },
+      "showocean": true,
       "projection": {
         "type": "conic equal area"
       },
@@ -602,6 +608,7 @@
         "row": 6,
         "column": 0
       },
+      "showocean": true,
       "projection": {
         "type": "conic equidistant"
       },
@@ -612,6 +619,7 @@
         "row": 7,
         "column": 0
       },
+      "showocean": true,
       "projection": {
         "type": "eckert4"
       },
@@ -622,6 +630,7 @@
         "row": 0,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "equirectangular"
       },
@@ -632,6 +641,7 @@
         "row": 1,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "gnomonic"
       },
@@ -642,6 +652,7 @@
         "row": 2,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "hammer"
       },
@@ -652,6 +663,7 @@
         "row": 3,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "kavrayskiy7"
       },
@@ -662,6 +674,7 @@
         "row": 4,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "mercator"
       },
@@ -672,6 +685,7 @@
         "row": 5,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "miller"
       },
@@ -682,6 +696,7 @@
         "row": 6,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "mollweide"
       },
@@ -692,6 +707,7 @@
         "row": 7,
         "column": 1
       },
+      "showocean": true,
       "projection": {
         "type": "natural earth"
       },
@@ -702,6 +718,7 @@
         "row": 0,
         "column": 2
       },
+      "showocean": true,
       "projection": {
         "type": "orthographic"
       },
@@ -712,6 +729,7 @@
         "row": 1,
         "column": 2
       },
+      "showocean": true,
       "projection": {
         "type": "robinson"
       },
@@ -722,6 +740,7 @@
         "row": 2,
         "column": 2
       },
+      "showocean": true,
       "projection": {
         "type": "sinusoidal"
       },
@@ -732,6 +751,7 @@
         "row": 3,
         "column": 2
       },
+      "showocean": true,
       "projection": {
         "type": "stereographic"
       },
@@ -742,6 +762,7 @@
         "row": 4,
         "column": 2
       },
+      "showocean": true,
       "projection": {
         "type": "transverse mercator"
       },
@@ -752,6 +773,7 @@
         "row": 5,
         "column": 2
       },
+      "showocean": true,
       "projection": {
         "type": "winkel tripel"
       },
