@@ -143,7 +143,7 @@ var layout = {
     },
     annotations: [{
         showarrow: false,
-        text: 'fitbounds<br>\'locations\'<br>for all<br>projection<br>types',
+        text: 'all<br>projection<br>types<br>in Plotly',
         font: { size: 20 },
         x: 1,
         xref: 'paper',
@@ -164,7 +164,7 @@ for(var col = 0; col < nCol; col++) {
         var geo = 'geo' + (n ? n + 1 : '');
         var usa = name.indexOf('usa') !== -1;
         var locationmode = usa ? 'USA-states' : undefined;
-        var locations = usa ? ['WA'] : ['AUS'];
+        var locations = usa ? ['TX', 'WA', 'NY', 'AK'] : ['GHA', 'ARG', 'AUS', 'CAN'];
 
         data.push({
             name: name,
@@ -172,7 +172,7 @@ for(var col = 0; col < nCol; col++) {
             type: 'choropleth',
             locationmode: locationmode,
             locations: locations,
-            z: [10],
+            z: [1, 2, 3, 4],
             showscale: false,
             hovertemplate: name
         });
@@ -180,8 +180,20 @@ for(var col = 0; col < nCol; col++) {
         data.push({
             geo: geo,
             type: 'scattergeo',
+            mode: 'markers+text',
+            text: ['Cape Town', 'Los Angeles'],
+            textfont: { size: 6 },
+            marker: { color: ['lightgreen', 'yellow'], size: [20, 10] },
+            lat: [-34, 34],
+            lon: [18, -118]
+        });
+
+        data.push({
+            geo: geo,
+            type: 'scattergeo',
             mode: 'text',
-            text: name.replace(' ', '<br>'),
+            text: [name.replace(' ', '<br>')],
+            textfont: { color: 'darkblue', family: 'Gravitas One, cursive' },
             locationmode: locationmode,
             locations: locations,
             hoverinfo: 'skip'
@@ -192,10 +204,24 @@ for(var col = 0; col < nCol; col++) {
                 row: row,
                 column: col,
             },
-            showocean: usa ? false : true,
             projection: { type: name },
-            fitbounds: 'locations'
+            lonaxis: {
+                showgrid: true,
+                gridwidth: 1,
+                gridcolor: 'lightgray'
+            },
+            lataxis: {
+                showgrid: true,
+                gridwidth: 1,
+                gridcolor: 'lightgray'
+            }
+            // fitbounds: 'locations'
         };
+
+        if(!usa) {
+            layout[geo].showcoastlines = false;
+            layout[geo].showocean = true;
+        }
     }
 }
 
