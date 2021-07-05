@@ -124,7 +124,7 @@ for(var i = 0; i < allMockList.length; i++) {
 
     var numDiffPixels = pixelmatch(img0.data, img1.data, diff.data, width, height, {
         threshold: shouldBePixelPerfect ? 0 :
-            mockName === 'mapbox_geojson-attributes' ? 0.2 : 0.15
+            mockName === 'mapbox_geojson-attributes' ? 0.25 : 0.15
     });
 
     if(numDiffPixels) {
