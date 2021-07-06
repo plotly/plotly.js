@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Axes = require('../plots/cartesian/axes');
@@ -22,7 +14,6 @@ var attrs = exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether this aggregate transform is enabled or disabled.'
@@ -36,7 +27,6 @@ var attrs = exports.attributes = {
         noBlank: true,
         arrayOk: true,
         dflt: 'x',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the grouping target to which the aggregation is applied.',
@@ -55,7 +45,6 @@ var attrs = exports.attributes = {
         _isLinkedToArray: 'aggregation',
         target: {
             valType: 'string',
-            role: 'info',
             editType: 'calc',
             description: [
                 'A reference to the data array in the parent trace to aggregate.',
@@ -70,7 +59,6 @@ var attrs = exports.attributes = {
             valType: 'enumerated',
             values: ['count', 'sum', 'avg', 'median', 'mode', 'rms', 'stddev', 'min', 'max', 'first', 'last', 'change', 'range'],
             dflt: 'first',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets the aggregation function.',
@@ -95,7 +83,6 @@ var attrs = exports.attributes = {
             valType: 'enumerated',
             values: ['sample', 'population'],
             dflt: 'sample',
-            role: 'info',
             editType: 'calc',
             description: [
                 '*stddev* supports two formula variants: *sample* (normalize by N-1)',
@@ -105,7 +92,6 @@ var attrs = exports.attributes = {
         enabled: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'calc',
             description: [
                 'Determines whether this aggregation function is enabled or disabled.'

@@ -1,15 +1,10 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
+var axisFormat = require('../../plots/cartesian/axis_format_attributes');
+var axisHoverFormat = axisFormat.axisHoverFormat;
+var descriptionOnlyNumbers = axisFormat.descriptionOnlyNumbers;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var dash = require('../../components/drawing/attributes').dash;
 var fontAttrs = require('../../plots/font_attributes');
@@ -19,7 +14,6 @@ var filterOps = require('../../constants/filter_ops');
 var COMPARISON_OPS2 = filterOps.COMPARISON_OPS2;
 var INTERVAL_OPS = filterOps.INTERVAL_OPS;
 
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
 
 var scatterLineAttrs = scatterAttrs.line;
 
@@ -44,7 +38,9 @@ module.exports = extendFlat({
     transpose: heatmapAttrs.transpose,
     xtype: heatmapAttrs.xtype,
     ytype: heatmapAttrs.ytype,
-    zhoverformat: heatmapAttrs.zhoverformat,
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: heatmapAttrs.hovertemplate,
     hoverongaps: heatmapAttrs.hoverongaps,
     connectgaps: extendFlat({}, heatmapAttrs.connectgaps, {
@@ -60,7 +56,6 @@ module.exports = extendFlat({
 
     fillcolor: {
         valType: 'color',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the fill color if `contours.type` is *constraint*.',
@@ -72,7 +67,6 @@ module.exports = extendFlat({
     autocontour: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         impliedEdits: {
             'contours.start': undefined,
@@ -90,7 +84,6 @@ module.exports = extendFlat({
         valType: 'integer',
         dflt: 15,
         min: 1,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the maximum number of contour levels. The actual number',
@@ -106,7 +99,6 @@ module.exports = extendFlat({
             valType: 'enumerated',
             values: ['levels', 'constraint'],
             dflt: 'levels',
-            role: 'info',
             editType: 'calc',
             description: [
                 'If `levels`, the data is represented as a contour plot with multiple',
@@ -118,7 +110,6 @@ module.exports = extendFlat({
         start: {
             valType: 'number',
             dflt: null,
-            role: 'style',
             editType: 'plot',
             impliedEdits: {'^autocontour': false},
             description: [
@@ -129,7 +120,6 @@ module.exports = extendFlat({
         end: {
             valType: 'number',
             dflt: null,
-            role: 'style',
             editType: 'plot',
             impliedEdits: {'^autocontour': false},
             description: [
@@ -141,7 +131,6 @@ module.exports = extendFlat({
             valType: 'number',
             dflt: null,
             min: 0,
-            role: 'style',
             editType: 'plot',
             impliedEdits: {'^autocontour': false},
             description: [
@@ -153,7 +142,6 @@ module.exports = extendFlat({
             valType: 'enumerated',
             values: ['fill', 'heatmap', 'lines', 'none'],
             dflt: 'fill',
-            role: 'style',
             editType: 'calc',
             description: [
                 'Determines the coloring method showing the contour values.',
@@ -167,7 +155,6 @@ module.exports = extendFlat({
         showlines: {
             valType: 'boolean',
             dflt: true,
-            role: 'style',
             editType: 'plot',
             description: [
                 'Determines whether or not the contour lines are drawn.',
@@ -177,7 +164,6 @@ module.exports = extendFlat({
         showlabels: {
             valType: 'boolean',
             dflt: false,
-            role: 'style',
             editType: 'plot',
             description: [
                 'Determines whether to label the contour lines with their values.'
@@ -195,18 +181,12 @@ module.exports = extendFlat({
         labelformat: {
             valType: 'string',
             dflt: '',
-            role: 'style',
             editType: 'plot',
-            description: [
-                'Sets the contour label formatting rule using d3 formatting',
-                'mini-language which is very similar to Python, see:',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('contour label')
         },
         operation: {
             valType: 'enumerated',
             values: [].concat(COMPARISON_OPS2).concat(INTERVAL_OPS),
-            role: 'info',
             dflt: '=',
             editType: 'calc',
             description: [
@@ -229,7 +209,6 @@ module.exports = extendFlat({
         value: {
             valType: 'any',
             dflt: 0,
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets the value or values of the constraint boundary.',
@@ -259,7 +238,6 @@ module.exports = extendFlat({
         width: {
             valType: 'number',
             min: 0,
-            role: 'style',
             editType: 'style+colorbars',
             description: [
                 'Sets the contour line width in (in px)',

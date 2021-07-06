@@ -1,12 +1,13 @@
 var Sliders = require('@src/components/sliders');
 var constants = require('@src/components/sliders/constants');
 
-var d3 = require('d3');
-var Plotly = require('@lib');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
@@ -234,7 +235,7 @@ describe('sliders initialization', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             sliders: [{
                 transition: {duration: 0},
                 steps: [
@@ -262,7 +263,7 @@ describe('ugly internal manipulation of steps', function() {
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3]}], {
+        Plotly.newPlot(gd, [{x: [1, 2, 3]}], {
             sliders: [{
                 transition: {duration: 0},
                 steps: [
@@ -282,7 +283,8 @@ describe('ugly internal manipulation of steps', function() {
         expect(gd._fullLayout.sliders[0].active).toEqual(0);
 
         // Set the active index higher than it can go:
-        Plotly.relayout(gd, {'sliders[0].active': 2}).then(function() {
+        Plotly.relayout(gd, {'sliders[0].active': 2})
+        .then(function() {
             // Confirm nothing changed
             expect(gd._fullLayout.sliders[0].active).toEqual(0);
 
@@ -304,7 +306,7 @@ describe('ugly internal manipulation of steps', function() {
             // The selected option no longer exists, so confirm it's
             // been fixed during the process of updating/drawing it:
             expect(gd._fullLayout.sliders[0].active).toEqual(0);
-        }).catch(failTest).then(done);
+        }).then(done, done.fail);
     });
 });
 
@@ -321,7 +323,7 @@ describe('sliders interactions', function() {
 
         mockCopy = Lib.extendDeep({}, mock, {layout: {sliders: [{x: 0.25}, {}]}});
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {
@@ -331,7 +333,7 @@ describe('sliders interactions', function() {
 
     it('positions sliders repeatably when they push margins', function(done) {
         function checkPositions(msg) {
-            d3.select(gd).selectAll('.slider-group').each(function(d, i) {
+            d3Select(gd).selectAll('.slider-group').each(function(d, i) {
                 var sliderBB = this.getBoundingClientRect();
                 var gdBB = gd.getBoundingClientRect();
 
@@ -356,8 +358,7 @@ describe('sliders interactions', function() {
         .then(function() {
             checkPositions('back to original');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should draw only visible sliders', function(done) {
@@ -365,7 +366,8 @@ describe('sliders interactions', function() {
         expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
         assertPlotSize({heightLessThan: 270}, 'initial');
 
-        Plotly.relayout(gd, 'sliders[0].visible', false).then(function() {
+        Plotly.relayout(gd, 'sliders[0].visible', false)
+        .then(function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
@@ -385,7 +387,8 @@ describe('sliders interactions', function() {
                 'sliders[0].visible': true,
                 'sliders[1].visible': true
             });
-        }).then(function() {
+        })
+        .then(function() {
             assertNodeCount('.' + constants.groupClassName, 1);
             expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();
@@ -410,8 +413,7 @@ describe('sliders interactions', function() {
             expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('only draws visible steps', function(done) {
@@ -462,8 +464,7 @@ describe('sliders interactions', function() {
         .then(function() {
             assertSlider(10, 5, 0, 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should respond to mouse clicks', function(done) {
@@ -503,8 +504,7 @@ describe('sliders interactions', function() {
             expect(mouseupFill).toEqual(originalFill);
             expect(mockCopy.layout.sliders[0].active).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should issue events on interaction', function(done) {
@@ -567,11 +567,10 @@ describe('sliders interactions', function() {
             // Now an end:
             assertEventCounts(1, 2, 2, 1, 'mouseup');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     function assertNodeCount(query, cnt) {
-        expect(d3.selectAll(query).size()).toEqual(cnt);
+        expect(d3SelectAll(query).size()).toEqual(cnt);
     }
 });

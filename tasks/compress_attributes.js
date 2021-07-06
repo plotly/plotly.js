@@ -5,40 +5,52 @@ var through = require('through2');
  * of the plotly.js bundles
  */
 
+var WHITESPACE_BEFORE = '\\s*';
+var OPTIONAL_COMMA = ',?';
 
 // one line string with or without trailing comma
 function makeStringRegex(attr) {
-    return attr + ': \'.*\'' + ',?';
+    return makeRegex(
+        WHITESPACE_BEFORE + attr + ': \'.*\'' + OPTIONAL_COMMA
+    );
 }
 
 // joined array of strings with or without trailing comma
 function makeJoinedArrayRegex(attr) {
-    return attr + ': \\[[\\s\\S]*?\\]' + '\\.join\\(.*' + ',?';
+    return makeRegex(
+        WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + '\\.join\\(.*' + OPTIONAL_COMMA
+    );
 }
 
 // array with or without trailing comma
 function makeArrayRegex(attr) {
-    return attr + ': \\[[\\s\\S]*?\\]' + ',?';
+    return makeRegex(
+        WHITESPACE_BEFORE + attr + ': \\[[\\s\\S]*?\\]' + OPTIONAL_COMMA
+    );
 }
 
-// ref: http://www.regexr.com/3cmac
-var regexStr = [
-    makeStringRegex('description'),
-    makeJoinedArrayRegex('description'),
-    makeArrayRegex('requiredOpts'),
-    makeArrayRegex('otherOpts'),
-    makeStringRegex('hrName'),
-    makeStringRegex('role')
-].join('|');
-
-var regex = new RegExp(regexStr, 'g');
+function makeRegex(regexStr) {
+    return (
+        new RegExp(regexStr, 'g')
+    );
+}
 
 module.exports = function() {
-    return through(function(buf, enc, next) {
-        this.push(
-            buf.toString('utf-8')
-               .replace(regex, '')
-        );
+    var allChunks = [];
+    return through(function(chunk, enc, next) {
+        allChunks.push(chunk);
         next();
+    }, function(done) {
+        var str = Buffer.concat(allChunks).toString('utf-8');
+        this.push(
+            str
+                .replace(makeStringRegex('description'), '')
+                .replace(makeJoinedArrayRegex('description'), '')
+                .replace(makeArrayRegex('requiredOpts'), '')
+                .replace(makeArrayRegex('otherOpts'), '')
+                .replace(makeStringRegex('role'), '')
+                .replace(makeStringRegex('hrName'), '')
+        );
+        done();
     });
 };

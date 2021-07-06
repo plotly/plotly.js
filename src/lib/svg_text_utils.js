@@ -1,17 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 /* global MathJax:false */
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Lib = require('../lib');
 var strTranslate = Lib.strTranslate;
@@ -778,6 +769,18 @@ function alignHTMLWith(_base, container, options) {
         return this;
     };
 }
+
+var onePx = '1px ';
+
+exports.makeTextShadow = function(color) {
+    var x = onePx;
+    var y = onePx;
+    var b = onePx;
+    return x + y + b + color + ', ' +
+        '-' + x + '-' + y + b + color + ', ' +
+        x + '-' + y + b + color + ', ' +
+        '-' + x + y + b + color;
+};
 
 /*
  * Editable title

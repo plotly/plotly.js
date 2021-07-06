@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var hiddenlabels = require('../pie/layout_attributes').hiddenlabels;
@@ -15,7 +7,6 @@ module.exports = {
 
     funnelareacolorway: {
         valType: 'colorlist',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the default funnelarea slice colors. Defaults to the main',
@@ -27,7 +18,6 @@ module.exports = {
     extendfunnelareacolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'If `true`, the funnelarea slice colors (whether given by `funnelareacolorway` or',

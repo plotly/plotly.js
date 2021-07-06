@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -41,7 +33,6 @@ module.exports = {
                 'dice-slice'
             ],
             dflt: 'squarify',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines d3 treemap solver.',
@@ -51,7 +42,6 @@ module.exports = {
 
         squarifyratio: {
             valType: 'number',
-            role: 'info',
             min: 1,
             dflt: 1,
             editType: 'plot',
@@ -69,7 +59,6 @@ module.exports = {
 
         flip: {
             valType: 'flaglist',
-            role: 'info',
             flags: [
                 'x',
                 'y'
@@ -83,7 +72,6 @@ module.exports = {
 
         pad: {
             valType: 'number',
-            role: 'style',
             min: 0,
             dflt: 3,
             editType: 'plot',
@@ -99,7 +87,6 @@ module.exports = {
         pad: {
             t: {
                 valType: 'number',
-                role: 'style',
                 min: 0,
                 editType: 'plot',
                 description: [
@@ -108,7 +95,6 @@ module.exports = {
             },
             l: {
                 valType: 'number',
-                role: 'style',
                 min: 0,
                 editType: 'plot',
                 description: [
@@ -117,7 +103,6 @@ module.exports = {
             },
             r: {
                 valType: 'number',
-                role: 'style',
                 min: 0,
                 editType: 'plot',
                 description: [
@@ -126,7 +111,6 @@ module.exports = {
             },
             b: {
                 valType: 'number',
-                role: 'style',
                 min: 0,
                 editType: 'plot',
                 description: [
@@ -143,7 +127,6 @@ module.exports = {
             valType: 'enumerated',
             values: [true, false, 'reversed'],
             editType: 'style',
-            role: 'style',
             description: [
                 'Determines if the sector colors are faded towards',
                 'the background from the leaves up to the headers.',
@@ -170,7 +153,6 @@ module.exports = {
         visible: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines if the path bar is drawn',
@@ -186,7 +168,6 @@ module.exports = {
                 'bottom'
             ],
             dflt: 'top',
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines on which side of the the treemap the',
@@ -204,7 +185,6 @@ module.exports = {
                 '\\'
             ],
             dflt: '>',
-            role: 'style',
             editType: 'plot',
             description: [
                 'Determines which shape is used for edges between `barpath` labels.'
@@ -214,7 +194,6 @@ module.exports = {
         thickness: {
             valType: 'number',
             min: 12,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Sets the thickness of `pathbar` (in px). If not specified the `pathbar.textfont.size` is used',
@@ -262,7 +241,6 @@ module.exports = {
             'bottom left', 'bottom center', 'bottom right'
         ],
         dflt: 'top left',
-        role: 'style',
         editType: 'plot',
         description: [
             'Sets the positions of the `text` elements.'

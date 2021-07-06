@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -36,13 +28,14 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             var rad = Math.max(3, di.mrc || 0);
             var kink = 1 - 1 / rad;
             var dxRaw = Math.abs(xa.c2p(di.x) - xpx);
-            var d = (dxRaw < rad) ? (kink * dxRaw / rad) : (dxRaw - rad + kink);
-            return d;
+            if(di.orig_x !== undefined) dxRaw += xa.c2p(di.orig_x) - xa.c2p(di.x);
+            return (dxRaw < rad) ? (kink * dxRaw / rad) : (dxRaw - rad + kink);
         };
         var dy = function(di) {
             var rad = Math.max(3, di.mrc || 0);
             var kink = 1 - 1 / rad;
             var dyRaw = Math.abs(ya.c2p(di.y) - ypx);
+            if(di.orig_y !== undefined) dyRaw += ya.c2p(di.orig_y) - ya.c2p(di.y);
             return (dyRaw < rad) ? (kink * dyRaw / rad) : (dyRaw - rad + kink);
         };
         var dxy = function(di) {

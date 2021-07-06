@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 module.exports = {
@@ -13,7 +5,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['stack', 'overlay'],
         dflt: 'stack',
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines how bars at the same location coordinate',
@@ -28,7 +19,6 @@ module.exports = {
         dflt: 0.1,
         min: 0,
         max: 1,
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the gap between bars of',

@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var supplyDefaults = require('@src/traces/surface').supplyDefaults;
-var failTest = require('../assets/fail_test');
+
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -10,7 +10,7 @@ describe('Test surface', function() {
 
     describe('supplyDefaults', function() {
         var defaultColor = '#444';
-        var layout = {_dfltTitle: {colorbar: 'cb'}};
+        var layout = {_dfltTitle: {colorbar: 'cb'}, font: {color: '#444'}};
 
         var traceIn, traceOut;
 
@@ -197,19 +197,18 @@ describe('Test surface', function() {
         }
 
         it('@gl surface should be invisible when the z array is empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'z': []
             }])
             .then(function() {
                 assertVisibility(false, 'not to be visible');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl surface should be invisible when the x array is defined but is empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [],
                 'y': [0, 1],
@@ -218,12 +217,11 @@ describe('Test surface', function() {
             .then(function() {
                 assertVisibility(false, 'not to be visible');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl surface should be invisible when the y array is defined but is empty', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],
                 'y': [],
@@ -232,12 +230,11 @@ describe('Test surface', function() {
             .then(function() {
                 assertVisibility(false, 'not to be visible');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl surface should be invisible when the x array is defined and has at least one item', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0],
                 'y': [0, 1],
@@ -246,12 +243,11 @@ describe('Test surface', function() {
             .then(function() {
                 assertVisibility(true, 'to be visible');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl surface should be invisible when the y array is defined and has at least one item', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],
                 'y': [0],
@@ -260,24 +256,22 @@ describe('Test surface', function() {
             .then(function() {
                 assertVisibility(true, 'to be visible');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl surface should be visible when the x and y are not provided; but z array is provided', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'z': [[1, 2], [3, 4]]
             }])
             .then(function() {
                 assertVisibility(true, 'to be visible');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('@gl surface should be invisible when the x and y are provided; but z array is not provided', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 'type': 'surface',
                 'x': [0, 1],
                 'y': [0, 1]
@@ -285,8 +279,7 @@ describe('Test surface', function() {
             .then(function() {
                 assertVisibility(false, 'to be invisible');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

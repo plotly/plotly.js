@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/core');
 var PlotlyHistogram2dContour = require('@lib/histogram2dcontour');
@@ -16,25 +16,25 @@ describe('Bundle with histogram2dcontour and histogram', function() {
     var mock = require('@mocks/2dhistogram_contour_subplots.json');
 
     beforeEach(function(done) {
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+        Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);
     });
 
     afterEach(destroyGraphDiv);
 
     it('should graph scatter traces', function() {
-        var nodes = d3.selectAll('g.trace.scatter');
+        var nodes = d3SelectAll('g.trace.scatter');
 
         expect(nodes.size()).toEqual(1);
     });
 
     it('should graph contour traces', function() {
-        var nodes = d3.selectAll('g.contour');
+        var nodes = d3SelectAll('g.contour');
 
         expect(nodes.size()).toEqual(1);
     });
 
     it('should graph histogram traces', function() {
-        var nodes = d3.selectAll('g.bars');
+        var nodes = d3SelectAll('g.bars');
 
         expect(nodes.size()).toEqual(2);
     });

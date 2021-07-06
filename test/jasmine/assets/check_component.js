@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -38,13 +38,13 @@ module.exports = function checkComponent(Plotly) {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.newPlot(gd, mock.data, mock.layout).then(done);
         });
 
         afterEach(destroyGraphDiv);
 
         it('should graph scatter traces with calendar attributes', function() {
-            var nodes = d3.selectAll('g.trace.scatter');
+            var nodes = d3SelectAll('g.trace.scatter');
 
             expect(nodes.size()).toEqual(1);
 
@@ -55,7 +55,7 @@ module.exports = function checkComponent(Plotly) {
         });
 
         it('should graph bar traces with calendar attributes', function() {
-            var nodes = d3.selectAll('g.trace.bars');
+            var nodes = d3SelectAll('g.trace.bars');
 
             expect(nodes.size()).toEqual(1);
             expect(gd._fullData[1].xcalendar).toBe('gregorian');
@@ -74,7 +74,7 @@ module.exports = function checkComponent(Plotly) {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.newPlot(gd, mock.data, mock.layout).then(done);
         });
 
         afterEach(destroyGraphDiv);

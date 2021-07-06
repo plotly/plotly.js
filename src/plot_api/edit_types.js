@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../lib');
@@ -18,12 +10,12 @@ var traceOpts = {
     flags: ['calc', 'clearAxisTypes', 'plot', 'style', 'markerSize', 'colorbars'],
     description: [
         'trace attributes should include an `editType` string matching this flaglist.',
-        '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
+        '*calc* is the most extensive: a full (re)plot starting by clearing `gd.calcdata`',
         'to force it to be regenerated',
         '*clearAxisTypes* resets the types of the axes this trace is on, because new data could',
         'cause the automatic axis type detection to change. Log type will not be cleared, as that',
         'is never automatically chosen so must have been user-specified.',
-        '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
+        '*plot* (re)plots but without first clearing `gd.calcdata`.',
         '*style* only calls `module.style` (or module.editStyle) for all trace modules and redraws the legend.',
         '*markerSize* is like *style*, but propagate axis-range changes due to scatter `marker.size`',
         '*colorbars* only redraws colorbars.'
@@ -39,9 +31,9 @@ var layoutOpts = {
     ],
     description: [
         'layout attributes should include an `editType` string matching this flaglist.',
-        '*calc* is the most extensive: a full `Plotly.plot` starting by clearing `gd.calcdata`',
+        '*calc* is the most extensive: a full (re)plot starting by clearing `gd.calcdata`',
         'to force it to be regenerated',
-        '*plot* calls `Plotly.plot` but without first clearing `gd.calcdata`.',
+        '*plot* (re)plots but without first clearing `gd.calcdata`.',
         '*legend* only redraws the legend.',
         '*ticks* only redraws axis ticks, labels, and gridlines.',
         '*axrange* minimal sequence when updating axis ranges.',

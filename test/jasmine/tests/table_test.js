@@ -1,13 +1,18 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Registry = require('@src/registry');
+function _doPlot(gd, data, layout) {
+    return Registry.call('_doPlot', gd, data, layout);
+}
+
 var Table = require('@src/traces/table');
 var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
-var d3 = require('d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 var mouseEvent = require('../assets/mouse_event');
 
@@ -147,38 +152,38 @@ describe('table', function() {
         it('Works with more than one column', function(done) {
             var mockCopy = Lib.extendDeep({}, mock2);
             var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(2);
                 expect(gd.data[0].cells.values.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('Works with one column', function(done) {
             var mockCopy = Lib.extendDeep({}, mock1);
             var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(1);
                 expect(gd.data[0].cells.values.length).toEqual(1);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(1);
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('Does not error with zero columns', function(done) {
             var mockCopy = Lib.extendDeep({}, mock0);
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(0);
                 expect(gd.data[0].cells.values.length).toEqual(0);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(0);
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('Does not raise an error with zero lines', function(done) {
@@ -189,13 +194,13 @@ describe('table', function() {
             mockCopy.data[0].cells.values = [[], []];
 
             var gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(2);
                 expect(gd.data[0].cells.values.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(2);
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('should remove scroll glyph and capture zone when *staticPlot:true*', function(done) {
@@ -203,28 +208,27 @@ describe('table', function() {
             var gd = createGraphDiv();
 
             function _assert(msg, exp) {
-                expect(d3.selectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
-                expect(d3.selectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
+                expect(d3SelectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
+                expect(d3SelectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
             }
 
             // more info in: https://github.com/plotly/streambed/issues/11618
 
-            Plotly.plot(gd, mockCopy).then(function() {
+            Plotly.newPlot(gd, mockCopy).then(function() {
                 _assert('staticPlot:false (base)', {
                     captureZone: 1,
                     glyph: 1
                 });
             })
             .then(function() { return Plotly.purge(gd); })
-            .then(function() { return Plotly.plot(gd, mockCopy.data, mockCopy.layout, {staticPlot: true}); })
+            .then(function() { return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, {staticPlot: true}); })
             .then(function() {
                 _assert('staticPlot:true', {
                     captureZone: 0,
                     glyph: 0
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -234,24 +238,24 @@ describe('table', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('`Plotly.plot` should render all the columns even if no cell contents were supplied yet', function(done) {
+        it('`Plotly.newPlot` should render all the columns even if no cell contents were supplied yet', function(done) {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
             delete mockCopy.data[0].cells;
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].header.values.length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.columnCell).length).toEqual(7 * 2); // both column rows to render
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
-        it('`Plotly.plot` should render all columns even if no header contents were supplied yet', function(done) {
+        it('`Plotly.newPlot` should render all columns even if no header contents were supplied yet', function(done) {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
             delete mockCopy.data[0].header;
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].cells.values.length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
@@ -259,23 +263,23 @@ describe('table', function() {
                 expect(document.querySelectorAll('#header').length).toEqual(7);
                 expect(document.querySelectorAll('#header .' + cn.columnCell).length).toEqual(7);
                 expect(document.querySelector('#header .' + cn.columnCell + ' text').textContent).toEqual('');
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
-        it('`Plotly.plot` should render all the column headers even if not all header values were supplied', function(done) {
+        it('`Plotly.newPlot` should render all the column headers even if not all header values were supplied', function(done) {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
             mockCopy.data[0].header.values = ['A', 'S', 'D']; // doesn't cover all 7 columns
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].cells.values.length).toEqual(7);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
                 expect(document.querySelectorAll('#header').length).toEqual(7);
                 expect(document.querySelectorAll('#header .' + cn.columnCell).length).toEqual(7);
                 expect(document.querySelector('#header .' + cn.columnCell + ' text').textContent).toEqual('A');
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -290,27 +294,27 @@ describe('table', function() {
                 y: [0.05, 0.85]
             };
             gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
-        it('`Plotly.plot` should have proper fields on `gd.data` on initial rendering', function() {
+        it('`Plotly.newPlot` should have proper fields on `gd.data` on initial rendering', function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].header.values.length).toEqual(7);
             expect(gd.data[0].cells.values.length).toEqual(7);
             expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
         });
 
-        it('Calling `Plotly.plot` again should add the new table trace', function(done) {
+        it('Calling _doPlot again should add the new table trace', function(done) {
             var reversedMockCopy = Lib.extendDeep({}, mockCopy);
             reversedMockCopy.data[0].header.values = reversedMockCopy.data[0].header.values.slice().reverse();
             reversedMockCopy.data[0].cells.values = reversedMockCopy.data[0].cells.values.slice().reverse();
             reversedMockCopy.data[0].domain.y = [0, 0.3];
 
-            Plotly.plot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
+            _doPlot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7 * 2);
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('Calling `Plotly.restyle` with a string path should amend the preexisting table', function(done) {
@@ -324,9 +328,8 @@ describe('table', function() {
                 expect(gd.data[0].cells.values.length).toEqual(7);
                 expect(gd.data[0].header.line.color).toEqual(['dimgray', 'grey']); // no change relative to original mock value
                 expect(gd.data[0].cells.line.color).toEqual(['grey']); // no change relative to original mock value
-
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
@@ -345,25 +348,27 @@ describe('table', function() {
             restyleValues('cells', 0, [['new cell content 1', 'new cell content 2']])()
                 .then(restyleValues('cells', 2, [[0, 0.1]]))
                 .then(restyleValues('header', 1, [['Species top', 'Species bottom']]))
-                .then(done);
+                .then(done, done.fail);
         });
 
         it('Calling `Plotly.relayout` with string should amend the preexisting table', function(done) {
             expect(gd.layout.width).toEqual(1000);
-            Plotly.relayout(gd, 'width', 500).then(function() {
+            Plotly.relayout(gd, 'width', 500)
+            .then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.layout.width).toEqual(500);
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('Calling `Plotly.relayout` with object should amend the preexisting table', function(done) {
             expect(gd.layout.width).toEqual(1000);
-            Plotly.relayout(gd, {width: 500}).then(function() {
+            Plotly.relayout(gd, {width: 500})
+            .then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.layout.width).toEqual(500);
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -373,7 +378,7 @@ describe('table', function() {
         beforeEach(function(done) {
             mockCopy = Lib.extendDeep({}, mock2);
             gd = createGraphDiv();
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('Calling `Plotly.restyle` for a `header.values` change should amend the preexisting one', function(done) {
@@ -413,7 +418,7 @@ describe('table', function() {
             mockCopy = Lib.extendDeep({}, mockMulti);
             gd = createGraphDiv();
             gdWheelEventCount = 0;
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
             .then(function() {
                 gd.addEventListener('wheel', function(evt) {
                     gdWheelEventCount++;
@@ -499,8 +504,7 @@ describe('table', function() {
                 scroll(bigCenter, -40);
                 assertBubbledEvents(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

@@ -1,16 +1,18 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/treemap/constants');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
+var d3Transition = require('../../strict-d3').transition;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
-var failTest = require('../assets/fail_test');
+
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -27,7 +29,7 @@ function _mouseEvent(type, gd, v) {
             mouseEvent(type, v[0], v[1]);
         } else {
             // position from slice number
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var el = gd3.select('.slice:nth-child(' + v + ')').node();
             mouseEvent(type, 0, 0, {element: el});
         }
@@ -572,18 +574,17 @@ describe('Test treemap plot:', function() {
     afterEach(destroyGraphDiv);
 
     it('should return early from the plot when there is no entry', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             labels: ['a', 'b'],
             parents: ['A', 'B'],
             type: 'treemap'
         }])
         .then(function() {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var element = gd3.select('.treemap trace').node();
             expect(element).toBe(null);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -615,7 +616,7 @@ describe('Test treemap hover:', function() {
         var exp = spec.exp || {};
         var ptData = null;
 
-        return Plotly.plot(gd, data, layout)
+        return Plotly.newPlot(gd, data, layout)
             .then(function() {
                 gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
             })
@@ -628,7 +629,7 @@ describe('Test treemap hover:', function() {
                 }
 
                 if(exp.style) {
-                    var gd3 = d3.select(gd);
+                    var gd3 = d3Select(gd);
                     assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
                 }
             });
@@ -781,7 +782,7 @@ describe('Test treemap hover:', function() {
     }]
     .forEach(function(spec) {
         it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
-            run(spec).catch(failTest).then(done);
+            run(spec).then(done, done.fail);
         });
     });
 });
@@ -821,7 +822,7 @@ describe('Test treemap hover with and without levels', function() {
         var exp = spec.exp || {};
         var ptData = null;
 
-        return Plotly.plot(gd, data, layout)
+        return Plotly.newPlot(gd, data, layout)
             .then(function() {
                 gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
             })
@@ -834,7 +835,7 @@ describe('Test treemap hover with and without levels', function() {
                 }
 
                 if(exp.style) {
-                    var gd3 = d3.select(gd);
+                    var gd3 = d3Select(gd);
                     assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
                 }
             });
@@ -923,7 +924,7 @@ describe('Test treemap hover with and without levels', function() {
     }]
     .forEach(function(spec) {
         it('should generate correct hover labels and event data - ' + spec.desc + ' with level:' + spec.level, function(done) {
-            run(spec).catch(failTest).then(done);
+            run(spec).then(done, done.fail);
         });
     });
 });
@@ -960,7 +961,7 @@ describe('Test treemap hover lifecycle:', function() {
     it('should fire the correct events', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(hover(gd, 1))
         .then(function() {
@@ -992,8 +993,7 @@ describe('Test treemap hover lifecycle:', function() {
                 fail('did not trigger correct # of plotly_unhover events');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1036,7 +1036,7 @@ describe('Test treemap clicks:', function() {
     it('should trigger animation when clicking on branches', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -1060,14 +1060,13 @@ describe('Test treemap clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 8))
         .then(function() {
@@ -1083,14 +1082,13 @@ describe('Test treemap clicks:', function() {
                 expect(trackers.click[0].points[0].label).toBe('Noam');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -1144,14 +1142,13 @@ describe('Test treemap clicks:', function() {
                 fail('incorrect plotly_animating triggering - ' + msg);
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to override default click behavior using plotly_treemapclick handler ()', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners({turnOffAnimation: true}))
         .then(click(gd, 2))
         .then(function() {
@@ -1170,8 +1167,7 @@ describe('Test treemap clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1191,19 +1187,18 @@ describe('Test treemap restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.treemaplayer');
+                var layer = d3Select(gd).select('.treemaplayer');
                 expect(layer.selectAll('.trace').size()).toBe(exp, msg);
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 2))
         .then(_restyle({'visible': false}))
         .then(_assert('both visible:false', 0))
         .then(_restyle({'visible': true}))
         .then(_assert('back to visible:true', 2))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
@@ -1211,7 +1206,7 @@ describe('Test treemap restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.treemaplayer');
+                var layer = d3Select(gd).select('.treemaplayer');
 
                 expect(layer.selectAll('.slice').size()).toBe(exp, msg);
 
@@ -1222,7 +1217,7 @@ describe('Test treemap restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 97))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1233,8 +1228,7 @@ describe('Test treemap restyle:', function() {
         .then(_assert('with non-root level', 67))
         .then(_restyle({maxdepth: null, level: null}))
         .then(_assert('back to first view', 97))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *textinfo*', function(done) {
@@ -1251,11 +1245,11 @@ describe('Test treemap restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.treemaplayer');
+                var layer = d3Select(gd).select('.treemaplayer');
                 var tx = [];
 
                 layer.selectAll('text.slicetext').each(function() {
-                    var lines = d3.select(this).selectAll('tspan');
+                    var lines = d3Select(this).selectAll('tspan');
 
                     if(lines.size()) {
                         var t = [];
@@ -1277,7 +1271,7 @@ describe('Test treemap restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1292,8 +1286,7 @@ describe('Test treemap restyle:', function() {
         .then(_assert('show everything', ['Root', 'B', 'A\n1\nnode1', 'b\n3\nnode3']))
         .then(_restyle({textinfo: null}))
         .then(_assert('back to dflt', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1306,7 +1299,7 @@ describe('Test treemap tweening:', function() {
         gd = createGraphDiv();
 
         // hacky way to track tween functions
-        spyOn(d3.transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
+        spyOn(d3Transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
             var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
             var pt = this[0][0].__data__;
             var id = pt.data.data.id;
@@ -1366,7 +1359,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry', 'd', 'Root',
@@ -1384,8 +1377,7 @@ describe('Test treemap tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
             _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
@@ -1398,7 +1390,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('enter new entry', 'd', 'Root',
@@ -1416,8 +1408,7 @@ describe('Test treemap tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [222.75, 126], 3);
             _assert('move b text to new position', 'transform', 'b', [225.75, 150], 3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
@@ -1430,7 +1421,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry', 'd', 'Root',
@@ -1448,8 +1439,7 @@ describe('Test treemap tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [221.25, 126], 3);
             _assert('enter b text to new position', 'transform', 'b', [287.625, 192]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
@@ -1463,7 +1453,7 @@ describe('Test treemap tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('exit b', 'd', 'b',
@@ -1479,8 +1469,7 @@ describe('Test treemap tweening:', function() {
                 'M215.75,112L617,112L617,367L215.75,367Z'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1502,14 +1491,14 @@ describe('Test treemap interactions edge cases', function() {
             expect(hoverCnt).toBe(exp.hoverCnt, msg + ' - hover cnt');
             expect(unhoverCnt).toBe(exp.unhoverCnt, msg + ' - unhover cnt');
 
-            var label = d3.select(gd).select('g.hovertext');
+            var label = d3Select(gd).select('g.hovertext');
             expect(label.size()).toBe(exp.hoverLabel, msg + ' - hover label cnt');
 
             hoverCnt = 0;
             unhoverCnt = 0;
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_hover', function() {
                 hoverCnt++;
@@ -1546,12 +1535,11 @@ describe('Test treemap interactions edge cases', function() {
                 hoverLabel: 1
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should show falsy zero text', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'treemap',
                 parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
@@ -1569,7 +1557,7 @@ describe('Test treemap interactions edge cases', function() {
         .then(function() {
             assertHoverLabelContent({ nums: 'D\n4\n0' });
         })
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should transition treemap traces only', function(done) {
@@ -1579,7 +1567,7 @@ describe('Test treemap interactions edge cases', function() {
         mock.data[1].name = 'treemap';
 
         function _assert(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.select('.cartesianlayer').selectAll('.trace').size())
                 .toBe(exp.cartesianTraceCnt, '# of cartesian traces');
             expect(gd3.select('.pielayer').selectAll('.trace').size())
@@ -1588,7 +1576,7 @@ describe('Test treemap interactions edge cases', function() {
                 .toBe(exp.treemapTraceCnt, '# of treemap traces');
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             _assert('base', {
                 cartesianTraceCnt: 2,
@@ -1605,8 +1593,7 @@ describe('Test treemap interactions edge cases', function() {
                 treemapTraceCnt: 1
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to transition treemap traces via `Plotly.react`', function(done) {
@@ -1618,7 +1605,7 @@ describe('Test treemap interactions edge cases', function() {
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.data[1].level = 'B';
             return Plotly.react(gd, gd.data, gd.layout);
@@ -1627,8 +1614,7 @@ describe('Test treemap interactions edge cases', function() {
         .then(function() {
             expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1720,7 +1706,7 @@ describe('treemap uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
@@ -1775,7 +1761,7 @@ describe('treemap uniformtext', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
@@ -1820,12 +1806,11 @@ describe('treemap uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0.84],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should uniform text scales after transition', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'treemap',
                 tiling: { packing: 'dice'},
@@ -1886,8 +1871,7 @@ describe('treemap uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1915,14 +1899,14 @@ describe('treemap pathbar react', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var selection = d3.selectAll(SLICES_SELECTOR);
+                var selection = d3SelectAll(SLICES_SELECTOR);
                 var size = selection.size();
 
                 expect(size).toBe(exp, msg);
             };
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(_assert('default pathbar.visible: true', 4))
         .then(function() {
             fig.data[0].pathbar = {visible: false};
@@ -1934,7 +1918,6 @@ describe('treemap pathbar react', function() {
             return Plotly.react(gd, fig);
         })
         .then(_assert('enable pathbar', 4))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

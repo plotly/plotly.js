@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
@@ -18,14 +10,12 @@ var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var buttonsAttrs = templatedArray('button', {
     visible: {
         valType: 'boolean',
-        role: 'info',
         description: 'Determines whether or not this button is visible.'
     },
     method: {
         valType: 'enumerated',
         values: ['restyle', 'relayout', 'animate', 'update', 'skip'],
         dflt: 'restyle',
-        role: 'info',
         description: [
             'Sets the Plotly method to be called on click.',
             'If the `skip` method is used, the API updatemenu will function as normal',
@@ -36,7 +26,6 @@ var buttonsAttrs = templatedArray('button', {
     },
     args: {
         valType: 'info_array',
-        role: 'info',
         freeLength: true,
         items: [
             {valType: 'any'},
@@ -50,7 +39,6 @@ var buttonsAttrs = templatedArray('button', {
     },
     args2: {
         valType: 'info_array',
-        role: 'info',
         freeLength: true,
         items: [
             {valType: 'any'},
@@ -66,13 +54,11 @@ var buttonsAttrs = templatedArray('button', {
     },
     label: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         description: 'Sets the text label to appear on the button.'
     },
     execute: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: [
             'When true, the API method is executed. When false, all other behaviors are the same',
@@ -89,7 +75,6 @@ module.exports = overrideAll(templatedArray('updatemenu', {
 
     visible: {
         valType: 'boolean',
-        role: 'info',
         description: [
             'Determines whether or not the update menu is visible.'
         ].join(' ')
@@ -99,7 +84,6 @@ module.exports = overrideAll(templatedArray('updatemenu', {
         valType: 'enumerated',
         values: ['dropdown', 'buttons'],
         dflt: 'dropdown',
-        role: 'info',
         description: [
             'Determines whether the buttons are accessible via a dropdown menu',
             'or whether the buttons are stacked horizontally or vertically'
@@ -110,7 +94,6 @@ module.exports = overrideAll(templatedArray('updatemenu', {
         valType: 'enumerated',
         values: ['left', 'right', 'up', 'down'],
         dflt: 'down',
-        role: 'info',
         description: [
             'Determines the direction in which the buttons are laid out, whether',
             'in a dropdown menu or a row/column of buttons. For `left` and `up`,',
@@ -121,7 +104,6 @@ module.exports = overrideAll(templatedArray('updatemenu', {
 
     active: {
         valType: 'integer',
-        role: 'info',
         min: -1,
         dflt: 0,
         description: [
@@ -132,7 +114,6 @@ module.exports = overrideAll(templatedArray('updatemenu', {
 
     showactive: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: 'Highlights active dropdown item or active button if true.'
     },
@@ -144,14 +125,12 @@ module.exports = overrideAll(templatedArray('updatemenu', {
         min: -2,
         max: 3,
         dflt: -0.05,
-        role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the update menu.'
     },
     xanchor: {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'right',
-        role: 'info',
         description: [
             'Sets the update menu\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -163,14 +142,12 @@ module.exports = overrideAll(templatedArray('updatemenu', {
         min: -2,
         max: 3,
         dflt: 1,
-        role: 'style',
         description: 'Sets the y position (in normalized coordinates) of the update menu.'
     },
     yanchor: {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'top',
-        role: 'info',
         description: [
             'Sets the update menu\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
@@ -188,20 +165,17 @@ module.exports = overrideAll(templatedArray('updatemenu', {
 
     bgcolor: {
         valType: 'color',
-        role: 'style',
         description: 'Sets the background color of the update menu buttons.'
     },
     bordercolor: {
         valType: 'color',
         dflt: colorAttrs.borderLine,
-        role: 'style',
         description: 'Sets the color of the border enclosing the update menu.'
     },
     borderwidth: {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'arraydraw',
         description: 'Sets the width (in px) of the border enclosing the update menu.'
     }

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../lib');
@@ -26,7 +18,6 @@ exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether this filter transform is enabled or disabled.'
@@ -38,7 +29,6 @@ exports.attributes = {
         noBlank: true,
         arrayOk: true,
         dflt: 'x',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the filter target by which the filter is applied.',
@@ -59,7 +49,6 @@ exports.attributes = {
             .concat(INTERVAL_OPS)
             .concat(SET_OPS),
         dflt: '=',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the filter operation.',
@@ -90,7 +79,6 @@ exports.attributes = {
     value: {
         valType: 'any',
         dflt: 0,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the value or values by which to filter.',
@@ -116,7 +104,6 @@ exports.attributes = {
     preservegaps: {
         valType: 'boolean',
         dflt: false,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not gaps in data arrays produced by the filter operation',

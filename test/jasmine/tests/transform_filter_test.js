@@ -1,5 +1,5 @@
 var Plotly = require('@lib/index');
-var Filter = require('@lib/filter');
+var Filter = require('@src/transforms/filter');
 
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
@@ -8,7 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var failTest = require('../assets/fail_test');
+
 
 var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
@@ -1096,17 +1096,16 @@ describe('filter transforms interactions', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('Plotly.plot should plot the transform trace', function(done) {
+    it('Plotly.newPlot should plot the transform trace', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        Plotly.plot(createGraphDiv(), data).then(function(gd) {
+        Plotly.newPlot(createGraphDiv(), data).then(function(gd) {
             assertDims([3]);
 
             var uid = gd._fullData[0]._fullInput.uid;
             expect(gd._fullData[0].uid).toEqual(uid + '0');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.restyle should work', function(done) {
@@ -1122,7 +1121,7 @@ describe('filter transforms interactions', function() {
                 .toBe(uid + '0', 'should preserve uid on restyle');
         }
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             uid = gd._fullData[0]._fullInput.uid;
 
             expect(gd._fullData[0].marker.color).toEqual('red');
@@ -1152,8 +1151,7 @@ describe('filter transforms interactions', function() {
             expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4]);
             expect(gd._fullLayout.yaxis.range).toBeCloseToArray([0, 2]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.extendTraces should work', function(done) {
@@ -1161,7 +1159,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd.data[0].x.length).toEqual(7);
             expect(gd._fullData[0].x.length).toEqual(3);
 
@@ -1177,8 +1175,7 @@ describe('filter transforms interactions', function() {
 
             assertDims([5]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('Plotly.deleteTraces should work', function(done) {
@@ -1186,7 +1183,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             assertDims([3, 4]);
 
             return Plotly.deleteTraces(gd, [1]);
@@ -1197,8 +1194,7 @@ describe('filter transforms interactions', function() {
         }).then(function() {
             assertDims([]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('toggling trace visibility should work', function(done) {
@@ -1206,7 +1202,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             assertDims([3, 4]);
 
             return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
@@ -1221,8 +1217,7 @@ describe('filter transforms interactions', function() {
         }).then(function() {
             assertDims([3, 4]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('zooming in/out should not change filtered data', function(done) {
@@ -1232,7 +1227,7 @@ describe('filter transforms interactions', function() {
 
         function getTx(p) { return p.tx; }
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
             expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
 
@@ -1248,8 +1243,7 @@ describe('filter transforms interactions', function() {
             expect(gd.calcdata[0].map(getTx)).toEqual(['e', 'f', 'g']);
             expect(gd.calcdata[1].map(getTx)).toEqual(['D', 'E', 'F', 'G']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update axis categories', function(done) {
@@ -1267,7 +1261,7 @@ describe('filter transforms interactions', function() {
 
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, data).then(function() {
+        Plotly.newPlot(gd, data).then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'f']);
             expect(gd._fullLayout.yaxis._categories).toEqual([]);
 
@@ -1292,8 +1286,7 @@ describe('filter transforms interactions', function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['i']);
             expect(gd._fullLayout.yaxis._categories).toEqual([]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should clear indexToPoints on removal', function(done) {
@@ -1315,8 +1308,7 @@ describe('filter transforms interactions', function() {
         .then(function() {
             expect(gd._fullData[0]._indexToPoints).toBeUndefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1352,7 +1344,7 @@ describe('filter resulting in empty coordinate arrays', function() {
             it(d[0], function(done) {
                 gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
-                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+                Plotly.newPlot(gd, fig).then(done, done.fail);
             });
         });
     });
@@ -1364,7 +1356,7 @@ describe('filter resulting in empty coordinate arrays', function() {
             it('@gl ' + d[0], function(done) {
                 gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
-                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+                Plotly.newPlot(gd, fig).then(done, done.fail);
             });
         });
     });
@@ -1377,10 +1369,10 @@ describe('filter resulting in empty coordinate arrays', function() {
         });
 
         mockList.forEach(function(d) {
-            it('@noCI @gl' + d[0], function(done) {
+            it('@gl' + d[0], function(done) {
                 gd = createGraphDiv();
                 var fig = filter2empty(d[1]);
-                Plotly.newPlot(gd, fig).catch(failTest).then(done);
+                Plotly.newPlot(gd, fig).then(done, done.fail);
             });
         });
     });

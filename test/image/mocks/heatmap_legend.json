@@ -60,7 +60,7 @@
             "orientation": "h",
             "title": {
                 "side": "top left",
-                "text": "<b><i>heatmap and contour legends<i></b>"
+                "text": "<i>heatmap and contour legends<i>"
             }
         },
         "height": 800,

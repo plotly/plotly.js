@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../lib');
@@ -30,10 +22,6 @@ function fileSaver(url, name, format) {
     var promise = new Promise(function(resolve, reject) {
         var blob;
         var objectUrl;
-
-        if(Lib.isIE9orBelow()) {
-            reject(new Error('IE < 10 unsupported'));
-        }
 
         // Safari doesn't allow downloading of blob urls
         if(Lib.isSafari()) {

@@ -31,23 +31,6 @@ glob(pathToJasmineBundleTests + '/*.js', function(err, files) {
         };
     });
 
-    var mathjaxTestFirefox = function(cb) {
-        var cmd = [
-            'karma', 'start',
-            path.join(constants.pathToRoot, 'test', 'jasmine', 'karma.conf.js'),
-            '--FF',
-            '--bundleTest=mathjax',
-            '--nowatch'
-        ].join(' ');
-
-        console.log('Running: ' + cmd);
-
-        exec(cmd, function(err) {
-            cb(null, err);
-        }).stdout.pipe(process.stdout);
-    };
-    tasks.push(mathjaxTestFirefox);
-
     runSeries(tasks, function(err, results) {
         if(err) throw err;
 

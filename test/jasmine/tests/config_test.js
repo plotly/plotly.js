@@ -1,8 +1,8 @@
 var Plotly = require('@lib/index');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
@@ -76,7 +76,7 @@ describe('config argument', function() {
                 if(!autosize) compareLayoutAndFullLayout(gd);
             }
 
-            Plotly.plot(gd, data, layout, config).then(function() {
+            Plotly.newPlot(gd, data, layout, config).then(function() {
                 beforeResize();
 
                 return Plotly.relayout(gd, relayout);
@@ -96,8 +96,7 @@ describe('config argument', function() {
                 return Plotly.react(gd, data, layout2, config);
             })
             .then(afterResize)
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         }
 
         it('should fill the frame when autosize: false, fillFrame: true, frameMargins: undefined', function(done) {
@@ -174,12 +173,11 @@ describe('config argument', function() {
         it('should fill the container when autosize: true up its max-width and max-height', function(done) {
             gd.style.maxWidth = '400px';
             gd.style.maxHeight = '300px';
-            Plotly.plot(gd, data, {autosize: true})
+            Plotly.newPlot(gd, data, {autosize: true})
             .then(function() {
                 checkLayoutSize(400, 300);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should respect attribute autosizable: false', function(done) {
@@ -206,7 +204,7 @@ describe('config argument', function() {
                 var dfltWidth = Plots.layoutAttributes.width.dflt;
                 var dfltHeight = Plots.layoutAttributes.height.dflt;
 
-                Plotly.plot(gd, data, {autosize: true})
+                Plotly.newPlot(gd, data, {autosize: true})
                 .then(function() {
                     if(spec.dflt) {
                         expect(gd._fullLayout.width).toBe(dfltWidth);
@@ -216,8 +214,7 @@ describe('config argument', function() {
                         expect(gd._fullLayout.height).not.toBe(dfltHeight);
                     }
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -231,24 +228,28 @@ describe('config argument', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should not display the edit link by default', function() {
-            Plotly.plot(gd, [], {});
+        it('should not display the edit link by default', function(done) {
+            Plotly.newPlot(gd, [], {})
+            .then(function() {
+                var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            var link = document.getElementsByClassName('js-plot-link-container')[0];
-
-            expect(link).toBeUndefined();
+                expect(link).toBeUndefined();
+            })
+            .then(done, done.fail);
         });
 
-        it('should display a link when true', function() {
-            Plotly.plot(gd, [], {}, { showLink: true });
+        it('should display a link when true', function(done) {
+            Plotly.newPlot(gd, [], {}, { showLink: true })
+            .then(function() {
+                var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            var link = document.getElementsByClassName('js-plot-link-container')[0];
+                expect(link.textContent).toBe('Edit chart »');
 
-            expect(link.textContent).toBe('Edit chart »');
-
-            var bBox = link.getBoundingClientRect();
-            expect(bBox.width).toBeGreaterThan(0);
-            expect(bBox.height).toBeGreaterThan(0);
+                var bBox = link.getBoundingClientRect();
+                expect(bBox.width).toBeGreaterThan(0);
+                expect(bBox.height).toBeGreaterThan(0);
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -266,7 +267,7 @@ describe('config argument', function() {
             var edits = {};
             edits[editFlag] = true;
 
-            return Plotly.plot(gd, [
+            return Plotly.newPlot(gd, [
                 { x: [1, 2, 3], y: [1, 2, 3] },
                 { x: [1, 2, 3], y: [3, 2, 1] }
             ], {
@@ -375,64 +376,55 @@ describe('config argument', function() {
                     titleText: false
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make titles editable', function(done) {
             initPlot('titleText')
             .then(checkIfEditable('gtitle', 'Click to enter Plot title'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make x axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-xtitle', 'Click to enter X axis title'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make y axes labels editable', function(done) {
             initPlot('axisTitleText')
             .then(checkIfEditable('g-ytitle', 'Click to enter Y axis title'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make legend labels editable', function(done) {
             initPlot('legendText')
             .then(checkIfEditable('legendtext', 'trace 0'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make annotation labels editable', function(done) {
             initPlot('annotationText')
             .then(checkIfEditable('annotation-text-g', 'testing'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make annotation labels draggable', function(done) {
             initPlot('annotationTail')
             .then(checkIfDraggable('annotation-text-g'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make annotation arrows draggable', function(done) {
             initPlot('annotationPosition')
             .then(checkIfDraggable('annotation-arrow-g'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should make legends draggable', function(done) {
             initPlot('legendPosition')
             .then(checkIfDraggable('legend'))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -442,10 +434,9 @@ describe('config argument', function() {
         var gd;
         var mockCopy;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
-            done();
         });
 
         afterEach(destroyGraphDiv);
@@ -459,16 +450,20 @@ describe('config argument', function() {
             });
         }
 
-        it('should have drag rectangles cursors by default', function() {
-            Plotly.plot(gd, mockCopy.data, {});
-
-            testDraggers(1);
+        it('should have drag rectangles cursors by default', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {})
+            .then(function() {
+                testDraggers(1);
+            })
+            .then(done, done.fail);
         });
 
-        it('should not have drag rectangles when disabled', function() {
-            Plotly.plot(gd, mockCopy.data, {}, { showAxisDragHandles: false });
-
-            testDraggers(0);
+        it('should not have drag rectangles when disabled', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {}, { showAxisDragHandles: false })
+            .then(function() {
+                testDraggers(0);
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -477,41 +472,44 @@ describe('config argument', function() {
 
         var gd, mockCopy;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
-            done();
         });
 
         afterEach(destroyGraphDiv);
 
-        it('allows axis range entry by default', function() {
-            Plotly.plot(gd, mockCopy.data, {});
+        it('allows axis range entry by default', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {})
+            .then(function() {
+                var corner = document.getElementsByClassName('edrag')[0];
+                var cornerBox = corner.getBoundingClientRect();
+                var cornerX = cornerBox.left + cornerBox.width / 2;
+                var cornerY = cornerBox.top + cornerBox.height / 2;
 
-            var corner = document.getElementsByClassName('edrag')[0];
-            var cornerBox = corner.getBoundingClientRect();
-            var cornerX = cornerBox.left + cornerBox.width / 2;
-            var cornerY = cornerBox.top + cornerBox.height / 2;
+                click(cornerX, cornerY);
 
-            click(cornerX, cornerY);
-
-            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
-            expect(editBox).toBeDefined();
-            expect(editBox.getAttribute('contenteditable')).toBe('true');
+                var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+                expect(editBox).toBeDefined();
+                expect(editBox.getAttribute('contenteditable')).toBe('true');
+            })
+            .then(done, done.fail);
         });
 
-        it('disallows axis range entry when disabled', function() {
-            Plotly.plot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false });
+        it('disallows axis range entry when disabled', function(done) {
+            Plotly.newPlot(gd, mockCopy.data, {}, { showAxisRangeEntryBoxes: false })
+            .then(function() {
+                var corner = document.getElementsByClassName('edrag')[0];
+                var cornerBox = corner.getBoundingClientRect();
+                var cornerX = cornerBox.left + cornerBox.width / 2;
+                var cornerY = cornerBox.top + cornerBox.height / 2;
 
-            var corner = document.getElementsByClassName('edrag')[0];
-            var cornerBox = corner.getBoundingClientRect();
-            var cornerX = cornerBox.left + cornerBox.width / 2;
-            var cornerY = cornerBox.top + cornerBox.height / 2;
+                click(cornerX, cornerY);
 
-            click(cornerX, cornerY);
-
-            var editBox = document.getElementsByClassName('plugin-editable editable')[0];
-            expect(editBox).toBeUndefined();
+                var editBox = document.getElementsByClassName('plugin-editable editable')[0];
+                expect(editBox).toBeUndefined();
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -529,7 +527,7 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         it('should not default to an external plotly cloud', function(done) {
-            Plotly.plot(gd, [], {})
+            Plotly.newPlot(gd, [], {})
             .then(function() {
                 expect(gd._context.plotlyServerURL).not.toBe('https://plot.ly');
                 expect(gd._context.plotlyServerURL).not.toBe('https://chart-studio.plotly.com');
@@ -538,12 +536,11 @@ describe('config argument', function() {
                 Plotly.Plots.sendDataToCloud(gd);
                 expect(form).toBe(undefined);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should be able to connect to Chart Studio Cloud when set to https://chart-studio.plotly.com', function(done) {
-            Plotly.plot(gd, [], {}, {
+            Plotly.newPlot(gd, [], {}, {
                 plotlyServerURL: 'https://chart-studio.plotly.com'
             })
             .then(function() {
@@ -553,12 +550,11 @@ describe('config argument', function() {
                 expect(form.action).toBe('https://chart-studio.plotly.com/external');
                 expect(form.method).toBe('post');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can be set to other base urls', function(done) {
-            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            Plotly.newPlot(gd, [], {}, {plotlyServerURL: 'dummy'})
             .then(function() {
                 expect(gd._context.plotlyServerURL).toBe('dummy');
 
@@ -566,14 +562,13 @@ describe('config argument', function() {
                 expect(form.action).toContain('/dummy/external');
                 expect(form.method).toBe('post');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('has lesser priotiy then window env', function(done) {
             window.PLOTLYENV = {BASE_URL: 'yo'};
 
-            Plotly.plot(gd, [], {}, {plotlyServerURL: 'dummy'})
+            Plotly.newPlot(gd, [], {}, {plotlyServerURL: 'dummy'})
             .then(function() {
                 expect(gd._context.plotlyServerURL).toBe('dummy');
 
@@ -665,59 +660,58 @@ describe('config argument', function() {
                 gd = parent.childNodes[0];
             }
 
-            it('@flaky should resize when the viewport width/height changes', function(done) {
+            it('should resize when the viewport width/height changes', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(testResponsive)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should still be responsive if the plot is edited', function(done) {
+            it('should still be responsive if the plot is edited', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
                 .then(testResponsive)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should still be responsive if the plot is purged and replotted', function(done) {
+            it('should still be responsive if the plot is purged and replotted', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.newPlot(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should only have one resize handler when plotted more than once', function(done) {
+            it('should only have one resize handler when plotted more than once', function(done) {
                 fillParent(1, 1);
                 var cntWindowResize = 0;
                 window.addEventListener('resize', function() {cntWindowResize++;});
-                spyOn(Plotly.Plots, 'resize').and.callThrough();
+                spyOn(Plots, 'resize').and.callThrough();
 
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
                 .then(function() {viewport.set(width / 2, width / 2);})
                 .then(delay(RESIZE_DELAY))
                 // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
                 .then(function() {
                     expect(cntWindowResize).toBe(1);
-                    expect(Plotly.Plots.resize.calls.count()).toBe(1);
+                    expect(Plots.resize.calls.count()).toBe(1);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should become responsive if configured as such via Plotly.react', function(done) {
+            it('should become responsive if configured as such via Plotly.react', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: false})
+                Plotly.newPlot(gd, data, {}, {responsive: false})
                 .then(function() {return Plotly.react(gd, data, {}, {responsive: true});})
                 .then(testResponsive)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should stop being responsive if configured as such via Plotly.react', function(done) {
+            it('should stop being responsive if configured as such via Plotly.react', function(done) {
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 // Check initial size
                 .then(function() {checkLayoutSize(width, height);})
                 // Turn off responsiveness
@@ -728,36 +722,35 @@ describe('config argument', function() {
                 .then(delay(RESIZE_DELAY))
                 // Check that final figure's size hasn't changed
                 .then(function() {checkLayoutSize(width, height);})
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             // Testing fancier CSS layouts
-            it('@flaky should resize horizontally in a flexbox when responsive: true', function(done) {
+            it('should resize horizontally in a flexbox when responsive: true', function(done) {
                 parent.style.display = 'flex';
                 parent.style.flexDirection = 'row';
                 fillParent(1, 2, function() {
                     this.style.flexGrow = '1';
                 });
 
-                Plotly.plot(gd, data, {}, { responsive: true })
+                Plotly.newPlot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should resize vertically in a flexbox when responsive: true', function(done) {
+            it('should resize vertically in a flexbox when responsive: true', function(done) {
                 parent.style.display = 'flex';
                 parent.style.flexDirection = 'column';
                 fillParent(2, 1, function() {
                     this.style.flexGrow = '1';
                 });
 
-                Plotly.plot(gd, data, {}, { responsive: true })
+                Plotly.newPlot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should resize in both direction in a grid when responsive: true', function(done) {
+            it('should resize in both direction in a grid when responsive: true', function(done) {
                 var numCols = 2;
                 var numRows = 2;
                 parent.style.display = 'grid';
@@ -765,18 +758,18 @@ describe('config argument', function() {
                 parent.style.gridTemplateRows = 'repeat(' + numRows + ', 1fr)';
                 fillParent(numRows, numCols);
 
-                Plotly.plot(gd, data, {}, { responsive: true })
+                Plotly.newPlot(gd, data, {}, { responsive: true })
                 .then(testResponsive)
-                .then(done);
+                .then(done, done.fail);
             });
 
-            it('@flaky should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
+            it('should provide a fixed non-zero width/height when autosize/responsive: true and container\' size is zero', function(done) {
                 fillParent(1, 1, function() {
                     this.style.display = 'inline-block';
                     this.style.width = null;
                     this.style.height = null;
                 });
-                Plotly.plot(gd, data, {autosize: true}, {responsive: true})
+                Plotly.newPlot(gd, data, {autosize: true}, {responsive: true})
                 .then(function() {
                     checkLayoutSize(700, 450);
                     expect(gd.clientWidth).toBe(700);
@@ -792,44 +785,41 @@ describe('config argument', function() {
                     expect(gd.clientWidth).toBe(700);
                     expect(gd.clientHeight).toBe(450);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             // The following test is to guarantee we're not breaking the existing (although maybe not ideal) behaviour.
             // In a future version, one may prefer responsive/autosize:true winning over an explicit width/height when embedded in a webpage.
-            it('@flaky should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
+            it('should use the explicitly provided width/height even if autosize/responsive:true', function(done) {
                 fillParent(1, 1, function() {
                     this.style.width = '1000px';
                     this.style.height = '500px';
                 });
 
-                Plotly.plot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
+                Plotly.newPlot(gd, data, {autosize: true, width: 1200, height: 700}, {responsive: true})
                 .then(function() {
                     expect(gd.clientWidth).toBe(1000);
                     expect(gd.clientHeight).toBe(500);
                     // The plot should overflow the container!
                     checkLayoutSize(1200, 700);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
 
             it('should not resize if gd is hidden', function(done) {
-                spyOn(Plotly.Plots, 'resize').and.callThrough();
+                spyOn(Plots, 'resize').and.callThrough();
 
                 fillParent(1, 1);
-                Plotly.plot(gd, data, {}, {responsive: true})
+                Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {
                     gd.style.display = 'none';
                     viewport.set(width / 2, height / 2);
                 })
                 .then(delay(RESIZE_DELAY))
                 .then(function() {
-                    expect(Plotly.Plots.resize.calls.count()).toBe(0);
+                    expect(Plots.resize.calls.count()).toBe(0);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
     });
@@ -842,7 +832,7 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         function plot(config) {
-            return Plotly.plot(gd, [], {}, config);
+            return Plotly.newPlot(gd, [], {}, config);
         }
 
         it('should fill in scrollZoom default', function(done) {
@@ -851,8 +841,7 @@ describe('config argument', function() {
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should fill in blank scrollZoom value', function(done) {
@@ -861,8 +850,7 @@ describe('config argument', function() {
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, mapbox: 1});
                 expect(gd._context._scrollZoom.cartesian).toBe(undefined, 'no cartesian!');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should honor scrollZoom:true', function(done) {
@@ -870,8 +858,7 @@ describe('config argument', function() {
                 expect(gd._context.scrollZoom).toBe(true);
                 expect(gd._context._scrollZoom).toEqual({gl3d: 1, geo: 1, cartesian: 1, mapbox: 1});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should honor scrollZoom:false', function(done) {
@@ -879,8 +866,7 @@ describe('config argument', function() {
                 expect(gd._context.scrollZoom).toBe(false);
                 expect(gd._context._scrollZoom).toEqual({});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should honor scrollZoom flaglist', function(done) {
@@ -888,8 +874,7 @@ describe('config argument', function() {
                 expect(gd._context.scrollZoom).toBe('mapbox+cartesian');
                 expect(gd._context._scrollZoom).toEqual({mapbox: 1, cartesian: 1});
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -899,7 +884,7 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         function _scroll() {
-            var mainDrag = d3.select('.nsewdrag[data-subplot="xy"]').node();
+            var mainDrag = d3Select('.nsewdrag[data-subplot="xy"]').node();
             mouseEvent('scroll', 200, 200, {deltaY: -200, element: mainDrag});
         }
 
@@ -936,8 +921,7 @@ describe('config argument', function() {
                 expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
                 expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should not disable scrollZoom when page is made scrollable by large graph', function(done) {
@@ -972,8 +956,7 @@ describe('config argument', function() {
                 expect(yrng[0]).toBeGreaterThan(yrng0[0], 'scrolled y-range[0]');
                 expect(yrng[1]).toBeLessThan(yrng0[1], 'scrolled y-range[1]');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

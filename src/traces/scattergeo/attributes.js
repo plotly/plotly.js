@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -43,7 +35,6 @@ module.exports = overrideAll({
     locationmode: {
         valType: 'enumerated',
         values: ['ISO-3', 'USA-states', 'country names', 'geojson-id'],
-        role: 'info',
         dflt: 'ISO-3',
         description: [
             'Determines the set of locations used to match entries in `locations`',
@@ -56,7 +47,6 @@ module.exports = overrideAll({
 
     geojson: {
         valType: 'any',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets optional GeoJSON data associated with this trace.',
@@ -72,7 +62,6 @@ module.exports = overrideAll({
     },
     featureidkey: {
         valType: 'string',
-        role: 'info',
         editType: 'calc',
         dflt: 'id',
         description: [
@@ -144,7 +133,6 @@ module.exports = overrideAll({
         valType: 'enumerated',
         values: ['none', 'toself'],
         dflt: 'none',
-        role: 'style',
         description: [
             'Sets the area to fill with a solid color.',
             'Use with `fillcolor` if not *none*.',

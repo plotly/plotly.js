@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorAttributes = require('../color/attributes');
@@ -14,14 +6,12 @@ module.exports = {
     bgcolor: {
         valType: 'color',
         dflt: colorAttributes.background,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the background color of the range slider.'
     },
     bordercolor: {
         valType: 'color',
         dflt: colorAttributes.defaultLine,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the border color of the range slider.'
     },
@@ -29,14 +19,12 @@ module.exports = {
         valType: 'integer',
         dflt: 0,
         min: 0,
-        role: 'style',
         editType: 'plot',
         description: 'Sets the border width of the range slider.'
     },
     autorange: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
@@ -47,7 +35,6 @@ module.exports = {
     },
     range: {
         valType: 'info_array',
-        role: 'info',
         items: [
             {valType: 'any', editType: 'calc', impliedEdits: {'^autorange': false}},
             {valType: 'any', editType: 'calc', impliedEdits: {'^autorange': false}}
@@ -72,7 +59,6 @@ module.exports = {
         dflt: 0.15,
         min: 0,
         max: 1,
-        role: 'style',
         editType: 'plot',
         description: [
             'The height of the range slider as a fraction of the',
@@ -82,7 +68,6 @@ module.exports = {
     visible: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not the range slider will be visible.',

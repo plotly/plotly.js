@@ -1,13 +1,14 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
 
-var d3 = require('d3');
-var Plotly = require('@lib');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Color = require('@src/components/color');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var getRectCenter = require('../assets/get_rect_center');
 var mouseEvent = require('../assets/mouse_event');
 var setConvert = require('@src/plots/cartesian/set_convert');
@@ -466,26 +467,25 @@ describe('range selector interactions:', function() {
         gd = createGraphDiv();
         mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
     afterEach(destroyGraphDiv);
 
     function assertNodeCount(query, cnt) {
-        expect(d3.selectAll(query).size()).toEqual(cnt);
+        expect(d3SelectAll(query).size()).toEqual(cnt);
     }
 
     function checkActiveButton(activeIndex, msg) {
-        d3.selectAll('.button').each(function(d, i) {
+        d3SelectAll('.button').each(function(d, i) {
             expect(d._isActive).toBe(activeIndex === i, msg + ': button #' + i);
         });
     }
 
     function checkButtonColor(bgColor, activeColor) {
-        d3.selectAll('.button').each(function(d) {
-            var rect = d3.select(this).select('rect');
+        d3SelectAll('.button').each(function(d) {
+            var rect = d3Select(this).select('rect');
 
             expect(rect.node().style.fill).toEqual(
                 d._isActive ? activeColor : bgColor
@@ -509,17 +509,16 @@ describe('range selector interactions:', function() {
             assertNodeCount('.rangeselector', 1);
             assertNodeCount('.button', allButtons);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to be removed by `relayout`', function(done) {
-        Plotly.relayout(gd, 'xaxis.rangeselector.visible', false).then(function() {
+        Plotly.relayout(gd, 'xaxis.rangeselector.visible', false)
+        .then(function() {
             assertNodeCount('.rangeselector', 0);
             assertNodeCount('.button', 0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to remove button(s) on `relayout`', function(done) {
@@ -527,15 +526,15 @@ describe('range selector interactions:', function() {
 
         assertNodeCount('.button', len);
 
-        Plotly.relayout(gd, 'xaxis.rangeselector.buttons[0]', null).then(function() {
+        Plotly.relayout(gd, 'xaxis.rangeselector.buttons[0]', null)
+        .then(function() {
             assertNodeCount('.button', len - 1);
 
             return Plotly.relayout(gd, 'xaxis.rangeselector.buttons[1]', 'remove');
         }).then(function() {
             assertNodeCount('.button', len - 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to change its style on `relayout`', function(done) {
@@ -543,20 +542,20 @@ describe('range selector interactions:', function() {
 
         checkButtonColor('rgb(238, 238, 238)', 'rgb(212, 212, 212)');
 
-        Plotly.relayout(gd, prefix + 'bgcolor', 'red').then(function() {
+        Plotly.relayout(gd, prefix + 'bgcolor', 'red')
+        .then(function() {
             checkButtonColor('rgb(255, 0, 0)', 'rgb(255, 128, 128)');
 
             return Plotly.relayout(gd, prefix + 'activecolor', 'blue');
         }).then(function() {
             checkButtonColor('rgb(255, 0, 0)', 'rgb(0, 0, 255)');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update range and active button when clicked', function() {
         var range0 = gd.layout.xaxis.range[0];
-        var buttons = d3.selectAll('.button').select('rect');
+        var buttons = d3SelectAll('.button').select('rect');
 
         checkActiveButton(buttons.size() - 1);
 
@@ -575,7 +574,7 @@ describe('range selector interactions:', function() {
     });
 
     it('should change color on mouse over', function() {
-        var button = d3.select('.button').select('rect');
+        var button = d3Select('.button').select('rect');
         var pos = getRectCenter(button.node());
 
         var fillColor = Color.rgb(gd._fullLayout.xaxis.rangeselector.bgcolor);
@@ -591,7 +590,7 @@ describe('range selector interactions:', function() {
     });
 
     it('should update is active relayout calls', function(done) {
-        var buttons = d3.selectAll('.button').select('rect');
+        var buttons = d3SelectAll('.button').select('rect');
 
         // 'all' should be active at first
         checkActiveButton(buttons.size() - 1, 'initial');
@@ -601,17 +600,18 @@ describe('range selector interactions:', function() {
             'xaxis.range[1]': '2015-11-30'
         };
 
-        Plotly.relayout(gd, update).then(function() {
+        Plotly.relayout(gd, update)
+        .then(function() {
             // '1m' should be active after the relayout
             checkActiveButton(0, '1m');
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
-        }).then(function() {
+        })
+        .then(function() {
             // 'all' should be after an autoscale
             checkActiveButton(buttons.size() - 1, 'back to all');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -630,8 +630,7 @@ describe('range selector automargin', function() {
             margin: {l: 50, r: 50, t: 100, b: 100}
         }});
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-        .catch(failTest)
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
         .then(done);
     });
 
@@ -657,7 +656,6 @@ describe('range selector automargin', function() {
         .then(function() {
             assertPlotSize({widthLessThan: 400, heightLessThan: 300}, 'reshow');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

@@ -13,7 +13,7 @@ var getBinSpanLabelRound = require('@src/traces/histogram/bin_label_vals');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var failTest = require('../assets/fail_test');
+
 
 var checkEventData = require('../assets/check_event_data');
 var constants = require('@src/traces/histogram/constants');
@@ -875,8 +875,7 @@ describe('Test histogram', function() {
                         expect(cd0[i].ph1).toBe(cd1[i].ph1);
                     }
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
         });
 
         it('autobins all data as one', function() {
@@ -1109,78 +1108,105 @@ describe('Test histogram', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('should update autobins correctly when restyling', function() {
+        it('should update autobins correctly when restyling', function(done) {
             // note: I'm *not* testing what this does to gd.data, as that's
-            // really a matter of convenience and will perhaps change later (v2?)
+            // really a matter of convenience and will perhaps change later (v3?)
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
-            Plotly.plot(gd, [{x: data1, type: 'histogram' }]);
-            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
-            expect(gd._fullData[0].nbinsx).toBe(0);
+            Plotly.newPlot(gd, [{x: data1, type: 'histogram' }])
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+                expect(gd._fullData[0].nbinsx).toBe(0);
 
-            // same range but fewer samples changes autobin size
-            var data2 = [1.5, 5];
-            Plotly.restyle(gd, 'x', [data2]);
-            expect(gd._fullData[0].xbins).toEqual({start: -2.5, end: 7.5, size: 5});
-            expect(gd._fullData[0].nbinsx).toBe(0);
+                // same range but fewer samples changes autobin size
+                var data2 = [1.5, 5];
+                return Plotly.restyle(gd, 'x', [data2]);
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: -2.5, end: 7.5, size: 5});
+                expect(gd._fullData[0].nbinsx).toBe(0);
 
-            // different range
-            var data3 = [10, 20.2, 20, 30, 30, 30, 40, 40, 50];
-            Plotly.restyle(gd, 'x', [data3]);
-            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
-            expect(gd._fullData[0].nbinsx).toBe(0);
+                // different range
+                var data3 = [10, 20.2, 20, 30, 30, 30, 40, 40, 50];
+                return Plotly.restyle(gd, 'x', [data3]);
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
+                expect(gd._fullData[0].nbinsx).toBe(0);
 
-            // explicit change to start does not update anything else
-            Plotly.restyle(gd, 'xbins.start', 3);
-            expect(gd._fullData[0].xbins).toEqual({start: 3, end: 55, size: 10});
-            expect(gd._fullData[0].nbinsx).toBe(0);
+                // explicit change to start does not update anything else
+                return Plotly.restyle(gd, 'xbins.start', 3);
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 3, end: 55, size: 10});
+                expect(gd._fullData[0].nbinsx).toBe(0);
 
-            // restart autobin
-            Plotly.restyle(gd, 'autobinx', true);
-            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
-            expect(gd._fullData[0].nbinsx).toBe(0);
+                // restart autobin
+                return Plotly.restyle(gd, 'autobinx', true);
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 5, end: 55, size: 10});
+                expect(gd._fullData[0].nbinsx).toBe(0);
 
-            // explicit end does not update anything else
-            Plotly.restyle(gd, 'xbins.end', 43);
-            expect(gd._fullData[0].xbins).toEqual({start: 5, end: 43, size: 10});
-            expect(gd._fullData[0].nbinsx).toBe(0);
+                // explicit end does not update anything else
+                return Plotly.restyle(gd, 'xbins.end', 43);
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 5, end: 43, size: 10});
+                expect(gd._fullData[0].nbinsx).toBe(0);
 
-            // nbins would update all three, but explicit end is honored
-            Plotly.restyle(gd, 'nbinsx', 3);
-            expect(gd._fullData[0].xbins).toEqual({start: 0, end: 43, size: 20});
-            expect(gd._fullData[0].nbinsx).toBe(3);
+                // nbins would update all three, but explicit end is honored
+                return Plotly.restyle(gd, 'nbinsx', 3);
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 0, end: 43, size: 20});
+                expect(gd._fullData[0].nbinsx).toBe(3);
 
-            // explicit size updates auto start *and* end, and moots nbins
-            Plotly.restyle(gd, {'xbins.end': null, 'xbins.size': 2});
-            expect(gd._fullData[0].xbins).toEqual({start: 9, end: 51, size: 2});
-            expect(gd._fullData[0].nbinsx).toBeUndefined();
+                // explicit size updates auto start *and* end, and moots nbins
+                return Plotly.restyle(gd, {'xbins.end': null, 'xbins.size': 2});
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 9, end: 51, size: 2});
+                expect(gd._fullData[0].nbinsx).toBeUndefined();
+            })
+            .then(done, done.fail);
         });
 
-        it('respects explicit autobin: false as a one-time autobin', function() {
+        it('respects explicit autobin: false as a one-time autobin', function(done) {
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
-            Plotly.plot(gd, [{x: data1, type: 'histogram', autobinx: false }]);
-            // we have no bins, so even though autobin is false we have to autobin once
-            // but for backward compat. calc pushes these bins back into gd.data
-            // even though there's no `autobinx` attribute anymore.
-            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
-            expect(gd.data[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            Plotly.newPlot(gd, [{x: data1, type: 'histogram', autobinx: false }])
+            .then(function() {
+                // we have no bins, so even though autobin is false we have to autobin once
+                // but for backward compat. calc pushes these bins back into gd.data
+                // even though there's no `autobinx` attribute anymore.
+                expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+                expect(gd.data[0].xbins).toEqual({start: 1, end: 6, size: 1});
 
-            // since autobin is false, this will not change the bins
-            var data2 = [1.5, 5];
-            Plotly.restyle(gd, 'x', [data2]);
-            expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+                // since autobin is false, this will not change the bins
+                var data2 = [1.5, 5];
+                return Plotly.restyle(gd, 'x', [data2]);
+            })
+            .then(function() {
+                expect(gd._fullData[0].xbins).toEqual({start: 1, end: 6, size: 1});
+            })
+            .then(done, done.fail);
         });
 
-        it('allows changing axis type with new x data', function() {
+        it('allows changing axis type with new x data', function(done) {
             var x1 = [1, 1, 1, 1, 2, 2, 2, 3, 3, 4];
             var x2 = ['2017-01-01', '2017-01-01', '2017-01-01', '2017-01-02', '2017-01-02', '2017-01-03'];
 
-            Plotly.newPlot(gd, [{x: x1, type: 'histogram'}]);
-            expect(gd._fullLayout.xaxis.type).toBe('linear');
-            expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.5, 4.5], 3);
+            Plotly.newPlot(gd, [{x: x1, type: 'histogram'}])
+            .then(function() {
+                expect(gd._fullLayout.xaxis.type).toBe('linear');
+                expect(gd._fullLayout.xaxis.range).toBeCloseToArray([0.5, 4.5], 3);
 
-            Plotly.restyle(gd, {x: [x2]});
-            expect(gd._fullLayout.xaxis.type).toBe('date');
-            expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
+                return Plotly.restyle(gd, {x: [x2]});
+            })
+            .then(function() {
+                expect(gd._fullLayout.xaxis.type).toBe('date');
+                expect(gd._fullLayout.xaxis.range).toEqual(['2016-12-31 12:00', '2017-01-03 12:00']);
+            })
+            .then(done, done.fail);
         });
 
         it('can resize a plot with several histograms', function(done) {
@@ -1212,8 +1238,7 @@ describe('Test histogram', function() {
                     expect(trace._xautoBinFinished).toBeUndefined(i);
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('gives the right bar width for single-value histograms', function(done) {
@@ -1225,8 +1250,7 @@ describe('Test histogram', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis.range).toBeCloseToArray([2, 4], 3);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('can recalc after the first trace is hidden', function(done) {
@@ -1262,8 +1286,7 @@ describe('Test histogram', function() {
             .then(function() {
                 assertTraceCount(3);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('autobins all histograms (on the same subplot) together except `visible: false`', function(done) {
@@ -1310,8 +1333,7 @@ describe('Test histogram', function() {
                 // legendonly traces still flip us back to gapped
                 expect(gd._fullLayout.bargap).toBe(0.2);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });

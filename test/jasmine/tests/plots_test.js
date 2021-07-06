@@ -3,11 +3,12 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Registry = require('@src/registry');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
-var failTest = require('../assets/fail_test');
+
 
 describe('Test Plots', function() {
     'use strict';
@@ -330,7 +331,7 @@ describe('Test Plots', function() {
             beforeAll(function(done) {
                 gd = createGraphDiv();
 
-                Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
+                Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }])
                     .then(function() {
                         gd.style.width = '400px';
                         gd.style.height = '400px';
@@ -390,8 +391,7 @@ describe('Test Plots', function() {
                 expect(gd.id).toBeTruthy();
 
                 Plotly.Plots.resize(gd.id)
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             });
         });
 
@@ -410,12 +410,11 @@ describe('Test Plots', function() {
                     }
                 }
 
-                Plotly.plot(gd, [], {})
+                Plotly.newPlot(gd, [], {})
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
                     .then(function() { return Plotly.Plots.resize(gd); })
                     .then(function() { _assert({l: 74, r: 74, t: 82, b: 66}); })
-                    .catch(failTest)
-                    .then(done);
+                    .then(done, done.fail);
             });
         });
 
@@ -439,8 +438,7 @@ describe('Test Plots', function() {
                         expect(v[0]).toEqual(v[1]);
                         expect(v[1]).toEqual(v[2]);
                     })
-                    .catch(failTest)
-                    .then(done);
+                    .then(done, done.fail);
             });
         });
     });
@@ -450,7 +448,7 @@ describe('Test Plots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
+            Plotly.newPlot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
 
             // hacky: simulate getting stuck with these flags due to an error
             // see #2055 and commit 6a44a9a - before fixing that error, we would
@@ -599,7 +597,7 @@ describe('Test Plots', function() {
                 }]
             };
 
-            Plotly.plot(gd, mock).then(function() {
+            Plotly.newPlot(gd, mock).then(function() {
                 var str = Plots.graphJson(gd, false, 'keepdata');
                 var obj = JSON.parse(str);
 
@@ -613,8 +611,7 @@ describe('Test Plots', function() {
                     name: 'garbage'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should convert typed arrays to regular arrays', function(done) {
@@ -634,7 +631,7 @@ describe('Test Plots', function() {
                 }
             };
 
-            Plotly.plot(gd, [trace]).then(function() {
+            Plotly.newPlot(gd, [trace]).then(function() {
                 var str = Plots.graphJson(gd, false, 'keepdata');
                 var obj = JSON.parse(str);
 
@@ -643,8 +640,7 @@ describe('Test Plots', function() {
                 expect(obj.data[0].marker.size).toEqual([20, 30, 10]);
                 expect(obj.data[0].marker.color).toEqual([10, 30, 20]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -773,7 +769,7 @@ describe('Test Plots', function() {
         });
 
         it('should handle cases when module plot is not set (geo case)', function(done) {
-            Plotly.plot(createGraphDiv(), [{
+            Plotly.newPlot(createGraphDiv(), [{
                 type: 'scattergeo',
                 visible: false,
                 lon: [10, 20],
@@ -784,15 +780,15 @@ describe('Test Plots', function() {
                 lat: [20, 10]
             }])
             .then(function() {
-                expect(d3.selectAll('g.trace.scattergeo').size()).toEqual(1);
+                expect(d3SelectAll('g.trace.scattergeo').size()).toEqual(1);
 
                 destroyGraphDiv();
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
 
         it('should handle cases when module plot is not set (ternary case)', function(done) {
-            Plotly.plot(createGraphDiv(), [{
+            Plotly.newPlot(createGraphDiv(), [{
                 type: 'scatterternary',
                 visible: false,
                 a: [0.1, 0.2],
@@ -803,11 +799,11 @@ describe('Test Plots', function() {
                 b: [0.2, 0.1]
             }])
             .then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toEqual(1);
+                expect(d3SelectAll('g.trace.scatter').size()).toEqual(1);
 
                 destroyGraphDiv();
-                done();
-            });
+            })
+            .then(done, done.fail);
         });
     });
 
@@ -823,7 +819,7 @@ describe('Test Plots', function() {
         it('should call reused style modules only once per graph', function(done) {
             var Drawing = require('@src/components/drawing');
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 mode: 'markers',
                 y: [1, 2, 1]
             }, {
@@ -855,8 +851,7 @@ describe('Test Plots', function() {
                 // some special Plots.style logic.
                 expect(Drawing.pointStyle).toHaveBeenCalledTimes(3);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -869,11 +864,11 @@ describe('Test Plots', function() {
 
         function assertCartesian(subplotsSVG, subplotsGL2D, msg) {
             var subplotsAll = subplotsSVG.concat(subplotsGL2D);
-            var subplots3 = d3.select(gd).selectAll('.cartesianlayer .subplot');
+            var subplots3 = d3Select(gd).selectAll('.cartesianlayer .subplot');
             expect(subplots3.size()).toBe(subplotsAll.length, msg);
 
             subplotsAll.forEach(function(subplot) {
-                expect(d3.select(gd).selectAll('.cartesianlayer .subplot.' + subplot).size())
+                expect(d3Select(gd).selectAll('.cartesianlayer .subplot.' + subplot).size())
                     .toBe(1, msg + ' - ' + subplot);
             });
 
@@ -899,7 +894,7 @@ describe('Test Plots', function() {
         };
 
         function assertSubplot(type, n, msg) {
-            expect(d3.select(gd).selectAll(subplotSelectors[type]).size())
+            expect(d3Select(gd).selectAll(subplotSelectors[type]).size())
                 .toBe(n, msg + ' - ' + type);
         }
 
@@ -921,8 +916,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy']}, 'totally blank');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('uses the first x & y axes it finds in making a blank cartesian subplot', function(done) {
@@ -930,8 +924,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['x3y4']}, 'blank with axis objects');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('shows expected cartesian subplots from visible traces and components', function(done) {
@@ -948,8 +941,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'visible components');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('shows expected cartesian subplots from invisible traces and components', function(done) {
@@ -966,12 +958,11 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({cartesian: ['xy', 'x2y2', 'x3y3', 'x5y5']}, 'invisible components');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('ignores unused axis and subplot objects', function(done) {
-            Plotly.plot('graph', [{
+            Plotly.newPlot('graph', [{
                 type: 'pie',
                 values: [1]
             }], {
@@ -985,8 +976,7 @@ describe('Test Plots', function() {
             .then(function() {
                 assertSubplots({pie: 1}, 'just pie');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1053,8 +1043,7 @@ describe('Test Plots', function() {
                     plotCallCnt: 0
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -1120,8 +1109,7 @@ describe('grids', function() {
                 }));
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('defaults to a coupled layout', function(done) {
@@ -1164,8 +1152,7 @@ describe('grids', function() {
             });
             _assertMissing(['xaxis', 'yaxis', 'xaxis4', 'yaxis4']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('has a bigger default gap with independent layout', function(done) {
@@ -1212,8 +1199,7 @@ describe('grids', function() {
             });
             _assertMissing(['xaxis', 'yaxis']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('can set x and y gaps and change domain', function(done) {
@@ -1260,8 +1246,7 @@ describe('grids', function() {
                 yaxis2: [0, 0.35 / 1.7]
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('responds to xside and yside', function(done) {
@@ -1307,8 +1292,7 @@ describe('grids', function() {
             checkAxis('xaxis2', 'free', 'bottom', 0);
             checkAxis('yaxis2', 'free', 'left', 0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('places other subplots in the grid by default', function(done) {
@@ -1339,7 +1323,6 @@ describe('grids', function() {
             checkDomain(gd._fullData[0], 1, 0, [0.6, 1], [0.6, 1]);
             checkDomain(gd._fullLayout.geo, 0, 1, [0, 0.4], [0, 0.4]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

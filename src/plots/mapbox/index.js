@@ -1,21 +1,13 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var mapboxgl = require('mapbox-gl');
+var mapboxgl = require('mapbox-gl/dist/mapbox-gl-unminified');
 
 var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var strScale = Lib.strScale;
 var getSubplotCalcData = require('../../plots/get_data').getSubplotCalcData;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
@@ -36,7 +28,6 @@ exports.idRegex = exports.attrRegex = Lib.counterRegex(MAPBOX);
 exports.attributes = {
     subplot: {
         valType: 'subplotid',
-        role: 'info',
         dflt: 'mapbox',
         editType: 'calc',
         description: [

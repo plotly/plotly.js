@@ -6,10 +6,11 @@ var Carpet = require('@src/traces/carpet');
 var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 var mouseEvent = require('../assets/mouse_event');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
@@ -500,17 +501,17 @@ describe('Test carpet interactions:', function() {
     afterEach(destroyGraphDiv);
 
     function countCarpets() {
-        return d3.select(gd).selectAll('.carpetlayer').selectAll('.trace').size();
+        return d3Select(gd).selectAll('.carpetlayer').selectAll('.trace').size();
     }
 
     function countContourTraces() {
-        return d3.select(gd).selectAll('.contour').size();
+        return d3Select(gd).selectAll('.contour').size();
     }
 
     it('should restyle visible attribute properly', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             expect(countCarpets()).toEqual(1);
             expect(countContourTraces()).toEqual(3);
@@ -533,15 +534,14 @@ describe('Test carpet interactions:', function() {
             expect(countCarpets()).toEqual(0);
             expect(countContourTraces()).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should add/delete trace properly', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
         var trace1 = Lib.extendDeep({}, mock.data[1]);
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             expect(countCarpets()).toEqual(1);
             expect(countContourTraces()).toEqual(3);
@@ -564,29 +564,27 @@ describe('Test carpet interactions:', function() {
             expect(countCarpets()).toEqual(0);
             expect(countContourTraces()).toEqual(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should respond to relayout properly', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             return Plotly.relayout(gd, 'xaxis.range', [0, 1]);
         })
         .then(function() {
             return Plotly.relayout(gd, 'yaxis.range', [7, 8]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('scattercarpet should be able to coexist with scatter traces', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
 
         function _assert(exp) {
-            expect(d3.selectAll('.point').size())
+            expect(d3SelectAll('.point').size())
                 .toBe(exp, 'number of scatter pts on graph');
         }
 
@@ -604,14 +602,13 @@ describe('Test carpet interactions:', function() {
         .then(function() {
             _assert(3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('preserves order of carpets on the same subplot after hide/show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.carpetlayer .trace').each(function(d) { out.push(d[0].trace.index); });
+            d3SelectAll('.carpetlayer .trace').each(function(d) { out.push(d[0].trace.index); });
             return out;
         }
 
@@ -637,8 +634,7 @@ describe('Test carpet interactions:', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -670,7 +666,7 @@ describe('scattercarpet array attributes', function() {
             }
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             for(var i = 0; i < 4; i++) {
                 var pt = gd.calcdata[5][i];
@@ -695,8 +691,7 @@ describe('scattercarpet array attributes', function() {
                 expect(pt.mlc).toBe(mlc[i]);
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -708,7 +703,7 @@ describe('scattercarpet hover labels', function() {
     function run(pos, fig, content) {
         gd = createGraphDiv();
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent({
                 nums: content[0].join('\n'),
@@ -724,7 +719,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900'], 'a = 0.2']
         )
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label (with hovertext array)', function(done) {
@@ -736,7 +731,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'b: 3.500', 'y: 2.900', 'D'], 'a = 0.2']
         )
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with \'hoverinfo\' set', function(done) {
@@ -747,7 +742,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['a: 0.200', 'y: 2.900'], null]
         )
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with arrayOk \'hoverinfo\' settings', function(done) {
@@ -758,7 +753,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['b: 3.500', 'y: 2.900'], null]
         )
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with *hovertemplate*', function(done) {
@@ -769,7 +764,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 2.900'], 'scattercarpet #5']
         )
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should generate hover label with arrayOk *hovertemplate*', function(done) {
@@ -780,7 +775,7 @@ describe('scattercarpet hover labels', function() {
             [200, 200], fig,
             [['f(0.2, 3.5) = 3.0'], 'pt #3']
         )
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -814,7 +809,7 @@ describe('contourcarpet plotting & editing', function() {
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
+            d3SelectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
             return out;
         }
 
@@ -847,7 +842,6 @@ describe('contourcarpet plotting & editing', function() {
         .then(function() {
             expect(getIndices()).toEqual([1, 2]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

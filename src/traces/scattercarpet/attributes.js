@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
@@ -23,7 +15,6 @@ var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 module.exports = {
     carpet: {
         valType: 'string',
-        role: 'info',
         editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',

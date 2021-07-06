@@ -2,13 +2,13 @@ var Lib = require('@src/lib');
 var _ = Lib._;
 var Registry = require('@src/registry');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var utcFormat = require('d3-time-format').utcFormat;
 
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 describe('localization', function() {
     'use strict';
@@ -39,11 +39,11 @@ describe('localization', function() {
     }
 
     function firstXLabel() {
-        return d3.select(gd).select('.xtick').text();
+        return d3Select(gd).select('.xtick').text();
     }
 
     function firstYLabel() {
-        return d3.select(gd).select('.ytick').text();
+        return d3Select(gd).select('.ytick').text();
     }
 
     var monthNums = ['!1', '!2', '!3', '!4', '!5', '!6', '!7', '!8', '!9', '!10', '!11', '!12'];
@@ -59,14 +59,13 @@ describe('localization', function() {
             expect(firstXLabel()).toBe('Jan 2001');
             expect(firstYLabel()).toBe('0.5');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     function getLabels(axLetter) {
         var out = [];
-        var s = d3.select(gd).selectAll('.' + axLetter + 'tick');
-        s.each(function() { out.push(d3.select(this).text()); });
+        var s = d3Select(gd).selectAll('.' + axLetter + 'tick');
+        s.each(function() { out.push(d3Select(this).text()); });
         return out;
     }
 
@@ -102,8 +101,7 @@ describe('localization', function() {
                 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('contains correct periods, dateTime, date, and time fields in the default locale', function(done) {
@@ -145,8 +143,7 @@ describe('localization', function() {
                 '01/01/2000~23:00:00', '01/02/2000~00:00:00', '01/02/2000~01:00:00'
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('uses the region first, then language (registered case)', function(done) {
@@ -195,8 +192,7 @@ describe('localization', function() {
             expect(firstXLabel()).toBe('!1 2001');
             expect(firstYLabel()).toBe('0~5');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('gives higher precedence to region than context vs registered', function(done) {
@@ -241,8 +237,7 @@ describe('localization', function() {
             // full names were not overridden, so fall back on english
             expect(gd._fullLayout.xaxis._dateFormat('%a %b %A %B')(d0)).toBe('t !1 Thursday January');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('does not generate an automatic base locale in context', function(done) {
@@ -255,8 +250,7 @@ describe('localization', function() {
             expect(firstXLabel()).toBe('Jan 2001');
             expect(firstYLabel()).toBe('0.5');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('allows registering dictionary and format separately without overwriting the other', function() {
@@ -317,8 +311,7 @@ describe('localization', function() {
         .then(function() {
             expect(firstYLabel()).toBe('0D500');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('uses extraFormat to localize the autoFormatted x-axis date tick', function(done) {
@@ -367,8 +360,7 @@ describe('localization', function() {
                 // test format.dayMonthYear
                 expect(firstXLabel()).toBe('00:001 Jan 2001');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
     });
 
     it('updates ticks and modebar tooltips on Plotly.react', function(done) {
@@ -395,13 +387,12 @@ describe('localization', function() {
             expect(getZoomTip()).toBe('Bigger');
 
             // this is discouraged usage, but it works
-            return Plotly.plot(gd, [], {}, {locale: 'en'});
+            return Plotly.newPlot(gd, gd.data, gd.layout, {locale: 'en'});
         })
         .then(function() {
             expect(firstXLabel()).toBe('Jan 2001');
             expect(getZoomTip()).toBe('Zoom');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

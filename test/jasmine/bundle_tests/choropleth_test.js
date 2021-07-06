@@ -1,11 +1,11 @@
-var d3 = require('d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/core');
 var PlotlyChoropleth = require('@lib/choropleth');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 
 var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 
@@ -26,13 +26,12 @@ describe('Bundle with choropleth', function() {
     afterEach(destroyGraphDiv);
 
     it('should graph choropleth traces', function(done) {
-        Plotly.plot(gd, mock.data, mock.layout)
+        Plotly.newPlot(gd, mock.data, mock.layout)
         .then(function() {
-            var nodes = d3.selectAll('g.trace.choropleth');
+            var nodes = d3SelectAll('g.trace.choropleth');
 
             expect(nodes.size()).toEqual(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
 });

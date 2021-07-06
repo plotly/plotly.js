@@ -1,10 +1,10 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 
@@ -87,7 +87,7 @@ describe('Test cone autorange:', function() {
             return function(v) { return v * s; };
         }
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             _assertAxisRanges('base', rng0, rng0, rng0);
 
             // the resulting image should be independent of what I multiply by here
@@ -172,8 +172,7 @@ describe('Test cone autorange:', function() {
             var rng = [1.229, 10.771];
             _assertAxisRanges('after spacing out the x/y/z coordinates', rng, rng, rng);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -190,7 +189,7 @@ describe('Test cone autorange:', function() {
     });
 
     it('@gl should skip identical positions in calculating cone vectorScale', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [
                 {
                     type: 'cone',
@@ -205,8 +204,7 @@ describe('Test cone autorange:', function() {
         }).then(function() {
             expect(gd._fullLayout.scene._scene.glplot.objects[0].vectorScale).toBeCloseTo(0.2857, 4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -227,7 +225,7 @@ describe('Test cone interactions', function() {
         // put traces on same subplot
         delete fig.data[1].scene;
 
-        Plotly.plot(gd, fig).then(function() {
+        Plotly.newPlot(gd, fig).then(function() {
             var scene = gd._fullLayout.scene._scene;
             var objs = scene.glplot.objects;
 
@@ -248,8 +246,7 @@ describe('Test cone interactions', function() {
 
             expect(scene).toBeUndefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should not pass zero or infinite `coneSize` to gl-cone3d', function(done) {
@@ -283,8 +280,7 @@ describe('Test cone interactions', function() {
             expect(objs[1].coneScale).toBe(0.5, 'absolute case');
             expect(objs[2].coneScale).toBe(0.5, 'absolute + 0-norm case');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display hover labels', function(done) {
@@ -301,7 +297,7 @@ describe('Test cone interactions', function() {
             mouseEvent('mouseover', 200, 200);
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(delay(20))
         .then(_hover)
         .then(delay(20))
@@ -359,8 +355,7 @@ describe('Test cone interactions', function() {
                 nums: 'NORM : 3.00\nat 2,2,2'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should display hover labels (multi-trace case)', function(done) {
@@ -368,7 +363,7 @@ describe('Test cone interactions', function() {
             mouseEvent('mouseover', 282, 240);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'cone',
             name: 'blue cone',
             x: [1], y: [1], z: [1],
@@ -401,7 +396,6 @@ describe('Test cone interactions', function() {
                 name: 'blue cone'
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

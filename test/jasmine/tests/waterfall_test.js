@@ -9,7 +9,7 @@ var Axes = require('@src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var supplyAllDefaults = require('../assets/supply_defaults');
 var color = require('@src/components/color');
 var rgb = color.rgb;
@@ -20,7 +20,8 @@ var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var WATERFALL_TEXT_SELECTOR = '.bars .bartext';
 
@@ -115,8 +116,17 @@ describe('Waterfall.supplyDefaults', function() {
         expect(traceOut.width).toBeUndefined();
     });
 
-    it('should coerce textposition to none', function() {
+    it('should coerce textposition to auto', function() {
         traceIn = {
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textposition).toBe('auto');
+    });
+
+    it('should not coerce text styling attributes when textposition is set to none', function() {
+        traceIn = {
+            textposition: 'none',
             y: [1, 2, 3]
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
@@ -129,6 +139,7 @@ describe('Waterfall.supplyDefaults', function() {
 
     it('should not coerce textinfo when textposition is none', function() {
         traceIn = {
+            textposition: 'none',
             y: [1, 2, 3],
             textinfo: 'text'
         };
@@ -139,7 +150,6 @@ describe('Waterfall.supplyDefaults', function() {
     it('should coerce textinfo when textposition is not none', function() {
         traceIn = {
             y: [1, 2, 3],
-            textposition: 'auto',
             textinfo: 'text'
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
@@ -652,7 +662,7 @@ describe('A waterfall plot', function() {
 
     function assertTextFontColors(expFontColors, label) {
         return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
+            var selection = d3SelectAll(WATERFALL_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
 
             selection.each(function(d, i) {
@@ -676,7 +686,7 @@ describe('A waterfall plot', function() {
         }];
         var layout = {};
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var foundTextNodes;
@@ -693,8 +703,7 @@ describe('A waterfall plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should show texts (horizontal case)', function(done) {
@@ -706,7 +715,7 @@ describe('A waterfall plot', function() {
         }];
         var layout = {};
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var foundTextNodes;
@@ -724,8 +733,7 @@ describe('A waterfall plot', function() {
 
             expect(foundTextNodes).toBe(true);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     var insideTextTestsTrace = {
@@ -733,7 +741,6 @@ describe('A waterfall plot', function() {
         y: [20, 14, 23, 10, 59, 15],
         text: [20, 14, 23, 10, 59, 15],
         type: 'waterfall',
-        textposition: 'auto',
         marker: {
             color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
         }
@@ -750,19 +757,17 @@ describe('A waterfall plot', function() {
             decreasing: { marker: { color: 'rgba(0, 0, 0, 0.8)' } }
         };
 
-        Plotly.plot(gd, [trace])
+        Plotly.newPlot(gd, [trace])
           .then(assertTextFontColors([DARK, LIGHT]))
-          .catch(failTest)
-          .then(done);
+          .then(done, done.fail);
     });
 
     it('should use defined textfont.color for inside text instead of the contrasting default', function(done) {
         var data = Lib.extendFlat({}, insideTextTestsTrace, { textfont: { color: '#09f' } });
 
-        Plotly.plot(gd, [data])
+        Plotly.newPlot(gd, [data])
           .then(assertTextFontColors(Lib.repeat('#09f', 6)))
-          .catch(failTest)
-          .then(done);
+          .then(done, done.fail);
     });
 
     it('should be able to restyle', function(done) {
@@ -778,7 +783,6 @@ describe('A waterfall plot', function() {
                 }, {
                     width: [0.4, 0.6, 0.8, 1],
                     text: ['Three', 2, 'inside text', 0],
-                    textposition: 'auto',
                     textfont: { size: [10] },
                     y: [3, 2, 1, 0],
                     x: [1, 2, 3, 4],
@@ -792,7 +796,6 @@ describe('A waterfall plot', function() {
                     type: 'waterfall'
                 }, {
                     text: [0, 'outside text', -3, -2],
-                    textposition: 'auto',
                     y: [0, -0.25, -3, -2],
                     x: [1, 2, 3, 4],
                     type: 'waterfall'
@@ -807,7 +810,7 @@ describe('A waterfall plot', function() {
             }
         };
 
-        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
             var cd = gd.calcdata;
             assertPointField(cd, 'x', [
                 [1, 2, 3, 4], [1, 2, 3, 4],
@@ -942,17 +945,16 @@ describe('A waterfall plot', function() {
             assertTextIsInsidePath(text20, path20); // inside
             assertTextIsInsidePath(text30, path30); // inside
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to add/remove connector nodes on restyle', function(done) {
         function _assertNumberOfWaterfallConnectorNodes(cnt) {
-            var sel = d3.select(gd).select('.waterfalllayer').selectAll('.line');
+            var sel = d3Select(gd).select('.waterfalllayer').selectAll('.line');
             expect(sel.size()).toBe(cnt);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'waterfall',
             x: ['Initial', 'A', 'B', 'C', 'Total'],
             y: [10, 2, 3, 5],
@@ -974,8 +976,7 @@ describe('A waterfall plot', function() {
         .then(function() {
             _assertNumberOfWaterfallConnectorNodes(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('handle BADNUM positions', function(done) {
@@ -1022,12 +1023,11 @@ describe('A waterfall plot', function() {
         .then(function() {
             return checkTransition(gd, mockCopy, animateOpts, transitionOpts, connectorTests);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to deal with transform that empty out the data coordinate arrays', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'waterfall',
                 x: [1, 2, 3],
@@ -1049,8 +1049,7 @@ describe('A waterfall plot', function() {
             expect(gd.calcdata[0][0].y).toEqual(NaN);
             expect(gd.calcdata[0][0].isBlank).toBe(undefined);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should coerce text-related attributes', function(done) {
@@ -1058,7 +1057,7 @@ describe('A waterfall plot', function() {
             y: [10, 20, 30, 40],
             type: 'waterfall',
             text: ['T1P1', 'T1P2', 13, 14],
-            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textposition: ['inside', 'outside', 'BADVALUE', 'none'],
             textfont: {
                 family: ['"comic sans"'],
                 color: ['red', 'green'],
@@ -1082,7 +1081,7 @@ describe('A waterfall plot', function() {
             y: [10, 20, 30, 40],
             type: 'waterfall',
             text: ['T1P1', 'T1P2', '13', '14'],
-            textposition: ['inside', 'outside', 'none'],
+            textposition: ['inside', 'outside', 'auto', 'none'],
             textfont: {
                 family: ['"comic sans"', 'arial'],
                 color: ['red', 'green'],
@@ -1100,7 +1099,7 @@ describe('A waterfall plot', function() {
             }
         };
 
-        Plotly.plot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, layout).then(function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var pathNodes = [
@@ -1133,22 +1132,20 @@ describe('A waterfall plot', function() {
             assertTextFont(textNodes[1], expected.outsidetextfont, 1);
             assertTextFont(textNodes[2], expected.insidetextfont, 2);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to add/remove text node on restyle', function(done) {
         function _assertNumberOfWaterfallTextNodes(cnt) {
-            var sel = d3.select(gd).select('.waterfalllayer').selectAll('text');
+            var sel = d3Select(gd).select('.waterfalllayer').selectAll('text');
             expect(sel.size()).toBe(cnt);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'waterfall',
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
             text: [20, 14, 23],
-            textposition: 'auto'
         }])
         .then(function() {
             _assertNumberOfWaterfallTextNodes(3);
@@ -1187,8 +1184,7 @@ describe('A waterfall plot', function() {
         .then(function() {
             _assertNumberOfWaterfallTextNodes(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to react with new text colors', function(done) {
@@ -1220,12 +1216,11 @@ describe('A waterfall plot', function() {
             return Plotly.react(gd, gd.data);
         })
         .then(assertTextFontColors(['rgb(255, 0, 0)', 'rgb(255, 0, 0)', 'rgb(255, 0, 0)']))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to adjust bars when reacting with new connector.line.width ', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'waterfall',
                 y: [1, 2, 3],
@@ -1239,7 +1234,7 @@ describe('A waterfall plot', function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var path = waterfallNodes[0].querySelector('path');
-            var d = d3.select(path).attr('d');
+            var d = d3Select(path).attr('d');
             expect(d).toBe('M11.33,321V268.33H102V321Z');
         })
         .then(function() {
@@ -1252,11 +1247,10 @@ describe('A waterfall plot', function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var path = waterfallNodes[0].querySelector('path');
-            var d = d3.select(path).attr('d');
+            var d = d3Select(path).attr('d');
             expect(d).toBe('M11.33,325V264.33H102V325Z');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     checkTextTemplate([{
@@ -1292,7 +1286,7 @@ describe('waterfall visibility toggling:', function() {
     }
 
     it('should update axis range according to visible edits (group case)', function(done) {
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {type: 'waterfall', x: [1, 2, 3], y: [0.5, 1, 0.5]},
             {type: 'waterfall', x: [1, 2, 3], y: [-0.5, -1, -0.5]}
         ])
@@ -1323,8 +1317,7 @@ describe('waterfall visibility toggling:', function() {
         .then(function() {
             _assert('back to both visible', [0.5, 3.5], [-2.222, 2.222], 1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1352,7 +1345,7 @@ describe('waterfall hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Waterfall.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Waterfall.hoverPoints(pointData, xval, yval, hovermode, {});
         if(!pts) return false;
 
         var pt = pts[0];
@@ -1381,9 +1374,8 @@ describe('waterfall hover', function() {
 
             var mock = Lib.extendDeep({}, require('@mocks/waterfall_11.json'));
 
-            Plotly.plot(gd, mock.data, mock.layout)
-            .catch(failTest)
-            .then(done);
+            Plotly.newPlot(gd, mock.data, mock.layout)
+            .then(done, done.fail);
         });
 
         it('should return the correct hover point data (case x)', function() {
@@ -1422,7 +1414,7 @@ describe('waterfall hover', function() {
             var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
             mock.data.forEach(function(t) { t.type = 'waterfall'; });
 
-            Plotly.plot(gd, mock).then(function() {
+            Plotly.newPlot(gd, mock).then(function() {
                 var out = _hover(gd, -0.25, 0.5, 'closest');
                 expect(out.text).toEqual('Hover text\nA', 'hover text');
 
@@ -1444,8 +1436,7 @@ describe('waterfall hover', function() {
                 var out = _hover(gd, -0.25, 0.5, 'closest');
                 expect(out.text).toEqual('apple', 'hover text');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should turn off hoverinfo flags with hoveinfo none or skip', function(done) {
@@ -1466,13 +1457,12 @@ describe('waterfall hover', function() {
                 Fx.hover('graph', evt, 'xy');
             }
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
-                expect(d3.selectAll('g.hovertext').size()).toBe(0);
+                expect(d3SelectAll('g.hovertext').size()).toBe(0);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should turn on hoverinfo flags with hoveinfo all', function(done) {
@@ -1484,13 +1474,14 @@ describe('waterfall hover', function() {
                 t.base = 1000;
                 t.hoverinfo = 'all';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
                 Fx.hover('graph', evt, 'xy');
             }
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
                 assertHoverLabelContent({
@@ -1503,8 +1494,7 @@ describe('waterfall hover', function() {
                     axis: '0'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should use hovertemplate if specified', function(done) {
@@ -1515,13 +1505,14 @@ describe('waterfall hover', function() {
                 t.type = 'waterfall';
                 t.hovertemplate = 'Value: %{y}<br>SUM: %{final}<br>START: %{initial}<br>DIFF: %{delta}<extra></extra>';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
                 Fx.hover('graph', evt, 'xy');
             }
 
-            Plotly.plot(gd, mock)
+            Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
                 assertHoverLabelContent({
@@ -1534,20 +1525,19 @@ describe('waterfall hover', function() {
                     axis: '0'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should format numbers - round hover precision', function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{
                     x: ['A', 'B', 'C', 'D', 'E'],
                     y: [0, -1.1, 2.2, -3.3, 4.4],
                     type: 'waterfall'
                 }],
-                layout: {width: 400, height: 400}
+                layout: {width: 400, height: 400, hovermode: 'x'}
             })
             .then(function() {
                 var evt = { xpx: 200, ypx: 350 };
@@ -1560,14 +1550,13 @@ describe('waterfall hover', function() {
                     axis: 'E'
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('hover measure categories with axis prefix and suffix', function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{
                     x: ['A', 'B', 'C', 'D', 'E'],
                     y: [2.2, -1.1, null, 3.3, null],
@@ -1618,8 +1607,7 @@ describe('waterfall hover', function() {
                 expect(out.extraText).toEqual(undefined);
                 expect(out.style).toEqual([4, '#4499FF', 4, 1004.401]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -1629,7 +1617,7 @@ describe('waterfall hover', function() {
         });
 
         it('should return correct hover data (single waterfall, trace width)', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'waterfall',
                 x: [1],
                 y: [2],
@@ -1667,12 +1655,11 @@ describe('waterfall hover', function() {
                     expect(out).toBe(false, hoverSpec);
                 });
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('should return correct hover data (two waterfalls, array width)', function(done) {
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'waterfall',
                 x: [1, 200],
                 y: [2, 1],
@@ -1705,8 +1692,7 @@ describe('waterfall hover', function() {
                 expect(out.style).toEqual([1, '#3D9970', 200, 3]);
                 assertPos(out.pos, [222, 280, 16, 16]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('positions labels correctly w.r.t. narrow waterfalls', function(done) {
@@ -1735,8 +1721,7 @@ describe('waterfall hover', function() {
                 out = _hover(gd, 10, 2, 'closest');
                 assertPos(out.pos, [145, 155, 110, 110]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 });
@@ -1803,7 +1788,7 @@ describe('waterfall uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
+            var selection = d3SelectAll(WATERFALL_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
@@ -1859,7 +1844,7 @@ describe('waterfall uniformtext', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12],
             scales: [0.48, 1, 1, 1, 1, 1, 1],
@@ -1912,7 +1897,6 @@ describe('waterfall uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12],
             scales: [0.48, 1, 1, 1, 1, 1, 1],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

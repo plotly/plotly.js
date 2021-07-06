@@ -1,16 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 /* global PlotlyGeoAssets:false */
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -514,7 +506,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
     }
 
     bgRect.on('mousemove', function() {
-        var lonlat = _this.projection.invert(d3.mouse(this));
+        var lonlat = _this.projection.invert(Lib.getPositionFromD3Event());
 
         if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) {
             return dragElement.unhover(gd, d3.event);

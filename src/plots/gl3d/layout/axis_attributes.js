@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Color = require('../../../components/color');
@@ -17,7 +9,6 @@ module.exports = overrideAll({
     visible: axesAttrs.visible,
     showspikes: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: [
             'Sets whether or not spikes starting from',
@@ -26,7 +17,6 @@ module.exports = overrideAll({
     },
     spikesides: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: [
             'Sets whether or not spikes extending from the',
@@ -36,20 +26,17 @@ module.exports = overrideAll({
     },
     spikethickness: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 2,
         description: 'Sets the thickness (in px) of the spikes.'
     },
     spikecolor: {
         valType: 'color',
-        role: 'style',
         dflt: Color.defaultLine,
         description: 'Sets the color of the spikes.'
     },
     showbackground: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: [
             'Sets whether or not this axis\' wall',
@@ -58,13 +45,11 @@ module.exports = overrideAll({
     },
     backgroundcolor: {
         valType: 'color',
-        role: 'style',
         dflt: 'rgba(204, 204, 204, 0.5)',
         description: 'Sets the background color of this axis\' wall.'
     },
     showaxeslabels: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: 'Sets whether or not this axis is labeled'
     },

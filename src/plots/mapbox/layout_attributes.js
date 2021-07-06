@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -35,7 +27,6 @@ var attrs = module.exports = overrideAll({
         valType: 'string',
         noBlank: true,
         strict: true,
-        role: 'info',
         description: [
             'Sets the mapbox access token to be used for this mapbox map.',
             'Alternatively, the mapbox access token can be set in the',
@@ -49,7 +40,6 @@ var attrs = module.exports = overrideAll({
         valType: 'any',
         values: constants.styleValuesMapbox.concat(constants.styleValuesNonMapbox),
         dflt: constants.styleValueDflt,
-        role: 'style',
         description: [
             'Defines the map layers that are rendered by default below the trace layers defined in `data`,',
             'which are themselves by default rendered below the layers defined in `layout.mapbox.layers`.',
@@ -78,32 +68,27 @@ var attrs = module.exports = overrideAll({
         lon: {
             valType: 'number',
             dflt: 0,
-            role: 'info',
             description: 'Sets the longitude of the center of the map (in degrees East).'
         },
         lat: {
             valType: 'number',
             dflt: 0,
-            role: 'info',
             description: 'Sets the latitude of the center of the map (in degrees North).'
         }
     },
     zoom: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         description: 'Sets the zoom level of the map (mapbox.zoom).'
     },
     bearing: {
         valType: 'number',
         dflt: 0,
-        role: 'info',
         description: 'Sets the bearing angle of the map in degrees counter-clockwise from North (mapbox.bearing).'
     },
     pitch: {
         valType: 'number',
         dflt: 0,
-        role: 'info',
         description: [
             'Sets the pitch angle of the map',
             '(in degrees, where *0* means perpendicular to the surface of the map) (mapbox.pitch).'
@@ -113,7 +98,6 @@ var attrs = module.exports = overrideAll({
     layers: templatedArray('layer', {
         visible: {
             valType: 'boolean',
-            role: 'info',
             dflt: true,
             description: [
                 'Determines whether this layer is displayed'
@@ -123,7 +107,6 @@ var attrs = module.exports = overrideAll({
             valType: 'enumerated',
             values: ['geojson', 'vector', 'raster', 'image'],
             dflt: 'geojson',
-            role: 'info',
             description: [
                 'Sets the source type for this layer,',
                 'that is the type of the layer data.'
@@ -132,7 +115,6 @@ var attrs = module.exports = overrideAll({
 
         source: {
             valType: 'any',
-            role: 'info',
             description: [
                 'Sets the source data for this layer (mapbox.layer.source).',
                 'When `sourcetype` is set to *geojson*, `source` can be a URL to a GeoJSON',
@@ -146,7 +128,6 @@ var attrs = module.exports = overrideAll({
         sourcelayer: {
             valType: 'string',
             dflt: '',
-            role: 'info',
             description: [
                 'Specifies the layer to use from a vector tile source (mapbox.layer.source-layer).',
                 'Required for *vector* source type that supports multiple layers.'
@@ -155,7 +136,6 @@ var attrs = module.exports = overrideAll({
 
         sourceattribution: {
             valType: 'string',
-            role: 'info',
             description: [
                 'Sets the attribution for this source.'
             ].join(' ')
@@ -165,7 +145,6 @@ var attrs = module.exports = overrideAll({
             valType: 'enumerated',
             values: ['circle', 'line', 'fill', 'symbol', 'raster'],
             dflt: 'circle',
-            role: 'info',
             description: [
                 'Sets the layer type,',
                 'that is the how the layer data set in `source` will be rendered',
@@ -181,7 +160,6 @@ var attrs = module.exports = overrideAll({
 
         coordinates: {
             valType: 'any',
-            role: 'info',
             description: [
                 'Sets the coordinates array contains [longitude, latitude] pairs',
                 'for the image corners listed in clockwise order:',
@@ -193,7 +171,6 @@ var attrs = module.exports = overrideAll({
         // attributes shared between all types
         below: {
             valType: 'string',
-            role: 'info',
             description: [
                 'Determines if the layer will be inserted',
                 'before the layer with the specified ID.',
@@ -204,7 +181,6 @@ var attrs = module.exports = overrideAll({
         color: {
             valType: 'color',
             dflt: defaultLine,
-            role: 'style',
             description: [
                 'Sets the primary layer color.',
                 'If `type` is *circle*, color corresponds to the circle color (mapbox.layer.paint.circle-color)',
@@ -218,7 +194,6 @@ var attrs = module.exports = overrideAll({
             min: 0,
             max: 1,
             dflt: 1,
-            role: 'info',
             description: [
                 'Sets the opacity of the layer.',
                 'If `type` is *circle*, opacity corresponds to the circle opacity (mapbox.layer.paint.circle-opacity)',
@@ -232,7 +207,6 @@ var attrs = module.exports = overrideAll({
             min: 0,
             max: 24,
             dflt: 0,
-            role: 'info',
             description: [
                 'Sets the minimum zoom level (mapbox.layer.minzoom).',
                 'At zoom levels less than the minzoom, the layer will be hidden.',
@@ -243,7 +217,6 @@ var attrs = module.exports = overrideAll({
             min: 0,
             max: 24,
             dflt: 24,
-            role: 'info',
             description: [
                 'Sets the maximum zoom level (mapbox.layer.maxzoom).',
                 'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
@@ -255,7 +228,6 @@ var attrs = module.exports = overrideAll({
             radius: {
                 valType: 'number',
                 dflt: 15,
-                role: 'style',
                 description: [
                     'Sets the circle radius (mapbox.layer.paint.circle-radius).',
                     'Has an effect only when `type` is set to *circle*.'
@@ -267,7 +239,6 @@ var attrs = module.exports = overrideAll({
             width: {
                 valType: 'number',
                 dflt: 2,
-                role: 'style',
                 description: [
                     'Sets the line width (mapbox.layer.paint.line-width).',
                     'Has an effect only when `type` is set to *line*.'
@@ -275,7 +246,6 @@ var attrs = module.exports = overrideAll({
             },
             dash: {
                 valType: 'data_array',
-                role: 'style',
                 description: [
                     'Sets the length of dashes and gaps (mapbox.layer.paint.line-dasharray).',
                     'Has an effect only when `type` is set to *line*.'
@@ -287,7 +257,6 @@ var attrs = module.exports = overrideAll({
             outlinecolor: {
                 valType: 'color',
                 dflt: defaultLine,
-                role: 'style',
                 description: [
                     'Sets the fill outline color (mapbox.layer.paint.fill-outline-color).',
                     'Has an effect only when `type` is set to *fill*.'
@@ -299,7 +268,6 @@ var attrs = module.exports = overrideAll({
             icon: {
                 valType: 'string',
                 dflt: 'marker',
-                role: 'style',
                 description: [
                     'Sets the symbol icon image (mapbox.layer.layout.icon-image).',
                     'Full list: https://www.mapbox.com/maki-icons/'
@@ -308,7 +276,6 @@ var attrs = module.exports = overrideAll({
             iconsize: {
                 valType: 'number',
                 dflt: 10,
-                role: 'style',
                 description: [
                     'Sets the symbol icon size (mapbox.layer.layout.icon-size).',
                     'Has an effect only when `type` is set to *symbol*.'
@@ -317,7 +284,6 @@ var attrs = module.exports = overrideAll({
             text: {
                 valType: 'string',
                 dflt: '',
-                role: 'info',
                 description: [
                     'Sets the symbol text (mapbox.layer.layout.text-field).'
                 ].join(' ')
@@ -326,7 +292,6 @@ var attrs = module.exports = overrideAll({
                 valType: 'enumerated',
                 values: ['point', 'line', 'line-center'],
                 dflt: 'point',
-                role: 'info',
                 description: [
                     'Sets the symbol and/or text placement (mapbox.layer.layout.symbol-placement).',
                     'If `placement` is *point*, the label is placed where the geometry is located',
@@ -343,7 +308,6 @@ var attrs = module.exports = overrideAll({
 // set uirevision outside of overrideAll so it can be `editType: 'none'`
 attrs.uirevision = {
     valType: 'any',
-    role: 'info',
     editType: 'none',
     description: [
         'Controls persistence of user-driven changes in the view:',

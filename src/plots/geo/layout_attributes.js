@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorAttrs = require('../../components/color/attributes');
@@ -16,7 +8,6 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var geoAxesAttrs = {
     range: {
         valType: 'info_array',
-        role: 'info',
         items: [
             {valType: 'number'},
             {valType: 'number'}
@@ -28,13 +19,11 @@ var geoAxesAttrs = {
     },
     showgrid: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: 'Sets whether or not graticule are shown on the map.'
     },
     tick0: {
         valType: 'number',
-        role: 'info',
         dflt: 0,
         description: [
             'Sets the graticule\'s starting tick longitude/latitude.'
@@ -42,14 +31,12 @@ var geoAxesAttrs = {
     },
     dtick: {
         valType: 'number',
-        role: 'info',
         description: [
             'Sets the graticule\'s longitude/latitude tick step.'
         ].join(' ')
     },
     gridcolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.lightLine,
         description: [
             'Sets the graticule\'s stroke color.'
@@ -57,7 +44,6 @@ var geoAxesAttrs = {
     },
     gridwidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 1,
         description: [
@@ -79,7 +65,6 @@ var attrs = module.exports = overrideAll({
         valType: 'enumerated',
         values: [false, 'locations', 'geojson'],
         dflt: false,
-        role: 'info',
         editType: 'plot',
         description: [
             'Determines if this subplot\'s view settings are auto-computed to fit trace data.',
@@ -105,7 +90,6 @@ var attrs = module.exports = overrideAll({
     resolution: {
         valType: 'enumerated',
         values: [110, 50],
-        role: 'info',
         dflt: 110,
         coerceNumber: true,
         description: [
@@ -116,7 +100,6 @@ var attrs = module.exports = overrideAll({
     },
     scope: {
         valType: 'enumerated',
-        role: 'info',
         values: Object.keys(constants.scopeDefaults),
         dflt: 'world',
         description: 'Set the scope of the map.'
@@ -124,14 +107,12 @@ var attrs = module.exports = overrideAll({
     projection: {
         type: {
             valType: 'enumerated',
-            role: 'info',
             values: Object.keys(constants.projNames),
             description: 'Sets the projection type.'
         },
         rotation: {
             lon: {
                 valType: 'number',
-                role: 'info',
                 description: [
                     'Rotates the map along parallels',
                     '(in degrees East).',
@@ -140,7 +121,6 @@ var attrs = module.exports = overrideAll({
             },
             lat: {
                 valType: 'number',
-                role: 'info',
                 description: [
                     'Rotates the map along meridians',
                     '(in degrees North).'
@@ -148,7 +128,6 @@ var attrs = module.exports = overrideAll({
             },
             roll: {
                 valType: 'number',
-                role: 'info',
                 description: [
                     'Roll the map (in degrees)',
                     'For example, a roll of *180* makes the map appear upside down.'
@@ -157,7 +136,6 @@ var attrs = module.exports = overrideAll({
         },
         parallels: {
             valType: 'info_array',
-            role: 'info',
             items: [
                 {valType: 'number'},
                 {valType: 'number'}
@@ -170,7 +148,6 @@ var attrs = module.exports = overrideAll({
         },
         scale: {
             valType: 'number',
-            role: 'info',
             min: 0,
             dflt: 1,
             description: [
@@ -183,7 +160,6 @@ var attrs = module.exports = overrideAll({
     center: {
         lon: {
             valType: 'number',
-            role: 'info',
             description: [
                 'Sets the longitude of the map\'s center.',
                 'By default, the map\'s longitude center lies at the middle of the longitude range',
@@ -192,7 +168,6 @@ var attrs = module.exports = overrideAll({
         },
         lat: {
             valType: 'number',
-            role: 'info',
             description: [
                 'Sets the latitude of the map\'s center.',
                 'For all projection types, the map\'s latitude center lies',
@@ -202,104 +177,87 @@ var attrs = module.exports = overrideAll({
     },
     visible: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         description: 'Sets the default visibility of the base layers.'
     },
     showcoastlines: {
         valType: 'boolean',
-        role: 'info',
         description: 'Sets whether or not the coastlines are drawn.'
     },
     coastlinecolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.defaultLine,
         description: 'Sets the coastline color.'
     },
     coastlinewidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the coastline stroke width (in px).'
     },
     showland: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: 'Sets whether or not land masses are filled in color.'
     },
     landcolor: {
         valType: 'color',
-        role: 'style',
         dflt: constants.landColor,
         description: 'Sets the land mass color.'
     },
     showocean: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: 'Sets whether or not oceans are filled in color.'
     },
     oceancolor: {
         valType: 'color',
-        role: 'style',
         dflt: constants.waterColor,
         description: 'Sets the ocean color'
     },
     showlakes: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: 'Sets whether or not lakes are drawn.'
     },
     lakecolor: {
         valType: 'color',
-        role: 'style',
         dflt: constants.waterColor,
         description: 'Sets the color of the lakes.'
     },
     showrivers: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: 'Sets whether or not rivers are drawn.'
     },
     rivercolor: {
         valType: 'color',
-        role: 'style',
         dflt: constants.waterColor,
         description: 'Sets color of the rivers.'
     },
     riverwidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the stroke width (in px) of the rivers.'
     },
     showcountries: {
         valType: 'boolean',
-        role: 'info',
         description: 'Sets whether or not country boundaries are drawn.'
     },
     countrycolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.defaultLine,
         description: 'Sets line color of the country boundaries.'
     },
     countrywidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets line width (in px) of the country boundaries.'
     },
     showsubunits: {
         valType: 'boolean',
-        role: 'info',
         description: [
             'Sets whether or not boundaries of subunits within countries',
             '(e.g. states, provinces) are drawn.'
@@ -307,38 +265,32 @@ var attrs = module.exports = overrideAll({
     },
     subunitcolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.defaultLine,
         description: 'Sets the color of the subunits boundaries.'
     },
     subunitwidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the stroke width (in px) of the subunits boundaries.'
     },
     showframe: {
         valType: 'boolean',
-        role: 'info',
         description: 'Sets whether or not a frame is drawn around the map.'
     },
     framecolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.defaultLine,
         description: 'Sets the color the frame.'
     },
     framewidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the stroke width (in px) of the frame.'
     },
     bgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: colorAttrs.background,
         description: 'Set the background color of the map'
     },
@@ -349,7 +301,6 @@ var attrs = module.exports = overrideAll({
 // set uirevision outside of overrideAll so it can be `editType: 'none'`
 attrs.uirevision = {
     valType: 'any',
-    role: 'info',
     editType: 'none',
     description: [
         'Controls persistence of user-driven changes in the view',

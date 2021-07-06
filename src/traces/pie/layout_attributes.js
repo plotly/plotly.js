@@ -1,17 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 module.exports = {
     hiddenlabels: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc',
         description: [
             'hiddenlabels is the funnelarea & pie chart analog of',
@@ -22,7 +13,6 @@ module.exports = {
     },
     piecolorway: {
         valType: 'colorlist',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the default pie slice colors. Defaults to the main',
@@ -34,7 +24,6 @@ module.exports = {
     extendpiecolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'If `true`, the pie slice colors (whether given by `piecolorway` or',

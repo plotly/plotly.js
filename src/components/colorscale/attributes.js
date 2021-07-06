@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorbarAttrs = require('../colorbar/attributes');
@@ -106,7 +98,6 @@ module.exports = function colorScaleAttrs(context, opts) {
         attrs.color = {
             valType: 'color',
             arrayOk: true,
-            role: 'style',
             editType: editTypeOverride || 'style',
             description: [
                 'Sets the', context, 'color.',
@@ -124,7 +115,6 @@ module.exports = function colorScaleAttrs(context, opts) {
 
     attrs[auto] = {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         editType: 'calc',
         impliedEdits: autoImpliedEdits,
@@ -139,7 +129,6 @@ module.exports = function colorScaleAttrs(context, opts) {
 
     attrs[min] = {
         valType: 'number',
-        role: 'info',
         dflt: null,
         editType: editTypeOverride || 'plot',
         impliedEdits: minmaxImpliedEdits,
@@ -153,7 +142,6 @@ module.exports = function colorScaleAttrs(context, opts) {
 
     attrs[max] = {
         valType: 'number',
-        role: 'info',
         dflt: null,
         editType: editTypeOverride || 'plot',
         impliedEdits: minmaxImpliedEdits,
@@ -167,7 +155,6 @@ module.exports = function colorScaleAttrs(context, opts) {
 
     attrs[mid] = {
         valType: 'number',
-        role: 'info',
         dflt: null,
         editType: 'calc',
         impliedEdits: autoImpliedEdits,
@@ -182,7 +169,6 @@ module.exports = function colorScaleAttrs(context, opts) {
 
     attrs.colorscale = {
         valType: 'colorscale',
-        role: 'style',
         editType: 'calc',
         dflt: colorscaleDflt,
         impliedEdits: {autocolorscale: false},
@@ -204,7 +190,6 @@ module.exports = function colorScaleAttrs(context, opts) {
 
     attrs.autocolorscale = {
         valType: 'boolean',
-        role: 'style',
         // gets overrode in 'heatmap' & 'surface' for backwards comp.
         dflt: opts.autoColorDflt === false ? false : true,
         editType: 'calc',
@@ -221,7 +206,6 @@ module.exports = function colorScaleAttrs(context, opts) {
 
     attrs.reversescale = {
         valType: 'boolean',
-        role: 'style',
         dflt: false,
         editType: 'plot',
         description: [
@@ -235,7 +219,6 @@ module.exports = function colorScaleAttrs(context, opts) {
     if(!noScale) {
         attrs.showscale = {
             valType: 'boolean',
-            role: 'info',
             dflt: showScaleDflt,
             editType: 'calc',
             description: [
@@ -250,7 +233,6 @@ module.exports = function colorScaleAttrs(context, opts) {
     if(!opts.noColorAxis) {
         attrs.coloraxis = {
             valType: 'subplotid',
-            role: 'info',
             regex: counterRegex('coloraxis'),
             dflt: null,
             editType: 'calc',
