@@ -1,6 +1,6 @@
 /**
-* plotly.js (mapbox) v1.58.4
-* Copyright 2012-2020, Plotly, Inc.
+* plotly.js (mapbox) v1.58.5
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -48329,14 +48329,9 @@ function buildSVGText(containerNode, str) {
                     var href = getQuotedMatch(extra, HREFMATCH);
 
                     if(href) {
-                        // check safe protocols
-                        var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
-                            // Decode href to allow both already encoded and not encoded
-                            // URIs. Without decoding prior encoding, an already encoded
-                            // URI would be encoded twice producing a semantically different URI.
-                            nodeSpec.href = encodeURI(decodeURI(href));
+                        var safeHref = sanitizeHref(href);
+                        if(safeHref) {
+                            nodeSpec.href = safeHref;
                             nodeSpec.target = getQuotedMatch(extra, TARGETMATCH) || '_blank';
                             nodeSpec.popup = getQuotedMatch(extra, POPUPMATCH);
                         }
@@ -48349,6 +48344,27 @@ function buildSVGText(containerNode, str) {
     }
 
     return hasLink;
+}
+
+function sanitizeHref(href) {
+    var decodedHref = encodeURI(decodeURI(href));
+    var dummyAnchor1 = document.createElement('a');
+    var dummyAnchor2 = document.createElement('a');
+    dummyAnchor1.href = href;
+    dummyAnchor2.href = decodedHref;
+
+    var p1 = dummyAnchor1.protocol;
+    var p2 = dummyAnchor2.protocol;
+
+    // check safe protocols
+    if(
+        PROTOCOLS.indexOf(p1) !== -1 &&
+        PROTOCOLS.indexOf(p2) !== -1
+    ) {
+        return decodedHref;
+    } else {
+        return '';
+    }
 }
 
 /*
@@ -48385,10 +48401,9 @@ exports.sanitizeHTML = function sanitizeHTML(str) {
                     var href = getQuotedMatch(extra, HREFMATCH);
 
                     if(href) {
-                        var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
-                            nodeAttrs.href = encodeURI(decodeURI(href));
+                        var safeHref = sanitizeHref(href);
+                        if(safeHref) {
+                            nodeAttrs.href = safeHref;
                             var target = getQuotedMatch(extra, TARGETMATCH);
                             if(target) {
                                 nodeAttrs.target = target;
@@ -85152,7 +85167,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '1.58.4';
+exports.version = '1.58.5';
 
 },{}]},{},[5])(5)
 });
