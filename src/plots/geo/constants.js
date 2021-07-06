@@ -128,7 +128,6 @@ exports.axesNames = ['lonaxis', 'lataxis'];
 
 // max longitudinal angular span (EXPERIMENTAL)
 exports.lonaxisSpan = {
-    'satellite': 120,
     'orthographic': 180,
     'azimuthal equal area': 360,
     'azimuthal equidistant': 360,

@@ -647,9 +647,9 @@ function getProjection(geoLayout) {
     var projFn = geo[projName] || geoProjection[projName];
     var projection = projFn();
 
-    var clipAngle = geoLayout._isClipped ?
-        constants.lonaxisSpan[projType] / 2 :
-        null;
+    var clipAngle =
+        projType === 'satellite' ? Math.acos(1 / projection.distance()) * 180 / Math.PI :
+            geoLayout._isClipped ? constants.lonaxisSpan[projType] / 2 : null;
 
     var methods = ['center', 'rotate', 'parallels', 'clipExtent'];
     var dummyFn = function(_) { return _ ? projection : []; };
