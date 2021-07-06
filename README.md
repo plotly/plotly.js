@@ -71,7 +71,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 Alternatively you may consider using [native ES6 import](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Modules) in the script tag.
 ```html
-<script>
+<script type="module">
     import "https://cdn.plot.ly/plotly-2.2.0.min.js"
     Plotly.newPlot("gd", [{ y: [1, 2, 3] }])
 </script>
