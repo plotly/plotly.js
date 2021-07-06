@@ -601,29 +601,6 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "gilbert",
-      "geo": "geo27",
-      "type": "choropleth",
-      "locations": [
-        "AUS"
-      ],
-      "z": [
-        10
-      ],
-      "showscale": false,
-      "hovertemplate": "gilbert"
-    },
-    {
-      "geo": "geo27",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": "gilbert",
-      "locations": [
-        "AUS"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
       "name": "ginzburg5",
       "geo": "geo28",
       "type": "choropleth",
@@ -1947,17 +1924,6 @@
       "showocean": true,
       "projection": {
         "type": "foucaut sinusoidal"
-      },
-      "fitbounds": "locations"
-    },
-    "geo27": {
-      "domain": {
-        "row": 2,
-        "column": 3
-      },
-      "showocean": true,
-      "projection": {
-        "type": "gilbert"
       },
       "fitbounds": "locations"
     },

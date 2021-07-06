@@ -1199,52 +1199,6 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "gilbert",
-      "geo": "geo27",
-      "type": "choropleth",
-      "locations": ["CAN"],
-      "z": [1],
-      "showscale": false,
-      "hovertemplate": "gilbert"
-    },
-    {
-      "geo": "geo27",
-      "type": "scattergeo",
-      "mode": "markers+text",
-      "text": [
-        "Vancouver",
-        "Montreal"
-      ],
-      "textfont": {
-        "size": 6
-      },
-      "marker": {
-        "color": [
-          "lightgreen",
-          "blue"
-        ],
-        "size": 10
-      },
-      "lat": [49, 45.5],
-      "lon": [-123, -73.5]
-    },
-    {
-      "geo": "geo27",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": [
-        "gilbert"
-      ],
-      "textfont": {
-        "color": "darkred",
-        "family": "Gravitas One, cursive"
-      },
-      "locations": [
-        "CAN"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
       "name": "ginzburg5",
       "geo": "geo28",
       "type": "choropleth",
@@ -3876,29 +3830,6 @@
       "projection": {
         "rotation": {"lat": 45},
         "type": "foucaut sinusoidal"
-      },
-      "lonaxis": {
-        "showgrid": true,
-        "gridwidth": 1,
-        "gridcolor": "lightgray"
-      },
-      "lataxis": {
-        "showgrid": true,
-        "gridwidth": 1,
-        "gridcolor": "lightgray"
-      },
-      "showcoastlines": false,
-      "showocean": true
-    },
-    "geo27": {
-      "domain": {
-        "row": 2,
-        "column": 3
-      },
-      "fitbounds": "locations",
-      "projection": {
-        "rotation": {"lat": 45},
-        "type": "gilbert"
       },
       "lonaxis": {
         "showgrid": true,

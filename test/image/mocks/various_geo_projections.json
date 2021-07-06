@@ -1771,74 +1771,6 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "gilbert",
-      "geo": "geo27",
-      "type": "choropleth",
-      "locations": [
-        "GHA",
-        "ARG",
-        "AUS",
-        "CAN"
-      ],
-      "z": [
-        1,
-        2,
-        3,
-        4
-      ],
-      "showscale": false,
-      "hovertemplate": "gilbert"
-    },
-    {
-      "geo": "geo27",
-      "type": "scattergeo",
-      "mode": "markers+text",
-      "text": [
-        "Cape Town",
-        "Los Angeles"
-      ],
-      "textfont": {
-        "size": 6
-      },
-      "marker": {
-        "color": [
-          "lightgreen",
-          "yellow"
-        ],
-        "size": [
-          20,
-          10
-        ]
-      },
-      "lat": [
-        -34,
-        34
-      ],
-      "lon": [
-        18,
-        -118
-      ]
-    },
-    {
-      "geo": "geo27",
-      "type": "scattergeo",
-      "mode": "text",
-      "text": [
-        "gilbert"
-      ],
-      "textfont": {
-        "color": "darkblue",
-        "family": "Gravitas One, cursive"
-      },
-      "locations": [
-        "GHA",
-        "ARG",
-        "AUS",
-        "CAN"
-      ],
-      "hoverinfo": "skip"
-    },
-    {
       "name": "ginzburg5",
       "geo": "geo28",
       "type": "choropleth",
@@ -5390,27 +5322,6 @@
       },
       "projection": {
         "type": "foucaut sinusoidal"
-      },
-      "lonaxis": {
-        "showgrid": true,
-        "gridwidth": 1,
-        "gridcolor": "lightgray"
-      },
-      "lataxis": {
-        "showgrid": true,
-        "gridwidth": 1,
-        "gridcolor": "lightgray"
-      },
-      "showcoastlines": false,
-      "showocean": true
-    },
-    "geo27": {
-      "domain": {
-        "row": 2,
-        "column": 3
-      },
-      "projection": {
-        "type": "gilbert"
       },
       "lonaxis": {
         "showgrid": true,
