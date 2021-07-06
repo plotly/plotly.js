@@ -9,12 +9,6 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
-## [1.58.5] -- 2021-07-06
-
-### Fixed
- - Fix to improve sanitizing href inputs for SVG and HTML text elements [[#5803](https://github.com/plotly/plotly.js/pull/5803)]
-
-
 ## [1.58.4] -- 2020-12-21
 
 ### Fixed
