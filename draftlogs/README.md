@@ -8,7 +8,9 @@ The markdown file should end with one of the followings:
 2. `_add.md` to propose new features
 3. `_remove.md` to propose a feature removal
 4. `_change.md` to propose a minor/major change
-5. `_deprecate.md` to propose a feature deprecate
+5. `_deprecate.md` to propose a feature be deprecated
+
+If your PR falls into more than one category - for example adding a new feature and changing an existing feature - you should include each in a separate file.
 
 ### Example filename and content for PR numbered 5546 for adding a new feature
 - filename: `5546_add.md`
