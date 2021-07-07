@@ -86,6 +86,16 @@ describe('svg+text utils', function() {
             d3SelectAll('.text-tester').remove();
         });
 
+        it('checks for XSS attack in href protocol', function() {
+            var node = mockTextSVGElement(
+                '<a href="j%61vascript:alert(\'attack\')">XSS</a>'
+            );
+
+            expect(node.text()).toEqual('XSS');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, null);
+        });
+
         it('checks for XSS attack in href', function() {
             var node = mockTextSVGElement(
                 '<a href="javascript:alert(\'attack\')">XSS</a>'
@@ -533,6 +543,14 @@ describe('sanitizeHTML', function() {
 
     afterEach(function() {
         d3SelectAll('.text-tester').remove();
+    });
+
+    it('checks for XSS attack in href protocol', function() {
+        var innerHTML = mockHTML(
+            '<a href="j%61vascript:alert(\'attack\')">XSS</a>'
+        );
+
+        expect(innerHTML).toEqual('<a>XSS</a>');
     });
 
     it('checks for XSS attack in href', function() {

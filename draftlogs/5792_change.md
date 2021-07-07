@@ -1,0 +1,1 @@
+ - Improve CONTRIBUTING guidelines for creating & updating baselines [[#5792](https://github.com/plotly/plotly.js/pull/5792)]
