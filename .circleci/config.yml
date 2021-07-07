@@ -15,14 +15,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: set up build environment
+          name: Set up build environment
           command: .circleci/env_build.sh
       - run:
           name: Pretest
-          command: |
-            npm run pretest
-            npm run cibuild
+          command: npm run pretest
       - run:
+          name: CI-Build
+          command: npm run cibuild
+      - run:
+          name: Delete git
           command: rm -rf .git
       - persist_to_workspace:
           root: /home/circleci
@@ -76,10 +78,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: install kaleido, plotly.io and required fonts
+          name: Install kaleido, plotly.io and required fonts
           command: .circleci/env_image.sh
       - run:
-          name: create all png files
+          name: Create all png files
           command: .circleci/test.sh make-baselines
       - persist_to_workspace:
           root: ~/
@@ -94,7 +96,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: compare pixels
+          name: Compare pixels
           command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
@@ -108,13 +110,13 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: install kaleido, plotly.io and required fonts
+          name: Install kaleido, plotly.io and required fonts
           command: .circleci/env_image.sh
       - run:
-          name: install poppler-utils to have pdftops for exporting eps
+          name: Install poppler-utils to have pdftops for exporting eps
           command: sudo apt-get install poppler-utils
       - run:
-          name: create svg, jpg, jpeg, webp, pdf and eps files
+          name: Create svg, jpg, jpeg, webp, pdf and eps files
           command: python3 test/image/make_exports.py
       - persist_to_workspace:
           root: ~/
@@ -129,7 +131,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: test export sizes
+          name: Test export sizes
           command: node test/image/export_test.js ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
@@ -179,8 +181,11 @@ jobs:
     steps:
       - checkout
       - run:
-          name: set up build environment
+          name: Set up build environment
           command: .circleci/env_build.sh
+      - run:
+          name: Preview CHANGELOG for next release (only on master)
+          command: if [ $CIRCLE_BRANCH == "master" ]; then npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true; fi
       - run:
           name: Build dist/
           command: npm run build
