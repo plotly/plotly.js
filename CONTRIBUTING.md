@@ -207,17 +207,40 @@ npm run test-jasmine -- --help
 npm run test-jasmine -- --info
 ```
 
-### Draft new baseline
-Install fonts and tools
+### Draft new baselines
+#### With docker:
+> If you prefer using docker each time you need to
 ```sh
-# install required fonts (if missing) on ubuntu
-sudo cp -r .circleci/fonts/ /usr/share/ && sudo fc-cache -f
-# upgrade pip (if needed)
+docker run -it -v "$(pwd)":/plotly.js circleci/python:3.8.9 bash
+# then inside the docker
+cd plotly.js
+sudo bash .circleci/env_image.sh
+```
+
+#### Without docker:
+> Otherwise you may need to install `python 3.8`
+Then upgrade `pip` if needed
+```sh
 python3 -m pip install --upgrade pip
-# install kaleido
-python3 -m pip install kaleido
-# install plotly
-python3 -m pip install plotly
+```
+
+To install required fonts and tools see this [shell script](https://github.com/plotly/plotly.js/blob/master/.circleci/env_image.sh).
+
+#### Scripts to generate/update new baselines with/without docker:
+```sh
+python3 test/image/make_baseline.py = mock_1 mock_2
+```
+
+> Alternatively using npm & node.js (which are not available in the python docker by default)
+
+```sh
+npm run baseline mock_1 mock_2
+```
+
+Or
+
+```sh
+npm run baseline mock_*
 ```
 
 **IMPORTANT:** the `baseline`, `test-image` and `test-export` scripts do **not** bundle the source files before
