@@ -226,7 +226,7 @@ python3 -m pip install --upgrade pip
 
 To install required fonts and tools see this [shell script](https://github.com/plotly/plotly.js/blob/master/.circleci/env_image.sh).
 
-#### Scrpits to generate/update new baselines with/without docker:
+#### Scripts to generate/update new baselines with/without docker:
 ```sh
 python3 test/image/make_baseline.py = mock_1 mock_2
 ```
