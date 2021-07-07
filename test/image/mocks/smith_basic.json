@@ -4,7 +4,11 @@
       "type": "scattersmith",
       "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
       "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
-      "mode": "markers"
+      "mode": "markers",
+      "marker": {
+        "symbol": "triangle-up",
+        "size": 20
+      }
     },
     {
       "type": "scattersmith",
@@ -19,6 +23,20 @@
       "im": [],
       "mode": "markers",
       "subplot": "smith3"
+    },
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "mode": "lines+markers",
+      "marker": {
+        "symbol": "x",
+        "color": "green"
+      },
+      "line": {
+        "color": "chartreuse"
+      },
+      "subplot": "smith4"
     }
   ],
   "layout": {
@@ -41,6 +59,12 @@
       },
       "radialaxis": {
         "title": {"text": "blank"}
+      }
+    },
+    "smith4": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0, 0.44]
       }
     },
     "showlegend": false,
