@@ -37750,11 +37750,11 @@
         "items": [
          {
           "editType": "plot",
-          "valType": "number"
+          "valType": "any"
          },
          {
           "editType": "plot",
-          "valType": "number"
+          "valType": "any"
          }
         ],
         "valType": "info_array"
