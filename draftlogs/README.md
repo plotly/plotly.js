@@ -1,9 +1,7 @@
 ## Directory of draft logs to help prepare the upcoming [CHANGELOG](https://github.com/plotly/plotly.js/blob/master/CHANGELOG.md)
 
-It is required that the PR contributors start the filename with a number.
-This number should preferably be the PR number.
-The number of issue they are trying to close could also be used.
-The markdown file should end with one of the followings:
+Every pull request should add at least one markdown file to this directory.
+The filename must start with a number, preferably the PR number, followed by one of these:
 1. `_fix.md` to propose a bug fix
 2. `_add.md` to propose new features
 3. `_remove.md` to propose a feature removal
