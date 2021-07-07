@@ -1,0 +1,64 @@
+{
+  "data": [
+    {
+      "re": [0, 0.3, 1, 2, 3, 5, 10],
+      "im": [0, 0.3, 1, 2, 3, 5, 10],
+      "mode": "lines+markers",
+      "name": "Curved",
+      "line": {
+        "color": "peru",
+        "shape": "spline"
+      },
+      "type": "scattersmith"
+    },
+    {
+      "re": [0, 0.3, 1, 2, 3, 5, 10],
+      "im": [0, 0.6, 2, 4, 6, 10, 20],
+      "mode": "lines+markers",
+      "name": "Interpolated",
+      "line": {
+        "color": "darkviolet",
+        "shape": "linear"
+      },
+      "type": "scattersmith"
+    },
+    {
+      "re": [0, 0.3, 1, 2, 3, 5, 10],
+      "im": [0, -0.3, -1, -2, -3, -5, -10],
+      "mode": "lines+markers",
+      "name": "Interpolated negative",
+      "line": {
+        "color": "firebrick",
+        "shape": "linear"
+      },
+      "type": "scattersmith"
+    }
+  ],
+  "layout": {
+    "title": {"text": "Smith chart lines"},
+    "font": {
+      "family": "Arial, sans-serif",
+      "size": 12,
+      "color": "#000"
+    },
+    "width": 500,
+    "height": 400,
+    "margin": {"l": 40, "r": 40, "b": 30, "t": 60, "pad": 0},
+    "smith": {
+      "bgcolor": "rgb(255, 255, 255)",
+      "radialaxis": {
+        "tickangle": 45,
+        "tick0": 0,
+        "dtick": 0.1
+      },
+      "angularaxis": {
+        "thetaunit": "radians",
+        "showgrid": true,
+        "tickwidth": 2,
+        "ticklen": 5
+      }
+    },
+    "showlegend": false,
+    "paper_bgcolor": "rgb(255, 255, 255)"
+  }
+}
