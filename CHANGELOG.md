@@ -9,6 +9,39 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.2.1] -- 2021-07-06
+
+### Fixed
+ - Fix to improve sanitizing href inputs for SVG and HTML text elements [[#5803](https://github.com/plotly/plotly.js/pull/5803)]
+
+
+## [1.58.5] -- 2021-07-06
+
+### Fixed
+ - Fix to improve sanitizing href inputs for SVG and HTML text elements [[#5803](https://github.com/plotly/plotly.js/pull/5803)]
+
+
+## [2.2.0] -- 2021-06-28
+
+### Added
+ - Legend group titles [[#5752](https://github.com/plotly/plotly.js/pull/5752)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+ - Add half-year directive (%h) for formatting dates and improve descriptions to include extra date formatting options [[#5762](https://github.com/plotly/plotly.js/pull/5762)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Changed
+ - Modernize the process of creating baselines using [Kaleido](https://github.com/plotly/Kaleido) and improve image & other export test systems [[#5724](https://github.com/plotly/plotly.js/pull/5724)]
+ - Centralize jsdom utility to return Plotly object in node.js test scripts and use it in generating plot-schema [[#5755](https://github.com/plotly/plotly.js/pull/5755)]
+ - Bump turf bbox dependency to v6.4.0 [[#5747](https://github.com/plotly/plotly.js/pull/5747)]
+ - Bump turf area dependency to v6.4.0 [[#5748](https://github.com/plotly/plotly.js/pull/5748)]
+
+### Fixed
+ - Cache values and patterns in set_convert for axes with `rangebreaks` to improve performance [[#5659](https://github.com/plotly/plotly.js/pull/5659)],
+   with thanks to @spasovski for the contribution!
+ - Fix fetching geojson when ES6 import is used to load the library [[#5763](https://github.com/plotly/plotly.js/pull/5763)]
+ - Correct readme links [[#5746](https://github.com/plotly/plotly.js/pull/5746)]
+
+
 ## [2.1.0] -- 2021-06-18
 
 ### Added
