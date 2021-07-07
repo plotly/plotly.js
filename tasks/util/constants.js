@@ -5,7 +5,8 @@ var pkg = require('../../package.json');
 var pathToRoot = path.join(__dirname, '../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToLib = path.join(pathToRoot, 'lib/');
-var pathToImageTest = path.join(pathToRoot, 'test/image');
+var pathToTest = path.join(pathToRoot, 'test/');
+var pathToImageTest = path.join(pathToTest, 'image/');
 var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
 var pathToDraftlogs = path.join(pathToRoot, 'draftlogs/');
 var pathToDist = path.join(pathToRoot, 'dist/');
@@ -186,7 +187,8 @@ module.exports = {
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
-    pathToSchema: path.join(pathToDist, 'plot-schema.json'),
+    pathToSchemaDiff: path.join(pathToTest, 'plot-schema.json'),
+    pathToSchemaDist: path.join(pathToDist, 'plot-schema.json'),
     pathToTranslationKeys: path.join(pathToDist, 'translation-keys.txt'),
 
     partialBundleNames: partialBundleNames,

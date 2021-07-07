@@ -138,14 +138,19 @@ Three additional helpers exist that are refreshed every second:
 There is also a search bar in the top right of the dashboard. This fuzzy-searches
 image mocks based on their file name and trace type.
 
-#### Alternative to test dashboard
+#### Step 5: Regenerate plot-schema in "test" folder then review & commit potential changes
 
-Use the [`plotly-mock-viewer`](https://github.com/rreusser/plotly-mock-viewer)
-which has live-reloading and a bunch of other cool features.
-An online version of `plotly-mock-viewer` is available at <https://rreusser.github.io/plotly-mock-viewer/>
-which uses <https://cdn.plot.ly/plotly-latest.min.js>
+```bash
+npm run schema
+```
 
-#### Other npm scripts
+#### Step 6: Review & commit potential changes made to test/plot-schema.json
+
+> If you are editing attribute descriptions or implementing a new feature this file located in the test folder records the proposed changes to the API. Note that there is another plot-schema.json file located in the dist folder, which should only be updated by the maintainers at release time.
+
+**IMPORTANT:** please do not change and commit any files in the "dist" folder
+
+#### Other npm scripts that may be of interest in development
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
   script must be run manually when updating the css and svg source files.
