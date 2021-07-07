@@ -1,0 +1,84 @@
+{
+  "data": [
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "mode": "lines+markers"
+    },
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "mode": "lines+markers",
+      "subplot": "smith2"
+    },
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "mode": "lines+markers",
+      "subplot": "smith3"
+    },
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "mode": "lines+markers",
+      "subplot": "smith4"
+    }
+  ],
+  "layout": {
+    "smith": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0.56, 1]
+      },
+      "angularaxis": {
+        "showgrid": false,
+        "zeroline": false,
+        "showticklabels": false,
+        "visible": true
+      }
+    },
+    "smith2": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0, 0.44]
+      },
+      "radialaxis": {
+        "showgrid": false,
+        "zeroline": false,
+        "visible": true
+      }
+    },
+    "smith3": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0.56, 1]
+      },
+      "radialaxis": {
+        "showgrid": true,
+        "zeroline": false,
+        "showticklabels": false,
+        "visible": true
+      }
+    },
+    "smith4": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0, 0.44]
+      },
+      "angularaxis": {
+        "visible": false
+      },
+      "radialaxis": {
+        "visible": false
+      }
+    },
+    "showlegend": true,
+    "margin": {"t": 40, "b": 40, "r": 40, "l": 40},
+    "width": 800,
+    "height": 800
+  }
+}
