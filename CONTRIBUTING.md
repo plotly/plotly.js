@@ -146,7 +146,7 @@ npm run schema
 
 #### Step 6: Review & commit potential changes made to test/plot-schema.json
 
-> If you are editing attribute descriptions or implementing a new feature this file located in test folder would record the proposed changes to the API. This test file is different from the other plot-schema.json file located in the dist folder and should only be updated by maintainers at the release time.
+> If you are editing attribute descriptions or implementing a new feature this file located in the test folder records the proposed changes to the API. Note that there is another plot-schema.json file located in the dist folder, which should only be updated by the maintainers at release time.
 
 **IMPORTANT:** please do not change and commit any files in the "dist" folder
 
