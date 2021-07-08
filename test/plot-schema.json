@@ -44079,12 +44079,12 @@
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "solid",
-       "dot",
        "dash",
-       "longdash",
        "dashdot",
-       "longdashdot"
+       "dot",
+       "longdash",
+       "longdashdot",
+       "solid"
       ]
      },
      "editType": "calc",
@@ -44796,11 +44796,11 @@
       "values": [
        "circle",
        "circle-open",
-       "square",
-       "square-open",
+       "cross",
        "diamond",
        "diamond-open",
-       "cross",
+       "square",
+       "square-open",
        "x"
       ]
      },
