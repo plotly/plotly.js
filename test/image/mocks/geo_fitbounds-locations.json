@@ -141,8 +141,54 @@
       "hoverinfo": "skip"
     },
     {
-      "name": "boggs",
+      "name": "baker",
       "geo": "geo7",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "baker"
+    },
+    {
+      "geo": "geo7",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "baker",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "bertin1953",
+      "geo": "geo8",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "bertin1953"
+    },
+    {
+      "geo": "geo8",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "bertin1953",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "boggs",
+      "geo": "geo9",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -154,7 +200,7 @@
       "hovertemplate": "boggs"
     },
     {
-      "geo": "geo7",
+      "geo": "geo9",
       "type": "scattergeo",
       "mode": "text",
       "text": "boggs",
@@ -164,8 +210,54 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "bonne",
+      "geo": "geo10",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "bonne"
+    },
+    {
+      "geo": "geo10",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "bonne",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "bottomley",
+      "geo": "geo11",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "bottomley"
+    },
+    {
+      "geo": "geo11",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "bottomley",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "bromley",
-      "geo": "geo8",
+      "geo": "geo12",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -177,7 +269,7 @@
       "hovertemplate": "bromley"
     },
     {
-      "geo": "geo8",
+      "geo": "geo12",
       "type": "scattergeo",
       "mode": "text",
       "text": "bromley",
@@ -188,7 +280,7 @@
     },
     {
       "name": "collignon",
-      "geo": "geo9",
+      "geo": "geo13",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -200,7 +292,7 @@
       "hovertemplate": "collignon"
     },
     {
-      "geo": "geo9",
+      "geo": "geo13",
       "type": "scattergeo",
       "mode": "text",
       "text": "collignon",
@@ -211,7 +303,7 @@
     },
     {
       "name": "conic conformal",
-      "geo": "geo10",
+      "geo": "geo14",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -223,7 +315,7 @@
       "hovertemplate": "conic conformal"
     },
     {
-      "geo": "geo10",
+      "geo": "geo14",
       "type": "scattergeo",
       "mode": "text",
       "text": "conic<br>conformal",
@@ -234,7 +326,7 @@
     },
     {
       "name": "conic equal area",
-      "geo": "geo11",
+      "geo": "geo15",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -246,7 +338,7 @@
       "hovertemplate": "conic equal area"
     },
     {
-      "geo": "geo11",
+      "geo": "geo15",
       "type": "scattergeo",
       "mode": "text",
       "text": "conic<br>equal area",
@@ -257,7 +349,7 @@
     },
     {
       "name": "conic equidistant",
-      "geo": "geo12",
+      "geo": "geo16",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -269,7 +361,7 @@
       "hovertemplate": "conic equidistant"
     },
     {
-      "geo": "geo12",
+      "geo": "geo16",
       "type": "scattergeo",
       "mode": "text",
       "text": "conic<br>equidistant",
@@ -279,8 +371,31 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "craig",
+      "geo": "geo17",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "craig"
+    },
+    {
+      "geo": "geo17",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "craig",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "craster",
-      "geo": "geo13",
+      "geo": "geo18",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -292,7 +407,7 @@
       "hovertemplate": "craster"
     },
     {
-      "geo": "geo13",
+      "geo": "geo18",
       "type": "scattergeo",
       "mode": "text",
       "text": "craster",
@@ -303,7 +418,7 @@
     },
     {
       "name": "cylindrical equal area",
-      "geo": "geo14",
+      "geo": "geo19",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -315,7 +430,7 @@
       "hovertemplate": "cylindrical equal area"
     },
     {
-      "geo": "geo14",
+      "geo": "geo19",
       "type": "scattergeo",
       "mode": "text",
       "text": "cylindrical<br>equal area",
@@ -326,7 +441,7 @@
     },
     {
       "name": "cylindrical stereographic",
-      "geo": "geo15",
+      "geo": "geo20",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -338,7 +453,7 @@
       "hovertemplate": "cylindrical stereographic"
     },
     {
-      "geo": "geo15",
+      "geo": "geo20",
       "type": "scattergeo",
       "mode": "text",
       "text": "cylindrical<br>stereographic",
@@ -349,7 +464,7 @@
     },
     {
       "name": "eckert1",
-      "geo": "geo16",
+      "geo": "geo21",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -361,7 +476,7 @@
       "hovertemplate": "eckert1"
     },
     {
-      "geo": "geo16",
+      "geo": "geo21",
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert1",
@@ -372,7 +487,7 @@
     },
     {
       "name": "eckert2",
-      "geo": "geo17",
+      "geo": "geo22",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -384,7 +499,7 @@
       "hovertemplate": "eckert2"
     },
     {
-      "geo": "geo17",
+      "geo": "geo22",
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert2",
@@ -395,7 +510,7 @@
     },
     {
       "name": "eckert3",
-      "geo": "geo18",
+      "geo": "geo23",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -407,7 +522,7 @@
       "hovertemplate": "eckert3"
     },
     {
-      "geo": "geo18",
+      "geo": "geo23",
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert3",
@@ -418,7 +533,7 @@
     },
     {
       "name": "eckert4",
-      "geo": "geo19",
+      "geo": "geo24",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -430,7 +545,7 @@
       "hovertemplate": "eckert4"
     },
     {
-      "geo": "geo19",
+      "geo": "geo24",
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert4",
@@ -441,7 +556,7 @@
     },
     {
       "name": "eckert5",
-      "geo": "geo20",
+      "geo": "geo25",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -453,7 +568,7 @@
       "hovertemplate": "eckert5"
     },
     {
-      "geo": "geo20",
+      "geo": "geo25",
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert5",
@@ -464,7 +579,7 @@
     },
     {
       "name": "eckert6",
-      "geo": "geo21",
+      "geo": "geo26",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -476,7 +591,7 @@
       "hovertemplate": "eckert6"
     },
     {
-      "geo": "geo21",
+      "geo": "geo26",
       "type": "scattergeo",
       "mode": "text",
       "text": "eckert6",
@@ -487,7 +602,7 @@
     },
     {
       "name": "eisenlohr",
-      "geo": "geo22",
+      "geo": "geo27",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -499,7 +614,7 @@
       "hovertemplate": "eisenlohr"
     },
     {
-      "geo": "geo22",
+      "geo": "geo27",
       "type": "scattergeo",
       "mode": "text",
       "text": "eisenlohr",
@@ -510,7 +625,7 @@
     },
     {
       "name": "equirectangular",
-      "geo": "geo23",
+      "geo": "geo28",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -522,7 +637,7 @@
       "hovertemplate": "equirectangular"
     },
     {
-      "geo": "geo23",
+      "geo": "geo28",
       "type": "scattergeo",
       "mode": "text",
       "text": "equirectangular",
@@ -533,7 +648,7 @@
     },
     {
       "name": "fahey",
-      "geo": "geo24",
+      "geo": "geo29",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -545,7 +660,7 @@
       "hovertemplate": "fahey"
     },
     {
-      "geo": "geo24",
+      "geo": "geo29",
       "type": "scattergeo",
       "mode": "text",
       "text": "fahey",
@@ -556,7 +671,7 @@
     },
     {
       "name": "foucaut",
-      "geo": "geo25",
+      "geo": "geo30",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -568,7 +683,7 @@
       "hovertemplate": "foucaut"
     },
     {
-      "geo": "geo25",
+      "geo": "geo30",
       "type": "scattergeo",
       "mode": "text",
       "text": "foucaut",
@@ -579,7 +694,7 @@
     },
     {
       "name": "foucaut sinusoidal",
-      "geo": "geo26",
+      "geo": "geo31",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -591,7 +706,7 @@
       "hovertemplate": "foucaut sinusoidal"
     },
     {
-      "geo": "geo26",
+      "geo": "geo31",
       "type": "scattergeo",
       "mode": "text",
       "text": "foucaut<br>sinusoidal",
@@ -601,8 +716,31 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "ginzburg4",
+      "geo": "geo32",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "ginzburg4"
+    },
+    {
+      "geo": "geo32",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "ginzburg4",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "ginzburg5",
-      "geo": "geo28",
+      "geo": "geo33",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -614,7 +752,7 @@
       "hovertemplate": "ginzburg5"
     },
     {
-      "geo": "geo28",
+      "geo": "geo33",
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg5",
@@ -625,7 +763,7 @@
     },
     {
       "name": "ginzburg6",
-      "geo": "geo29",
+      "geo": "geo34",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -637,7 +775,7 @@
       "hovertemplate": "ginzburg6"
     },
     {
-      "geo": "geo29",
+      "geo": "geo34",
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg6",
@@ -648,7 +786,7 @@
     },
     {
       "name": "ginzburg8",
-      "geo": "geo30",
+      "geo": "geo35",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -660,7 +798,7 @@
       "hovertemplate": "ginzburg8"
     },
     {
-      "geo": "geo30",
+      "geo": "geo35",
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg8",
@@ -671,7 +809,7 @@
     },
     {
       "name": "ginzburg9",
-      "geo": "geo31",
+      "geo": "geo36",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -683,7 +821,7 @@
       "hovertemplate": "ginzburg9"
     },
     {
-      "geo": "geo31",
+      "geo": "geo36",
       "type": "scattergeo",
       "mode": "text",
       "text": "ginzburg9",
@@ -694,7 +832,7 @@
     },
     {
       "name": "gnomonic",
-      "geo": "geo32",
+      "geo": "geo37",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -706,7 +844,7 @@
       "hovertemplate": "gnomonic"
     },
     {
-      "geo": "geo32",
+      "geo": "geo37",
       "type": "scattergeo",
       "mode": "text",
       "text": "gnomonic",
@@ -717,7 +855,7 @@
     },
     {
       "name": "gringorten",
-      "geo": "geo33",
+      "geo": "geo38",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -729,7 +867,7 @@
       "hovertemplate": "gringorten"
     },
     {
-      "geo": "geo33",
+      "geo": "geo38",
       "type": "scattergeo",
       "mode": "text",
       "text": "gringorten",
@@ -740,7 +878,7 @@
     },
     {
       "name": "gringorten quincuncial",
-      "geo": "geo34",
+      "geo": "geo39",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -752,7 +890,7 @@
       "hovertemplate": "gringorten quincuncial"
     },
     {
-      "geo": "geo34",
+      "geo": "geo39",
       "type": "scattergeo",
       "mode": "text",
       "text": "gringorten<br>quincuncial",
@@ -763,7 +901,7 @@
     },
     {
       "name": "guyou",
-      "geo": "geo35",
+      "geo": "geo40",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -775,7 +913,7 @@
       "hovertemplate": "guyou"
     },
     {
-      "geo": "geo35",
+      "geo": "geo40",
       "type": "scattergeo",
       "mode": "text",
       "text": "guyou",
@@ -786,7 +924,7 @@
     },
     {
       "name": "hammer",
-      "geo": "geo36",
+      "geo": "geo41",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -798,7 +936,7 @@
       "hovertemplate": "hammer"
     },
     {
-      "geo": "geo36",
+      "geo": "geo41",
       "type": "scattergeo",
       "mode": "text",
       "text": "hammer",
@@ -809,7 +947,7 @@
     },
     {
       "name": "hill",
-      "geo": "geo37",
+      "geo": "geo42",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -821,7 +959,7 @@
       "hovertemplate": "hill"
     },
     {
-      "geo": "geo37",
+      "geo": "geo42",
       "type": "scattergeo",
       "mode": "text",
       "text": "hill",
@@ -831,8 +969,31 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "homolosine",
+      "geo": "geo43",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "homolosine"
+    },
+    {
+      "geo": "geo43",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "homolosine",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "hufnagel",
-      "geo": "geo38",
+      "geo": "geo44",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -844,7 +1005,7 @@
       "hovertemplate": "hufnagel"
     },
     {
-      "geo": "geo38",
+      "geo": "geo44",
       "type": "scattergeo",
       "mode": "text",
       "text": "hufnagel",
@@ -855,7 +1016,7 @@
     },
     {
       "name": "hyperelliptical",
-      "geo": "geo39",
+      "geo": "geo45",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -867,7 +1028,7 @@
       "hovertemplate": "hyperelliptical"
     },
     {
-      "geo": "geo39",
+      "geo": "geo45",
       "type": "scattergeo",
       "mode": "text",
       "text": "hyperelliptical",
@@ -878,7 +1039,7 @@
     },
     {
       "name": "kavrayskiy7",
-      "geo": "geo40",
+      "geo": "geo46",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -890,7 +1051,7 @@
       "hovertemplate": "kavrayskiy7"
     },
     {
-      "geo": "geo40",
+      "geo": "geo46",
       "type": "scattergeo",
       "mode": "text",
       "text": "kavrayskiy7",
@@ -901,7 +1062,7 @@
     },
     {
       "name": "lagrange",
-      "geo": "geo41",
+      "geo": "geo47",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -913,7 +1074,7 @@
       "hovertemplate": "lagrange"
     },
     {
-      "geo": "geo41",
+      "geo": "geo47",
       "type": "scattergeo",
       "mode": "text",
       "text": "lagrange",
@@ -923,8 +1084,77 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "larrivee",
+      "geo": "geo48",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "larrivee"
+    },
+    {
+      "geo": "geo48",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "larrivee",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "laskowski",
+      "geo": "geo49",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "laskowski"
+    },
+    {
+      "geo": "geo49",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "laskowski",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "loximuthal",
+      "geo": "geo50",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "loximuthal"
+    },
+    {
+      "geo": "geo50",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "loximuthal",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "mercator",
-      "geo": "geo42",
+      "geo": "geo51",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -936,7 +1166,7 @@
       "hovertemplate": "mercator"
     },
     {
-      "geo": "geo42",
+      "geo": "geo51",
       "type": "scattergeo",
       "mode": "text",
       "text": "mercator",
@@ -947,7 +1177,7 @@
     },
     {
       "name": "miller",
-      "geo": "geo43",
+      "geo": "geo52",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -959,7 +1189,7 @@
       "hovertemplate": "miller"
     },
     {
-      "geo": "geo43",
+      "geo": "geo52",
       "type": "scattergeo",
       "mode": "text",
       "text": "miller",
@@ -970,7 +1200,7 @@
     },
     {
       "name": "mollweide",
-      "geo": "geo44",
+      "geo": "geo53",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -982,7 +1212,7 @@
       "hovertemplate": "mollweide"
     },
     {
-      "geo": "geo44",
+      "geo": "geo53",
       "type": "scattergeo",
       "mode": "text",
       "text": "mollweide",
@@ -993,7 +1223,7 @@
     },
     {
       "name": "mt flat polar parabolic",
-      "geo": "geo45",
+      "geo": "geo54",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1005,7 +1235,7 @@
       "hovertemplate": "mt flat polar parabolic"
     },
     {
-      "geo": "geo45",
+      "geo": "geo54",
       "type": "scattergeo",
       "mode": "text",
       "text": "mt<br>flat polar parabolic",
@@ -1016,7 +1246,7 @@
     },
     {
       "name": "mt flat polar quartic",
-      "geo": "geo46",
+      "geo": "geo55",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1028,7 +1258,7 @@
       "hovertemplate": "mt flat polar quartic"
     },
     {
-      "geo": "geo46",
+      "geo": "geo55",
       "type": "scattergeo",
       "mode": "text",
       "text": "mt<br>flat polar quartic",
@@ -1039,7 +1269,7 @@
     },
     {
       "name": "mt flat polar sinusoidal",
-      "geo": "geo47",
+      "geo": "geo56",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1051,7 +1281,7 @@
       "hovertemplate": "mt flat polar sinusoidal"
     },
     {
-      "geo": "geo47",
+      "geo": "geo56",
       "type": "scattergeo",
       "mode": "text",
       "text": "mt<br>flat polar sinusoidal",
@@ -1062,7 +1292,7 @@
     },
     {
       "name": "natural earth",
-      "geo": "geo48",
+      "geo": "geo57",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1074,7 +1304,7 @@
       "hovertemplate": "natural earth"
     },
     {
-      "geo": "geo48",
+      "geo": "geo57",
       "type": "scattergeo",
       "mode": "text",
       "text": "natural<br>earth",
@@ -1085,7 +1315,7 @@
     },
     {
       "name": "natural earth1",
-      "geo": "geo49",
+      "geo": "geo58",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1097,7 +1327,7 @@
       "hovertemplate": "natural earth1"
     },
     {
-      "geo": "geo49",
+      "geo": "geo58",
       "type": "scattergeo",
       "mode": "text",
       "text": "natural<br>earth1",
@@ -1108,7 +1338,7 @@
     },
     {
       "name": "natural earth2",
-      "geo": "geo50",
+      "geo": "geo59",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1120,7 +1350,7 @@
       "hovertemplate": "natural earth2"
     },
     {
-      "geo": "geo50",
+      "geo": "geo59",
       "type": "scattergeo",
       "mode": "text",
       "text": "natural<br>earth2",
@@ -1131,7 +1361,7 @@
     },
     {
       "name": "nell hammer",
-      "geo": "geo51",
+      "geo": "geo60",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1143,7 +1373,7 @@
       "hovertemplate": "nell hammer"
     },
     {
-      "geo": "geo51",
+      "geo": "geo60",
       "type": "scattergeo",
       "mode": "text",
       "text": "nell<br>hammer",
@@ -1154,7 +1384,7 @@
     },
     {
       "name": "nicolosi",
-      "geo": "geo52",
+      "geo": "geo61",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1166,7 +1396,7 @@
       "hovertemplate": "nicolosi"
     },
     {
-      "geo": "geo52",
+      "geo": "geo61",
       "type": "scattergeo",
       "mode": "text",
       "text": "nicolosi",
@@ -1177,7 +1407,7 @@
     },
     {
       "name": "orthographic",
-      "geo": "geo53",
+      "geo": "geo62",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1189,7 +1419,7 @@
       "hovertemplate": "orthographic"
     },
     {
-      "geo": "geo53",
+      "geo": "geo62",
       "type": "scattergeo",
       "mode": "text",
       "text": "orthographic",
@@ -1200,7 +1430,7 @@
     },
     {
       "name": "patterson",
-      "geo": "geo54",
+      "geo": "geo63",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1212,7 +1442,7 @@
       "hovertemplate": "patterson"
     },
     {
-      "geo": "geo54",
+      "geo": "geo63",
       "type": "scattergeo",
       "mode": "text",
       "text": "patterson",
@@ -1223,7 +1453,7 @@
     },
     {
       "name": "peirce quincuncial",
-      "geo": "geo55",
+      "geo": "geo64",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1235,7 +1465,7 @@
       "hovertemplate": "peirce quincuncial"
     },
     {
-      "geo": "geo55",
+      "geo": "geo64",
       "type": "scattergeo",
       "mode": "text",
       "text": "peirce<br>quincuncial",
@@ -1245,8 +1475,31 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "polyconic",
+      "geo": "geo65",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "polyconic"
+    },
+    {
+      "geo": "geo65",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "polyconic",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "rectangular polyconic",
-      "geo": "geo56",
+      "geo": "geo66",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1258,7 +1511,7 @@
       "hovertemplate": "rectangular polyconic"
     },
     {
-      "geo": "geo56",
+      "geo": "geo66",
       "type": "scattergeo",
       "mode": "text",
       "text": "rectangular<br>polyconic",
@@ -1269,7 +1522,7 @@
     },
     {
       "name": "robinson",
-      "geo": "geo57",
+      "geo": "geo67",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1281,7 +1534,7 @@
       "hovertemplate": "robinson"
     },
     {
-      "geo": "geo57",
+      "geo": "geo67",
       "type": "scattergeo",
       "mode": "text",
       "text": "robinson",
@@ -1292,7 +1545,7 @@
     },
     {
       "name": "satellite",
-      "geo": "geo58",
+      "geo": "geo68",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1304,7 +1557,7 @@
       "hovertemplate": "satellite"
     },
     {
-      "geo": "geo58",
+      "geo": "geo68",
       "type": "scattergeo",
       "mode": "text",
       "text": "satellite",
@@ -1314,8 +1567,31 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "sinu mollweide",
+      "geo": "geo69",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "sinu mollweide"
+    },
+    {
+      "geo": "geo69",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "sinu<br>mollweide",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "sinusoidal",
-      "geo": "geo59",
+      "geo": "geo70",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1327,7 +1603,7 @@
       "hovertemplate": "sinusoidal"
     },
     {
-      "geo": "geo59",
+      "geo": "geo70",
       "type": "scattergeo",
       "mode": "text",
       "text": "sinusoidal",
@@ -1338,7 +1614,7 @@
     },
     {
       "name": "stereographic",
-      "geo": "geo60",
+      "geo": "geo71",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1350,7 +1626,7 @@
       "hovertemplate": "stereographic"
     },
     {
-      "geo": "geo60",
+      "geo": "geo71",
       "type": "scattergeo",
       "mode": "text",
       "text": "stereographic",
@@ -1361,7 +1637,7 @@
     },
     {
       "name": "times",
-      "geo": "geo61",
+      "geo": "geo72",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1373,7 +1649,7 @@
       "hovertemplate": "times"
     },
     {
-      "geo": "geo61",
+      "geo": "geo72",
       "type": "scattergeo",
       "mode": "text",
       "text": "times",
@@ -1384,7 +1660,7 @@
     },
     {
       "name": "transverse mercator",
-      "geo": "geo62",
+      "geo": "geo73",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1396,7 +1672,7 @@
       "hovertemplate": "transverse mercator"
     },
     {
-      "geo": "geo62",
+      "geo": "geo73",
       "type": "scattergeo",
       "mode": "text",
       "text": "transverse<br>mercator",
@@ -1407,7 +1683,7 @@
     },
     {
       "name": "van der grinten",
-      "geo": "geo63",
+      "geo": "geo74",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1419,7 +1695,7 @@
       "hovertemplate": "van der grinten"
     },
     {
-      "geo": "geo63",
+      "geo": "geo74",
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten",
@@ -1430,7 +1706,7 @@
     },
     {
       "name": "van der grinten2",
-      "geo": "geo64",
+      "geo": "geo75",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1442,7 +1718,7 @@
       "hovertemplate": "van der grinten2"
     },
     {
-      "geo": "geo64",
+      "geo": "geo75",
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten2",
@@ -1453,7 +1729,7 @@
     },
     {
       "name": "van der grinten3",
-      "geo": "geo65",
+      "geo": "geo76",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1465,7 +1741,7 @@
       "hovertemplate": "van der grinten3"
     },
     {
-      "geo": "geo65",
+      "geo": "geo76",
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten3",
@@ -1476,7 +1752,7 @@
     },
     {
       "name": "van der grinten4",
-      "geo": "geo66",
+      "geo": "geo77",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1488,7 +1764,7 @@
       "hovertemplate": "van der grinten4"
     },
     {
-      "geo": "geo66",
+      "geo": "geo77",
       "type": "scattergeo",
       "mode": "text",
       "text": "van<br>der grinten4",
@@ -1499,7 +1775,7 @@
     },
     {
       "name": "wagner4",
-      "geo": "geo67",
+      "geo": "geo78",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1511,7 +1787,7 @@
       "hovertemplate": "wagner4"
     },
     {
-      "geo": "geo67",
+      "geo": "geo78",
       "type": "scattergeo",
       "mode": "text",
       "text": "wagner4",
@@ -1522,7 +1798,7 @@
     },
     {
       "name": "wagner6",
-      "geo": "geo68",
+      "geo": "geo79",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1534,7 +1810,7 @@
       "hovertemplate": "wagner6"
     },
     {
-      "geo": "geo68",
+      "geo": "geo79",
       "type": "scattergeo",
       "mode": "text",
       "text": "wagner6",
@@ -1545,7 +1821,7 @@
     },
     {
       "name": "wiechel",
-      "geo": "geo69",
+      "geo": "geo80",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1557,7 +1833,7 @@
       "hovertemplate": "wiechel"
     },
     {
-      "geo": "geo69",
+      "geo": "geo80",
       "type": "scattergeo",
       "mode": "text",
       "text": "wiechel",
@@ -1568,7 +1844,7 @@
     },
     {
       "name": "winkel tripel",
-      "geo": "geo70",
+      "geo": "geo81",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1580,7 +1856,7 @@
       "hovertemplate": "winkel tripel"
     },
     {
-      "geo": "geo70",
+      "geo": "geo81",
       "type": "scattergeo",
       "mode": "text",
       "text": "winkel<br>tripel",
@@ -1591,7 +1867,7 @@
     },
     {
       "name": "winkel3",
-      "geo": "geo71",
+      "geo": "geo82",
       "type": "choropleth",
       "locations": [
         "AUS"
@@ -1603,7 +1879,7 @@
       "hovertemplate": "winkel3"
     },
     {
-      "geo": "geo71",
+      "geo": "geo82",
       "type": "scattergeo",
       "mode": "text",
       "text": "winkel3",
@@ -1616,10 +1892,10 @@
   "layout": {
     "grid": {
       "rows": 8,
-      "columns": 9
+      "columns": 11
     },
     "showlegend": false,
-    "width": 1800,
+    "width": 2400,
     "height": 1200,
     "margin": {
       "l": 20,
@@ -1647,22 +1923,44 @@
         "row": 0,
         "column": 0
       },
-      "showocean": true,
       "projection": {
         "type": "airy"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo2": {
       "domain": {
         "row": 1,
         "column": 0
       },
-      "showocean": true,
       "projection": {
         "type": "aitoff"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo3": {
       "domain": {
@@ -1672,744 +1970,1755 @@
       "projection": {
         "type": "albers usa"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      }
     },
     "geo4": {
       "domain": {
         "row": 3,
         "column": 0
       },
-      "showocean": true,
       "projection": {
         "type": "august"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo5": {
       "domain": {
         "row": 4,
         "column": 0
       },
-      "showocean": true,
       "projection": {
         "type": "azimuthal equal area"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo6": {
       "domain": {
         "row": 5,
         "column": 0
       },
-      "showocean": true,
       "projection": {
         "type": "azimuthal equidistant"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo7": {
       "domain": {
         "row": 6,
         "column": 0
       },
-      "showocean": true,
       "projection": {
-        "type": "boggs"
+        "type": "baker"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo8": {
       "domain": {
         "row": 7,
         "column": 0
       },
-      "showocean": true,
       "projection": {
-        "type": "bromley"
+        "type": "bertin1953"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo9": {
       "domain": {
         "row": 0,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "collignon"
+        "type": "boggs"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo10": {
       "domain": {
         "row": 1,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "conic conformal"
+        "type": "bonne"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo11": {
       "domain": {
         "row": 2,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "conic equal area"
+        "type": "bottomley"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo12": {
       "domain": {
         "row": 3,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "conic equidistant"
+        "type": "bromley"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo13": {
       "domain": {
         "row": 4,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "craster"
+        "type": "collignon"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo14": {
       "domain": {
         "row": 5,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "cylindrical equal area"
+        "type": "conic conformal"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo15": {
       "domain": {
         "row": 6,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "cylindrical stereographic"
+        "type": "conic equal area"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo16": {
       "domain": {
         "row": 7,
         "column": 1
       },
-      "showocean": true,
       "projection": {
-        "type": "eckert1"
+        "type": "conic equidistant"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo17": {
       "domain": {
         "row": 0,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "eckert2"
+        "type": "craig"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo18": {
       "domain": {
         "row": 1,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "eckert3"
+        "type": "craster"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo19": {
       "domain": {
         "row": 2,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "eckert4"
+        "type": "cylindrical equal area"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo20": {
       "domain": {
         "row": 3,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "eckert5"
+        "type": "cylindrical stereographic"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo21": {
       "domain": {
         "row": 4,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "eckert6"
+        "type": "eckert1"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo22": {
       "domain": {
         "row": 5,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "eisenlohr"
+        "type": "eckert2"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo23": {
       "domain": {
         "row": 6,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "equirectangular"
+        "type": "eckert3"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo24": {
       "domain": {
         "row": 7,
         "column": 2
       },
-      "showocean": true,
       "projection": {
-        "type": "fahey"
+        "type": "eckert4"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo25": {
       "domain": {
         "row": 0,
         "column": 3
       },
-      "showocean": true,
       "projection": {
-        "type": "foucaut"
+        "type": "eckert5"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo26": {
       "domain": {
         "row": 1,
         "column": 3
       },
-      "showocean": true,
       "projection": {
-        "type": "foucaut sinusoidal"
+        "type": "eckert6"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo27": {
+      "domain": {
+        "row": 2,
+        "column": 3
+      },
+      "projection": {
+        "type": "eisenlohr"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo28": {
       "domain": {
         "row": 3,
         "column": 3
       },
-      "showocean": true,
       "projection": {
-        "type": "ginzburg5"
+        "type": "equirectangular"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo29": {
       "domain": {
         "row": 4,
         "column": 3
       },
-      "showocean": true,
       "projection": {
-        "type": "ginzburg6"
+        "type": "fahey"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo30": {
       "domain": {
         "row": 5,
         "column": 3
       },
-      "showocean": true,
       "projection": {
-        "type": "ginzburg8"
+        "type": "foucaut"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo31": {
       "domain": {
         "row": 6,
         "column": 3
       },
-      "showocean": true,
       "projection": {
-        "type": "ginzburg9"
+        "type": "foucaut sinusoidal"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo32": {
       "domain": {
         "row": 7,
         "column": 3
       },
-      "showocean": true,
       "projection": {
-        "type": "gnomonic"
+        "type": "ginzburg4"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo33": {
       "domain": {
         "row": 0,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "gringorten"
+        "type": "ginzburg5"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo34": {
       "domain": {
         "row": 1,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "gringorten quincuncial"
+        "type": "ginzburg6"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo35": {
       "domain": {
         "row": 2,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "guyou"
+        "type": "ginzburg8"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo36": {
       "domain": {
         "row": 3,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "hammer"
+        "type": "ginzburg9"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo37": {
       "domain": {
         "row": 4,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "hill"
+        "type": "gnomonic"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo38": {
       "domain": {
         "row": 5,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "hufnagel"
+        "type": "gringorten"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo39": {
       "domain": {
         "row": 6,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "hyperelliptical"
+        "type": "gringorten quincuncial"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo40": {
       "domain": {
         "row": 7,
         "column": 4
       },
-      "showocean": true,
       "projection": {
-        "type": "kavrayskiy7"
+        "type": "guyou"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo41": {
       "domain": {
         "row": 0,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "lagrange"
+        "type": "hammer"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo42": {
       "domain": {
         "row": 1,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "mercator"
+        "type": "hill"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo43": {
       "domain": {
         "row": 2,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "miller"
+        "type": "homolosine"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo44": {
       "domain": {
         "row": 3,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "mollweide"
+        "type": "hufnagel"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo45": {
       "domain": {
         "row": 4,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "mt flat polar parabolic"
+        "type": "hyperelliptical"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo46": {
       "domain": {
         "row": 5,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "mt flat polar quartic"
+        "type": "kavrayskiy7"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo47": {
       "domain": {
         "row": 6,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "mt flat polar sinusoidal"
+        "type": "lagrange"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo48": {
       "domain": {
         "row": 7,
         "column": 5
       },
-      "showocean": true,
       "projection": {
-        "type": "natural earth"
+        "type": "larrivee"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo49": {
       "domain": {
         "row": 0,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "natural earth1"
+        "type": "laskowski"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo50": {
       "domain": {
         "row": 1,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "natural earth2"
+        "type": "loximuthal"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo51": {
       "domain": {
         "row": 2,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "nell hammer"
+        "type": "mercator"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo52": {
       "domain": {
         "row": 3,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "nicolosi"
+        "type": "miller"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo53": {
       "domain": {
         "row": 4,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "orthographic"
+        "type": "mollweide"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo54": {
       "domain": {
         "row": 5,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "patterson"
+        "type": "mt flat polar parabolic"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo55": {
       "domain": {
         "row": 6,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "peirce quincuncial"
+        "type": "mt flat polar quartic"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo56": {
       "domain": {
         "row": 7,
         "column": 6
       },
-      "showocean": true,
       "projection": {
-        "type": "rectangular polyconic"
+        "type": "mt flat polar sinusoidal"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo57": {
       "domain": {
         "row": 0,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "robinson"
+        "type": "natural earth"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo58": {
       "domain": {
         "row": 1,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "satellite"
+        "type": "natural earth1"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo59": {
       "domain": {
         "row": 2,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "sinusoidal"
+        "type": "natural earth2"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo60": {
       "domain": {
         "row": 3,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "stereographic"
+        "type": "nell hammer"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo61": {
       "domain": {
         "row": 4,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "times"
+        "type": "nicolosi"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo62": {
       "domain": {
         "row": 5,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "transverse mercator"
+        "type": "orthographic"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo63": {
       "domain": {
         "row": 6,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "van der grinten"
+        "type": "patterson"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo64": {
       "domain": {
         "row": 7,
         "column": 7
       },
-      "showocean": true,
       "projection": {
-        "type": "van der grinten2"
+        "type": "peirce quincuncial"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo65": {
       "domain": {
         "row": 0,
         "column": 8
       },
-      "showocean": true,
       "projection": {
-        "type": "van der grinten3"
+        "type": "polyconic"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo66": {
       "domain": {
         "row": 1,
         "column": 8
       },
-      "showocean": true,
       "projection": {
-        "type": "van der grinten4"
+        "type": "rectangular polyconic"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo67": {
       "domain": {
         "row": 2,
         "column": 8
       },
-      "showocean": true,
       "projection": {
-        "type": "wagner4"
+        "type": "robinson"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo68": {
       "domain": {
         "row": 3,
         "column": 8
       },
-      "showocean": true,
       "projection": {
-        "type": "wagner6"
+        "type": "satellite"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo69": {
       "domain": {
         "row": 4,
         "column": 8
       },
-      "showocean": true,
       "projection": {
-        "type": "wiechel"
+        "type": "sinu mollweide"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo70": {
       "domain": {
         "row": 5,
         "column": 8
       },
-      "showocean": true,
       "projection": {
-        "type": "winkel tripel"
+        "type": "sinusoidal"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     },
     "geo71": {
       "domain": {
         "row": 6,
         "column": 8
       },
-      "showocean": true,
+      "projection": {
+        "type": "stereographic"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo72": {
+      "domain": {
+        "row": 7,
+        "column": 8
+      },
+      "projection": {
+        "type": "times"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo73": {
+      "domain": {
+        "row": 0,
+        "column": 9
+      },
+      "projection": {
+        "type": "transverse mercator"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo74": {
+      "domain": {
+        "row": 1,
+        "column": 9
+      },
+      "projection": {
+        "type": "van der grinten"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo75": {
+      "domain": {
+        "row": 2,
+        "column": 9
+      },
+      "projection": {
+        "type": "van der grinten2"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo76": {
+      "domain": {
+        "row": 3,
+        "column": 9
+      },
+      "projection": {
+        "type": "van der grinten3"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo77": {
+      "domain": {
+        "row": 4,
+        "column": 9
+      },
+      "projection": {
+        "type": "van der grinten4"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo78": {
+      "domain": {
+        "row": 5,
+        "column": 9
+      },
+      "projection": {
+        "type": "wagner4"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo79": {
+      "domain": {
+        "row": 6,
+        "column": 9
+      },
+      "projection": {
+        "type": "wagner6"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo80": {
+      "domain": {
+        "row": 7,
+        "column": 9
+      },
+      "projection": {
+        "type": "wiechel"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo81": {
+      "domain": {
+        "row": 0,
+        "column": 10
+      },
+      "projection": {
+        "type": "winkel tripel"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo82": {
+      "domain": {
+        "row": 1,
+        "column": 10
+      },
       "projection": {
         "type": "winkel3"
       },
-      "fitbounds": "locations"
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
     }
   }
 }
