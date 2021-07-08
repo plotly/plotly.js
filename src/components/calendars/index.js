@@ -10,7 +10,7 @@ var ONEDAY = constants.ONEDAY;
 
 var attributes = {
     valType: 'enumerated',
-    values: Object.keys(calendars.calendars),
+    values: Lib.sortedObjectKeys(calendars.calendars),
     editType: 'calc',
     dflt: 'gregorian'
 };
