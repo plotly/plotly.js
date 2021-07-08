@@ -138,7 +138,7 @@
     },
     {
       "name": "albers usa",
-      "geo": "geo3",
+      "geo": "geo83",
       "type": "choropleth",
       "locationmode": "USA-states",
       "locations": [
@@ -157,7 +157,7 @@
       "hovertemplate": "albers usa"
     },
     {
-      "geo": "geo3",
+      "geo": "geo83",
       "type": "scattergeo",
       "mode": "markers+text",
       "text": [
@@ -187,7 +187,7 @@
       ]
     },
     {
-      "geo": "geo3",
+      "geo": "geo83",
       "type": "scattergeo",
       "mode": "text",
       "text": [
@@ -5650,10 +5650,10 @@
       "showcoastlines": false,
       "showocean": true
     },
-    "geo3": {
+    "geo83": {
       "domain": {
         "row": 2,
-        "column": 0
+        "column": 10
       },
       "projection": {
         "type": "albers usa"
