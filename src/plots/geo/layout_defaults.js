@@ -34,6 +34,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     if(isAlbersUsa) scope = geoLayoutOut.scope = 'usa';
 
     var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
+    var isSatellite = geoLayoutOut._isSatellite = projType === 'satellite';
     var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1;
     var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
 
@@ -147,6 +148,11 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
 
     coerce('center.lon', centerLonDflt);
     coerce('center.lat', centerLatDflt);
+
+    if(isSatellite) {
+        coerce('projection.tilt');
+        coerce('projection.distance');
+    }
 
     if(isConic) {
         var dfltProjParallels = scopeParams.projParallels || [0, 60];

@@ -648,8 +648,8 @@ function getProjection(geoLayout) {
     var projection = projFn();
 
     var clipAngle =
-        projType === 'satellite' ? Math.acos(1 / projection.distance()) * 180 / Math.PI :
-            geoLayout._isClipped ? constants.lonaxisSpan[projType] / 2 : null;
+        geoLayout._isSatellite ? Math.acos(1 / projLayout.distance) * 180 / Math.PI :
+        geoLayout._isClipped ? constants.lonaxisSpan[projType] / 2 : null;
 
     var methods = ['center', 'rotate', 'parallels', 'clipExtent'];
     var dummyFn = function(_) { return _ ? projection : []; };
@@ -685,6 +685,10 @@ function getProjection(geoLayout) {
     };
 
     projection.precision(constants.precision);
+
+    if(geoLayout._isSatellite) {
+        projection.tilt(projLayout.tilt).distance(projLayout.distance);
+    }
 
     if(clipAngle) {
         projection.clipAngle(clipAngle - constants.clipPad);

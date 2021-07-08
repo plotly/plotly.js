@@ -134,6 +134,24 @@ var attrs = module.exports = overrideAll({
                 ].join(' ')
             }
         },
+        tilt: {
+            valType: 'number',
+            dflt: 0,
+            description: [
+                'For satellite projection type only.',
+                'Sets the tilt angle of perspective projection.'
+            ].join(' ')
+        },
+        distance: {
+            valType: 'number',
+            min: 1.001,
+            dflt: 2,
+            description: [
+                'For satellite projection type only.',
+                'Sets the distance from the center of the sphere to the point of view',
+                'as a proportion of the sphere’s radius.'
+            ].join(' ')
+        },
         parallels: {
             valType: 'info_array',
             items: [

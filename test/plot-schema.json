@@ -2005,6 +2005,13 @@
      "valType": "color"
     },
     "projection": {
+     "distance": {
+      "description": "For satellite projection type only. Sets the distance from the center of the sphere to the point of view as a proportion of the sphere’s radius.",
+      "dflt": 2,
+      "editType": "plot",
+      "min": 1.001,
+      "valType": "number"
+     },
      "editType": "plot",
      "parallels": {
       "description": "For conic projection types only. Sets the parallels (tangent, secant) where the cone intersects the sphere.",
@@ -2046,6 +2053,12 @@
       "dflt": 1,
       "editType": "plot",
       "min": 0,
+      "valType": "number"
+     },
+     "tilt": {
+      "description": "For satellite projection type only. Sets the tilt angle of perspective projection.",
+      "dflt": 0,
+      "editType": "plot",
       "valType": "number"
      },
      "type": {
