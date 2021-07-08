@@ -36,7 +36,6 @@
       },
       "angularaxis": {
         "showgrid": false,
-        "zeroline": false,
         "showticklabels": false,
         "visible": true
       }
@@ -48,7 +47,6 @@
       },
       "radialaxis": {
         "showgrid": false,
-        "zeroline": false,
         "visible": true
       }
     },
@@ -59,7 +57,6 @@
       },
       "radialaxis": {
         "showgrid": true,
-        "zeroline": false,
         "showticklabels": false,
         "visible": true
       }
