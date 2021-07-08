@@ -1,0 +1,1 @@
+ - Sort object key values in schema [[#5813](https://github.com/plotly/plotly.js/pull/5813)]
