@@ -1,6 +1,6 @@
 'use strict';
 
-var sortedObjectKeys = require('../../lib/sorted_object_keys');
+var sortObjectKeys = require('../../lib/sort_object_keys');
 
 var requiredVersion = '1.10.1';
 
@@ -158,7 +158,7 @@ var stylesNonMapbox = {
     }
 };
 
-var styleValuesNonMapbox = sortedObjectKeys(stylesNonMapbox);
+var styleValuesNonMapbox = sortObjectKeys(stylesNonMapbox);
 
 module.exports = {
     requiredVersion: requiredVersion,

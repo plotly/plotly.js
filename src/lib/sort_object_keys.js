@@ -1,5 +1,5 @@
 'use strict';
 
-module.exports = function sortedObjectKeys(obj) {
+module.exports = function sortObjectKeys(obj) {
     return Object.keys(obj).sort();
 };

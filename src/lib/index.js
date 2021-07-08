@@ -65,7 +65,7 @@ lib.roundUp = searchModule.roundUp;
 lib.sort = searchModule.sort;
 lib.findIndexOfMin = searchModule.findIndexOfMin;
 
-lib.sortedObjectKeys = require('./sorted_object_keys');
+lib.sortObjectKeys = require('./sort_object_keys');
 
 var statsModule = require('./stats');
 lib.aggNums = statsModule.aggNums;

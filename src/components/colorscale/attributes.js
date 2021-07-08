@@ -2,10 +2,10 @@
 
 var colorbarAttrs = require('../colorbar/attributes');
 var counterRegex = require('../../lib/regex').counter;
-var sortedObjectKeys = require('../../lib/sorted_object_keys');
+var sortObjectKeys = require('../../lib/sort_object_keys');
 
 var palettes = require('./scales.js').scales;
-var paletteStr = sortedObjectKeys(palettes);
+var paletteStr = sortObjectKeys(palettes);
 
 function code(s) {
     return '`' + s + '`';
