@@ -49288,12 +49288,12 @@
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "solid",
-       "dot",
        "dash",
-       "longdash",
        "dashdot",
-       "longdashdot"
+       "dot",
+       "longdash",
+       "longdashdot",
+       "solid"
       ]
      },
      "editType": "calc",
@@ -54147,12 +54147,12 @@
       "editType": "calc",
       "valType": "enumerated",
       "values": [
-       "solid",
-       "dot",
        "dash",
-       "longdash",
        "dashdot",
-       "longdashdot"
+       "dot",
+       "longdash",
+       "longdashdot",
+       "solid"
       ]
      },
      "editType": "calc",
