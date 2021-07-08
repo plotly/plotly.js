@@ -47,6 +47,29 @@
       "hoverinfo": "skip"
     },
     {
+      "name": "albers",
+      "geo": "geo3",
+      "type": "choropleth",
+      "locations": [
+        "AUS"
+      ],
+      "z": [
+        10
+      ],
+      "showscale": false,
+      "hovertemplate": "albers"
+    },
+    {
+      "geo": "geo3",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": "albers",
+      "locations": [
+        "AUS"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
       "name": "albers usa",
       "geo": "geo83",
       "type": "choropleth",
@@ -1947,6 +1970,28 @@
       },
       "projection": {
         "type": "aitoff"
+      },
+      "fitbounds": "locations",
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo3": {
+      "domain": {
+        "row": 2,
+        "column": 0
+      },
+      "projection": {
+        "type": "albers"
       },
       "fitbounds": "locations",
       "lonaxis": {

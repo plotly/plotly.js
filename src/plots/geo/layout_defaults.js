@@ -35,7 +35,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
 
     var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
     var isSatellite = geoLayoutOut._isSatellite = projType === 'satellite';
-    var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1;
+    var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1 || projType === 'albers';
     var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
 
     if(geoLayoutIn.visible === false) {

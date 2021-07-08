@@ -177,7 +177,7 @@ describe('Test Geo layout defaults', function() {
 
         projTypes.forEach(function(projType) {
             testOne(projType);
-            if(projType.indexOf('conic') !== -1) {
+            if(projType.indexOf('conic') !== -1 || projType === 'albers') {
                 expect(layoutOut.geo.projection.parallels).toBeDefined();
             } else {
                 expect(layoutOut.geo.projection.parallels).toBeUndefined();

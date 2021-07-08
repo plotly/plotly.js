@@ -26,7 +26,7 @@ exports.projNames = {
     'sinusoidal': 'sinusoidal',
 
     'airy': 'airy',
-    // 'albers': 'albers',
+    'albers': 'albers',
     // 'armadillo': 'armadillo',
     'august': 'august',
     'baker': 'baker',
