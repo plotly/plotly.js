@@ -235,6 +235,8 @@ describe('Test scatterpolargl interactions:', function() {
             polar: {domain: {column: 1}},
             width: 400,
             height: 400
+        }, {
+            plotGlPixelRatio: 1
         })
         .then(function() {
             expect(countCanvases()).toBe(3);
@@ -415,7 +417,7 @@ describe('Test scatterpolargl autorange:', function() {
                 type: 'scatterpolargl',
                 mode: 'markers',
                 r: r,
-                marker: {size: 10}
+                marker: {size: 5}
             }])
             .then(function() {
                 expect(gd._fullLayout.polar.radialaxis.range)
@@ -434,7 +436,7 @@ describe('Test scatterpolargl autorange:', function() {
             }])
             .then(function() {
                 expect(gd._fullLayout.polar.radialaxis.range)
-                    .toBeCloseToArray([0, 1.0465], 2, 'radial range');
+                    .toBeCloseToArray([0, 1.0975], 2, 'radial range');
                 expect(cnt).toBe(1, '# of plot call');
             })
             .then(done, done.fail);
