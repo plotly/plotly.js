@@ -98,6 +98,11 @@ function makeGridData(gd) {
     var k;
 
     function push(prefix, ax, x0, x1, y0, y1) {
+        x0 *= plotGlPixelRatio;
+        x1 *= plotGlPixelRatio;
+        y0 *= plotGlPixelRatio;
+        y1 *= plotGlPixelRatio;
+
         var lcolor = ax[prefix + 'color'];
         var lwidth = ax[prefix + 'width'];
         var key = String(lcolor + lwidth);
@@ -123,37 +128,35 @@ function makeGridData(gd) {
         var ya = sp.yaxis;
         var xVals = xa._gridVals;
         var yVals = ya._gridVals;
-        var b = gs.b * plotGlPixelRatio;
-        var h = gs.h * plotGlPixelRatio;
-        var xoffset = xa._offset * plotGlPixelRatio;
-        var xlength = xa._length * plotGlPixelRatio;
-        var ylength = ya._length * plotGlPixelRatio;
+        var xoffset = xa._offset;
+        var xlength = xa._length;
+        var ylength = ya._length;
 
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
-        var yOffset = b + ya.domain[0] * h;
+        var yoffset = (gs.b + ya.domain[0] * gs.h);
         var ym = -ya._m;
         var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
         var x, y;
 
         if(xa.showgrid) {
             for(k = 0; k < xVals.length; k++) {
-                x = xoffset + xa.l2p(xVals[k].x) * plotGlPixelRatio;
-                push('grid', xa, x, yOffset, x, yOffset + ylength);
+                x = xoffset + xa.l2p(xVals[k].x);
+                push('grid', xa, x, yoffset, x, yoffset + ylength);
             }
         }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
-                y = yOffset + yb + ym * yVals[k].x * plotGlPixelRatio;
+                y = yoffset + yb + ym * yVals[k].x;
                 push('grid', ya, xoffset, y, xoffset + xlength, y);
             }
         }
         if(shouldShowZeroLine(gd, xa, ya)) {
             x = xoffset + xa.l2p(0);
-            push('zeroline', xa, x, yOffset, x, yOffset + ylength);
+            push('zeroline', xa, x, yoffset, x, yoffset + ylength);
         }
         if(shouldShowZeroLine(gd, ya, xa)) {
-            y = yOffset + yb + 0;
+            y = yoffset + yb + 0;
             push('zeroline', ya, xoffset, y, xoffset + xlength, y);
         }
     }
