@@ -3857,7 +3857,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "airy"
       },
       "lonaxis": {
@@ -3880,7 +3879,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "aitoff"
       },
       "lonaxis": {
@@ -3903,7 +3901,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "albers"
       },
       "lonaxis": {
@@ -3946,7 +3943,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "august"
       },
       "lonaxis": {
@@ -4013,7 +4009,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "baker"
       },
       "lonaxis": {
@@ -4036,7 +4031,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "bertin1953"
       },
       "lonaxis": {
@@ -4059,7 +4053,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "boggs"
       },
       "lonaxis": {
@@ -4082,7 +4075,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "bonne"
       },
       "lonaxis": {
@@ -4105,7 +4097,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "bottomley"
       },
       "lonaxis": {
@@ -4128,7 +4119,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "bromley"
       },
       "lonaxis": {
@@ -4151,7 +4141,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "collignon"
       },
       "lonaxis": {
@@ -4196,7 +4185,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "conic equal area"
       },
       "lonaxis": {
@@ -4219,7 +4207,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "conic equidistant"
       },
       "lonaxis": {
@@ -4242,7 +4229,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "craig"
       },
       "lonaxis": {
@@ -4265,7 +4251,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "craster"
       },
       "lonaxis": {
@@ -4288,7 +4273,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "cylindrical equal area"
       },
       "lonaxis": {
@@ -4311,7 +4295,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "cylindrical stereographic"
       },
       "lonaxis": {
@@ -4334,7 +4317,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "eckert1"
       },
       "lonaxis": {
@@ -4357,7 +4339,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "eckert2"
       },
       "lonaxis": {
@@ -4380,7 +4361,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "eckert3"
       },
       "lonaxis": {
@@ -4403,7 +4383,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "eckert4"
       },
       "lonaxis": {
@@ -4426,7 +4405,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "eckert5"
       },
       "lonaxis": {
@@ -4449,7 +4427,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "eckert6"
       },
       "lonaxis": {
@@ -4472,7 +4449,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "eisenlohr"
       },
       "lonaxis": {
@@ -4495,7 +4471,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "equirectangular"
       },
       "lonaxis": {
@@ -4518,7 +4493,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "fahey"
       },
       "lonaxis": {
@@ -4541,7 +4515,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "foucaut"
       },
       "lonaxis": {
@@ -4564,7 +4537,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "foucaut sinusoidal"
       },
       "lonaxis": {
@@ -4587,7 +4559,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "ginzburg4"
       },
       "lonaxis": {
@@ -4610,7 +4581,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "ginzburg5"
       },
       "lonaxis": {
@@ -4633,7 +4603,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "ginzburg6"
       },
       "lonaxis": {
@@ -4656,7 +4625,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "ginzburg8"
       },
       "lonaxis": {
@@ -4679,7 +4647,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "ginzburg9"
       },
       "lonaxis": {
@@ -4724,7 +4691,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "gringorten"
       },
       "lonaxis": {
@@ -4747,7 +4713,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "gringorten quincuncial"
       },
       "lonaxis": {
@@ -4770,7 +4735,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "guyou"
       },
       "lonaxis": {
@@ -4793,7 +4757,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "hammer"
       },
       "lonaxis": {
@@ -4816,7 +4779,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "hill"
       },
       "lonaxis": {
@@ -4839,7 +4801,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "homolosine"
       },
       "lonaxis": {
@@ -4862,7 +4823,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "hufnagel"
       },
       "lonaxis": {
@@ -4885,7 +4845,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "hyperelliptical"
       },
       "lonaxis": {
@@ -4908,7 +4867,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "kavrayskiy7"
       },
       "lonaxis": {
@@ -4931,7 +4889,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "lagrange"
       },
       "lonaxis": {
@@ -4954,7 +4911,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "larrivee"
       },
       "lonaxis": {
@@ -4977,7 +4933,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "laskowski"
       },
       "lonaxis": {
@@ -5000,7 +4955,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "loximuthal"
       },
       "lonaxis": {
@@ -5023,7 +4977,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "mercator"
       },
       "lonaxis": {
@@ -5046,7 +4999,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "miller"
       },
       "lonaxis": {
@@ -5069,7 +5021,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "mollweide"
       },
       "lonaxis": {
@@ -5092,7 +5043,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "mt flat polar parabolic"
       },
       "lonaxis": {
@@ -5115,7 +5065,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "mt flat polar quartic"
       },
       "lonaxis": {
@@ -5138,7 +5087,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "mt flat polar sinusoidal"
       },
       "lonaxis": {
@@ -5161,7 +5109,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "natural earth"
       },
       "lonaxis": {
@@ -5184,7 +5131,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "natural earth1"
       },
       "lonaxis": {
@@ -5207,7 +5153,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "natural earth2"
       },
       "lonaxis": {
@@ -5230,7 +5175,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "nell hammer"
       },
       "lonaxis": {
@@ -5253,7 +5197,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "nicolosi"
       },
       "lonaxis": {
@@ -5298,7 +5241,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "patterson"
       },
       "lonaxis": {
@@ -5321,7 +5263,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "peirce quincuncial"
       },
       "lonaxis": {
@@ -5344,7 +5285,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "polyconic"
       },
       "lonaxis": {
@@ -5367,7 +5307,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "rectangular polyconic"
       },
       "lonaxis": {
@@ -5390,7 +5329,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "robinson"
       },
       "lonaxis": {
@@ -5413,7 +5351,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "satellite"
       },
       "lonaxis": {
@@ -5436,7 +5373,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "sinu mollweide"
       },
       "lonaxis": {
@@ -5459,7 +5395,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "sinusoidal"
       },
       "lonaxis": {
@@ -5504,7 +5439,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "times"
       },
       "lonaxis": {
@@ -5549,7 +5483,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "van der grinten"
       },
       "lonaxis": {
@@ -5572,7 +5505,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "van der grinten2"
       },
       "lonaxis": {
@@ -5595,7 +5527,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "van der grinten3"
       },
       "lonaxis": {
@@ -5618,7 +5549,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "van der grinten4"
       },
       "lonaxis": {
@@ -5641,7 +5571,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "wagner4"
       },
       "lonaxis": {
@@ -5664,7 +5593,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "wagner6"
       },
       "lonaxis": {
@@ -5687,7 +5615,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "wiechel"
       },
       "lonaxis": {
@@ -5710,7 +5637,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "winkel tripel"
       },
       "lonaxis": {
@@ -5733,7 +5659,6 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "rotation": {"lat": 45},
         "type": "winkel3"
       },
       "lonaxis": {
