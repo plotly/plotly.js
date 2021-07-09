@@ -241,7 +241,16 @@ module.exports = function(canvasGL, d) {
     var isPick = d.pick;
 
     var regl = d.regl;
-    var plotGlPixelRatio = 1; // d.viewModel.plotGlPixelRatio;
+    var gl = regl._gl;
+    var supportedLineWidth = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE);
+    // ensure here that plotGlPixelRatio is within supported range; otherwise regl throws error
+    var plotGlPixelRatio = Math.max(
+        supportedLineWidth[0],
+        Math.min(
+            supportedLineWidth[1],
+            d.viewModel.plotGlPixelRatio
+        )
+    );
 
     var renderState = {
         currentRafs: {},
