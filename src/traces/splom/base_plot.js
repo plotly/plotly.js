@@ -128,36 +128,36 @@ function makeGridData(gd) {
         var ya = sp.yaxis;
         var xVals = xa._gridVals;
         var yVals = ya._gridVals;
-        var xoffset = xa._offset;
-        var xlength = xa._length;
-        var ylength = ya._length;
+        var xOffset = xa._offset;
+        var xLength = xa._length;
+        var yLength = ya._length;
 
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
-        var yoffset = (gs.b + ya.domain[0] * gs.h);
+        var yOffset = gs.b + ya.domain[0] * gs.h;
         var ym = -ya._m;
         var yb = -ym * ya.r2l(ya.range[0], ya.calendar);
         var x, y;
 
         if(xa.showgrid) {
             for(k = 0; k < xVals.length; k++) {
-                x = xoffset + xa.l2p(xVals[k].x);
-                push('grid', xa, x, yoffset, x, yoffset + ylength);
+                x = xOffset + xa.l2p(xVals[k].x);
+                push('grid', xa, x, yOffset, x, yOffset + yLength);
             }
         }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
-                y = yoffset + yb + ym * yVals[k].x;
-                push('grid', ya, xoffset, y, xoffset + xlength, y);
+                y = yOffset + yb + ym * yVals[k].x;
+                push('grid', ya, xOffset, y, xOffset + xLength, y);
             }
         }
         if(shouldShowZeroLine(gd, xa, ya)) {
-            x = xoffset + xa.l2p(0);
-            push('zeroline', xa, x, yoffset, x, yoffset + ylength);
+            x = xOffset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + yLength);
         }
         if(shouldShowZeroLine(gd, ya, xa)) {
-            y = yoffset + yb + 0;
-            push('zeroline', ya, xoffset, y, xoffset + xlength, y);
+            y = yOffset + yb + 0;
+            push('zeroline', ya, xOffset, y, xOffset + xLength, y);
         }
     }
 
