@@ -4691,7 +4691,7 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "type": "gringorten"
+        "type": "gringorten", "rotation": {"lat": 30}
       },
       "lonaxis": {
         "showgrid": true,
@@ -4735,7 +4735,7 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "type": "guyou"
+        "type": "guyou", "rotation": {"lat": 60}
       },
       "lonaxis": {
         "showgrid": true,
@@ -5351,7 +5351,7 @@
       },
       "fitbounds": "locations",
       "projection": {
-        "type": "satellite"
+        "type": "satellite", "rotation": {"lat": 45}
       },
       "lonaxis": {
         "showgrid": true,
