@@ -190,6 +190,13 @@ jobs:
               then npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true
             fi
       - run:
+          name: Set draft version in package.json
+          command: |
+            node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" `git describe`
+      - run:
+          name: View package.json diff between previous and next releases (including above draft version change)
+          command: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
+      - run:
           name: Build dist/
           command: npm run build
       - store_artifacts:
@@ -205,7 +212,7 @@ jobs:
           name: Pack tarball
           command: |
             npm pack
-            version=$(node -e "console.log(require('./package.json').version)")
+            version=$(node --eval "console.log(require('./package.json').version)")
             mv plotly.js-$version.tgz plotly.js.tgz
       - store_artifacts:
           path: plotly.js.tgz
