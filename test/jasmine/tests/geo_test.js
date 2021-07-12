@@ -130,6 +130,35 @@ describe('Test Geo layout defaults', function() {
         });
     });
 
+    it('should only coerce projection.tilt and projection.distance if type is satellite', function() {
+        var projTypes = layoutAttributes.projection.type.values;
+
+        function testOne(projType) {
+            layoutIn = {
+                geo: {
+                    projection: {
+                        type: projType,
+                        tilt: 30,
+                        distance: 3
+                    }
+                }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+
+        projTypes.forEach(function(projType) {
+            testOne(projType);
+            if(projType === 'satellite') {
+                expect(layoutOut.geo.projection.tilt).toBeDefined();
+                expect(layoutOut.geo.projection.distance).toBeDefined();
+            } else {
+                expect(layoutOut.geo.projection.tilt).toBeUndefined();
+                expect(layoutOut.geo.projection.distance).toBeUndefined();
+            }
+        });
+    });
+
     it('should only coerce projection.parallels if type is conic', function() {
         var projTypes = layoutAttributes.projection.type.values;
 
@@ -148,7 +177,7 @@ describe('Test Geo layout defaults', function() {
 
         projTypes.forEach(function(projType) {
             testOne(projType);
-            if(projType.indexOf('conic') !== -1) {
+            if(projType.indexOf('conic') !== -1 || projType === 'albers') {
                 expect(layoutOut.geo.projection.parallels).toBeDefined();
             } else {
                 expect(layoutOut.geo.projection.parallels).toBeUndefined();
