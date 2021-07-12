@@ -77,7 +77,7 @@ module.exports = function calc(gd, trace) {
     // use average marker size instead to speed things up.
     var ppad;
     if(hasTooManyPoints) {
-        ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
+        ppad = opts.sizeAvg || Math.max(opts.size, 3);
     } else {
         ppad = calcMarkerSize(trace, commonLength);
     }
