@@ -12,27 +12,25 @@ var BADNUM = numConstants.BADNUM;
 var lib = module.exports = {};
 
 lib.adjustFormat = function(a) {
-    if(!a) return a;
-    var b = a;
-    if(b === '0.f') return '~f';
-    if(/^[0123456789].[0123456789]f/.test(b)) return a;
-    if(/.[0123456789]%/.test(b)) return a;
-    if(/^[0123456789]%/.test(b)) return '~%';
-    if(/^[0123456789]s/.test(b)) return '~s';
-    if(!(/^[~,.0$]/.test(b)) && /[&fps]/.test(b)) {
-        // try adding tilde to the start of format in order to trim
-        b = '~' + b;
-    }
-    return b;
+    if(
+        !a ||
+        /^[0123456789].[0123456789]f/.test(a) ||
+        /.[0123456789]%/.test(a)
+    ) return a;
+
+    if(a === '0.f') return '~f';
+    if(/^[0123456789]%/.test(a)) return '~%';
+    if(/^[0123456789]s/.test(a)) return '~s';
+
+    // try adding tilde to the start of format in order to trim
+    if(!(/^[~,.0$]/.test(a)) && /[&fps]/.test(a)) return '~' + a;
+
+    return a;
 };
 
 var d3Format = require('d3-format').format;
 var numberFormat = function(a) {
-    var b = lib.adjustFormat(a);
-
-    // console.log('"' + a + '" > "' + b + '"');
-
-    return d3Format(b);
+    return d3Format(lib.adjustFormat(a));
 };
 lib.numberFormat = numberFormat;
 
