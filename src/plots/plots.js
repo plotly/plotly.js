@@ -703,10 +703,16 @@ function getFormatter(formatObj, separators) {
     formatObj.thousands = separators.charAt(1);
 
     return {
-        numberFormat: function(a) {
-            return formatLocale(formatObj).format(
-                Lib.adjustFormat(a)
-            );
+        numberFormat: function(formatStr) {
+            try {
+                formatStr = formatLocale(formatObj).format(
+                    Lib.adjustFormat(formatStr)
+                );
+            } catch(e) {
+                return Lib.noFormat;
+            }
+
+            return formatStr;
         },
         timeFormat: timeFormatLocale(formatObj).utcFormat
     };
