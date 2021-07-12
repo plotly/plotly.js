@@ -10,7 +10,9 @@ var MAX_SAFE = numConstants.FP_SAFE;
 var MIN_SAFE = -MAX_SAFE;
 var BADNUM = numConstants.BADNUM;
 
-var lib = module.exports = {};
+var lib = module.exports = {
+    _numberFormat: d3.format // simply to test d3.format before switching to d3-format
+};
 
 lib.adjustFormat = function adjustFormat(formatStr) {
     if(
