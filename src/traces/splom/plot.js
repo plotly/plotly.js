@@ -64,7 +64,13 @@ function plotOne(gd, cd0) {
         }
     }
 
-    viewOpts.viewport = [gs.l, gs.b, gs.w + gs.l, gs.h + gs.b];
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
+    var l = gs.l * plotGlPixelRatio;
+    var b = gs.b * plotGlPixelRatio;
+    var w = gs.w * plotGlPixelRatio;
+    var h = gs.h * plotGlPixelRatio;
+
+    viewOpts.viewport = [l, b, w + l, h + b];
 
     if(scene.matrix === true) {
         scene.matrix = createMatrix(regl);

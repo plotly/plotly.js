@@ -86,13 +86,23 @@ function updateGrid(gd) {
 }
 
 function makeGridData(gd) {
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
-    var fullView = [0, 0, fullLayout.width, fullLayout.height];
+    var fullView = [
+        0, 0,
+        fullLayout.width * plotGlPixelRatio,
+        fullLayout.height * plotGlPixelRatio
+    ];
     var lookup = {};
     var k;
 
     function push(prefix, ax, x0, x1, y0, y1) {
+        x0 *= plotGlPixelRatio;
+        x1 *= plotGlPixelRatio;
+        y0 *= plotGlPixelRatio;
+        y1 *= plotGlPixelRatio;
+
         var lcolor = ax[prefix + 'color'];
         var lwidth = ax[prefix + 'width'];
         var key = String(lcolor + lwidth);
@@ -103,7 +113,7 @@ function makeGridData(gd) {
             lookup[key] = {
                 data: [x0, x1, y0, y1],
                 join: 'rect',
-                thickness: lwidth,
+                thickness: lwidth * plotGlPixelRatio,
                 color: lcolor,
                 viewport: fullView,
                 range: fullView,
@@ -118,6 +128,10 @@ function makeGridData(gd) {
         var ya = sp.yaxis;
         var xVals = xa._gridVals;
         var yVals = ya._gridVals;
+        var xOffset = xa._offset;
+        var xLength = xa._length;
+        var yLength = ya._length;
+
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
         var yOffset = gs.b + ya.domain[0] * gs.h;
@@ -127,23 +141,23 @@ function makeGridData(gd) {
 
         if(xa.showgrid) {
             for(k = 0; k < xVals.length; k++) {
-                x = xa._offset + xa.l2p(xVals[k].x);
-                push('grid', xa, x, yOffset, x, yOffset + ya._length);
+                x = xOffset + xa.l2p(xVals[k].x);
+                push('grid', xa, x, yOffset, x, yOffset + yLength);
             }
         }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
                 y = yOffset + yb + ym * yVals[k].x;
-                push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
+                push('grid', ya, xOffset, y, xOffset + xLength, y);
             }
         }
         if(shouldShowZeroLine(gd, xa, ya)) {
-            x = xa._offset + xa.l2p(0);
-            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+            x = xOffset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + yLength);
         }
         if(shouldShowZeroLine(gd, ya, xa)) {
             y = yOffset + yb + 0;
-            push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
+            push('zeroline', ya, xOffset, y, xOffset + xLength, y);
         }
     }
 
