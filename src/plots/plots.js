@@ -704,11 +704,9 @@ function getFormatter(formatObj, separators) {
 
     return {
         numberFormat: function(a) {
-            var b = Lib.adjustFormat(a);
-
-            // console.log('"' + a + '" > "' + b + '"');
-
-            return formatLocale(formatObj).format(b);
+            return formatLocale(formatObj).format(
+                Lib.adjustFormat(a)
+            );
         },
         timeFormat: timeFormatLocale(formatObj).utcFormat
     };

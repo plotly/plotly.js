@@ -2,6 +2,7 @@
 
 var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
+var d3Format = require('d3-format').format;
 var isNumeric = require('fast-isnumeric');
 
 var numConstants = require('../constants/numerical');
@@ -11,7 +12,7 @@ var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
 
-lib.adjustFormat = function(a) {
+lib.adjustFormat = function adjustFormat(a) {
     if(
         !a ||
         /^[0123456789].[0123456789]f/.test(a) ||
@@ -28,11 +29,9 @@ lib.adjustFormat = function(a) {
     return a;
 };
 
-var d3Format = require('d3-format').format;
-var numberFormat = function(a) {
+lib.numberFormat = function(a) {
     return d3Format(lib.adjustFormat(a));
 };
-lib.numberFormat = numberFormat;
 
 lib.nestedProperty = require('./nested_property');
 lib.keyedContainer = require('./keyed_container');
@@ -1141,7 +1140,7 @@ function templateFormatString(string, labels, d3locale) {
         if(format) {
             var fmt;
             if(format[0] === ':') {
-                fmt = d3locale ? d3locale.numberFormat : numberFormat;
+                fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
 
