@@ -31,7 +31,7 @@ lib.adjustFormat = function adjustFormat(formatStr) {
     return formatStr;
 };
 
-lib.noFormat = function(value) { return value; };
+lib.noFormat = function(value) { return String(value); };
 
 lib.numberFormat = function(formatStr) {
     try {
