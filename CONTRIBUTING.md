@@ -84,21 +84,33 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
   [`package-lock.json`](https://docs.npmjs.com/files/package-lock.json) file is
   used and updated correctly.
 
-#### Step 1: Clone the plotly.js repo, download it and install dependencies
+#### Step 1: Fork the plotly.js repository, clone your fork and step into it
 
 ```bash
 git clone --depth 1 git@github.com:<your-GitHub-username>/plotly.js.git
 cd plotly.js
+```
+
+#### Step 2: Switch to a dev branch
+
+```bash
+# please do not use master or main for your dev branch
+git checkout dev-branch-name
+```
+
+#### Step 3: Install dependencies
+
+```bash
 npm install
 ```
 
-#### Step 2: Setup test environment
+#### Step 4: Setup test environment
 
 ```bash
 npm run pretest
 ```
 
-#### Step 3: Start the test dashboard
+#### Step 5: Start the test dashboard
 
 ```bash
 npm start
@@ -110,7 +122,7 @@ This command bundles up the source files with source maps using
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 
-#### Step 4: Open up the console and start developing
+#### Step 6: Open up the console and start developing
 
 A typical workflow is to make some modifications to the source, update the
 test dashboard, inspect and debug the changes, then repeat. The test dashboard
@@ -138,13 +150,13 @@ Three additional helpers exist that are refreshed every second:
 There is also a search bar in the top right of the dashboard. This fuzzy-searches
 image mocks based on their file name and trace type.
 
-#### Step 5: Regenerate plot-schema in "test" folder then review & commit potential changes
+#### Step 7: Regenerate plot-schema in "test" folder then review & commit potential changes
 
 ```bash
 npm run schema
 ```
 
-#### Step 6: Review & commit potential changes made to test/plot-schema.json
+#### Step 8: Review & commit potential changes made to test/plot-schema.json
 
 > If you are editing attribute descriptions or implementing a new feature this file located in the test folder records the proposed changes to the API. Note that there is another plot-schema.json file located in the dist folder, which should only be updated by the maintainers at release time.
 
