@@ -1347,6 +1347,10 @@ lib.bigFont = function(size) {
     return Math.round(1.2 * size);
 };
 
+lib.beginCap = function(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
 var firefoxVersion = lib.getFirefoxVersion();
 // see https://bugzilla.mozilla.org/show_bug.cgi?id=1684973
 var isProblematicFirefox = firefoxVersion !== null && firefoxVersion < 86;

@@ -1,6 +1,7 @@
 'use strict';
 
 var d3Time = require('d3-time');
+var beginCap = require('../../lib').beginCap;
 
 module.exports = function getUpdateObject(axisLayout, buttonLayout) {
     var axName = axisLayout._name;
@@ -23,10 +24,7 @@ function getXRange(axisLayout, buttonLayout) {
     var base = new Date(axisLayout.r2l(currentRange[1]));
     var step = buttonLayout.step;
 
-    var utcStep = d3Time['utc' +
-        // Capitalized step e.g. month -> Month
-        (step.charAt(0).toUpperCase() + step.slice(1))
-    ];
+    var utcStep = d3Time['utc' + beginCap(step)];
 
     var count = buttonLayout.count;
     var range0;
