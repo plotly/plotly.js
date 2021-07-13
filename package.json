@@ -66,7 +66,7 @@
     ]
   },
   "dependencies": {
-    "@plotly/d3": "git://github.com/plotly/d3.git#3fc195e30e85b008238783379d2aa067c737e636",
+    "@plotly/d3": "git://github.com/plotly/d3.git#40bd18923ece4b1d761a35721008db6f1dbbe6b2",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
     "@plotly/point-cluster": "^3.1.9",
@@ -82,11 +82,12 @@
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",
     "d3-force": "^1.2.1",
+    "d3-format": "^1.4.5",
     "d3-geo": "^1.12.1",
     "d3-geo-projection": "^2.9.0",
-    "d3-format": "^1.4.5",
     "d3-hierarchy": "^1.1.9",
     "d3-interpolate": "^1.4.0",
+    "d3-time": "^1.1.0",
     "d3-time-format": "^2.2.3",
     "delaunay-triangulate": "^1.1.6",
     "fast-isnumeric": "^1.1.4",
