@@ -308,7 +308,9 @@ function plotOne(gd, cd, element, transitionOpts) {
             // if pt to remove:
             // - if 'below' where the root-node used to be: shrink it radially inward
             // - otherwise, collapse it clockwise or counterclockwise which ever is shortest to theta=0
-            next = pt.rpx1 < entryPrev.rpx1 ? {rpx0: 0, rpx1: 0} : {x0: a, x1: a};
+            next = pt.rpx1 < entryPrev.rpx1 ?
+                {x0: pt.x0, x1: pt.x1, rpx0: 0, rpx1: 0} :
+                {x0: a, x1: a, rpx0: pt.rpx0, rpx1: pt.rpx1};
         } else {
             // this happens when maxdepth is set, when leaves must
             // be removed and the rootPt is new (i.e. does not have a 'prev' object)
