@@ -24,7 +24,7 @@ function getXRange(axisLayout, buttonLayout) {
     var step = buttonLayout.step;
 
     var utcStep = d3Time['utc' +
-        // Capitalized and pluralized step e.g. month -> Months
+        // Capitalized step e.g. month -> Month
         (step.charAt(0).toUpperCase() + step.slice(1))
     ];
 
