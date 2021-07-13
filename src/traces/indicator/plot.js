@@ -1,6 +1,8 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
+var interpolate = require('d3-interpolate').interpolate;
+var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
 var Lib = require('../../lib');
 var strScale = Lib.strScale;
@@ -593,7 +595,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                 .each('interrupt', function() { writeNumber(); onComplete && onComplete(); })
                 .attrTween('text', function() {
                     var that = d3.select(this);
-                    var interpolator = d3.interpolateNumber(cd[0].lastY, cd[0].y);
+                    var interpolator = interpolateNumber(cd[0].lastY, cd[0].y);
                     trace._lastValue = cd[0].y;
 
                     var transitionFmt = transitionFormat(trace.number.valueformat, fmt, cd[0].lastY, cd[0].y);
@@ -650,7 +652,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                     var to = deltaValue(cd[0]);
                     var from = trace._deltaLastValue;
                     var transitionFmt = transitionFormat(trace.delta.valueformat, deltaFmt, from, to);
-                    var interpolator = d3.interpolateNumber(from, to);
+                    var interpolator = interpolateNumber(from, to);
                     trace._deltaLastValue = to;
                     return function(t) {
                         that.text(deltaFormatText(interpolator(t), transitionFmt));
@@ -792,9 +794,9 @@ function styleShape(p) {
 // arcs from their current angle to the specified new angle.
 function arcTween(arc, endAngle, newAngle) {
     return function() {
-        var interpolate = d3.interpolate(endAngle, newAngle);
+        var interp = interpolate(endAngle, newAngle);
         return function(t) {
-            return arc.endAngle(interpolate(t))();
+            return arc.endAngle(interp(t))();
         };
     };
 }

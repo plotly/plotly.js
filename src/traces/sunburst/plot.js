@@ -2,6 +2,7 @@
 
 var d3 = require('@plotly/d3');
 var d3Hierarchy = require('d3-hierarchy');
+var interpolate = require('d3-interpolate').interpolate;
 
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
@@ -326,14 +327,14 @@ function plotOne(gd, cd, element, transitionOpts) {
                 }
             });
             var n = parentChildren.length;
-            var interp = d3.interpolate(parent.x0, parent.x1);
+            var interp = interpolate(parent.x0, parent.x1);
             next = {
                 rpx0: rMax, rpx1: rMax,
                 x0: interp(ci / n), x1: interp((ci + 1) / n)
             };
         }
 
-        return d3.interpolate(prev, next);
+        return interpolate(prev, next);
     }
 
     function makeUpdateSliceInterpolator(pt) {
@@ -372,7 +373,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             }
         }
 
-        return d3.interpolate(prev, next);
+        return interpolate(prev, next);
     }
 
     function makeUpdateTextInterpolator(pt) {
@@ -419,19 +420,19 @@ function plotOne(gd, cd, element, transitionOpts) {
             }
         }
 
-        var textPosAngleFn = d3.interpolate(prev.transform.textPosAngle, pt.transform.textPosAngle);
-        var rpx1Fn = d3.interpolate(prev.rpx1, pt.rpx1);
-        var x0Fn = d3.interpolate(prev.x0, pt.x0);
-        var x1Fn = d3.interpolate(prev.x1, pt.x1);
-        var scaleFn = d3.interpolate(prev.transform.scale, transform.scale);
-        var rotateFn = d3.interpolate(prev.transform.rotate, transform.rotate);
+        var textPosAngleFn = interpolate(prev.transform.textPosAngle, pt.transform.textPosAngle);
+        var rpx1Fn = interpolate(prev.rpx1, pt.rpx1);
+        var x0Fn = interpolate(prev.x0, pt.x0);
+        var x1Fn = interpolate(prev.x1, pt.x1);
+        var scaleFn = interpolate(prev.transform.scale, transform.scale);
+        var rotateFn = interpolate(prev.transform.rotate, transform.rotate);
 
         // smooth out start/end from entry, to try to keep text inside sector
         // while keeping transition smooth
         var pow = transform.rCenter === 0 ? 3 :
             prev.transform.rCenter === 0 ? 1 / 3 :
             1;
-        var _rCenterFn = d3.interpolate(prev.transform.rCenter, transform.rCenter);
+        var _rCenterFn = interpolate(prev.transform.rCenter, transform.rCenter);
         var rCenterFn = function(t) { return _rCenterFn(Math.pow(t, pow)); };
 
         return function(t) {
@@ -476,7 +477,7 @@ function plotOne(gd, cd, element, transitionOpts) {
             var parentChildren = parent.children;
             var ci = parentChildren.indexOf(pt);
             var n = parentChildren.length;
-            var interp = d3.interpolate(parentPrev.x0, parentPrev.x1);
+            var interp = interpolate(parentPrev.x0, parentPrev.x1);
             out.x0 = interp(ci / n);
             out.x1 = interp(ci / n);
         } else {
