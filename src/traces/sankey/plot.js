@@ -1,10 +1,11 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
+var Lib = require('../../lib');
+var numberFormat = Lib.numberFormat;
 var render = require('./render');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
-var Lib = require('../../lib');
 var cn = require('./constants').cn;
 
 var _ = Lib._;
@@ -192,7 +193,7 @@ module.exports = function plot(gd, calcData) {
             link.fullData = link.trace;
             obj = d.link.trace.link;
             var hoverCenter = hoverCenterPosition(link);
-            var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(link.value) + d.valueSuffix};
+            var hovertemplateLabels = {valueLabel: numberFormat(d.valueFormat)(link.value) + d.valueSuffix};
 
             hoverItems.push({
                 x: hoverCenter[0],
@@ -202,7 +203,7 @@ module.exports = function plot(gd, calcData) {
                     link.label || '',
                     sourceLabel + link.source.label,
                     targetLabel + link.target.label,
-                    link.concentrationscale ? concentrationLabel + d3.format('%0.2f')(link.flow.labelConcentration) : ''
+                    link.concentrationscale ? concentrationLabel + numberFormat('%0.2f')(link.flow.labelConcentration) : ''
                 ].filter(renderableValuePresent).join('<br>'),
                 color: castHoverOption(obj, 'bgcolor') || Color.addOpacity(link.color, 1),
                 borderColor: castHoverOption(obj, 'bordercolor'),
@@ -281,7 +282,7 @@ module.exports = function plot(gd, calcData) {
         var hoverCenterX1 = boundingBox.right + 2 - rootBBox.left;
         var hoverCenterY = boundingBox.top + boundingBox.height / 4 - rootBBox.top;
 
-        var hovertemplateLabels = {valueLabel: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix};
+        var hovertemplateLabels = {valueLabel: numberFormat(d.valueFormat)(d.node.value) + d.valueSuffix};
         d.node.fullData = d.node.trace;
 
         gd._fullLayout._calcInverseTransform(gd);
@@ -292,7 +293,7 @@ module.exports = function plot(gd, calcData) {
             x0: scaleX * hoverCenterX0,
             x1: scaleX * hoverCenterX1,
             y: scaleY * hoverCenterY,
-            name: d3.format(d.valueFormat)(d.node.value) + d.valueSuffix,
+            name: numberFormat(d.valueFormat)(d.node.value) + d.valueSuffix,
             text: [
                 d.node.label,
                 incomingLabel + d.node.targetLinks.length,

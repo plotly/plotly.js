@@ -2,6 +2,7 @@
 
 var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
+var d3Format = require('d3-format').format;
 var isNumeric = require('fast-isnumeric');
 
 var numConstants = require('../constants/numerical');
@@ -9,8 +10,35 @@ var MAX_SAFE = numConstants.FP_SAFE;
 var MIN_SAFE = -MAX_SAFE;
 var BADNUM = numConstants.BADNUM;
 
-var lib = module.exports = {
-    _numberFormat: d3.format // simply to test d3.format before switching to d3-format
+var lib = module.exports = {};
+
+lib.adjustFormat = function adjustFormat(formatStr) {
+    if(
+        !formatStr ||
+        /^[0123456789].[0123456789]f/.test(formatStr) ||
+        /.[0123456789]%/.test(formatStr)
+    ) return formatStr;
+
+    if(formatStr === '0.f') return '~f';
+    if(/^[0123456789]%/.test(formatStr)) return '~%';
+    if(/^[0123456789]s/.test(formatStr)) return '~s';
+
+    // try adding tilde to the start of format in order to trim
+    if(!(/^[~,.0$]/.test(formatStr)) && /[&fps]/.test(formatStr)) return '~' + formatStr;
+
+    return formatStr;
+};
+
+lib.noFormat = function(value) { return String(value); };
+
+lib.numberFormat = function(formatStr) {
+    try {
+        formatStr = d3Format(lib.adjustFormat(formatStr));
+    } catch(e) {
+        return lib.noFormat;
+    }
+
+    return formatStr;
 };
 
 lib.nestedProperty = require('./nested_property');
@@ -1120,7 +1148,7 @@ function templateFormatString(string, labels, d3locale) {
         if(format) {
             var fmt;
             if(format[0] === ':') {
-                fmt = d3locale ? d3locale.numberFormat : d3.format;
+                fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
 
@@ -1317,6 +1345,10 @@ lib.join2 = function(arr, mainSeparator, lastSeparator) {
 
 lib.bigFont = function(size) {
     return Math.round(1.2 * size);
+};
+
+lib.beginCap = function(str) {
+    return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
 var firefoxVersion = lib.getFirefoxVersion();

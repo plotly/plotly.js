@@ -1,13 +1,14 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
+var Lib = require('../../lib');
+var numberFormat = Lib.numberFormat;
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
 var Color = require('../color');
 var Colorscale = require('../colorscale');
-var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
 
@@ -275,7 +276,7 @@ function makePointPath(symbolNumber, r) {
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
 var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
-var stopFormatter = d3.format('~.1f');
+var stopFormatter = numberFormat('~f');
 var gradientInfo = {
     radial: {node: 'radialGradient'},
     radialreversed: {node: 'radialGradient', reversed: true},

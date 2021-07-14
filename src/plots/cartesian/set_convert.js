@@ -2,9 +2,10 @@
 
 var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
+var Lib = require('../../lib');
+var numberFormat = Lib.numberFormat;
 var isNumeric = require('fast-isnumeric');
 
-var Lib = require('../../lib');
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
@@ -953,7 +954,7 @@ module.exports = function setConvert(ax, fullLayout) {
     // occasionally we need _numFormat to pass through
     // even though it won't be needed by this axis
     ax._separators = fullLayout.separators;
-    ax._numFormat = locale ? locale.numberFormat : d3.format;
+    ax._numFormat = locale ? locale.numberFormat : numberFormat;
 
     // and for bar charts and box plots: reset forced minimum tick spacing
     delete ax._minDtick;
