@@ -26,11 +26,12 @@ module.exports = function convert(gd, calcTrace) {
     var hasText = subTypes.hasText(trace);
     var hasCircles = (hasMarkers && trace.marker.symbol === 'circle');
     var hasSymbols = (hasMarkers && trace.marker.symbol !== 'circle');
+    var hasCluster = trace.cluster && trace.cluster.enabled;
 
-    var fill = initContainer();
-    var line = initContainer();
-    var circle = initContainer();
-    var symbol = initContainer();
+    var fill = initContainer('fill');
+    var line = initContainer('line');
+    var circle = initContainer('circle');
+    var symbol = initContainer('symbol');
 
     var opts = {
         fill: fill,
@@ -74,12 +75,39 @@ module.exports = function convert(gd, calcTrace) {
         var circleOpts = makeCircleOpts(calcTrace);
         circle.geojson = circleOpts.geojson;
         circle.layout.visibility = 'visible';
+        if(hasCluster) {
+            circle.filter = ['!', ['has', 'point_count']];
+            opts.cluster = {
+                type: 'circle',
+                filter: ['has', 'point_count'],
+                layout: {visibility: 'visible'},
+                paint: {
+                    'circle-color': arrayifyAttribute(trace.cluster.color, trace.cluster.step),
+                    'circle-radius': arrayifyAttribute(trace.cluster.size, trace.cluster.step),
+                    'circle-opacity': arrayifyAttribute(trace.cluster.opacity, trace.cluster.step),
+                },
+            };
+            opts.clusterCount = {
+                type: 'symbol',
+                filter: ['has', 'point_count'],
+                paint: {},
+                layout: {
+                    'text-field': '{point_count_abbreviated}',
+                    'text-font': ['Open Sans Regular', 'Arial Unicode MS Regular'],
+                    'text-size': 12
+                }
+            };
+        }
 
         Lib.extendFlat(circle.paint, {
             'circle-color': circleOpts.mcc,
             'circle-radius': circleOpts.mrc,
             'circle-opacity': circleOpts.mo
         });
+    }
+
+    if(hasCircles && hasCluster) {
+        circle.filter = ['!', ['has', 'point_count']];
     }
 
     if(hasSymbols || hasText) {
@@ -142,10 +170,12 @@ module.exports = function convert(gd, calcTrace) {
     return opts;
 };
 
-function initContainer() {
+function initContainer(type) {
     return {
+        type: type,
         geojson: geoJsonUtils.makeBlank(),
         layout: { visibility: 'none' },
+        filter: null,
         paint: {}
     };
 }
@@ -200,7 +230,8 @@ function makeCircleOpts(calcTrace) {
 
         features.push({
             type: 'Feature',
-            geometry: {type: 'Point', coordinates: lonlat},
+            id: i + 1,
+            geometry: { type: 'Point', coordinates: lonlat },
             properties: props
         });
     }
@@ -322,4 +353,18 @@ function blankFillFunc() { return ''; }
 // only need to check lon (OR lat)
 function isBADNUM(lonlat) {
     return lonlat[0] === BADNUM;
+}
+
+function arrayifyAttribute(values, step) {
+    var newAttribute;
+    if(Lib.isArrayOrTypedArray(values) && Lib.isArrayOrTypedArray(step)) {
+        newAttribute = ['step', ['get', 'point_count'], values[0]];
+
+        for(var idx = 1; idx < values.length; idx++) {
+            newAttribute.push(step[idx - 1], values[idx]);
+        }
+    } else {
+        newAttribute = values;
+    }
+    return newAttribute;
 }
