@@ -346,9 +346,8 @@ exports.drawFramework = function(gd) {
     var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, String);
-
-    subplotLayers.enter().append('g')
+        .data(subplotData, String)
+        .enter().append('g')
         .attr('class', function(d) { return 'subplot ' + d[0]; });
 
     subplotLayers.order();
