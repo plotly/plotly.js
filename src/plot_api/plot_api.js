@@ -213,7 +213,7 @@ function _doPlot(gd, data, layout, config) {
                 .attr('class', function(d) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
-                .style({
+                .styles({
                     position: 'absolute',
                     top: 0,
                     left: 0,
@@ -3688,7 +3688,7 @@ function makePlotFramework(gd) {
     }
 
     fullLayout._paperdiv.selectAll('.main-svg')
-        .attr(xmlnsNamespaces.svgAttrs);
+        .attrs(xmlnsNamespaces.svgAttrs);
 
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);

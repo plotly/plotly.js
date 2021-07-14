@@ -75,12 +75,12 @@ color.contrast = function(cstr, lightAmount, darkAmount) {
 
 color.stroke = function(s, c) {
     var tc = tinycolor(c);
-    s.style({'stroke': color.tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
+    s.styles({'stroke': color.tinyRGB(tc), 'stroke-opacity': tc.getAlpha()});
 };
 
 color.fill = function(s, c) {
     var tc = tinycolor(c);
-    s.style({
+    s.styles({
         'fill': color.tinyRGB(tc),
         'fill-opacity': tc.getAlpha()
     });

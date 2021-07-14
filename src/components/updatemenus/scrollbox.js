@@ -40,7 +40,7 @@ function ScrollBox(gd, container, id) {
     this.bg.enter().append('rect')
         .classed('scrollbox-bg', true)
         .style('pointer-events', 'all')
-        .attr({
+        .attrs({
             opacity: 0,
             x: 0,
             y: 0,
@@ -159,7 +159,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
         .call(Color.fill, ScrollBox.barColor);
 
     if(needsHorizontalScrollBar) {
-        this.hbar = hbar.attr({
+        this.hbar = hbar.attrs({
             'rx': ScrollBox.barRadius,
             'ry': ScrollBox.barRadius,
             'x': hbarL,
@@ -199,7 +199,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
         .call(Color.fill, ScrollBox.barColor);
 
     if(needsVerticalScrollBar) {
-        this.vbar = vbar.attr({
+        this.vbar = vbar.attrs({
             'rx': ScrollBox.barRadius,
             'ry': ScrollBox.barRadius,
             'x': vbarL,
@@ -234,7 +234,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
         .append('rect');
 
     if(needsHorizontalScrollBar || needsVerticalScrollBar) {
-        this._clipRect = clipPath.select('rect').attr({
+        this._clipRect = clipPath.select('rect').attrs({
             x: Math.floor(clipL),
             y: Math.floor(clipT),
             width: Math.ceil(clipR) - Math.floor(clipL),
@@ -243,14 +243,14 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
         this.container.call(Drawing.setClipUrl, clipId, this.gd);
 
-        this.bg.attr({
+        this.bg.attrs({
             x: l,
             y: t,
             width: w,
             height: h
         });
     } else {
-        this.bg.attr({
+        this.bg.attrs({
             width: 0,
             height: 0
         });
@@ -306,7 +306,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
  */
 ScrollBox.prototype.disable = function disable() {
     if(this.hbar || this.vbar) {
-        this.bg.attr({
+        this.bg.attrs({
             width: 0,
             height: 0
         });
@@ -431,7 +431,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
         this._box.t - this.position.t - translateY);
 
     if(this._clipRect) {
-        this._clipRect.attr({
+        this._clipRect.attrs({
             x: Math.floor(this.position.l + translateX - 0.5),
             y: Math.floor(this.position.t + translateY - 0.5)
         });

@@ -585,7 +585,7 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
     labels.exit().remove();
 
     labels.enter().append('text')
-        .attr({
+        .attrs({
             'data-notex': 1,
             'text-anchor': 'middle'
         })
@@ -594,7 +594,7 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
             var y = d.y - Math.cos(d.theta) * d.dy;
             d3.select(this)
                 .text(d.text)
-                .attr({
+                .attrs({
                     x: x,
                     y: y,
                     transform: 'rotate(' + (180 * d.theta / Math.PI) + ' ' + x + ' ' + y + ')'

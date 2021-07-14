@@ -14,7 +14,7 @@ module.exports = function style(gd) {
         var trace = cd0.trace;
         var traceSelection = d3.select(this);
 
-        traceSelection.style({opacity: trace.opacity});
+        traceSelection.styles({opacity: trace.opacity});
 
         traceSelection.selectAll('path.surface').each(function(pt) {
             d3.select(this).call(styleOne, pt, trace);

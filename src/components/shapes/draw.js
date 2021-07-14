@@ -141,7 +141,7 @@ function drawOne(gd, index) {
         if(isActiveShape || gd._context.edits.shapePosition) editHelpers = arrayEditor(gd.layout, 'shapes', options);
 
         if(isActiveShape) {
-            path.style({
+            path.styles({
                 'cursor': 'move',
             });
 
@@ -242,7 +242,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         // Helper path for moving
         g.append('path')
           .attr('d', shapePath.attr('d'))
-          .style({
+          .styles({
               'cursor': 'move',
               'stroke-width': sensoryWidth,
               'stroke-opacity': '0' // ensure not visible
@@ -255,7 +255,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         var circleRadius = Math.max(sensoryWidth / 2, minSensoryWidth);
 
         g.append('circle')
-          .attr({
+          .attrs({
               'data-line-point': 'start-point',
               'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
               'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
@@ -265,7 +265,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
           .classed('cursor-grab', true);
 
         g.append('circle')
-          .attr({
+          .attrs({
               'data-line-point': 'end-point',
               'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
               'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
@@ -511,7 +511,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
             var strokeWidth = 1;
             visualCues.enter()
               .append('path')
-              .attr({
+              .attrs({
                   'fill': '#fff',
                   'fill-rule': 'evenodd',
                   'stroke': '#000',

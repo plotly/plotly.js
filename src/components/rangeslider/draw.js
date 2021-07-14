@@ -381,7 +381,7 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
 
 function drawBg(rangeSlider, gd, axisOpts, opts) {
     var bg = Lib.ensureSingle(rangeSlider, 'rect', constants.bgClassName, function(s) {
-        s.attr({
+        s.attrs({
             x: 0,
             y: 0,
             'shape-rendering': 'crispEdges'
@@ -395,7 +395,7 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
     var offsetShift = -opts._offsetShift;
     var lw = Drawing.crispRound(gd, opts.borderwidth);
 
-    bg.attr({
+    bg.attrs({
         width: opts._width + borderCorrect,
         height: opts._height + borderCorrect,
         transform: strTranslate(offsetShift, offsetShift),
@@ -409,10 +409,10 @@ function addClipPath(rangeSlider, gd, axisOpts, opts) {
     var fullLayout = gd._fullLayout;
 
     var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', opts._clipId, function(s) {
-        s.append('rect').attr({ x: 0, y: 0 });
+        s.append('rect').attrs({ x: 0, y: 0 });
     });
 
-    clipPath.select('rect').attr({
+    clipPath.select('rect').attrs({
         width: opts._width,
         height: opts._height
     });
@@ -518,7 +518,7 @@ function filterRangePlotCalcData(calcData, subplotId) {
 
 function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
     var maskMin = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinClassName, function(s) {
-        s.attr({
+        s.attrs({
             x: 0,
             y: 0,
             'shape-rendering': 'crispEdges'
@@ -530,7 +530,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
         .call(Color.fill, constants.maskColor);
 
     var maskMax = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxClassName, function(s) {
-        s.attr({
+        s.attrs({
             y: 0,
             'shape-rendering': 'crispEdges'
         });
@@ -543,7 +543,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
     // masks used for oppAxis zoom
     if(oppAxisRangeOpts.rangemode !== 'match') {
         var maskMinOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinOppAxisClassName, function(s) {
-            s.attr({
+            s.attrs({
                 y: 0,
                 'shape-rendering': 'crispEdges'
             });
@@ -554,7 +554,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
             .call(Color.fill, constants.maskOppAxisColor);
 
         var maskMaxOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxOppAxisClassName, function(s) {
-            s.attr({
+            s.attrs({
                 y: 0,
                 'shape-rendering': 'crispEdges'
             });
@@ -571,14 +571,14 @@ function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
     if(gd._context.staticPlot) return;
 
     var slideBox = Lib.ensureSingle(rangeSlider, 'rect', constants.slideBoxClassName, function(s) {
-        s.attr({
+        s.attrs({
             y: 0,
             cursor: constants.slideBoxCursor,
             'shape-rendering': 'crispEdges'
         });
     });
 
-    slideBox.attr({
+    slideBox.attrs({
         height: opts._height,
         fill: constants.slideBoxFill
     });

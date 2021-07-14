@@ -129,7 +129,7 @@ plots.addLinks = function(gd) {
     var fullLayout = gd._fullLayout;
 
     var linkContainer = Lib.ensureSingle(fullLayout._paper, 'text', 'js-plot-link-container', function(s) {
-        s.style({
+        s.styles({
             'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
             'fill': Color.defaultLine,
@@ -182,7 +182,7 @@ plots.addLinks = function(gd) {
 function positionPlayWithData(gd, container) {
     container.text('');
     var link = container.append('a')
-        .attr({
+        .attrs({
             'xlink:xlink:href': '#',
             'class': 'link--impt link--embedview',
             'font-weight': 'bold'
@@ -196,7 +196,7 @@ function positionPlayWithData(gd, container) {
     } else {
         var path = window.location.pathname.split('/');
         var query = window.location.search;
-        link.attr({
+        link.attrs({
             'xlink:xlink:show': 'new',
             'xlink:xlink:href': '/' + path[2].split('.')[0] + '/' + path[1] + query
         });
@@ -216,7 +216,7 @@ plots.sendDataToCloud = function(gd) {
 
     var hiddenform = hiddenformDiv
         .append('form')
-        .attr({
+        .attrs({
             action: baseUrl + '/external',
             method: 'post',
             target: '_blank'
@@ -224,7 +224,7 @@ plots.sendDataToCloud = function(gd) {
 
     var hiddenformInput = hiddenform
         .append('input')
-        .attr({
+        .attrs({
             type: 'text',
             name: 'data'
         });

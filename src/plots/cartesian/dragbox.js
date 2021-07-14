@@ -997,7 +997,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 function makeDragger(plotinfo, nodeName, dragClass, cursor) {
     var dragger3 = Lib.ensureSingle(plotinfo.draglayer, nodeName, dragClass, function(s) {
         s.classed('drag', true)
-            .style({fill: 'transparent', 'stroke-width': 0})
+            .styles({fill: 'transparent', 'stroke-width': 0})
             .attr('data-subplot', plotinfo.id);
     });
 
@@ -1115,7 +1115,7 @@ function getDragCursor(nsew, dragmode, isMainDrag) {
 function makeZoombox(zoomlayer, lum, xs, ys, path0) {
     return zoomlayer.append('path')
         .attr('class', 'zoombox')
-        .style({
+        .styles({
             'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
             'stroke-width': 0
         })
@@ -1126,7 +1126,7 @@ function makeZoombox(zoomlayer, lum, xs, ys, path0) {
 function makeCorners(zoomlayer, xs, ys) {
     return zoomlayer.append('path')
         .attr('class', 'zoombox-corners')
-        .style({
+        .styles({
             fill: Color.background,
             stroke: Color.defaultLine,
             'stroke-width': 1,

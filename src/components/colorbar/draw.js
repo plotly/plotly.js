@@ -417,7 +417,7 @@ function drawColorBar(g, opts, gd) {
 
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
-            var fillEl = d3.select(this).attr({
+            var fillEl = d3.select(this).attrs({
                 x: xLeft,
                 width: Math.max(thickPx, 2),
                 y: d3.min(z),
@@ -501,7 +501,7 @@ function drawColorBar(g, opts, gd) {
         var outerwidth = 2 * opts.xpad + innerWidth + opts.borderwidth + opts.outlinewidth / 2;
         var outerheight = yBottomPx - yTopPx;
 
-        g.select('.' + cn.cbbg).attr({
+        g.select('.' + cn.cbbg).attrs({
             x: xLeft - opts.xpad - (opts.borderwidth + opts.outlinewidth) / 2,
             y: yTopPx - yExtraPx,
             width: Math.max(outerwidth, 2),
@@ -511,14 +511,14 @@ function drawColorBar(g, opts, gd) {
         .call(Color.stroke, opts.bordercolor)
         .style('stroke-width', opts.borderwidth);
 
-        g.selectAll('.' + cn.cboutline).attr({
+        g.selectAll('.' + cn.cboutline).attrs({
             x: xLeft,
             y: yTopPx + opts.ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
             height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
         })
         .call(Color.stroke, opts.outlinecolor)
-        .style({
+        .styles({
             fill: 'none',
             'stroke-width': opts.outlinewidth
         });

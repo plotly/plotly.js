@@ -202,7 +202,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                     .attr('cx', x)
                     .attr('cy', y)
                     .attr('r', 4)
-                    .style({
+                    .styles({
                         'mix-blend-mode': 'luminosity',
                         fill: 'black',
                         stroke: 'white',

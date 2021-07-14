@@ -864,7 +864,7 @@ function createHoverText(hoverData, opts, gd) {
     commonLabel.each(function() {
         var label = d3.select(this);
         var lpath = Lib.ensureSingle(label, 'path', '', function(s) {
-            s.style({'stroke-width': '1px'});
+            s.styles({'stroke-width': '1px'});
         });
         var ltext = Lib.ensureSingle(label, 'text', '', function(s) {
             // prohibit tex interpretation until we can handle
@@ -881,7 +881,7 @@ function createHoverText(hoverData, opts, gd) {
             color: commonLabelOpts.font.color || contrastColor
         };
 
-        lpath.style({
+        lpath.styles({
             fill: commonBgColor,
             stroke: commonStroke
         });
@@ -1194,7 +1194,7 @@ function createHoverText(hoverData, opts, gd) {
             g.select('rect').remove();
         }
 
-        g.select('path').style({
+        g.select('path').styles({
             fill: numsColor,
             stroke: contrastColor
         });
@@ -1748,7 +1748,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Foreground horizontal line (to y-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: xBase,
                     x2: xEndSpike,
                     y1: hLinePointY,
@@ -1762,7 +1762,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Background horizontal Line (to y-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: xBase,
                     x2: xEndSpike,
                     y1: hLinePointY,
@@ -1776,7 +1776,7 @@ function createSpikelines(gd, closestPoints, opts) {
         // Y axis marker
         if(yMode.indexOf('marker') !== -1) {
             container.insert('circle', ':first-child')
-                .attr({
+                .attrs({
                     cx: xEdge + (ya.side !== 'right' ? yThickness : -yThickness),
                     cy: hLinePointY,
                     r: yThickness,
@@ -1827,7 +1827,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Foreground vertical line (to x-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: vLinePointX,
                     x2: vLinePointX,
                     y1: yBase,
@@ -1841,7 +1841,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Background vertical line (to x-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: vLinePointX,
                     x2: vLinePointX,
                     y1: yBase,
@@ -1856,7 +1856,7 @@ function createSpikelines(gd, closestPoints, opts) {
         // X axis marker
         if(xMode.indexOf('marker') !== -1) {
             container.insert('circle', ':first-child')
-                .attr({
+                .attrs({
                     cx: vLinePointX,
                     cy: yEdge - (xa.side !== 'top' ? xThickness : -xThickness),
                     r: xThickness,

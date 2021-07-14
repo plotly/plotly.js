@@ -63,7 +63,7 @@ module.exports = function plot(gd, cdModule) {
 
                 slicePath.enter().append('path')
                     .classed('surface', true)
-                    .style({'pointer-events': 'all'});
+                    .styles({'pointer-events': 'all'});
 
                 sliceTop.call(attachFxHandlers, gd, cd);
 
@@ -96,7 +96,7 @@ module.exports = function plot(gd, cdModule) {
                     var font = Lib.ensureUniformFontSize(gd, determineInsideTextFont(trace, pt, fullLayout.font));
 
                     sliceText.text(pt.text)
-                        .attr({
+                        .attrs({
                             'class': 'slicetext',
                             transform: '',
                             'text-anchor': 'middle'
@@ -150,7 +150,7 @@ module.exports = function plot(gd, cdModule) {
                 }
 
                 titleText.text(txt)
-                    .attr({
+                    .attrs({
                         'class': 'titletext',
                         transform: '',
                         'text-anchor': 'middle',

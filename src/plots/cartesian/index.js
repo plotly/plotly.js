@@ -590,7 +590,7 @@ exports.toSVG = function(gd) {
         var imageData = canvas.toDataURL('image/png');
         var image = imageRoot.append('svg:image');
 
-        image.attr({
+        image.attrs({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
             preserveAspectRatio: 'none',

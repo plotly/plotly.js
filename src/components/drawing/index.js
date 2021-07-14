@@ -153,7 +153,7 @@ drawing.dashLine = function(s, dash, lineWidth) {
 
     dash = drawing.dashStyle(dash, lineWidth);
 
-    s.style({
+    s.styles({
         'stroke-dasharray': dash,
         'stroke-width': lineWidth + 'px'
     });
@@ -336,7 +336,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
 
             stops.each(function(d) {
                 var tc = tinycolor(d[1]);
-                d3.select(this).attr({
+                d3.select(this).attrs({
                     offset: d[0] + '%',
                     'stop-color': Color.tinyRGB(tc),
                     'stop-opacity': tc.getAlpha()
@@ -527,7 +527,7 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
         .each(function() {
             var el = d3.select(this);
 
-            el.attr({
+            el.attrs({
                 'id': fullID,
                 'width': width + 'px',
                 'height': height + 'px',
@@ -541,7 +541,7 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 rects.exit().remove();
                 rects.enter()
                     .append('rect')
-                    .attr({
+                    .attrs({
                         'width': width + 'px',
                         'height': height + 'px',
                         'fill': bgcolor
@@ -691,7 +691,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         // open markers can't have zero linewidth, default to 1px,
         // and use fill color as stroke color
         sel.call(Color.stroke, fillColor)
-            .style({
+            .styles({
                 'stroke-width': (lineWidth || 1) + 'px',
                 fill: 'none'
             });
@@ -1120,8 +1120,8 @@ drawing.steps = function(shape) {
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
 drawing.makeTester = function() {
     var tester = Lib.ensureSingleById(d3.select('body'), 'svg', 'js-plotly-tester', function(s) {
-        s.attr(xmlnsNamespaces.svgAttrs)
-            .style({
+        s.attrs(xmlnsNamespaces.svgAttrs)
+            .styles({
                 position: 'absolute',
                 left: '-10000px',
                 top: '-10000px',
@@ -1136,7 +1136,7 @@ drawing.makeTester = function() {
     // reference point we can measure off of.
     var testref = Lib.ensureSingle(tester, 'path', 'js-reference-point', function(s) {
         s.attr('d', 'M0,0H1V1H0Z')
-            .style({
+            .styles({
                 'stroke-width': 0,
                 fill: 'black'
             });
