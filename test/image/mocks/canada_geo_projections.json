@@ -1,0 +1,5678 @@
+{
+  "data": [
+    {
+      "name": "airy",
+      "geo": "geo",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "airy"
+    },
+    {
+      "geo": "geo",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "airy"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "aitoff",
+      "geo": "geo2",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "aitoff"
+    },
+    {
+      "geo": "geo2",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo2",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "aitoff"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "albers",
+      "geo": "geo3",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "albers"
+    },
+    {
+      "geo": "geo3",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo3",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "albers"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "albers usa",
+      "geo": "geo83",
+      "type": "choropleth",
+      "locationmode": "USA-states",
+      "locations": ["OK"],
+      "z": [
+        1
+      ],
+      "showscale": false,
+      "hovertemplate": "albers usa"
+    },
+    {
+      "geo": "geo83",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo83",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "albers<br>usa"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locationmode": "USA-states",
+      "locations": ["OK"],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "august",
+      "geo": "geo4",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "august"
+    },
+    {
+      "geo": "geo4",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo4",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "august"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "azimuthal equal area",
+      "geo": "geo5",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "azimuthal equal area"
+    },
+    {
+      "geo": "geo5",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo5",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "azimuthal<br>equal area"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "azimuthal equidistant",
+      "geo": "geo6",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "azimuthal equidistant"
+    },
+    {
+      "geo": "geo6",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo6",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "azimuthal<br>equidistant"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "baker",
+      "geo": "geo7",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "baker"
+    },
+    {
+      "geo": "geo7",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo7",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "baker"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "bertin1953",
+      "geo": "geo8",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "bertin1953"
+    },
+    {
+      "geo": "geo8",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo8",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "bertin1953"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "boggs",
+      "geo": "geo9",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "boggs"
+    },
+    {
+      "geo": "geo9",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo9",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "boggs"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "bonne",
+      "geo": "geo10",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "bonne"
+    },
+    {
+      "geo": "geo10",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo10",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "bonne"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "bottomley",
+      "geo": "geo11",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "bottomley"
+    },
+    {
+      "geo": "geo11",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo11",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "bottomley"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "bromley",
+      "geo": "geo12",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "bromley"
+    },
+    {
+      "geo": "geo12",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo12",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "bromley"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "collignon",
+      "geo": "geo13",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "collignon"
+    },
+    {
+      "geo": "geo13",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo13",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "collignon"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "conic conformal",
+      "geo": "geo14",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "conic conformal"
+    },
+    {
+      "geo": "geo14",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo14",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "conic<br>conformal"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "conic equal area",
+      "geo": "geo15",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "conic equal area"
+    },
+    {
+      "geo": "geo15",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo15",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "conic<br>equal area"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "conic equidistant",
+      "geo": "geo16",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "conic equidistant"
+    },
+    {
+      "geo": "geo16",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo16",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "conic<br>equidistant"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "craig",
+      "geo": "geo17",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "craig"
+    },
+    {
+      "geo": "geo17",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo17",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "craig"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "craster",
+      "geo": "geo18",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "craster"
+    },
+    {
+      "geo": "geo18",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo18",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "craster"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "cylindrical equal area",
+      "geo": "geo19",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "cylindrical equal area"
+    },
+    {
+      "geo": "geo19",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo19",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "cylindrical<br>equal area"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "cylindrical stereographic",
+      "geo": "geo20",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "cylindrical stereographic"
+    },
+    {
+      "geo": "geo20",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo20",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "cylindrical<br>stereographic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "eckert1",
+      "geo": "geo21",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "eckert1"
+    },
+    {
+      "geo": "geo21",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo21",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "eckert1"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "eckert2",
+      "geo": "geo22",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "eckert2"
+    },
+    {
+      "geo": "geo22",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo22",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "eckert2"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "eckert3",
+      "geo": "geo23",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "eckert3"
+    },
+    {
+      "geo": "geo23",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo23",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "eckert3"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "eckert4",
+      "geo": "geo24",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "eckert4"
+    },
+    {
+      "geo": "geo24",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo24",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "eckert4"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "eckert5",
+      "geo": "geo25",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "eckert5"
+    },
+    {
+      "geo": "geo25",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo25",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "eckert5"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "eckert6",
+      "geo": "geo26",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "eckert6"
+    },
+    {
+      "geo": "geo26",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo26",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "eckert6"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "eisenlohr",
+      "geo": "geo27",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "eisenlohr"
+    },
+    {
+      "geo": "geo27",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo27",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "eisenlohr"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "equirectangular",
+      "geo": "geo28",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "equirectangular"
+    },
+    {
+      "geo": "geo28",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo28",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "equirectangular"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "fahey",
+      "geo": "geo29",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "fahey"
+    },
+    {
+      "geo": "geo29",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo29",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "fahey"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "foucaut",
+      "geo": "geo30",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "foucaut"
+    },
+    {
+      "geo": "geo30",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo30",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "foucaut"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "foucaut sinusoidal",
+      "geo": "geo31",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "foucaut sinusoidal"
+    },
+    {
+      "geo": "geo31",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo31",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "foucaut<br>sinusoidal"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "ginzburg4",
+      "geo": "geo32",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "ginzburg4"
+    },
+    {
+      "geo": "geo32",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo32",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "ginzburg4"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "ginzburg5",
+      "geo": "geo33",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "ginzburg5"
+    },
+    {
+      "geo": "geo33",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo33",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "ginzburg5"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "ginzburg6",
+      "geo": "geo34",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "ginzburg6"
+    },
+    {
+      "geo": "geo34",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo34",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "ginzburg6"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "ginzburg8",
+      "geo": "geo35",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "ginzburg8"
+    },
+    {
+      "geo": "geo35",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo35",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "ginzburg8"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "ginzburg9",
+      "geo": "geo36",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "ginzburg9"
+    },
+    {
+      "geo": "geo36",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo36",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "ginzburg9"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "gnomonic",
+      "geo": "geo37",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "gnomonic"
+    },
+    {
+      "geo": "geo37",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo37",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "gnomonic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "gringorten",
+      "geo": "geo38",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "gringorten"
+    },
+    {
+      "geo": "geo38",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo38",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "gringorten"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "gringorten quincuncial",
+      "geo": "geo39",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "gringorten quincuncial"
+    },
+    {
+      "geo": "geo39",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo39",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "gringorten<br>quincuncial"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "guyou",
+      "geo": "geo40",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "guyou"
+    },
+    {
+      "geo": "geo40",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo40",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "guyou"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "hammer",
+      "geo": "geo41",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "hammer"
+    },
+    {
+      "geo": "geo41",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo41",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "hammer"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "hill",
+      "geo": "geo42",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "hill"
+    },
+    {
+      "geo": "geo42",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo42",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "hill"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "homolosine",
+      "geo": "geo43",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "homolosine"
+    },
+    {
+      "geo": "geo43",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo43",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "homolosine"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "hufnagel",
+      "geo": "geo44",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "hufnagel"
+    },
+    {
+      "geo": "geo44",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo44",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "hufnagel"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "hyperelliptical",
+      "geo": "geo45",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "hyperelliptical"
+    },
+    {
+      "geo": "geo45",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo45",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "hyperelliptical"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "kavrayskiy7",
+      "geo": "geo46",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "kavrayskiy7"
+    },
+    {
+      "geo": "geo46",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo46",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "kavrayskiy7"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "lagrange",
+      "geo": "geo47",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "lagrange"
+    },
+    {
+      "geo": "geo47",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo47",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "lagrange"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "larrivee",
+      "geo": "geo48",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "larrivee"
+    },
+    {
+      "geo": "geo48",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo48",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "larrivee"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "laskowski",
+      "geo": "geo49",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "laskowski"
+    },
+    {
+      "geo": "geo49",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo49",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "laskowski"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "loximuthal",
+      "geo": "geo50",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "loximuthal"
+    },
+    {
+      "geo": "geo50",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo50",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "loximuthal"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "mercator",
+      "geo": "geo51",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "mercator"
+    },
+    {
+      "geo": "geo51",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo51",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "mercator"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "miller",
+      "geo": "geo52",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "miller"
+    },
+    {
+      "geo": "geo52",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo52",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "miller"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "mollweide",
+      "geo": "geo53",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "mollweide"
+    },
+    {
+      "geo": "geo53",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo53",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "mollweide"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "mt flat polar parabolic",
+      "geo": "geo54",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "mt flat polar parabolic"
+    },
+    {
+      "geo": "geo54",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo54",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "mt<br>flat polar parabolic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "mt flat polar quartic",
+      "geo": "geo55",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "mt flat polar quartic"
+    },
+    {
+      "geo": "geo55",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo55",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "mt<br>flat polar quartic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "mt flat polar sinusoidal",
+      "geo": "geo56",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "mt flat polar sinusoidal"
+    },
+    {
+      "geo": "geo56",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo56",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "mt<br>flat polar sinusoidal"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "natural earth",
+      "geo": "geo57",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "natural earth"
+    },
+    {
+      "geo": "geo57",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo57",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "natural<br>earth"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "natural earth1",
+      "geo": "geo58",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "natural earth1"
+    },
+    {
+      "geo": "geo58",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo58",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "natural<br>earth1"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "natural earth2",
+      "geo": "geo59",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "natural earth2"
+    },
+    {
+      "geo": "geo59",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo59",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "natural<br>earth2"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "nell hammer",
+      "geo": "geo60",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "nell hammer"
+    },
+    {
+      "geo": "geo60",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo60",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "nell<br>hammer"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "nicolosi",
+      "geo": "geo61",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "nicolosi"
+    },
+    {
+      "geo": "geo61",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo61",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "nicolosi"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "orthographic",
+      "geo": "geo62",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "orthographic"
+    },
+    {
+      "geo": "geo62",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo62",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "orthographic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "patterson",
+      "geo": "geo63",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "patterson"
+    },
+    {
+      "geo": "geo63",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo63",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "patterson"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "peirce quincuncial",
+      "geo": "geo64",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "peirce quincuncial"
+    },
+    {
+      "geo": "geo64",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo64",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "peirce<br>quincuncial"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "polyconic",
+      "geo": "geo65",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "polyconic"
+    },
+    {
+      "geo": "geo65",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo65",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "polyconic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "rectangular polyconic",
+      "geo": "geo66",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "rectangular polyconic"
+    },
+    {
+      "geo": "geo66",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo66",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "rectangular<br>polyconic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "robinson",
+      "geo": "geo67",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "robinson"
+    },
+    {
+      "geo": "geo67",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo67",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "robinson"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "satellite",
+      "geo": "geo68",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "satellite"
+    },
+    {
+      "geo": "geo68",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo68",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "satellite"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "sinu mollweide",
+      "geo": "geo69",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "sinu mollweide"
+    },
+    {
+      "geo": "geo69",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo69",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "sinu<br>mollweide"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "sinusoidal",
+      "geo": "geo70",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "sinusoidal"
+    },
+    {
+      "geo": "geo70",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo70",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "sinusoidal"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "stereographic",
+      "geo": "geo71",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "stereographic"
+    },
+    {
+      "geo": "geo71",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo71",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "stereographic"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "times",
+      "geo": "geo72",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "times"
+    },
+    {
+      "geo": "geo72",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo72",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "times"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "transverse mercator",
+      "geo": "geo73",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "transverse mercator"
+    },
+    {
+      "geo": "geo73",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo73",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "transverse<br>mercator"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "van der grinten",
+      "geo": "geo74",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "van der grinten"
+    },
+    {
+      "geo": "geo74",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo74",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "van<br>der grinten"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "van der grinten2",
+      "geo": "geo75",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "van der grinten2"
+    },
+    {
+      "geo": "geo75",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo75",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "van<br>der grinten2"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "van der grinten3",
+      "geo": "geo76",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "van der grinten3"
+    },
+    {
+      "geo": "geo76",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo76",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "van<br>der grinten3"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "van der grinten4",
+      "geo": "geo77",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "van der grinten4"
+    },
+    {
+      "geo": "geo77",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo77",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "van<br>der grinten4"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "wagner4",
+      "geo": "geo78",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "wagner4"
+    },
+    {
+      "geo": "geo78",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo78",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "wagner4"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "wagner6",
+      "geo": "geo79",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "wagner6"
+    },
+    {
+      "geo": "geo79",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo79",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "wagner6"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "wiechel",
+      "geo": "geo80",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "wiechel"
+    },
+    {
+      "geo": "geo80",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo80",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "wiechel"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "winkel tripel",
+      "geo": "geo81",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "winkel tripel"
+    },
+    {
+      "geo": "geo81",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo81",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "winkel<br>tripel"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    },
+    {
+      "name": "winkel3",
+      "geo": "geo82",
+      "type": "choropleth",
+      "locations": ["CAN"],
+      "z": [1],
+      "showscale": false,
+      "hovertemplate": "winkel3"
+    },
+    {
+      "geo": "geo82",
+      "type": "scattergeo",
+      "mode": "markers+text",
+      "text": [
+        "Vancouver",
+        "Montreal"
+      ],
+      "textfont": {
+        "size": 6
+      },
+      "marker": {
+        "color": [
+          "lightgreen",
+          "blue"
+        ],
+        "size": 10
+      },
+      "lat": [49, 45.5],
+      "lon": [-123, -73.5]
+    },
+    {
+      "geo": "geo82",
+      "type": "scattergeo",
+      "mode": "text",
+      "text": [
+        "winkel3"
+      ],
+      "textfont": {
+        "color": "darkred",
+        "family": "Gravitas One, cursive"
+      },
+      "locations": [
+        "CAN"
+      ],
+      "hoverinfo": "skip"
+    }
+  ],
+  "layout": {
+    "grid": {
+      "rows": 8,
+      "columns": 11
+    },
+    "showlegend": false,
+    "width": 2400,
+    "height": 1200,
+    "margin": {
+      "l": 20,
+      "t": 20,
+      "r": 20,
+      "b": 20
+    },
+    "annotations": [
+      {
+        "showarrow": false,
+        "text": "Canada<br>in various<br>projection<br>types",
+        "font": {
+          "size": 20
+        },
+        "x": 1,
+        "xref": "paper",
+        "xanchor": "right",
+        "yref": "paper",
+        "y": 0,
+        "yanchor": "bottom"
+      }
+    ],
+    "geo": {
+      "domain": {
+        "row": 0,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "airy"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo2": {
+      "domain": {
+        "row": 1,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "aitoff"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo3": {
+      "domain": {
+        "row": 2,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "albers"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo83": {
+      "domain": {
+        "row": 2,
+        "column": 10
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "albers usa"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      }
+    },
+    "geo4": {
+      "domain": {
+        "row": 3,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "august"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo5": {
+      "domain": {
+        "row": 4,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "azimuthal equal area"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo6": {
+      "domain": {
+        "row": 5,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "azimuthal equidistant"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo7": {
+      "domain": {
+        "row": 6,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "baker"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo8": {
+      "domain": {
+        "row": 7,
+        "column": 0
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "bertin1953"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo9": {
+      "domain": {
+        "row": 0,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "boggs"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo10": {
+      "domain": {
+        "row": 1,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "bonne"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo11": {
+      "domain": {
+        "row": 2,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "bottomley"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo12": {
+      "domain": {
+        "row": 3,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "bromley"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo13": {
+      "domain": {
+        "row": 4,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "collignon"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo14": {
+      "domain": {
+        "row": 5,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "conic conformal"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo15": {
+      "domain": {
+        "row": 6,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "conic equal area"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo16": {
+      "domain": {
+        "row": 7,
+        "column": 1
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "conic equidistant"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo17": {
+      "domain": {
+        "row": 0,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "craig"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo18": {
+      "domain": {
+        "row": 1,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "craster"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo19": {
+      "domain": {
+        "row": 2,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "cylindrical equal area"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo20": {
+      "domain": {
+        "row": 3,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "cylindrical stereographic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo21": {
+      "domain": {
+        "row": 4,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "eckert1"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo22": {
+      "domain": {
+        "row": 5,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "eckert2"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo23": {
+      "domain": {
+        "row": 6,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "eckert3"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo24": {
+      "domain": {
+        "row": 7,
+        "column": 2
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "eckert4"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo25": {
+      "domain": {
+        "row": 0,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "eckert5"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo26": {
+      "domain": {
+        "row": 1,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "eckert6"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo27": {
+      "domain": {
+        "row": 2,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "eisenlohr"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo28": {
+      "domain": {
+        "row": 3,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "equirectangular"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo29": {
+      "domain": {
+        "row": 4,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "fahey"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo30": {
+      "domain": {
+        "row": 5,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "foucaut"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo31": {
+      "domain": {
+        "row": 6,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "foucaut sinusoidal"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo32": {
+      "domain": {
+        "row": 7,
+        "column": 3
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "ginzburg4"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo33": {
+      "domain": {
+        "row": 0,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "ginzburg5"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo34": {
+      "domain": {
+        "row": 1,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "ginzburg6"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo35": {
+      "domain": {
+        "row": 2,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "ginzburg8"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo36": {
+      "domain": {
+        "row": 3,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "ginzburg9"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo37": {
+      "domain": {
+        "row": 4,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "gnomonic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo38": {
+      "domain": {
+        "row": 5,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "gringorten", "rotation": {"lat": 30}
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo39": {
+      "domain": {
+        "row": 6,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "gringorten quincuncial"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo40": {
+      "domain": {
+        "row": 7,
+        "column": 4
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "guyou", "rotation": {"lat": 60}
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo41": {
+      "domain": {
+        "row": 0,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "hammer"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo42": {
+      "domain": {
+        "row": 1,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "hill"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo43": {
+      "domain": {
+        "row": 2,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "homolosine"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo44": {
+      "domain": {
+        "row": 3,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "hufnagel"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo45": {
+      "domain": {
+        "row": 4,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "hyperelliptical"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo46": {
+      "domain": {
+        "row": 5,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "kavrayskiy7"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo47": {
+      "domain": {
+        "row": 6,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "lagrange"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo48": {
+      "domain": {
+        "row": 7,
+        "column": 5
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "larrivee"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo49": {
+      "domain": {
+        "row": 0,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "laskowski"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo50": {
+      "domain": {
+        "row": 1,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "loximuthal"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo51": {
+      "domain": {
+        "row": 2,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "mercator"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo52": {
+      "domain": {
+        "row": 3,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "miller"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo53": {
+      "domain": {
+        "row": 4,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "mollweide"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo54": {
+      "domain": {
+        "row": 5,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "mt flat polar parabolic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo55": {
+      "domain": {
+        "row": 6,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "mt flat polar quartic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo56": {
+      "domain": {
+        "row": 7,
+        "column": 6
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "mt flat polar sinusoidal"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo57": {
+      "domain": {
+        "row": 0,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "natural earth"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo58": {
+      "domain": {
+        "row": 1,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "natural earth1"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo59": {
+      "domain": {
+        "row": 2,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "natural earth2"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo60": {
+      "domain": {
+        "row": 3,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "nell hammer"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo61": {
+      "domain": {
+        "row": 4,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "nicolosi"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo62": {
+      "domain": {
+        "row": 5,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "orthographic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo63": {
+      "domain": {
+        "row": 6,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "patterson"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo64": {
+      "domain": {
+        "row": 7,
+        "column": 7
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "peirce quincuncial"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo65": {
+      "domain": {
+        "row": 0,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "polyconic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo66": {
+      "domain": {
+        "row": 1,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "rectangular polyconic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo67": {
+      "domain": {
+        "row": 2,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "robinson"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo68": {
+      "domain": {
+        "row": 3,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "satellite", "rotation": {"lat": 45}
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo69": {
+      "domain": {
+        "row": 4,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "sinu mollweide"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo70": {
+      "domain": {
+        "row": 5,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "sinusoidal"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo71": {
+      "domain": {
+        "row": 6,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "stereographic"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo72": {
+      "domain": {
+        "row": 7,
+        "column": 8
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "times"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo73": {
+      "domain": {
+        "row": 0,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "transverse mercator"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo74": {
+      "domain": {
+        "row": 1,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "van der grinten"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo75": {
+      "domain": {
+        "row": 2,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "van der grinten2"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo76": {
+      "domain": {
+        "row": 3,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "van der grinten3"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo77": {
+      "domain": {
+        "row": 4,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "van der grinten4"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo78": {
+      "domain": {
+        "row": 5,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "wagner4"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo79": {
+      "domain": {
+        "row": 6,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "wagner6"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo80": {
+      "domain": {
+        "row": 7,
+        "column": 9
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "wiechel"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo81": {
+      "domain": {
+        "row": 0,
+        "column": 10
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "winkel tripel"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    },
+    "geo82": {
+      "domain": {
+        "row": 1,
+        "column": 10
+      },
+      "fitbounds": "locations",
+      "projection": {
+        "type": "winkel3"
+      },
+      "lonaxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "lataxis": {
+        "showgrid": true,
+        "gridwidth": 1,
+        "gridcolor": "lightgray"
+      },
+      "showcoastlines": false,
+      "showocean": true
+    }
+  }
+}

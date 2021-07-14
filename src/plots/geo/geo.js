@@ -3,6 +3,10 @@
 /* global PlotlyGeoAssets:false */
 
 var d3 = require('@plotly/d3');
+var geo = require('d3-geo');
+var geoPath = geo.geoPath;
+var geoDistance = geo.geoDistance;
+var geoProjection = require('d3-geo-projection');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
@@ -24,8 +28,6 @@ var constants = require('./constants');
 var geoUtils = require('../../lib/geo_location_utils');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson-client').feature;
-
-require('./projections')(d3);
 
 function Geo(opts) {
     this.id = opts.id;
@@ -246,29 +248,6 @@ proto.updateProjection = function(geoCalcData, fullLayout) {
     var b = this.bounds = projection.getBounds(rangeBox);
     var s = this.fitScale = projection.scale();
     var t = projection.translate();
-
-    if(
-        !isFinite(b[0][0]) || !isFinite(b[0][1]) ||
-        !isFinite(b[1][0]) || !isFinite(b[1][1]) ||
-        isNaN(t[0]) || isNaN(t[0])
-    ) {
-        var attrToUnset = ['fitbounds', 'projection.rotation', 'center', 'lonaxis.range', 'lataxis.range'];
-        var msg = 'Invalid geo settings, relayout\'ing to default view.';
-        var updateObj = {};
-
-        // clear all attributes that could cause invalid bounds,
-        // clear viewInitial to update reset-view behavior
-
-        for(var i = 0; i < attrToUnset.length; i++) {
-            updateObj[this.id + '.' + attrToUnset[i]] = null;
-        }
-
-        this.viewInitial = null;
-
-        Lib.warn(msg);
-        gd._promises.push(Registry.call('relayout', gd, updateObj));
-        return msg;
-    }
 
     if(geoLayout.fitbounds) {
         var b2 = projection.getBounds(makeRangeBox(axLon.range, axLat.range));
@@ -508,7 +487,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
     bgRect.on('mousemove', function() {
         var lonlat = _this.projection.invert(Lib.getPositionFromD3Event());
 
-        if(!lonlat || isNaN(lonlat[0]) || isNaN(lonlat[1])) {
+        if(!lonlat) {
             return dragElement.unhover(gd, d3.event);
         }
 
@@ -648,9 +627,8 @@ proto.render = function() {
     }
 };
 
-// Helper that wraps d3.geo[/* projection name /*]() which:
+// Helper that wraps d3[geo + /* Projection name /*]() which:
 //
-// - adds 'fitExtent' (available in d3 v4)
 // - adds 'getPath', 'getBounds' convenience methods
 // - scopes logic related to 'clipAngle'
 // - adds 'isLonLatOverEdges' method
@@ -663,11 +641,15 @@ function getProjection(geoLayout) {
     var projLayout = geoLayout.projection;
     var projType = projLayout.type;
 
-    var projection = d3.geo[constants.projNames[projType]]();
+    var projName = constants.projNames[projType];
+    // uppercase the first letter and add geo to the start of method name
+    projName = 'geo' + projName.charAt(0).toUpperCase() + projName.slice(1);
+    var projFn = geo[projName] || geoProjection[projName];
+    var projection = projFn();
 
-    var clipAngle = geoLayout._isClipped ?
-        constants.lonaxisSpan[projType] / 2 :
-        null;
+    var clipAngle =
+        geoLayout._isSatellite ? Math.acos(1 / projLayout.distance) * 180 / Math.PI :
+        geoLayout._isClipped ? constants.lonaxisSpan[projType] / 2 : null;
 
     var methods = ['center', 'rotate', 'parallels', 'clipExtent'];
     var dummyFn = function(_) { return _ ? projection : []; };
@@ -686,7 +668,7 @@ function getProjection(geoLayout) {
 
         if(clipAngle) {
             var r = projection.rotate();
-            var angle = d3.geo.distance(lonlat, [-r[0], -r[1]]);
+            var angle = geoDistance(lonlat, [-r[0], -r[1]]);
             var maxAngle = clipAngle * Math.PI / 180;
             return angle > maxAngle;
         } else {
@@ -695,39 +677,18 @@ function getProjection(geoLayout) {
     };
 
     projection.getPath = function() {
-        return d3.geo.path().projection(projection);
+        return geoPath().projection(projection);
     };
 
     projection.getBounds = function(object) {
         return projection.getPath().bounds(object);
     };
 
-    // adapted from d3 v4:
-    // https://github.com/d3/d3-geo/blob/master/src/projection/fit.js
-    projection.fitExtent = function(extent, object) {
-        var w = extent[1][0] - extent[0][0];
-        var h = extent[1][1] - extent[0][1];
-        var clip = projection.clipExtent && projection.clipExtent();
-
-        projection
-            .scale(150)
-            .translate([0, 0]);
-
-        if(clip) projection.clipExtent(null);
-
-        var b = projection.getBounds(object);
-        var k = Math.min(w / (b[1][0] - b[0][0]), h / (b[1][1] - b[0][1]));
-        var x = +extent[0][0] + (w - k * (b[1][0] + b[0][0])) / 2;
-        var y = +extent[0][1] + (h - k * (b[1][1] + b[0][1])) / 2;
-
-        if(clip) projection.clipExtent(clip);
-
-        return projection
-            .scale(k * 150)
-            .translate([x, y]);
-    };
-
     projection.precision(constants.precision);
+
+    if(geoLayout._isSatellite) {
+        projection.tilt(projLayout.tilt).distance(projLayout.distance);
+    }
 
     if(clipAngle) {
         projection.clipAngle(clipAngle - constants.clipPad);

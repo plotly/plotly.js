@@ -15,25 +15,16 @@ jobs:
     steps:
       - checkout
       - run:
-          name: set heap option before very first node.js call
-          command: |
-            export NODE_OPTIONS='--max-old-space-size=4096'
-      - run:
-          name: Install dependencies
-          command: |
-            npm ci
-      - run:
-          name: List dependency versions
-          command: |
-            echo "npm: $(npm --version)"
-            echo "node: $(node --version)"
-            npm ls || true
+          name: Set up build environment
+          command: .circleci/env_build.sh
       - run:
           name: Pretest
-          command: |
-            npm run pretest
-            npm run cibuild
+          command: npm run pretest
       - run:
+          name: CI-Build
+          command: npm run cibuild
+      - run:
+          name: Delete git
           command: rm -rf .git
       - persist_to_workspace:
           root: /home/circleci
@@ -51,7 +42,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part A)
-          command: ./.circleci/test.sh no-gl-jasmine
+          command: .circleci/test.sh no-gl-jasmine
 
   webgl-jasmine:
     docker:
@@ -64,9 +55,9 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part B)
-          command: ./.circleci/test.sh webgl-jasmine
+          command: .circleci/test.sh webgl-jasmine
 
-  no-gl-flaky-jasmine:
+  flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.22.1-browsers
@@ -76,7 +67,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part C)
-          command: ./.circleci/test.sh no-gl-flaky-jasmine
+          command: .circleci/test.sh flaky-no-gl-jasmine
 
   make-baselines:
     parallelism: 4
@@ -87,34 +78,11 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: which pip3 version
-          command: which pip3 && pip3 --version
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
       - run:
-          name: install kaleido v0.2.1
-          command: python3 -m pip install kaleido==0.2.1
-      - run:
-          name: install plotly.io v5.0.0
-          command: python3 -m pip install plotly==5.0.0
-      - run:
-          name: install liberation2 fonts
-          command: sudo apt-get install fonts-liberation2
-      - run:
-          name: install OpenSans fonts
-          command: sudo apt-get install fonts-open-sans
-      - run:
-          name: install NotoSansCJK fonts
-          command: sudo apt install fonts-noto-cjk
-      - run:
-          name: download google fonts e.g. Dosis, GravitasOne, NotoSansMono, NotoSans, NotoSerif, Old_Standard_TT, PT_Sans_Narrow, Raleway and Roboto
-          command: python3 ./.circleci/download_google_fonts.py
-      - run:
-          name: install downloaded google fonts
-          command: |
-            sudo cp -r .circleci/fonts/ /usr/share/
-            sudo fc-cache -f
-      - run:
-          name: create all png files
-          command: ./.circleci/test.sh make-baselines
+          name: Create all png files
+          command: .circleci/test.sh make-baselines
       - persist_to_workspace:
           root: ~/
           paths:
@@ -128,8 +96,8 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: compare pixels
-          command: ./.circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
+          name: Compare pixels
+          command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
           destination: /
@@ -142,19 +110,13 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: which pip3 version
-          command: which pip3 && pip3 --version
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
       - run:
-          name: install kaleido v0.2.1
-          command: python3 -m pip install kaleido==0.2.1
-      - run:
-          name: install plotly.io v5.0.0
-          command: python3 -m pip install plotly==5.0.0
-      - run:
-          name: install poppler-utils to have pdftops for exporting eps
+          name: Install poppler-utils to have pdftops for exporting eps
           command: sudo apt-get install poppler-utils
       - run:
-          name: create svg, jpg, jpeg, webp, pdf and eps files
+          name: Create svg, jpg, jpeg, webp, pdf and eps files
           command: python3 test/image/make_exports.py
       - persist_to_workspace:
           root: ~/
@@ -169,7 +131,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: test export sizes
+          name: Test export sizes
           command: node test/image/export_test.js ; find build -maxdepth 1 -type f -delete
       - store_artifacts:
           path: build
@@ -198,7 +160,7 @@ jobs:
           at: ~/
       - run:
           name: Run syntax tests on source files
-          command: ./.circleci/test.sh source-syntax
+          command: .circleci/test.sh source-syntax
 
   jasmine-bundle:
     docker:
@@ -210,15 +172,30 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part D)
-          command: ./.circleci/test.sh jasmine-bundle
+          command: .circleci/test.sh jasmine-bundle
 
   publish-dist:
     docker:
       - image: circleci/node:12.22.1
     working_directory: ~/plotly.js
     steps:
-      - attach_workspace:
-          at: ~/
+      - checkout
+      - run:
+          name: Set up build environment
+          command: .circleci/env_build.sh
+      - run:
+          name: Preview CHANGELOG for next release (only on master)
+          command: |
+            if [ $CIRCLE_BRANCH == "master" ]
+              then npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true
+            fi
+      - run:
+          name: Set draft version in package.json
+          command: |
+            node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" `git describe`
+      - run:
+          name: View package.json diff between previous and next releases (including above draft version change)
+          command: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
       - run:
           name: Build dist/
           command: npm run build
@@ -226,10 +203,16 @@ jobs:
           path: dist
           destination: dist
       - run:
+          name: Preview plot-schema diff between previous and next releases (only on master)
+          command: |
+            if [ $CIRCLE_BRANCH == "master" ]
+              then git --no-pager diff tags/$(git describe --tags --abbrev=0) dist/plot-schema.json || true
+            fi
+      - run:
           name: Pack tarball
           command: |
             npm pack
-            version=$(node -e "console.log(require('./package.json').version)")
+            version=$(node --eval "console.log(require('./package.json').version)")
             mv plotly.js-$version.tgz plotly.js.tgz
       - store_artifacts:
           path: plotly.js.tgz
@@ -242,18 +225,9 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
-      - persist_to_workspace:
-          root: ~/
-          paths:
-            - plotly.js
-
-  test-dist1:
-    docker:
-      - image: circleci/node:12.22.1
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
+      - run:
+          name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
+          command: diff --unified --color dist/plot-schema.json test/plot-schema.json
       - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
@@ -263,20 +237,9 @@ jobs:
       - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func
-
-  test-dist2:
-    docker:
-      - image: circleci/node:12.22.1
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
-      - run:
-          name: Test plotly bundles againt duplicate keys
-          command: npm run no-dup-keys
 
 workflows:
   version: 2
@@ -292,7 +255,7 @@ workflows:
       - webgl-jasmine:
           requires:
             - install-and-cibuild
-      - no-gl-flaky-jasmine:
+      - flaky-no-gl-jasmine:
           requires:
             - install-and-cibuild
       - make-baselines:
@@ -313,12 +276,5 @@ workflows:
       - source-syntax:
           requires:
             - install-and-cibuild
-      - publish-dist:
-          requires:
-            - install-and-cibuild
-      - test-dist1:
-          requires:
-            - publish-dist
-      - test-dist2:
-          requires:
-            - publish-dist
+
+      - publish-dist
