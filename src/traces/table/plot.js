@@ -354,7 +354,7 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
             var bbox = this.getBoundingClientRect();
             var s = d.scrollbarState;
             var pixelVal = y - bbox.top;
-            var inverseScale = d3.scale.linear().domain([0, s.scrollableAreaHeight]).range([0, s.totalHeight]).clamp(true);
+            var inverseScale = d3.scaleLinear().domain([0, s.scrollableAreaHeight]).range([0, s.totalHeight]).clamp(true);
             if(!(s.topY <= pixelVal && pixelVal <= s.bottomY)) {
                 makeDragRow(gd, tableControlView, null, inverseScale(pixelVal - s.barLength / 2))(d);
             }

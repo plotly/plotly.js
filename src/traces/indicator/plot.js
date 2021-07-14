@@ -365,7 +365,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     }
 
     function arcPathGenerator(size) {
-        return d3.svg.arc()
+        return d3.arc()
                   .innerRadius((innerRadius + radius) / 2 - size / 2 * (radius - innerRadius))
                   .outerRadius((innerRadius + radius) / 2 + size / 2 * (radius - innerRadius))
                   .startAngle(-theta);
