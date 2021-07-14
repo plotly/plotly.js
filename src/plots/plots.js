@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../lib/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var formatLocale = require('d3-format').formatLocale;
 var isNumeric = require('fast-isnumeric');

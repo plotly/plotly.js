@@ -1,7 +1,7 @@
 'use strict';
 
 var c = require('./constants');
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var d3Drag = require('d3-drag').drag;
 
 var keyFun = require('../../lib/gup').keyFun;
