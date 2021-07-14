@@ -241,7 +241,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     function textLayout(s) {
         s.call(Drawing.font, font)
-        .attr({
+        .attrs({
             'text-anchor': {
                 left: 'start',
                 right: 'end'
@@ -256,11 +256,11 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         // if the text has *only* a link, make the whole box into a link
         var anchor3 = annText.selectAll('a');
         if(anchor3.size() === 1 && anchor3.text() === annText.text()) {
-            var wholeLink = annTextGroupInner.insert('a', ':first-child').attr({
+            var wholeLink = annTextGroupInner.insert('a', ':first-child').attrs({
                 'xlink:xlink:href': anchor3.attr('xlink:href'),
                 'xlink:xlink:show': anchor3.attr('xlink:show')
             })
-            .style({cursor: 'pointer'});
+            .styles({cursor: 'pointer'});
 
             wholeLink.node().appendChild(annTextBG.node());
         }
@@ -453,7 +453,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
         }
 
         if(hasMathjax) {
-            mathjaxGroup.select('svg').attr({
+            mathjaxGroup.select('svg').attrs({
                 x: borderfull + xShift - 1,
                 y: borderfull + yShift
             })
@@ -482,7 +482,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
          * because we needed that for autoranging anyway, so now whether
          * we have an arrow or not, we rotate about the text center.
          */
-        annTextGroup.attr({transform: 'rotate(' + textangle + ',' +
+        annTextGroup.attrs({transform: 'rotate(' + textangle + ',' +
                             annPosPx.x.text + ',' + annPosPx.y.text + ')'});
 
         /*
@@ -550,7 +550,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
             var arrowSide = options.arrowside;
 
             var arrowGroup = annGroup.append('g')
-                .style({opacity: Color.opacity(arrowColor)})
+                .styles({opacity: Color.opacity(arrowColor)})
                 .classed('annotation-arrow-g', true);
 
             var arrow = arrowGroup.append('path')
@@ -574,7 +574,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                     .classed('annotation-arrow', true)
                     .classed('anndrag', true)
                     .classed('cursor-move', true)
-                    .attr({
+                    .attrs({
                         d: 'M3,3H-3V-3H3ZM0,0L' + (tailX - arrowDragHeadX) + ',' + (tailY - arrowDragHeadY),
                         transform: strTranslate(arrowDragHeadX, arrowDragHeadY)
                     })
@@ -624,7 +624,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
 
                         arrowGroup.attr('transform', strTranslate(dx, dy));
-                        annTextGroup.attr({
+                        annTextGroup.attrs({
                             transform: 'rotate(' + textangle + ',' +
                                    xcenter + ',' + ycenter + ')'
                         });
@@ -707,7 +707,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
                         }
                     } else return;
 
-                    annTextGroup.attr({
+                    annTextGroup.attrs({
                         transform: strTranslate(dx, dy) + baseTextTransform
                     });
 

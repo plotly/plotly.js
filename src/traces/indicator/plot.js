@@ -749,7 +749,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             };
         }
 
-        delta.attr({dx: dx, dy: dy});
+        delta.attrs({dx: dx, dy: dy});
     }
 
     // Resize numbers to fit within space and position

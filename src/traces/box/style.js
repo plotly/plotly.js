@@ -35,7 +35,7 @@ function style(gd, cd, sel) {
         } else {
             styleBox(allBoxes, lineWidth, trace.line.color, trace.fillcolor);
             el.selectAll('path.mean')
-                .style({
+                .styles({
                     'stroke-width': lineWidth,
                     'stroke-dasharray': (2 * lineWidth) + 'px,' + lineWidth + 'px'
                 })

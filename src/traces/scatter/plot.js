@@ -488,7 +488,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 var y = ya.c2p(d.y);
 
                 d3.select(this).selectAll('tspan.line').each(function() {
-                    transition(d3.select(this)).attr({x: x, y: y});
+                    transition(d3.select(this)).attrs({x: x, y: y});
                 });
             });
 

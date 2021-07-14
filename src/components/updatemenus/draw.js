@@ -191,7 +191,7 @@ function drawHeader(gd, gHeader, gButton, scrollBox, menuOpts) {
             .text(constants.arrowSymbol[menuOpts.direction]);
     });
 
-    arrow.attr({
+    arrow.attrs({
         x: dims.headerWidth - constants.arrowOffsetX + menuOpts.pad.l,
         y: dims.headerHeight / 2 + constants.textOffsetY + menuOpts.pad.t
     });
@@ -411,7 +411,7 @@ function drawItem(item, menuOpts, itemOpts, gd) {
 
 function drawItemRect(item, menuOpts) {
     var rect = Lib.ensureSingle(item, 'rect', constants.itemRectClassName, function(s) {
-        s.attr({
+        s.attrs({
             rx: constants.rx,
             ry: constants.ry,
             'shape-rendering': 'crispEdges'
@@ -425,7 +425,7 @@ function drawItemRect(item, menuOpts) {
 
 function drawItemText(item, menuOpts, itemOpts, gd) {
     var text = Lib.ensureSingle(item, 'text', constants.itemTextClassName, function(s) {
-        s.attr({
+        s.attrs({
             'text-anchor': 'start',
             'data-notex': 1
         });
@@ -610,7 +610,7 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
     var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
     var finalHeight = overrideOpts.height || (isVertical ? dims.heights[index] : dims.height1);
 
-    rect.attr({
+    rect.attrs({
         x: 0,
         y: 0,
         width: overrideOpts.width || (isVertical ? dims.width1 : dims.widths[index]),

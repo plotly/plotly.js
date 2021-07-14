@@ -114,7 +114,7 @@ exports.toSVG = function(gd) {
         var imageData = scene.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
 
-        image.attr({
+        image.attrs({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
             x: size.l + size.w * domain.x[0],

@@ -70,7 +70,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
 
             end.x += backOffX;
             end.y += backOffY;
-            el3.attr({x2: end.x, y2: end.y});
+            el3.attrs({x2: end.x, y2: end.y});
         }
 
         if(startBackOff) {
@@ -83,7 +83,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
 
             start.x -= startBackOffX;
             start.y -= startbackOffY;
-            el3.attr({x1: start.x, y1: start.y});
+            el3.attrs({x1: start.x, y1: start.y});
         }
     } else if(el.nodeName === 'path') {
         var pathlen = el.getTotalLength();
@@ -126,7 +126,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
         if(arrowHeadStyle.noRotate) rot = 0;
 
         d3.select(el.parentNode).append('path')
-            .attr({
+            .attrs({
                 'class': el3.attr('class'),
                 d: arrowHeadStyle.path,
                 transform:
@@ -134,7 +134,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
                     strRotate(rot * 180 / Math.PI) +
                     strScale(arrowScale)
             })
-            .style({
+            .styles({
                 fill: Color.rgb(options.arrowcolor),
                 'stroke-width': 0
             });

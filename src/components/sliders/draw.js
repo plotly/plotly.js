@@ -295,7 +295,7 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     }
 
     var text = Lib.ensureSingle(sliderGroup, 'text', constants.labelClass, function(s) {
-        s.attr({
+        s.attrs({
             'text-anchor': textAnchor,
             'data-notex': 1
         });
@@ -336,7 +336,7 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
             .style('pointer-events', 'all');
     });
 
-    grip.attr({
+    grip.attrs({
         width: constants.gripWidth,
         height: constants.gripHeight,
         rx: constants.gripRadius,
@@ -349,7 +349,7 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
 
 function drawLabel(item, data, sliderOpts) {
     var text = Lib.ensureSingle(item, 'text', constants.labelClass, function(s) {
-        s.attr({
+        s.attrs({
             'text-anchor': 'middle',
             'data-notex': 1
         });
@@ -506,7 +506,7 @@ function drawTicks(sliderGroup, sliderOpts) {
 
     tick.exit().remove();
 
-    tick.attr({
+    tick.attrs({
         width: sliderOpts.tickwidth + 'px',
         'shape-rendering': 'crispEdges'
     });
@@ -516,7 +516,7 @@ function drawTicks(sliderGroup, sliderOpts) {
         var item = d3.select(this);
 
         item
-            .attr({height: isMajor ? sliderOpts.ticklen : sliderOpts.minorticklen})
+            .attrs({height: isMajor ? sliderOpts.ticklen : sliderOpts.minorticklen})
             .call(Color.fill, isMajor ? sliderOpts.tickcolor : sliderOpts.tickcolor);
 
         Drawing.setTranslate(item,
@@ -588,7 +588,7 @@ function drawTouchRect(sliderGroup, gd, sliderOpts) {
             .style('pointer-events', 'all');
     });
 
-    rect.attr({
+    rect.attrs({
         width: dims.inputAreaLength,
         height: Math.max(dims.inputAreaWidth, constants.tickOffset + sliderOpts.ticklen + dims.labelHeight)
     })
@@ -603,7 +603,7 @@ function drawRail(sliderGroup, sliderOpts) {
     var computedLength = dims.inputAreaLength - constants.railInset * 2;
     var rect = Lib.ensureSingle(sliderGroup, 'rect', constants.railRectClass);
 
-    rect.attr({
+    rect.attrs({
         width: computedLength,
         height: constants.railWidth,
         rx: constants.railRadius,

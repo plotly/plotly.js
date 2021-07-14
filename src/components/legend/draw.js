@@ -165,7 +165,7 @@ function _draw(gd, legendObj) {
                 // if unified hover, let it be its full size
                 if(inHover) height = legendObj._height;
 
-                bg.attr({
+                bg.attrs({
                     width: legendObj._width - bw,
                     height: height - bw,
                     x: bw / 2,
@@ -174,7 +174,7 @@ function _draw(gd, legendObj) {
 
                 Drawing.setTranslate(scrollBox, 0, 0);
 
-                clipPath.select('rect').attr({
+                clipPath.select('rect').attrs({
                     width: legendObj._width - 2 * bw,
                     height: height - 2 * bw,
                     x: bw,
@@ -198,7 +198,7 @@ function _draw(gd, legendObj) {
 
                 // increase the background and clip-path width
                 // by the scrollbar width and margin
-                bg.attr({
+                bg.attrs({
                     width: legendObj._width -
                         2 * bw +
                         constants.scrollBarWidth +
@@ -208,7 +208,7 @@ function _draw(gd, legendObj) {
                     y: bw / 2
                 });
 
-                clipPath.select('rect').attr({
+                clipPath.select('rect').attrs({
                     width: legendObj._width -
                         2 * bw +
                         constants.scrollBarWidth +

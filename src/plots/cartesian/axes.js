@@ -1912,7 +1912,7 @@ axes.makeClipPaths = function(gd) {
     axClips.exit().remove();
 
     axClips.each(function(d) {
-        d3.select(this).select('rect').attr({
+        d3.select(this).select('rect').attrs({
             x: d.x._offset || 0,
             y: d.y._offset || 0,
             width: d.x._length || 1,
@@ -3041,7 +3041,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
             if(mathjaxGroup.empty()) {
                 var thisText = thisLabel.select('text');
-                thisText.attr({
+                thisText.attrs({
                     transform: transform,
                     'text-anchor': anchor
                 });

@@ -71,7 +71,7 @@ function plot(gd, cdModule) {
 
                 slicePath.enter().append('path')
                     .classed('surface', true)
-                    .style({'pointer-events': 'all'});
+                    .styles({'pointer-events': 'all'});
 
                 sliceTop.call(attachFxHandlers, gd, cd);
 
@@ -150,7 +150,7 @@ function plot(gd, cdModule) {
                     );
 
                     sliceText.text(pt.text)
-                        .attr({
+                        .attrs({
                             'class': 'slicetext',
                             transform: '',
                             'text-anchor': 'middle'
@@ -221,7 +221,7 @@ function plot(gd, cdModule) {
                 }
 
                 titleText.text(txt)
-                    .attr({
+                    .attrs({
                         'class': 'titletext',
                         transform: '',
                         'text-anchor': 'middle',
@@ -334,7 +334,7 @@ function plotTextLines(slices, trace) {
 
         Lib.ensureSingle(sliceTop, 'path', 'textline')
             .call(Color.stroke, trace.outsidetextfont.color)
-            .attr({
+            .attrs({
                 'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
                 d: textLinePath,
                 fill: 'none'

@@ -104,7 +104,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
     var corners = zoomLayer.append('path')
         .attr('class', 'zoombox-corners')
-        .style({
+        .styles({
             fill: Color.background,
             stroke: Color.defaultLine,
             'stroke-width': 1

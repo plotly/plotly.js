@@ -30,7 +30,7 @@ module.exports = function draw(gd) {
 
     selectors.exit().remove();
 
-    selectors.style({
+    selectors.styles({
         cursor: 'pointer',
         'pointer-events': 'all'
     });
@@ -115,7 +115,7 @@ function drawButtonRect(button, selectorLayout, d) {
         s.attr('shape-rendering', 'crispEdges');
     });
 
-    rect.attr({
+    rect.attrs({
         'rx': constants.rx,
         'ry': constants.ry
     });
@@ -190,7 +190,7 @@ function reposition(gd, buttons, opts, axName, selector) {
 
         button.attr('transform', strTranslate(borderWidth + width, borderWidth));
 
-        rect.attr({
+        rect.attrs({
             x: 0,
             y: 0,
             width: wEff,

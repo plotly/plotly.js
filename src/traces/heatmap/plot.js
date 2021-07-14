@@ -320,12 +320,12 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var image3 = plotGroup.selectAll('image')
             .data(cd);
 
-        image3.enter().append('svg:image').attr({
+        image3.enter().append('svg:image').attrs({
             xmlns: xmlnsNamespaces.svg,
             preserveAspectRatio: 'none'
         });
 
-        image3.attr({
+        image3.attrs({
             height: imageHeight,
             width: imageWidth,
             x: left,

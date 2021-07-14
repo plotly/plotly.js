@@ -104,7 +104,7 @@ exports.toSVG = function(gd) {
         var imageData = mapbox.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
 
-        image.attr({
+        image.attrs({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
             x: size.l + size.w * domain.x[0],
@@ -123,7 +123,7 @@ exports.toSVG = function(gd) {
             logo.attr('transform', strTranslate(size.l + size.w * domain.x[0] + 10, size.t + size.h * (1 - domain.y[0]) - 31));
             logo.append('path')
               .attr('d', constants.mapboxLogo.path0)
-              .style({
+              .styles({
                   opacity: 0.9,
                   fill: '#ffffff',
                   'enable-background': 'new'
@@ -141,7 +141,7 @@ exports.toSVG = function(gd) {
 
             logo.append('polygon')
               .attr('points', constants.mapboxLogo.polygon)
-              .style({
+              .styles({
                   opacity: 0.9,
                   fill: '#ffffff',
                   'enable-background': 'new'
@@ -159,7 +159,7 @@ exports.toSVG = function(gd) {
         attributionText
           .text(attributions)
           .classed('static-attribution', true)
-          .attr({
+          .attrs({
               'font-size': 12,
               'font-family': 'Arial',
               'color': 'rgba(0, 0, 0, 0.75)',
@@ -185,7 +185,7 @@ exports.toSVG = function(gd) {
         // Draw white rectangle behind text
         attributionGroup
           .insert('rect', '.static-attribution')
-          .attr({
+          .attrs({
               x: -bBox.width - 6,
               y: -bBox.height - 3,
               width: bBox.width + 6,

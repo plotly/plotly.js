@@ -296,7 +296,7 @@ function plotBoxMean(sel, axes, trace, t) {
 
     paths.enter().append('path')
         .attr('class', 'mean')
-        .style({
+        .styles({
             fill: 'none',
             'vector-effect': 'non-scaling-stroke'
         });

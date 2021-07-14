@@ -49,7 +49,7 @@ function lsInner(gd) {
     var axList = Axes.list(gd, '', true);
     var i, subplot, plotinfo, ax, xa, ya;
 
-    fullLayout._paperdiv.style({
+    fullLayout._paperdiv.styles({
         width: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width) ? '100%' : fullLayout.width + 'px',
         height: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroHeight && !gd.layout.height) ? '100%' : fullLayout.height + 'px'
     })
@@ -194,7 +194,7 @@ function lsInner(gd) {
                     .append('rect');
             });
 
-            plotinfo.clipRect = plotClip.select('rect').attr({
+            plotinfo.clipRect = plotClip.select('rect').attrs({
                 width: xa._length,
                 height: ya._length
             });

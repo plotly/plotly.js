@@ -181,7 +181,7 @@ module.exports = function draw(gd) {
                 break;
         }
 
-        thisImage.attr({
+        thisImage.attrs({
             x: xPos,
             y: yPos,
             width: width,

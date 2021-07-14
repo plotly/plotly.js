@@ -135,7 +135,7 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
         var direction = (label.endAnchor ? -1 : 1) * orientation.flip;
 
         var labelEl = d3.select(this)
-            .attr({
+            .attrs({
                 'text-anchor': direction > 0 ? 'start' : 'end',
                 'data-notex': 1
             })

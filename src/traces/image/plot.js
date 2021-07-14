@@ -124,7 +124,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         var image3 = plotGroup.selectAll('image')
             .data([cd]);
 
-        image3.enter().append('svg:image').attr({
+        image3.enter().append('svg:image').attrs({
             xmlns: xmlnsNamespaces.svg,
             preserveAspectRatio: 'none'
         });
@@ -207,7 +207,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 }
             }
 
-            image3.attr({
+            image3.attrs({
                 'xlink:href': href,
                 height: imageHeight,
                 width: imageWidth,

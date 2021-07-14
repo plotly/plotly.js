@@ -135,7 +135,7 @@ function draw(gd, titleClass, options) {
 
         titleEl.attr('transform', transformVal);
 
-        titleEl.style({
+        titleEl.styles({
             'font-family': fontFamily,
             'font-size': d3.round(fontSize, 2) + 'px',
             fill: Color.rgb(fontColor),

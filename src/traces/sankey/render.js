@@ -840,7 +840,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
           .attr('x', d.translateX)
           .attr('y', d.translateY)
           .classed('bgsankey', true)
-          .style({fill: 'transparent', 'stroke-width': 0});
+          .styles({fill: 'transparent', 'stroke-width': 0});
     });
 
     sankey.transition()
