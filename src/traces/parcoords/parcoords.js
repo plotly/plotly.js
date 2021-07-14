@@ -633,8 +633,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             var scale = d.domainScale;
             var sdom = scale.domain();
             d3.select(this)
-                .call(d3.svg.axis()
-                    .orient('left')
+                .call(d3.axisLeft()
                     .tickSize(4)
                     .outerTickSize(2)
                     .ticks(wantedTickCount, d.tickFormat) // works for continuous scales only...
