@@ -50997,6 +50997,79 @@
      "editType": "calc",
      "valType": "string"
     },
+    "cluster": {
+     "color": {
+      "arrayOk": true,
+      "description": "Sets the color for each cluster step.",
+      "editType": "calc",
+      "role": "style",
+      "valType": "color"
+     },
+     "colorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for  color .",
+      "editType": "none",
+      "valType": "string"
+     },
+     "editType": "calc",
+     "enabled": {
+      "description": "Determines whether clustering is enabled or disabled.",
+      "dflt": false,
+      "editType": "calc",
+      "role": "info",
+      "valType": "boolean"
+     },
+     "maxzoom": {
+      "description": "Sets the maximum zoom level. At zoom levels equal to or greater than the maxzoom, the layer will be hidden.",
+      "dflt": 24,
+      "editType": "calc",
+      "max": 24,
+      "min": 0,
+      "valType": "number"
+     },
+     "opacity": {
+      "arrayOk": true,
+      "description": "Sets the marker opacity.",
+      "dflt": 1,
+      "editType": "calc",
+      "max": 1,
+      "min": 0,
+      "valType": "number"
+     },
+     "opacitysrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for  opacity .",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "arrayOk": true,
+      "description": "Sets the size for each cluster step.",
+      "dflt": 20,
+      "editType": "calc",
+      "min": 0,
+      "role": "info",
+      "valType": "number"
+     },
+     "sizesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for  size .",
+      "editType": "none",
+      "valType": "string"
+     },
+     "step": {
+      "arrayOk": true,
+      "description": "Sets the steps for each cluster.",
+      "dflt": -1,
+      "editType": "calc",
+      "min": -1,
+      "role": "info",
+      "valType": "number"
+     },
+     "stepsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for  step .",
+      "editType": "none",
+      "valType": "string"
+     }
+    },
     "connectgaps": {
      "description": "Determines whether or not gaps (i.e. {nan} or missing values) in the provided data arrays are connected.",
      "dflt": false,
