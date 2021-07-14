@@ -2,9 +2,26 @@
 
 var d3 = require('d3');
 
-d3.round = function(x, n) { // copy of d3.round from v3
+// copy of d3.round from v3
+d3.round = function(x, n) {
     return n ? Math.round(x * (n = Math.pow(10, n))) / n : Math.round(x);
 };
+
+// copy of d3.rebind from v3
+d3.rebind = function(target, source) {
+    var i = 1;
+    var n = arguments.length;
+    var method;
+    while(++i < n) target[method = arguments[i]] = _rebind(target, source, source[method]);
+    return target;
+};
+
+function _rebind(target, source, method) {
+    return function() {
+        var value = method.apply(source, arguments);
+        return value === source ? target : value;
+    };
+}
 
 // Adapt node_modules/d3-selection-multi/build/d3-selection-multi.js
 function attrsFunction(selection$$1, map) {
