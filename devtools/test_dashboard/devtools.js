@@ -7,7 +7,6 @@ var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
 var d3 = require('../../test/strict-d3');
-var d3Json = d3.json;
 
 require('./perf');
 
@@ -62,25 +61,17 @@ var Tabs = {
 
         console.warn('Plotting:', mockURL);
 
-        d3Json(mockURL, function(err, fig) {
-            if(err) {
-                console.error(err);
-            } else {
+        var request = new XMLHttpRequest();
+        request.open('GET', mockURL, true);
+        request.responseType = '';
+        request.send();
+
+        request.onreadystatechange = function() {
+            if(this.readyState === 4 && this.status === 200) {
+                var fig = JSON.parse(this.responseText);
                 Plotly.newPlot(Tabs.fresh(id), fig);
             }
-        });
-    },
-
-    getMock: function(mockName, callback) {
-        var mockURL = '/test/image/mocks/' + mockName + '.json';
-
-        d3Json(mockURL, function(err, fig) {
-            if(typeof callback !== 'function') {
-                window.mock = fig;
-            } else {
-                callback(err, fig);
-            }
-        });
+        };
     },
 
     // Save a png snapshot and display it below the plot
