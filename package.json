@@ -88,6 +88,7 @@
     "d3-geo-projection": "^2.9.0",
     "d3-hierarchy": "^1.1.9",
     "d3-interpolate": "^1.4.0",
+    "d3-selection-multi": "^1.0.1",
     "d3-time": "^1.1.0",
     "d3-time-format": "^2.2.3",
     "d3-zoom": "^1.8.3",
