@@ -1,14 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
+var interpolate = require('d3-interpolate').interpolate;
+var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
 var Lib = require('../../lib');
 var strScale = Lib.strScale;
@@ -324,7 +318,7 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     }
     fgBullet.exit().remove();
 
-    var data = cd.filter(function() {return trace.gauge.threshold.value;});
+    var data = cd.filter(function() {return trace.gauge.threshold.value || trace.gauge.threshold.value === 0;});
     var threshold = bullet.selectAll('g.threshold-bullet').data(data);
     threshold.enter().append('g').classed('threshold-bullet', true).append('line');
     threshold.select('line')
@@ -402,6 +396,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     ax.type = 'linear';
     ax.range = trace.gauge.axis.range;
     ax._id = 'xangularaxis'; // or 'y', but I don't think this makes a difference here
+    ax.ticklabeloverflow = 'allow';
     ax.setScale();
 
     // 't'ick to 'g'eometric radians is used all over the place here
@@ -497,7 +492,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     // Draw threshold
     arcs = [];
     var v = trace.gauge.threshold.value;
-    if(v) {
+    if(v || v === 0) {
         arcs.push({
             range: [v, v],
             color: trace.gauge.threshold.color,
@@ -600,7 +595,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                 .each('interrupt', function() { writeNumber(); onComplete && onComplete(); })
                 .attrTween('text', function() {
                     var that = d3.select(this);
-                    var interpolator = d3.interpolateNumber(cd[0].lastY, cd[0].y);
+                    var interpolator = interpolateNumber(cd[0].lastY, cd[0].y);
                     trace._lastValue = cd[0].y;
 
                     var transitionFmt = transitionFormat(trace.number.valueformat, fmt, cd[0].lastY, cd[0].y);
@@ -657,7 +652,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
                     var to = deltaValue(cd[0]);
                     var from = trace._deltaLastValue;
                     var transitionFmt = transitionFormat(trace.delta.valueformat, deltaFmt, from, to);
-                    var interpolator = d3.interpolateNumber(from, to);
+                    var interpolator = interpolateNumber(from, to);
                     trace._deltaLastValue = to;
                     return function(t) {
                         that.text(deltaFormatText(interpolator(t), transitionFmt));
@@ -799,9 +794,9 @@ function styleShape(p) {
 // arcs from their current angle to the specified new angle.
 function arcTween(arc, endAngle, newAngle) {
     return function() {
-        var interpolate = d3.interpolate(endAngle, newAngle);
+        var interp = interpolate(endAngle, newAngle);
         return function(t) {
-            return arc.endAngle(interpolate(t))();
+            return arc.endAngle(interp(t))();
         };
     };
 }

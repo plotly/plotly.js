@@ -1,15 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Color = require('../../components/color');
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var baseAttrs = require('../../plots/attributes');
 
@@ -19,7 +12,6 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 function makeContourProjAttr(axLetter) {
     return {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: [
             'Determines whether or not these contour lines are projected',
@@ -36,7 +28,6 @@ function makeContourAttr(axLetter) {
     return {
         show: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             description: [
                 'Determines whether or not contour lines about the', axLetter,
@@ -46,7 +37,6 @@ function makeContourAttr(axLetter) {
         start: {
             valType: 'number',
             dflt: null,
-            role: 'style',
             editType: 'plot',
          // impliedEdits: {'^autocontour': false},
             description: [
@@ -57,7 +47,6 @@ function makeContourAttr(axLetter) {
         end: {
             valType: 'number',
             dflt: null,
-            role: 'style',
             editType: 'plot',
          // impliedEdits: {'^autocontour': false},
             description: [
@@ -69,7 +58,6 @@ function makeContourAttr(axLetter) {
             valType: 'number',
             dflt: null,
             min: 0,
-            role: 'style',
             editType: 'plot',
          // impliedEdits: {'^autocontour': false},
             description: [
@@ -84,13 +72,11 @@ function makeContourAttr(axLetter) {
         },
         color: {
             valType: 'color',
-            role: 'style',
             dflt: Color.defaultLine,
             description: 'Sets the color of the contour lines.'
         },
         usecolormap: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             description: [
                 'An alternate to *color*.',
@@ -100,7 +86,6 @@ function makeContourAttr(axLetter) {
         },
         width: {
             valType: 'number',
-            role: 'style',
             min: 1,
             max: 16,
             dflt: 2,
@@ -108,7 +93,6 @@ function makeContourAttr(axLetter) {
         },
         highlight: {
             valType: 'boolean',
-            role: 'info',
             dflt: true,
             description: [
                 'Determines whether or not contour lines about the', axLetter,
@@ -117,13 +101,11 @@ function makeContourAttr(axLetter) {
         },
         highlightcolor: {
             valType: 'color',
-            role: 'style',
             dflt: Color.defaultLine,
             description: 'Sets the color of the highlighted contour lines.'
         },
         highlightwidth: {
             valType: 'number',
-            role: 'style',
             min: 1,
             max: 16,
             dflt: 2,
@@ -148,7 +130,6 @@ var attrs = module.exports = overrideAll(extendFlat({
 
     text: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         description: [
@@ -159,17 +140,19 @@ var attrs = module.exports = overrideAll(extendFlat({
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         description: 'Same as `text`.'
     },
     hovertemplate: hovertemplateAttrs(),
 
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+
     connectgaps: {
         valType: 'boolean',
         dflt: false,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not gaps',
@@ -200,7 +183,6 @@ colorScaleAttrs('', {
     },
     hidesurface: {
         valType: 'boolean',
-        role: 'info',
         dflt: false,
         description: [
             'Determines whether or not a surface is drawn.',
@@ -213,7 +195,6 @@ colorScaleAttrs('', {
     lightposition: {
         x: {
             valType: 'number',
-            role: 'style',
             min: -1e5,
             max: 1e5,
             dflt: 10,
@@ -221,7 +202,6 @@ colorScaleAttrs('', {
         },
         y: {
             valType: 'number',
-            role: 'style',
             min: -1e5,
             max: 1e5,
             dflt: 1e4,
@@ -229,7 +209,6 @@ colorScaleAttrs('', {
         },
         z: {
             valType: 'number',
-            role: 'style',
             min: -1e5,
             max: 1e5,
             dflt: 0,
@@ -240,7 +219,6 @@ colorScaleAttrs('', {
     lighting: {
         ambient: {
             valType: 'number',
-            role: 'style',
             min: 0.00,
             max: 1.0,
             dflt: 0.8,
@@ -248,7 +226,6 @@ colorScaleAttrs('', {
         },
         diffuse: {
             valType: 'number',
-            role: 'style',
             min: 0.00,
             max: 1.00,
             dflt: 0.8,
@@ -256,7 +233,6 @@ colorScaleAttrs('', {
         },
         specular: {
             valType: 'number',
-            role: 'style',
             min: 0.00,
             max: 2.00,
             dflt: 0.05,
@@ -264,7 +240,6 @@ colorScaleAttrs('', {
         },
         roughness: {
             valType: 'number',
-            role: 'style',
             min: 0.00,
             max: 1.00,
             dflt: 0.5,
@@ -272,7 +247,6 @@ colorScaleAttrs('', {
         },
         fresnel: {
             valType: 'number',
-            role: 'style',
             min: 0.00,
             max: 5.00,
             dflt: 0.2,
@@ -285,7 +259,6 @@ colorScaleAttrs('', {
 
     opacity: {
         valType: 'number',
-        role: 'style',
         min: 0,
         max: 1,
         dflt: 1,
@@ -300,7 +273,6 @@ colorScaleAttrs('', {
 
     opacityscale: {
         valType: 'any',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the opacityscale.',

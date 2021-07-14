@@ -2,10 +2,10 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var mouseEvent = require('../assets/mouse_event');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -264,12 +264,12 @@ describe('Test sort transform interactions:', function() {
     afterEach(destroyGraphDiv);
 
     function _assertFirst(p) {
-        var parts = d3.select('.point').attr('d').split(',').slice(0, 3).join(',');
+        var parts = d3Select('.point').attr('d').split(',').slice(0, 3).join(',');
         expect(parts).toEqual(p);
     }
 
     it('should respond to restyle calls', function(done) {
-        Plotly.plot(createGraphDiv(), [{
+        Plotly.newPlot(createGraphDiv(), [{
             x: [-2, -1, -2, 0, 1, 3, 1],
             y: [1, 2, 3, 1, 2, 3, 1],
             marker: {
@@ -298,8 +298,7 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             _assertFirst('M10,0A10,10 0 1');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('does not preserve event data `pointNumber` value', function(done) {
@@ -341,7 +340,7 @@ describe('Test sort transform interactions:', function() {
             expect(pt.fullData.ids[pt.pointNumber]).toEqual(id, 'id');
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             mode: 'markers',
             x: [-2, -1, -2, 0, 1, 3, 1],
             y: [1, 2, 3, 1, 2, 3, 1],
@@ -390,14 +389,13 @@ describe('Test sort transform interactions:', function() {
         .then(function(eventData) {
             assertPt(eventData, 1, 1, 5, 'G');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should honor *categoryarray* when set', function(done) {
         var gd = createGraphDiv();
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: ['C', 'B', 'A'],
             y: [3, 1, 2],
             marker: {
@@ -427,7 +425,6 @@ describe('Test sort transform interactions:', function() {
         .then(function() {
             expect(gd._fullLayout.xaxis._categories).toEqual(['A', 'B', 'C']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

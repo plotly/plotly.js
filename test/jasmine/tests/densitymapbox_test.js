@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -270,7 +270,7 @@ describe('Test densitymapbox convert:', function() {
     });
 });
 
-describe('@noCI Test densitymapbox hover:', function() {
+describe('Test densitymapbox hover:', function() {
     var gd;
 
     afterEach(function(done) {
@@ -296,7 +296,7 @@ describe('@noCI Test densitymapbox hover:', function() {
 
         var pos = s.pos || [353, 143];
 
-        return Plotly.plot(gd, fig).then(function() {
+        return Plotly.newPlot(gd, fig).then(function() {
             var to = setTimeout(function() {
                 failTest('no event data received');
                 done();
@@ -330,7 +330,7 @@ describe('@noCI Test densitymapbox hover:', function() {
 
     var specs = [{
         desc: 'basic',
-        nums: '3\n(20°, 25°)',
+        nums: '3\n(25°, 20°)',
         name: '',
         evtPts: [{lon: 20, lat: 25, z: 3, pointNumber: 1, curveNumber: 0}]
     }, {
@@ -352,7 +352,7 @@ describe('@noCI Test densitymapbox hover:', function() {
             });
             return fig;
         },
-        nums: '(20°, 25°)',
+        nums: '(25°, 20°)',
         name: 'trace 0',
         evtPts: [{lon: 20, lat: 25, z: 3, pointNumber: 1, curveNumber: 0}]
     }, {
@@ -363,7 +363,7 @@ describe('@noCI Test densitymapbox hover:', function() {
             });
             return fig;
         },
-        nums: '(20°, 25°)',
+        nums: '(25°, 20°)',
         name: '',
         evtPts: [{lon: 20, lat: 25, pointNumber: 1, curveNumber: 0}]
     }];
@@ -375,7 +375,7 @@ describe('@noCI Test densitymapbox hover:', function() {
     });
 });
 
-describe('@noCI Test densitymapbox interactions:', function() {
+describe('Test densitymapbox interactions:', function() {
     var gd;
 
     beforeEach(function() {
@@ -410,7 +410,7 @@ describe('@noCI Test densitymapbox interactions:', function() {
             z: [1, 20, 5],
         };
 
-        Plotly.plot(gd,
+        Plotly.newPlot(gd,
             [trace0, trace1],
             {mapbox: {style: 'basic'}},
             {mapboxAccessToken: MAPBOX_ACCESS_TOKEN}
@@ -426,8 +426,7 @@ describe('@noCI Test densitymapbox interactions:', function() {
         .then(function() {
             _assert('after adding trace0', { layerCnt: 22 });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to restyle *below*', function(done) {
@@ -438,7 +437,7 @@ describe('@noCI Test densitymapbox interactions:', function() {
             return layerIds;
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'densitymapbox',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
@@ -494,8 +493,7 @@ describe('@noCI Test densitymapbox interactions:', function() {
                 'place_label_other', 'place_label_city', 'country_label'
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 
     it('@gl should be able to restyle from and to *scattermapbox*', function(done) {
@@ -507,7 +505,7 @@ describe('@noCI Test densitymapbox interactions:', function() {
             }
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'densitymapbox',
             lon: [10, 20, 30],
             lat: [15, 25, 35],
@@ -520,7 +518,6 @@ describe('@noCI Test densitymapbox interactions:', function() {
         .then(function() { _assert('after restyle to scattermapbox', 'scattermapbox'); })
         .then(function() { return Plotly.restyle(gd, 'type', 'densitymapbox'); })
         .then(function() { _assert('back to densitymapbox', 'densitymapbox'); })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     }, 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });

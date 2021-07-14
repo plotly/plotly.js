@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var extendFlat = require('../lib/extend').extendFlat;
@@ -37,7 +29,6 @@ exports.attributes = function(opts, extra) {
 
     var base = {
         valType: 'info_array',
-        role: 'info',
         editType: opts.editType,
         items: [
             {valType: 'number', min: 0, max: 1, editType: opts.editType},
@@ -77,7 +68,6 @@ exports.attributes = function(opts, extra) {
             valType: 'integer',
             min: 0,
             dflt: 0,
-            role: 'info',
             editType: opts.editType,
             description: [
                 'If there is a layout grid, use the domain ',
@@ -92,7 +82,6 @@ exports.attributes = function(opts, extra) {
             valType: 'integer',
             min: 0,
             dflt: 0,
-            role: 'info',
             editType: opts.editType,
             description: [
                 'If there is a layout grid, use the domain ',

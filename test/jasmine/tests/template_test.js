@@ -199,11 +199,10 @@ describe('makeTemplate', function() {
                 }
             });
         })
-        .catch(failTest)
         .then(function() {
             document.body.removeChild(gd);
-        })
-        .then(done);
+            done();
+        }, done.fail);
     });
 });
 
@@ -216,7 +215,6 @@ describe('template interactions', function() {
         var mock = Lib.extendDeep({}, templateMock);
         gd = createGraphDiv();
         Plotly.newPlot(gd, mock)
-        .catch(failTest)
         .then(done);
     });
     afterEach(destroyGraphDiv);
@@ -256,8 +254,7 @@ describe('template interactions', function() {
             // item count and order are unchanged now, item just moves.
             schoolDragger = checkAnnotations(6, 5, 4, 0.5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('makes a new shape or edits the existing one as necessary', function(done) {
@@ -293,8 +290,7 @@ describe('template interactions', function() {
             // item count and order are unchanged now, item just resizes.
             rectDragger = checkShapes(2, 0.4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -398,7 +394,7 @@ describe('validateTemplate', function() {
             path: 'layout.annotations[4]',
             templateitemname: 'nope',
             msg: 'There are no templates for item layout.annotations[4] with name nope'
-        }]).then(done);
+        }]).then(done, done.fail);
     });
 
     it('catches missing template.data', function(done) {
@@ -411,7 +407,7 @@ describe('validateTemplate', function() {
         }],
         // check only the first error - we don't care about the specifics
         // uncovered after we already know there's no template.data
-        1).then(done);
+        1).then(done, done.fail);
     });
 
     it('catches missing template.layout', function(done) {
@@ -421,6 +417,6 @@ describe('validateTemplate', function() {
         checkValidate(noLayoutMock, [{
             code: 'layout',
             msg: 'The template has no key layout.'
-        }], 1).then(done);
+        }], 1).then(done, done.fail);
     });
 });

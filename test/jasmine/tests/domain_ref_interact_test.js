@@ -1,13 +1,12 @@
 'use strict';
-var failTest = require('../assets/fail_test');
-var domainRefComponents = require('../assets/domain_ref/components');
+
+var domainRefComponents = require('../assets/domain_ref_components');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var Plotly = require('../../../lib/index');
-var Lib = require('../../../src/lib');
-var getSVGElemScreenBBox = require(
-    '../assets/get_svg_elem_screen_bbox');
-var testMock = require('../assets/domain_ref/domain_refs_editable.json');
+var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
+var getSVGElemScreenBBox = require('../assets/get_svg_elem_screen_bbox');
+var testMock = require('../assets/domain_refs_editable.json');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 // we have to use drag to move annotations for some reason
@@ -153,8 +152,7 @@ describe('Shapes referencing domain', function() {
                 testObjectMove(color, x, y, type);
             })
             .then(delay(DELAY_TIME))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         };
     }
     function testAnnotationMoveLabelItFun(color, x, y) {
@@ -163,8 +161,7 @@ describe('Shapes referencing domain', function() {
             .then(delay(DELAY_TIME))
             .then(testAnnotationMoveLabel(color, x, y))
             .then(delay(DELAY_TIME))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         };
     }
     function testAnnotationMoveWholeItFun(color, arrowColor, x, y, corner) {
@@ -173,8 +170,7 @@ describe('Shapes referencing domain', function() {
             .then(delay(DELAY_TIME))
             .then(testAnnotationMoveWhole(color, arrowColor, x, y, corner))
             .then(delay(DELAY_TIME))
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         };
     }
     it('should move box on linear x axis and log y to the proper position',

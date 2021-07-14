@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../lib');
@@ -22,7 +14,6 @@ exports.attributes = {
     enabled: {
         valType: 'boolean',
         dflt: true,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether this sort transform is enabled or disabled.'
@@ -34,7 +25,6 @@ exports.attributes = {
         noBlank: true,
         arrayOk: true,
         dflt: 'x',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the target by which the sort transform is applied.',
@@ -53,7 +43,6 @@ exports.attributes = {
         valType: 'enumerated',
         values: ['ascending', 'descending'],
         dflt: 'ascending',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the sort transform order.'

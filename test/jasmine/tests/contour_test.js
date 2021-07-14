@@ -1,4 +1,4 @@
-var d3 = require('d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -8,7 +8,7 @@ var Contour = require('@src/traces/contour');
 var makeColorMap = require('@src/traces/contour/make_color_map');
 var colorScales = require('@src/components/colorscale/scales').scales;
 
-var failTest = require('../assets/fail_test');
+
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
@@ -467,8 +467,7 @@ describe('contour plotting and editing', function() {
             checkTicks('y', ['Jan 102016', 'Jan 24', 'Feb 7', 'Feb 21'], 'date y #2');
             expect(gd._fullLayout.yaxis.type).toBe('date');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('works and draws labels when explicitly specifying ncontours=1', function(done) {
@@ -486,8 +485,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             expect(gd.querySelector('.contourlabels text').textContent).toBe('0.41');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should always draw heatmap coloring layer below contour lines', function(done) {
@@ -515,8 +513,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             assertNodeOrder('.hm', '.contourlevel', 'back to heatmap coloring');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('can change z values with gaps', function(done) {
@@ -557,14 +554,13 @@ describe('contour plotting and editing', function() {
             expect(gd.calcdata[0][0].z).toEqual([[1, 2], [2, 4], [1, 2.5]]);
             expect(gd.calcdata[0][0].zmask).toEqual([[1, 1], [0, 1], [1, 0]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
+            d3SelectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
             return out;
         }
 
@@ -587,8 +583,7 @@ describe('contour plotting and editing', function() {
         .then(function() {
             expect(getIndices()).toEqual([0, 1]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -630,7 +625,7 @@ describe('contour hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, {
+            Plotly.newPlot(gd, {
                 data: [{
                     type: 'contour',
                     x: [10, 11, 10, 11],
@@ -644,12 +639,12 @@ describe('contour hover', function() {
         afterAll(destroyGraphDiv);
 
         it('should not display hover on missing data and hoverongaps is disabled', function() {
-            var pt = _hover(gd, 10, 100)[0];
-
             var hoverData;
             gd.on('plotly_hover', function(data) {
                 hoverData = data;
             });
+
+            var pt = _hover(gd, 10, 100)[0];
 
             expect(hoverData).toEqual(undefined);
             expect(pt).toEqual(undefined);
@@ -660,7 +655,7 @@ describe('contour hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{
+            Plotly.newPlot(gd, [{
                 type: 'contour',
                 x: [1, 2, 3],
                 y: [2, 3, 4],

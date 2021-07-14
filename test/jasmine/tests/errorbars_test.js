@@ -1,9 +1,8 @@
 var Plotly = require('@lib/index');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
 
 
 describe('errorbar plotting', function() {
@@ -16,8 +15,8 @@ describe('errorbar plotting', function() {
     afterEach(destroyGraphDiv);
 
     function countBars(xCount, yCount) {
-        expect(d3.select(gd).selectAll('.xerror').size()).toBe(xCount);
-        expect(d3.select(gd).selectAll('.yerror').size()).toBe(yCount);
+        expect(d3Select(gd).selectAll('.xerror').size()).toBe(xCount);
+        expect(d3Select(gd).selectAll('.yerror').size()).toBe(yCount);
     }
 
     function checkCalcdata(cdTrace, errorBarData) {
@@ -61,8 +60,7 @@ describe('errorbar plotting', function() {
         .then(function() {
             check([-0.6667, 2.6667], [-0.2629, 4.9949], 3, 3);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('shows half errorbars and removes individual bars that disappear', function(done) {
@@ -79,7 +77,7 @@ describe('errorbar plotting', function() {
                 {xs: 10, xh: 13}
             ]);
 
-            Plotly.restyle(gd, {'error_x.array': [[1]], 'error_y.arrayminus': [[5, 6]]});
+            return Plotly.restyle(gd, {'error_x.array': [[1]], 'error_y.arrayminus': [[5, 6]]});
         })
         .then(function() {
             countBars(1, 2);
@@ -88,7 +86,7 @@ describe('errorbar plotting', function() {
                 {ys: 34, yh: 40}
             ]);
 
-            Plotly.restyle(gd, {'error_x.array': [[7, 8]], 'error_y.arrayminus': [[9]]});
+            return Plotly.restyle(gd, {'error_x.array': [[7, 8]], 'error_y.arrayminus': [[9]]});
         })
         .then(function() {
             countBars(2, 1);
@@ -97,7 +95,6 @@ describe('errorbar plotting', function() {
                 {xs: 10, xh: 18}
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

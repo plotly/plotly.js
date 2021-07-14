@@ -1,18 +1,9 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 module.exports = function makeBinAttrs(axLetter, match) {
     return {
         start: {
             valType: 'any', // for date axes
-            role: 'style',
             editType: 'calc',
             description: [
                 'Sets the starting value for the', axLetter,
@@ -36,7 +27,6 @@ module.exports = function makeBinAttrs(axLetter, match) {
         },
         end: {
             valType: 'any', // for date axes
-            role: 'style',
             editType: 'calc',
             description: [
                 'Sets the end value for the', axLetter,
@@ -49,7 +39,6 @@ module.exports = function makeBinAttrs(axLetter, match) {
         },
         size: {
             valType: 'any', // for date axes
-            role: 'style',
             editType: 'calc',
             description: [
                 'Sets the size of each', axLetter, 'axis bin.',

@@ -4,14 +4,14 @@ var Color = require('@src/components/color');
 
 var Scatter3D = require('@src/traces/scatter3d');
 
-var d3 = require('d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 
 function countCanvases() {
-    return d3.selectAll('canvas').size();
+    return d3SelectAll('canvas').size();
 }
 
 describe('Scatter3D defaults', function() {
@@ -127,7 +127,7 @@ describe('Test scatter3d interactions:', function() {
         var _mock = Lib.extendDeep({}, mock2);
         var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             expect(countCanvases()).toEqual(1);
@@ -158,13 +158,13 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
         })
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to delete the last trace', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             return Plotly.deleteTraces(gd, [0]);
@@ -174,7 +174,7 @@ describe('Test scatter3d interactions:', function() {
             expect(gd._fullLayout._has('gl3d')).toBe(false);
             expect(gd._fullLayout.scene === undefined).toBe(true);
         })
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should be able to toggle visibility', function(done) {
@@ -203,7 +203,7 @@ describe('Test scatter3d interactions:', function() {
             expect(actual).toEqual(expected);
         }
 
-        Plotly.plot(gd, _mock)
+        Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
             assertObjects(order0);
@@ -238,7 +238,7 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertObjects(order0);
         })
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should avoid passing blank texts to webgl', function(done) {
@@ -246,7 +246,7 @@ describe('Test scatter3d interactions:', function() {
             var fullLayout = gd._fullLayout;
             expect(fullLayout.scene._scene.glplot.objects[0].glyphBuffer.length).not.toBe(0, msg);
         }
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             mode: 'text',
             x: [1, 2, 3],
@@ -256,14 +256,13 @@ describe('Test scatter3d interactions:', function() {
         .then(function() {
             assertIsFilled('not to be empty text');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should avoid passing empty lines to webgl', function(done) {
         var obj;
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             mode: 'lines',
             x: [1],
@@ -284,12 +283,11 @@ describe('Test scatter3d interactions:', function() {
             // see https://github.com/plotly/plotly.js/issues/1976
             expect(obj.vao.draw).toHaveBeenCalledTimes(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@gl should only accept texts for textposition otherwise textposition is set to middle center before passing to webgl', function(done) {
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scatter3d',
             mode: 'markers+text+lines',
             x: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16],
@@ -309,7 +307,6 @@ describe('Test scatter3d interactions:', function() {
                 expect(AllTextpositions[i]).toBe('middle center', 'is not middle center');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

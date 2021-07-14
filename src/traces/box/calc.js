@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -48,7 +40,7 @@ module.exports = function calc(gd, trace) {
     var allPosArrays = getPosArrays(trace, posLetter, posAxis, fullLayout[numKey]);
     var posArray = allPosArrays[0];
     var origPos = allPosArrays[1];
-    var dv = Lib.distinctVals(posArray);
+    var dv = Lib.distinctVals(posArray, posAxis);
     var posDistinct = dv.vals;
     var dPos = dv.minDiff / 2;
 

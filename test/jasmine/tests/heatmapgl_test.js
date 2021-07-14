@@ -4,6 +4,9 @@ var Plotly = require('@lib/index');
 var schema = Plotly.PlotSchema.get();
 var attributeList = Object.getOwnPropertyNames(schema.traces.heatmapgl.attributes);
 
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+
 describe('heatmapgl supplyDefaults', function() {
     'use strict';
 
@@ -95,5 +98,34 @@ describe('heatmapgl supplyDefaults', function() {
                 expect(attributeList.indexOf(key)).not.toBe(-1, key);
             }
         });
+    });
+});
+
+describe('heatmapgl plotting', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('can do scaleanchor', function(done) {
+        var data = [{
+            z: [[1, 2, 3], [4, 5, 6], [7, 8, 9]],
+            type: 'heatmapgl',
+            showscale: false
+        }];
+        var layout = {
+            xaxis: {scaleanchor: 'y'},
+            width: 500,
+            height: 300,
+            margin: {l: 50, r: 50, t: 50, b: 50}
+        };
+        Plotly.newPlot(gd, data, layout)
+        .then(function() {
+            expect(layout.xaxis.range).toBeCloseToArray([-1, 3], 3);
+        })
+        .then(done, done.fail);
     });
 });

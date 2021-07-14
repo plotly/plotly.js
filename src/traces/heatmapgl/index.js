@@ -1,12 +1,11 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
+
+var deprecationWarning = [
+    '*heatmapgl* trace is deprecated!',
+    'Please consider switching to the *heatmap* or *image* trace types.',
+    'Alternatively you could contribute/sponsor rewriting this trace type',
+    'based on cartesian features and using regl framework.'
+].join(' ');
 
 module.exports = {
     attributes: require('./attributes'),
@@ -22,6 +21,7 @@ module.exports = {
     categories: ['gl', 'gl2d', '2dMap'],
     meta: {
         description: [
+            deprecationWarning,
             'WebGL version of the heatmap trace type.'
         ].join(' ')
     }

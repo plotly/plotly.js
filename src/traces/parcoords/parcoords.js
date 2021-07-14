@@ -1,14 +1,6 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var rgba = require('color-rgba');
 
 var Axes = require('../../plots/cartesian/axes');
@@ -377,7 +369,7 @@ function calcTilt(angle, position) {
     };
 }
 
-function updatePanelLayout(yAxis, vm) {
+function updatePanelLayout(yAxis, vm, plotGlPixelRatio) {
     var panels = vm.panels || (vm.panels = []);
     var data = yAxis.data();
     for(var i = 0; i < data.length - 1; i++) {
@@ -391,6 +383,7 @@ function updatePanelLayout(yAxis, vm) {
         p.panelSizeY = vm.model.canvasHeight;
         p.y = 0;
         p.canvasY = 0;
+        p.plotGlPixelRatio = plotGlPixelRatio;
     }
 }
 
@@ -441,6 +434,8 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
+    var paperColor = gd._fullLayout.paper_bgcolor;
 
     calcAllTicks(cdModule);
 
@@ -459,6 +454,8 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
+            d.viewModel.plotGlPixelRatio = plotGlPixelRatio;
+            d.viewModel.paperColor = paperColor;
             d.model = d.viewModel ? d.viewModel.model : null;
         });
 
@@ -542,7 +539,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.yAxis, true);
 
     parcoordsControlView.each(function(p) {
-        updatePanelLayout(yAxis, p);
+        updatePanelLayout(yAxis, p, plotGlPixelRatio);
     });
 
     glLayers
@@ -581,7 +578,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
                     e.canvasX = e.x * e.model.canvasPixelRatio;
                 });
 
-            updatePanelLayout(yAxis, p);
+            updatePanelLayout(yAxis, p, plotGlPixelRatio);
 
             yAxis.filter(function(e) { return Math.abs(d.xIndex - e.xIndex) !== 0; })
                 .attr('transform', function(d) { return strTranslate(d.xScale(d.xIndex), 0); });
@@ -594,7 +591,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             var p = d.parent;
             d.x = d.xScale(d.xIndex);
             d.canvasX = d.x * d.model.canvasPixelRatio;
-            updatePanelLayout(yAxis, p);
+            updatePanelLayout(yAxis, p, plotGlPixelRatio);
             d3.select(this)
                 .attr('transform', function(d) { return strTranslate(d.x, 0); });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
@@ -655,7 +652,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .attr('stroke-width', '1px');
 
     axis.selectAll('text')
-        .style('text-shadow', '1px 1px 1px #fff, -1px -1px 1px #fff, 1px -1px 1px #fff, -1px 1px 1px #fff')
+        .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('cursor', 'default');
 
     var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)
@@ -757,5 +754,5 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .text(function(d) { return extremeText(d, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
-    brush.ensureAxisBrush(axisOverlays);
+    brush.ensureAxisBrush(axisOverlays, paperColor);
 };

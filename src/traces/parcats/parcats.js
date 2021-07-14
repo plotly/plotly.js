@@ -1,14 +1,7 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
+var interpolateNumber = require('d3-interpolate').interpolateNumber;
 var Plotly = require('../../plot_api/plot_api');
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
@@ -246,11 +239,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
             })
         .attr('alignment-baseline', 'middle')
 
-        .style('text-shadow',
-            paperColor + ' -1px  1px 2px, ' +
-            paperColor + ' 1px  1px 2px, ' +
-            paperColor + '  1px -1px 2px, ' +
-            paperColor + ' -1px -1px 2px')
+        .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('fill', 'rgb(0, 0, 0)')
         .attr('x',
             function(d) {
@@ -1621,7 +1610,7 @@ function buildSvgPath(leftXPositions, pathYs, dimWidths, pathHeight, curvature) 
     var d;
 
     for(d = 0; d < dimWidths.length - 1; d++) {
-        refInterpolator = d3.interpolateNumber(dimWidths[d] + leftXPositions[d], leftXPositions[d + 1]);
+        refInterpolator = interpolateNumber(dimWidths[d] + leftXPositions[d], leftXPositions[d + 1]);
         xRefPoints1.push(refInterpolator(curvature));
         xRefPoints2.push(refInterpolator(1 - curvature));
     }

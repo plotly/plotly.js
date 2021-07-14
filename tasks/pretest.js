@@ -6,7 +6,6 @@ var common = require('./util/common');
 // main
 makeCredentialsFile();
 makeTestImageFolders();
-makeRequireJSFixture();
 
 // Create a credentials json file,
 // to be required in jasmine test suites and test dashboard
@@ -30,20 +29,6 @@ function makeTestImageFolders() {
 
     makeOne(constants.pathToTestImages, 'test image folder');
     makeOne(constants.pathToTestImagesDiff, 'test image diff folder');
-}
-
-// Make script file that define plotly in a RequireJS context
-function makeRequireJSFixture() {
-    var bundle = fs.readFileSync(constants.pathToPlotlyDistMin, 'utf-8');
-
-    var index = [
-        'define(\'plotly\', function(require, exports, module) {',
-        bundle,
-        '});'
-    ].join('');
-
-    common.writeFile(constants.pathToRequireJSFixture, index);
-    logger('make build/requirejs_fixture.js');
 }
 
 function logger(task) {

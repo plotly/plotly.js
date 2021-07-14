@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var EventEmitter = require('events').EventEmitter;
@@ -61,7 +53,7 @@ function toImage(gd, opts) {
 
     var redrawFunc = helpers.getRedrawFunc(clonedGd);
 
-    Registry.call('plot', clonedGd, clone.data, clone.layout, clone.config)
+    Registry.call('_doPlot', clonedGd, clone.data, clone.layout, clone.config)
         .then(redrawFunc)
         .then(wait)
         .catch(function(err) {

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Registry = require('../registry');
@@ -17,13 +9,8 @@ var frameAttributes = require('../plots/frame_attributes');
 var animationAttributes = require('../plots/animation_attributes');
 var configAttributes = require('./plot_config').configAttributes;
 
-// polar attributes are not part of the Registry yet
-var polarAreaAttrs = require('../plots/polar/legacy/area_attributes');
-var polarAxisAttrs = require('../plots/polar/legacy/axis_attributes');
-
 var editTypes = require('./edit_types');
 
-var extendFlat = Lib.extendFlat;
 var extendDeepAll = Lib.extendDeepAll;
 var isPlainObject = Lib.isPlainObject;
 var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
@@ -55,7 +42,7 @@ exports.UNDERSCORE_ATTRS = UNDERSCORE_ATTRS;
 exports.get = function() {
     var traces = {};
 
-    Registry.allTypes.concat('area').forEach(function(type) {
+    Registry.allTypes.forEach(function(type) {
         traces[type] = getTraceAttributes(type);
     });
 
@@ -282,8 +269,6 @@ exports.getTraceValObject = function(trace, parts) {
         moduleAttrs = (Registry.transformsRegistry[transforms[tNum].type] || {}).attributes;
         valObject = moduleAttrs && moduleAttrs[parts[2]];
         i = 3; // start recursing only inside the transform
-    } else if(trace.type === 'area') {
-        valObject = polarAreaAttrs[head];
     } else {
         // first look in the module for this trace
         // components have already merged their trace attributes in here
@@ -384,12 +369,7 @@ function layoutHeadAttr(fullLayout, head) {
 
     if(head in baseLayoutAttributes) return baseLayoutAttributes[head];
 
-    // Polar doesn't populate _modules or _basePlotModules
-    // just fall back on these when the others fail
-    if(head === 'radialaxis' || head === 'angularaxis') {
-        return polarAxisAttrs[head];
-    }
-    return polarAxisAttrs.layout[head] || false;
+    return false;
 }
 
 function recurseIntoValObject(valObject, parts, i) {
@@ -447,13 +427,8 @@ function isIndex(val) {
 function getTraceAttributes(type) {
     var _module, basePlotModule;
 
-    if(type === 'area') {
-        _module = { attributes: polarAreaAttrs };
-        basePlotModule = {};
-    } else {
-        _module = Registry.modules[type]._module,
-        basePlotModule = _module.basePlotModule;
-    }
+    _module = Registry.modules[type]._module,
+    basePlotModule = _module.basePlotModule;
 
     var attributes = {};
 
@@ -551,9 +526,6 @@ function getLayoutAttributes() {
         }
     }
 
-    // polar layout attributes
-    layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
-
     // add registered components layout attributes
     for(key in Registry.componentsRegistry) {
         _module = Registry.componentsRegistry[key];
@@ -631,7 +603,6 @@ function mergeValTypeAndRole(attrs) {
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
-            role: 'info',
             description: [
                 'Sets the source reference on Chart Studio Cloud for ',
                 attrName, '.'
@@ -642,13 +613,8 @@ function mergeValTypeAndRole(attrs) {
 
     function callback(attr, attrName, attrs) {
         if(exports.isValObject(attr)) {
-            if(attr.valType === 'data_array') {
-                // all 'data_array' attrs have role 'data'
-                attr.role = 'data';
-                // all 'data_array' attrs have a corresponding 'src' attr
-                attrs[attrName + 'src'] = makeSrcAttr(attrName);
-            } else if(attr.arrayOk === true) {
-                // all 'arrayOk' attrs have a corresponding 'src' attr
+            if(attr.arrayOk === true || attr.valType === 'data_array') {
+                // all 'arrayOk' and 'data_array' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
             }
         } else if(isPlainObject(attr)) {
@@ -701,16 +667,6 @@ function stringify(attrs) {
     walk(attrs);
 }
 
-function assignPolarLayoutAttrs(layoutAttributes) {
-    extendFlat(layoutAttributes, {
-        radialaxis: polarAxisAttrs.radialaxis,
-        angularaxis: polarAxisAttrs.angularaxis
-    });
-
-    extendFlat(layoutAttributes, polarAxisAttrs.layout);
-
-    return layoutAttributes;
-}
 
 function handleBasePlotModule(layoutAttributes, _module, astr) {
     var np = nestedProperty(layoutAttributes, astr);

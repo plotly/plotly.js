@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
@@ -24,7 +16,6 @@ carpetFont.color.dflt = colorAttrs.defaultLine;
 module.exports = {
     carpet: {
         valType: 'string',
-        role: 'info',
         editType: 'calc',
         description: [
             'An identifier for this carpet, so that `scattercarpet` and',
@@ -37,7 +28,7 @@ module.exports = {
         editType: 'calc+clearAxisTypes',
         description: [
             'A two dimensional array of x coordinates at each carpet point.',
-            'If ommitted, the plot is a cheater plot and the xaxis is hidden',
+            'If omitted, the plot is a cheater plot and the xaxis is hidden',
             'by default.'
         ].join(' ')
     },
@@ -56,7 +47,6 @@ module.exports = {
     a0: {
         valType: 'number',
         dflt: 0,
-        role: 'info',
         editType: 'calc',
         description: [
             'Alternate to `a`.',
@@ -68,7 +58,6 @@ module.exports = {
     da: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the a coordinate step.',
@@ -83,7 +72,6 @@ module.exports = {
     b0: {
         valType: 'number',
         dflt: 0,
-        role: 'info',
         editType: 'calc',
         description: [
             'Alternate to `b`.',
@@ -95,7 +83,6 @@ module.exports = {
     db: {
         valType: 'number',
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the b coordinate step.',
@@ -104,12 +91,11 @@ module.exports = {
     },
     cheaterslope: {
         valType: 'number',
-        role: 'info',
         dflt: 1,
         editType: 'calc',
         description: [
             'The shift applied to each successive row of data in creating a cheater plot.',
-            'Only used if `x` is been ommitted.'
+            'Only used if `x` is been omitted.'
         ].join(' ')
     },
     aaxis: axisAttrs,
@@ -118,7 +104,6 @@ module.exports = {
     color: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'plot',
         description: [
             'Sets default for all colors associated with this axis',

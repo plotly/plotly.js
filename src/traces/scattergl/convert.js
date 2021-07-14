@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -47,6 +39,8 @@ function convertStyle(gd, trace) {
         textUnsel: undefined
     };
 
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
+
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
@@ -72,24 +66,24 @@ function convertStyle(gd, trace) {
     if(subTypes.hasLines(trace)) {
         opts.line = {
             overlay: true,
-            thickness: trace.line.width,
+            thickness: trace.line.width * plotGlPixelRatio,
             color: trace.line.color,
             opacity: trace.opacity
         };
 
         var dashes = (constants.DASHES[trace.line.dash] || [1]).slice();
         for(i = 0; i < dashes.length; ++i) {
-            dashes[i] *= trace.line.width;
+            dashes[i] *= trace.line.width * plotGlPixelRatio;
         }
         opts.line.dashes = dashes;
     }
 
     if(trace.error_x && trace.error_x.visible) {
-        opts.errorX = convertErrorBarStyle(trace, trace.error_x);
+        opts.errorX = convertErrorBarStyle(trace, trace.error_x, plotGlPixelRatio);
     }
 
     if(trace.error_y && trace.error_y.visible) {
-        opts.errorY = convertErrorBarStyle(trace, trace.error_y);
+        opts.errorY = convertErrorBarStyle(trace, trace.error_y, plotGlPixelRatio);
     }
 
     if(!!trace.fill && trace.fill !== 'none') {
@@ -114,6 +108,7 @@ function convertTextStyle(gd, trace) {
     var tff = textfontIn.family;
     var optsOut = {};
     var i;
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
 
     var texttemplate = trace.texttemplate;
     if(texttemplate) {
@@ -199,13 +194,13 @@ function convertTextStyle(gd, trace) {
                 Array.isArray(tfs) ? (
                     isNumeric(tfs[i]) ? tfs[i] : 0
                 ) : tfs
-            );
+            ) * plotGlPixelRatio;
 
             fonti.family = Array.isArray(tff) ? tff[i] : tff;
         }
     } else {
         // if both are single values, make render fast single-value
-        optsOut.font = {size: tfs, family: tff};
+        optsOut.font = {size: tfs * plotGlPixelRatio, family: tff};
     }
 
     return optsOut;
@@ -291,7 +286,8 @@ function convertMarkerStyle(trace) {
     }
 
     // prepare sizes
-    var markerSizeFunc = makeBubbleSizeFn(trace);
+    var sizeFactor = 1;
+    var markerSizeFunc = makeBubbleSizeFn(trace, sizeFactor);
     var s;
 
     if(multiSize || multiLineWidth) {
@@ -316,10 +312,10 @@ function convertMarkerStyle(trace) {
         // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
         if(multiLineWidth) {
             for(i = 0; i < count; i++) {
-                borderSizes[i] = optsIn.line.width[i] / 2;
+                borderSizes[i] = optsIn.line.width[i];
             }
         } else {
-            s = optsIn.line.width / 2;
+            s = optsIn.line.width;
             for(i = 0; i < count; i++) {
                 borderSizes[i] = s;
             }
@@ -343,7 +339,7 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.size = target.marker.size / 2;
+        if(target.marker.size) optsOut.size = target.marker.size;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }
@@ -373,10 +369,10 @@ function convertTextSelection(gd, trace, target) {
     return optsOut;
 }
 
-function convertErrorBarStyle(trace, target) {
+function convertErrorBarStyle(trace, target, plotGlPixelRatio) {
     var optsOut = {
-        capSize: target.width * 2,
-        lineWidth: target.thickness,
+        capSize: target.width * 2 * plotGlPixelRatio,
+        lineWidth: target.thickness * plotGlPixelRatio,
         color: target.color
     };
 

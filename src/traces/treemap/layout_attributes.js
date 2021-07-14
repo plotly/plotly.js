@@ -1,17 +1,8 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 module.exports = {
     treemapcolorway: {
         valType: 'colorlist',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the default treemap slice colors. Defaults to the main',
@@ -23,7 +14,6 @@ module.exports = {
     extendtreemapcolors: {
         valType: 'boolean',
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'If `true`, the treemap slice colors (whether given by `treemapcolorway` or',

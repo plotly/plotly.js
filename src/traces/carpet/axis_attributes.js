@@ -1,25 +1,14 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
+var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
-
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = require('../../constants/docs').TIME_FORMAT_LINK;
 
 module.exports = {
     color: {
         valType: 'color',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets default for all colors associated with this axis',
@@ -33,14 +22,12 @@ module.exports = {
         dflt: 1,
         min: 0,
         max: 1.3,
-        role: 'info',
         editType: 'calc'
     },
     title: {
         text: {
             valType: 'string',
             dflt: '',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets the title of this axis.',
@@ -60,7 +47,6 @@ module.exports = {
         // TODO how is this different than `title.standoff`
         offset: {
             valType: 'number',
-            role: 'info',
             dflt: 10,
             editType: 'calc',
             description: [
@@ -79,7 +65,6 @@ module.exports = {
         // to gd.data like the others are.
         values: ['-', 'linear', 'date', 'category'],
         dflt: '-',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the axis type.',
@@ -93,7 +78,6 @@ module.exports = {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
-        role: 'style',
         editType: 'calc',
         description: [
             'Determines whether or not the range of this axis is',
@@ -106,7 +90,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
-        role: 'style',
         editType: 'calc',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
@@ -119,7 +102,6 @@ module.exports = {
     },
     range: {
         valType: 'info_array',
-        role: 'info',
         editType: 'calc',
         items: [
             {valType: 'any', editType: 'calc'},
@@ -142,7 +124,6 @@ module.exports = {
     fixedrange: {
         valType: 'boolean',
         dflt: false,
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not this axis is zoom-able.',
@@ -153,21 +134,18 @@ module.exports = {
         valType: 'enumerated',
         values: ['index', 'value'],
         dflt: 'value',
-        role: 'info',
         editType: 'calc'
     },
     tickmode: {
         valType: 'enumerated',
         values: ['linear', 'array'],
         dflt: 'array',
-        role: 'info',
         editType: 'calc'
     },
     nticks: {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'style',
         editType: 'calc',
         description: [
             'Specifies the maximum number of ticks for the particular axis.',
@@ -198,7 +176,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['start', 'end', 'both', 'none'],
         dflt: 'start',
-        role: 'style',
         editType: 'calc',
         description: [
             'Determines whether axis labels are drawn on the low side,',
@@ -212,7 +189,6 @@ module.exports = {
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
@@ -223,7 +199,6 @@ module.exports = {
     tickprefix: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'calc',
         description: 'Sets a tick label prefix.'
     },
@@ -231,7 +206,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
-        role: 'style',
         editType: 'calc',
         description: [
             'If *all*, all tick labels are displayed with a prefix.',
@@ -243,7 +217,6 @@ module.exports = {
     ticksuffix: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'calc',
         description: 'Sets a tick label suffix.'
     },
@@ -251,7 +224,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
-        role: 'style',
         editType: 'calc',
         description: 'Same as `showtickprefix` but for tick suffixes.'
     },
@@ -259,7 +231,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
-        role: 'style',
         editType: 'calc',
         description: [
             'If *all*, all exponents are shown besides their significands.',
@@ -272,7 +243,6 @@ module.exports = {
         valType: 'enumerated',
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
         dflt: 'B',
-        role: 'style',
         editType: 'calc',
         description: [
             'Determines a formatting rule for the tick exponents.',
@@ -289,7 +259,6 @@ module.exports = {
         valType: 'number',
         dflt: 3,
         min: 0,
-        role: 'style',
         editType: 'calc',
         description: [
             'Hide SI prefix for 10^n if |n| is below this number'
@@ -298,7 +267,6 @@ module.exports = {
     separatethousands: {
         valType: 'boolean',
         dflt: false,
-        role: 'style',
         editType: 'calc',
         description: [
             'If "true", even 4-digit integers are separated'
@@ -307,18 +275,8 @@ module.exports = {
     tickformat: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'calc',
-        description: [
-            'Sets the tick label formatting rule using d3 formatting mini-languages',
-            'which are very similar to those in Python. For numbers, see:',
-            FORMAT_LINK,
-            'And for dates see:',
-            DATE_FORMAT_LINK,
-            'We add one item to d3\'s date formatter: *%{n}f* for fractional seconds',
-            'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
-            '*%H~%M~%S.%2f* would display *09~15~23.46*'
-        ].join(' ')
+        description: descriptionWithDates('tick label')
     },
     tickformatstops: overrideAll(axesAttrs.tickformatstops, 'calc', 'from-root'),
     categoryorder: {
@@ -328,7 +286,6 @@ module.exports = {
             /* , 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
         ],
         dflt: 'trace',
-        role: 'info',
         editType: 'calc',
         description: [
             'Specifies the ordering logic for the case of categorical variables.',
@@ -344,7 +301,6 @@ module.exports = {
     },
     categoryarray: {
         valType: 'data_array',
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the order in which categories on this axis appear.',
@@ -354,21 +310,18 @@ module.exports = {
     },
     labelpadding: {
         valType: 'integer',
-        role: 'style',
         dflt: 10,
         editType: 'calc',
         description: 'Extra padding between label and the axis'
     },
     labelprefix: {
         valType: 'string',
-        role: 'style',
         editType: 'calc',
         description: 'Sets a axis label prefix.'
     },
     labelsuffix: {
         valType: 'string',
         dflt: '',
-        role: 'style',
         editType: 'calc',
         description: 'Sets a axis label suffix.'
     },
@@ -376,7 +329,6 @@ module.exports = {
     showline: {
         valType: 'boolean',
         dflt: false,
-        role: 'style',
         editType: 'calc',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
@@ -385,7 +337,6 @@ module.exports = {
     linecolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the axis line color.'
     },
@@ -393,13 +344,11 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the width (in px) of the axis line.'
     },
     gridcolor: {
         valType: 'color',
-        role: 'style',
         editType: 'calc',
         description: 'Sets the axis line color.'
     },
@@ -407,13 +356,11 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the width (in px) of the axis line.'
     },
     showgrid: {
         valType: 'boolean',
-        role: 'style',
         dflt: true,
         editType: 'calc',
         description: [
@@ -425,7 +372,6 @@ module.exports = {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'info',
         editType: 'calc',
         description: 'Sets the number of minor grid ticks per major grid tick'
     },
@@ -433,20 +379,17 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the width (in px) of the grid lines.'
     },
     minorgridcolor: {
         valType: 'color',
         dflt: colorAttrs.lightLine,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the color of the grid lines.'
     },
     startline: {
         valType: 'boolean',
-        role: 'style',
         editType: 'calc',
         description: [
             'Determines whether or not a line is drawn at along the starting value',
@@ -456,20 +399,17 @@ module.exports = {
     },
     startlinecolor: {
         valType: 'color',
-        role: 'style',
         editType: 'calc',
         description: 'Sets the line color of the start line.'
     },
     startlinewidth: {
         valType: 'number',
         dflt: 1,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the width (in px) of the start line.'
     },
     endline: {
         valType: 'boolean',
-        role: 'style',
         editType: 'calc',
         description: [
             'Determines whether or not a line is drawn at along the final value',
@@ -480,13 +420,11 @@ module.exports = {
     endlinewidth: {
         valType: 'number',
         dflt: 1,
-        role: 'style',
         editType: 'calc',
         description: 'Sets the width (in px) of the end line.'
     },
     endlinecolor: {
         valType: 'color',
-        role: 'style',
         editType: 'calc',
         description: 'Sets the line color of the end line.'
     },
@@ -494,7 +432,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 0,
-        role: 'info',
         editType: 'calc',
         description: 'The starting index of grid lines along the axis'
     },
@@ -502,7 +439,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: 'The stride between grid lines along the axis'
     },
@@ -510,7 +446,6 @@ module.exports = {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'info',
         editType: 'calc',
         description: 'The starting index of grid lines along the axis'
     },
@@ -518,7 +453,6 @@ module.exports = {
         valType: 'integer',
         min: 1,
         dflt: 1,
-        role: 'info',
         editType: 'calc',
         description: 'The stride between grid lines along the axis'
     },
@@ -526,7 +460,6 @@ module.exports = {
     _deprecated: {
         title: {
             valType: 'string',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Deprecated in favor of `title.text`.',
@@ -540,7 +473,6 @@ module.exports = {
         }),
         titleoffset: {
             valType: 'number',
-            role: 'info',
             dflt: 10,
             editType: 'calc',
             description: 'Deprecated in favor of `title.offset`.'

@@ -1,0 +1,119 @@
+{
+    "data": [{
+        "xaxis": "x",
+        "yaxis": "y",
+        "type": "bar",
+        "orientation": "h",
+        "x": [1, 10, 100],
+        "y": [1, 10, 100]
+    }, {
+        "xaxis": "x2",
+        "yaxis": "y2",
+        "type": "heatmap",
+        "colorbar": {
+            "tickangle": -90,
+            "dtick": 10,
+            "ticks": "inside",
+            "ticklen": 12,
+            "tickwidth": 4,
+            "ticklabelposition": "inside top"
+        },
+        "x": [1, 10, 100],
+        "y": [1, 10, 100],
+        "z": [
+            [0, 50, 100],
+            [50, 100, 0],
+            [100, 0, 50]
+        ]
+    }, {
+        "xaxis": "x3",
+        "yaxis": "y3",
+        "type": "image",
+        "z": [
+            [[255, 0, 0], [255, 255, 0], [0, 255, 0], [0, 255, 255], [0, 0, 255], [255, 0, 255]],
+            [[255, 255, 0], [0, 255, 0], [0, 255, 255], [0, 0, 255], [255, 0, 255], [255, 0, 0]],
+            [[0, 255, 0], [0, 255, 255], [0, 0, 255], [255, 0, 255], [255, 0, 0], [255, 255, 0]],
+            [[0, 255, 255], [0, 0, 255], [255, 0, 255], [255, 0, 0], [255, 255, 0], [0, 255, 0]],
+            [[0, 0, 255], [255, 0, 255], [255, 0, 0], [255, 255, 0], [0, 255, 0], [0, 255, 255]],
+            [[255, 0, 255], [255, 0, 0], [255, 255, 0], [0, 255, 0], [0, 255, 255], [0, 0, 255]]
+        ]
+    }, {
+        "xaxis": "x4",
+        "yaxis": "y4",
+        "type": "bar",
+        "orientation": "v",
+        "x": [1, 10, 100],
+        "y": [1, 10, 100]
+    }],
+    "layout": {
+        "xaxis": {
+            "anchor": "y",
+            "domain": [0, 0.475],
+            "side": "bottom",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis": {
+            "anchor": "x",
+            "domain": [0, 0.475],
+            "side": "left",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [0.525, 1],
+            "side": "bottom",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [0, 0.475],
+            "side": "right",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "domain": [0.525, 1],
+            "side": "top",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain": [0.525, 1],
+            "side": "right",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "xaxis4": {
+            "anchor": "y4",
+            "domain": [0, 0.475],
+            "side": "top",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "yaxis4": {
+            "anchor": "x4",
+            "domain": [0.525, 1],
+            "side": "left",
+            "ticklabelposition": "inside",
+            "gridcolor": "white"
+        },
+        "font": {
+            "size": 24
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 1000,
+        "height": 1000,
+        "margin": {
+            "t": 40,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        }
+    }
+}

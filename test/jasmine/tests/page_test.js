@@ -1,10 +1,9 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
 
 
 describe('page rendering', function() {
@@ -60,7 +59,7 @@ describe('page rendering', function() {
         mock.layout.showlegend = true;
 
         return Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var allPresentationElements = gd3.selectAll('path,text,rect,image,canvas');
 
             gd3.style('visibility', 'hidden');
@@ -82,7 +81,6 @@ describe('page rendering', function() {
                 expect(bBox.height).toBe(0);
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var annAttrs = require('../annotations/attributes');
@@ -17,35 +8,30 @@ module.exports = overrideAll(templatedArray('annotation', {
     visible: annAttrs.visible,
     x: {
         valType: 'any',
-        role: 'info',
         description: [
             'Sets the annotation\'s x position.'
         ].join(' ')
     },
     y: {
         valType: 'any',
-        role: 'info',
         description: [
             'Sets the annotation\'s y position.'
         ].join(' ')
     },
     z: {
         valType: 'any',
-        role: 'info',
         description: [
             'Sets the annotation\'s z position.'
         ].join(' ')
     },
     ax: {
         valType: 'number',
-        role: 'info',
         description: [
             'Sets the x component of the arrow tail about the arrow head (in pixels).'
         ].join(' ')
     },
     ay: {
         valType: 'number',
-        role: 'info',
         description: [
             'Sets the y component of the arrow tail about the arrow head (in pixels).'
         ].join(' ')

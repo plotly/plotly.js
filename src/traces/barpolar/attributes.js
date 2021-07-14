@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -24,7 +16,6 @@ module.exports = {
 
     // orientation: {
     //     valType: 'enumerated',
-    //     role: 'info',
     //     values: ['radial', 'angular'],
     //     editType: 'calc+clearAxisTypes',
     //     description: 'Sets the orientation of the bars.'

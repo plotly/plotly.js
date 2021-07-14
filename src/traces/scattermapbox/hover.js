@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var Fx = require('../../components/fx');
@@ -16,7 +7,7 @@ var fillText = Lib.fillText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
-module.exports = function hoverPoints(pointData, xval, yval) {
+function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var trace = cd[0].trace;
     var xa = pointData.xa;
@@ -84,7 +75,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     pointData.hovertemplate = trace.hovertemplate;
 
     return [pointData];
-};
+}
 
 function getExtraText(trace, di, labels) {
     if(trace.hovertemplate) return;
@@ -104,7 +95,7 @@ function getExtraText(trace, di, labels) {
     }
 
     if(isAll || (hasLon && hasLat)) {
-        text.push('(' + format(lonlat[0]) + ', ' + format(lonlat[1]) + ')');
+        text.push('(' + format(lonlat[1]) + ', ' + format(lonlat[0]) + ')');
     } else if(hasLon) {
         text.push(labels.lon + format(lonlat[0]));
     } else if(hasLat) {
@@ -117,3 +108,8 @@ function getExtraText(trace, di, labels) {
 
     return text.join('<br>');
 }
+
+module.exports = {
+    hoverPoints: hoverPoints,
+    getExtraText: getExtraText
+};

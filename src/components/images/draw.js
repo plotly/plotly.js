@@ -1,14 +1,6 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
 var axisIds = require('../../plots/cartesian/axis_ids');
@@ -236,7 +228,7 @@ module.exports = function draw(gd) {
         subplot = allSubplots[i];
         var subplotObj = fullLayout._plots[subplot];
 
-        // filter out overlaid plots (which havd their images on the main plot)
+        // filter out overlaid plots (which have their images on the main plot)
         // and gl2d plots (which don't support below images, at least not yet)
         if(!subplotObj.imagelayer) continue;
 

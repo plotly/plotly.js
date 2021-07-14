@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 var Registry = require('@src/registry');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -35,8 +35,7 @@ describe('Plots.executeAPICommand', function() {
 
                 expect(value).toEqual('resolution');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -56,15 +55,14 @@ describe('Plots.executeAPICommand', function() {
 
                 expect(value).toEqual('rejection');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
     describe('with the skip command', function() {
         it('resolves immediately', function(done) {
             Plots.executeAPICommand(gd, 'skip')
-                .catch(failTest).then(done);
+                .then(done, done.fail);
         });
     });
 });
@@ -75,7 +73,7 @@ describe('Plots.hasSimpleAPICommandBindings', function() {
     beforeEach(function() {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {x: [1, 2, 3], y: [1, 2, 3]},
             {x: [1, 2, 3], y: [4, 5, 6]},
         ]);
@@ -194,7 +192,7 @@ describe('Plots.computeAPICommandBindings', function() {
     beforeEach(function() {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [
+        Plotly.newPlot(gd, [
             {x: [1, 2, 3], y: [1, 2, 3]},
             {x: [1, 2, 3], y: [4, 5, 6]},
         ]);
@@ -518,7 +516,7 @@ describe('component bindings', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         gd = createGraphDiv();
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     afterEach(function() {
@@ -536,7 +534,8 @@ describe('component bindings', function() {
         });
 
         // Doesn't trigger the callback:
-        Plotly.relayout(gd, 'width', 400).then(function() {
+        Plotly.relayout(gd, 'width', 400)
+        .then(function() {
             // Triggers the callback:
             return Plotly.restyle(gd, 'marker.color', 'green');
         }).then(function() {
@@ -545,8 +544,7 @@ describe('component bindings', function() {
         }).then(function() {
             expect(count).toEqual(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('logs a warning if unable to create an observer', function() {
@@ -569,8 +567,7 @@ describe('component bindings', function() {
         Plotly.restyle(gd, 'marker.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('does not update the component if the value is not present', function(done) {
@@ -579,8 +576,7 @@ describe('component bindings', function() {
         Plotly.restyle(gd, 'marker.color', 'black').then(function() {
             expect(gd.layout.sliders[0].active).toBe(0);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('udpates bound components when the computed value changes', function(done) {
@@ -592,8 +588,7 @@ describe('component bindings', function() {
         Plotly.restyle(gd, 'line.color', 'blue').then(function() {
             expect(gd.layout.sliders[0].active).toBe(4);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -603,7 +598,7 @@ describe('attaching component bindings', function() {
 
     beforeEach(function(done) {
         gd = createGraphDiv();
-        Plotly.plot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}]).then(done);
+        Plotly.newPlot(gd, [{x: [1, 2, 3], y: [1, 2, 3]}]).then(done);
     });
 
     afterEach(function() {
@@ -662,8 +657,7 @@ describe('attaching component bindings', function() {
             // been removed
             expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('attaches and updates bindings for updatemenus', function(done) {
@@ -717,7 +711,6 @@ describe('attaching component bindings', function() {
             // been removed
             expect(gd._internalEv._events.plotly_animatingframe).toBeUndefined();
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

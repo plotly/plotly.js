@@ -5,7 +5,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
-var failTest = require('../assets/fail_test');
+
 
 var assertDims = customAssertions.assertDims;
 var assertStyle = customAssertions.assertStyle;
@@ -69,12 +69,12 @@ describe('groupby', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData0);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -89,8 +89,7 @@ describe('groupby', function() {
 
                 assertDims([4, 3]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Accepts deprecated object notation for styles', function(done) {
@@ -113,7 +112,7 @@ describe('groupby', function() {
             var gd = createGraphDiv();
             var dims = [4, 3];
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertStyle(dims,
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
                     [1, 1]
@@ -139,11 +138,10 @@ describe('groupby', function() {
                 expect(gd._fullData[0].marker.opacity).toEqual(1);
                 expect(gd._fullData[1].marker.opacity).toEqual(1);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
 
             // The final test for restyle updates using deprecated syntax
-            // is ommitted since old style syntax is *only* sanitized on
+            // is omitted since old style syntax is *only* sanitized on
             // initial plot, *not* on restyle.
         });
 
@@ -154,7 +152,7 @@ describe('groupby', function() {
             var gd = createGraphDiv();
             var dims = [4, 3];
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertStyle(dims,
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
                     [1, 1]
@@ -193,8 +191,7 @@ describe('groupby', function() {
                     [0.4, 0.4]
                 );
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Plotly.react should work', function(done) {
@@ -204,7 +201,7 @@ describe('groupby', function() {
             var gd = createGraphDiv();
             var dims = [4, 3];
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertStyle(dims,
                     ['rgb(255, 0, 0)', 'rgb(0, 0, 255)'],
                     [1, 1]
@@ -257,8 +254,7 @@ describe('groupby', function() {
                     [1, 1]
                 );
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Plotly.extendTraces should work', function(done) {
@@ -266,7 +262,7 @@ describe('groupby', function() {
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data[0].x.length).toEqual(7);
                 expect(gd._fullData[0].x.length).toEqual(4);
                 expect(gd._fullData[1].x.length).toEqual(3);
@@ -285,8 +281,7 @@ describe('groupby', function() {
 
                 assertDims([5, 5]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('Plotly.deleteTraces should work', function(done) {
@@ -294,7 +289,7 @@ describe('groupby', function() {
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertDims([4, 3, 4, 3]);
 
                 return Plotly.deleteTraces(gd, [1]);
@@ -305,8 +300,7 @@ describe('groupby', function() {
             }).then(function() {
                 assertDims([]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('toggling trace visibility should work', function(done) {
@@ -314,7 +308,7 @@ describe('groupby', function() {
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 assertDims([4, 3, 4, 3]);
 
                 return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
@@ -329,24 +323,22 @@ describe('groupby', function() {
             }).then(function() {
                 assertDims([4, 3, 4, 3]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('Plotly.plot should group points properly using typed array', function(done) {
+        it('Plotly.newPlot should group points properly using typed array', function(done) {
             var data = Lib.extendDeep([], mockDataWithTypedArrayGroups);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd._fullData.length).toEqual(2);
                 expect(gd._fullData[0].x).toEqual([20, 12, 0, 1]);
                 expect(gd._fullData[0].y).toEqual([1, 3, 2, 5]);
                 expect(gd._fullData[1].x).toEqual([11, 2, 3]);
                 expect(gd._fullData[1].y).toEqual([2, 2, 0]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -440,12 +432,12 @@ describe('groupby', function() {
 
         afterEach(destroyGraphDiv);
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -458,16 +450,15 @@ describe('groupby', function() {
 
                 assertDims([4, 3]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData0);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -475,16 +466,15 @@ describe('groupby', function() {
                 expect(gd._fullData.length).toEqual(1);
                 assertDims([7]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData1);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -495,16 +485,15 @@ describe('groupby', function() {
 
                 assertDims([7]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData2);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -516,16 +505,15 @@ describe('groupby', function() {
 
                 assertDims([7]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
-        it('Plotly.plot should plot the transform traces', function(done) {
+        it('Plotly.newPlot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData3);
 
             var gd = createGraphDiv();
 
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
@@ -537,8 +525,7 @@ describe('groupby', function() {
 
                 assertDims([7]);
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
     });
 
@@ -553,7 +540,7 @@ describe('groupby', function() {
 
                 var gd = createGraphDiv();
 
-                Plotly.plot(gd, data).then(function() {
+                Plotly.newPlot(gd, data).then(function() {
                     expect(gd.data.length).toEqual(1);
                     expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
                     expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -575,8 +562,7 @@ describe('groupby', function() {
 
                     assertDims([4, 3]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             };
         }
 
@@ -704,12 +690,11 @@ describe('groupby', function() {
         it('passes extended tests with group styles partially overriding top level aesthetics', function(done) {
             var data = Lib.extendDeep([], mockData3);
             var gd = createGraphDiv();
-            Plotly.plot(gd, data).then(function() {
+            Plotly.newPlot(gd, data).then(function() {
                 expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
                 expect(gd._fullData[1].marker.line.color).toEqual('yellow');
             })
-            .catch(failTest)
-            .then(done);
+            .then(done, done.fail);
         });
 
         it('passes with no explicit styling for the individual group', test(mockData4));
@@ -728,7 +713,7 @@ describe('groupby', function() {
 
                 var gd = createGraphDiv();
 
-                Plotly.plot(gd, data).then(function() {
+                Plotly.newPlot(gd, data).then(function() {
                     expect(gd.data.length).toEqual(1);
                     expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
                     expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
@@ -744,8 +729,7 @@ describe('groupby', function() {
 
                     assertDims([7]);
                 })
-                .catch(failTest)
-                .then(done);
+                .then(done, done.fail);
             };
         }
 

@@ -1,18 +1,9 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 
 module.exports = {
     visible: {
         valType: 'boolean',
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not this set of error bars is visible.'
@@ -21,7 +12,6 @@ module.exports = {
     type: {
         valType: 'enumerated',
         values: ['percent', 'constant', 'sqrt', 'data'],
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines the rule used to generate the error bars.',
@@ -32,7 +22,7 @@ module.exports = {
             'If *percent*, the bar lengths correspond to a percentage of',
             'underlying data. Set this percentage in `value`.',
 
-            'If *sqrt*, the bar lengths correspond to the sqaure of the',
+            'If *sqrt*, the bar lengths correspond to the square of the',
             'underlying data.',
 
             'If *data*, the bar lengths are set with data set `array`.'
@@ -40,7 +30,6 @@ module.exports = {
     },
     symmetric: {
         valType: 'boolean',
-        role: 'info',
         editType: 'calc',
         description: [
             'Determines whether or not the error bars have the same length',
@@ -69,7 +58,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 10,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the value of either the percentage',
@@ -82,7 +70,6 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 10,
-        role: 'info',
         editType: 'calc',
         description: [
             'Sets the value of either the percentage',
@@ -96,29 +83,24 @@ module.exports = {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'info',
         editType: 'style'
     },
     tracerefminus: {
         valType: 'integer',
         min: 0,
         dflt: 0,
-        role: 'info',
         editType: 'style'
     },
     copy_ystyle: {
         valType: 'boolean',
-        role: 'style',
         editType: 'plot'
     },
     copy_zstyle: {
         valType: 'boolean',
-        role: 'style',
         editType: 'style'
     },
     color: {
         valType: 'color',
-        role: 'style',
         editType: 'style',
         description: 'Sets the stoke color of the error bars.'
     },
@@ -126,14 +108,12 @@ module.exports = {
         valType: 'number',
         min: 0,
         dflt: 2,
-        role: 'style',
         editType: 'style',
         description: 'Sets the thickness (in px) of the error bars.'
     },
     width: {
         valType: 'number',
         min: 0,
-        role: 'style',
         editType: 'plot',
         description: [
             'Sets the width (in px) of the cross-bar at both ends',
@@ -145,7 +125,6 @@ module.exports = {
     _deprecated: {
         opacity: {
             valType: 'number',
-            role: 'style',
             editType: 'style',
             description: [
                 'Obsolete.',

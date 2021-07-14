@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3Hierarchy = require('d3-hierarchy');
@@ -21,6 +13,7 @@ var ALMOST_EQUAL = require('../../constants/numerical').ALMOST_EQUAL;
 
 var sunburstExtendedColorWays = {};
 var treemapExtendedColorWays = {};
+var icicleExtendedColorWays = {};
 
 exports.calc = function(gd, trace) {
     var fullLayout = gd._fullLayout;
@@ -253,11 +246,14 @@ exports._runCrossTraceCalc = function(desiredType, gd) {
 
     if(fullLayout['extend' + desiredType + 'colors']) {
         colorWay = generateExtendedColors(colorWay,
-            desiredType === 'treemap' ? treemapExtendedColorWays : sunburstExtendedColorWays
+            desiredType === 'icicle' ? icicleExtendedColorWays :
+            desiredType === 'treemap' ? treemapExtendedColorWays :
+                sunburstExtendedColorWays
         );
     }
     var dfltColorCount = 0;
 
+    var rootColor;
     function pickColor(d) {
         var cdi = d.data.data;
         var id = cdi.id;
@@ -277,7 +273,7 @@ exports._runCrossTraceCalc = function(desiredType, gd) {
                 }
             } else {
                 // set root color. no coloring by default.
-                cdi.color = cdi.trace.root.color;
+                cdi.color = rootColor;
             }
         }
     }
@@ -286,6 +282,7 @@ exports._runCrossTraceCalc = function(desiredType, gd) {
         var cd = calcdata[i];
         var cd0 = cd[0];
         if(cd0.trace.type === desiredType && cd0.hierarchy) {
+            rootColor = cd0.trace.root.color;
             cd0.hierarchy.each(pickColor);
         }
     }

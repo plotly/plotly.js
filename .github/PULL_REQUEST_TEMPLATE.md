@@ -9,11 +9,14 @@ Thanks for your interest in plotly.js!
 ### Features, Bug fixes, and others:
 
 Before opening a pull request, developer should:
+1. make sure they are not on the `master` branch of their fork as using `master` for a pull request would make it difficult to fetch `upstream` changes.
+2. fetch latest changes from `upstream/master` into your fork i.e. `origin/master` then pull `origin/master` from you local `master`.
+3. then `git rebase master` their local dev branch off the latest `master` which should be sync with `upstream/master` at this time.
+4. make sure to **not** `git add` the `dist/` folder (the `dist/` is updated only on version bumps).
+5. make sure to commit changes to the `package-lock.json` file (if any new dependency required).
+6. provide a title and write an overview of what the PR attempts to do with a link to the issue they are trying to address.
+7. select the _Allow edits from maintainers_ option (see this [article](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/) for more details).
 
-- `git rebase` their local branch off the latest `master`,
-- make sure to **not** `git add` the `dist/` folder (the `dist/` is updated only on version bumps),
-- make sure to commit changes to the `package-lock.json` file (if any new dependency required),
-- write an overview of what the PR attempts to do,
-- select the _Allow edits from maintainers_ option (see this [article](https://help.github.com/articles/allowing-changes-to-a-pull-request-branch-created-from-a-fork/) for more details).
-
-Note that it is forbidden to force push (i.e. `git push -f`) to remote branches associated with opened pull requests. Force pushes make it hard for maintainers to keep track of updates. Therefore, if required, please `git merge master` into your PR branch instead of `git rebase master`.
+After opening a pull request, developer:
+ - should create a new small markdown log file using the PR number e.g. `1010_fix.md` or `1010_add.md` inside `draftlogs` folder as described in this [README](https://github.com/plotly/plotly.js/blob/master/draftlogs/README.md), commit it and push.
+ - should **not** force push (i.e. `git push -f`) to remote branches associated with opened pull requests. Force pushes make it hard for maintainers to keep track of updates. Therefore, if required, please fetch `upstream/master` and "merge" with master instead of "rebase".

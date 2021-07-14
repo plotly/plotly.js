@@ -4,7 +4,7 @@ var Plots = require('@src/plots/plots');
 
 // The following is used to fill up the Registry module
 /* eslint-disable-next-line */
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 
 /**
  * supplyDefaults that fills in necessary _context

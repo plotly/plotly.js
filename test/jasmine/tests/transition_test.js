@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 var plotApiHelpers = require('@src/plot_api/helpers');
 var Axes = require('@src/plots/cartesian/axes');
 var Registry = require('@src/registry');
@@ -8,30 +8,35 @@ var Drawing = require('@src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var delay = require('../assets/delay');
 var mock = require('@mocks/animation');
 
-function runTests(transitionDuration) {
-    describe('Plots.transition (duration = ' + transitionDuration + ')', function() {
-        'use strict';
+describe('Plots.transition', function() {
+    'use strict';
 
-        var gd;
+    var gd;
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
+    beforeEach(function(done) {
+        gd = createGraphDiv();
 
-            var mockCopy = Lib.extendDeep({}, mock);
+        var mockCopy = Lib.extendDeep({}, mock);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
-        });
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
 
-        afterEach(function() {
-            Plotly.purge(gd);
-            destroyGraphDiv();
-        });
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
 
-        it('resolves only once the transition has completed', function(done) {
+    // Run the whole set of tests twice: once with zero duration and once with
+    // nonzero duration since the behavior should be identical, but there's a
+    // very real possibility of race conditions or other timing issues.
+    //
+    // And of course, remember to put the async loop in a closure:
+    [0, 20].forEach(function(transitionDuration) {
+        it('with duration:' + transitionDuration + ', resolves only once the transition has completed', function(done) {
             var t1 = Date.now();
             var traces = plotApiHelpers.coerceTraceIndices(gd, null);
 
@@ -39,10 +44,10 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(Date.now() - t1).toBeGreaterThan(transitionDuration);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
         });
 
-        it('emits plotly_transitioning on transition start', function(done) {
+        it('with duration:' + transitionDuration + ', emits plotly_transitioning on transition start', function(done) {
             var beginTransitionCnt = 0;
             var traces = plotApiHelpers.coerceTraceIndices(gd, null);
 
@@ -52,10 +57,10 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(beginTransitionCnt).toBe(1);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
         });
 
-        it('emits plotly_transitioned on transition end', function(done) {
+        it('with duration:' + transitionDuration + ', emits plotly_transitioned on transition end', function(done) {
             var trEndCnt = 0;
             var traces = plotApiHelpers.coerceTraceIndices(gd, null);
 
@@ -65,10 +70,10 @@ function runTests(transitionDuration) {
                 .then(delay(20))
                 .then(function() {
                     expect(trEndCnt).toEqual(1);
-                }).catch(failTest).then(done);
+                }).then(done, done.fail);
         });
 
-        it('transitions an annotation', function(done) {
+        it('with duration:' + transitionDuration + ', transitions an annotation', function(done) {
             function annotationPosition() {
                 var g = gd._fullLayout._infolayer.select('.annotation').select('.annotation-text-g');
                 var bBox = g.node().getBoundingClientRect();
@@ -76,7 +81,8 @@ function runTests(transitionDuration) {
             }
             var p1, p2;
 
-            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]}).then(function() {
+            Plotly.relayout(gd, {annotations: [{x: 0, y: 0, text: 'test'}]})
+            .then(function() {
                 p1 = annotationPosition();
 
                 return Plots.transition(gd, null, {
@@ -92,10 +98,10 @@ function runTests(transitionDuration) {
                 // Ensure both coordinates have moved, i.e. that the annotation has transitioned:
                 expect(p1[0]).not.toEqual(p2[0]);
                 expect(p1[1]).not.toEqual(p2[1]);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
-        it('transitions an image', function(done) {
+        it('with duration:' + transitionDuration + ', transitions an image', function(done) {
             var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
             var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
@@ -107,7 +113,8 @@ function runTests(transitionDuration) {
             }
             var p1, p2, e1, e2;
 
-            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]}).then(function() {
+            Plotly.relayout(gd, {images: [{x: 0, y: 0, source: jsLogo}]})
+            .then(function() {
                 p1 = imagesrc();
                 e1 = imageel();
 
@@ -126,10 +133,10 @@ function runTests(transitionDuration) {
 
                 // Test that the image element identity has not:
                 expect(e1).toBe(e2);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
-        it('transitions a shape', function(done) {
+        it('with duration:' + transitionDuration + ', transitions a shape', function(done) {
             function getPath() {
                 return gd._fullLayout._shapeUpperLayer.select('path').node();
             }
@@ -183,11 +190,11 @@ function runTests(transitionDuration) {
 
                 expect(d3).toEqual(d2);
                 expect(s3).not.toEqual(s2);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
 
-        it('transitions a transform', function(done) {
+        it('with duration:' + transitionDuration + ', transitions a transform', function(done) {
             Plotly.restyle(gd, {
                 'transforms[0]': {
                     enabled: true,
@@ -219,12 +226,12 @@ function runTests(transitionDuration) {
                     target: 'x',
                     value: 10
                 })]);
-            }).catch(failTest).then(done);
+            }).then(done, done.fail);
         });
 
         // This doesn't really test anything that the above tests don't cover, but it combines
         // the behavior and attempts to ensure chaining and events happen in the correct order.
-        it('transitions may be chained', function(done) {
+        it('with duration:' + transitionDuration + ', transitions may be chained', function(done) {
             var currentlyRunning = 0;
             var beginCnt = 0;
             var endCnt = 0;
@@ -253,20 +260,11 @@ function runTests(transitionDuration) {
                     expect(endCnt).toEqual(3);
                 })
                 .then(checkNoneRunning)
-                .catch(failTest).then(done);
+                .then(done, done.fail);
         });
     });
-}
+});
 
-for(var i = 0; i < 2; i++) {
-    var duration = i * 20;
-    // Run the whole set of tests twice: once with zero duration and once with
-    // nonzero duration since the behavior should be identical, but there's a
-    // very real possibility of race conditions or other timing issues.
-    //
-    // And of course, remember to put the async loop in a closure:
-    runTests(duration);
-}
 
 describe('Plotly.react transitions:', function() {
     var gd;
@@ -450,8 +448,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should go through transition pathway only when there are animatable changes', function(done) {
@@ -512,8 +509,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should no try to transition a trace which is not *animatable:true* yet', function(done) {
@@ -553,8 +549,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 0]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not try to transition when the *config* has changed', function(done) {
@@ -589,8 +584,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should only *redraw* at end of transition when necessary', function(done) {
@@ -635,8 +629,7 @@ describe('Plotly.react transitions:', function() {
                 [Registry, 'call', ['redraw', gd]]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@flaky should only transition the layout when both traces and layout have animatable changes by default', function(done) {
@@ -727,8 +720,7 @@ describe('Plotly.react transitions:', function() {
                 [gd._fullLayout._basePlotModules[0], 'plot', [gd]]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should transition data coordinates with and without *datarevision*', function(done) {
@@ -795,8 +787,7 @@ describe('Plotly.react transitions:', function() {
                 [Plots, 'transitionFromReact', 1]
             ]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@flaky should transition layout when one or more axis auto-ranged value changed', function(done) {
@@ -846,8 +837,7 @@ describe('Plotly.react transitions:', function() {
             ]);
             assertAxAutorange('axes are still autorange:false', false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('@flaky should not transition layout when axis auto-ranged value do not changed', function(done) {
@@ -917,8 +907,7 @@ describe('Plotly.react transitions:', function() {
             ]);
             assertAxAutorange('y-axis is now autorange:false', false);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should emit transition events', function(done) {
@@ -944,8 +933,7 @@ describe('Plotly.react transitions:', function() {
                 expect(store[k]).toHaveBeenCalledTimes(1);
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should preserve trace object-constancy (out-of-order case)', function(done) {
@@ -1028,8 +1016,7 @@ describe('Plotly.react transitions:', function() {
             ]);
             _assertTraceNodes(msg, traceNodes, [[360, 90], [120, 210]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should preserve trace object-constancy (# of traces mismatch case)', function(done) {
@@ -1116,8 +1103,7 @@ describe('Plotly.react transitions:', function() {
             var traceNodesNew = gd.querySelectorAll('.scatterlayer > .trace');
             _assertTraceNodes(msg, [traceNodes[0], traceNodesNew[1]], [[360, 90], [120, 210]]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not leak axis update from subplot to subplot', function(done) {
@@ -1139,7 +1125,7 @@ describe('Plotly.react transitions:', function() {
             };
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             x: [0.1, 0.2, 0.3],
             y: [0.4, 0.5, 0.6],
         }, {
@@ -1185,12 +1171,11 @@ describe('Plotly.react transitions:', function() {
             xaxis: [-10, 10], xaxis2: [-20, 20], xaxis3: [-30, 30],
             yaxis: [-10, 10], yaxis2: [-20, 20], yaxis3: [-30, 30]
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
-    it('@flaky should update ranges of date and category axes', function(done) {
-        Plotly.plot(gd, [
+    it('should update ranges of date and category axes', function(done) {
+        Plotly.newPlot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
         ], {
@@ -1207,29 +1192,24 @@ describe('Plotly.react transitions:', function() {
 
             gd.layout.xaxis.range = ['2018-06-01', '2019-06-01'];
             gd.layout.xaxis2.range = [0.5, 1.5];
-            var promise = Plotly.react(gd, gd.data, gd.layout);
 
-            setTimeout(function() {
-                var fullLayout = gd._fullLayout;
+            return Plotly.react(gd, gd.data, gd.layout);
+        }).then(function() {
+            var fullLayout = gd._fullLayout;
 
-                var xa = fullLayout.xaxis;
-                var xr = xa.range.slice();
-                expect(xa.r2l(xr[0])).toBeGreaterThan(xa.r2l('2018-01-01'));
-                expect(xa.r2l(xr[1])).toBeLessThan(xa.r2l('2020-01-01'));
+            var xa = fullLayout.xaxis;
+            var xr = xa.range.slice();
+            expect(xa.r2l(xr[0])).toBeGreaterThan(xa.r2l('2018-01-01'));
+            expect(xa.r2l(xr[1])).toBeLessThan(xa.r2l('2020-01-01'));
 
-                var xa2 = fullLayout.xaxis2;
-                var xr2 = xa2.range.slice();
-                expect(xr2[0]).toBeGreaterThan(0);
-                expect(xr2[1]).toBeLessThan(2);
-            }, 15);
+            var xa2 = fullLayout.xaxis2;
+            var xr2 = xa2.range.slice();
+            expect(xr2[0]).toBeGreaterThan(0);
+            expect(xr2[1]).toBeLessThan(2);
 
-            return promise;
-        })
-        .then(function() {
             expect(gd._fullLayout.xaxis.range).toEqual(['2018-06-01', '2019-06-01']);
             expect(gd._fullLayout.xaxis2.range).toEqual([0.5, 1.5]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

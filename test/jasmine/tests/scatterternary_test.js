@@ -1,11 +1,12 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var ScatterTernary = require('@src/traces/scatterternary');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var failTest = require('../assets/fail_test');
+
 var customAssertions = require('../assets/custom_assertions');
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -310,23 +311,23 @@ describe('scatterternary plot and hover', function() {
         var gd = createGraphDiv();
         var mockCopy = Lib.extendDeep({}, mock);
 
-        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
     it('should put scatterternary trace in \'frontplot\' node', function() {
-        var nodes = d3.select('.frontplot').selectAll('.scatter');
+        var nodes = d3Select('.frontplot').selectAll('.scatter');
 
         expect(nodes.size()).toEqual(1);
     });
 
     it('should generate one line path per trace', function() {
-        var nodes = d3.selectAll('path.js-line');
+        var nodes = d3SelectAll('path.js-line');
 
         expect(nodes.size()).toEqual(mock.data.length);
     });
 
     it('should generate as many points as there are data points', function() {
-        var nodes = d3.selectAll('path.point');
+        var nodes = d3SelectAll('path.point');
 
         expect(nodes.size()).toEqual(mock.data[0].a.length);
     });
@@ -355,7 +356,7 @@ describe('scatterternary hover', function() {
             c: [0.1, 0.4, 0.5],
             text: ['A', 'B', 'C']
         }];
-        Plotly.plot(gd, data).then(done);
+        Plotly.newPlot(gd, data).then(done);
     });
 
     afterAll(destroyGraphDiv);
@@ -408,8 +409,7 @@ describe('scatterternary hover', function() {
             expect(scatterPointData[0].yLabelVal).toBeUndefined();
             expect(scatterPointData[0].text).toEqual('orange');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should pass along hovertemplate on hover', function(done) {
@@ -427,8 +427,7 @@ describe('scatterternary hover', function() {
             expect(scatterPointData[0].bLabel).toBe('0.1111111');
             expect(scatterPointData[0].cLabel).toBe('0.5555556');
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should always display hoverlabel when hovertemplate is defined', function(done) {
@@ -446,8 +445,7 @@ describe('scatterternary hover', function() {
         .then(function() {
             check([380, 210], ['0.5, 0.25, 0.25']);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -459,8 +457,8 @@ describe('Test scatterternary *cliponaxis*', function() {
         var fig = Lib.extendDeep({}, require('@mocks/ternary_markers.json'));
 
         function _assert(layerClips, nodeDisplays, lineClips) {
-            var frontLayer = d3.select('.frontplot');
-            var scatterLayer = d3.select('.scatterlayer');
+            var frontLayer = d3Select('.frontplot');
+            var scatterLayer = d3Select('.scatterlayer');
 
             assertClip(frontLayer, layerClips[0], 1, 'front layer');
             assertClip(scatterLayer, layerClips[1], 1, 'scatter layer');
@@ -483,7 +481,7 @@ describe('Test scatterternary *cliponaxis*', function() {
             );
         }
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(function() {
             _assert(
                 [false, false],
@@ -551,8 +549,7 @@ describe('Test scatterternary *cliponaxis*', function() {
                 [true, 1]
            );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 

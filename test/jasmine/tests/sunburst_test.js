@@ -1,16 +1,18 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
 var constants = require('@src/traces/sunburst/constants');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
+var d3Transition = require('../../strict-d3').transition;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var delay = require('../assets/delay');
-var failTest = require('../assets/fail_test');
+
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
@@ -26,7 +28,7 @@ function _mouseEvent(type, gd, v) {
             mouseEvent(type, v[0], v[1]);
         } else {
             // position from slice number
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var el = gd3.select('.slice:nth-child(' + v + ')').node();
             mouseEvent(type, 0, 0, {element: el});
         }
@@ -525,7 +527,7 @@ describe('Test sunburst hover:', function() {
         var exp = spec.exp || {};
         var ptData = null;
 
-        return Plotly.plot(gd, data, layout)
+        return Plotly.newPlot(gd, data, layout)
             .then(function() {
                 gd.once('plotly_hover', function(d) { ptData = d.points[0]; });
             })
@@ -538,7 +540,7 @@ describe('Test sunburst hover:', function() {
                 }
 
                 if(exp.style) {
-                    var gd3 = d3.select(gd);
+                    var gd3 = d3Select(gd);
                     assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
                 }
             });
@@ -691,7 +693,7 @@ describe('Test sunburst hover:', function() {
     }]
     .forEach(function(spec) {
         it('should generate correct hover labels and event data - ' + spec.desc, function(done) {
-            run(spec).catch(failTest).then(done);
+            run(spec).then(done, done.fail);
         });
     });
 });
@@ -728,7 +730,7 @@ describe('Test sunburst hover lifecycle:', function() {
     it('should fire the correct events', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(hover(gd, 1))
         .then(function() {
@@ -760,8 +762,7 @@ describe('Test sunburst hover lifecycle:', function() {
                 fail('did not trigger correct # of plotly_unhover events');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -804,7 +805,7 @@ describe('Test sunburst clicks:', function() {
     it('should trigger animation when clicking on branches', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -828,14 +829,13 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should trigger plotly_click event when clicking on root node', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 1))
         .then(function() {
@@ -857,14 +857,13 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 8))
         .then(function() {
@@ -886,14 +885,13 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not trigger animation when graph is transitioning', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners())
         .then(click(gd, 2))
         .then(function() {
@@ -946,14 +944,13 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering - ' + msg);
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to override default click behavior using plotly_sunburstclick handler ()', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/sunburst_first.json'));
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(setupListeners({turnOffAnimation: true}))
         .then(click(gd, 2))
         .then(function() {
@@ -972,8 +969,7 @@ describe('Test sunburst clicks:', function() {
                 fail('incorrect plotly_animating triggering');
             }
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -993,19 +989,18 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
                 expect(layer.selectAll('.trace').size()).toBe(exp, msg);
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 2))
         .then(_restyle({'visible': false}))
         .then(_assert('both visible:false', 0))
         .then(_restyle({'visible': true}))
         .then(_assert('back to visible:true', 2))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
@@ -1013,7 +1008,7 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
 
                 expect(layer.selectAll('.slice').size()).toBe(exp, msg);
 
@@ -1024,7 +1019,7 @@ describe('Test sunburst restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', 96))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1035,8 +1030,7 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('with non-root level', 13))
         .then(_restyle({maxdepth: null, level: null}))
         .then(_assert('back to first view', 96))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *leaf.opacity*', function(done) {
@@ -1050,7 +1044,7 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
 
                 var opacities = [];
                 layer.selectAll('path.surface').each(function() {
@@ -1067,7 +1061,7 @@ describe('Test sunburst restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', ['', '0.7', '', '0.7']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1079,8 +1073,7 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('raise leaf.opacity', ['', '1', '', '1']))
         .then(_restyle({'leaf.opacity': null}))
         .then(_assert('back to dflt', ['', '0.7', '', '0.7']))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to restyle *textinfo* with various *insidetextorientation*', function(done) {
@@ -1096,11 +1089,11 @@ describe('Test sunburst restyle:', function() {
 
         function _assert(msg, exp) {
             return function() {
-                var layer = d3.select(gd).select('.sunburstlayer');
+                var layer = d3Select(gd).select('.sunburstlayer');
                 var tx = [];
 
                 layer.selectAll('text.slicetext').each(function() {
-                    var lines = d3.select(this).selectAll('tspan');
+                    var lines = d3Select(this).selectAll('tspan');
 
                     if(lines.size()) {
                         var t = [];
@@ -1122,7 +1115,7 @@ describe('Test sunburst restyle:', function() {
             };
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_assert('base', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
         .then(function() {
             spyOn(Plots, 'doCalcdata').and.callThrough();
@@ -1158,8 +1151,7 @@ describe('Test sunburst restyle:', function() {
         .then(_assert('no textinfo', ['', '', '', '']))
         .then(_restyle({textinfo: null}))
         .then(_assert('back to dflt', ['Root\nnode0', 'B\nnode2', 'A\nnode1', 'b\nnode3']))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1172,7 +1164,7 @@ describe('Test sunburst tweening:', function() {
         gd = createGraphDiv();
 
         // hacky way to track tween functions
-        spyOn(d3.transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
+        spyOn(d3Transition.prototype, 'attrTween').and.callFake(function(attrName, fn) {
             var lookup = {d: pathTweenFnLookup, transform: textTweenFnLookup}[attrName];
             var pt = this[0][0].__data__;
             var id = pt.data.data.id;
@@ -1231,7 +1223,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry radially inward', 'd', 'Root',
@@ -1252,8 +1244,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [313.45, 275.54]);
             _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update (case: click on entry, no maxdepth)', function(done) {
@@ -1266,7 +1257,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('enter new entry radially outward', 'd', 'Root',
@@ -1287,8 +1278,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [316.85, 272.14]);
             _assert('move b text to new position', 'transform', 'b', [274.42, 314.57]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2)', function(done) {
@@ -1301,7 +1291,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 3))
         .then(function() {
             _assert('exit entry radially inward', 'd', 'Root',
@@ -1321,8 +1311,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move B text to new position', 'transform', 'B', [303.01, 285.98]);
             _assert('enter b text to new position', 'transform', 'b', [248.75, 239]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should tween sector enter/update/exit (case: click on entry, maxdepth=2, level=B)', function(done) {
@@ -1336,7 +1325,7 @@ describe('Test sunburst tweening:', function() {
             }]
         };
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(_run(gd, 1))
         .then(function() {
             _assert('exit b radially outward and to parent sector angle', 'd', 'b',
@@ -1355,13 +1344,12 @@ describe('Test sunburst tweening:', function() {
                 'L383.75,235A33.75,33.750,1,1350,201.25Z'
             );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     /*
     it('should tween in sectors from new traces', function(done) {
-        Plotly.plot(gd, [{type: 'sunburst'}])
+        Plotly.newPlot(gd, [{type: 'sunburst'}])
         .then(_reset)
         .then(function() {
             return Plotly.animate(gd, [{
@@ -1384,13 +1372,12 @@ describe('Test sunburst tweening:', function() {
             //     ''
             // );
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
     */
 
     it('should update text position during transition using *auto* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1410,12 +1397,11 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
             _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *horizontal* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1435,12 +1421,11 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [395.12660928295867, 124.11350635624726]);
             _assert('move Z text to new position', 'transform', 'Z', [354.1550374068844, 115.63596810986363]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *tangential* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1460,12 +1445,11 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [393.6173101979463, 123.958130483835]);
             _assert('move Z text to new position', 'transform', 'Z', [359.52567880729003, 116.05583257124167]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *radial* insidetextorientation', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1485,12 +1469,11 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [398.67767996405655, 121.9940236084775]);
             _assert('move Z text to new position', 'transform', 'Z', [354.00770212095256, 116.19286557341015]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *radial* insidetextorientation with level', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1509,12 +1492,11 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [247.47466543373307, 255.288278237516]);
             _assert('move Z text to new position', 'transform', 'Z', [300.75324430542196, 332.0135787956955]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *tangential* insidetextorientation with level', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1533,12 +1515,11 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [249.73412124927503, 271.78420776316403]);
             _assert('move Z text to new position', 'transform', 'Z', [305.39156336654094, 331.3597434293286]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should update text position during transition using *horizontal* insidetextorientation with level', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 textinfo: 'label',
@@ -1557,8 +1538,7 @@ describe('Test sunburst tweening:', function() {
             _assert('move Y text to new position', 'transform', 'Y', [244.44862109889465, 255.71893345117468]);
             _assert('move Z text to new position', 'transform', 'Z', [301.6438278403359, 334.2263222726318]);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1580,14 +1560,14 @@ describe('Test sunburst interactions edge cases', function() {
             expect(hoverCnt).toBe(exp.hoverCnt, msg + ' - hover cnt');
             expect(unhoverCnt).toBe(exp.unhoverCnt, msg + ' - unhover cnt');
 
-            var label = d3.select(gd).select('g.hovertext');
+            var label = d3Select(gd).select('g.hovertext');
             expect(label.size()).toBe(exp.hoverLabel, msg + ' - hover label cnt');
 
             hoverCnt = 0;
             unhoverCnt = 0;
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.on('plotly_hover', function() {
                 hoverCnt++;
@@ -1624,12 +1604,11 @@ describe('Test sunburst interactions edge cases', function() {
                 hoverLabel: 1
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should show falsy zero text', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 parents: ['', 'A', 'B', 'C', 'D', 'E', 'F'],
@@ -1647,7 +1626,7 @@ describe('Test sunburst interactions edge cases', function() {
         .then(function() {
             assertHoverLabelContent({ nums: 'D\n4\n0' });
         })
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should transition sunburst traces only', function(done) {
@@ -1655,7 +1634,7 @@ describe('Test sunburst interactions edge cases', function() {
         mock.data[0].visible = false;
 
         function _assert(msg, exp) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.select('.cartesianlayer').selectAll('.trace').size())
                 .toBe(exp.cartesianTraceCnt, '# of cartesian traces');
             expect(gd3.select('.pielayer').selectAll('.trace').size())
@@ -1664,7 +1643,7 @@ describe('Test sunburst interactions edge cases', function() {
                 .toBe(exp.sunburstTraceCnt, '# of sunburst traces');
         }
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             _assert('base', {
                 cartesianTraceCnt: 2,
@@ -1681,8 +1660,7 @@ describe('Test sunburst interactions edge cases', function() {
                 sunburstTraceCnt: 1
             });
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should be able to transition sunburst traces via `Plotly.react`', function(done) {
@@ -1691,7 +1669,7 @@ describe('Test sunburst interactions edge cases', function() {
 
         spyOn(Plots, 'transitionFromReact').and.callThrough();
 
-        Plotly.plot(gd, mock)
+        Plotly.newPlot(gd, mock)
         .then(function() {
             gd.data[1].level = 'B';
             return Plotly.react(gd, gd.data, gd.layout);
@@ -1700,8 +1678,7 @@ describe('Test sunburst interactions edge cases', function() {
         .then(function() {
             expect(Plots.transitionFromReact).toHaveBeenCalledTimes(1);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -1905,7 +1882,7 @@ describe('sunburst inside text orientation', function() {
 
     function assertTextRotations(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['rotations'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
@@ -1952,7 +1929,7 @@ describe('sunburst inside text orientation', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextRotations('using default "auto"', {
             rotations: [-0.6, 0, 48, 0]
         }))
@@ -1984,8 +1961,7 @@ describe('sunburst inside text orientation', function() {
         .then(assertTextRotations('back to "auto"', {
             rotations: [-0.6, 0, 48, 0]
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });
 
@@ -2002,7 +1978,7 @@ describe('sunburst uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(SLICES_TEXT_SELECTOR);
+            var selection = d3SelectAll(SLICES_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');
@@ -2057,7 +2033,7 @@ describe('sunburst uniformtext', function() {
             }
         };
 
-        Plotly.plot(gd, fig)
+        Plotly.newPlot(gd, fig)
         .then(assertTextSizes('without uniformtext', {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
@@ -2110,12 +2086,11 @@ describe('sunburst uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 1, 1, 1, 1, 1, 0.52],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should uniform text scales after transition', function(done) {
-        Plotly.plot(gd, {
+        Plotly.newPlot(gd, {
             data: [{
                 type: 'sunburst',
                 parents: [
@@ -2174,7 +2149,6 @@ describe('sunburst uniformtext', function() {
             fontsizes: [12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12, 12],
             scales: [1, 1, 1, 1, 0, 1, 1, 0, 1, 1, 1, 1],
         }))
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 });

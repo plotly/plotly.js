@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
@@ -125,7 +117,6 @@ module.exports = overrideAll({
         symbol: {
             valType: 'string',
             dflt: 'circle',
-            role: 'style',
             arrayOk: true,
             description: [
                 'Sets the marker symbol.',
@@ -137,7 +128,6 @@ module.exports = overrideAll({
         angle: {
             valType: 'number',
             dflt: 'auto',
-            role: 'style',
             arrayOk: true,
             description: [
                 'Sets the marker orientation from true North, in degrees clockwise.',
@@ -148,7 +138,6 @@ module.exports = overrideAll({
         allowoverlap: {
             valType: 'boolean',
             dflt: false,
-            role: 'style',
             description: [
                 'Flag to draw all symbols, even if they overlap.'
             ].join(' ')
@@ -171,7 +160,6 @@ module.exports = overrideAll({
 
     below: {
         valType: 'string',
-        role: 'info',
         description: [
             'Determines if this scattermapbox trace\'s layers are to be inserted',
             'before the layer with the specified ID.',

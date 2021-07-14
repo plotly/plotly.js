@@ -1,24 +1,9 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var isArray = Array.isArray;
 
-// IE9 fallbacks
-
-var ab = (typeof ArrayBuffer === 'undefined' || !ArrayBuffer.isView) ?
-    {isView: function() { return false; }} :
-    ArrayBuffer;
-
-var dv = (typeof DataView === 'undefined') ?
-    function() {} :
-    DataView;
+var ab = ArrayBuffer;
+var dv = DataView;
 
 function isTypedArray(a) {
     return ab.isView(a) && !(a instanceof dv);

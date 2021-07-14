@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Registry = require('../../registry');
@@ -135,4 +127,20 @@ exports.ref2id = function(ar) {
     // checking if the first letter matches [xyz] to determine if it should
     // return the axis ID. Otherwise it returns false.
     return (/^[xyz]/.test(ar)) ? ar.split(' ')[0] : false;
+};
+
+function isFound(axId, list) {
+    if(list && list.length) {
+        for(var i = 0; i < list.length; i++) {
+            if(list[i][axId]) return true;
+        }
+    }
+    return false;
+}
+
+exports.isLinked = function(fullLayout, axId) {
+    return (
+        isFound(axId, fullLayout._axisMatchGroups) ||
+        isFound(axId, fullLayout._axisConstraintGroups)
+    );
 };

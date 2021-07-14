@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
@@ -22,7 +14,6 @@ module.exports = {
     labelangle: {
         valType: 'angle',
         dflt: 0,
-        role: 'info',
         editType: 'plot',
         description: [
             'Sets the angle of the labels with respect to the horizontal.',
@@ -34,7 +25,6 @@ module.exports = {
 
     labelside: {
         valType: 'enumerated',
-        role: 'info',
         values: ['top', 'bottom'],
         dflt: 'top',
         editType: 'plot',
@@ -63,7 +53,6 @@ module.exports = {
     dimensions: templatedArray('dimension', {
         label: {
             valType: 'string',
-            role: 'info',
             editType: 'plot',
             description: 'The shown name of the dimension.'
         },
@@ -87,13 +76,11 @@ module.exports = {
         visible: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'plot',
             description: 'Shows the dimension when set to `true` (the default). Hides the dimension for `false`.'
         },
         range: {
             valType: 'info_array',
-            role: 'info',
             items: [
                 {valType: 'number', editType: 'plot'},
                 {valType: 'number', editType: 'plot'}
@@ -106,7 +93,6 @@ module.exports = {
         },
         constraintrange: {
             valType: 'info_array',
-            role: 'info',
             freeLength: true,
             dimensions: '1-2',
             items: [
@@ -123,13 +109,11 @@ module.exports = {
         multiselect: {
             valType: 'boolean',
             dflt: true,
-            role: 'info',
             editType: 'plot',
             description: 'Do we allow multiple selection ranges or just a single range?'
         },
         values: {
             valType: 'data_array',
-            role: 'info',
             editType: 'calc',
             description: [
                 'Dimension values. `values[n]` represents the value of the `n`th point in the dataset,',

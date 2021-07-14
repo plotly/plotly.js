@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Loggers = require('./lib/loggers');
@@ -144,7 +136,7 @@ exports.traceIs = function(traceType, category) {
     var _module = exports.modules[traceType];
 
     if(!_module) {
-        if(traceType && traceType !== 'area') {
+        if(traceType) {
             Loggers.log('Unrecognized trace type ' + traceType + '.');
         }
 

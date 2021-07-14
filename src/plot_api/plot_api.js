@@ -1,14 +1,6 @@
-/**
-* Copyright 2012-2020, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var d3 = require('d3');
+var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 var hasHover = require('has-hover');
 
@@ -21,14 +13,12 @@ var Queue = require('../lib/queue');
 var Registry = require('../registry');
 var PlotSchema = require('./plot_schema');
 var Plots = require('../plots/plots');
-var Polar = require('../plots/polar/legacy');
 
 var Axes = require('../plots/cartesian/axes');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var svgTextUtils = require('../lib/svg_text_utils');
 var clearSelect = require('../plots/cartesian/select').clearSelect;
 
 var dfltConfig = require('./plot_config').dfltConfig;
@@ -43,7 +33,7 @@ var numericNameWarningCount = 0;
 var numericNameWarningCountLimit = 5;
 
 /**
- * Main plot-creation function
+ * Internal plot-creation function
  *
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
@@ -63,7 +53,7 @@ var numericNameWarningCountLimit = 5;
  *      object containing `data`, `layout`, `config`, and `frames` members
  *
  */
-function plot(gd, data, layout, config) {
+function _doPlot(gd, data, layout, config) {
     var frames;
 
     gd = Lib.getGraphDiv(gd);
@@ -85,7 +75,7 @@ function plot(gd, data, layout, config) {
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
     if(!data && !layout && !Lib.isPlotDiv(gd)) {
-        Lib.warn('Calling Plotly.plot as if redrawing ' +
+        Lib.warn('Calling _doPlot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
     }
 
@@ -141,13 +131,7 @@ function plot(gd, data, layout, config) {
     var fullLayout = gd._fullLayout;
     var hasCartesian = fullLayout._has('cartesian');
 
-    // Legacy polar plots
-    if(!fullLayout._has('polar') && data && data[0] && data[0].r) {
-        Lib.log('Legacy polar charts are deprecated!');
-        return plotLegacyPolar(gd, data, layout);
-    }
-
-    // so we don't try to re-call Plotly.plot from inside
+    // so we don't try to re-call _doPlot from inside
     // legend and colorbar, if margins changed
     fullLayout._replotting = true;
 
@@ -160,14 +144,9 @@ function plot(gd, data, layout, config) {
         }
     }
 
-    // polar need a different framework
-    if(gd.framework !== makePlotFramework) {
-        gd.framework = makePlotFramework;
-        makePlotFramework(gd);
-    }
-
-    // clear gradient defs on each .plot call, because we know we'll loop through all traces
+    // clear gradient and pattern defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
+    Drawing.initPatterns(gd);
 
     // save initial show spikes once per graph
     if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
@@ -175,7 +154,7 @@ function plot(gd, data, layout, config) {
     // prepare the data and find the autorange
 
     // generate calcdata, if we need to
-    // to force redoing calcdata, just delete it before calling Plotly.plot
+    // to force redoing calcdata, just delete it before calling _doPlot
     var recalc = !gd.calcdata || gd.calcdata.length !== (gd._fullData || []).length;
     if(recalc) Plots.doCalcdata(gd);
 
@@ -243,17 +222,20 @@ function plot(gd, data, layout, config) {
                 });
         }
 
+        var plotGlPixelRatio = gd._context.plotGlPixelRatio;
         if(fullLayout._glcanvas) {
             fullLayout._glcanvas
-                .attr('width', fullLayout.width)
-                .attr('height', fullLayout.height);
+                .attr('width', fullLayout.width * plotGlPixelRatio)
+                .attr('height', fullLayout.height * plotGlPixelRatio)
+                .style('width', fullLayout.width + 'px')
+                .style('height', fullLayout.height + 'px');
 
             var regl = fullLayout._glcanvas.data()[0].regl;
             if(regl) {
                 // Unfortunately, this can happen when relayouting to large
                 // width/height on some browsers.
-                if(Math.floor(fullLayout.width) !== regl._gl.drawingBufferWidth ||
-                    Math.floor(fullLayout.height) !== regl._gl.drawingBufferHeight
+                if(Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
+                    Math.floor(fullLayout.height * plotGlPixelRatio) !== regl._gl.drawingBufferHeight
                  ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
                     if(drawFrameworkCalls) {
@@ -547,99 +529,6 @@ function setPlotContext(gd, config) {
     }
 }
 
-function plotLegacyPolar(gd, data, layout) {
-    // build or reuse the container skeleton
-    var plotContainer = d3.select(gd).selectAll('.plot-container')
-        .data([0]);
-    plotContainer.enter()
-        .insert('div', ':first-child')
-        .classed('plot-container plotly', true);
-    var paperDiv = plotContainer.selectAll('.svg-container')
-        .data([0]);
-    paperDiv.enter().append('div')
-        .classed('svg-container', true)
-        .style('position', 'relative');
-
-    // empty it everytime for now
-    paperDiv.html('');
-
-    // fulfill gd requirements
-    if(data) gd.data = data;
-    if(layout) gd.layout = layout;
-    Polar.manager.fillLayout(gd);
-
-    // resize canvas
-    paperDiv.style({
-        width: gd._fullLayout.width + 'px',
-        height: gd._fullLayout.height + 'px'
-    });
-
-    // instantiate framework
-    gd.framework = Polar.manager.framework(gd);
-
-    // plot
-    gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node());
-
-    // set undo point
-    gd.framework.setUndoPoint();
-
-    // get the resulting svg for extending it
-    var polarPlotSVG = gd.framework.svg();
-
-    // editable title
-    var opacity = 1;
-    var txt = gd._fullLayout.title ? gd._fullLayout.title.text : '';
-    if(txt === '' || !txt) opacity = 0;
-
-    var titleLayout = function() {
-        this.call(svgTextUtils.convertToTspans, gd);
-        // TODO: html/mathjax
-        // TODO: center title
-    };
-
-    var title = polarPlotSVG.select('.title-group text')
-        .call(titleLayout);
-
-    if(gd._context.edits.titleText) {
-        var placeholderText = Lib._(gd, 'Click to enter Plot title');
-        if(!txt || txt === placeholderText) {
-            opacity = 0.2;
-            // placeholder is not going through convertToTspans
-            // so needs explicit data-unformatted
-            title.attr({'data-unformatted': placeholderText})
-                .text(placeholderText)
-                .style({opacity: opacity})
-                .on('mouseover.opacity', function() {
-                    d3.select(this).transition().duration(100)
-                        .style('opacity', 1);
-                })
-                .on('mouseout.opacity', function() {
-                    d3.select(this).transition().duration(1000)
-                        .style('opacity', 0);
-                });
-        }
-
-        var setContenteditable = function() {
-            this.call(svgTextUtils.makeEditable, {gd: gd})
-                .on('edit', function(text) {
-                    gd.framework({layout: {title: {text: text}}});
-                    this.text(text)
-                        .call(titleLayout);
-                    this.call(setContenteditable);
-                })
-                .on('cancel', function() {
-                    var txt = this.attr('data-unformatted');
-                    this.text(txt).call(titleLayout);
-                });
-        };
-        title.call(setContenteditable);
-    }
-
-    gd._context.setBackground(gd, gd._fullLayout.paper_bgcolor);
-    Plots.addLinks(gd);
-
-    return Promise.resolve();
-}
 
 // convenience function to force a full redraw, mostly for use by plotly.js
 function redraw(gd) {
@@ -653,7 +542,7 @@ function redraw(gd) {
     helpers.cleanLayout(gd.layout);
 
     gd.calcdata = undefined;
-    return exports.plot(gd).then(function() {
+    return exports._doPlot(gd).then(function() {
         gd.emit('plotly_redraw');
         return gd;
     });
@@ -674,7 +563,7 @@ function newPlot(gd, data, layout, config) {
     Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {});
 
     Plots.purge(gd);
-    return exports.plot(gd, data, layout, config);
+    return exports._doPlot(gd, data, layout, config);
 }
 
 /**
@@ -1385,7 +1274,7 @@ function restyle(gd, astr, val, _traces) {
     var seq = [];
 
     if(flags.fullReplot) {
-        seq.push(exports.plot);
+        seq.push(exports._doPlot);
     } else {
         seq.push(Plots.previousPromises);
 
@@ -1871,10 +1760,6 @@ function relayout(gd, astr, val) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
-    if(gd.framework && gd.framework.isPolar) {
-        return Promise.resolve(gd);
-    }
-
     var aobj = {};
     if(typeof astr === 'string') {
         aobj[astr] = val;
@@ -1948,7 +1833,9 @@ function axRangeSupplyDefaultsByPass(gd, flags, specs) {
         var axIn = gd.layout[axName];
         var axOut = fullLayout[axName];
         axOut.autorange = axIn.autorange;
-        axOut.range = axIn.range.slice();
+        if(axIn.range) {
+            axOut.range = axIn.range.slice();
+        }
         axOut.cleanRange();
 
         if(axOut._matchGroup) {
@@ -2382,10 +2269,6 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
     gd = Lib.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
-    if(gd.framework && gd.framework.isPolar) {
-        return Promise.resolve(gd);
-    }
-
     if(!Lib.isPlainObject(traceUpdate)) traceUpdate = {};
     if(!Lib.isPlainObject(layoutUpdate)) layoutUpdate = {};
 
@@ -2412,7 +2295,7 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         // relayoutFlags.layoutReplot and restyleFlags.fullReplot are true
         seq.push(subroutines.layoutReplot);
     } else if(restyleFlags.fullReplot) {
-        seq.push(exports.plot);
+        seq.push(exports._doPlot);
     } else {
         seq.push(Plots.previousPromises);
         axRangeSupplyDefaultsByPass(gd, relayoutFlags, relayoutSpecs) || Plots.supplyDefaults(gd);
@@ -2494,7 +2377,7 @@ var traceUIControlPatterns = [
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
     {pattern: /^node\.(x|y|groups)/}, // for Sankey nodes
-    {pattern: /^level$/}, // for Sunburst & Treemap traces
+    {pattern: /^level$/}, // for Sunburst, Treemap and Icicle traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -2735,16 +2618,6 @@ function react(gd, data, layout, config) {
 
         applyUIRevisions(gd.data, gd.layout, oldFullData, oldFullLayout);
 
-        var allNames = Object.getOwnPropertyNames(oldFullLayout);
-        for(var q = 0; q < allNames.length; q++) {
-            var name = allNames[q];
-            var start = name.substring(0, 5);
-            if(start === 'xaxis' || start === 'yaxis') {
-                var emptyCategories = oldFullLayout[name]._emptyCategories;
-                if(emptyCategories) emptyCategories();
-            }
-        }
-
         // "true" skips updating calcdata and remapping arrays from calcTransforms,
         // which supplyDefaults usually does at the end, but we may need to NOT do
         // if the diff (which we haven't determined yet) says we'll recalc
@@ -2770,10 +2643,22 @@ function react(gd, data, layout, config) {
 
         if(updateAutosize(gd)) relayoutFlags.layoutReplot = true;
 
-        // clear calcdata if required
-        if(restyleFlags.calc || relayoutFlags.calc) gd.calcdata = undefined;
+        // clear calcdata and empty categories if required
+        if(restyleFlags.calc || relayoutFlags.calc) {
+            gd.calcdata = undefined;
+            var allNames = Object.getOwnPropertyNames(newFullLayout);
+            for(var q = 0; q < allNames.length; q++) {
+                var name = allNames[q];
+                var start = name.substring(0, 5);
+                if(start === 'xaxis' || start === 'yaxis') {
+                    var emptyCategories = newFullLayout[name]._emptyCategories;
+                    if(emptyCategories) emptyCategories();
+                }
+            }
         // otherwise do the calcdata updates and calcTransform array remaps that we skipped earlier
-        else Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
+        } else {
+            Plots.supplyDefaultsUpdateCalc(gd.calcdata, newFullData);
+        }
 
         // Note: what restyle/relayout use impliedEdits and clearAxisTypes for
         // must be handled by the user when using Plotly.react.
@@ -2802,7 +2687,7 @@ function react(gd, data, layout, config) {
             });
         } else if(restyleFlags.fullReplot || relayoutFlags.layoutReplot || configChanged) {
             gd._fullLayout._skipDefaults = true;
-            seq.push(exports.plot);
+            seq.push(exports._doPlot);
         } else {
             for(var componentType in relayoutFlags.arrays) {
                 var indices = relayoutFlags.arrays[componentType];
@@ -3227,7 +3112,7 @@ function animate(gd, frameOrGroupNameOrFrameList, animationOpts) {
     }
 
     // Execute a callback after the wrapper function has been called n times.
-    // This is used to defer the resolution until a transition has resovled *and*
+    // This is used to defer the resolution until a transition has resolved *and*
     // the frame has completed. If it's not done this way, then we get a race
     // condition in which the animation might resolve before a transition is complete
     // or vice versa.
@@ -3701,7 +3586,7 @@ function deleteFrames(gd, frameList) {
 }
 
 /**
- * Purge a graph container div back to its initial pre-Plotly.plot state
+ * Purge a graph container div back to its initial pre-_doPlot state
  *
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
@@ -3724,7 +3609,7 @@ function purge(gd) {
     // remove plot container
     if(fullLayout._container) fullLayout._container.remove();
 
-    // in contrast to Plotly.Plots.purge which does NOT clear _context!
+    // in contrast to _doPlots.purge which does NOT clear _context!
     delete gd._context;
 
     return gd;
@@ -3857,6 +3742,9 @@ function makePlotFramework(gd) {
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
     // single treemap layer for the whole plot
+    fullLayout._iciclelayer = fullLayout._paper.append('g').classed('iciclelayer', true);
+
+    // single treemap layer for the whole plot
     fullLayout._treemaplayer = fullLayout._paper.append('g').classed('treemaplayer', true);
 
     // single sunburst layer for the whole plot
@@ -3905,7 +3793,7 @@ exports.moveTraces = moveTraces;
 exports.prependTraces = prependTraces;
 
 exports.newPlot = newPlot;
-exports.plot = plot;
+exports._doPlot = _doPlot;
 exports.purge = purge;
 
 exports.react = react;

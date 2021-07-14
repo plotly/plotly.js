@@ -1,6 +1,7 @@
 var dragElement = require('@src/components/dragelement');
 
-var d3 = require('d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
@@ -16,7 +17,7 @@ describe('dragElement', function() {
 
         this.gd.className = 'js-plotly-plot';
         this.gd._fullLayout = {
-            _hoverlayer: d3.select(this.hoverlayer)
+            _hoverlayer: d3Select(this.hoverlayer)
         };
         this.gd._context = {
             doubleClickDelay: 300
@@ -34,7 +35,7 @@ describe('dragElement', function() {
     afterEach(destroyGraphDiv);
 
     function countCoverSlip() {
-        return d3.selectAll('.dragcover').size();
+        return d3SelectAll('.dragcover').size();
     }
 
     it('should init drag element', function() {
