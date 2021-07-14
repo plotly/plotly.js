@@ -22,7 +22,6 @@ module.exports = overrideAll({
     cluster: {
         enabled: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             description: 'Determines whether clustering is enabled or disabled.'
         },
@@ -33,7 +32,6 @@ module.exports = overrideAll({
             ].join(' ')
         }),
         step: {
-            role: 'info',
             valType: 'number',
             arrayOk: true,
             dflt: -1,
@@ -43,7 +41,6 @@ module.exports = overrideAll({
             ].join(' ')
         },
         size: {
-            role: 'info',
             valType: 'number',
             arrayOk: true,
             dflt: 20,
@@ -55,7 +52,6 @@ module.exports = overrideAll({
         color: {
             valType: 'color',
             arrayOk: true,
-            role: 'style',
             description: [
                 'Sets the color for each cluster step.'
             ].join(' ')

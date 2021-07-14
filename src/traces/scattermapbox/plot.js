@@ -49,7 +49,7 @@ proto.addSource = function(k, opts, cluster) {
         data: opts.geojson,
     };
 
-    if(cluster.enabled) {
+    if(cluster && cluster.enabled) {
         Lib.extendFlat(sourceOpts, {
             cluster: true,
             clusterMaxZoom: cluster.maxzoom,
@@ -86,7 +86,7 @@ proto.update = function update(calcTrace) {
     var optsAll = convert(subplot.gd, calcTrace);
     var below = subplot.belowLookup['trace-' + this.uid];
     var i, k, opts, order;
-    var hasCluster = trace.cluster.enabled;
+    var hasCluster = trace.cluster && trace.cluster.enabled;
     var hadCluster = this.clusterEnabled;
 
     if(hasCluster === hadCluster) {
@@ -147,16 +147,18 @@ proto.dispose = function dispose() {
 
 module.exports = function createScatterMapbox(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
+    var hasCluster = trace.cluster && trace.cluster.enabled;
     var scatterMapbox = new ScatterMapbox(
-    subplot,
-    trace.uid,
-    trace.cluster.enabled
-  );
+        subplot,
+        trace.uid,
+        hasCluster
+    );
+
     var optsAll = convert(subplot.gd, calcTrace);
     var below = scatterMapbox.below = subplot.belowLookup['trace-' + trace.uid];
     var i, k, opts;
 
-    if(trace.cluster.enabled) {
+    if(hasCluster) {
         scatterMapbox.addSource('circle', optsAll.circle, trace.cluster);
         for(i = 0; i < ORDER.cluster.length; i++) {
             k = ORDER.cluster[i];

@@ -26,7 +26,7 @@ module.exports = function convert(gd, calcTrace) {
     var hasText = subTypes.hasText(trace);
     var hasCircles = (hasMarkers && trace.marker.symbol === 'circle');
     var hasSymbols = (hasMarkers && trace.marker.symbol !== 'circle');
-    var hasCluster = trace.cluster.enabled;
+    var hasCluster = trace.cluster && trace.cluster.enabled;
 
     var fill = initContainer('fill');
     var line = initContainer('line');

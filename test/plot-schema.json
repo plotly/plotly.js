@@ -51002,7 +51002,6 @@
       "arrayOk": true,
       "description": "Sets the color for each cluster step.",
       "editType": "calc",
-      "role": "style",
       "valType": "color"
      },
      "colorsrc": {
@@ -51015,7 +51014,6 @@
       "description": "Determines whether clustering is enabled or disabled.",
       "dflt": false,
       "editType": "calc",
-      "role": "info",
       "valType": "boolean"
      },
      "maxzoom": {
@@ -51047,7 +51045,6 @@
       "dflt": 20,
       "editType": "calc",
       "min": 0,
-      "role": "info",
       "valType": "number"
      },
      "sizesrc": {
@@ -51061,7 +51058,6 @@
       "dflt": -1,
       "editType": "calc",
       "min": -1,
-      "role": "info",
       "valType": "number"
      },
      "stepsrc": {

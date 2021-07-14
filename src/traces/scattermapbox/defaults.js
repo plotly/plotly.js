@@ -46,8 +46,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    var clusterEnabled = coerce('cluster.enabled');
-    if(clusterEnabled) {
+    var hasCluster = coerce('cluster.enabled');
+    if(hasCluster) {
         coerce('cluster.maxzoom');
         coerce('cluster.step');
         coerce('cluster.color', traceOut.marker.color || defaultColor);
