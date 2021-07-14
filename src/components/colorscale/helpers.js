@@ -169,7 +169,7 @@ function makeColorScaleFunc(specs, opts) {
         _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
     }
 
-    var _sclFunc = d3.scale.linear()
+    var _sclFunc = d3.scaleLinear()
         .domain(domain)
         .range(_range)
         .clamp(true);

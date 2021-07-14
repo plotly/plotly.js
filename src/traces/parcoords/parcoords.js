@@ -81,7 +81,7 @@ function toText(formatter, texts) {
 function domainScale(height, padding, dimension, tickvals, ticktext) {
     var extent = dimensionExtent(dimension);
     if(tickvals) {
-        return d3.scale.ordinal()
+        return d3.scaleOrdinal()
             .domain(tickvals.map(toText(numberFormat(dimension.tickformat), ticktext)))
             .range(tickvals
                 .map(function(d) {
@@ -90,17 +90,17 @@ function domainScale(height, padding, dimension, tickvals, ticktext) {
                 })
             );
     }
-    return d3.scale.linear()
+    return d3.scaleLinear()
         .domain(extent)
         .range([height - padding, padding]);
 }
 
 function unitToPaddedPx(height, padding) {
-    return d3.scale.linear().range([padding, height - padding]);
+    return d3.scaleLinear().range([padding, height - padding]);
 }
 
 function domainToPaddedUnitScale(dimension, padFraction) {
-    return d3.scale.linear()
+    return d3.scaleLinear()
         .domain(dimensionExtent(dimension))
         .range([padFraction, 1 - padFraction]);
 }
@@ -109,7 +109,7 @@ function ordinalScale(dimension) {
     if(!dimension.tickvals) return;
 
     var extent = dimensionExtent(dimension);
-    return d3.scale.ordinal()
+    return d3.scaleOrdinal()
         .domain(dimension.tickvals)
         .range(dimension.tickvals.map(function(d) {
             return (d - extent[0]) / (extent[1] - extent[0]);
@@ -127,7 +127,7 @@ function unitToColorScale(cscale) {
     // We can't use d3 color interpolation as we may have non-uniform color palette raster
     // (various color stop distances).
     var polylinearUnitScales = 'rgb'.split('').map(function(key) {
-        return d3.scale.linear()
+        return d3.scaleLinear()
             .clamp(true)
             .domain(colorStops)
             .range(colorTuples.map(prop(key)));
@@ -164,7 +164,7 @@ function model(layout, d, i) {
     var rangeFont = trace.rangefont;
 
     var lines = Lib.extendDeepNoArrays({}, line, {
-        color: lineColor.map(d3.scale.linear().domain(
+        color: lineColor.map(d3.scaleLinear().domain(
             dimensionExtent({
                 values: lineColor,
                 range: [cOpts.min, cOpts.max],
