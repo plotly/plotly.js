@@ -32,7 +32,6 @@ module.exports = function handleClick(g, gd, numClicks) {
         [];
 
     var legendItem = g.data()[0][0];
-    if(legendItem.groupTitle) return; // no click on group legends for now
 
     var fullData = gd._fullData;
     var fullTrace = legendItem.trace;
