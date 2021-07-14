@@ -3,6 +3,7 @@
 module.exports = ScrollBox;
 
 var d3 = require('@plotly/d3');
+var d3Drag = require('d3-drag').drag;
 
 var Color = require('../color');
 var Drawing = require('../drawing');
@@ -263,8 +264,8 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     // set up drag listeners (if scroll bars are needed)
     if(needsHorizontalScrollBar || needsVerticalScrollBar) {
-        var onBoxDrag = d3.behavior.drag()
-            .on('dragstart', function() {
+        var onBoxDrag = d3Drag()
+            .on('start', function() {
                 d3.event.sourceEvent.preventDefault();
             })
             .on('drag', this._onBoxDrag.bind(this));
@@ -275,8 +276,8 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
             .on('.drag', null)
             .call(onBoxDrag);
 
-        var onBarDrag = d3.behavior.drag()
-            .on('dragstart', function() {
+        var onBarDrag = d3Drag()
+            .on('start', function() {
                 d3.event.sourceEvent.preventDefault();
                 d3.event.sourceEvent.stopPropagation();
             })

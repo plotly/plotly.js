@@ -3,6 +3,8 @@
 var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
+var d3Drag = require('d3-drag').drag;
+
 var rgba = require('color-rgba');
 
 var Axes = require('../../plots/cartesian/axes');
@@ -564,8 +566,8 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     });
 
     // drag column for reordering columns
-    yAxis.call(d3.behavior.drag()
-        .origin(function(d) { return d; })
+    yAxis.call(d3Drag()
+        .subject(function(d) { return d; })
         .on('drag', function(d) {
             var p = d.parent;
             state.linePickActive(false);
@@ -588,7 +590,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
             p.focusLayer.render && p.focusLayer.render(p.panels);
         })
-        .on('dragend', function(d) {
+        .on('end', function(d) {
             var p = d.parent;
             d.x = d.xScale(d.xIndex);
             d.canvasX = d.x * d.model.canvasPixelRatio;

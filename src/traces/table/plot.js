@@ -4,6 +4,8 @@ var c = require('./constants');
 var d3 = require('@plotly/d3');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
+var d3Drag = require('d3-drag').drag;
+
 var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
 var svgUtil = require('../../lib/svg_text_utils');
@@ -106,8 +108,8 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     yColumn.attr('transform', function(d) {return strTranslate(d.x, 0);});
 
     if(dynamic) {
-        yColumn.call(d3.behavior.drag()
-            .origin(function(d) {
+        yColumn.call(d3Drag()
+            .subject(function(d) {
                 var movedColumn = d3.select(this);
                 easeColumn(movedColumn, d, -c.uplift);
                 raiseToTop(this);
@@ -136,7 +138,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
                     .call(cancelEeaseColumn)
                     .attr('transform', strTranslate(d.x, -c.uplift));
             })
-            .on('dragend', function(d) {
+            .on('end', function(d) {
                 var movedColumn = d3.select(this);
                 var p = d.calcdata;
                 d.x = d.xScale(d);
@@ -168,13 +170,13 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
     if(dynamic) {
-        cellsColumnBlock.call(d3.behavior.drag()
-            .origin(function(d) {
+        cellsColumnBlock.call(d3Drag()
+            .subject(function(d) {
                 d3.event.stopPropagation();
                 return d;
             })
             .on('drag', makeDragRow(gd, tableControlView, -1))
-            .on('dragend', function() {
+            .on('end', function() {
                 // fixme emit plotly notification
             })
         );
@@ -359,14 +361,14 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
                 makeDragRow(gd, tableControlView, null, inverseScale(pixelVal - s.barLength / 2))(d);
             }
         })
-        .call(d3.behavior.drag()
-            .origin(function(d) {
+        .call(d3Drag()
+            .subject(function(d) {
                 d3.event.stopPropagation();
                 d.scrollbarState.scrollbarScrollInProgress = true;
                 return d;
             })
             .on('drag', makeDragRow(gd, tableControlView))
-            .on('dragend', function() {
+            .on('end', function() {
                 // fixme emit Plotly event
             })
         );
