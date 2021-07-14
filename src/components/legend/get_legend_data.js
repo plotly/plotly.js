@@ -134,19 +134,10 @@ module.exports = function getLegendData(calcdata, opts) {
         if(reversed) legendData[i].reverse();
 
         if(groupTitle) {
-            var hasPieLike = false;
-            for(j = 0; j < legendData[i].length; j++) {
-                if(Registry.traceIs(legendData[i][j].trace, 'pie-like')) {
-                    hasPieLike = true;
-                    break;
-                }
-            }
-
             // set group title text
             legendData[i].unshift({
                 i: -1,
                 groupTitle: groupTitle,
-                noClick: hasPieLike,
                 trace: {
                     showlegend: firstItemTrace.showlegend,
                     legendgroup: firstItemTrace.legendgroup,
