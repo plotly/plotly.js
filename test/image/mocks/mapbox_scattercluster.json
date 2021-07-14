@@ -12,7 +12,7 @@
       },
       "cluster": {
         "enabled": true,
-        "radius": 20,
+        "size": 20,
         "color": "yellow"
       },
       "lon": [
@@ -55,14 +55,14 @@
     {
       "type": "scattermapbox",
       "subplot": "mapbox2",
-      "name": "20 (40)",
+      "name": "20 (10)",
       "mode": "markers",
       "marker": {
         "size": 20
       },
       "cluster": {
         "enabled": true,
-        "radius": 40
+        "size": 10
       },
       "lon": [
         -73.56,
@@ -104,14 +104,14 @@
     {
       "type": "scattermapbox",
       "subplot": "mapbox3",
-      "name": "40 (20)",
+      "name": "10 (20)",
       "mode": "markers",
       "marker": {
-        "size": 40
+        "size": 10
       },
       "cluster": {
         "enabled": true,
-        "radius": 20
+        "size": 20
       },
       "lon": [
         -73.56,
@@ -153,14 +153,14 @@
     {
       "type": "scattermapbox",
       "subplot": "mapbox4",
-      "name": "40 (40)",
+      "name": "10 (10)",
       "mode": "markers",
       "marker": {
-        "size": 40
+        "size": 10
       },
       "cluster": {
         "enabled": true,
-        "radius": 40
+        "size": 10
       },
       "lon": [
         -73.56,

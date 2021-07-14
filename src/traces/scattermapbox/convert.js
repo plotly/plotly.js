@@ -355,15 +355,16 @@ function isBADNUM(lonlat) {
     return lonlat[0] === BADNUM;
 }
 
-function arrayifyAttribute(attribute, step) {
+function arrayifyAttribute(values, step) {
     var newAttribute;
-    if(Lib.isArrayOrTypedArray(attribute) && Lib.isArrayOrTypedArray(step)) {
-        newAttribute = ['step', ['get', 'point_count'], attribute[0]];
-        for(var idx = 1; idx < attribute.length; idx++) {
-            newAttribute.push(step[idx - 1], attribute[idx]);
+    if(Lib.isArrayOrTypedArray(values) && Lib.isArrayOrTypedArray(step)) {
+        newAttribute = ['step', ['get', 'point_count'], values[0]];
+
+        for(var idx = 1; idx < values.length; idx++) {
+            newAttribute.push(step[idx - 1], values[idx]);
         }
     } else {
-        newAttribute = attribute;
+        newAttribute = values;
     }
     return newAttribute;
 }
