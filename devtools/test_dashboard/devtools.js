@@ -60,10 +60,14 @@ var Tabs = {
     plotMock: function(mockName, id) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
-        d3Json(mockURL, function(err, fig) {
-            console.warn('Plotting:', mockURL);
+        console.warn('Plotting:', mockURL);
 
-            Plotly.newPlot(Tabs.fresh(id), fig);
+        d3Json(mockURL, function(err, fig) {
+            if(err) {
+                console.error(err);
+            } else {
+                Plotly.newPlot(Tabs.fresh(id), fig);
+            }
         });
     },
 
