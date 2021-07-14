@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
+var d3Drag = require('d3-drag').drag;
 
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
@@ -246,8 +247,8 @@ function _draw(gd, legendObj) {
                 };
 
                 // scroll legend by dragging scrollBAR
-                var scrollBarDrag = d3.behavior.drag()
-                .on('dragstart', function() {
+                var scrollBarDrag = d3Drag()
+                .on('start', function() {
                     var e = d3.event.sourceEvent;
                     if(e.type === 'touchstart') {
                         eventY0 = e.changedTouches[0].clientY;
@@ -270,8 +271,8 @@ function _draw(gd, legendObj) {
                 scrollBar.call(scrollBarDrag);
 
                 // scroll legend by touch-dragging scrollBOX
-                var scrollBoxTouchDrag = d3.behavior.drag()
-                .on('dragstart', function() {
+                var scrollBoxTouchDrag = d3Drag()
+                .on('start', function() {
                     var e = d3.event.sourceEvent;
                     if(e.type === 'touchstart') {
                         eventY0 = e.changedTouches[0].clientY;

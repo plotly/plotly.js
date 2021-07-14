@@ -81,6 +81,7 @@
     "color-rgba": "2.1.1",
     "convex-hull": "^1.0.3",
     "country-regex": "^1.1.0",
+    "d3-drag": "^1.2.5",
     "d3-force": "^1.2.1",
     "d3-geo": "^1.12.1",
     "d3-geo-projection": "^2.9.0",

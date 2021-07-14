@@ -466,7 +466,7 @@ proto.initFx = function(calcData, fullLayout) {
         Fx.loneUnhover(fullLayout._hoverlayer);
     }
 
-    map.on('dragstart', function() {
+    map.on('start', function() {
         self.dragging = true;
         unhover();
     });
