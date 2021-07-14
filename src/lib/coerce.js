@@ -12,21 +12,75 @@ var nestedProperty = require('./nested_property');
 var counterRegex = require('./regex').counter;
 var modHalf = require('./mod').modHalf;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
+var isTypedArraySpec = require('./array').isTypedArraySpec;
+var decodeTypedArraySpec = require('./array').decodeTypedArraySpec;
+var coerceTypedArraySpec = require('./array').coerceTypedArraySpec;
+
 
 exports.valObjectMeta = {
     data_array: {
         // You can use *dflt=[] to force said array to exist though.
         description: [
             'An {array} of data.',
-            'The value MUST be an {array}, or we ignore it.',
-            'Note that typed arrays (e.g. Float32Array) are supported.'
+            'The value must represent an {array} or it will be ignored,',
+            'but this array can be provided in several forms:',
+            '(1) a regular {array} object',
+            '(2) a typed array (e.g. Float32Array)',
+            '(3) an object with keys dtype, bvals, and optionally shape.',
+            'In this 3rd form, dtype is one of *int8*, *uint8*, *uint8clamped*,',
+            '*int16*, *uint16*, *int32*, *uint32*, *float32*, or *float64*.',
+            'bvals is either a base64-encoded string or an ArrayBuffer,',
+            'and for multi-dimensional arrays you must provide its dimensions',
+            'as an array of integers.'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            // TODO maybe `v: {type: 'float32', vals: [/* ... */]}` also
-            if(isArrayOrTypedArray(v)) propOut.set(v);
-            else if(dflt !== undefined) propOut.set(dflt);
+            var wasSet;
+            if(isArrayOrTypedArray(v)) {
+                propOut.set(v);
+                wasSet = true;
+            } else if(isTypedArraySpec(v)) {
+                // Copy and coerce spec
+                v = coerceTypedArraySpec(v);
+
+                // See if caching location is available
+                var uid = propOut.obj.uid;
+                var module = propOut.obj._module;
+
+                if(v.bvals.constructor === ArrayBuffer || !uid || !module) {
+                    // Already an ArrayBuffer
+                    // decoding is cheap
+                    propOut.set(decodeTypedArraySpec(v));
+                } else {
+                    var prop = propOut.astr;
+                    var cache = module._b64BufferCache || {};
+
+                    // Check cache
+                    var cachedBuffer = ((cache[uid] || {})[prop] || {})[v.bvals];
+                    if(cachedBuffer !== undefined) {
+                        // Use cached array buffer instead of base64 encoded
+                        // string
+                        v.bvals = cachedBuffer;
+                        propOut.set(decodeTypedArraySpec(v));
+                    } else {
+                        // Not in so cache decode
+                        var decoded = decodeTypedArraySpec(v);
+                        propOut.set(decoded);
+
+                        // Update cache for next time
+                        cache[uid] = (cache[uid] || {});
+
+                        // Clear any prior cache value (only store one per
+                        // trace property
+                        cache[uid][prop] = {};
+                        cache[uid][prop][v.bvals] = decoded.buffer;
+                        module._b64BufferCache = cache;
+                    }
+                }
+                wasSet = true;
+            }
+            if(!wasSet && dflt !== undefined) propOut.set(dflt);
         }
     },
     enumerated: {
