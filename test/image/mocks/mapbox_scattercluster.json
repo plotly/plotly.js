@@ -253,7 +253,6 @@
       }
     },
     "height": 800,
-    "width": 1200,
-    "autosize": true
+    "width": 1200
   }
 }
