@@ -32,9 +32,12 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 
     clearMinTextSize('sunburst', fullLayout);
 
-    join = layer.selectAll('g.trace.sunburst').data(cdmodule, function(cd) { return cd[0].trace.uid; })
+    join = layer.selectAll('g.trace.sunburst')
+        .data(cdmodule, function(cd) { return cd[0].trace.uid; })
         .enter()
-        .append('g')
+        .append('g');
+
+    join
         .classed('trace', true)
         .classed('sunburst', true)
         .attr('stroke-linejoin', 'round'); // using same 'stroke-linejoin' as pie traces
@@ -162,10 +165,10 @@ function plotOne(gd, cd, element, transitionOpts) {
     var getTargetX = function(d) { return cx + getTextXY(d)[0] * (d.transform.rCenter || 0) + (d.transform.x || 0); };
     var getTargetY = function(d) { return cy + getTextXY(d)[1] * (d.transform.rCenter || 0) + (d.transform.y || 0); };
 
-    slices = slices.data(sliceData, helpers.getPtId)
+    slices = slices
+        .data(sliceData, helpers.getPtId)
         .enter()
-        .append('g')
-        .classed('slice', true);
+        .append('g');
 
     if(hasTransition) {
         slices.exit().transition()
@@ -185,6 +188,9 @@ function plotOne(gd, cd, element, transitionOpts) {
     } else {
         slices.exit().remove();
     }
+
+    slices
+        .classed('slice', true);
 
     slices.order();
 

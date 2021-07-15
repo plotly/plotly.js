@@ -319,18 +319,19 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
 
         var image3 = plotGroup.selectAll('image').data(cd)
             .enter()
-            .append('svg:image')
-            .attrs({
-                xmlns: xmlnsNamespaces.svg,
-                preserveAspectRatio: 'none',
-                height: imageHeight,
-                width: imageWidth,
-                x: left,
-                y: top,
-                'xlink:href': canvas.toDataURL('image/png')
-            });
+            .append('svg:image');
 
         image3.exit().remove();
+
+        image3.attrs({
+            xmlns: xmlnsNamespaces.svg,
+            preserveAspectRatio: 'none',
+            height: imageHeight,
+            width: imageWidth,
+            x: left,
+            y: top,
+            'xlink:href': canvas.toDataURL('image/png')
+        });
     });
 };
 

@@ -42,7 +42,12 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
 
         var connectors = group.selectAll('g.line')
             .data(Lib.identity)
-            .enter().append('g')
+            .enter()
+            .append('g');
+
+        connectors.exit().remove();
+
+        connectors
             .classed('line', true);
 
         var len = connectors.size();
@@ -96,8 +101,6 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 .attr('d', shape)
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
         });
-
-        connectors.exit().remove();
     });
 }
 

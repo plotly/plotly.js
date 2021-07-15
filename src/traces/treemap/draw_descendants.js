@@ -75,10 +75,12 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
     slices = slices.data(sliceData, helpers.getPtId)
         .enter()
-        .append('g')
-        .classed('slice', true);
+        .append('g');
 
     handleSlicesExit(slices, onPathbar, refRect, [width, height], pathSlice);
+
+    slices
+        .classed('slice', true);
 
     slices.order();
 
