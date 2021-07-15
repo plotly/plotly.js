@@ -124,7 +124,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var trace = cdscatter[0].trace;
+    var trace = getTraceFromCd(cdscatter);
     var line = trace.line;
     var tr = d3.select(element);
 
@@ -381,7 +381,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     function makePoints(points, text, cdscatter) {
         var join, selection, hasNode;
 
-        var trace = cdscatter[0].trace;
+        var trace = getTraceFromCd(cdscatter);
         var showMarkers = subTypes.hasMarkers(trace);
         var showText = subTypes.hasText(trace);
 
@@ -525,7 +525,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     var xr = d3.extent(Lib.simpleMap(xa.range, xa.r2c));
     var yr = d3.extent(Lib.simpleMap(ya.range, ya.r2c));
 
-    var trace = cdscatter[0].trace;
+    var trace = getTraceFromCd(cdscatter);
     if(!subTypes.hasMarkers(trace)) return;
     // if marker.maxdisplayed is used, select a maximum of
     // mnum markers to show, from the set that are in the viewport
@@ -559,4 +559,10 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     cd.forEach(function(v, i) {
         if(Math.round((i + i0) % inc) === 0) v.vis = true;
     });
+}
+
+function getTraceFromCd(cd) {
+    for(var i = 0; i < cd.length; i++) {
+        if(cd[i].i === 0) return cd[i].trace;
+    }
 }
