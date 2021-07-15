@@ -40,12 +40,10 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         var isHorizontal = (trace.orientation === 'h');
         var mode = trace.connector.mode;
 
-        var connectors = group.selectAll('g.line').data(Lib.identity);
-
-        connectors.enter().append('g')
+        var connectors = group.selectAll('g.line')
+            .data(Lib.identity)
+            .enter().append('g')
             .classed('line', true);
-
-        connectors.exit().remove();
 
         var len = connectors.size();
 
@@ -98,6 +96,8 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
                 .attr('d', shape)
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
         });
+
+        connectors.exit().remove();
     });
 }
 

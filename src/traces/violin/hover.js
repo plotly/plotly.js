@@ -85,12 +85,14 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
     // update violin line (if any)
     var violinLine = hoverLayer.selectAll('.violinline-' + trace.uid)
-        .data(violinLineAttrs ? [0] : []);
-    violinLine.enter().append('line')
+        .data(violinLineAttrs ? [0] : [])
+        .enter()
+        .append('line')
         .classed('violinline-' + trace.uid, true)
-        .attr('stroke-width', 1.5);
+        .attr('stroke-width', 1.5)
+        .attr(violinLineAttrs);
+
     violinLine.exit().remove();
-    violinLine.attr(violinLineAttrs);
 
     // same combine logic as box hoverPoints
     if(hovermode === 'closest') {

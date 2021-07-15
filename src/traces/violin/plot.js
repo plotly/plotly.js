@@ -45,13 +45,12 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var hasPositiveSide = hasBothSides || trace.side === 'positive';
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
 
-        var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
-
-        violins.enter().append('path')
+        var violins = plotGroup.selectAll('path.violin')
+            .data(Lib.identity)
+            .enter()
+            .append('path')
             .style('vector-effect', 'non-scaling-stroke')
             .attr('class', 'violin');
-
-        violins.exit().remove();
 
         violins.each(function(d) {
             var pathSel = d3.select(this);
@@ -120,6 +119,8 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
         });
 
+        violins.exit().remove();
+
         var boxAttrs = trace.box;
         var boxWidth = boxAttrs.width;
         var boxLineWidth = (boxAttrs.line || {}).width;
@@ -158,12 +159,14 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
 
         // N.B. use different class name than boxPlot.plotBoxMean,
         // to avoid selectAll conflict
-        var meanPaths = plotGroup.selectAll('path.meanline').data(fn || []);
-        meanPaths.enter().append('path')
+        var meanPaths = plotGroup.selectAll('path.meanline')
+            .data(fn || [])
+            .enter()
+            .append('path')
             .attr('class', 'meanline')
             .style('fill', 'none')
             .style('vector-effect', 'non-scaling-stroke');
-        meanPaths.exit().remove();
+
         meanPaths.each(function(d) {
             var v = valAxis.c2p(d.mean, true);
             var p = helpers.getPositionOnKdePath(d, trace, v);
@@ -174,6 +177,8 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                     'M' + p[0] + ',' + v + 'H' + p[1]
             );
         });
+
+        meanPaths.exit().remove();
 
         boxPlot.plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
     });
