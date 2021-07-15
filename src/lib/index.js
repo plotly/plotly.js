@@ -4,13 +4,14 @@ var utcFormat = require('d3-time-format').utcFormat;
 var d3Format = require('d3-format').format;
 var isNumeric = require('fast-isnumeric');
 
+var d3 = require('./d3');
 var numConstants = require('../constants/numerical');
 var MAX_SAFE = numConstants.FP_SAFE;
 var MIN_SAFE = -MAX_SAFE;
 var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {
-    d3: require('./d3')
+    d3: d3
 };
 
 lib.adjustFormat = function adjustFormat(formatStr) {
