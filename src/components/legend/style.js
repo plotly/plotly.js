@@ -144,12 +144,14 @@ module.exports = function style(s, gd, legend) {
         var fill = this3.select('.legendfill').selectAll('path')
             .data(showFill || showGradientFill ? [d] : [])
             .enter()
-            .append('path')
+            .append('path');
+
+        fill.exit().remove();
+
+        fill
             .classed('js-fill', true)
             .attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z')
             .call(showFill ? Drawing.fillGroupStyle : fillGradient);
-
-        fill.exit().remove();
 
         if(showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);
@@ -160,7 +162,11 @@ module.exports = function style(s, gd, legend) {
         var line = this3.select('.legendlines').selectAll('path')
             .data(showLine || showGradientLine ? [dMod] : [])
             .enter()
-            .append('path')
+            .append('path');
+
+        line.exit().remove();
+
+        line
             .classed('js-line', true)
             // this is ugly... but you can't apply a gradient to a perfectly
             // horizontal or vertical line. Presumably because then
@@ -170,8 +176,6 @@ module.exports = function style(s, gd, legend) {
             // This issue (and workaround) exist across (Mac) Chrome, FF, and Safari
             .attr('d', pathStart + (showGradientLine ? 'l' + itemWidth + ',0.0001' : 'h' + itemWidth))
             .call(showLine ? Drawing.lineGroupStyle : lineGradient);
-
-        line.exit().remove();
     }
 
     function stylePoints(d) {
@@ -263,12 +267,14 @@ module.exports = function style(s, gd, legend) {
             .data(showMarker ? dMod : [])
             // make sure marker is on the bottom, in case it enters after text
             .enter()
-            .insert('path', ':first-child')
+            .insert('path', ':first-child');
+
+        pts.exit().remove();
+
+        pts
             .classed('scatterpts', true)
             .attr('transform', centerTransform)
             .call(Drawing.pointStyle, tMod, gd);
-
-        pts.exit().remove();
 
         // 'mrc' is set in pointStyle and used in textPointStyle:
         // constrain it here
@@ -277,14 +283,16 @@ module.exports = function style(s, gd, legend) {
         var txt = ptgroup.selectAll('g.pointtext')
             .data(showText ? dMod : [])
             .enter()
-            .append('g')
+            .append('g');
+
+        txt.exit().remove();
+
+        txt
             .classed('pointtext', true)
             .append('text')
             .attr('transform', centerTransform)
             .selectAll('text')
             .call(Drawing.textPointStyle, tMod, gd);
-
-        txt.exit().remove();
     }
 
     function styleWaterfalls(d) {
@@ -309,7 +317,11 @@ module.exports = function style(s, gd, legend) {
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendwaterfall')
             .data(ptsData)
             .enter()
-            .append('path')
+            .append('path');
+
+        pts.exit().remove();
+
+        pts
             .classed('legendwaterfall', true)
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
@@ -327,8 +339,6 @@ module.exports = function style(s, gd, legend) {
                 pt.call(Color.stroke, cont.line.color);
             }
         });
-
-        pts.exit().remove();
     }
 
     function styleBars(d) {
@@ -350,7 +360,11 @@ module.exports = function style(s, gd, legend) {
         var barpath = d3.select(lThis).select('g.legendpoints').selectAll('path.legend' + desiredType)
             .data(isVisible ? [d] : [])
             .enter()
-            .append('path')
+            .append('path');
+
+        barpath.exit().remove();
+
+        barpath
             .classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', centerTransform);
@@ -395,8 +409,6 @@ module.exports = function style(s, gd, legend) {
 
             if(w) Color.stroke(p, d0.mlc || markerLine.color);
         });
-
-        barpath.exit().remove();
     }
 
     function styleBoxes(d) {
@@ -405,7 +417,11 @@ module.exports = function style(s, gd, legend) {
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendbox')
             .data(trace.visible && Registry.traceIs(trace, 'box-violin') ? [d] : [])
             .enter()
-            .append('path')
+            .append('path');
+
+        pts.exit().remove();
+
+        pts
             .classed('legendbox', true)
             // if we want the median bar, prepend M6,0H-6
             .attr('d', 'M6,6H-6V-6H6Z')
@@ -435,8 +451,6 @@ module.exports = function style(s, gd, legend) {
                 if(w) Color.stroke(p, trace.line.color);
             }
         });
-
-        pts.exit().remove();
     }
 
     function styleCandles(d) {
@@ -445,7 +459,11 @@ module.exports = function style(s, gd, legend) {
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendcandle')
             .data(trace.visible && trace.type === 'candlestick' ? [d, d] : [])
             .enter()
-            .append('path')
+            .append('path');
+
+        pts.exit().remove();
+
+        pts
             .classed('legendcandle', true)
             .attr('d', function(_, i) {
                 if(i) return 'M-15,0H-8M-8,6V-6H8Z'; // increasing
@@ -464,8 +482,6 @@ module.exports = function style(s, gd, legend) {
 
             if(w) Color.stroke(p, cont.line.color);
         });
-
-        pts.exit().remove();
     }
 
     function styleOHLC(d) {
@@ -474,7 +490,11 @@ module.exports = function style(s, gd, legend) {
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendohlc')
             .data(trace.visible && trace.type === 'ohlc' ? [d, d] : [])
             .enter()
-            .append('path')
+            .append('path');
+
+        pts.exit().remove();
+
+        pts
             .classed('legendohlc', true)
             .attr('d', function(_, i) {
                 if(i) return 'M-15,0H0M-8,-6V0'; // increasing
@@ -493,8 +513,6 @@ module.exports = function style(s, gd, legend) {
 
             if(w) Color.stroke(p, cont.line.color);
         });
-
-        pts.exit().remove();
     }
 
     function stylePies(d) {
@@ -515,7 +533,11 @@ module.exports = function style(s, gd, legend) {
         var pts = d3.select(lThis).select('g.legendpoints').selectAll('path.legend' + desiredType)
             .data(isVisible ? [d] : [])
             .enter()
-            .append('path')
+            .append('path');
+
+        pts.exit().remove();
+
+        pts
             .classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', centerTransform);
@@ -532,8 +554,6 @@ module.exports = function style(s, gd, legend) {
 
             stylePie(pts, d0Mod, tMod);
         }
-
-        pts.exit().remove();
     }
 
     function styleSpatial(d) { // i.e. maninly traces having z and colorscale
@@ -616,7 +636,11 @@ module.exports = function style(s, gd, legend) {
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legend3dandfriends')
             .data(ptsData)
             .enter()
-            .append('path')
+            .append('path');
+
+        pts.exit().remove();
+
+        pts
             .classed('legend3dandfriends', true)
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
@@ -657,8 +681,6 @@ module.exports = function style(s, gd, legend) {
                 pt.call(fillGradient);
             }
         });
-
-        pts.exit().remove();
     }
 };
 

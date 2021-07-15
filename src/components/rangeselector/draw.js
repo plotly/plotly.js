@@ -25,7 +25,11 @@ module.exports = function draw(gd) {
     var selectors = fullLayout._infolayer.selectAll('.rangeselector')
         .data(makeSelectorData(gd), selectorKeyFunc)
         .enter()
-        .append('g')
+        .append('g');
+
+    selectors.exit().remove();
+
+    selectors
         .classed('rangeselector', true)
         .styles({
             cursor: 'pointer',
@@ -40,7 +44,11 @@ module.exports = function draw(gd) {
         var buttons = selector.selectAll('g.button')
             .data(Lib.filterVisible(selectorLayout.buttons))
             .enter()
-            .append('g')
+            .append('g');
+
+        buttons.exit().remove();
+
+        buttons
             .classed('button', true);
 
         buttons.each(function(d) {
@@ -69,12 +77,8 @@ module.exports = function draw(gd) {
             });
         });
 
-        buttons.exit().remove();
-
         reposition(gd, buttons, selectorLayout, axisLayout._name, selector);
     });
-
-    selectors.exit().remove();
 };
 
 function makeSelectorData(gd) {
