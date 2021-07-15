@@ -1133,7 +1133,7 @@ function createHoverText(hoverData, opts, gd) {
     hoverLabels.exit().remove();
 
     hoverLabels
-        .classed('hovertext', true)
+        .classed('hovertext', true);
 
     hoverLabels.each(function() {
         var g = d3.select(this);
