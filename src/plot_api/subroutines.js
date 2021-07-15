@@ -162,25 +162,23 @@ function lsInner(gd) {
     lowerBackgrounds
         .classed('bg', true);
 
-    lowerBackgrounds.each(function(subplot) {
-        fullLayout._plots[subplot].bg = d3.select(this);
-    });
+    lowerBackgrounds.each(function(subplot, i) {
+        var s = d3.select(this);
 
-    // style all backgrounds
-    for(i = 0; i < backgroundIds.length; i++) {
+        fullLayout._plots[subplot].bg = s;
+
+        // style all backgrounds
         plotinfo = fullLayout._plots[backgroundIds[i]];
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
 
-        if(plotinfo.bg && xa._offset !== undefined && ya._offset !== undefined) {
-            plotinfo.bg
-                .call(Drawing.setRect,
-                    xa._offset - pad, ya._offset - pad,
-                    xa._length + 2 * pad, ya._length + 2 * pad)
-                .call(Color.fill, fullLayout.plot_bgcolor)
-                .style('stroke-width', 0);
-        }
-    }
+        Drawing.setRect(s,
+                xa._offset - pad, ya._offset - pad,
+                xa._length + 2 * pad, ya._length + 2 * pad);
+
+        Color.fill(s, fullLayout.plot_bgcolor);
+    })
+    .style('stroke-width', 0);
 
     if(!fullLayout._hasOnlyLargeSploms) {
         for(subplot in fullLayout._plots) {
