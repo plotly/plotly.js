@@ -207,19 +207,19 @@ function _doPlot(gd, data, layout, config) {
                 key: 'pickLayer',
                 context: false,
                 pick: true
-            }], function(d) { return d.key; });
-
-            fullLayout._glcanvas.enter().append('canvas')
-                .attr('class', function(d) {
-                    return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
-                })
-                .styles({
-                    position: 'absolute',
-                    top: 0,
-                    left: 0,
-                    overflow: 'visible',
-                    'pointer-events': 'none'
-                });
+            }], function(d) { return d.key; })
+            .enter()
+            .append('canvas')
+            .attr('class', function(d) {
+                return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
+            })
+            .styles({
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                overflow: 'visible',
+                'pointer-events': 'none'
+            });
         }
 
         var plotGlPixelRatio = gd._context.plotGlPixelRatio;

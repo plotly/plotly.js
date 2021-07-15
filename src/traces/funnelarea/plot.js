@@ -40,11 +40,11 @@ module.exports = function plot(gd, cdModule) {
         setCoords(cd);
 
         plotGroup.each(function() {
-            var slices = d3.select(this).selectAll('g.slice').data(cd);
-
-            slices.enter().append('g')
+            var slices = d3.select(this).selectAll('g.slice')
+                .data(cd)
+                .enter()
+                .append('g')
                 .classed('slice', true);
-            slices.exit().remove();
 
             slices.each(function(pt, i) {
                 if(pt.hidden) {
@@ -58,14 +58,6 @@ module.exports = function plot(gd, cdModule) {
 
                 var cx = cd0.cx;
                 var cy = cd0.cy;
-                var sliceTop = d3.select(this);
-                var slicePath = sliceTop.selectAll('path.surface').data([pt]);
-
-                slicePath.enter().append('path')
-                    .classed('surface', true)
-                    .styles({'pointer-events': 'all'});
-
-                sliceTop.call(attachFxHandlers, gd, cd);
 
                 var shape =
                     'M' + (cx + pt.TR[0]) + ',' + (cy + pt.TR[1]) +
@@ -74,17 +66,26 @@ module.exports = function plot(gd, cdModule) {
                     line(pt.BL, pt.TL) +
                     'Z';
 
-                slicePath.attr('d', shape);
+                var sliceTop = d3.select(this);
+                var slicePath = sliceTop.selectAll('path.surface')
+                    .data([pt])
+                    .enter()
+                    .append('path')
+                    .classed('surface', true)
+                    .styles({'pointer-events': 'all'})
+                    .call(attachFxHandlers, gd, cd)
+                    .attr('d', shape);
+
+                slicePath.exit().remove();
 
                 // add text
                 formatSliceLabel(gd, pt, cd0);
                 var textPosition = pieHelpers.castOption(trace.textposition, pt.pts);
                 var sliceTextGroup = sliceTop.selectAll('g.slicetext')
-                    .data(pt.text && (textPosition !== 'none') ? [0] : []);
-
-                sliceTextGroup.enter().append('g')
+                    .data(pt.text && (textPosition !== 'none') ? [0] : [])
+                    .enter()
+                    .append('g')
                     .classed('slicetext', true);
-                sliceTextGroup.exit().remove();
 
                 sliceTextGroup.each(function() {
                     var sliceText = Lib.ensureSingle(d3.select(this), 'text', '', function(s) {
@@ -128,15 +129,18 @@ module.exports = function plot(gd, cdModule) {
 
                     sliceText.attr('transform', Lib.getTextTransform(transform));
                 });
+
+                sliceTextGroup.exit().remove();
             });
+
+            slices.exit().remove();
 
             // add the title
             var titleTextGroup = d3.select(this).selectAll('g.titletext')
-                .data(trace.title.text ? [0] : []);
-
-            titleTextGroup.enter().append('g')
+                .data(trace.title.text ? [0] : [])
+                .enter()
+                .append('g')
                 .classed('titletext', true);
-            titleTextGroup.exit().remove();
 
             titleTextGroup.each(function() {
                 var titleText = Lib.ensureSingle(d3.select(this), 'text', '', function(s) {
@@ -165,6 +169,8 @@ module.exports = function plot(gd, cdModule) {
                     strScale(Math.min(1, transform.scale)) +
                     strTranslate(transform.tx, transform.ty));
             });
+
+            titleTextGroup.exit().remove();
         });
     });
 };

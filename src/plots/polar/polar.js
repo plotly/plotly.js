@@ -114,9 +114,9 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     if(!isRadialAxisBelowTraces) layerData.push('radial-axis');
 
     var join = _this.framework.selectAll('.polarsublayer')
-        .data(layerData, String);
-
-    join.enter().append('g')
+        .data(layerData, String)
+        .enter()
+        .append('g')
         .attr('class', function(d) { return 'polarsublayer ' + d;})
         .each(function(d) {
             var sel = layers[d] = d3.select(this);

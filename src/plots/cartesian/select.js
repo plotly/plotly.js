@@ -85,7 +85,8 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     }
 
     var drwStyle = fullLayout.newshape;
-    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data(isDrawMode ? [0] : [1, 2])
+    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id)
+        .data(isDrawMode ? [0] : [1, 2])
         .enter()
         .append('path')
         .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
