@@ -4,7 +4,6 @@ var c = require('./constants');
 var d3 = require('../../lib/d3');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
-var d3Drag = require('d3-drag').drag;
 
 var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
@@ -112,7 +111,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     yColumn.attr('transform', function(d) {return strTranslate(d.x, 0);});
 
     if(dynamic) {
-        yColumn.call(d3Drag()
+        yColumn.call(d3.drag()
             .subject(function(d) {
                 var movedColumn = d3.select(this);
                 easeColumn(movedColumn, d, -c.uplift);
@@ -175,7 +174,7 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     var cellsColumnBlock = columnBlock.filter(cellsBlock);
 
     if(dynamic) {
-        cellsColumnBlock.call(d3Drag()
+        cellsColumnBlock.call(d3.drag()
             .subject(function(d) {
                 d3.event.stopPropagation();
                 return d;
@@ -376,7 +375,7 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
                 makeDragRow(gd, tableControlView, null, inverseScale(pixelVal - s.barLength / 2))(d);
             }
         })
-        .call(d3Drag()
+        .call(d3.drag()
             .subject(function(d) {
                 d3.event.stopPropagation();
                 d.scrollbarState.scrollbarScrollInProgress = true;

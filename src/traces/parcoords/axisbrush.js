@@ -2,7 +2,6 @@
 
 var c = require('./constants');
 var d3 = require('../../lib/d3');
-var d3Drag = require('d3-drag').drag;
 
 var keyFun = require('../../lib/gup').keyFun;
 var repeat = require('../../lib/gup').repeat;
@@ -347,7 +346,7 @@ function attachDragBehavior(selection) {
         .on('mouseleave', function(d) {
             if(!d.parent.inBrushDrag) clearCursor();
         })
-        .call(d3Drag()
+        .call(d3.drag()
             .on('start', function(d) { start(this, d); })
             .on('drag', function(d) { drag(this, d); })
             .on('end', function(d) { end(this, d); })

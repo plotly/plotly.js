@@ -3,7 +3,6 @@
 var d3Force = require('d3-force');
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 var d3 = require('../../lib/d3');
-var d3Drag = require('d3-drag').drag;
 
 var d3Sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
@@ -591,7 +590,7 @@ function attachPointerEvents(selection, sankey, eventSet) {
 }
 
 function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
-    var dragBehavior = d3Drag()
+    var dragBehavior = d3.drag()
         .subject(function(d) {
             return {
                 x: d.node.x0 + d.visibleWidth / 2,

@@ -3,7 +3,6 @@
 var d3 = require('../../lib/d3');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
-var d3Drag = require('d3-drag').drag;
 
 var rgba = require('color-rgba');
 
@@ -573,7 +572,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     });
 
     // drag column for reordering columns
-    yAxis.call(d3Drag()
+    yAxis.call(d3.drag()
         .subject(function(d) { return d; })
         .on('drag', function(d) {
             var p = d.parent;

@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
-var d3Drag = require('d3-drag').drag;
 
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 var Plotly = require('../../plot_api/plot_api');
@@ -312,7 +311,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     categorySelection.exit().remove();
 
     // Setup drag
-    dimensionSelection.call(d3Drag()
+    dimensionSelection.call(d3.drag()
         .subject(function(d) {
             return {x: d.x, y: 0};
         })
