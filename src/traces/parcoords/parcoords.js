@@ -643,7 +643,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             d3.select(this)
                 .call(d3.axisLeft()
                     .tickSize(4)
-                    .outerTickSize(2)
+                    .tickSizeOuter(2)
                     .ticks(wantedTickCount, d.tickFormat) // works for continuous scales only...
                     .tickValues(d.ordinal ? // and this works for ordinal scales
                         sdom :
