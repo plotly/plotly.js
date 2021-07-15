@@ -226,9 +226,9 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     layerData.sort(function(a, b) { return a.i - b.i; });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
-        .data(layerData, function(d) { return d.className; });
-
-    layers.enter().append('g')
+        .data(layerData, function(d) { return d.className; })
+        .enter()
+        .append('g')
         .attr('class', function(d) { return d.className; })
         .classed('mlayer', true)
         .classed('rangeplot', plotinfo.isRangePlot);
