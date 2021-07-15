@@ -1,7 +1,6 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
-var d3Zoom = require('d3-zoom');
 
 var Lib = require('../../lib');
 var Registry = require('../../registry');
@@ -32,8 +31,8 @@ module.exports = createGeoZoom;
 
 // common to all zoom types
 function initZoom(geo, projection) {
-    return d3Zoom.zoom(
-        d3Zoom.zoomIdentity
+    return d3.zoom(
+        d3.zoomIdentity
             .translate(projection.translate())
             .scale(projection.scale())
     );
