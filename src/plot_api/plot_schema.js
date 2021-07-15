@@ -273,7 +273,13 @@ exports.getTraceValObject = function(trace, parts) {
         // first look in the module for this trace
         // components have already merged their trace attributes in here
         var _module = trace._module;
-        if(!_module) _module = (Registry.modules[trace.type || baseAttributes.type.dflt] || {})._module;
+        if(!_module) _module = (Registry.modules[trace.type] || {})._module;
+        if(!_module) {
+            var scatter = Registry.modules[baseAttributes.type.dflt];
+            if(scatter) {
+                _module = scatter._module;
+            }
+        }
         if(!_module) return false;
 
         moduleAttrs = _module.attributes;

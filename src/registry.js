@@ -7,7 +7,7 @@ var isPlainObject = require('./lib/is_plain_object');
 var addStyleRule = require('./lib/dom').addStyleRule;
 var ExtendModule = require('./lib/extend');
 
-var basePlotAttributes = require('./plots/attributes');
+var dfltTrace = require('./plots/attributes').type.dflt;
 var baseLayoutAttributes = require('./plots/layout_attributes');
 
 var extendFlat = ExtendModule.extendFlat;
@@ -140,7 +140,13 @@ exports.traceIs = function(traceType, category) {
             Loggers.log('Unrecognized trace type ' + traceType + '.');
         }
 
-        _module = exports.modules[basePlotAttributes.type.dflt];
+        _module = exports.modules[dfltTrace];
+        if(!_module) {
+            Loggers.log('The default trace type ' + dfltTrace + ' is not registered.');
+
+            // in case the category starts with no return true otherwise false
+            return category.indexOf('no') === 0 ? true : false;
+        }
     }
 
     return !!_module.categories[category];

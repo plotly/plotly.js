@@ -1,11 +1,12 @@
 var Plotly = require('@lib/index');
-var d3Select = require('../../strict-d3').select;
 
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-
 describe('Test MathJax:', function() {
+    'use strict';
+
     var mathJaxScriptTag;
 
     // N.B. we have to load MathJax "dynamically" as Karam
