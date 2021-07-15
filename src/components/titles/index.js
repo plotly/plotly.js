@@ -107,6 +107,8 @@ function draw(gd, titleClass, options) {
 
     el.exit().remove();
 
+    if(!elShouldExist) return group;
+
     el
         .text(txt)
         // this is hacky, but convertToTspans uses the class
@@ -115,8 +117,6 @@ function draw(gd, titleClass, options) {
         // correct one (only relevant for colorbars, at least
         // for now) - ie don't use .classed
         .attr('class', titleClass);
-
-    if(!elShouldExist) return group;
 
     function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
