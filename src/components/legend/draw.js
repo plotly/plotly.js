@@ -96,7 +96,7 @@ function _draw(gd, legendObj) {
     }
 
     var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
-        s.attr(constants.scrollBarEnterAttrs)
+        s.attrs(constants.scrollBarEnterAttrs)
          .call(Color.fill, constants.scrollBarColor);
     });
 
