@@ -1904,7 +1904,11 @@ axes.makeClipPaths = function(gd) {
     var axClips = fullLayout._clips.selectAll('.axesclip')
         .data(clipList, function(d) { return d.x._id + d.y._id; })
         .enter()
-        .append('clipPath')
+        .append('clipPath');
+
+    axClips.exit().remove();
+
+    axClips
         .classed('axesclip', true)
         .attr('id', function(d) { return 'clip' + fullLayout._uid + d.x._id + d.y._id; })
         .append('rect');
@@ -1917,8 +1921,6 @@ axes.makeClipPaths = function(gd) {
             height: d.y._length || 1
         });
     });
-
-    axClips.exit().remove();
 };
 
 /**
@@ -2803,7 +2805,11 @@ axes.drawTicks = function(gd, ax, opts) {
     var ticks = opts.layer.selectAll('path.' + cls)
         .data(ax.ticks ? vals : [], tickDataFn)
         .enter()
-        .append('path')
+        .append('path');
+
+    ticks.exit().remove();
+
+    ticks
         .classed(cls, 1)
         .classed('ticks', 1)
         .classed('crisp', opts.crisp !== false)
@@ -2815,8 +2821,6 @@ axes.drawTicks = function(gd, ax, opts) {
     hideCounterAxisInsideTickLabels(ax, [TICK_PATH]);
 
     ticks.attr('transform', opts.transFn);
-
-    ticks.exit().remove();
 };
 
 /**
@@ -2866,7 +2870,11 @@ axes.drawGrid = function(gd, ax, opts) {
     var grid = opts.layer.selectAll('path.' + cls)
         .data(vals, tickDataFn)
         .enter()
-        .append('path')
+        .append('path');
+
+    grid.exit().remove();
+
+    grid
         .classed(cls, 1)
         .classed('crisp', opts.crisp !== false);
 
@@ -2882,7 +2890,7 @@ axes.drawGrid = function(gd, ax, opts) {
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 
-    grid.exit().remove();
+
 };
 
 /**
@@ -2911,7 +2919,11 @@ axes.drawZeroLine = function(gd, ax, opts) {
     var zl = opts.layer.selectAll('path.' + cls)
         .data(show ? [{x: 0, id: ax._id}] : [])
         .enter()
-        .append('path')
+        .append('path');
+
+    zl.exit().remove();
+
+    zl
         .classed(cls, 1)
         .classed('zl', 1)
         .classed('crisp', opts.crisp !== false)
@@ -2928,8 +2940,6 @@ axes.drawZeroLine = function(gd, ax, opts) {
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
         .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
         .style('display', null); // visible
-
-    zl.exit().remove();
 
     hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
 };
@@ -2976,7 +2986,11 @@ axes.drawLabels = function(gd, ax, opts) {
     var tickLabels = opts.layer.selectAll('g.' + cls)
         .data(ax.showticklabels ? vals : [], tickDataFn)
         .enter()
-        .append('g')
+        .append('g');
+
+    tickLabels.exit().remove();
+
+    tickLabels
         .classed(cls, 1)
         .append('text')
         // only so tex has predictable alignment that we can
@@ -3014,8 +3028,6 @@ axes.drawLabels = function(gd, ax, opts) {
                 .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d));
         });
     }
-
-    tickLabels.exit().remove();
 
     function positionLabels(s, angle) {
         s.each(function(d) {
@@ -3363,15 +3375,17 @@ function drawDividers(gd, ax, opts) {
     var dividers = opts.layer.selectAll('path.' + cls)
         .data(vals, tickDataFn)
         .enter()
-        .insert('path', ':first-child')
+        .insert('path', ':first-child');
+
+    dividers.exit().remove();
+
+    dividers
         .classed(cls, 1)
         .classed('crisp', 1)
         .call(Color.stroke, ax.dividercolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.dividerwidth, 1) + 'px')
         .attr('transform', opts.transFn)
         .attr('d', opts.path);
-
-    dividers.exit().remove();
 }
 
 /**
