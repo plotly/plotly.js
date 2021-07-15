@@ -2,7 +2,7 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
-
+var Drawing = require('../drawing');
 
 module.exports = {
     bgcolor: {
@@ -75,6 +75,16 @@ module.exports = {
         description: [
             'Determines if the legend items symbols scale with their corresponding *trace* attributes',
             'or remain *constant* independent of the symbol size on the graph.'
+        ].join(' ')
+    },
+    itemsymbol: {
+        valType: 'enumerated',
+        values: ['trace'].concat(Drawing.symbolList),
+        dflt: 'trace',
+        editType: 'legend',
+        description: [
+            'Determines if the legend items symbols use the symbol of the first point in each *trace*',
+            'or the specified symbol name.'
         ].join(' ')
     },
     itemwidth: {
