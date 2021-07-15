@@ -5,13 +5,15 @@ var utcFormat = require('d3-time-format').utcFormat;
 var d3Format = require('d3-format').format;
 var isNumeric = require('fast-isnumeric');
 
+var getTraceFromCd = require('./trace_from_cd');
 var numConstants = require('../constants/numerical');
 var MAX_SAFE = numConstants.FP_SAFE;
 var MIN_SAFE = -MAX_SAFE;
 var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {
-    d3: d3
+    d3: d3,
+    getTraceFromCd: getTraceFromCd
 };
 
 lib.adjustFormat = function adjustFormat(formatStr) {

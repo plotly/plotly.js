@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var barHover = require('../bar/hover').hoverPoints;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 
@@ -10,7 +11,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
     pointData = pts[0];
     var di = pointData.cd[pointData.index];
-    var trace = pointData.cd[0].trace;
+    var trace = getTraceFromCd(pointData.cd);
 
     if(!trace.cumulative.enabled) {
         var posLetter = trace.orientation === 'h' ? 'y' : 'x';

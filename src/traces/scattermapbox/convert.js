@@ -3,6 +3,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var geoJsonUtils = require('../../lib/geojson_utils');
 
@@ -17,7 +18,7 @@ var NEWLINES = require('../../lib/svg_text_utils').NEWLINES;
 var BR_TAG_ALL = require('../../lib/svg_text_utils').BR_TAG_ALL;
 
 module.exports = function convert(gd, calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
 
     var isVisible = (trace.visible === true && trace._length !== 0);
     var hasFill = (trace.fill !== 'none');
@@ -151,7 +152,7 @@ function initContainer() {
 }
 
 function makeCircleOpts(calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var marker = trace.marker;
     var selectedpoints = trace.selectedpoints;
     var arrayColor = Lib.isArrayOrTypedArray(marker.color);
@@ -240,7 +241,7 @@ function makeCircleOpts(calcTrace) {
 
 function makeSymbolGeoJSON(calcTrace, gd) {
     var fullLayout = gd._fullLayout;
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
 
     var marker = trace.marker || {};
     var symbol = marker.symbol;

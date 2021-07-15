@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var subTypes = require('../scatter/subtypes');
 var styleTextSelection = require('./edit_style').styleTextSelection;
 
@@ -8,7 +9,7 @@ module.exports = function select(searchInfo, selectionTester) {
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var selection = [];
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var stash = cd[0].t;
     var len = trace._length;
     var x = stash.x;

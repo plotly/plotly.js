@@ -1,6 +1,7 @@
 'use strict';
 
 var convert = require('./convert');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 var ORDER = ['fill', 'line', 'circle', 'symbol'];
 
@@ -90,7 +91,7 @@ proto.update = function update(calcTrace) {
     }
 
     // link ref for quick update during selections
-    calcTrace[0].trace._glTrace = this;
+    getTraceFromCd(calcTrace)._glTrace = this;
 };
 
 proto.dispose = function dispose() {
@@ -104,7 +105,7 @@ proto.dispose = function dispose() {
 };
 
 module.exports = function createScatterMapbox(subplot, calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var scatterMapbox = new ScatterMapbox(subplot, trace.uid);
     var optsAll = convert(subplot.gd, calcTrace);
     var below = scatterMapbox.below = subplot.belowLookup['trace-' + trace.uid];
@@ -117,7 +118,7 @@ module.exports = function createScatterMapbox(subplot, calcTrace) {
     }
 
     // link ref for quick update during selections
-    calcTrace[0].trace._glTrace = scatterMapbox;
+    getTraceFromCd(calcTrace)._glTrace = scatterMapbox;
 
     return scatterMapbox;
 };

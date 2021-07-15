@@ -3,6 +3,7 @@
 var d3 = require('../../lib/d3');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Plots = require('../../plots/plots');
 var Registry = require('../../registry');
 var Events = require('../../lib/events');
@@ -120,7 +121,7 @@ function _draw(gd, legendObj) {
         .attr('class', 'traces');
 
     traces.style('opacity', function(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         if(Registry.traceIs(trace, 'pie-like')) {
             return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
         } else {

@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var setPositionOffset = require('../box/cross_trace_calc').setPositionOffset;
 var orientations = ['v', 'h'];
 
@@ -16,7 +17,7 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         for(var j = 0; j < calcdata.length; j++) {
             var cd = calcdata[j];
             var t = cd[0].t;
-            var trace = cd[0].trace;
+            var trace = getTraceFromCd(cd);
 
             if(trace.visible === true && trace.type === 'violin' &&
                     !t.empty &&

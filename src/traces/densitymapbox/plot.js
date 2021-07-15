@@ -1,6 +1,7 @@
 'use strict';
 
 var convert = require('./convert');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function DensityMapbox(subplot, uid) {
@@ -87,7 +88,7 @@ proto.dispose = function() {
 };
 
 module.exports = function createDensityMapbox(subplot, calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var densityMapbox = new DensityMapbox(subplot, trace.uid);
     var sourceId = densityMapbox.sourceId;
     var optsAll = convert(calcTrace);

@@ -2,13 +2,14 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var fillText = Lib.fillText;
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var hoveron = trace.hoveron;
     var closeBoxData = [];
     var closePtData;
@@ -41,7 +42,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var xa = pointData.xa;
     var ya = pointData.ya;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var t = cd[0].t;
     var isViolin = trace.type === 'violin';
     var closeBoxData = [];
@@ -194,7 +195,7 @@ function hoverOnPoints(pointData, xval, yval) {
     var cd = pointData.cd;
     var xa = pointData.xa;
     var ya = pointData.ya;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var xPx = xa.c2p(xval);
     var yPx = ya.c2p(yval);
     var closePtData;

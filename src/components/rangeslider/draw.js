@@ -6,6 +6,7 @@ var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var Drawing = require('../drawing');
 var Color = require('../color');
@@ -509,7 +510,7 @@ function filterRangePlotCalcData(calcData, subplotId) {
 
     for(var i = 0; i < calcData.length; i++) {
         var calcTrace = calcData[i];
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(trace.xaxis + trace.yaxis === subplotId) {
             out.push(calcTrace);

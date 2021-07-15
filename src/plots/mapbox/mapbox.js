@@ -3,6 +3,7 @@
 var mapboxgl = require('mapbox-gl/dist/mapbox-gl-unminified');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var geoUtils = require('../../lib/geo_location_utils');
 var Registry = require('../../registry');
 var Axes = require('../cartesian/axes');
@@ -271,8 +272,8 @@ proto.updateData = function(calcData) {
     // e.g. choroplethmapbox traces will be below scattermapbox traces
     var calcDataSorted = calcData.slice().sort(function(a, b) {
         return (
-            traceType2orderIndex[a[0].trace.type] -
-            traceType2orderIndex[b[0].trace.type]
+            traceType2orderIndex[getTraceFromCd(a).type] -
+            traceType2orderIndex[getTraceFromCd(b).type]
         );
     });
 
@@ -280,7 +281,7 @@ proto.updateData = function(calcData) {
     for(i = 0; i < calcDataSorted.length; i++) {
         var calcTrace = calcDataSorted[i];
 
-        trace = calcTrace[0].trace;
+        trace = getTraceFromCd(calcTrace);
         traceObj = traceHash[trace.uid];
 
         var didUpdate = false;

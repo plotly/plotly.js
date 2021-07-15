@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Fx = require('../../components/fx');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
@@ -9,7 +10,7 @@ var attributes = require('./attributes');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var xa = pointData.xa;
     var ya = pointData.ya;
     var geo = pointData.subplot;

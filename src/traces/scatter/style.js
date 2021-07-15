@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Drawing = require('../../components/drawing');
 var Registry = require('../../registry');
 
@@ -8,18 +9,19 @@ function style(gd) {
     var s = d3.select(gd).selectAll('g.trace.scatter');
 
     s.style('opacity', function(d) {
-        return d[0].trace.opacity;
+        var trace = getTraceFromCd(d);
+        return trace.opacity;
     });
 
     s.selectAll('g.points').each(function(d) {
         var sel = d3.select(this);
-        var trace = d.trace || d[0].trace;
+        var trace = getTraceFromCd(d);
         stylePoints(sel, trace, gd);
     });
 
     s.selectAll('g.text').each(function(d) {
         var sel = d3.select(this);
-        var trace = d.trace || d[0].trace;
+        var trace = getTraceFromCd(d);
         styleText(sel, trace, gd);
     });
 
@@ -41,7 +43,7 @@ function styleText(sel, trace, gd) {
 }
 
 function styleOnSelect(gd, cd, sel) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     if(trace.selectedpoints) {
         Drawing.selectedPointStyle(sel.selectAll('path.point'), trace);

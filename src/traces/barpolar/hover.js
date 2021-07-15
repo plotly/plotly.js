@@ -2,6 +2,7 @@
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var getTraceColor = require('../bar/hover').getTraceColor;
 var fillText = Lib.fillText;
 var makeHoverPointText = require('../scatterpolar/hover').makeHoverPointText;
@@ -9,7 +10,7 @@ var isPtInsidePolygon = require('../../plots/polar/helpers').isPtInsidePolygon;
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     var subplot = pointData.subplot;
     var radialAxis = subplot.radialAxis;

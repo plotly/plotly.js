@@ -2,6 +2,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
 
 var orientations = ['v', 'h'];
@@ -21,7 +22,7 @@ function crossTraceCalc(gd, plotinfo) {
         for(var j = 0; j < calcdata.length; j++) {
             var cd = calcdata[j];
             var t = cd[0].t;
-            var trace = cd[0].trace;
+            var trace = getTraceFromCd(cd);
 
             if(trace.visible === true &&
                     (trace.type === 'box' || trace.type === 'candlestick') &&
@@ -79,7 +80,7 @@ function setPositionOffset(traceType, gd, boxList, posAxis) {
     for(i = 0; i < boxList.length; i++) {
         calcTrace = calcdata[boxList[i]];
 
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
         var t = calcTrace[0].t;
         var width = trace.width;
         var side = trace.side;

@@ -8,6 +8,7 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var dragElement = require('../dragelement');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var extendFlat = require('../../lib/extend').extendFlat;
 var setCursor = require('../../lib/setcursor');
@@ -118,7 +119,7 @@ function makeColorBarData(gd) {
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
-        trace = cd[0].trace;
+        trace = getTraceFromCd(cd);
         var moduleOpts = trace._module.colorbar;
 
         if(trace.visible === true && moduleOpts) {

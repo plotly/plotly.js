@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('./trace_from_cd');
 var BADNUM = require('../constants/numerical').BADNUM;
 
 /**
@@ -14,7 +15,7 @@ var BADNUM = require('../constants/numerical').BADNUM;
  *
  */
 exports.calcTraceToLineCoords = function(calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var connectgaps = trace.connectgaps;
 
     var coords = [];

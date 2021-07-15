@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
 
@@ -13,10 +14,10 @@ module.exports = function style(gd, calcTrace) {
 };
 
 function styleTrace(gd, calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var s = calcTrace[0].node3;
 
-    s.style('opacity', calcTrace[0].trace.opacity);
+    s.style('opacity', getTraceFromCd(calcTrace).opacity);
 
     stylePoints(s, trace, gd);
     styleText(s, trace, gd);

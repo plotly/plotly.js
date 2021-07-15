@@ -3,6 +3,7 @@
 var d3 = require('../../lib/d3');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var geoUtils = require('../../lib/geo_location_utils');
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var findExtremes = require('../../plots/cartesian/autorange').findExtremes;
@@ -31,7 +32,7 @@ function plot(gd, geo, calcData) {
 }
 
 function calcGeoJSON(calcTrace, fullLayout) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var geoLayout = fullLayout[trace.geo];
     var geo = geoLayout._subplot;
     var locationmode = trace.locationmode;

@@ -1,7 +1,7 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
-
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Drawing = require('../../components/drawing');
 var heatmapStyle = require('../heatmap/style');
 
@@ -12,12 +12,12 @@ module.exports = function style(gd) {
     var contours = d3.select(gd).selectAll('g.contour');
 
     contours.style('opacity', function(d) {
-        return d[0].trace.opacity;
+        return getTraceFromCd(d).opacity;
     });
 
     contours.each(function(d) {
         var c = d3.select(this);
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         var contours = trace.contours;
         var line = trace.line;
         var cs = contours.size || 1;

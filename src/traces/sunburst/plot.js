@@ -6,6 +6,7 @@ var interpolate = require('d3-interpolate').interpolate;
 
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var uniformText = require('../bar/uniform_text');
 var recordMinTextSize = uniformText.recordMinTextSize;
@@ -34,7 +35,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     clearMinTextSize('sunburst', fullLayout);
 
     join = layer.selectAll('g.trace.sunburst')
-        .data(cdmodule, function(cd) { return cd[0].trace.uid; })
+        .data(cdmodule, function(cd) { return getTraceFromCd(cd).uid; })
         .enter()
         .append('g');
 

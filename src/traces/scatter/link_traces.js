@@ -1,5 +1,7 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
+
 var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
 
 module.exports = function linkTraces(gd, plotinfo, cdscatter) {
@@ -35,8 +37,8 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     var cdscatterSorted = cdscatter.slice();
     if(needsSort) {
         cdscatterSorted.sort(function(a, b) {
-            var traceA = a[0].trace;
-            var traceB = b[0].trace;
+            var traceA = getTraceFromCd(a);
+            var traceB = getTraceFromCd(b);
             return (traceA._groupIndex - traceB._groupIndex) ||
                 (traceA.index - traceB.index);
         });

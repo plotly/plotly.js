@@ -4,6 +4,7 @@ var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var ensureSingle = Lib.ensureSingle;
 var identity = Lib.identity;
 var Drawing = require('../../components/drawing');
@@ -26,13 +27,13 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
     var cdscatterSorted = linkTraces(gd, plotinfo, cdscatter);
 
     join = scatterLayer.selectAll('g.trace')
-        .data(cdscatterSorted, function(d) { return d[0].trace.uid; })
+        .data(cdscatterSorted, function(d) { return getTraceFromCd(d).uid; })
         .enter()
         .append('g');
 
     join
         .attr('class', function(d) {
-            return 'trace scatter trace' + d[0].trace.uid;
+            return 'trace scatter trace' + getTraceFromCd(d).uid;
         })
         .style('stroke-miterlimit', 2);
 
@@ -84,7 +85,7 @@ function createFills(gd, traceJoin, plotinfo) {
         var fills = ensureSingle(d3.select(this), 'g', 'fills');
         Drawing.setClipUrl(fills, plotinfo.layerClipId, gd);
 
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         var fillData = [];
         if(trace._ownfill) fillData.push('_ownFill');
@@ -125,7 +126,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var trace = cdscatter[0].trace;
+    var trace = getTraceFromCd(cdscatter);
     var line = trace.line;
     var tr = d3.select(element);
 
@@ -382,7 +383,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     function makePoints(points, text, cdscatter) {
         var join, selection, hasNode;
 
-        var trace = cdscatter[0].trace;
+        var trace = getTraceFromCd(cdscatter);
         var showMarkers = subTypes.hasMarkers(trace);
         var showText = subTypes.hasText(trace);
 
@@ -526,7 +527,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     var xr = d3.extent(Lib.simpleMap(xa.range, xa.r2c));
     var yr = d3.extent(Lib.simpleMap(ya.range, ya.r2c));
 
-    var trace = cdscatter[0].trace;
+    var trace = getTraceFromCd(cdscatter);
     if(!subTypes.hasMarkers(trace)) return;
     // if marker.maxdisplayed is used, select a maximum of
     // mnum markers to show, from the set that are in the viewport

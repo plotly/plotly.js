@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../lib/trace_from_cd');
 var Registry = require('../registry');
 var SUBPLOT_PATTERN = require('./cartesian/constants').SUBPLOT_PATTERN;
 
@@ -21,7 +22,7 @@ exports.getSubplotCalcData = function(calcData, type, subplotId) {
 
     for(var i = 0; i < calcData.length; i++) {
         var calcTrace = calcData[i];
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(trace[attr] === subplotId) subplotCalcData.push(calcTrace);
     }
@@ -60,7 +61,7 @@ exports.getModuleCalcData = function(calcdata, arg1) {
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
-        var trace = cd[0].trace;
+        var trace = getTraceFromCd(cd);
         // N.B.
         // - 'legendonly' traces do not make it past here
         // - skip over 'visible' traces that got trimmed completely during calc transforms

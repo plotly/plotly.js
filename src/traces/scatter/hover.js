@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Fx = require('../../components/fx');
 var Registry = require('../../registry');
 var getTraceColor = require('./get_trace_color');
@@ -9,7 +10,7 @@ var fillText = Lib.fillText;
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var xa = pointData.xa;
     var ya = pointData.ya;
     var xpx = xa.c2p(xval);

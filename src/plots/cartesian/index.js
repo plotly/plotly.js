@@ -4,6 +4,7 @@ var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Plots = require('../plots');
 var Drawing = require('../../components/drawing');
 
@@ -147,7 +148,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
 
         for(var j = 0; j < calcdata.length; j++) {
             var cd = calcdata[j];
-            var trace = cd[0].trace;
+            var trace = getTraceFromCd(cd);
 
             // Skip trace if whitelist provided and it's not whitelisted:
             // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;

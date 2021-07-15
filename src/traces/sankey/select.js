@@ -1,9 +1,11 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
+
 module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var selection = [];
-    var fullData = cd[0].trace;
+    var fullData = getTraceFromCd(cd);
 
     var nodes = fullData._sankey.graph.nodes;
 

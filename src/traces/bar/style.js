@@ -4,6 +4,7 @@ var d3 = require('../../lib/d3');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Registry = require('../../registry');
 
 var resizeText = require('./uniform_text').resizeText;
@@ -21,7 +22,7 @@ function style(gd) {
     var fullLayout = gd._fullLayout;
 
     // trace styling
-    s.style('opacity', function(d) { return d[0].trace.opacity; })
+    s.style('opacity', function(d) { return getTraceFromCd(d).opacity; })
 
     // for gapless (either stacked or neighboring grouped) bars use
     // crispEdges to turn off antialiasing so an artificial gap
@@ -30,14 +31,14 @@ function style(gd) {
         if((fullLayout.barmode === 'stack' && barcount > 1) ||
                 (fullLayout.bargap === 0 &&
                  fullLayout.bargroupgap === 0 &&
-                 !d[0].trace.marker.line.width)) {
+                 !getTraceFromCd(d).marker.line.width)) {
             d3.select(this).attr('shape-rendering', 'crispEdges');
         }
     });
 
     s.selectAll('g.points').each(function(d) {
         var sel = d3.select(this);
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         stylePoints(sel, trace, gd);
     });
 
@@ -59,7 +60,7 @@ function styleTextPoints(sel, trace, gd) {
 }
 
 function styleOnSelect(gd, cd, sel) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     if(trace.selectedpoints) {
         stylePointsInSelectionMode(sel, trace, gd);

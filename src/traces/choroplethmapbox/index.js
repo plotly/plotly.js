@@ -1,5 +1,7 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
+
 module.exports = {
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults'),
@@ -12,7 +14,7 @@ module.exports = {
 
     styleOnSelect: function(_, cd) {
         if(cd) {
-            var trace = cd[0].trace;
+            var trace = getTraceFromCd(cd);
             trace._glTrace.updateOnSelect(cd);
         }
     },

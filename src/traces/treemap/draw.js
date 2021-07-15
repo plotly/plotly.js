@@ -2,7 +2,7 @@
 
 var Lib = require('../../lib');
 var d3 = require('../../lib/d3');
-
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var helpers = require('../sunburst/helpers');
 var uniformText = require('../bar/uniform_text');
 var clearMinTextSize = uniformText.clearMinTextSize;
@@ -26,7 +26,7 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
     clearMinTextSize(type, fullLayout);
 
     join = layer.selectAll('g.trace.' + type)
-        .data(cdmodule, function(cd) { return cd[0].trace.uid; })
+        .data(cdmodule, function(cd) { return getTraceFromCd(cd).uid; })
         .enter()
         .append('g');
 

@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 
 var Drawing = require('../../components/drawing');
 var Color = require('../../components/color');
@@ -13,11 +14,11 @@ function style(gd, cd, sel) {
     var s = sel ? sel : d3.select(gd).selectAll('g.waterfalllayer').selectAll('g.trace');
     resizeText(gd, s, 'waterfall');
 
-    s.style('opacity', function(d) { return d[0].trace.opacity; });
+    s.style('opacity', function(d) { return getTraceFromCd(d).opacity; });
 
     s.each(function(d) {
         var gTrace = d3.select(this);
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         gTrace.selectAll('.point > path').each(function(di) {
             if(!di.isBlank) {

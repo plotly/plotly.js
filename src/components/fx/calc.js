@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Registry = require('../../registry');
 
 module.exports = function calc(gd) {
@@ -15,7 +16,7 @@ module.exports = function calc(gd) {
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
-        var trace = cd[0].trace;
+        var trace = getTraceFromCd(cd);
 
         // don't include hover calc fields for pie traces
         // as calcdata items might be sorted by value and

@@ -5,6 +5,7 @@ var interpolate = require('d3-interpolate').interpolate;
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strScale = Lib.strScale;
 var strTranslate = Lib.strTranslate;
 var rad2deg = Lib.rad2deg;
@@ -236,7 +237,7 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
 };
 
 function drawBulletGauge(gd, plotGroup, cd, opts) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     var bullet = opts.gauge;
     var axisLayer = opts.layer;
@@ -377,7 +378,7 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
 }
 
 function drawAngularGauge(gd, plotGroup, cd, opts) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     var size = opts.size;
     var radius = opts.radius;
@@ -575,7 +576,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
 }
 
 function drawNumbers(gd, plotGroup, cd, opts) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     var numbersX = opts.numbersX;
     var numbersY = opts.numbersY;

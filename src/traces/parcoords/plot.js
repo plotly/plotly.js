@@ -1,6 +1,7 @@
 'use strict';
 
 var parcoords = require('./parcoords');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var prepareRegl = require('../../lib/prepare_regl');
 var isVisible = require('./helpers').isVisible;
 
@@ -37,7 +38,7 @@ module.exports = function plot(gd, cdModule) {
     var size = fullLayout._size;
 
     cdModule.forEach(function(d, i) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         fullIndices[i] = trace.index;
         var iIn = inputIndices[i] = trace._fullInput.index;
         currentDims[i] = gd.data[iIn].dimensions;

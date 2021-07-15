@@ -1,10 +1,12 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
+
 module.exports = function selectPoints(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var isFunnel = (trace.type === 'funnel');
     var isHorizontal = (trace.orientation === 'h');
     var selection = [];
