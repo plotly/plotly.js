@@ -204,12 +204,13 @@ module.exports = function draw(gd) {
     }
 
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
-        .data(imageDataBelow);
+        .data(imageDataBelow)
+        .enter()
+        .append('image');
     var imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
-        .data(imageDataAbove);
-
-    imagesBelow.enter().append('image');
-    imagesAbove.enter().append('image');
+        .data(imageDataAbove)
+        .enter()
+        .append('image');
 
     imagesBelow.exit().remove();
     imagesAbove.exit().remove();

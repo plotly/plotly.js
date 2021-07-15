@@ -861,8 +861,6 @@ function createHoverText(hoverData, opts, gd) {
         .append('g')
         .classed('axistext', true);
 
-    commonLabel.exit().remove();
-
     commonLabel.each(function() {
         var label = d3.select(this);
         var lpath = Lib.ensureSingle(label, 'path', '', function(s) {
@@ -1016,6 +1014,8 @@ function createHoverText(hoverData, opts, gd) {
         label.attr('transform', strTranslate(lx, ly));
     });
 
+    commonLabel.exit().remove();
+
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
@@ -1139,8 +1139,6 @@ function createHoverText(hoverData, opts, gd) {
                 .call(Drawing.font, fontFamily, fontSize);
         });
 
-    hoverLabels.exit().remove();
-
     // then put the text in, position the pointer to the data,
     // and figure out sizes
     hoverLabels.each(function(d) {
@@ -1263,6 +1261,8 @@ function createHoverText(hoverData, opts, gd) {
         g.attr('transform', strTranslate(htx, hty) +
             (rotateLabels ? strRotate(YANGLE) : ''));
     });
+
+    hoverLabels.exit().remove();
 
     return hoverLabels;
 }
