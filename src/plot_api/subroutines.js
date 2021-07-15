@@ -154,12 +154,12 @@ function lsInner(gd) {
     // we have the list of subplots that need them
     var lowerBackgrounds = fullLayout._bgLayer.selectAll('.bg')
         .data(lowerBackgroundIDs)
-        .enter();
+        .enter()
+        .append('rect');
 
     lowerBackgrounds.exit().remove();
 
     lowerBackgrounds
-        .append('rect')
         .classed('bg', true);
 
     lowerBackgrounds.each(function(subplot) {
