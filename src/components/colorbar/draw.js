@@ -33,9 +33,9 @@ function draw(gd) {
 
     var colorBars = fullLayout._infolayer
         .selectAll('g.' + cn.colorbar)
-        .data(makeColorBarData(gd), function(opts) { return opts._id; });
-
-    colorBars.enter().append('g')
+        .data(makeColorBarData(gd), function(opts) { return opts._id; })
+        .enter()
+        .append('g')
         .attr('class', function(opts) { return opts._id; })
         .classed(cn.colorbar, true);
 
@@ -391,10 +391,12 @@ function drawColorBar(g, opts, gd) {
         var fills = g.select('.' + cn.cbfills)
             .selectAll('rect.' + cn.cbfill)
             .attr('style', '')
-            .data(fillLevels);
-        fills.enter().append('rect')
+            .data(fillLevels)
+            .enter()
+            .append('rect')
             .classed(cn.cbfill, true)
             .style('stroke', 'none');
+
         fills.exit().remove();
 
         var zBounds = zrange
@@ -436,9 +438,11 @@ function drawColorBar(g, opts, gd) {
 
         var lines = g.select('.' + cn.cblines)
             .selectAll('path.' + cn.cbline)
-            .data(line.color && line.width ? lineLevels : []);
-        lines.enter().append('path')
+            .data(line.color && line.width ? lineLevels : [])
+            .enter()
+            .append('path')
             .classed(cn.cbline, true);
+
         lines.exit().remove();
         lines.each(function(d) {
             d3.select(this)

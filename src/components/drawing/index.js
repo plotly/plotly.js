@@ -317,11 +317,8 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
 
     var gradient = fullLayout._defs.select('.gradients')
         .selectAll('#' + fullID)
-        .data([type + colorStops.join(';')], Lib.identity);
-
-    gradient.exit().remove();
-
-    gradient.enter()
+        .data([type + colorStops.join(';')], Lib.identity)
+        .enter()
         .append(info.node)
         .each(function() {
             var el = d3.select(this);
@@ -330,19 +327,22 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
             el.attr('id', fullID);
 
             var stops = el.selectAll('stop')
-                .data(colorStops);
-            stops.exit().remove();
-            stops.enter().append('stop');
-
-            stops.each(function(d) {
-                var tc = tinycolor(d[1]);
-                d3.select(this).attrs({
-                    offset: d[0] + '%',
-                    'stop-color': Color.tinyRGB(tc),
-                    'stop-opacity': tc.getAlpha()
+                .data(colorStops)
+                .enter()
+                .append('stop')
+                .each(function(d) {
+                    var tc = tinycolor(d[1]);
+                    d3.select(this).attrs({
+                        offset: d[0] + '%',
+                        'stop-color': Color.tinyRGB(tc),
+                        'stop-opacity': tc.getAlpha()
+                    });
                 });
-            });
+
+            stops.exit().remove();
         });
+
+    gradient.exit().remove();
 
     sel.style(prop, getFullUrl(fullID, gd))
         .style(prop + '-opacity', null);
@@ -518,11 +518,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
 
     var pattern = fullLayout._defs.select('.patterns')
         .selectAll('#' + fullID)
-        .data([str], Lib.identity);
-
-    pattern.exit().remove();
-
-    pattern.enter()
+        .data([str], Lib.identity)
+        .enter()
         .append('pattern')
         .each(function() {
             var el = d3.select(this);
@@ -537,28 +534,33 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             });
 
             if(bgcolor) {
-                var rects = el.selectAll('rect').data([0]);
-                rects.exit().remove();
-                rects.enter()
+                var rects = el.selectAll('rect').data([0])
+                    .enter()
                     .append('rect')
                     .attrs({
                         'width': width + 'px',
                         'height': height + 'px',
                         'fill': bgcolor
                     });
+
+                rects.exit().remove();
             }
 
-            var patterns = el.selectAll(patternTag).data([0]);
-            patterns.exit().remove();
-            patterns.enter()
+            var patterns = el.selectAll(patternTag).data([0])
+                .enter()
                 .append(patternTag)
                 .attr(patternAttrs);
+
+            patterns.exit().remove();
         });
+
+    pattern.exit().remove();
 
     sel.style('fill', getFullUrl(fullID, gd))
         .style('fill-opacity', null);
 
     sel.classed('pattern_filled', true);
+
     var className2query = function(s) {
         return '.' + s.attr('class').replace(/\s/g, '.');
     };

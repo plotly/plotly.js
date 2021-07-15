@@ -347,26 +347,24 @@ exports.drawFramework = function(gd) {
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
         .data(subplotData, String)
-        .enter().append('g')
-        .attr('class', function(d) { return 'subplot ' + d[0]; });
+        .enter()
+        .append('g')
+        .attr('class', function(d) { return 'subplot ' + d[0]; })
+        .order()
+        .each(function(d) {
+            var id = d[0];
+            var plotinfo = fullLayout._plots[id];
 
-    subplotLayers.order();
+            plotinfo.plotgroup = d3.select(this);
+            makeSubplotLayer(gd, plotinfo);
 
-    subplotLayers.exit()
-        .call(purgeSubplotLayers, fullLayout);
+            // make separate drag layers for each subplot,
+            // but append them to paper rather than the plot groups,
+            // so they end up on top of the rest
+            plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+        });
 
-    subplotLayers.each(function(d) {
-        var id = d[0];
-        var plotinfo = fullLayout._plots[id];
-
-        plotinfo.plotgroup = d3.select(this);
-        makeSubplotLayer(gd, plotinfo);
-
-        // make separate drag layers for each subplot,
-        // but append them to paper rather than the plot groups,
-        // so they end up on top of the rest
-        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
-    });
+    subplotLayers.exit().call(purgeSubplotLayers, fullLayout);
 };
 
 exports.rangePlot = function(gd, plotinfo, cdSubplot) {

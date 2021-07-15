@@ -221,12 +221,13 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
 
     var annTextClip = fullLayout._topclips
         .selectAll('#' + annClipID)
-        .data(isSizeConstrained ? [0] : []);
-
-    annTextClip.enter().append('clipPath')
+        .data(isSizeConstrained ? [0] : [])
+        .enter()
+        .append('clipPath')
         .classed('annclip', true)
         .attr('id', annClipID)
-      .append('rect');
+        .append('rect');
+
     annTextClip.exit().remove();
 
     var font = options.font;

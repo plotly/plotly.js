@@ -856,8 +856,9 @@ function createHoverText(hoverData, opts, gd) {
     }
 
     var commonLabel = container.selectAll('g.axistext')
-        .data(showCommonLabel ? [0] : []);
-    commonLabel.enter().append('g')
+        .data(showCommonLabel ? [0] : [])
+        .enter()
+        .append('g')
         .classed('axistext', true);
     commonLabel.exit().remove();
 
@@ -998,10 +999,15 @@ function createHoverText(hoverData, opts, gd) {
                 clipPath = null;
             }
 
-            var textClip = fullLayout._topclips.selectAll('#' + clipId).data(clipPath ? [0] : []);
-            textClip.enter().append('clipPath').attr('id', clipId).append('path');
+            var textClip = fullLayout._topclips.selectAll('#' + clipId).data(clipPath ? [0] : [])
+                .enter()
+                .append('clipPath')
+                .attr('id', clipId).append('path')
+                .select('path')
+                .attr('d', clipPath);
+
             textClip.exit().remove();
-            textClip.select('path').attr('d', clipPath);
+
             Drawing.setClipUrl(ltext, clipPath ? clipId : null, gd);
         }
 

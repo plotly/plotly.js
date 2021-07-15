@@ -102,7 +102,8 @@ function draw(gd, titleClass, options) {
 
     var el = group.selectAll('text')
         .data(elShouldExist ? [0] : [])
-        .enter().append('text')
+        .enter()
+        .append('text')
         .text(txt)
         // this is hacky, but convertToTspans uses the class
         // to determine whether to rotate mathJax...

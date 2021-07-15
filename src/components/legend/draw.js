@@ -100,12 +100,18 @@ function _draw(gd, legendObj) {
          .call(Color.fill, constants.scrollBarColor);
     });
 
-    var groups = scrollBox.selectAll('g.groups').data(legendData);
-    groups.enter().append('g').attr('class', 'groups');
+    var groups = scrollBox.selectAll('g.groups').data(legendData)
+        .enter()
+        .append('g')
+        .attr('class', 'groups');
+
     groups.exit().remove();
 
-    var traces = groups.selectAll('g.traces').data(Lib.identity);
-    traces.enter().append('g').attr('class', 'traces');
+    var traces = groups.selectAll('g.traces').data(Lib.identity)
+        .enter()
+        .append('g')
+        .attr('class', 'traces');
+
     traces.exit().remove();
 
     traces.style('opacity', function(d) {

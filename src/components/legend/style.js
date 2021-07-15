@@ -59,27 +59,25 @@ module.exports = function style(s, gd, legend) {
             layers.attr('transform', strTranslate(0, markerOffsetY));
         }
 
-        var fill = layers
-            .selectAll('g.legendfill')
-                .data([d]);
-        fill.enter().append('g')
+        layers.selectAll('g.legendfill').data([d])
+            .enter()
+            .append('g')
             .classed('legendfill', true);
 
-        var line = layers
-            .selectAll('g.legendlines')
-                .data([d]);
-        line.enter().append('g')
+        layers.selectAll('g.legendlines').data([d])
+            .enter()
+            .append('g')
             .classed('legendlines', true);
 
-        var symbol = layers
-            .selectAll('g.legendsymbols')
-                .data([d]);
-        symbol.enter().append('g')
+        var symbol = layers.selectAll('g.legendsymbols').data([d])
+            .enter()
+            .append('g')
             .classed('legendsymbols', true);
 
         symbol.selectAll('g.legendpoints')
             .data([d])
-          .enter().append('g')
+            .enter()
+            .append('g')
             .classed('legendpoints', true);
     })
     .each(styleSpatial)
@@ -141,11 +139,14 @@ module.exports = function style(s, gd, legend) {
         var this3 = d3.select(this);
 
         var fill = this3.select('.legendfill').selectAll('path')
-            .data(showFill || showGradientFill ? [d] : []);
-        fill.enter().append('path').classed('js-fill', true);
-        fill.exit().remove();
-        fill.attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z')
+            .data(showFill || showGradientFill ? [d] : [])
+            .enter()
+            .append('path')
+            .classed('js-fill', true)
+            .attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z')
             .call(showFill ? Drawing.fillGroupStyle : fillGradient);
+
+        fill.exit().remove();
 
         if(showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);
@@ -154,18 +155,20 @@ module.exports = function style(s, gd, legend) {
         }
 
         var line = this3.select('.legendlines').selectAll('path')
-            .data(showLine || showGradientLine ? [dMod] : []);
-        line.enter().append('path').classed('js-line', true);
-        line.exit().remove();
-
-        // this is ugly... but you can't apply a gradient to a perfectly
-        // horizontal or vertical line. Presumably because then
-        // the system doesn't know how to scale vertical variation, even
-        // though there *is* no vertical variation in this case.
-        // so add an invisibly small angle to the line
-        // This issue (and workaround) exist across (Mac) Chrome, FF, and Safari
-        line.attr('d', pathStart + (showGradientLine ? 'l' + itemWidth + ',0.0001' : 'h' + itemWidth))
+            .data(showLine || showGradientLine ? [dMod] : [])
+            .enter()
+            .append('path')
+            .classed('js-line', true)
+            // this is ugly... but you can't apply a gradient to a perfectly
+            // horizontal or vertical line. Presumably because then
+            // the system doesn't know how to scale vertical variation, even
+            // though there *is* no vertical variation in this case.
+            // so add an invisibly small angle to the line
+            // This issue (and workaround) exist across (Mac) Chrome, FF, and Safari
+            .attr('d', pathStart + (showGradientLine ? 'l' + itemWidth + ',0.0001' : 'h' + itemWidth))
             .call(showLine ? Drawing.lineGroupStyle : lineGradient);
+
+        line.exit().remove();
     }
 
     function stylePoints(d) {
@@ -254,25 +257,31 @@ module.exports = function style(s, gd, legend) {
         var ptgroup = d3.select(this).select('g.legendpoints');
 
         var pts = ptgroup.selectAll('path.scatterpts')
-            .data(showMarker ? dMod : []);
-        // make sure marker is on the bottom, in case it enters after text
-        pts.enter().insert('path', ':first-child')
+            .data(showMarker ? dMod : [])
+            // make sure marker is on the bottom, in case it enters after text
+            .enter()
+            .insert('path', ':first-child')
             .classed('scatterpts', true)
-            .attr('transform', centerTransform);
+            .attr('transform', centerTransform)
+            .call(Drawing.pointStyle, tMod, gd);
+
         pts.exit().remove();
-        pts.call(Drawing.pointStyle, tMod, gd);
 
         // 'mrc' is set in pointStyle and used in textPointStyle:
         // constrain it here
         if(showMarker) dMod[0].mrc = 3;
 
         var txt = ptgroup.selectAll('g.pointtext')
-            .data(showText ? dMod : []);
-        txt.enter()
-            .append('g').classed('pointtext', true)
-                .append('text').attr('transform', centerTransform);
+            .data(showText ? dMod : [])
+            .enter()
+            .append('g')
+            .classed('pointtext', true)
+            .append('text')
+            .attr('transform', centerTransform)
+            .selectAll('text')
+            .call(Drawing.textPointStyle, tMod, gd);
+
         txt.exit().remove();
-        txt.selectAll('text').call(Drawing.textPointStyle, tMod, gd);
     }
 
     function styleWaterfalls(d) {

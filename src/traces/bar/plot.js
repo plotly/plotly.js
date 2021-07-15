@@ -111,9 +111,8 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
         var keyFunc = getKeyFunc(trace);
-        var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc);
-
-        bars.enter().append('g')
+        var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc)
+            .enter().append('g')
             .classed('point', true);
 
         bars.exit().remove();
