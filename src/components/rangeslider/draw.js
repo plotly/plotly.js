@@ -254,18 +254,27 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
             switch(target) {
                 case slideBox:
                     cursor = 'ew-resize';
+                    if(minVal + delta > axisOpts._length || maxVal + delta < 0) {
+                        return;
+                    }
                     pixelMin = minVal + delta;
                     pixelMax = maxVal + delta;
                     break;
 
                 case grabAreaMin:
                     cursor = 'col-resize';
+                    if(minVal + delta > axisOpts._length) {
+                        return;
+                    }
                     pixelMin = minVal + delta;
                     pixelMax = maxVal;
                     break;
 
                 case grabAreaMax:
                     cursor = 'col-resize';
+                    if(maxVal + delta < 0) {
+                        return;
+                    }
                     pixelMin = minVal;
                     pixelMax = maxVal + delta;
                     break;
