@@ -27,7 +27,9 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
     join = scatterLayer.selectAll('g.trace')
         .data(cdscatterSorted, function(d) { return d[0].trace.uid; })
         .enter()
-        .append('g')
+        .append('g');
+
+    join
         .attr('class', function(d) {
             return 'trace scatter trace' + d[0].trace.uid;
         })
@@ -271,7 +273,9 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var lineJoin = lines.selectAll('.js-line')
         .data(segments)
         .enter()
-        .append('path')
+        .append('path');
+
+    lineJoin
         .classed('js-line', true)
         .style('vector-effect', 'non-scaling-stroke')
         .call(Drawing.lineGroupStyle)
@@ -410,7 +414,17 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         join = selection.data(markerFilter, keyFunc)
             .enter()
-            .append('path')
+            .append('path');
+
+        if(hasTransition) {
+            join.exit().transition()
+                .style('opacity', 0)
+                .remove();
+        } else {
+            join.exit().remove();
+        }
+
+        join
             .classed('point', true);
 
         if(hasTransition) {
@@ -449,21 +463,17 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             }
         });
 
-        if(hasTransition) {
-            join.exit().transition()
-                .style('opacity', 0)
-                .remove();
-        } else {
-            join.exit().remove();
-        }
-
         // text points
         selection = text.selectAll('g');
         join = selection.data(textFilter, keyFunc)
             // each text needs to go in its own 'g' in case
             // it gets converted to mathjax
             .enter()
-            .append('g')
+            .append('g');
+
+        join.exit().remove();
+
+        join
             .classed('textpoint', true)
             .append('text');
 
@@ -495,8 +505,6 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     transition(d3.select(this)).attrs({x: x, y: y});
                 });
             });
-
-        join.exit().remove();
     }
 
     points.datum(cdscatter);
