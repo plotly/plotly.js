@@ -5,6 +5,7 @@ var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
 var Events = require('../../lib/events');
@@ -296,8 +297,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         for(itemnum = 0; itemnum < evt.length; itemnum++) {
             cd = gd.calcdata[evt[itemnum].curveNumber || 0];
             if(cd) {
-                trace = cd[0].trace;
-                if(cd[0].trace.hoverinfo !== 'skip') {
+                trace = getTraceFromCd(cd);
+                if(getTraceFromCd(cd).hoverinfo !== 'skip') {
                     searchData.push(cd);
                     if(trace.orientation === 'h') {
                         hasOneHorizontalTrace = true;
@@ -308,7 +309,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     } else {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
-            trace = cd[0].trace;
+            trace = getTraceFromCd(cd);
             if(trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
                 searchData.push(cd);
                 if(trace.orientation === 'h') {
@@ -388,9 +389,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             cd = searchData[curvenum];
 
             // filter out invisible or broken data
-            if(!cd || !cd[0] || !cd[0].trace) continue;
+            if(!cd || !cd[0] || !getTraceFromCd(cd)) continue;
 
-            trace = cd[0].trace;
+            trace = getTraceFromCd(cd);
 
             if(trace.visible !== true || trace._length === 0) continue;
 
@@ -661,7 +662,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     if(
         helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
-        hoverData[0].trace.type !== 'splom' // TODO: add support for splom
+        getTraceFromCd(hoverData).type !== 'splom' // TODO: add support for splom
     ) {
         // pick winning point
         var winningPoint = hoverData[0];
@@ -1075,7 +1076,7 @@ function createHoverText(hoverData, opts, gd) {
 
             mockLegend.entries.push([pt]);
         }
-        mockLegend.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
+        mockLegend.entries.sort(function(a, b) { return getTraceFromCd(a).index - getTraceFromCd(b).index;});
         mockLegend.layer = container;
 
         // Draw unified hover label

@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Axes = require('../../plots/cartesian/axes');
 var scatterMapboxHoverPoints = require('../scattermapbox/hover').hoverPoints;
 var getExtraText = require('../scattermapbox/hover').getExtraText;
@@ -10,7 +11,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
 
     var newPointData = pts[0];
     var cd = newPointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var di = cd[newPointData.index];
 
     // let Fx.hover pick the color

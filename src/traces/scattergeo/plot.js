@@ -3,6 +3,7 @@
 var d3 = require('../../lib/d3');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var geoJsonUtils = require('../../lib/geojson_utils');
 var geoUtils = require('../../lib/geo_location_utils');
@@ -28,7 +29,7 @@ function plot(gd, geo, calcData) {
 
     gTraces.each(function(calcTrace) {
         var s = d3.select(this);
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(subTypes.hasLines(trace) || trace.fill !== 'none') {
             var lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
@@ -69,7 +70,7 @@ function plot(gd, geo, calcData) {
 }
 
 function calcGeoJSON(calcTrace, fullLayout) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var geoLayout = fullLayout[trace.geo];
     var geo = geoLayout._subplot;
     var len = trace._length;

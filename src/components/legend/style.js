@@ -4,6 +4,7 @@ var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var Drawing = require('../drawing');
 var Color = require('../color');
@@ -45,7 +46,7 @@ module.exports = function style(s, gd, legend) {
         var traceGroup = d3.select(this);
 
         var layers = Lib.ensureSingle(traceGroup, 'g', 'layers');
-        layers.style('opacity', d[0].trace.opacity);
+        layers.style('opacity', getTraceFromCd(d).opacity);
 
         var valign = legend.valign;
         var lineHeight = d[0].lineHeight;
@@ -296,11 +297,11 @@ module.exports = function style(s, gd, legend) {
     }
 
     function styleWaterfalls(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         var isWaterfall = trace.type === 'waterfall';
 
         if(d[0]._distinct && isWaterfall) {
-            var cont = d[0].trace[d[0].dir].marker;
+            var cont = getTraceFromCd(d)[d[0].dir].marker;
             d[0].mc = cont.color;
             d[0].mlw = cont.line.width;
             d[0].mlc = cont.line.color;
@@ -350,7 +351,7 @@ module.exports = function style(s, gd, legend) {
     }
 
     function styleBarLike(d, lThis, desiredType) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         var marker = trace.marker || {};
         var markerLine = marker.line || {};
 
@@ -412,7 +413,7 @@ module.exports = function style(s, gd, legend) {
     }
 
     function styleBoxes(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendbox')
             .data(trace.visible && Registry.traceIs(trace, 'box-violin') ? [d] : [])
@@ -454,7 +455,7 @@ module.exports = function style(s, gd, legend) {
     }
 
     function styleCandles(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendcandle')
             .data(trace.visible && trace.type === 'candlestick' ? [d, d] : [])
@@ -485,7 +486,7 @@ module.exports = function style(s, gd, legend) {
     }
 
     function styleOHLC(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendohlc')
             .data(trace.visible && trace.type === 'ohlc' ? [d, d] : [])
@@ -557,7 +558,7 @@ module.exports = function style(s, gd, legend) {
     }
 
     function styleSpatial(d) { // i.e. maninly traces having z and colorscale
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         var useGradient;
         var ptsData = [];
@@ -690,7 +691,7 @@ function getGradientDirection(reversescale, isRadial) {
 }
 
 function getStyleGuide(d) {
-    var trace = d[0].trace;
+    var trace = getTraceFromCd(d);
     var contours = trace.contours;
     var showLine = subTypes.hasLines(trace);
     var showMarker = subTypes.hasMarkers(trace);

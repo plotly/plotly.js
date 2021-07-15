@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Axes = require('../../plots/cartesian/axes');
 var boxHoverPoints = require('../box/hover');
 var helpers = require('./helpers');
@@ -10,7 +11,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
     var hoverLayer = opts.hoverLayer;
 
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var hoveron = trace.hoveron;
     var hasHoveronViolins = hoveron.indexOf('violins') !== -1;
     var hasHoveronKDE = hoveron.indexOf('kde') !== -1;

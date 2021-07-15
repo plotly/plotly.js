@@ -2,6 +2,7 @@
 
 var d3 = require('../../lib/d3');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var numberFormat = Lib.numberFormat;
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
@@ -101,7 +102,7 @@ drawing.hideOutsideRangePoints = function(traceGroups, subplot) {
     var ya = subplot.yaxis;
 
     traceGroups.each(function(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         var xcalendar = trace.xcalendar;
         var ycalendar = trace.ycalendar;
         var selector = Registry.traceIs(trace, 'bar-like') ? '.bartext' : '.point,.textpoint';
@@ -193,8 +194,8 @@ drawing.fillGroupStyle = function(s) {
         var shape = d3.select(this);
         // N.B. 'd' won't be a calcdata item when
         // fill !== 'none' on a segment-less and marker-less trace
-        if(d[0].trace) {
-            shape.call(Color.fill, d[0].trace.fillcolor);
+        if(getTraceFromCd(d)) {
+            shape.call(Color.fill, getTraceFromCd(d).fillcolor);
         }
     });
 };

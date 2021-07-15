@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var subtypes = require('../scatter/subtypes');
 var BADNUM = require('../../constants/numerical').BADNUM;
 
@@ -8,7 +9,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var xa = searchInfo.xaxis;
     var ya = searchInfo.yaxis;
     var selection = [];
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     var di, lonlat, x, y, i;
 

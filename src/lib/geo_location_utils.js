@@ -12,6 +12,8 @@ var isPlainObject = require('./is_plain_object');
 var nestedProperty = require('./nested_property');
 var polygon = require('./polygon');
 
+var getTraceFromCd = require('./trace_from_cd');
+
 // make list of all country iso3 ids from at runtime
 var countryIds = Object.keys(countryRegex);
 
@@ -194,7 +196,7 @@ function getTraceGeojson(trace) {
 }
 
 function extractTraceFeature(calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
 
     var geojsonIn = getTraceGeojson(trace);
     if(!geojsonIn) return false;

@@ -2,11 +2,13 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var attributes = require('./attributes');
-var fillText = require('../../lib').fillText;
+var Lib = require('../../lib');
+var fillText = Lib.fillText;
+var getTraceFromCd = require('../../lib/trace_from_cd');
 
 module.exports = function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var geo = pointData.subplot;
 
     var pt, i, j, isInside;

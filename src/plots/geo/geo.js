@@ -10,6 +10,7 @@ var geoProjection = require('d3-geo-projection');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -145,7 +146,7 @@ proto.update = function(geoCalcData, fullLayout) {
 
     for(var i = 0; i < geoCalcData.length; i++) {
         var calcTrace = geoCalcData[i];
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(trace.type === 'choropleth') {
             this.hasChoropleth = true;

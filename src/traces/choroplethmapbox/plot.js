@@ -2,6 +2,7 @@
 
 var convert = require('./convert').convert;
 var convertOnSelect = require('./convert').convertOnSelect;
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var LAYER_PREFIX = require('../../plots/mapbox/constants').traceLayerPrefix;
 
 function ChoroplethMapbox(subplot, uid) {
@@ -97,7 +98,7 @@ proto.dispose = function() {
 };
 
 module.exports = function createChoroplethMapbox(subplot, calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var choroplethMapbox = new ChoroplethMapbox(subplot, trace.uid);
     var sourceId = choroplethMapbox.sourceId;
     var optsAll = convert(calcTrace);
@@ -111,7 +112,7 @@ module.exports = function createChoroplethMapbox(subplot, calcTrace) {
     choroplethMapbox._addLayers(optsAll, below);
 
     // link ref for quick update during selections
-    calcTrace[0].trace._glTrace = choroplethMapbox;
+    getTraceFromCd(calcTrace)._glTrace = choroplethMapbox;
 
     return choroplethMapbox;
 };

@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var isNumeric = require('fast-isnumeric');
 
 var Drawing = require('../drawing');
@@ -15,7 +16,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
     var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
     traces.each(function(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         // || {} is in case the trace (specifically scatterternary)
         // doesn't support error bars at all, but does go through
         // the scatter.plot mechanics, which calls ErrorBars.plot

@@ -4,6 +4,7 @@ var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var ensureSingle = Lib.ensureSingle;
 var identity = Lib.identity;
 var Drawing = require('../../components/drawing');
@@ -25,13 +26,13 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
     var cdscatterSorted = linkTraces(gd, plotinfo, cdscatter);
 
     join = scatterLayer.selectAll('g.trace')
-        .data(cdscatterSorted, function(d) { return d[0].trace.uid; })
+        .data(cdscatterSorted, function(d) { return getTraceFromCd(d).uid; })
         .enter()
         .append('g');
 
     join
         .attr('class', function(d) {
-            return 'trace scatter trace' + d[0].trace.uid;
+            return 'trace scatter trace' + getTraceFromCd(d).uid;
         })
         .style('stroke-miterlimit', 2);
 
@@ -83,7 +84,7 @@ function createFills(gd, traceJoin, plotinfo) {
         var fills = ensureSingle(d3.select(this), 'g', 'fills');
         Drawing.setClipUrl(fills, plotinfo.layerClipId, gd);
 
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         var fillData = [];
         if(trace._ownfill) fillData.push('_ownFill');
@@ -559,10 +560,4 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     cd.forEach(function(v, i) {
         if(Math.round((i + i0) % inc) === 0) v.vis = true;
     });
-}
-
-function getTraceFromCd(cd) {
-    for(var i = 0; i < cd.length; i++) {
-        if(cd[i].i === 0) return cd[i].trace;
-    }
 }

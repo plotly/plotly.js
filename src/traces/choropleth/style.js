@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Colorscale = require('../../components/colorscale');
@@ -10,7 +11,7 @@ function style(gd, calcTrace) {
 }
 
 function styleTrace(gd, calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var s = calcTrace[0].node3;
     var locs = s.selectAll('.choroplethlocation');
     var marker = trace.marker || {};
@@ -31,7 +32,7 @@ function styleTrace(gd, calcTrace) {
 
 function styleOnSelect(gd, calcTrace) {
     var s = calcTrace[0].node3;
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
 
     if(trace.selectedpoints) {
         Drawing.selectedPointStyle(s.selectAll('.choroplethlocation'), trace, gd);
