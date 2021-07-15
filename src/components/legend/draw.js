@@ -121,10 +121,13 @@ function _draw(gd, legendObj) {
         } else {
             return trace.visible === 'legendonly' ? 0.5 : 1;
         }
-    })
-    .each(function() { d3.select(this).call(drawTexts, gd, legendObj); })
-    .call(style, gd, legendObj)
-    .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
+    });
+
+    traces.each(function() { d3.select(this).call(drawTexts, gd, legendObj); });
+
+    traces
+        .call(style, gd, legendObj)
+        .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
 
     Lib.syncOrAsync([
         Plots.previousPromises,
