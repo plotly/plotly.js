@@ -858,7 +858,11 @@ function createHoverText(hoverData, opts, gd) {
     var commonLabel = container.selectAll('g.axistext')
         .data(showCommonLabel ? [0] : [])
         .enter()
-        .append('g')
+        .append('g');
+
+    commonLabel.exit().remove();
+
+    commonLabel
         .classed('axistext', true);
 
     commonLabel.each(function() {
@@ -1001,20 +1005,20 @@ function createHoverText(hoverData, opts, gd) {
             var textClip = fullLayout._topclips.selectAll('#' + clipId)
                 .data(clipPath ? [0] : [])
                 .enter()
-                .append('clipPath')
+                .append('clipPath');
+
+            textClip.exit().remove();
+
+            textClip
                 .attr('id', clipId).append('path')
                 .select('path')
                 .attr('d', clipPath);
-
-            textClip.exit().remove();
 
             Drawing.setClipUrl(ltext, clipPath ? clipId : null, gd);
         }
 
         label.attr('transform', strTranslate(lx, ly));
     });
-
-    commonLabel.exit().remove();
 
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
@@ -1124,20 +1128,25 @@ function createHoverText(hoverData, opts, gd) {
             return hoverDataKey(d);
         })
         .enter()
-        .append('g')
+        .append('g');
+
+    hoverLabels.exit().remove();
+
+    hoverLabels
         .classed('hovertext', true)
-        .each(function() {
-            var g = d3.select(this);
-            // trace name label (rect and text.name)
-            g.append('rect')
-                .call(Color.fill, Color.addOpacity(bgColor, 0.8));
-            g.append('text').classed('name', true);
-            // trace data label (path and text.nums)
-            g.append('path')
-                .style('stroke-width', '1px');
-            g.append('text').classed('nums', true)
-                .call(Drawing.font, fontFamily, fontSize);
-        });
+
+    hoverLabels.each(function() {
+        var g = d3.select(this);
+        // trace name label (rect and text.name)
+        g.append('rect')
+            .call(Color.fill, Color.addOpacity(bgColor, 0.8));
+        g.append('text').classed('name', true);
+        // trace data label (path and text.nums)
+        g.append('path')
+            .style('stroke-width', '1px');
+        g.append('text').classed('nums', true)
+            .call(Drawing.font, fontFamily, fontSize);
+    });
 
     // then put the text in, position the pointer to the data,
     // and figure out sizes
@@ -1261,8 +1270,6 @@ function createHoverText(hoverData, opts, gd) {
         g.attr('transform', strTranslate(htx, hty) +
             (rotateLabels ? strRotate(YANGLE) : ''));
     });
-
-    hoverLabels.exit().remove();
 
     return hoverLabels;
 }

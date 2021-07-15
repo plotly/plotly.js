@@ -236,9 +236,10 @@ module.exports = function draw(gd) {
         var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')
             // even if there are no images on this subplot, we need to run
             // enter and exit in case there were previously
-            .data(imageDataSubplot[subplot] || []);
+            .data(imageDataSubplot[subplot] || [])
+            .enter()
+            .append('image');
 
-        imagesOnSubplot.enter().append('image');
         imagesOnSubplot.exit().remove();
 
         imagesOnSubplot.each(function(d) {

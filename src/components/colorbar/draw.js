@@ -35,9 +35,17 @@ function draw(gd) {
         .selectAll('g.' + cn.colorbar)
         .data(makeColorBarData(gd), function(opts) { return opts._id; })
         .enter()
-        .append('g')
+        .append('g');
+
+    colorBars.exit()
+        .each(function(opts) { Plots.autoMargin(gd, opts._id); })
+        .remove();
+
+    colorBars
         .attr('class', function(opts) { return opts._id; })
         .classed(cn.colorbar, true);
+
+    colorBars.order();
 
     colorBars.each(function(opts) {
         var g = d3.select(this);
@@ -56,12 +64,6 @@ function draw(gd) {
             makeEditable(g, opts, gd);
         }
     });
-
-    colorBars.exit()
-        .each(function(opts) { Plots.autoMargin(gd, opts._id); })
-        .remove();
-
-    colorBars.order();
 }
 
 function makeColorBarData(gd) {
@@ -393,11 +395,13 @@ function drawColorBar(g, opts, gd) {
             .attr('style', '')
             .data(fillLevels)
             .enter()
-            .append('rect')
-            .classed(cn.cbfill, true)
-            .style('stroke', 'none');
+            .append('rect');
 
         fills.exit().remove();
+
+        fills
+            .classed(cn.cbfill, true)
+            .style('stroke', 'none');
 
         var zBounds = zrange
             .map(ax.c2p)
@@ -440,10 +444,13 @@ function drawColorBar(g, opts, gd) {
             .selectAll('path.' + cn.cbline)
             .data(line.color && line.width ? lineLevels : [])
             .enter()
-            .append('path')
-            .classed(cn.cbline, true);
+            .append('path');
 
         lines.exit().remove();
+
+        lines
+            .classed(cn.cbline, true);
+
         lines.each(function(d) {
             d3.select(this)
                 .attr('d', 'M' + xLeft + ',' +
