@@ -37,7 +37,9 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
         if(!yObj.visible && !xObj.visible) d = [];
 
         var errorbars = d3.select(this).selectAll('g.errorbar')
-            .data(d, keyFunc);
+            .data(d, keyFunc)
+            .enter()
+            .append('g');
 
         errorbars.exit().remove();
 
@@ -48,11 +50,12 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
 
         errorbars.style('opacity', 1);
 
-        var enter = errorbars.enter().append('g')
+        errorbars
             .classed('errorbar', true);
 
         if(hasAnimation) {
-            enter.style('opacity', 0).transition()
+            errorbars
+                .style('opacity', 0).transition()
                 .duration(transitionOpts.duration)
                 .style('opacity', 1);
         }
