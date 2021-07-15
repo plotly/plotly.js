@@ -16,12 +16,14 @@ function plot(gd, geo, calcData) {
         var sel = d3.select(this);
 
         var paths = sel.selectAll('path.choroplethlocation')
-            .data(Lib.identity);
-
-        paths.enter().append('path')
-            .classed('choroplethlocation', true);
+            .data(Lib.identity)
+            .enter()
+            .append('path');
 
         paths.exit().remove();
+
+        paths
+            .classed('choroplethlocation', true);
 
         // call style here within topojson request callback
         style(gd, calcTrace);

@@ -67,16 +67,19 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.box').data((
-        trace.type !== 'violin' ||
-        trace.box.visible
-    ) ? Lib.identity : []);
-
-    paths.enter().append('path')
-        .style('vector-effect', 'non-scaling-stroke')
-        .attr('class', 'box');
+    var paths = sel.selectAll('path.box')
+        .data((
+            trace.type !== 'violin' ||
+            trace.box.visible
+        ) ? Lib.identity : [])
+        .enter()
+        .append('path');
 
     paths.exit().remove();
+
+    paths
+        .style('vector-effect', 'non-scaling-stroke')
+        .attr('class', 'box');
 
     paths.each(function(d) {
         if(d.empty) return 'M0,0Z';
@@ -180,12 +183,14 @@ function plotPoints(sel, axes, trace, t) {
     };
 
     var gPoints = sel.selectAll('g.points')
-        .data(mode ? fn : []);
-
-    gPoints.enter().append('g')
-        .attr('class', 'points');
+        .data(mode ? fn : [])
+        .enter()
+        .append('g');
 
     gPoints.exit().remove();
+
+    gPoints
+        .attr('class', 'points');
 
     var paths = gPoints.selectAll('path')
         .data(function(d) {
@@ -257,12 +262,14 @@ function plotPoints(sel, axes, trace, t) {
             }
 
             return pts;
-        });
-
-    paths.enter().append('path')
-        .classed('point', true);
+        })
+        .enter()
+        .append('path');
 
     paths.exit().remove();
+
+    paths
+        .classed('point', true);
 
     paths.call(Drawing.translatePoints, xa, ya);
 }
@@ -289,12 +296,15 @@ function plotBoxMean(sel, axes, trace, t) {
         bdPos1 = t.bdPos;
     }
 
-    var paths = sel.selectAll('path.mean').data((
-        (trace.type === 'box' && trace.boxmean) ||
-        (trace.type === 'violin' && trace.box.visible && trace.meanline.visible)
-    ) ? Lib.identity : []);
+    var paths = sel.selectAll('path.mean')
+        .data((
+            (trace.type === 'box' && trace.boxmean) ||
+            (trace.type === 'violin' && trace.box.visible && trace.meanline.visible)
+        ) ? Lib.identity : [])
+        .enter()
+        .append('path');
 
-    paths.enter().append('path')
+    paths
         .attr('class', 'mean')
         .styles({
             fill: 'none',

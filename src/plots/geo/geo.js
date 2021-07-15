@@ -321,7 +321,15 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
     var join = _this.framework.selectAll('.layer')
         .data(layerData, String)
         .enter()
-        .append('g')
+        .append('g');
+
+    join.exit().each(function(d) {
+        delete layers[d];
+        delete basePaths[d];
+        d3.select(this).remove();
+    });
+
+    join
         .attr('class', function(d) { return 'layer ' + d; })
         .each(function(d) {
             var layer = layers[d] = d3.select(this);
@@ -370,12 +378,6 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         } else if(isFillLayer(d)) {
             path.call(Color.fill, geoLayout[adj + 'color']);
         }
-    });
-
-    join.exit().each(function(d) {
-        delete layers[d];
-        delete basePaths[d];
-        d3.select(this).remove();
     });
 };
 

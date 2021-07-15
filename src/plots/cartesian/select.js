@@ -88,7 +88,11 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id)
         .data(isDrawMode ? [0] : [1, 2])
         .enter()
-        .append('path')
+        .append('path');
+
+    outlines.exit().remove();
+
+    outlines
         .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
         .style(isDrawMode ? {
             opacity: drwStyle.opacity / 2,

@@ -103,7 +103,11 @@ function draw(gd, titleClass, options) {
     var el = group.selectAll('text')
         .data(elShouldExist ? [0] : [])
         .enter()
-        .append('text')
+        .append('text');
+
+    el.exit().remove();
+
+    el
         .text(txt)
         // this is hacky, but convertToTspans uses the class
         // to determine whether to rotate mathJax...
@@ -111,8 +115,6 @@ function draw(gd, titleClass, options) {
         // correct one (only relevant for colorbars, at least
         // for now) - ie don't use .classed
         .attr('class', titleClass);
-
-    el.exit().remove();
 
     if(!elShouldExist) return group;
 

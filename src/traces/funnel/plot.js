@@ -42,7 +42,11 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
         var connectors = group.selectAll('g.region').data(Lib.identity)
             .enter()
-            .append('g')
+            .append('g');
+
+        connectors.exit().remove();
+
+        connectors
             .classed('region', true);
 
         var len = connectors.size();
@@ -76,8 +80,6 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
                 .attr('d', shape)
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
         });
-
-        connectors.exit().remove();
     });
 }
 
@@ -100,7 +102,11 @@ function plotConnectorLines(gd, plotinfo, cdModule, traceLayer) {
 
         var connectors = group.selectAll('g.line').data(Lib.identity)
             .enter()
-            .append('g')
+            .append('g');
+
+        connectors.exit().remove();
+
+        connectors
             .classed('line', true);
 
         var len = connectors.size();
@@ -131,8 +137,6 @@ function plotConnectorLines(gd, plotinfo, cdModule, traceLayer) {
                 .attr('d', shape)
                 .call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
         });
-
-        connectors.exit().remove();
     });
 }
 

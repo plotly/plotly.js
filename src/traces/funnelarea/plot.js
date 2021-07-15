@@ -43,7 +43,11 @@ module.exports = function plot(gd, cdModule) {
             var slices = d3.select(this).selectAll('g.slice')
                 .data(cd)
                 .enter()
-                .append('g')
+                .append('g');
+
+            slices.exit().remove();
+
+            slices
                 .classed('slice', true);
 
             slices.each(function(pt, i) {
@@ -70,13 +74,15 @@ module.exports = function plot(gd, cdModule) {
                 var slicePath = sliceTop.selectAll('path.surface')
                     .data([pt])
                     .enter()
-                    .append('path')
+                    .append('path');
+
+                slicePath.exit().remove();
+
+                slicePath
                     .classed('surface', true)
                     .styles({'pointer-events': 'all'})
                     .call(attachFxHandlers, gd, cd)
                     .attr('d', shape);
-
-                slicePath.exit().remove();
 
                 // add text
                 formatSliceLabel(gd, pt, cd0);
@@ -84,7 +90,11 @@ module.exports = function plot(gd, cdModule) {
                 var sliceTextGroup = sliceTop.selectAll('g.slicetext')
                     .data(pt.text && (textPosition !== 'none') ? [0] : [])
                     .enter()
-                    .append('g')
+                    .append('g');
+
+                sliceTextGroup.exit().remove();
+
+                sliceTextGroup
                     .classed('slicetext', true);
 
                 sliceTextGroup.each(function() {
@@ -129,17 +139,17 @@ module.exports = function plot(gd, cdModule) {
 
                     sliceText.attr('transform', Lib.getTextTransform(transform));
                 });
-
-                sliceTextGroup.exit().remove();
             });
-
-            slices.exit().remove();
 
             // add the title
             var titleTextGroup = d3.select(this).selectAll('g.titletext')
                 .data(trace.title.text ? [0] : [])
                 .enter()
-                .append('g')
+                .append('g');
+
+            titleTextGroup.exit().remove();
+
+            titleTextGroup
                 .classed('titletext', true);
 
             titleTextGroup.each(function() {
@@ -169,8 +179,6 @@ module.exports = function plot(gd, cdModule) {
                     strScale(Math.min(1, transform.scale)) +
                     strTranslate(transform.tx, transform.ty));
             });
-
-            titleTextGroup.exit().remove();
         });
     });
 };

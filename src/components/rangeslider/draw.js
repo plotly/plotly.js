@@ -49,9 +49,10 @@ module.exports = function(gd) {
         return axisOpts._name;
     }
 
-    var rangeSliders = fullLayout._infolayer
-        .selectAll('g.' + constants.containerClassName)
-        .data(rangeSliderData, keyFunction);
+    var rangeSliders = fullLayout._infolayer.selectAll('g.' + constants.containerClassName)
+        .data(rangeSliderData, keyFunction)
+        .enter()
+        .append('g');
 
     // remove exiting sliders and their corresponding clip paths
     rangeSliders.exit().each(function(axisOpts) {
@@ -62,7 +63,7 @@ module.exports = function(gd) {
     // return early if no range slider is visible
     if(rangeSliderData.length === 0) return;
 
-    rangeSliders.enter().append('g')
+    rangeSliders
         .classed(constants.containerClassName, true)
         .attr('pointer-events', 'all');
 
@@ -422,15 +423,17 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
     var calcData = gd.calcdata;
 
     var rangePlots = rangeSlider.selectAll('g.' + constants.rangePlotClassName)
-        .data(axisOpts._subplotsWith, Lib.identity);
+        .data(axisOpts._subplotsWith, Lib.identity)
+        .enter()
+        .append('g');
 
-    rangePlots.enter().append('g')
+    rangePlots.exit().remove();
+
+    rangePlots
         .attr('class', function(id) { return constants.rangePlotClassName + ' ' + id; })
         .call(Drawing.setClipUrl, opts._clipId, gd);
 
     rangePlots.order();
-
-    rangePlots.exit().remove();
 
     var mainplotinfo;
 

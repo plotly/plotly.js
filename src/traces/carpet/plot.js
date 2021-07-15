@@ -81,9 +81,14 @@ function drawClipPath(trace, t, layer, xaxis, yaxis) {
 
 function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
     var lineClass = 'const-' + axisLetter + '-lines';
-    var gridJoin = layer.selectAll('.' + lineClass).data(gridlines);
+    var gridJoin = layer.selectAll('.' + lineClass)
+        .data(gridlines)
+        .enter()
+        .append('path');
 
-    gridJoin.enter().append('path')
+    gridJoin.exit().remove();
+
+    gridJoin
         .classed(lineClass, true)
         .style('vector-effect', 'non-scaling-stroke');
 
@@ -104,14 +109,17 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
             .style('stroke', gridline.color)
             .style('fill', 'none');
     });
-
-    gridJoin.exit().remove();
 }
 
 function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
-    var labelJoin = layer.selectAll('text.' + labelClass).data(labels);
+    var labelJoin = layer.selectAll('text.' + labelClass)
+        .data(labels)
+        .enter()
+        .append('text');
 
-    labelJoin.enter().append('text')
+    labelJoin.exit().remove();
+
+    labelJoin
         .classed(labelClass, true);
 
     var maxExtent = 0;
@@ -157,8 +165,6 @@ function drawAxisLabels(gd, xaxis, yaxis, trace, t, layer, labels, labelClass) {
         maxExtent = Math.max(maxExtent, bbox.width + label.axis.labelpadding);
     });
 
-    labelJoin.exit().remove();
-
     labelOrientation.maxExtent = maxExtent;
     return labelOrientation;
 }
@@ -194,12 +200,17 @@ var lineSpacing = alignmentConstants.LINE_SPACING;
 var midShift = ((1 - alignmentConstants.MID_SHIFT) / lineSpacing) + 1;
 
 function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientation, labelClass) {
+    var offset = labelOrientation.maxExtent;
     var data = [];
     if(axis.title.text) data.push(axis.title.text);
-    var titleJoin = layer.selectAll('text.' + labelClass).data(data);
-    var offset = labelOrientation.maxExtent;
+    var titleJoin = layer.selectAll('text.' + labelClass)
+        .data(data)
+        .enter()
+        .append('text');
 
-    titleJoin.enter().append('text')
+    titleJoin.exit().remove();
+
+    titleJoin
         .classed(labelClass, true);
 
     // There's only one, but we'll do it as a join so it's updated nicely:
@@ -235,6 +246,4 @@ function drawAxisTitle(gd, layer, trace, t, xy, dxy, axis, xa, ya, labelOrientat
             .attr('text-anchor', 'middle')
             .call(Drawing.font, axis.title.font);
     });
-
-    titleJoin.exit().remove();
 }

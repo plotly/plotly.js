@@ -129,11 +129,15 @@ proto.updateLayers = function(ternaryLayout) {
     }
 
     var toplevel = _this.plotContainer.selectAll('g.toplevel')
-        .data(plotLayers, String);
+        .data(plotLayers, String)
+        .enter()
+        .append('g');
+
+    toplevel.exit().remove();
 
     var grids = ['agrid', 'bgrid', 'cgrid'];
 
-    toplevel.enter().append('g')
+    toplevel
         .attr('class', function(d) { return 'toplevel ' + d; })
         .each(function(d) {
             var s = d3.select(this);

@@ -21,11 +21,17 @@ module.exports = function draw(gd) {
     var sliderData = makeSliderData(fullLayout, gd);
 
     // draw a container for *all* sliders:
-    var sliders = fullLayout._infolayer
-        .selectAll('g.' + constants.containerClassName)
-        .data(sliderData.length > 0 ? [0] : []);
+    var sliders = fullLayout._infolayer.selectAll('g.' + constants.containerClassName)
+        .data(sliderData.length > 0 ? [0] : [])
+        .enter()
+        .append('g');
 
-    sliders.enter().append('g')
+    sliders.exit().each(function() {
+        d3.select(this).selectAll('g.' + constants.groupClassName)
+            .each(clearSlider);
+    }).remove();
+
+    sliders
         .classed(constants.containerClassName, true)
         .style('cursor', 'ew-resize');
 
@@ -41,24 +47,20 @@ module.exports = function draw(gd) {
         Plots.autoMargin(gd, autoMarginId(sliderOpts));
     }
 
-    sliders.exit().each(function() {
-        d3.select(this).selectAll('g.' + constants.groupClassName)
-            .each(clearSlider);
-    })
-    .remove();
-
     // Return early if no menus visible:
     if(sliderData.length === 0) return;
 
     var sliderGroups = sliders.selectAll('g.' + constants.groupClassName)
-        .data(sliderData, keyFunction);
-
-    sliderGroups.enter().append('g')
-        .classed(constants.groupClassName, true);
+        .data(sliderData, keyFunction)
+        .enter()
+        .append('g');
 
     sliderGroups.exit()
         .each(clearSlider)
         .remove();
+
+    sliderGroups
+        .classed(constants.groupClassName, true);
 
     // Find the dimensions of the sliders:
     for(var i = 0; i < sliderData.length; i++) {
@@ -117,10 +119,14 @@ function keyFunction(opts) {
 // Compute the dimensions (mutates sliderOpts):
 function findDimensions(gd, sliderOpts) {
     var sliderLabels = Drawing.tester.selectAll('g.' + constants.labelGroupClass)
-        .data(sliderOpts._visibleSteps);
+        .data(sliderOpts._visibleSteps)
+        .enter()
+        .append('g');
 
-    sliderLabels.enter().append('g')
+    sliderLabels
         .classed(constants.labelGroupClass, true);
+
+    sliderLabels.remove();
 
     // loop over fake buttons to find width / height
     var maxLabelWidth = 0;
@@ -137,8 +143,6 @@ function findDimensions(gd, sliderOpts) {
             maxLabelWidth = Math.max(maxLabelWidth, bBox.width);
         }
     });
-
-    sliderLabels.remove();
 
     var dims = sliderOpts._dims = {};
 
@@ -371,12 +375,14 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
     var dims = sliderOpts._dims;
 
     var labelItems = labels.selectAll('g.' + constants.labelGroupClass)
-        .data(dims.labelSteps);
-
-    labelItems.enter().append('g')
-        .classed(constants.labelGroupClass, true);
+        .data(dims.labelSteps)
+        .enter()
+        .append('g');
 
     labelItems.exit().remove();
+
+    labelItems
+        .classed(constants.labelGroupClass, true);
 
     labelItems.each(function(d) {
         var item = d3.select(this);
@@ -497,19 +503,21 @@ function attachGripEvents(item, gd, sliderGroup) {
 }
 
 function drawTicks(sliderGroup, sliderOpts) {
-    var tick = sliderGroup.selectAll('rect.' + constants.tickRectClass)
-        .data(sliderOpts._visibleSteps);
     var dims = sliderOpts._dims;
 
-    tick.enter().append('rect')
-        .classed(constants.tickRectClass, true);
+    var tick = sliderGroup.selectAll('rect.' + constants.tickRectClass)
+        .data(sliderOpts._visibleSteps)
+        .enter()
+        .append('rect');
 
     tick.exit().remove();
 
-    tick.attrs({
-        width: sliderOpts.tickwidth + 'px',
-        'shape-rendering': 'crispEdges'
-    });
+    tick
+        .classed(constants.tickRectClass, true)
+        .attrs({
+            width: sliderOpts.tickwidth + 'px',
+            'shape-rendering': 'crispEdges'
+        });
 
     tick.each(function(d, i) {
         var isMajor = i % dims.labelStride === 0;

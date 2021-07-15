@@ -228,12 +228,14 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     var layers = plotinfo.plot.selectAll('g.mlayer')
         .data(layerData, function(d) { return d.className; })
         .enter()
-        .append('g')
+        .append('g');
+
+    layers.exit().remove();
+
+    layers
         .attr('class', function(d) { return d.className; })
         .classed('mlayer', true)
         .classed('rangeplot', plotinfo.isRangePlot);
-
-    layers.exit().remove();
 
     layers.order();
 
@@ -348,7 +350,11 @@ exports.drawFramework = function(gd) {
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
         .data(subplotData, String)
         .enter()
-        .append('g')
+        .append('g');
+
+    subplotLayers.exit().call(purgeSubplotLayers, fullLayout);
+
+    subplotLayers
         .attr('class', function(d) { return 'subplot ' + d[0]; })
         .order()
         .each(function(d) {
@@ -363,8 +369,6 @@ exports.drawFramework = function(gd) {
             // so they end up on top of the rest
             plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
         });
-
-    subplotLayers.exit().call(purgeSubplotLayers, fullLayout);
 };
 
 exports.rangePlot = function(gd, plotinfo, cdSubplot) {
