@@ -534,7 +534,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             });
 
             if(bgcolor) {
-                var rects = el.selectAll('rect').data([0])
+                var rects = el.selectAll('rect')
+                    .data([0])
                     .enter()
                     .append('rect')
                     .attrs({
@@ -546,7 +547,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 rects.exit().remove();
             }
 
-            var patterns = el.selectAll(patternTag).data([0])
+            var patterns = el.selectAll(patternTag)
+                .data([0])
                 .enter()
                 .append(patternTag)
                 .attr(patternAttrs);

@@ -860,6 +860,7 @@ function createHoverText(hoverData, opts, gd) {
         .enter()
         .append('g')
         .classed('axistext', true);
+
     commonLabel.exit().remove();
 
     commonLabel.each(function() {
@@ -999,7 +1000,8 @@ function createHoverText(hoverData, opts, gd) {
                 clipPath = null;
             }
 
-            var textClip = fullLayout._topclips.selectAll('#' + clipId).data(clipPath ? [0] : [])
+            var textClip = fullLayout._topclips.selectAll('#' + clipId)
+                .data(clipPath ? [0] : [])
                 .enter()
                 .append('clipPath')
                 .attr('id', clipId).append('path')
@@ -1120,8 +1122,9 @@ function createHoverText(hoverData, opts, gd) {
             // N.B. when multiple items have the same result key-function value,
             // only the first of those items in hoverData gets rendered
             return hoverDataKey(d);
-        });
-    hoverLabels.enter().append('g')
+        })
+        .enter()
+        .append('g')
         .classed('hovertext', true)
         .each(function() {
             var g = d3.select(this);
@@ -1135,6 +1138,7 @@ function createHoverText(hoverData, opts, gd) {
             g.append('text').classed('nums', true)
                 .call(Drawing.font, fontFamily, fontSize);
         });
+
     hoverLabels.exit().remove();
 
     // then put the text in, position the pointer to the data,

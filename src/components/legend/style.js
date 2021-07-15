@@ -59,17 +59,20 @@ module.exports = function style(s, gd, legend) {
             layers.attr('transform', strTranslate(0, markerOffsetY));
         }
 
-        layers.selectAll('g.legendfill').data([d])
+        layers.selectAll('g.legendfill')
+            .data([d])
             .enter()
             .append('g')
             .classed('legendfill', true);
 
-        layers.selectAll('g.legendlines').data([d])
+        layers.selectAll('g.legendlines')
+            .data([d])
             .enter()
             .append('g')
             .classed('legendlines', true);
 
-        var symbol = layers.selectAll('g.legendsymbols').data([d])
+        var symbol = layers.selectAll('g.legendsymbols')
+            .data([d])
             .enter()
             .append('g')
             .classed('legendsymbols', true);
@@ -303,13 +306,13 @@ module.exports = function style(s, gd, legend) {
                 [['increasing', 'M-6,-6V6H6Z'], ['decreasing', 'M6,6V-6H-6Z']];
         }
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendwaterfall')
-            .data(ptsData);
-        pts.enter().append('path').classed('legendwaterfall', true)
+        var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendwaterfall')
+            .data(ptsData)
+            .enter()
+            .append('path')
+            .classed('legendwaterfall', true)
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
-        pts.exit().remove();
 
         pts.each(function(dd) {
             var pt = d3.select(this);
@@ -324,6 +327,8 @@ module.exports = function style(s, gd, legend) {
                 pt.call(Color.stroke, cont.line.color);
             }
         });
+
+        pts.exit().remove();
     }
 
     function styleBars(d) {
@@ -342,13 +347,13 @@ module.exports = function style(s, gd, legend) {
         var isVisible = (!desiredType) ? Registry.traceIs(trace, 'bar') :
             (trace.visible && trace.type === desiredType);
 
-        var barpath = d3.select(lThis).select('g.legendpoints')
-            .selectAll('path.legend' + desiredType)
-            .data(isVisible ? [d] : []);
-        barpath.enter().append('path').classed('legend' + desiredType, true)
+        var barpath = d3.select(lThis).select('g.legendpoints').selectAll('path.legend' + desiredType)
+            .data(isVisible ? [d] : [])
+            .enter()
+            .append('path')
+            .classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', centerTransform);
-        barpath.exit().remove();
 
         barpath.each(function(d) {
             var p = d3.select(this);
@@ -390,19 +395,21 @@ module.exports = function style(s, gd, legend) {
 
             if(w) Color.stroke(p, d0.mlc || markerLine.color);
         });
+
+        barpath.exit().remove();
     }
 
     function styleBoxes(d) {
         var trace = d[0].trace;
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendbox')
-            .data(trace.visible && Registry.traceIs(trace, 'box-violin') ? [d] : []);
-        pts.enter().append('path').classed('legendbox', true)
+        var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendbox')
+            .data(trace.visible && Registry.traceIs(trace, 'box-violin') ? [d] : [])
+            .enter()
+            .append('path')
+            .classed('legendbox', true)
             // if we want the median bar, prepend M6,0H-6
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', centerTransform);
-        pts.exit().remove();
 
         pts.each(function() {
             var p = d3.select(this);
@@ -428,22 +435,24 @@ module.exports = function style(s, gd, legend) {
                 if(w) Color.stroke(p, trace.line.color);
             }
         });
+
+        pts.exit().remove();
     }
 
     function styleCandles(d) {
         var trace = d[0].trace;
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendcandle')
-            .data(trace.visible && trace.type === 'candlestick' ? [d, d] : []);
-        pts.enter().append('path').classed('legendcandle', true)
+        var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendcandle')
+            .data(trace.visible && trace.type === 'candlestick' ? [d, d] : [])
+            .enter()
+            .append('path')
+            .classed('legendcandle', true)
             .attr('d', function(_, i) {
                 if(i) return 'M-15,0H-8M-8,6V-6H8Z'; // increasing
                 return 'M15,0H8M8,-6V6H-8Z'; // decreasing
             })
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
-        pts.exit().remove();
 
         pts.each(function(_, i) {
             var p = d3.select(this);
@@ -455,22 +464,24 @@ module.exports = function style(s, gd, legend) {
 
             if(w) Color.stroke(p, cont.line.color);
         });
+
+        pts.exit().remove();
     }
 
     function styleOHLC(d) {
         var trace = d[0].trace;
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legendohlc')
-            .data(trace.visible && trace.type === 'ohlc' ? [d, d] : []);
-        pts.enter().append('path').classed('legendohlc', true)
+        var pts = d3.select(this).select('g.legendpoints').selectAll('path.legendohlc')
+            .data(trace.visible && trace.type === 'ohlc' ? [d, d] : [])
+            .enter()
+            .append('path')
+            .classed('legendohlc', true)
             .attr('d', function(_, i) {
                 if(i) return 'M-15,0H0M-8,-6V0'; // increasing
                 return 'M15,0H0M8,6V0'; // decreasing
             })
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
-        pts.exit().remove();
 
         pts.each(function(_, i) {
             var p = d3.select(this);
@@ -482,6 +493,8 @@ module.exports = function style(s, gd, legend) {
 
             if(w) Color.stroke(p, cont.line.color);
         });
+
+        pts.exit().remove();
     }
 
     function stylePies(d) {
@@ -499,13 +512,13 @@ module.exports = function style(s, gd, legend) {
         var isVisible = (!desiredType) ? Registry.traceIs(trace, desiredType) :
             (trace.visible && trace.type === desiredType);
 
-        var pts = d3.select(lThis).select('g.legendpoints')
-            .selectAll('path.legend' + desiredType)
-            .data(isVisible ? [d] : []);
-        pts.enter().append('path').classed('legend' + desiredType, true)
+        var pts = d3.select(lThis).select('g.legendpoints').selectAll('path.legend' + desiredType)
+            .data(isVisible ? [d] : [])
+            .enter()
+            .append('path')
+            .classed('legend' + desiredType, true)
             .attr('d', 'M6,6H-6V-6H6Z')
             .attr('transform', centerTransform);
-        pts.exit().remove();
 
         if(pts.size()) {
             var cont = (trace.marker || {}).line;
@@ -519,6 +532,8 @@ module.exports = function style(s, gd, legend) {
 
             stylePie(pts, d0Mod, tMod);
         }
+
+        pts.exit().remove();
     }
 
     function styleSpatial(d) { // i.e. maninly traces having z and colorscale
@@ -598,13 +613,13 @@ module.exports = function style(s, gd, legend) {
             }
         }
 
-        var pts = d3.select(this).select('g.legendpoints')
-            .selectAll('path.legend3dandfriends')
-            .data(ptsData);
-        pts.enter().append('path').classed('legend3dandfriends', true)
+        var pts = d3.select(this).select('g.legendpoints').selectAll('path.legend3dandfriends')
+            .data(ptsData)
+            .enter()
+            .append('path')
+            .classed('legend3dandfriends', true)
             .attr('transform', centerTransform)
             .style('stroke-miterlimit', 1);
-        pts.exit().remove();
 
         pts.each(function(dd, i) {
             var pt = d3.select(this);
@@ -642,6 +657,8 @@ module.exports = function style(s, gd, legend) {
                 pt.call(fillGradient);
             }
         });
+
+        pts.exit().remove();
     }
 };
 

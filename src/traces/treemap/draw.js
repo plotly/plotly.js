@@ -24,9 +24,9 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
     clearMinTextSize(type, fullLayout);
 
     join = layer.selectAll('g.trace.' + type)
-        .data(cdmodule, function(cd) { return cd[0].trace.uid; });
-
-    join.enter().append('g')
+        .data(cdmodule, function(cd) { return cd[0].trace.uid; })
+        .enter()
+        .append('g')
         .classed('trace', true)
         .classed(type, true);
 
