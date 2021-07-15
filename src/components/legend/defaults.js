@@ -100,6 +100,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         defaultX = 1.02;
         defaultY = 1;
         defaultYAnchor = 'auto';
+
+        coerce('grouporientation');
     }
 
     coerce('traceorder', defaultOrder);
