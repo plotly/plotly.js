@@ -48,7 +48,11 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var violins = plotGroup.selectAll('path.violin')
             .data(Lib.identity)
             .enter()
-            .append('path')
+            .append('path');
+
+        violins.exit().remove();
+
+        violins
             .style('vector-effect', 'non-scaling-stroke')
             .attr('class', 'violin');
 
@@ -119,8 +123,6 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
             d.pathLength = d.path.getTotalLength() / (hasBothSides ? 2 : 1);
         });
 
-        violins.exit().remove();
-
         var boxAttrs = trace.box;
         var boxWidth = boxAttrs.width;
         var boxLineWidth = (boxAttrs.line || {}).width;
@@ -162,7 +164,11 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var meanPaths = plotGroup.selectAll('path.meanline')
             .data(fn || [])
             .enter()
-            .append('path')
+            .append('path');
+
+        meanPaths.exit().remove();
+
+        meanPaths
             .attr('class', 'meanline')
             .style('fill', 'none')
             .style('vector-effect', 'non-scaling-stroke');
@@ -177,8 +183,6 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                     'M' + p[0] + ',' + v + 'H' + p[1]
             );
         });
-
-        meanPaths.exit().remove();
 
         boxPlot.plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
     });
