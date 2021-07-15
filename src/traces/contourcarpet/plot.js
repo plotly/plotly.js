@@ -148,11 +148,13 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours, plotinfo, ca
     var lineClip = contourPlot.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
 
     var labelGroup = plotgroup.selectAll('g.contourlabels')
-        .data(showLabels ? [0] : []);
+        .data(showLabels ? [0] : [])
+        .enter()
+        .append('g');
 
     labelGroup.exit().remove();
 
-    labelGroup.enter().append('g')
+    labelGroup
         .classed('contourlabels', true);
 
     if(showLabels) {
@@ -301,8 +303,10 @@ function makeBackground(plotgroup, clipsegments, xaxis, yaxis, isConstraint, col
     var bggroup = Lib.ensureSingle(plotgroup, 'g', 'contourbg');
 
     var bgfill = bggroup.selectAll('path')
-        .data((coloring === 'fill' && !isConstraint) ? [0] : []);
-    bgfill.enter().append('path');
+        .data((coloring === 'fill' && !isConstraint) ? [0] : [])
+        .enter()
+        .append('path');
+
     bgfill.exit().remove();
 
     var segs = [];
@@ -327,9 +331,13 @@ function makeFills(trace, plotgroup, xa, ya, pathinfo, perimeter, ab2p, carpet, 
     }
 
     var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
-    var fillitems = fillgroup.selectAll('path').data(hasFills ? pathinfo : []);
-    fillitems.enter().append('path');
+    var fillitems = fillgroup.selectAll('path')
+        .data(hasFills ? pathinfo : [])
+        .enter()
+        .append('path');
+
     fillitems.exit().remove();
+
     fillitems.each(function(pi) {
         // join all paths for this level together into a single path
         // first follow clockwise around the perimeter to close any open paths

@@ -71,9 +71,12 @@ function makeBackground(plotgroup, perimeter, contours) {
     var bggroup = Lib.ensureSingle(plotgroup, 'g', 'contourbg');
 
     var bgfill = bggroup.selectAll('path')
-        .data(contours.coloring === 'fill' ? [0] : []);
-    bgfill.enter().append('path');
+        .data(contours.coloring === 'fill' ? [0] : [])
+        .enter()
+        .append('path');
+
     bgfill.exit().remove();
+
     bgfill
         .attr('d', 'M' + perimeter.join('L') + 'Z')
         .style('stroke', 'none');
@@ -90,9 +93,13 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
 
     var fillgroup = Lib.ensureSingle(plotgroup, 'g', 'contourfill');
 
-    var fillitems = fillgroup.selectAll('path').data(hasFills ? pathinfo : []);
-    fillitems.enter().append('path');
+    var fillitems = fillgroup.selectAll('path')
+        .data(hasFills ? pathinfo : [])
+        .enter()
+        .append('path');
+
     fillitems.exit().remove();
+
     fillitems.each(function(pi) {
         // join all paths for this level together into a single path
         // first follow clockwise around the perimeter to close any open paths
@@ -214,11 +221,13 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
     var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
 
     var labelGroup = plotgroup.selectAll('g.contourlabels')
-        .data(showLabels ? [0] : []);
+        .data(showLabels ? [0] : [])
+        .enter()
+        .append('g');
 
     labelGroup.exit().remove();
 
-    labelGroup.enter().append('g')
+    labelGroup
         .classed('contourlabels', true);
 
     if(showLabels) {
@@ -322,23 +331,27 @@ exports.createLines = function(lineContainer, makeLines, pathinfo) {
     var smoothing = pathinfo[0].smoothing;
 
     var linegroup = lineContainer.selectAll('g.contourlevel')
-        .data(makeLines ? pathinfo : []);
+        .data(makeLines ? pathinfo : [])
+        .enter()
+        .append('g');
 
     linegroup.exit().remove();
-    linegroup.enter().append('g')
+
+    linegroup
         .classed('contourlevel', true);
 
     if(makeLines) {
         // pedgepaths / ppaths are used by contourcarpet, for the paths transformed from a/b to x/y
         // edgepaths / paths are used by contour since it's in x/y from the start
         var opencontourlines = linegroup.selectAll('path.openline')
-            .data(function(d) { return d.pedgepaths || d.edgepaths; });
+            .data(function(d) { return d.pedgepaths || d.edgepaths; })
+            .enter()
+            .append('path');
 
         opencontourlines.exit().remove();
-        opencontourlines.enter().append('path')
-            .classed('openline', true);
 
         opencontourlines
+            .classed('openline', true)
             .attr('d', function(d) {
                 return Drawing.smoothopen(d, smoothing);
             })
@@ -346,13 +359,14 @@ exports.createLines = function(lineContainer, makeLines, pathinfo) {
             .style('vector-effect', 'non-scaling-stroke');
 
         var closedcontourlines = linegroup.selectAll('path.closedline')
-            .data(function(d) { return d.ppaths || d.paths; });
+            .data(function(d) { return d.ppaths || d.paths; })
+            .enter()
+            .append('path');
 
         closedcontourlines.exit().remove();
-        closedcontourlines.enter().append('path')
-            .classed('closedline', true);
 
         closedcontourlines
+            .classed('closedline', true)
             .attr('d', function(d) {
                 return Drawing.smoothclosed(d, smoothing);
             })
@@ -368,10 +382,13 @@ exports.createLineClip = function(lineContainer, clipLinesForLabels, gd, uid) {
     var clipId = clipLinesForLabels ? ('clipline' + uid) : null;
 
     var lineClip = clips.selectAll('#' + clipId)
-        .data(clipLinesForLabels ? [0] : []);
+        .data(clipLinesForLabels ? [0] : [])
+        .enter()
+        .append('clipPath');
+
     lineClip.exit().remove();
 
-    lineClip.enter().append('clipPath')
+    lineClip
         .classed('contourlineclip', true)
         .attr('id', clipId);
 
@@ -580,11 +597,13 @@ exports.drawLabels = function(labelGroup, labelData, gd, lineClip, labelClipPath
     var labels = labelGroup.selectAll('text')
         .data(labelData, function(d) {
             return d.text + ',' + d.x + ',' + d.y + ',' + d.theta;
-        });
+        })
+        .enter()
+        .append('text');
 
     labels.exit().remove();
 
-    labels.enter().append('text')
+    labels
         .attrs({
             'data-notex': 1,
             'text-anchor': 'middle'
@@ -619,11 +638,15 @@ function clipGaps(plotGroup, plotinfo, gd, cd0, perimeter) {
     var clipId = 'clip' + trace.uid;
 
     var clipPath = clips.selectAll('#' + clipId)
-        .data(trace.connectgaps ? [] : [0]);
-    clipPath.enter().append('clipPath')
+        .data(trace.connectgaps ? [] : [0])
+        .enter()
+        .append('clipPath');
+
+    clipPath.exit().remove();
+
+    clipPath
         .classed('contourclip', true)
         .attr('id', clipId);
-    clipPath.exit().remove();
 
     if(trace.connectgaps === false) {
         var clipPathInfo = {
