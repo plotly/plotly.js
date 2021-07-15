@@ -4,6 +4,7 @@ var colorAttrs = require('../../components/color/attributes');
 var domainAttrs = require('../domain').attributes;
 var constants = require('./constants');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var sortObjectKeys = require('../../lib/sort_object_keys');
 
 var geoAxesAttrs = {
     range: {
@@ -100,14 +101,14 @@ var attrs = module.exports = overrideAll({
     },
     scope: {
         valType: 'enumerated',
-        values: Object.keys(constants.scopeDefaults),
+        values: sortObjectKeys(constants.scopeDefaults),
         dflt: 'world',
         description: 'Set the scope of the map.'
     },
     projection: {
         type: {
             valType: 'enumerated',
-            values: Object.keys(constants.projNames),
+            values: sortObjectKeys(constants.projNames),
             description: 'Sets the projection type.'
         },
         rotation: {

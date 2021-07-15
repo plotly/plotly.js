@@ -5,6 +5,7 @@ var scatterAttrs = require('../scatter/attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 
+var sortObjectKeys = require('../../lib/sort_object_keys');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var DASHES = require('./constants').DASHES;
@@ -59,7 +60,7 @@ var attrs = module.exports = overrideAll({
         },
         dash: {
             valType: 'enumerated',
-            values: Object.keys(DASHES),
+            values: sortObjectKeys(DASHES),
             dflt: 'solid',
             description: 'Sets the style of the lines.'
         }
