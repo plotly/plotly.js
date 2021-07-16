@@ -72,7 +72,7 @@ function zoomScoped(geo, projection) {
     var zoom = initZoom(geo, projection);
 
     function handleZoomstart() {
-        d3.select(this).style(startStyle);
+        d3.select(this).styles(startStyle);
     }
 
     function handleZoom() {
@@ -97,7 +97,7 @@ function zoomScoped(geo, projection) {
     }
 
     function handleZoomend() {
-        d3.select(this).style(endStyle);
+        d3.select(this).styles(endStyle);
         sync(geo, projection, syncCb);
     }
 
@@ -132,7 +132,7 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoomstart() {
-        d3.select(this).style(startStyle);
+        d3.select(this).styles(startStyle);
 
         mouse0 = d3.mouse(this);
         rotate0 = projection.rotate();
@@ -177,7 +177,7 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoomend() {
-        d3.select(this).style(endStyle);
+        d3.select(this).styles(endStyle);
         if(didZoom) sync(geo, projection, syncCb);
     }
 
@@ -210,7 +210,7 @@ function zoomClipped(geo, projection) {
     var zoomPoint;
 
     zoom.on('start', function() {
-        d3.select(this).style(startStyle);
+        d3.select(this).styles(startStyle);
 
         var mouse0 = d3.mouse(this);
         var rotate0 = projection.rotate();
@@ -264,7 +264,7 @@ function zoomClipped(geo, projection) {
         started(event.of(this, arguments));
     })
     .on('end', function() {
-        d3.select(this).style(endStyle);
+        d3.select(this).styles(endStyle);
         zoomOn.call(zoom, 'zoom', null);
         ended(event.of(this, arguments));
         sync(geo, projection, syncCb);

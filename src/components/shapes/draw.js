@@ -261,7 +261,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
               'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
               'r': circleRadius
           })
-          .style(circleStyle)
+          .styles(circleStyle)
           .classed('cursor-grab', true);
 
         g.append('circle')
@@ -271,7 +271,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
               'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
               'r': circleRadius
           })
-          .style(circleStyle)
+          .styles(circleStyle)
           .classed('cursor-grab', true);
 
         return g;

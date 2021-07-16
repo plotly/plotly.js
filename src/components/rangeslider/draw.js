@@ -607,14 +607,14 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
         height: Math.round(opts._height / 2),
     };
     var handleMin = Lib.ensureSingle(grabberMin, 'rect', constants.handleMinClassName, function(s) {
-        s.attr(handleFixAttrs);
+        s.attrs(handleFixAttrs);
     });
-    handleMin.attr(handleDynamicAttrs);
+    handleMin.attrs(handleDynamicAttrs);
 
     var handleMax = Lib.ensureSingle(grabberMax, 'rect', constants.handleMaxClassName, function(s) {
-        s.attr(handleFixAttrs);
+        s.attrs(handleFixAttrs);
     });
-    handleMax.attr(handleDynamicAttrs);
+    handleMax.attrs(handleDynamicAttrs);
 
     // <g grabarea />
     var grabAreaFixAttrs = {
@@ -626,12 +626,12 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     };
 
     var grabAreaMin = Lib.ensureSingle(grabberMin, 'rect', constants.grabAreaMinClassName, function(s) {
-        s.attr(grabAreaFixAttrs);
+        s.attrs(grabAreaFixAttrs);
     });
     grabAreaMin.attr('height', opts._height);
 
     var grabAreaMax = Lib.ensureSingle(grabberMax, 'rect', constants.grabAreaMaxClassName, function(s) {
-        s.attr(grabAreaFixAttrs);
+        s.attrs(grabAreaFixAttrs);
     });
     grabAreaMax.attr('height', opts._height);
 }

@@ -325,7 +325,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
 
     gradient.each(function() {
         var el = d3.select(this);
-        if(info.attrs) el.attr(info.attrs);
+        if(info.attrs) el.attrs(info.attrs);
 
         el.attr('id', fullID);
 
@@ -561,7 +561,7 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
         patterns.exit().remove();
 
         patterns
-            .attr(patternAttrs);
+            .attrs(patternAttrs);
     });
 
     sel.style('fill', getFullUrl(fullID, gd))

@@ -33,11 +33,11 @@ module.exports = function style(gd) {
         };
 
         sel.selectAll('path.mean')
-            .style(meanLineStyle)
+            .styles(meanLineStyle)
             .call(Color.stroke, meanline.color);
 
         sel.selectAll('path.meanline')
-            .style(meanLineStyle)
+            .styles(meanLineStyle)
             .call(Color.stroke, meanline.color);
 
         stylePoints(sel, trace, gd);

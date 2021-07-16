@@ -94,7 +94,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
     violinLine
         .classed('violinline-' + trace.uid, true)
         .attr('stroke-width', 1.5)
-        .attr(violinLineAttrs);
+        .attrs(violinLineAttrs);
 
     // same combine logic as box hoverPoints
     if(hovermode === 'closest') {

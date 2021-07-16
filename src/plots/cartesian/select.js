@@ -94,7 +94,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
     outlines
         .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
-        .style(isDrawMode ? {
+        .styles(isDrawMode ? {
             opacity: drwStyle.opacity / 2,
             fill: isOpenMode ? undefined : drwStyle.fillcolor,
             stroke: drwStyle.line.color,
