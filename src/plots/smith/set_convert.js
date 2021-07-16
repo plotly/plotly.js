@@ -26,7 +26,7 @@ var rad2deg = Lib.rad2deg;
  *
  * Radial axis coordinate systems:
  * - d, c and l: same as for cartesian axes
- * - g: like calcdata but translated about `radialaxis.range[0]` & `polar.hole`
+ * - g: like calcdata but translated about `realaxis.range[0]` & `polar.hole`
  *
  * Angular axis coordinate systems:
  * - d: data, in whatever form it's provided
@@ -43,13 +43,13 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
 
     switch(ax._id) {
         case 'x':
-        case 'radialaxis':
+        case 'realaxis':
             setConvertRadial(ax, polarLayout);
             break;
         case 'angularaxis':
             setConvertAngular(ax, polarLayout);
             break;
-        case 'realaxis':
+        case 'realaxis2':
             setConvertReal(ax, polarLayout);
             break;
     }

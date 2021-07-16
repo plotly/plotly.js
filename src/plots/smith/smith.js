@@ -92,7 +92,7 @@ proto.plot = function(polarCalcData, fullLayout) {
 proto.updateLayers = function(fullLayout, polarLayout) {
     var _this = this;
     var layers = _this.layers;
-    var radialLayout = polarLayout.radialaxis;
+    var radialLayout = polarLayout.realaxis;
     var angularLayout = polarLayout.angularaxis;
     var layerNames = constants.layerNames;
 
@@ -153,12 +153,12 @@ proto.updateLayers = function(fullLayout, polarLayout) {
 
 /* Polar subplots juggle with 6 'axis objects' (!), these are:
  *
- * - polarLayout.radialaxis (aka radialLayout in this file):
+ * - polarLayout.realaxis (aka radialLayout in this file):
  * - polarLayout.angularaxis (aka angularLayout in this file):
  *   used for data -> calcdata conversions (aka d2c) during the calc step
  *
  * - this.radialAxis
- *   extends polarLayout.radialaxis, adds mocked 'domain' and
+ *   extends polarLayout.realaxis, adds mocked 'domain' and
  *   few other keys in order to reuse Cartesian doAutoRange and the Axes
  *   drawing routines.
  *   used for calcdata -> geometric conversions (aka c2g) during the plot step
@@ -184,7 +184,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var gs = fullLayout._size;
 
     // axis attributes
-    var radialLayout = polarLayout.radialaxis;
+    var radialLayout = polarLayout.realaxis;
     var angularLayout = polarLayout.angularaxis;
     // layout domains
     var xDomain = polarLayout.domain.x;
@@ -238,7 +238,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
     var cyy = _this.cyy = cy - yOffset2;
 
     _this.radialAxis = _this.mockAxis(fullLayout, polarLayout, radialLayout, {
-        _id: 'realaxis',
+        _id: 'realaxis2',
         side: {
             counterclockwise: 'top',
             clockwise: 'bottom'
@@ -341,7 +341,7 @@ proto.mockCartesianAxis = function(fullLayout, polarLayout, opts) {
 proto.doAutoRange = function(fullLayout, polarLayout) {
     var gd = this.gd;
     var radialAxis = this.radialAxis;
-    var radialLayout = polarLayout.radialaxis;
+    var radialLayout = polarLayout.realaxis;
 
     radialAxis.setScale();
     doAutoRange(gd, radialAxis);
@@ -363,13 +363,13 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
-    var radialLayout = polarLayout.radialaxis;
+    var radialLayout = polarLayout.realaxis;
     var a0 = mod(polarLayout.sector[0], 360);
     var ax = _this.radialAxis;
     var hasRoomForIt = true;
 
-    _this.fillViewInitialKey('radialaxis.angle', radialLayout.angle);
-    _this.fillViewInitialKey('radialaxis.range', ax.range.slice());
+    _this.fillViewInitialKey('realaxis.angle', radialLayout.angle);
+    _this.fillViewInitialKey('realaxis.range', ax.range.slice());
 
     ax.setGeometry();
 
@@ -488,7 +488,7 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
-    var radialLayout = polarLayout.radialaxis;
+    var radialLayout = polarLayout.realaxis;
     var titleClass = _this.id + 'title';
 
     var angle = _angle !== undefined ? _angle : _this.radialAxisAngle;
@@ -511,7 +511,7 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
 
     _this.layers['radial-axis-title'] = Titles.draw(gd, titleClass, {
         propContainer: radialLayout,
-        propName: _this.id + '.radialaxis.title',
+        propName: _this.id + '.realaxis.title',
         placeholder: _(gd, 'Click to enter radial axis title'),
         attributes: {
             x: cx + (radius / 2) * cosa + pad * sina,
@@ -934,7 +934,7 @@ proto.updateMainDrag = function(fullLayout) {
             rl[0] + (r0 - innerRadius) * m,
             rl[0] + (r1 - innerRadius) * m
         ];
-        update[_this.id + '.radialaxis.range'] = newRng;
+        update[_this.id + '.realaxis.range'] = newRng;
     }
 
     function zoomClick(numClicks, evt) {
@@ -1086,17 +1086,17 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
 
     function computeRadialAxisUpdates(update) {
         if(angle1 !== null) {
-            update[_this.id + '.radialaxis.angle'] = angle1;
+            update[_this.id + '.realaxis.angle'] = angle1;
         } else if(rprime !== null) {
-            update[_this.id + '.radialaxis.range[' + rngIndex + ']'] = rprime;
+            update[_this.id + '.realaxis.range[' + rngIndex + ']'] = rprime;
         }
     }
 
     function doneFn() {
         if(angle1 !== null) {
-            Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.angle', angle1);
+            Registry.call('_guiRelayout', gd, _this.id + '.realaxis.angle', angle1);
         } else if(rprime !== null) {
-            Registry.call('_guiRelayout', gd, _this.id + '.radialaxis.range[' + rngIndex + ']', rprime);
+            Registry.call('_guiRelayout', gd, _this.id + '.realaxis.range[' + rngIndex + ']', rprime);
         }
     }
 
@@ -1299,7 +1299,7 @@ proto.updateAngularDrag = function(fullLayout) {
         updateObj[_this.id + '.angularaxis.rotation'] = rot1;
 
         if(_this.vangles) {
-            updateObj[_this.id + '.radialaxis.angle'] = rrot1;
+            updateObj[_this.id + '.realaxis.angle'] = rrot1;
         }
     }
 

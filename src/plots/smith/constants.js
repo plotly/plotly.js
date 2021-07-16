@@ -4,8 +4,8 @@ module.exports = {
     attr: 'subplot',
     name: 'smith',
 
-    axisNames: ['angularaxis', 'radialaxis'],
-    axisName2dataArray: {angularaxis: 'theta', radialaxis: 'r'},
+    axisNames: ['angularaxis', 'realaxis'],
+    axisName2dataArray: {angularaxis: 'theta', realaxis: 'r'},
 
     layerNames: [
         'draglayer',

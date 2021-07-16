@@ -82,7 +82,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut._m = 1;
 
         switch(axName) {
-            case 'radialaxis':
+            case 'realaxis':
                 axIn.autorange = false;
 
                 coerceAxis('range');

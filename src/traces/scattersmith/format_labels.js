@@ -14,7 +14,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     // TODO we should consider moving the texttemplate formatting logic to the plot step
     if(!subplot) {
         subplot = fullLayout[trace.subplot];
-        radialAxis = subplot.radialaxis;
+        radialAxis = subplot.realaxis;
         angularAxis = subplot.angularaxis;
     } else {
         radialAxis = subplot.radialAxis;

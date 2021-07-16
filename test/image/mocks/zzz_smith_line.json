@@ -46,7 +46,7 @@
     "margin": {"l": 40, "r": 40, "b": 30, "t": 60, "pad": 0},
     "smith": {
       "bgcolor": "rgb(255, 255, 255)",
-      "radialaxis": {
+      "realaxis": {
         "tickangle": 45,
         "tick0": 0,
         "dtick": 0.1

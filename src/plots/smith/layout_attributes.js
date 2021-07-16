@@ -141,8 +141,8 @@ var radialAxisAttrs = {
 extendFlat(
     radialAxisAttrs,
 
-    // N.B. radialaxis grid lines are circular,
-    // but radialaxis lines are straight from circle center to outer bound
+    // N.B. realaxis grid lines are circular,
+    // but realaxis lines are straight from circle center to outer bound
     axisLineGridAttr,
     axisTickAttrs
 );
@@ -291,7 +291,7 @@ module.exports = {
         description: 'Set the background color of the subplot'
     },
 
-    radialaxis: radialAxisAttrs,
+    realaxis: radialAxisAttrs,
     angularaxis: angularAxisAttrs,
 
     gridshape: {
@@ -303,7 +303,7 @@ module.exports = {
             'Determines if the radial axis grid lines and angular axis line are drawn',
             'as *circular* sectors or as *linear* (polygon) sectors.',
             'Has an effect only when the angular axis has `type` *category*.',
-            'Note that `radialaxis.angle` is snapped to the angle of the closest',
+            'Note that `realaxis.angle` is snapped to the angle of the closest',
             'vertex when `gridshape` is *circular*',
             '(so that radial axis scale is the same as the data scale).'
         ].join(' ')
