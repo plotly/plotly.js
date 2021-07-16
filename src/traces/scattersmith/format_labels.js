@@ -15,7 +15,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     if(!subplot) {
         subplot = fullLayout[trace.subplot];
         radialAxis = subplot.realaxis;
-        angularAxis = subplot.angularaxis;
+        angularAxis = subplot.imaginaryaxis;
     } else {
         radialAxis = subplot.radialAxis;
         angularAxis = subplot.angularAxis;

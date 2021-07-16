@@ -34,7 +34,7 @@
         "x": [0, 0.46],
         "y": [0.56, 1]
       },
-      "angularaxis": {
+      "imaginaryaxis": {
         "showgrid": false,
         "showticklabels": false,
         "visible": true
@@ -66,7 +66,7 @@
         "x": [0.54, 1],
         "y": [0, 0.44]
       },
-      "angularaxis": {
+      "imaginaryaxis": {
         "visible": false
       },
       "realaxis": {

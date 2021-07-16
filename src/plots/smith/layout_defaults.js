@@ -101,10 +101,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 }
                 break;
 
-            case 'angularaxis':
+            case 'imaginaryaxis':
                 // We do not support 'true' date angular axes yet,
                 // users can still plot dates on angular axes by setting
-                // `angularaxis.type: 'category'`.
+                // `imaginaryaxis.type: 'category'`.
                 //
                 // Here, if a date angular axes is detected, we make
                 // all its corresponding traces invisible, so that
@@ -171,7 +171,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut._input = axIn;
     }
 
-    if(contOut.angularaxis.type === 'category') {
+    if(contOut.imaginaryaxis.type === 'category') {
         coerce('gridshape');
     }
 }

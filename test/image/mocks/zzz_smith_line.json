@@ -51,7 +51,7 @@
         "tick0": 0,
         "dtick": 0.1
       },
-      "angularaxis": {
+      "imaginaryaxis": {
         "thetaunit": "radians",
         "showgrid": true,
         "tickwidth": 2,

@@ -46,7 +46,7 @@ module.exports = function setConvert(ax, polarLayout, fullLayout) {
         case 'realaxis':
             setConvertRadial(ax, polarLayout);
             break;
-        case 'angularaxis':
+        case 'imaginaryaxis':
             setConvertAngular(ax, polarLayout);
             break;
         case 'realaxis2':

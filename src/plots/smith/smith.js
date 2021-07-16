@@ -93,7 +93,7 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     var _this = this;
     var layers = _this.layers;
     var radialLayout = polarLayout.realaxis;
-    var angularLayout = polarLayout.angularaxis;
+    var angularLayout = polarLayout.imaginaryaxis;
     var layerNames = constants.layerNames;
 
     var frontPlotIndex = layerNames.indexOf('frontplot');
@@ -154,7 +154,7 @@ proto.updateLayers = function(fullLayout, polarLayout) {
 /* Polar subplots juggle with 6 'axis objects' (!), these are:
  *
  * - polarLayout.realaxis (aka radialLayout in this file):
- * - polarLayout.angularaxis (aka angularLayout in this file):
+ * - polarLayout.imaginaryaxis (aka angularLayout in this file):
  *   used for data -> calcdata conversions (aka d2c) during the calc step
  *
  * - this.radialAxis
@@ -166,7 +166,7 @@ proto.updateLayers = function(fullLayout, polarLayout) {
  *   + setScale setups ax._m,ax._b for given ax.range
  *
  * - this.angularAxis
- *   extends polarLayout.angularaxis, adds mocked 'range' and 'domain' and
+ *   extends polarLayout.imaginaryaxis, adds mocked 'range' and 'domain' and
  *   a few other keys in order to reuse the Axes drawing routines.
  *   used for calcdata -> geometric conversions (aka c2g) during the plot step
  *   + setGeometry setups ax.c2g given ax.rotation, ax.direction & ax._categories,
@@ -185,7 +185,7 @@ proto.updateLayout = function(fullLayout, polarLayout) {
 
     // axis attributes
     var radialLayout = polarLayout.realaxis;
-    var angularLayout = polarLayout.angularaxis;
+    var angularLayout = polarLayout.imaginaryaxis;
     // layout domains
     var xDomain = polarLayout.domain.x;
     var yDomain = polarLayout.domain.y;
@@ -529,10 +529,10 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
     var radius = _this.radius;
     var cx = _this.cx;
     var cy = _this.cy;
-    var angularLayout = polarLayout.angularaxis;
+    var angularLayout = polarLayout.imaginaryaxis;
     var ax = _this.angularAxis;
 
-    _this.fillViewInitialKey('angularaxis.rotation', angularLayout.rotation);
+    _this.fillViewInitialKey('imaginaryaxis.rotation', angularLayout.rotation);
 
     ax.setGeometry();
     ax.setScale();
@@ -1296,7 +1296,7 @@ proto.updateAngularDrag = function(fullLayout) {
     }
 
     function computeRotationUpdates(updateObj) {
-        updateObj[_this.id + '.angularaxis.rotation'] = rot1;
+        updateObj[_this.id + '.imaginaryaxis.rotation'] = rot1;
 
         if(_this.vangles) {
             updateObj[_this.id + '.realaxis.angle'] = rrot1;
@@ -1313,7 +1313,7 @@ proto.updateAngularDrag = function(fullLayout) {
 
     dragOpts.prepFn = function(evt, startX, startY) {
         var polarLayoutNow = fullLayout[_this.id];
-        rot0 = polarLayoutNow.angularaxis.rotation;
+        rot0 = polarLayoutNow.imaginaryaxis.rotation;
 
         var bbox = angularDrag.getBoundingClientRect();
         x0 = startX - bbox.left;

@@ -179,7 +179,7 @@ var angularAxisAttrs = {
         editType: 'calc',
         description: [
             'Sets the format unit of the formatted *theta* values.',
-            'Has an effect only when `angularaxis.type` is *linear*.'
+            'Has an effect only when `imaginaryaxis.type` is *linear*.'
         ].join(' ')
     },
 
@@ -189,7 +189,7 @@ var angularAxisAttrs = {
         min: 0,
         description: [
             'Set the angular period.',
-            'Has an effect only when `angularaxis.type` is *category*.',
+            'Has an effect only when `imaginaryaxis.type` is *category*.',
         ].join(' ')
         // Examples for date axes:
         //
@@ -292,7 +292,7 @@ module.exports = {
     },
 
     realaxis: radialAxisAttrs,
-    angularaxis: angularAxisAttrs,
+    imaginaryaxis: angularAxisAttrs,
 
     gridshape: {
         valType: 'enumerated',
