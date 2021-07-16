@@ -281,7 +281,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         .classed('js-line', true)
         .style('vector-effect', 'non-scaling-stroke')
         .call(Drawing.lineGroupStyle)
-        .each(makeUpdate(true));
+        //.each(makeUpdate(true));
 
     transition(lineJoin.exit())
         .style('opacity', 0)
