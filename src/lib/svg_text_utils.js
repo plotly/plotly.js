@@ -383,7 +383,7 @@ var entityToUnicode = {
     amp: '&',
     lt: '<',
     gt: '>',
-    nbsp: ' ',
+    nbsp: ' ',
     times: '×',
     plusmn: '±',
     deg: '°'
