@@ -523,7 +523,7 @@ function buildSVGText(containerNode, str) {
             currentNode.appendChild(newNode);
         }
 
-        d3.select(newNode).attr(nodeAttrs);
+        d3.select(newNode).attrs(nodeAttrs);
 
         currentNode = nodeSpec.node = newNode;
         nodeStack.push(nodeSpec);
@@ -680,7 +680,7 @@ exports.sanitizeHTML = function sanitizeHTML(str) {
 
                 var newNode = document.createElement(tagType);
                 currentNode.appendChild(newNode);
-                d3.select(newNode).attr(nodeAttrs);
+                d3.select(newNode).attrs(nodeAttrs);
 
                 currentNode = newNode;
                 nodeStack.push(newNode);
