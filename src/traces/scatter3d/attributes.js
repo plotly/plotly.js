@@ -11,6 +11,7 @@ var DASHES = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var sortObjectKeys = require('../../lib/sort_object_keys');
 
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -20,7 +21,7 @@ var lineAttrs = extendFlat({
     width: scatterLineAttrs.width,
     dash: {
         valType: 'enumerated',
-        values: Object.keys(DASHES),
+        values: sortObjectKeys(DASHES),
         dflt: 'solid',
         description: 'Sets the dash style of the lines.'
     }
@@ -122,7 +123,7 @@ var attrs = module.exports = overrideAll({
     marker: extendFlat({  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
-            values: Object.keys(MARKER_SYMBOLS),
+            values: sortObjectKeys(MARKER_SYMBOLS),
             dflt: 'circle',
             arrayOk: true,
             description: 'Sets the marker symbol type.'
