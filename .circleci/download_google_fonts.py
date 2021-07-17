@@ -11,7 +11,7 @@ def download(repo, family, types) :
         open(dirOut + name, 'wb').write(req.content)
 
 download(
-    'https://github.com/eliheuer/dosis-vf/blob/master/fonts/static-fonts/',
+    'https://github.com/eliheuer/dosis-vf/tree/master/fonts/ttf/',
     'Dosis',
     [
         '-Regular',
