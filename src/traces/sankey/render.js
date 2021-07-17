@@ -6,13 +6,14 @@ var d3 = require('../../lib/d3');
 var d3Sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
 
-var c = require('./constants');
 var tinycolor = require('tinycolor2');
+var c = require('./constants');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
+var d3EaseFn = Lib.whichD3EaseFn(c);
 var gup = require('../../lib/gup');
 var keyFun = gup.keyFun;
 var repeat = gup.repeat;
@@ -842,7 +843,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     });
 
     sankey.transition()
-        .ease(c.ease).duration(c.duration)
+        .ease(d3EaseFn).duration(c.duration)
         .attr('transform', sankeyTransform);
 
     var sankeyLinks = sankey.selectAll('.' + c.cn.sankeyLinks)
@@ -868,7 +869,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     sankeyLink.exit()
         .transition()
-        .ease(c.ease).duration(c.duration)
+        .ease(d3EaseFn).duration(c.duration)
         .style('opacity', 0)
         .remove();
 
@@ -897,7 +898,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
     sankeyLink
         .style('opacity', function() { return (gd._context.staticPlot || firstRender || dragcover) ? 1 : 0;})
         .transition()
-        .ease(c.ease).duration(c.duration)
+        .ease(d3EaseFn).duration(c.duration)
         .style('opacity', 1);
 
     var sankeyNodeSet = sankey.selectAll('.' + c.cn.sankeyNodeSet)
@@ -929,7 +930,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     sankeyNode.exit()
         .transition()
-        .ease(c.ease).duration(c.duration)
+        .ease(d3EaseFn).duration(c.duration)
         .style('opacity', 0)
         .remove();
 
@@ -944,7 +945,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     sankeyNode
         .transition()
-        .ease(c.ease).duration(c.duration)
+        .ease(d3EaseFn).duration(c.duration)
         .call(updateNodePositions)
         .style('opacity', function(n) { return n.partOfGroup ? 0 : 1;});
 
@@ -965,7 +966,7 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('fill-opacity', function(d) {return d.tinyColorAlpha;});
 
     nodeRect.transition()
-        .ease(c.ease).duration(c.duration)
+        .ease(d3EaseFn).duration(c.duration)
         .call(sizeNode);
 
     var nodeLabel = sankeyNode.selectAll('.' + c.cn.nodeLabel)
@@ -1019,5 +1020,5 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
 
     nodeLabel
         .transition()
-        .ease(c.ease).duration(c.duration);
+        .ease(d3EaseFn).duration(c.duration);
 };

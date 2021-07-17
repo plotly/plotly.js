@@ -280,6 +280,12 @@ lib.cancelTransition = function(selection) {
     return selection.transition().duration(0);
 };
 
+lib.whichD3EaseFn = function(transitionOpts) {
+    return transitionOpts && transitionOpts.easing ?
+        d3['ease' + lib.titleCase(transitionOpts.easing)] :
+        function() {};
+};
+
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v, v0, v1) {
     if(v0 > v1) return Math.max(v1, Math.min(v0, v));
@@ -1387,3 +1393,4 @@ lib.getPositionFromD3Event = function() {
         ];
     }
 };
+

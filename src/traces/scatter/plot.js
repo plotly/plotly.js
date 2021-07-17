@@ -14,6 +14,7 @@ var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
 module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var join, onComplete;
 
     // If transition config is provided, then it is only a partial replot and traces not
@@ -49,7 +50,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
 
         var transition = d3.transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() {
                 onComplete && onComplete();
             })

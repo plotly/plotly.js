@@ -246,6 +246,8 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     var domain = trace.domain;
 
     var transitionOpts = opts.transitionOpts;
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
+
     var onComplete = opts.onComplete;
 
     // preparing axis
@@ -333,7 +335,7 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
         fgBullet.select('rect')
             .transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); })
             .attr('width', Math.max(0, ax.c2p(Math.min(trace.gauge.axis.range[1], cd[0].y))));
@@ -387,6 +389,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     var axisLayer = opts.layer;
 
     var transitionOpts = opts.transitionOpts;
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var onComplete = opts.onComplete;
 
     // circular gauge
@@ -523,7 +526,7 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
         valueArcPath
             .transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); })
             .attrTween('d', arcTween(valueArcPathGenerator, valueToAngle(cd[0].lastY), valueToAngle(cd[0].y)));
@@ -580,6 +583,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
     var numbersAnchor = anchor[numbersAlign];
 
     var transitionOpts = opts.transitionOpts;
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var onComplete = opts.onComplete;
 
     var numbers = Lib.ensureSingle(plotGroup, 'g', 'numbers');
@@ -650,7 +654,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             number
                 .transition()
                 .duration(transitionOpts.duration)
-                .ease(transitionOpts.easing)
+                .ease(d3EaseFn)
                 .each('end', function() { writeNumber(); onComplete && onComplete(); })
                 .each('interrupt', function() { writeNumber(); onComplete && onComplete(); })
                 .attrTween('text', function() {
@@ -706,7 +710,7 @@ function drawNumbers(gd, plotGroup, cd, opts) {
             delta
                 .transition()
                 .duration(transitionOpts.duration)
-                .ease(transitionOpts.easing)
+                .ease(d3EaseFn)
                 .tween('text', function() {
                     var that = d3.select(this);
                     var to = deltaValue(cd[0]);

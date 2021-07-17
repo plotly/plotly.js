@@ -1,5 +1,6 @@
 'use strict';
 
+var Lib = require('../../lib');
 var d3 = require('../../lib/d3');
 
 var helpers = require('../sunburst/helpers');
@@ -10,6 +11,7 @@ var resizeText = require('../bar/style').resizeText;
 var plotOne = require('./plot_one');
 
 module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCallback, opts) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var type = opts.type;
     var drawDescendants = opts.drawDescendants;
 
@@ -44,7 +46,7 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
 
         var transition = d3.transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); });
 

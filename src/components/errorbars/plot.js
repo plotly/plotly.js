@@ -1,5 +1,6 @@
 'use strict';
 
+var Lib = require('../../lib');
 var d3 = require('../../lib/d3');
 var isNumeric = require('fast-isnumeric');
 
@@ -7,6 +8,8 @@ var Drawing = require('../drawing');
 var subTypes = require('../../traces/scatter/subtypes');
 
 module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
+
     var isNew;
 
     var xa = plotinfo.xaxis;
@@ -93,7 +96,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
                     yerror = yerror
                         .transition()
                             .duration(transitionOpts.duration)
-                            .ease(transitionOpts.easing);
+                            .ease(d3EaseFn);
                 }
 
                 yerror.attr('d', path);
@@ -121,7 +124,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
                     xerror = xerror
                         .transition()
                             .duration(transitionOpts.duration)
-                            .ease(transitionOpts.easing);
+                            .ease(d3EaseFn);
                 }
 
                 xerror.attr('d', path);

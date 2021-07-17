@@ -21,6 +21,7 @@ var constants = require('./constants');
 var helpers = require('./helpers');
 
 exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var fullLayout = gd._fullLayout;
     var layer = fullLayout._sunburstlayer;
     var join, onComplete;
@@ -54,7 +55,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 
         var transition = d3.transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); });
 

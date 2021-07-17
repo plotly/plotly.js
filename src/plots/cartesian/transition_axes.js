@@ -24,6 +24,8 @@ var Axes = require('./axes');
  * @param {function} makeOnCompleteCallback
  */
 module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnCompleteCallback) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
+
     var fullLayout = gd._fullLayout;
 
     // special case for redraw:false Plotly.animate that relies on this
@@ -170,7 +172,7 @@ module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnComple
     }
 
     var t1, t2, raf;
-    var easeFn = d3.ease(transitionOpts.easing);
+    var easeFn = d3.ease(d3EaseFn);
 
     gd._transitionData._interruptCallbacks.push(function() {
         window.cancelAnimationFrame(raf);
