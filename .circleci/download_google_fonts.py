@@ -11,11 +11,11 @@ def download(repo, family, types) :
         open(dirOut + name, 'wb').write(req.content)
 
 download(
-    'https://github.com/eliheuer/dosis-vf/tree/master/fonts/ttf/',
+    'https://github.com/expo/google-fonts/blob/master/font-packages/dosis/',
     'Dosis',
     [
-        '-Regular',
-        '-Bold'
+        '_400Regular',
+        '_700Bold'
     ]
 )
 
