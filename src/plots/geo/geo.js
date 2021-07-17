@@ -643,7 +643,7 @@ function getProjection(geoLayout) {
 
     var projName = constants.projNames[projType];
     // uppercase the first letter and add geo to the start of method name
-    projName = 'geo' + Lib.beginCap(projName);
+    projName = 'geo' + Lib.titleCase(projName);
     var projFn = geo[projName] || geoProjection[projName];
     var projection = projFn();
 
