@@ -66,7 +66,7 @@
     ]
   },
   "dependencies": {
-    "@plotly/d3": "git://github.com/plotly/d3.git#40bd18923ece4b1d761a35721008db6f1dbbe6b2",
+    "@plotly/d3": "3.8.0",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
     "@plotly/point-cluster": "^3.1.9",
