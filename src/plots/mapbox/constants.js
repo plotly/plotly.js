@@ -1,5 +1,7 @@
 'use strict';
 
+var sortObjectKeys = require('../../lib/sort_object_keys');
+
 var requiredVersion = '1.10.1';
 
 var OSM = '© <a target="_blank" href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors';
@@ -156,7 +158,7 @@ var stylesNonMapbox = {
     }
 };
 
-var styleValuesNonMapbox = Object.keys(stylesNonMapbox);
+var styleValuesNonMapbox = sortObjectKeys(stylesNonMapbox);
 
 module.exports = {
     requiredVersion: requiredVersion,
