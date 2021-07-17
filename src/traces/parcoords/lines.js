@@ -160,17 +160,27 @@ function emptyAttributes(regl) {
     return attributes;
 }
 
-function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, drwLayer, constraints) {
+function makeItem(
+    model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY,
+    crossfilterDimensionIndex, drwLayer, constraints, plotGlPixelRatio
+) {
     var dims = [[], []];
     for(var k = 0; k < 64; k++) {
         dims[0][k] = (k === i0) ? 1 : 0;
         dims[1][k] = (k === i1) ? 1 : 0;
     }
-
-    var overdrag = model.lines.canvasOverdrag;
+    x *= plotGlPixelRatio;
+    y *= plotGlPixelRatio;
+    panelSizeX *= plotGlPixelRatio;
+    panelSizeY *= plotGlPixelRatio;
+    var overdrag = model.lines.canvasOverdrag * plotGlPixelRatio;
     var domain = model.domain;
-    var canvasWidth = model.canvasWidth;
-    var canvasHeight = model.canvasHeight;
+    var canvasWidth = model.canvasWidth * plotGlPixelRatio;
+    var canvasHeight = model.canvasHeight * plotGlPixelRatio;
+    var padL = model.pad.l * plotGlPixelRatio;
+    var padB = model.pad.b * plotGlPixelRatio;
+    var layoutHeight = model.layoutHeight * plotGlPixelRatio;
+    var layoutWidth = model.layoutWidth * plotGlPixelRatio;
 
     var deselectedLinesColor = model.deselectedLines.color;
 
@@ -201,13 +211,13 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
                 Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
         ],
 
-        scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
+        scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (padL - overdrag) + layoutWidth * domain.x[0],
         scissorWidth: (itemNumber === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (itemNumber === leftmost ? x + overdrag : 0),
-        scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
+        scissorY: y + padB + layoutHeight * domain.y[0],
         scissorHeight: panelSizeY,
 
-        viewportX: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
-        viewportY: model.pad.b + model.layoutHeight * domain.y[0],
+        viewportX: padL - overdrag + layoutWidth * domain.x[0],
+        viewportY: padB + layoutHeight * domain.y[0],
         viewportWidth: canvasWidth,
         viewportHeight: canvasHeight
     }, constraints);
@@ -231,6 +241,16 @@ module.exports = function(canvasGL, d) {
     var isPick = d.pick;
 
     var regl = d.regl;
+    var gl = regl._gl;
+    var supportedLineWidth = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE);
+    // ensure here that plotGlPixelRatio is within supported range; otherwise regl throws error
+    var plotGlPixelRatio = Math.max(
+        supportedLineWidth[0],
+        Math.min(
+            supportedLineWidth[1],
+            d.viewModel.plotGlPixelRatio
+        )
+    );
 
     var renderState = {
         currentRafs: {},
@@ -307,7 +327,7 @@ module.exports = function(canvasGL, d) {
         frag: fragmentShaderSource,
 
         primitive: 'lines',
-        lineWidth: 1,
+        lineWidth: plotGlPixelRatio,
         attributes: attributes,
         uniforms: {
             resolution: regl.prop('resolution'),
@@ -454,6 +474,7 @@ module.exports = function(canvasGL, d) {
             var x = p.canvasX;
             var y = p.canvasY;
             var nextX = x + p.panelSizeX;
+            var plotGlPixelRatio = p.plotGlPixelRatio;
             if(setChanged ||
                 !prevAxisOrder[i0] ||
                 prevAxisOrder[i0][0] !== x ||
@@ -467,7 +488,8 @@ module.exports = function(canvasGL, d) {
                     p.panelSizeX, p.panelSizeY,
                     p.dim0.crossfilterDimensionIndex,
                     isContext ? 0 : isPick ? 2 : 1,
-                    constraints
+                    constraints,
+                    plotGlPixelRatio
                 );
 
                 renderState.clearOnly = clearOnly;

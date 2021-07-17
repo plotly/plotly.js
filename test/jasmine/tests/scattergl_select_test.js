@@ -479,6 +479,7 @@ describe('Test displayed selections:', function() {
         }
 
         var mock = {
+            config: { plotGlPixelRatio: 1 },
             data: [{
                 x: x, y: y, type: 'scattergl', mode: 'markers'
             }],
@@ -522,6 +523,7 @@ describe('Test displayed selections:', function() {
         }
 
         var mock = {
+            config: { plotGlPixelRatio: 1 },
             data: [{
                 x: x, y: y, type: 'scattergl', mode: 'markers',
                 marker: {symbol: symbol, size: size, color: color}
