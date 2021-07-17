@@ -589,15 +589,15 @@ function attachPointerEvents(selection, sankey, eventSet) {
 }
 
 function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
-    var dragBehavior = d3.behavior.drag()
-        .origin(function(d) {
+    var dragBehavior = d3.drag()
+        .subject(function(d) {
             return {
                 x: d.node.x0 + d.visibleWidth / 2,
                 y: d.node.y0 + d.visibleHeight / 2
             };
         })
 
-        .on('dragstart', function(d) {
+        .on('start', function(d) {
             if(d.arrangement === 'fixed') return;
             Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'dragcover', function(s) {
                 gd._fullLayout._dragCover = s;
@@ -647,7 +647,7 @@ function attachDragHandler(sankeyNode, sankeyLink, callbacks, gd) {
             }
         })
 
-        .on('dragend', function(d) {
+        .on('end', function(d) {
             if(d.arrangement === 'fixed') return;
             d.interactionState.dragInProgress = false;
             for(var i = 0; i < d.node.childrenNodes.length; i++) {

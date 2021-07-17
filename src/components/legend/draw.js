@@ -246,8 +246,8 @@ function _draw(gd, legendObj) {
                 };
 
                 // scroll legend by dragging scrollBAR
-                var scrollBarDrag = d3.behavior.drag()
-                .on('dragstart', function() {
+                var scrollBarDrag = d3.drag()
+                .on('start', function() {
                     var e = d3.event.sourceEvent;
                     if(e.type === 'touchstart') {
                         eventY0 = e.changedTouches[0].clientY;
@@ -270,8 +270,8 @@ function _draw(gd, legendObj) {
                 scrollBar.call(scrollBarDrag);
 
                 // scroll legend by touch-dragging scrollBOX
-                var scrollBoxTouchDrag = d3.behavior.drag()
-                .on('dragstart', function() {
+                var scrollBoxTouchDrag = d3.drag()
+                .on('start', function() {
                     var e = d3.event.sourceEvent;
                     if(e.type === 'touchstart') {
                         eventY0 = e.changedTouches[0].clientY;

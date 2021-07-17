@@ -294,7 +294,7 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
             .call(setItemPosition, menuOpts, posOpts);
 
         button.on('click', function() {
-            // skip `dragend` events
+            // skip `end` events
             if(d3.event.defaultPrevented) return;
 
             if(buttonOpts.execute) {

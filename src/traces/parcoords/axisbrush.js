@@ -199,7 +199,7 @@ function getInterval(d, y) {
     return out;
 }
 
-function dragstart(lThis, d) {
+function start(lThis, d) {
     d3.event.sourceEvent.stopPropagation();
     var y = d.height - d3.mouse(lThis)[1] - 2 * c.verticalPadding;
     var unitLocation = d.unitToPaddedPx.invert(y);
@@ -245,7 +245,7 @@ function drag(lThis, d) {
     renderHighlight(lThis.parentNode);
 }
 
-function dragend(lThis, d) {
+function end(lThis, d) {
     var brush = d.brush;
     var filter = brush.filter;
     var s = brush.svgBrush;
@@ -345,10 +345,10 @@ function attachDragBehavior(selection) {
         .on('mouseleave', function(d) {
             if(!d.parent.inBrushDrag) clearCursor();
         })
-        .call(d3.behavior.drag()
-            .on('dragstart', function(d) { dragstart(this, d); })
+        .call(d3.drag()
+            .on('start', function(d) { start(this, d); })
             .on('drag', function(d) { drag(this, d); })
-            .on('dragend', function(d) { dragend(this, d); })
+            .on('end', function(d) { end(this, d); })
         );
 }
 

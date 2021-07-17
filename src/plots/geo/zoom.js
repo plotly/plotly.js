@@ -6,8 +6,8 @@ var Registry = require('../../registry');
 
 var radians = Math.PI / 180;
 var degrees = 180 / Math.PI;
-var zoomstartStyle = {cursor: 'pointer'};
-var zoomendStyle = {cursor: 'auto'};
+var startStyle = {cursor: 'pointer'};
+var endStyle = {cursor: 'auto'};
 
 function createGeoZoom(geo, geoLayout) {
     var projection = geo.projection;
@@ -30,9 +30,11 @@ module.exports = createGeoZoom;
 
 // common to all zoom types
 function initZoom(geo, projection) {
-    return d3.behavior.zoom()
-        .translate(projection.translate())
-        .scale(projection.scale());
+    return d3.zoom(
+        d3.zoomIdentity
+            .translate(projection.translate())
+            .scale(projection.scale())
+    );
 }
 
 // sync zoom updates with user & full layout
@@ -70,7 +72,7 @@ function zoomScoped(geo, projection) {
     var zoom = initZoom(geo, projection);
 
     function handleZoomstart() {
-        d3.select(this).style(zoomstartStyle);
+        d3.select(this).style(startStyle);
     }
 
     function handleZoom() {
@@ -95,14 +97,14 @@ function zoomScoped(geo, projection) {
     }
 
     function handleZoomend() {
-        d3.select(this).style(zoomendStyle);
+        d3.select(this).style(endStyle);
         sync(geo, projection, syncCb);
     }
 
     zoom
-        .on('zoomstart', handleZoomstart)
+        .on('start', handleZoomstart)
         .on('zoom', handleZoom)
-        .on('zoomend', handleZoomend);
+        .on('end', handleZoomend);
 
     return zoom;
 }
@@ -130,7 +132,7 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoomstart() {
-        d3.select(this).style(zoomstartStyle);
+        d3.select(this).style(startStyle);
 
         mouse0 = d3.mouse(this);
         rotate0 = projection.rotate();
@@ -175,7 +177,7 @@ function zoomNonClipped(geo, projection) {
     }
 
     function handleZoomend() {
-        d3.select(this).style(zoomendStyle);
+        d3.select(this).style(endStyle);
         if(didZoom) sync(geo, projection, syncCb);
     }
 
@@ -189,9 +191,9 @@ function zoomNonClipped(geo, projection) {
     }
 
     zoom
-        .on('zoomstart', handleZoomstart)
+        .on('start', handleZoomstart)
         .on('zoom', handleZoom)
-        .on('zoomend', handleZoomend);
+        .on('end', handleZoomend);
 
     return zoom;
 }
@@ -201,14 +203,14 @@ function zoomNonClipped(geo, projection) {
 function zoomClipped(geo, projection) {
     var view = {r: projection.rotate(), k: projection.scale()};
     var zoom = initZoom(geo, projection);
-    var event = d3eventDispatch(zoom, 'zoomstart', 'zoom', 'zoomend');
+    var event = d3eventDispatch(zoom, 'start', 'zoom', 'end');
     var zooming = 0;
     var zoomOn = zoom.on;
 
     var zoomPoint;
 
-    zoom.on('zoomstart', function() {
-        d3.select(this).style(zoomstartStyle);
+    zoom.on('start', function() {
+        d3.select(this).style(startStyle);
 
         var mouse0 = d3.mouse(this);
         var rotate0 = projection.rotate();
@@ -259,12 +261,12 @@ function zoomClipped(geo, projection) {
             zoomed(event.of(this, arguments));
         });
 
-        zoomstarted(event.of(this, arguments));
+        started(event.of(this, arguments));
     })
-    .on('zoomend', function() {
-        d3.select(this).style(zoomendStyle);
+    .on('end', function() {
+        d3.select(this).style(endStyle);
         zoomOn.call(zoom, 'zoom', null);
-        zoomended(event.of(this, arguments));
+        ended(event.of(this, arguments));
         sync(geo, projection, syncCb);
     })
     .on('zoom.redraw', function() {
@@ -278,16 +280,16 @@ function zoomClipped(geo, projection) {
         });
     });
 
-    function zoomstarted(dispatch) {
-        if(!zooming++) dispatch({type: 'zoomstart'});
+    function started(dispatch) {
+        if(!zooming++) dispatch({type: 'start'});
     }
 
     function zoomed(dispatch) {
         dispatch({type: 'zoom'});
     }
 
-    function zoomended(dispatch) {
-        if(!--zooming) dispatch({type: 'zoomend'});
+    function ended(dispatch) {
+        if(!--zooming) dispatch({type: 'end'});
     }
 
     function syncCb(set) {

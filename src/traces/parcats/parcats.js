@@ -310,13 +310,13 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     categorySelection.exit().remove();
 
     // Setup drag
-    dimensionSelection.call(d3.behavior.drag()
-        .origin(function(d) {
+    dimensionSelection.call(d3.drag()
+        .subject(function(d) {
             return {x: d.x, y: 0};
         })
-        .on('dragstart', dragDimensionStart)
+        .on('start', dragDimensionStart)
         .on('drag', dragDimension)
-        .on('dragend', dragDimensionEnd));
+        .on('end', dragDimensionEnd));
 
 
     // Save off selections to view models
