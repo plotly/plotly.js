@@ -11,15 +11,6 @@ def download(repo, family, types) :
         open(dirOut + name, 'wb').write(req.content)
 
 download(
-    'https://github.com/expo/google-fonts/blob/master/font-packages/dosis/',
-    'Dosis',
-    [
-        '_400Regular',
-        '_700Bold'
-    ]
-)
-
-download(
     'https://github.com/googlefonts/noto-fonts/blob/main/hinted/ttf/NotoSansMono/',
     'NotoSansMono',
     [
