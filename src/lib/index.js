@@ -29,16 +29,29 @@ lib.adjustFormat = function adjustFormat(formatStr) {
     return formatStr;
 };
 
-lib.noFormat = function(value) { return String(value); };
+var seenBadFormats = {};
+lib.warnBadFormat = function(f) {
+    var key = String(f);
+    if(!seenBadFormats[key]) {
+        seenBadFormats[key] = 1;
+        lib.warn('encountered bad format: "' + key + '"');
+    }
+};
+
+lib.noFormat = function(value) {
+    return String(value);
+};
 
 lib.numberFormat = function(formatStr) {
+    var fn;
     try {
-        formatStr = d3Format(lib.adjustFormat(formatStr));
+        fn = d3Format(lib.adjustFormat(formatStr));
     } catch(e) {
+        lib.warnBadFormat(formatStr);
         return lib.noFormat;
     }
 
-    return formatStr;
+    return fn;
 };
 
 lib.nestedProperty = require('./nested_property');

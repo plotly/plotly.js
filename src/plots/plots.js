@@ -709,6 +709,7 @@ function getFormatter(formatObj, separators) {
                     Lib.adjustFormat(formatStr)
                 );
             } catch(e) {
+                Lib.warnBadFormat(formatStr);
                 return Lib.noFormat;
             }
 
