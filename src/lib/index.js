@@ -15,13 +15,13 @@ var lib = module.exports = {};
 lib.adjustFormat = function adjustFormat(formatStr) {
     if(
         !formatStr ||
-        /^[0123456789].[0123456789]f/.test(formatStr) ||
-        /.[0123456789]%/.test(formatStr)
+        /^\d[.]\df/.test(formatStr) ||
+        /[.]\d%/.test(formatStr)
     ) return formatStr;
 
     if(formatStr === '0.f') return '~f';
-    if(/^[0123456789]%/.test(formatStr)) return '~%';
-    if(/^[0123456789]s/.test(formatStr)) return '~s';
+    if(/^\d%/.test(formatStr)) return '~%';
+    if(/^\ds/.test(formatStr)) return '~s';
 
     // try adding tilde to the start of format in order to trim
     if(!(/^[~,.0$]/.test(formatStr)) && /[&fps]/.test(formatStr)) return '~' + formatStr;
