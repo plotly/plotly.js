@@ -96,8 +96,8 @@ module.exports = {
             freeLength: true,
             dimensions: '1-2',
             items: [
-                {valType: 'number', editType: 'plot'},
-                {valType: 'number', editType: 'plot'}
+                {valType: 'any', editType: 'plot'},
+                {valType: 'any', editType: 'plot'}
             ],
             editType: 'plot',
             description: [
