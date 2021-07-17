@@ -2,7 +2,7 @@
 
 var d3Force = require('d3-force');
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var d3Sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
 

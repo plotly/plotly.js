@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var interpolateNumber = require('d3-interpolate').interpolateNumber;
 var Plotly = require('../../plot_api/plot_api');
 var Fx = require('../../components/fx');

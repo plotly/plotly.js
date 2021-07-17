@@ -5,7 +5,7 @@
 
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../src/lib/d3');
 var isNumeric = require('fast-isnumeric');
 
 var selProto = d3.selection.prototype;

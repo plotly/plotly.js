@@ -2,7 +2,7 @@
 
 /* global PlotlyGeoAssets:false */
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var geo = require('d3-geo');
 var geoPath = geo.geoPath;
 var geoDistance = geo.geoDistance;
