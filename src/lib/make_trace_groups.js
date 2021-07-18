@@ -15,12 +15,13 @@ var d3 = require('./d3');
  */
 module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
     var traces = traceLayer.selectAll('g.' + cls.replace(/\s/g, '.'))
-        .data(cdModule, function(cd) { return cd[0].trace.uid; });
+        .data(cdModule, function(cd) { return cd[0].trace.uid; })
+        .enter()
+        .append('g');
 
     traces.exit().remove();
 
-    traces.enter().append('g')
-        .attr('class', cls);
+    traces.attr('class', cls);
 
     traces.order();
 

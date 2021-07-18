@@ -21,14 +21,18 @@ module.exports = function(text, displayLength) {
     if(isNumeric(displayLength)) ts = displayLength;
     else if(displayLength === 'long') ts = 3000;
 
-    var notifierContainer = d3.select('body')
-        .selectAll('.plotly-notifier')
-        .data([0]);
-    notifierContainer.enter()
-        .append('div')
+    var notifierContainer = d3.select('body').selectAll('.plotly-notifier')
+        .data([0])
+        .enter()
+        .append('div');
+
+    notifierContainer
         .classed('plotly-notifier', true);
 
-    var notes = notifierContainer.selectAll('.notifier-note').data(NOTEDATA);
+    var notes = notifierContainer.selectAll('.notifier-note')
+        .data(NOTEDATA)
+        .enter()
+        .append('div');
 
     function killNote(transition) {
         transition
@@ -41,7 +45,7 @@ module.exports = function(text, displayLength) {
             });
     }
 
-    notes.enter().append('div')
+    notes
         .classed('notifier-note', true)
         .style('opacity', 0)
         .each(function(thisText) {
