@@ -141,9 +141,18 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
         }
 
         // Prepare angular gauge layers
-        var angularGauge = plotGroup.selectAll('g.angular').data(isAngular ? cd : []);
+        var angularGauge = plotGroup.selectAll('g.angular')
+            .data(isAngular ? cd : [])
+            .enter()
+            .append('g');
+
         angularGauge.exit().remove();
-        var angularaxisLayer = plotGroup.selectAll('g.angularaxis').data(isAngular ? cd : []);
+
+        var angularaxisLayer = plotGroup.selectAll('g.angularaxis')
+            .data(isAngular ? cd : [])
+            .enter()
+            .append('g');
+
         angularaxisLayer.exit().remove();
 
         if(isAngular) {
@@ -180,10 +189,15 @@ module.exports = function plot(gd, cdModule, transitionOpts, makeOnCompleteCallb
         }
 
         // title
-        var title = plotGroup.selectAll('text.title').data(cd);
+        var title = plotGroup.selectAll('text.title')
+            .data(cd)
+            .enter()
+            .append('text');
+
         title.exit().remove();
-        title.enter().append('text').classed('title', true);
+
         title
+            .classed('title', true)
             .attr('text-anchor', function() {
                 return isBullet ? anchor.right : anchor[trace.title.align];
             })
@@ -237,13 +251,13 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
     // preparing axis
     var ax, vals, transFn, tickSign, shift;
 
-    // Enter bullet, axis
-    bullet.enter().append('g').classed('bullet', true);
+    bullet.classed('bullet', true);
     bullet.attr('transform', strTranslate(size.l, size.t));
 
-    axisLayer.enter().append('g')
+    axisLayer
         .classed('bulletaxis', true)
         .classed('crisp', true);
+
     axisLayer.selectAll('g.' + 'xbulletaxis' + 'tick,path,text').remove();
 
     // Draw bullet
@@ -288,16 +302,29 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
 
     // Draw bullet background, steps
     var boxes = [gaugeBg].concat(trace.gauge.steps);
-    var bgBullet = bullet.selectAll('g.bg-bullet').data(boxes);
-    bgBullet.enter().append('g').classed('bg-bullet', true).append('rect');
+    var bgBullet = bullet.selectAll('g.bg-bullet')
+        .data(boxes)
+        .enter()
+        .append('g');
+
+    bgBullet.exit().remove();
+
+    bgBullet
+        .classed('bg-bullet', true).append('rect');
+
     bgBullet.select('rect')
         .call(drawRect)
         .call(styleShape);
-    bgBullet.exit().remove();
 
     // Draw value bar with transitions
-    var fgBullet = bullet.selectAll('g.value-bullet').data([trace.gauge.bar]);
-    fgBullet.enter().append('g').classed('value-bullet', true).append('rect');
+    var fgBullet = bullet.selectAll('g.value-bullet')
+        .data([trace.gauge.bar])
+        .enter()
+        .append('g');
+
+    fgBullet.exit().remove();
+
+    fgBullet.classed('value-bullet', true).append('rect');
     fgBullet.select('rect')
         .attr('height', innerBulletHeight)
         .attr('y', (bulletHeight - innerBulletHeight) / 2)
@@ -316,11 +343,16 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
                 Math.max(0, ax.c2p(Math.min(trace.gauge.axis.range[1], cd[0].y))) :
                 0);
     }
-    fgBullet.exit().remove();
 
     var data = cd.filter(function() {return trace.gauge.threshold.value || trace.gauge.threshold.value === 0;});
-    var threshold = bullet.selectAll('g.threshold-bullet').data(data);
-    threshold.enter().append('g').classed('threshold-bullet', true).append('line');
+    var threshold = bullet.selectAll('g.threshold-bullet')
+        .data(data)
+        .enter()
+        .append('g');
+
+    threshold.exit().remove();
+
+    threshold.classed('threshold-bullet', true).append('line');
     threshold.select('line')
         .attr('x1', ax.c2p(trace.gauge.threshold.value))
         .attr('x2', ax.c2p(trace.gauge.threshold.value))
@@ -328,14 +360,18 @@ function drawBulletGauge(gd, plotGroup, cd, opts) {
         .attr('y2', (1 - (1 - trace.gauge.threshold.thickness) / 2) * bulletHeight)
         .call(Color.stroke, trace.gauge.threshold.line.color)
         .style('stroke-width', trace.gauge.threshold.line.width);
-    threshold.exit().remove();
 
-    var bulletOutline = bullet.selectAll('g.gauge-outline').data([gaugeOutline]);
-    bulletOutline.enter().append('g').classed('gauge-outline', true).append('rect');
+    var bulletOutline = bullet.selectAll('g.gauge-outline')
+        .data([gaugeOutline])
+        .enter()
+        .append('g');
+
+    bulletOutline.exit().remove();
+
+    bulletOutline.classed('gauge-outline', true).append('rect');
     bulletOutline.select('rect')
         .call(drawRect)
         .call(styleShape);
-    bulletOutline.exit().remove();
 }
 
 function drawAngularGauge(gd, plotGroup, cd, opts) {
@@ -384,10 +420,10 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
     var ax, vals, transFn, tickSign;
 
     // Enter gauge and axis
-    gauge.enter().append('g').classed('angular', true);
+    gauge.classed('angular', true);
     gauge.attr('transform', strTranslate(gaugePosition[0], gaugePosition[1]));
 
-    axisLayer.enter().append('g')
+    axisLayer
         .classed('angularaxis', true)
         .classed('crisp', true);
     axisLayer.selectAll('g.' + 'xangularaxis' + 'tick,path,text').remove();
@@ -462,15 +498,26 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
 
     // Draw background + steps
     var arcs = [gaugeBg].concat(trace.gauge.steps);
-    var bgArc = gauge.selectAll('g.bg-arc').data(arcs);
-    bgArc.enter().append('g').classed('bg-arc', true).append('path');
-    bgArc.select('path').call(drawArc).call(styleShape);
+    var bgArc = gauge.selectAll('g.bg-arc')
+        .data(arcs)
+        .enter()
+        .append('g');
+
     bgArc.exit().remove();
+
+    bgArc.classed('bg-arc', true).append('path');
+    bgArc.select('path').call(drawArc).call(styleShape);
 
     // Draw foreground with transition
     var valueArcPathGenerator = arcPathGenerator(trace.gauge.bar.thickness);
-    var valueArc = gauge.selectAll('g.value-arc').data([trace.gauge.bar]);
-    valueArc.enter().append('g').classed('value-arc', true).append('path');
+    var valueArc = gauge.selectAll('g.value-arc')
+        .data([trace.gauge.bar])
+        .enter()
+        .append('g');
+
+    valueArc.exit().remove();
+
+    valueArc.classed('value-arc', true).append('path');
     var valueArcPath = valueArc.select('path');
     if(hasTransition(transitionOpts)) {
         valueArcPath
@@ -487,7 +534,6 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
             'M0,0Z');
     }
     valueArcPath.call(styleShape);
-    valueArc.exit().remove();
 
     // Draw threshold
     arcs = [];
@@ -503,16 +549,26 @@ function drawAngularGauge(gd, plotGroup, cd, opts) {
             thickness: trace.gauge.threshold.thickness
         });
     }
-    var thresholdArc = gauge.selectAll('g.threshold-arc').data(arcs);
-    thresholdArc.enter().append('g').classed('threshold-arc', true).append('path');
-    thresholdArc.select('path').call(drawArc).call(styleShape);
+    var thresholdArc = gauge.selectAll('g.threshold-arc')
+        .data(arcs)
+        .enter()
+        .append('g');
+
     thresholdArc.exit().remove();
 
+    thresholdArc.classed('threshold-arc', true).append('path');
+    thresholdArc.select('path').call(drawArc).call(styleShape);
+
     // Draw border last
-    var gaugeBorder = gauge.selectAll('g.gauge-outline').data([gaugeOutline]);
-    gaugeBorder.enter().append('g').classed('gauge-outline', true).append('path');
-    gaugeBorder.select('path').call(drawArc).call(styleShape);
+    var gaugeBorder = gauge.selectAll('g.gauge-outline')
+        .data([gaugeOutline])
+        .enter()
+        .append('g');
+
     gaugeBorder.exit().remove();
+
+    gaugeBorder.classed('gauge-outline', true).append('path');
+    gaugeBorder.select('path').call(drawArc).call(styleShape);
 }
 
 function drawNumbers(gd, plotGroup, cd, opts) {
@@ -536,8 +592,13 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         data.push('delta');
         if(trace.delta.position === 'left') data.reverse();
     }
-    var sel = numbers.selectAll('text').data(data);
-    sel.enter().append('text');
+    var sel = numbers.selectAll('text')
+        .data(data)
+        .enter()
+        .append('text');
+
+    sel.exit().remove();
+
     sel
         .attr('text-anchor', function() {return numbersAnchor;})
         .attr('class', function(d) { return d;})
@@ -545,7 +606,6 @@ function drawNumbers(gd, plotGroup, cd, opts) {
         .attr('y', null)
         .attr('dx', null)
         .attr('dy', null);
-    sel.exit().remove();
 
     // Function to override the number formatting used during transitions
     function transitionFormat(valueformat, fmt, from, to) {
