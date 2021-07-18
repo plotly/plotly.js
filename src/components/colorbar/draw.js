@@ -33,11 +33,19 @@ function draw(gd) {
 
     var colorBars = fullLayout._infolayer
         .selectAll('g.' + cn.colorbar)
-        .data(makeColorBarData(gd), function(opts) { return opts._id; });
+        .data(makeColorBarData(gd), function(opts) { return opts._id; })
+        .enter()
+        .append('g');
 
-    colorBars.enter().append('g')
+    colorBars.exit()
+        .each(function(opts) { Plots.autoMargin(gd, opts._id); })
+        .remove();
+
+    colorBars
         .attr('class', function(opts) { return opts._id; })
         .classed(cn.colorbar, true);
+
+    colorBars.order();
 
     colorBars.each(function(opts) {
         var g = d3.select(this);
@@ -56,12 +64,6 @@ function draw(gd) {
             makeEditable(g, opts, gd);
         }
     });
-
-    colorBars.exit()
-        .each(function(opts) { Plots.autoMargin(gd, opts._id); })
-        .remove();
-
-    colorBars.order();
 }
 
 function makeColorBarData(gd) {
@@ -391,11 +393,15 @@ function drawColorBar(g, opts, gd) {
         var fills = g.select('.' + cn.cbfills)
             .selectAll('rect.' + cn.cbfill)
             .attr('style', '')
-            .data(fillLevels);
-        fills.enter().append('rect')
+            .data(fillLevels)
+            .enter()
+            .append('rect');
+
+        fills.exit().remove();
+
+        fills
             .classed(cn.cbfill, true)
             .style('stroke', 'none');
-        fills.exit().remove();
 
         var zBounds = zrange
             .map(ax.c2p)
@@ -436,10 +442,15 @@ function drawColorBar(g, opts, gd) {
 
         var lines = g.select('.' + cn.cblines)
             .selectAll('path.' + cn.cbline)
-            .data(line.color && line.width ? lineLevels : []);
-        lines.enter().append('path')
-            .classed(cn.cbline, true);
+            .data(line.color && line.width ? lineLevels : [])
+            .enter()
+            .append('path');
+
         lines.exit().remove();
+
+        lines
+            .classed(cn.cbline, true);
+
         lines.each(function(d) {
             d3.select(this)
                 .attr('d', 'M' + xLeft + ',' +
