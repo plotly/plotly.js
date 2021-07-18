@@ -30,14 +30,17 @@ function ScrollBox(gd, container, id) {
     this.vbar = null;  // vertical scrollbar D3 selection
 
     // <rect> element to capture pointer events
-    this.bg = this.container.selectAll('rect.scrollbox-bg').data([0]);
+    this.bg = this.container.selectAll('rect.scrollbox-bg')
+        .data([0])
+        .enter()
+        .append('rect');
 
     this.bg.exit()
         .on('.drag', null)
         .on('wheel', null)
         .remove();
 
-    this.bg.enter().append('rect')
+    this.bg
         .classed('scrollbox-bg', true)
         .style('pointer-events', 'all')
         .attrs({
@@ -147,14 +150,16 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     if(hbarT + hbarH > fullHeight) hbarT = fullHeight - hbarH;
 
-    var hbar = this.container.selectAll('rect.scrollbar-horizontal').data(
-            (needsHorizontalScrollBar) ? [0] : []);
+    var hbar = this.container.selectAll('rect.scrollbar-horizontal')
+        .data((needsHorizontalScrollBar) ? [0] : [])
+        .enter()
+        .append('rect');
 
     hbar.exit()
         .on('.drag', null)
         .remove();
 
-    hbar.enter().append('rect')
+    hbar
         .classed('scrollbar-horizontal', true)
         .call(Color.fill, ScrollBox.barColor);
 
@@ -187,14 +192,16 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     if(vbarL + vbarW > fullWidth) vbarL = fullWidth - vbarW;
 
-    var vbar = this.container.selectAll('rect.scrollbar-vertical').data(
-            (needsVerticalScrollBar) ? [0] : []);
+    var vbar = this.container.selectAll('rect.scrollbar-vertical')
+        .data((needsVerticalScrollBar) ? [0] : [])
+        .enter()
+        .append('rect');
 
     vbar.exit()
         .on('.drag', null)
         .remove();
 
-    vbar.enter().append('rect')
+    vbar
         .classed('scrollbar-vertical', true)
         .call(Color.fill, ScrollBox.barColor);
 
@@ -225,12 +232,14 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
     var clipB = (needsHorizontalScrollBar) ? boxB + hbarH + 0.5 : boxB + 0.5;
 
     var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data((needsHorizontalScrollBar || needsVerticalScrollBar) ? [0] : []);
+        .data((needsHorizontalScrollBar || needsVerticalScrollBar) ? [0] : [])
+        .enter()
+        .append('clipPath');
 
     clipPath.exit().remove();
 
-    clipPath.enter()
-        .append('clipPath').attr('id', clipId)
+    clipPath
+        .attr('id', clipId)
         .append('rect');
 
     if(needsHorizontalScrollBar || needsVerticalScrollBar) {
