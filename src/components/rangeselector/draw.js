@@ -23,17 +23,18 @@ module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
 
     var selectors = fullLayout._infolayer.selectAll('.rangeselector')
-        .data(makeSelectorData(gd), selectorKeyFunc);
-
-    selectors.enter().append('g')
-        .classed('rangeselector', true);
+        .data(makeSelectorData(gd), selectorKeyFunc)
+        .enter()
+        .append('g');
 
     selectors.exit().remove();
 
-    selectors.styles({
-        cursor: 'pointer',
-        'pointer-events': 'all'
-    });
+    selectors
+        .classed('rangeselector', true)
+        .styles({
+            cursor: 'pointer',
+            'pointer-events': 'all'
+        });
 
     selectors.each(function(d) {
         var selector = d3.select(this);
@@ -41,12 +42,14 @@ module.exports = function draw(gd) {
         var selectorLayout = axisLayout.rangeselector;
 
         var buttons = selector.selectAll('g.button')
-            .data(Lib.filterVisible(selectorLayout.buttons));
-
-        buttons.enter().append('g')
-            .classed('button', true);
+            .data(Lib.filterVisible(selectorLayout.buttons))
+            .enter()
+            .append('g');
 
         buttons.exit().remove();
+
+        buttons
+            .classed('button', true);
 
         buttons.each(function(d) {
             var button = d3.select(this);
