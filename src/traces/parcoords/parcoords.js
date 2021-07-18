@@ -507,12 +507,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
     var controlOverlay = svg.selectAll('.' + c.cn.parcoords)
-        .data(vm, keyFun);
+        .data(vm, keyFun)
+        .enter()
+        .append('g');
 
     controlOverlay.exit().remove();
 
-    controlOverlay.enter()
-        .append('g')
+    controlOverlay
         .classed(c.cn.parcoords, true)
         .style('shape-rendering', 'crispEdges')
         .style('pointer-events', 'none');
@@ -522,10 +523,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     });
 
     var parcoordsControlView = controlOverlay.selectAll('.' + c.cn.parcoordsControlView)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    parcoordsControlView.enter()
-        .append('g')
+    parcoordsControlView.exit().remove();
+
+    parcoordsControlView
         .classed(c.cn.parcoordsControlView, true);
 
     parcoordsControlView.attr('transform', function(d) {
@@ -533,10 +537,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     });
 
     var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
-        .data(function(p) { return p.dimensions; }, keyFun);
+        .data(function(p) { return p.dimensions; }, keyFun)
+        .enter()
+        .append('g');
 
-    yAxis.enter()
-        .append('g')
+    yAxis.exit().remove();
+
+    yAxis
         .classed(c.cn.yAxis, true);
 
     parcoordsControlView.each(function(p) {
@@ -606,23 +613,26 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         })
     );
 
-    yAxis.exit()
-        .remove();
-
     var axisOverlays = yAxis.selectAll('.' + c.cn.axisOverlays)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisOverlays.enter()
-        .append('g')
+    axisOverlays.exit().remove();
+
+    axisOverlays
         .classed(c.cn.axisOverlays, true);
 
     axisOverlays.selectAll('.' + c.cn.axis).remove();
 
     var axis = axisOverlays.selectAll('.' + c.cn.axis)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axis.enter()
-        .append('g')
+    axis.exit().remove();
+
+    axis
         .classed(c.cn.axis, true);
 
     axis
@@ -656,17 +666,23 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .style('cursor', 'default');
 
     var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisHeading.enter()
-        .append('g')
+    axisHeading.exit().remove();
+
+    axisHeading
         .classed(c.cn.axisHeading, true);
 
     var axisTitle = axisHeading.selectAll('.' + c.cn.axisTitle)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('text');
 
-    axisTitle.enter()
-        .append('text')
+    axisTitle.exit().remove();
+
+    axisTitle
         .classed(c.cn.axisTitle, true)
         .attr('text-anchor', 'middle')
         .style('cursor', 'ew-resize')
@@ -701,27 +717,36 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         });
 
     var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisExtent.enter()
-        .append('g')
+    axisExtent.exit().remove();
+
+    axisExtent
         .classed(c.cn.axisExtent, true);
 
     var axisExtentTop = axisExtent.selectAll('.' + c.cn.axisExtentTop)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisExtentTop.enter()
-        .append('g')
+    axisExtentTop.exit().remove();
+
+    axisExtentTop
         .classed(c.cn.axisExtentTop, true);
 
     axisExtentTop
         .attr('transform', strTranslate(0, -c.axisExtentOffset));
 
     var axisExtentTopText = axisExtentTop.selectAll('.' + c.cn.axisExtentTopText)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('text');
 
-    axisExtentTopText.enter()
-        .append('text')
+    axisExtentTopText.exit().remove();
+
+    axisExtentTopText
         .classed(c.cn.axisExtentTopText, true)
         .call(styleExtentTexts);
 
@@ -730,10 +755,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     var axisExtentBottom = axisExtent.selectAll('.' + c.cn.axisExtentBottom)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisExtentBottom.enter()
-        .append('g')
+    axisExtentBottom.exit().remove();
+
+    axisExtentBottom
         .classed(c.cn.axisExtentBottom, true);
 
     axisExtentBottom
@@ -742,10 +770,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         });
 
     var axisExtentBottomText = axisExtentBottom.selectAll('.' + c.cn.axisExtentBottomText)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('text');
 
-    axisExtentBottomText.enter()
-        .append('text')
+    axisExtentBottomText.exit().remove();
+
+    axisExtentBottomText
         .classed(c.cn.axisExtentBottomText, true)
         .attr('dy', '0.75em')
         .call(styleExtentTexts);

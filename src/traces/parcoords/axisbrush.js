@@ -355,10 +355,14 @@ function attachDragBehavior(selection) {
 function startAsc(a, b) { return a[0] - b[0]; }
 
 function renderAxisBrush(axisBrush, paperColor) {
-    var background = axisBrush.selectAll('.background').data(repeat);
+    var background = axisBrush.selectAll('.background')
+        .data(repeat)
+        .enter()
+        .append('rect');
 
-    background.enter()
-        .append('rect')
+    background.exit().remove();
+
+    background
         .classed('background', true)
         .call(barHorizontalSetup)
         .call(backgroundBarHorizontalSetup)
@@ -371,10 +375,14 @@ function renderAxisBrush(axisBrush, paperColor) {
             return d.height - c.verticalPadding;
         });
 
-    var highlightShadow = axisBrush.selectAll('.highlight-shadow').data(repeat); // we have a set here, can't call it `extent`
+    var highlightShadow = axisBrush.selectAll('.highlight-shadow')
+        .data(repeat) // we have a set here, can't call it `extent`
+        .enter()
+        .append('line');
 
-    highlightShadow.enter()
-        .append('line')
+    highlightShadow.exit().remove();
+
+    highlightShadow
         .classed('highlight-shadow', true)
         .attr('x', -c.bar.width / 2)
         .attr('stroke-width', c.bar.width + c.bar.strokeWidth)
@@ -386,10 +394,14 @@ function renderAxisBrush(axisBrush, paperColor) {
         .attr('y1', function(d) { return d.height; })
         .call(styleHighlight);
 
-    var highlight = axisBrush.selectAll('.highlight').data(repeat); // we have a set here, can't call it `extent`
+    var highlight = axisBrush.selectAll('.highlight')
+        .data(repeat) // we have a set here, can't call it `extent`
+        .enter()
+        .append('line');
 
-    highlight.enter()
-        .append('line')
+    highlight.exit().remove();
+
+    highlight
         .classed('highlight', true)
         .attr('x', -c.bar.width / 2)
         .attr('stroke-width', c.bar.width - c.bar.strokeWidth)
@@ -404,10 +416,13 @@ function renderAxisBrush(axisBrush, paperColor) {
 
 function ensureAxisBrush(axisOverlays, paperColor) {
     var axisBrush = axisOverlays.selectAll('.' + c.cn.axisBrush)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisBrush.enter()
-        .append('g')
+    axisBrush.exit().remove();
+
+    axisBrush
         .classed(c.cn.axisBrush, true);
 
     renderAxisBrush(axisBrush, paperColor);
