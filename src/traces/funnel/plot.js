@@ -40,12 +40,14 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
         var isHorizontal = (trace.orientation === 'h');
 
-        var connectors = group.selectAll('g.region').data(Lib.identity);
-
-        connectors.enter().append('g')
-            .classed('region', true);
+        var connectors = group.selectAll('g.region').data(Lib.identity)
+            .enter()
+            .append('g');
 
         connectors.exit().remove();
+
+        connectors
+            .classed('region', true);
 
         var len = connectors.size();
 
@@ -98,12 +100,14 @@ function plotConnectorLines(gd, plotinfo, cdModule, traceLayer) {
 
         var isHorizontal = (trace.orientation === 'h');
 
-        var connectors = group.selectAll('g.line').data(Lib.identity);
-
-        connectors.enter().append('g')
-            .classed('line', true);
+        var connectors = group.selectAll('g.line').data(Lib.identity)
+            .enter()
+            .append('g');
 
         connectors.exit().remove();
+
+        connectors
+            .classed('line', true);
 
         var len = connectors.size();
 

@@ -40,12 +40,15 @@ function plotConnectors(gd, plotinfo, cdModule, traceLayer) {
         var isHorizontal = (trace.orientation === 'h');
         var mode = trace.connector.mode;
 
-        var connectors = group.selectAll('g.line').data(Lib.identity);
-
-        connectors.enter().append('g')
-            .classed('line', true);
+        var connectors = group.selectAll('g.line')
+            .data(Lib.identity)
+            .enter()
+            .append('g');
 
         connectors.exit().remove();
+
+        connectors
+            .classed('line', true);
 
         var len = connectors.size();
 

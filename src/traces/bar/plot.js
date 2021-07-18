@@ -111,12 +111,13 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
         var keyFunc = getKeyFunc(trace);
-        var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc);
-
-        bars.enter().append('g')
-            .classed('point', true);
+        var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc)
+            .enter()
+            .append('g');
 
         bars.exit().remove();
+
+        bars.classed('point', true);
 
         bars.each(function(di, i) {
             var bar = d3.select(this);
