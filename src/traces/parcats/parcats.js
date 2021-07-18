@@ -14,80 +14,54 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     var viewModels = parcatsModels.map(createParcatsViewModel.bind(0, graphDiv, layout));
 
     // Get (potentially empty) parcatslayer selection with bound data to single element array
-    var layerSelection = svg.selectAll('g.parcatslayer').data([null]);
+    var layerSelection = svg.selectAll('g.parcatslayer')
+        .data([null])
+        .enter()
+        .append('g');
 
-    // Initialize single parcatslayer group if it doesn't exist
-    layerSelection.enter()
-        .append('g')
+    layerSelection.exit().remove();
+
+    layerSelection
         .attr('class', 'parcatslayer')
         .style('pointer-events', 'all');
 
     // Bind data to children of layerSelection and get reference to traceSelection
-    var traceSelection = layerSelection
-        .selectAll('g.trace.parcats')
-        .data(viewModels, key);
+    var traceSelection = layerSelection.selectAll('g.trace.parcats')
+        .data(viewModels, key)
+        .enter()
+        .append('g');
 
-    // Initialize group for each trace/dimensions
-    var traceEnter = traceSelection.enter()
-        .append('g')
-        .attr('class', 'trace parcats');
+    traceSelection.exit().remove();
 
-    // Update properties for each trace
     traceSelection
-        .attr('transform', function(d) {
-            return strTranslate(d.x, d.y);
-        });
-
-    // Initialize paths group
-    traceEnter
+        .attr('class', 'trace parcats')
+        .attr('transform', function(d) { return strTranslate(d.x, d.y); })
         .append('g')
         .attr('class', 'paths');
 
     // Update paths transform
-    var pathsSelection = traceSelection
-        .select('g.paths');
-
-    // Get paths selection
-    var pathSelection = pathsSelection
-        .selectAll('path.path')
-        .data(function(d) {
-            return d.paths;
-        }, key);
-
-    // Update existing path colors
-    pathSelection
-        .attr('fill', function(d) {
-            return d.model.color;
-        });
-
-    // Create paths
-    var pathSelectionEnter = pathSelection
+    var pathSelection = traceSelection.select('g.paths').selectAll('path.path')
+        .data(function(d) { return d.paths; }, key)
         .enter()
-        .append('path')
+        .append('path');
+
+    pathSelection.exit().remove();
+
+    pathSelection
         .attr('class', 'path')
         .attr('stroke-opacity', 0)
-        .attr('fill', function(d) {
-            return d.model.color;
-        })
-        .attr('fill-opacity', 0);
+        .attr('fill', function(d) { return d.model.color; })
+        .attr('fill-opacity', 0)
+        .attr('d', function(d) { return d.svgD; });
 
-    stylePathsNoHover(pathSelectionEnter);
-
-    // Set path geometry
-    pathSelection
-        .attr('d', function(d) {
-            return d.svgD;
-        });
+    stylePathsNoHover(pathSelection);
 
     // sort paths
-    if(!pathSelectionEnter.empty()) {
+    if(!pathSelection.empty()) {
         // Only sort paths if there has been a change.
         // Otherwise paths are already sorted or a hover operation may be in progress
         pathSelection.sort(compareRawColor);
     }
-
-    // Remove any old paths
-    pathSelection.exit().remove();
 
     // Path hover
     pathSelection
@@ -96,129 +70,72 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .on('click', clickPath);
 
     // Initialize dimensions group
-    traceEnter.append('g').attr('class', 'dimensions');
-
-    // Update dimensions transform
-    var dimensionsSelection = traceSelection
-        .select('g.dimensions');
+    traceSelection.append('g').attr('class', 'dimensions');
 
     // Get dimension selection
-    var dimensionSelection = dimensionsSelection
-        .selectAll('g.dimension')
-        .data(function(d) {
-            return d.dimensions;
-        }, key);
+    var dimensionSelection = traceSelection.select('g.dimensions').selectAll('g.dimension')
+        .data(function(d) { return d.dimensions; }, key)
+        .enter()
+        .append('g');
 
-    // Create dimension groups
-    dimensionSelection.enter()
-        .append('g')
-        .attr('class', 'dimension');
-
-    // Update dimension group transforms
-    dimensionSelection.attr('transform', function(d) {
-        return strTranslate(d.x, 0);
-    });
-
-    // Remove any old dimensions
     dimensionSelection.exit().remove();
 
+    dimensionSelection
+        .attr('class', 'dimension')
+        .attr('transform', function(d) { return strTranslate(d.x, 0); });
+
     // Get category selection
-    var categorySelection = dimensionSelection
-        .selectAll('g.category')
-        .data(function(d) {
-            return d.categories;
-        }, key);
-
-    // Initialize category groups
-    var categoryGroupEnterSelection = categorySelection
+    var categorySelection = dimensionSelection.selectAll('g.category')
+        .data(function(d) { return d.categories; }, key)
         .enter()
-        .append('g')
-        .attr('class', 'category');
+        .append('g');
 
-    // Update category transforms
     categorySelection
-        .attr('transform', function(d) {
-            return strTranslate(0, d.y);
-        });
-
-
-    // Initialize rectangle
-    categoryGroupEnterSelection
+        .attr('class', 'category')
+        .attr('transform', function(d) { return strTranslate(0, d.y); })
         .append('rect')
         .attr('class', 'catrect')
-        .attr('pointer-events', 'none');
-
-
-    // Update rectangle
-    categorySelection.select('rect.catrect')
+        .attr('pointer-events', 'none')
+        .select('rect.catrect')
         .attr('fill', 'none')
-        .attr('width', function(d) {
-            return d.width;
-        })
-        .attr('height', function(d) {
-            return d.height;
-        });
+        .attr('width', function(d) { return d.width; })
+        .attr('height', function(d) { return d.height; });
 
-    styleCategoriesNoHover(categoryGroupEnterSelection);
+    styleCategoriesNoHover(categorySelection);
 
     // Initialize color band rects
-    var bandSelection = categorySelection
-        .selectAll('rect.bandrect')
-        .data(
-            /** @param {CategoryViewModel} catViewModel*/
-            function(catViewModel) {
-                return catViewModel.bands;
-            }, key);
-
-    // Raise all update bands to the top so that fading enter/exit bands will be behind
-    bandSelection.each(function() {Lib.raiseToTop(this);});
-
-    // Update band color
-    bandSelection
-        .attr('fill', function(d) {
-            return d.color;
-        });
-
-    var bandsSelectionEnter = bandSelection.enter()
-        .append('rect')
-        .attr('class', 'bandrect')
-        .attr('stroke-opacity', 0)
-        .attr('fill', function(d) {
-            return d.color;
-        })
-        .attr('fill-opacity', 0);
-
-    bandSelection
-        .attr('fill', function(d) {
-            return d.color;
-        })
-        .attr('width', function(d) {
-            return d.width;
-        })
-        .attr('height', function(d) {
-            return d.height;
-        })
-        .attr('y', function(d) {
-            return d.y;
-        })
-        .attr('cursor',
-            /** @param {CategoryBandViewModel} bandModel*/
-            function(bandModel) {
-                if(bandModel.parcatsViewModel.arrangement === 'fixed') {
-                    return 'default';
-                } else if(bandModel.parcatsViewModel.arrangement === 'perpendicular') {
-                    return 'ns-resize';
-                } else {
-                    return 'move';
-                }
-            });
-
-    styleBandsNoHover(bandsSelectionEnter);
+    var bandSelection = categorySelection.selectAll('rect.bandrect')
+        .data(function(catViewModel) { return catViewModel.bands; }, key)
+        // Raise all update bands to the top so that fading enter/exit bands will be behind
+        .each(function() {Lib.raiseToTop(this);})
+        .enter()
+        .append('rect');
 
     bandSelection.exit().remove();
 
+    bandSelection
+        .attr('class', 'bandrect')
+        .attr('stroke-opacity', 0)
+        .attr('fill', function(d) { return d.color; })
+        .attr('fill-opacity', 0)
+        .attr('fill', function(d) { return d.color; })
+        .attr('width', function(d) { return d.width; })
+        .attr('height', function(d) { return d.height; })
+        .attr('y', function(d) { return d.y; })
+        .attr('cursor', function(bandModel) {
+            if(bandModel.parcatsViewModel.arrangement === 'fixed') {
+                return 'default';
+            } else if(bandModel.parcatsViewModel.arrangement === 'perpendicular') {
+                return 'ns-resize';
+            } else {
+                return 'move';
+            }
+        });
+
+    styleBandsNoHover(bandSelection);
+
     // Initialize category label
-    categoryGroupEnterSelection
+    categorySelection
         .append('text')
         .attr('class', 'catlabel')
         .attr('pointer-events', 'none');
@@ -227,45 +144,37 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
 
     // Update category label
     categorySelection.select('text.catlabel')
-        .attr('text-anchor',
-            function(d) {
-                if(catInRightDim(d)) {
-                    // Place label to the right of category
-                    return 'start';
-                } else {
-                    // Place label to the left of category
-                    return 'end';
-                }
-            })
+        .attr('text-anchor', function(d) {
+            if(catInRightDim(d)) {
+                // Place label to the right of category
+                return 'start';
+            } else {
+                // Place label to the left of category
+                return 'end';
+            }
+        })
         .attr('alignment-baseline', 'middle')
 
         .style('text-shadow', svgTextUtils.makeTextShadow(paperColor))
         .style('fill', 'rgb(0, 0, 0)')
-        .attr('x',
-            function(d) {
-                if(catInRightDim(d)) {
-                    // Place label to the right of category
-                    return d.width + 5;
-                } else {
-                    // Place label to the left of category
-                    return -5;
-                }
-            })
-        .attr('y', function(d) {
-            return d.height / 2;
+        .attr('x', function(d) {
+            if(catInRightDim(d)) {
+                // Place label to the right of category
+                return d.width + 5;
+            } else {
+                // Place label to the left of category
+                return -5;
+            }
         })
-        .text(function(d) {
-            return d.model.categoryLabel;
-        })
-        .each(
-            /** @param {CategoryViewModel} catModel*/
-            function(catModel) {
-                Drawing.font(d3.select(this), catModel.parcatsViewModel.categorylabelfont);
-                svgTextUtils.convertToTspans(d3.select(this), graphDiv);
-            });
+        .attr('y', function(d) { return d.height / 2; })
+        .text(function(d) { return d.model.categoryLabel; })
+        .each(function(catModel) {
+            Drawing.font(d3.select(this), catModel.parcatsViewModel.categorylabelfont);
+            svgTextUtils.convertToTspans(d3.select(this), graphDiv);
+        });
 
     // Initialize dimension label
-    categoryGroupEnterSelection
+    categorySelection
         .append('text')
         .attr('class', 'dimlabel');
 
@@ -273,18 +182,14 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
     categorySelection.select('text.dimlabel')
         .attr('text-anchor', 'middle')
         .attr('alignment-baseline', 'baseline')
-        .attr('cursor',
-             /** @param {CategoryViewModel} catModel*/
-            function(catModel) {
-                if(catModel.parcatsViewModel.arrangement === 'fixed') {
-                    return 'default';
-                } else {
-                    return 'ew-resize';
-                }
-            })
-        .attr('x', function(d) {
-            return d.width / 2;
+        .attr('cursor', function(catModel) {
+            if(catModel.parcatsViewModel.arrangement === 'fixed') {
+                return 'default';
+            } else {
+                return 'ew-resize';
+            }
         })
+        .attr('x', function(d) { return d.width / 2; })
         .attr('y', -5)
         .text(function(d, i) {
             if(i === 0) {
@@ -294,11 +199,9 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
                 return null;
             }
         })
-        .each(
-            /** @param {CategoryViewModel} catModel*/
-            function(catModel) {
-                Drawing.font(d3.select(this), catModel.parcatsViewModel.labelfont);
-            });
+        .each(function(catModel) {
+            Drawing.font(d3.select(this), catModel.parcatsViewModel.labelfont);
+        });
 
     // Category hover
     // categorySelection.select('rect.catrect')
@@ -622,12 +525,10 @@ function selectPathsThroughCategoryBandColor(catBandViewModel) {
     var catInd = catBandViewModel.categoryViewModel.model.categoryInd;
 
     return allPaths
-        .filter(
-            /** @param {PathViewModel} pathViewModel */
-            function(pathViewModel) {
-                return pathViewModel.model.categoryInds[dimInd] === catInd &&
-                    pathViewModel.model.color === catBandViewModel.color;
-            });
+        .filter(function(pathViewModel) {
+            return pathViewModel.model.categoryInds[dimInd] === catInd &&
+                pathViewModel.model.color === catBandViewModel.color;
+        });
 }
 
 
@@ -906,13 +807,11 @@ function createHoverLabelForColorHovermode(gd, rootBBox, bandElement) {
     var catCount = catViewModel.model.count;
 
     var colorCount = 0;
-    parcatsViewModel.pathSelection.each(
-        /** @param {PathViewModel} pathViewModel */
-        function(pathViewModel) {
-            if(pathViewModel.model.color === bandViewModel.color) {
-                colorCount += pathViewModel.model.count;
-            }
-        });
+    parcatsViewModel.pathSelection.each(function(pathViewModel) {
+        if(pathViewModel.model.color === bandViewModel.color) {
+            colorCount += pathViewModel.model.count;
+        }
+    });
 
     var pColorAndCat = bandColorCount / totalCount;
     var pCatGivenColor = bandColorCount / colorCount;
@@ -1083,38 +982,36 @@ function dragDimensionStart(d) {
     d3.select(this)
         .selectAll('g.category')
         .select('rect.catrect')
-        .each(
-            /** @param {CategoryViewModel} catViewModel */
-            function(catViewModel) {
-                var catMouseX = d3.mouse(this)[0];
-                var catMouseY = d3.mouse(this)[1];
+        .each(function(catViewModel) {
+            var catMouseX = d3.mouse(this)[0];
+            var catMouseY = d3.mouse(this)[1];
 
 
-                if(-2 <= catMouseX && catMouseX <= catViewModel.width + 2 &&
-                    -2 <= catMouseY && catMouseY <= catViewModel.height + 2) {
-                    // Save off initial drag indexes for categories
-                    d.dragCategoryDisplayInd = catViewModel.model.displayInd;
-                    d.initialDragCategoryDisplayInds = d.model.categories.map(function(c) {
-                        return c.displayInd;
+            if(-2 <= catMouseX && catMouseX <= catViewModel.width + 2 &&
+                -2 <= catMouseY && catMouseY <= catViewModel.height + 2) {
+                // Save off initial drag indexes for categories
+                d.dragCategoryDisplayInd = catViewModel.model.displayInd;
+                d.initialDragCategoryDisplayInds = d.model.categories.map(function(c) {
+                    return c.displayInd;
+                });
+
+                // Initialize categories dragY to be the current y position
+                catViewModel.model.dragY = catViewModel.y;
+
+                // Raise category
+                Lib.raiseToTop(this.parentNode);
+
+                // Get band element
+                d3.select(this.parentNode)
+                    .selectAll('rect.bandrect')
+                    /** @param {CategoryBandViewModel} bandViewModel */
+                    .each(function(bandViewModel) {
+                        if(bandViewModel.y < catMouseY && catMouseY <= bandViewModel.y + bandViewModel.height) {
+                            d.potentialClickBand = this;
+                        }
                     });
-
-                    // Initialize categories dragY to be the current y position
-                    catViewModel.model.dragY = catViewModel.y;
-
-                    // Raise category
-                    Lib.raiseToTop(this.parentNode);
-
-                    // Get band element
-                    d3.select(this.parentNode)
-                        .selectAll('rect.bandrect')
-                        /** @param {CategoryBandViewModel} bandViewModel */
-                        .each(function(bandViewModel) {
-                            if(bandViewModel.y < catMouseY && catMouseY <= bandViewModel.y + bandViewModel.height) {
-                                d.potentialClickBand = this;
-                            }
-                        });
-                }
-            });
+            }
+        });
 
     // Update toplevel drag dimension
     d.parcatsViewModel.dragDimension = d;
@@ -1427,26 +1324,24 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
     // the right, all others on the left
     var catLabelSelection = categorySelection.select('.catlabel');
     catLabelSelection
-        .attr('text-anchor',
-            function(d) {
-                if(catInRightDim(d)) {
-                    // Place label to the right of category
-                    return 'start';
-                } else {
-                    // Place label to the left of category
-                    return 'end';
-                }
-            })
-        .attr('x',
-            function(d) {
-                if(catInRightDim(d)) {
-                    // Place label to the right of category
-                    return d.width + 5;
-                } else {
-                    // Place label to the left of category
-                    return -5;
-                }
-            })
+        .attr('text-anchor', function(d) {
+            if(catInRightDim(d)) {
+                // Place label to the right of category
+                return 'start';
+            } else {
+                // Place label to the left of category
+                return 'end';
+            }
+        })
+        .attr('x', function(d) {
+            if(catInRightDim(d)) {
+                // Place label to the right of category
+                return d.width + 5;
+            } else {
+                // Place label to the left of category
+                return -5;
+            }
+        })
         .each(function(d) {
             // Update attriubutes of <tspan> elements
             var newX;
@@ -1470,37 +1365,24 @@ function updateSvgCategories(parcatsViewModel, hasTransition) {
     // Initialize color band rects
     var bandSelection = categorySelection
         .selectAll('rect.bandrect')
-        .data(
-            /** @param {CategoryViewModel} catViewModel*/
-            function(catViewModel) {
-                return catViewModel.bands;
-            }, key);
+        .data(function(catViewModel) { return catViewModel.bands; }, key)
+        .enter()
+        .append('rect');
 
-    var bandsSelectionEnter = bandSelection.enter()
-        .append('rect')
+    bandSelection
         .attr('class', 'bandrect')
         .attr('cursor', 'move')
         .attr('stroke-opacity', 0)
-        .attr('fill', function(d) {
-            return d.color;
-        })
+        .attr('fill', function(d) { return d.color; })
         .attr('fill-opacity', 0);
 
     bandSelection
-        .attr('fill', function(d) {
-            return d.color;
-        })
-        .attr('width', function(d) {
-            return d.width;
-        })
-        .attr('height', function(d) {
-            return d.height;
-        })
-        .attr('y', function(d) {
-            return d.y;
-        });
+        .attr('fill', function(d) { return d.color; })
+        .attr('width', function(d) { return d.width; })
+        .attr('height', function(d) { return d.height; })
+        .attr('y', function(d) { return d.y; });
 
-    styleBandsNoHover(bandsSelectionEnter);
+    styleBandsNoHover(bandSelection);
 
     // Raise bands to the top
     bandSelection.each(function() {Lib.raiseToTop(this);});
