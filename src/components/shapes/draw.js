@@ -129,7 +129,7 @@ function drawOne(gd, index) {
         }
 
         var path = shapeLayer.append('path')
-            .attr(attrs)
+            .attrs(attrs)
             .style('opacity', opacity)
             .call(Color.stroke, lineColor)
             .call(Color.fill, fillColor)
@@ -504,20 +504,22 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         function renderAnchor() {
             var isNotPath = shapeOptions.type !== 'path';
 
-            // d3 join with dummy data to satisfy d3 data-binding
-            var visualCues = shapeLayer.selectAll('.visual-cue').data([0]);
-
-            // Enter
             var strokeWidth = 1;
-            visualCues.enter()
-              .append('path')
-              .attrs({
-                  'fill': '#fff',
-                  'fill-rule': 'evenodd',
-                  'stroke': '#000',
-                  'stroke-width': strokeWidth
-              })
-              .classed('visual-cue', true);
+
+            // d3 join with dummy data to satisfy d3 data-binding
+            var visualCues = shapeLayer.selectAll('.visual-cue')
+                .data([0])
+                .enter()
+                .append('path');
+
+            visualCues
+                .attrs({
+                    'fill': '#fff',
+                    'fill-rule': 'evenodd',
+                    'stroke': '#000',
+                    'stroke-width': strokeWidth
+                })
+                .classed('visual-cue', true);
 
             // Update
             var posX = x2p(
