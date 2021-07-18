@@ -22,12 +22,13 @@ module.exports = function plot(gd, wrappedTraceHolders) {
             var traceHolder = gup.unwrap(wrappedTraceHolder);
             var trace = traceHolder.trace;
             return prepareData(gd, trace);
-        }), gup.keyFun);
+        }), gup.keyFun)
+        .enter()
+        .append('g');
 
     table.exit().remove();
 
-    table.enter()
-        .append('g')
+    table
         .classed(c.cn.table, true)
         .attr('overflow', 'visible')
         .style('box-sizing', 'content-box')
@@ -45,10 +46,11 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         });
 
     var tableControlView = table.selectAll('.' + c.cn.tableControlView)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('g');
 
-    var cvEnter = tableControlView.enter()
-        .append('g')
+    var cvEnter = tableControlView
         .classed(c.cn.tableControlView, true)
         .style('box-sizing', 'content-box');
     if(dynamic) {
@@ -79,10 +81,11 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     // scrollBackground merely ensures that mouse events are captured even on crazy fast scrollwheeling
     // otherwise rendering glitches may occur
     var scrollBackground = tableControlView.selectAll('.' + c.cn.scrollBackground)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('rect');
 
-    scrollBackground.enter()
-        .append('rect')
+    scrollBackground
         .classed(c.cn.scrollBackground, true)
         .attr('fill', 'none');
 
@@ -95,13 +98,14 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     });
 
     var yColumn = tableControlView.selectAll('.' + c.cn.yColumn)
-        .data(function(vm) {return vm.columns;}, gup.keyFun);
-
-    yColumn.enter()
-        .append('g')
-        .classed(c.cn.yColumn, true);
+        .data(function(vm) {return vm.columns;}, gup.keyFun)
+        .enter()
+        .append('g');
 
     yColumn.exit().remove();
+
+    yColumn
+        .classed(c.cn.yColumn, true);
 
     yColumn.attr('transform', function(d) {return strTranslate(d.x, 0);});
 
@@ -152,10 +156,11 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     });
 
     var columnBlock = yColumn.selectAll('.' + c.cn.columnBlock)
-        .data(splitData.splitToPanels, gup.keyFun);
+        .data(splitData.splitToPanels, gup.keyFun)
+        .enter()
+        .append('g');
 
-    columnBlock.enter()
-        .append('g')
+    columnBlock
         .classed(c.cn.columnBlock, true)
         .attr('id', function(d) {return d.key;});
 
@@ -186,18 +191,20 @@ module.exports = function plot(gd, wrappedTraceHolders) {
     renderColumnCellTree(gd, tableControlView, cellsColumnBlock, columnBlock);
 
     var scrollAreaClip = tableControlView.selectAll('.' + c.cn.scrollAreaClip)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('clipPath');
 
-    scrollAreaClip.enter()
-        .append('clipPath')
+    scrollAreaClip
         .classed(c.cn.scrollAreaClip, true)
         .attr('id', function(d) {return scrollAreaBottomClipKey(gd, d);});
 
     var scrollAreaClipRect = scrollAreaClip.selectAll('.' + c.cn.scrollAreaClipRect)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('rect');
 
-    scrollAreaClipRect.enter()
-        .append('rect')
+    scrollAreaClipRect
         .classed(c.cn.scrollAreaClipRect, true)
         .attr('x', -c.overdrag)
         .attr('y', -c.uplift)
@@ -208,28 +215,31 @@ module.exports = function plot(gd, wrappedTraceHolders) {
         .attr('height', function(d) {return d.height + c.uplift;});
 
     var columnBoundary = yColumn.selectAll('.' + c.cn.columnBoundary)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('g');
 
-    columnBoundary.enter()
-        .append('g')
+    columnBoundary
         .classed(c.cn.columnBoundary, true);
 
     var columnBoundaryClippath = yColumn.selectAll('.' + c.cn.columnBoundaryClippath)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('clipPath');
 
     // SVG spec doesn't mandate wrapping into a <defs> and doesn't seem to cause a speed difference
-    columnBoundaryClippath.enter()
-        .append('clipPath')
+    columnBoundaryClippath
         .classed(c.cn.columnBoundaryClippath, true);
 
     columnBoundaryClippath
         .attr('id', function(d) {return columnBoundaryClipKey(gd, d);});
 
     var columnBoundaryRect = columnBoundaryClippath.selectAll('.' + c.cn.columnBoundaryRect)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('rect');
 
-    columnBoundaryRect.enter()
-        .append('rect')
+    columnBoundaryRect
         .classed(c.cn.columnBoundaryRect, true)
         .attr('fill', 'none');
 
@@ -255,8 +265,7 @@ function columnBoundaryClipKey(gd, d) {
 }
 
 function flatData(selection) {
-    return [].concat.apply([], selection.map(function(g) {return g;}))
-        .map(function(g) {return g.__data__;});
+    return [].concat.apply([], selection.data());
 }
 
 function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
@@ -266,10 +275,11 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
     }
 
     var scrollbarKit = tableControlView.selectAll('.' + c.cn.scrollbarKit)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('g');
 
-    scrollbarKit.enter()
-        .append('g')
+    scrollbarKit
         .classed(c.cn.scrollbarKit, true)
         .style('shape-rendering', 'geometricPrecision');
 
@@ -293,17 +303,19 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
         });
 
     var scrollbar = scrollbarKit.selectAll('.' + c.cn.scrollbar)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('g');
 
-    scrollbar.enter()
-        .append('g')
+    scrollbar
         .classed(c.cn.scrollbar, true);
 
     var scrollbarSlider = scrollbar.selectAll('.' + c.cn.scrollbarSlider)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('g');
 
-    scrollbarSlider.enter()
-        .append('g')
+    scrollbarSlider
         .classed(c.cn.scrollbarSlider, true);
 
     scrollbarSlider
@@ -312,10 +324,11 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
         });
 
     var scrollbarGlyph = scrollbarSlider.selectAll('.' + c.cn.scrollbarGlyph)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('line');
 
-    scrollbarGlyph.enter()
-        .append('line')
+    scrollbarGlyph
         .classed(c.cn.scrollbarGlyph, true)
         .attr('stroke', 'black')
         .attr('stroke-width', c.scrollbarWidth)
@@ -339,10 +352,11 @@ function renderScrollbarKit(tableControlView, gd, bypassVisibleBar) {
         .attr('stroke-opacity', 0);
 
     var scrollbarCaptureZone = scrollbar.selectAll('.' + c.cn.scrollbarCaptureZone)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('line');
 
-    scrollbarCaptureZone.enter()
-        .append('line')
+    scrollbarCaptureZone
         .classed(c.cn.scrollbarCaptureZone, true)
         .attr('stroke', 'white')
         .attr('stroke-opacity', 0.01) // some browser might get rid of a 0 opacity element
@@ -414,10 +428,11 @@ function renderColumnCellTree(gd, tableControlView, columnBlock, allColumnBlock)
 
 function renderColumnCells(columnBlock) {
     var columnCells = columnBlock.selectAll('.' + c.cn.columnCells)
-        .data(gup.repeat, gup.keyFun);
+        .data(gup.repeat, gup.keyFun)
+        .enter()
+        .append('g');
 
-    columnCells.enter()
-        .append('g')
+    columnCells
         .classed(c.cn.columnCells, true);
 
     columnCells.exit()
@@ -428,10 +443,11 @@ function renderColumnCells(columnBlock) {
 
 function renderColumnCell(columnCells) {
     var columnCell = columnCells.selectAll('.' + c.cn.columnCell)
-        .data(splitData.splitToCells, function(d) {return d.keyWithinBlock;});
+        .data(splitData.splitToCells, function(d) {return d.keyWithinBlock;})
+        .enter()
+        .append('g');
 
-    columnCell.enter()
-        .append('g')
+    columnCell
         .classed(c.cn.columnCell, true);
 
     columnCell.exit()
@@ -442,10 +458,11 @@ function renderColumnCell(columnCells) {
 
 function renderCellRect(columnCell) {
     var cellRect = columnCell.selectAll('.' + c.cn.cellRect)
-        .data(gup.repeat, function(d) {return d.keyWithinBlock;});
+        .data(gup.repeat, function(d) {return d.keyWithinBlock;})
+        .enter()
+        .append('rect');
 
-    cellRect.enter()
-        .append('rect')
+    cellRect
         .classed(c.cn.cellRect, true);
 
     return cellRect;
@@ -453,10 +470,11 @@ function renderCellRect(columnCell) {
 
 function renderCellText(cellTextHolder) {
     var cellText = cellTextHolder.selectAll('.' + c.cn.cellText)
-        .data(gup.repeat, function(d) {return d.keyWithinBlock;});
+        .data(gup.repeat, function(d) {return d.keyWithinBlock;})
+        .enter()
+        .append('text');
 
-    cellText.enter()
-        .append('text')
+    cellText
         .classed(c.cn.cellText, true)
         .style('cursor', function() {return 'auto';})
         .on('mousedown', function() {d3.event.stopPropagation();});
@@ -466,10 +484,11 @@ function renderCellText(cellTextHolder) {
 
 function renderCellTextHolder(columnCell) {
     var cellTextHolder = columnCell.selectAll('.' + c.cn.cellTextHolder)
-        .data(gup.repeat, function(d) {return d.keyWithinBlock;});
+        .data(gup.repeat, function(d) {return d.keyWithinBlock;})
+        .enter()
+        .append('g');
 
-    cellTextHolder.enter()
-        .append('g')
+    cellTextHolder
         .classed(c.cn.cellTextHolder, true)
         .style('shape-rendering', 'geometricPrecision');
 
