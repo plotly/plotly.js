@@ -807,13 +807,13 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             .map(sankeyModel.bind(null, layout));
 
     var sankey = svg.selectAll('.' + c.cn.sankey)
-        .data(styledData, keyFun);
+        .data(styledData, keyFun)
+        .enter()
+        .append('g');
 
-    sankey.exit()
-        .remove();
+    sankey.exit().remove();
 
-    sankey.enter()
-        .append('g')
+    sankey
         .classed(c.cn.sankey, true)
         .style('box-sizing', 'content-box')
         .style('position', 'absolute')
@@ -846,25 +846,35 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .attr('transform', sankeyTransform);
 
     var sankeyLinks = sankey.selectAll('.' + c.cn.sankeyLinks)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    sankeyLinks.enter()
-        .append('g')
+    sankeyLinks.exit().remove();
+
+    sankeyLinks
         .classed(c.cn.sankeyLinks, true)
         .style('fill', 'none');
 
     var sankeyLink = sankeyLinks.selectAll('.' + c.cn.sankeyLink)
-          .data(function(d) {
-              var links = d.graph.links;
-              return links
-                .filter(function(l) {return l.value;})
-                .map(linkModel.bind(null, d));
-          }, keyFun);
+        .data(function(d) {
+            var links = d.graph.links;
+            return links
+            .filter(function(l) {return l.value;})
+            .map(linkModel.bind(null, d));
+        }, keyFun)
+        .enter()
+        .append('path');
+
+    sankeyLink.exit()
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .style('opacity', 0)
+        .remove();
 
     sankeyLink
-          .enter().append('path')
-          .classed(c.cn.sankeyLink, true)
-          .call(attachPointerEvents, sankey, callbacks.linkEvents);
+        .classed(c.cn.sankeyLink, true)
+        .call(attachPointerEvents, sankey, callbacks.linkEvents);
 
     sankeyLink
         .style('stroke', function(d) {
@@ -890,17 +900,12 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .ease(c.ease).duration(c.duration)
         .style('opacity', 1);
 
-    sankeyLink.exit()
-        .transition()
-        .ease(c.ease).duration(c.duration)
-        .style('opacity', 0)
-        .remove();
-
     var sankeyNodeSet = sankey.selectAll('.' + c.cn.sankeyNodeSet)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    sankeyNodeSet.enter()
-        .append('g')
+    sankeyNodeSet
         .classed(c.cn.sankeyNodeSet, true);
 
     sankeyNodeSet
@@ -918,10 +923,17 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
             persistOriginalPlace(nodes);
             return nodes
               .map(nodeModel.bind(null, d));
-        }, keyFun);
+        }, keyFun)
+        .enter()
+        .append('g');
 
-    sankeyNode.enter()
-        .append('g')
+    sankeyNode.exit()
+        .transition()
+        .ease(c.ease).duration(c.duration)
+        .style('opacity', 0)
+        .remove();
+
+    sankeyNode
         .classed(c.cn.sankeyNode, true)
         .call(updateNodePositions)
         .style('opacity', function(n) { return ((gd._context.staticPlot || firstRender) && !n.partOfGroup) ? 1 : 0;});
@@ -936,17 +948,12 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .call(updateNodePositions)
         .style('opacity', function(n) { return n.partOfGroup ? 0 : 1;});
 
-    sankeyNode.exit()
-        .transition()
-        .ease(c.ease).duration(c.duration)
-        .style('opacity', 0)
-        .remove();
-
     var nodeRect = sankeyNode.selectAll('.' + c.cn.nodeRect)
-        .data(repeat);
+        .data(repeat)
+        .enter()
+        .append('rect');
 
-    nodeRect.enter()
-        .append('rect')
+    nodeRect
         .classed(c.cn.nodeRect, true)
         .call(sizeNode);
 
@@ -962,10 +969,11 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .call(sizeNode);
 
     var nodeLabel = sankeyNode.selectAll('.' + c.cn.nodeLabel)
-        .data(repeat);
+        .data(repeat)
+        .enter()
+        .append('text');
 
-    nodeLabel.enter()
-        .append('text')
+    nodeLabel
         .classed(c.cn.nodeLabel, true)
         .style('cursor', 'default');
 
