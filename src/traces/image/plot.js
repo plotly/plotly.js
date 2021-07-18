@@ -122,17 +122,19 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         }
 
         var image3 = plotGroup.selectAll('image')
-            .data([cd]);
-
-        image3.enter().append('svg:image').attrs({
-            xmlns: xmlnsNamespaces.svg,
-            preserveAspectRatio: 'none'
-        });
+            .data([cd])
+            .enter()
+            .append('svg:image');
 
         image3.exit().remove();
 
-        var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
+        image3
+            .attrs({
+                xmlns: xmlnsNamespaces.svg,
+                preserveAspectRatio: 'none'
+            });
 
+        var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
         if(realImage) {
             var xRange = Lib.simpleMap(xa.range, xa.r2l);
             var yRange = Lib.simpleMap(ya.range, ya.r2l);
