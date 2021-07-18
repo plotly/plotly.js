@@ -65,12 +65,14 @@ module.exports = function drawAncestors(gd, cd, entry, slices, opts) {
 
     sliceData.reverse();
 
-    slices = slices.data(sliceData, helpers.getPtId);
-
-    slices.enter().append('g')
-        .classed('pathbar', true);
+    slices = slices.data(sliceData, helpers.getPtId)
+        .enter()
+        .append('g');
 
     handleSlicesExit(slices, onPathbar, refRect, [width, height], pathSlice);
+
+    slices
+        .classed('pathbar', true);
 
     slices.order();
 

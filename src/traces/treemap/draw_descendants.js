@@ -71,14 +71,16 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
         }
     });
 
-    slices = slices.data(sliceData, helpers.getPtId);
-
     trace._maxVisibleLayers = isFinite(maxVisibleDepth) ? maxVisibleDepth - minVisibleDepth + 1 : 0;
 
-    slices.enter().append('g')
-        .classed('slice', true);
+    slices = slices.data(sliceData, helpers.getPtId)
+        .enter()
+        .append('g');
 
     handleSlicesExit(slices, onPathbar, refRect, [width, height], pathSlice);
+
+    slices
+        .classed('slice', true);
 
     slices.order();
 
