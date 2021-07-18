@@ -95,17 +95,29 @@ function _draw(gd, legendObj) {
     }
 
     var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
-        s.attr(constants.scrollBarEnterAttrs)
+        s.attrs(constants.scrollBarEnterAttrs)
          .call(Color.fill, constants.scrollBarColor);
     });
 
-    var groups = scrollBox.selectAll('g.groups').data(legendData);
-    groups.enter().append('g').attr('class', 'groups');
+    var groups = scrollBox.selectAll('g.groups')
+        .data(legendData)
+        .enter()
+        .append('g');
+
     groups.exit().remove();
 
-    var traces = groups.selectAll('g.traces').data(Lib.identity);
-    traces.enter().append('g').attr('class', 'traces');
+    groups
+        .attr('class', 'groups');
+
+    var traces = groups.selectAll('g.traces')
+        .data(Lib.identity)
+        .enter()
+        .append('g');
+
     traces.exit().remove();
+
+    traces
+        .attr('class', 'traces');
 
     traces.style('opacity', function(d) {
         var trace = d[0].trace;
@@ -114,10 +126,13 @@ function _draw(gd, legendObj) {
         } else {
             return trace.visible === 'legendonly' ? 0.5 : 1;
         }
-    })
-    .each(function() { d3.select(this).call(drawTexts, gd, legendObj); })
-    .call(style, gd, legendObj)
-    .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
+    });
+
+    traces.each(function() { d3.select(this).call(drawTexts, gd, legendObj); });
+
+    traces
+        .call(style, gd, legendObj)
+        .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
 
     Lib.syncOrAsync([
         Plots.previousPromises,
