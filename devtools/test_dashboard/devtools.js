@@ -6,8 +6,6 @@ var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
-var d3 = require('../../test/strict-d3');
-var d3Json = d3.json;
 
 require('./perf');
 
@@ -60,23 +58,23 @@ var Tabs = {
     plotMock: function(mockName, id) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
-        d3Json(mockURL, function(err, fig) {
-            Plotly.newPlot(Tabs.fresh(id), fig);
+        console.warn('Plotting:', mockURL);
 
-            console.warn('Plotting:', mockURL);
-        });
-    },
+        var request = new XMLHttpRequest();
+        request.open('GET', mockURL, true);
+        request.responseType = '';
+        request.send();
 
-    getMock: function(mockName, callback) {
-        var mockURL = '/test/image/mocks/' + mockName + '.json';
-
-        d3Json(mockURL, function(err, fig) {
-            if(typeof callback !== 'function') {
-                window.mock = fig;
-            } else {
-                callback(err, fig);
+        request.onreadystatechange = function() {
+            if(this.readyState === 4) {
+                if(this.status === 200) {
+                    var fig = JSON.parse(this.responseText);
+                    Plotly.newPlot(Tabs.fresh(id), fig);
+                } else {
+                    console.error(this.statusText);
+                }
             }
-        });
+        };
     },
 
     // Save a png snapshot and display it below the plot
@@ -152,7 +150,6 @@ var Tabs = {
 // Bind things to the window
 window.Tabs = Tabs;
 window.Lib = Lib;
-window.d3 = d3;
 window.onload = handleOnLoad;
 setInterval(function() {
     window.gd = Tabs.getGraph() || Tabs.fresh();
