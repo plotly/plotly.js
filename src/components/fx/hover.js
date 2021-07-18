@@ -856,10 +856,14 @@ function createHoverText(hoverData, opts, gd) {
     }
 
     var commonLabel = container.selectAll('g.axistext')
-        .data(showCommonLabel ? [0] : []);
-    commonLabel.enter().append('g')
-        .classed('axistext', true);
+        .data(showCommonLabel ? [0] : [])
+        .enter()
+        .append('g');
+
     commonLabel.exit().remove();
+
+    commonLabel
+        .classed('axistext', true);
 
     commonLabel.each(function() {
         var label = d3.select(this);
@@ -998,10 +1002,18 @@ function createHoverText(hoverData, opts, gd) {
                 clipPath = null;
             }
 
-            var textClip = fullLayout._topclips.selectAll('#' + clipId).data(clipPath ? [0] : []);
-            textClip.enter().append('clipPath').attr('id', clipId).append('path');
+            var textClip = fullLayout._topclips.selectAll('#' + clipId)
+                .data(clipPath ? [0] : [])
+                .enter()
+                .append('clipPath');
+
             textClip.exit().remove();
-            textClip.select('path').attr('d', clipPath);
+
+            textClip
+                .attr('id', clipId).append('path')
+                .select('path')
+                .attr('d', clipPath);
+
             Drawing.setClipUrl(ltext, clipPath ? clipId : null, gd);
         }
 
@@ -1114,22 +1126,27 @@ function createHoverText(hoverData, opts, gd) {
             // N.B. when multiple items have the same result key-function value,
             // only the first of those items in hoverData gets rendered
             return hoverDataKey(d);
-        });
-    hoverLabels.enter().append('g')
-        .classed('hovertext', true)
-        .each(function() {
-            var g = d3.select(this);
-            // trace name label (rect and text.name)
-            g.append('rect')
-                .call(Color.fill, Color.addOpacity(bgColor, 0.8));
-            g.append('text').classed('name', true);
-            // trace data label (path and text.nums)
-            g.append('path')
-                .style('stroke-width', '1px');
-            g.append('text').classed('nums', true)
-                .call(Drawing.font, fontFamily, fontSize);
-        });
+        })
+        .enter()
+        .append('g');
+
     hoverLabels.exit().remove();
+
+    hoverLabels
+        .classed('hovertext', true);
+
+    hoverLabels.each(function() {
+        var g = d3.select(this);
+        // trace name label (rect and text.name)
+        g.append('rect')
+            .call(Color.fill, Color.addOpacity(bgColor, 0.8));
+        g.append('text').classed('name', true);
+        // trace data label (path and text.nums)
+        g.append('path')
+            .style('stroke-width', '1px');
+        g.append('text').classed('nums', true)
+            .call(Drawing.font, fontFamily, fontSize);
+    });
 
     // then put the text in, position the pointer to the data,
     // and figure out sizes
