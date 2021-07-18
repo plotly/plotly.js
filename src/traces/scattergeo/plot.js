@@ -39,7 +39,8 @@ function plot(gd, geo, calcData) {
 
             s.selectAll('path.js-line')
                 .data([{geojson: lineData, trace: trace}])
-              .enter().append('path')
+                .enter()
+                .append('path')
                 .classed('js-line', true)
                 .style('stroke-miterlimit', 2);
         }
@@ -47,7 +48,8 @@ function plot(gd, geo, calcData) {
         if(subTypes.hasMarkers(trace)) {
             s.selectAll('path.point')
                 .data(Lib.identity)
-             .enter().append('path')
+                .enter()
+                .append('path')
                 .classed('point', true)
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
@@ -55,7 +57,8 @@ function plot(gd, geo, calcData) {
         if(subTypes.hasText(trace)) {
             s.selectAll('g')
                 .data(Lib.identity)
-              .enter().append('g')
+                .enter()
+                .append('g')
                 .append('text')
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
