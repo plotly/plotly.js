@@ -45,13 +45,16 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var hasPositiveSide = hasBothSides || trace.side === 'positive';
         var hasNegativeSide = hasBothSides || trace.side === 'negative';
 
-        var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
-
-        violins.enter().append('path')
-            .style('vector-effect', 'non-scaling-stroke')
-            .attr('class', 'violin');
+        var violins = plotGroup.selectAll('path.violin')
+            .data(Lib.identity)
+            .enter()
+            .append('path');
 
         violins.exit().remove();
+
+        violins
+            .style('vector-effect', 'non-scaling-stroke')
+            .attr('class', 'violin');
 
         violins.each(function(d) {
             var pathSel = d3.select(this);
@@ -158,12 +161,18 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
 
         // N.B. use different class name than boxPlot.plotBoxMean,
         // to avoid selectAll conflict
-        var meanPaths = plotGroup.selectAll('path.meanline').data(fn || []);
-        meanPaths.enter().append('path')
+        var meanPaths = plotGroup.selectAll('path.meanline')
+            .data(fn || [])
+            .enter()
+            .append('path');
+
+        meanPaths.exit().remove();
+
+        meanPaths
             .attr('class', 'meanline')
             .style('fill', 'none')
             .style('vector-effect', 'non-scaling-stroke');
-        meanPaths.exit().remove();
+
         meanPaths.each(function(d) {
             var v = valAxis.c2p(d.mean, true);
             var p = helpers.getPositionOnKdePath(d, trace, v);
