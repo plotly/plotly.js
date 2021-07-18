@@ -317,15 +317,15 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
         gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-        var image3 = plotGroup.selectAll('image')
-            .data(cd);
+        var image3 = plotGroup.selectAll('image').data(cd)
+            .enter()
+            .append('svg:image');
 
-        image3.enter().append('svg:image').attrs({
-            xmlns: xmlnsNamespaces.svg,
-            preserveAspectRatio: 'none'
-        });
+        image3.exit().remove();
 
         image3.attrs({
+            xmlns: xmlnsNamespaces.svg,
+            preserveAspectRatio: 'none',
             height: imageHeight,
             width: imageWidth,
             x: left,
