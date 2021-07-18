@@ -317,32 +317,34 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
 
     var gradient = fullLayout._defs.select('.gradients')
         .selectAll('#' + fullID)
-        .data([type + colorStops.join(';')], Lib.identity);
+        .data([type + colorStops.join(';')], Lib.identity)
+        .enter()
+        .append(info.node);
 
     gradient.exit().remove();
 
-    gradient.enter()
-        .append(info.node)
-        .each(function() {
-            var el = d3.select(this);
-            if(info.attrs) el.attr(info.attrs);
+    gradient.each(function() {
+        var el = d3.select(this);
+        if(info.attrs) el.attr(info.attrs);
 
-            el.attr('id', fullID);
+        el.attr('id', fullID);
 
-            var stops = el.selectAll('stop')
-                .data(colorStops);
-            stops.exit().remove();
-            stops.enter().append('stop');
+        var stops = el.selectAll('stop')
+            .data(colorStops)
+            .enter()
+            .append('stop');
 
-            stops.each(function(d) {
-                var tc = tinycolor(d[1]);
-                d3.select(this).attrs({
-                    offset: d[0] + '%',
-                    'stop-color': Color.tinyRGB(tc),
-                    'stop-opacity': tc.getAlpha()
-                });
+        stops.exit().remove();
+
+        stops.each(function(d) {
+            var tc = tinycolor(d[1]);
+            d3.select(this).attrs({
+                offset: d[0] + '%',
+                'stop-color': Color.tinyRGB(tc),
+                'stop-opacity': tc.getAlpha()
             });
         });
+    });
 
     sel.style(prop, getFullUrl(fullID, gd))
         .style(prop + '-opacity', null);
@@ -518,47 +520,55 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
 
     var pattern = fullLayout._defs.select('.patterns')
         .selectAll('#' + fullID)
-        .data([str], Lib.identity);
+        .data([str], Lib.identity)
+        .enter()
+        .append('pattern');
 
     pattern.exit().remove();
 
-    pattern.enter()
-        .append('pattern')
-        .each(function() {
-            var el = d3.select(this);
+    pattern.each(function() {
+        var el = d3.select(this);
 
-            el.attrs({
-                'id': fullID,
+        el.attrs({
+            'id': fullID,
+            'width': width + 'px',
+            'height': height + 'px',
+            'patternUnits': 'userSpaceOnUse',
+            // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
+            'patternTransform': isLegend ? 'scale(0.8)' : ''
+        });
+
+        if(bgcolor) {
+            var rects = el.selectAll('rect')
+                .data([0])
+                .enter()
+                .append('rect');
+
+            rects.exit().remove();
+
+            rects.attrs({
                 'width': width + 'px',
                 'height': height + 'px',
-                'patternUnits': 'userSpaceOnUse',
-                // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
-                'patternTransform': isLegend ? 'scale(0.8)' : ''
+                'fill': bgcolor
             });
+        }
 
-            if(bgcolor) {
-                var rects = el.selectAll('rect').data([0]);
-                rects.exit().remove();
-                rects.enter()
-                    .append('rect')
-                    .attrs({
-                        'width': width + 'px',
-                        'height': height + 'px',
-                        'fill': bgcolor
-                    });
-            }
+        var patterns = el.selectAll(patternTag)
+            .data([0])
+            .enter()
+            .append(patternTag);
 
-            var patterns = el.selectAll(patternTag).data([0]);
-            patterns.exit().remove();
-            patterns.enter()
-                .append(patternTag)
-                .attr(patternAttrs);
-        });
+        patterns.exit().remove();
+
+        patterns
+            .attr(patternAttrs);
+    });
 
     sel.style('fill', getFullUrl(fullID, gd))
         .style('fill-opacity', null);
 
     sel.classed('pattern_filled', true);
+
     var className2query = function(s) {
         return '.' + s.attr('class').replace(/\s/g, '.');
     };
