@@ -18,14 +18,17 @@ module.exports = function plot(gd, subplot, cdbar) {
     Lib.makeTraceGroups(barLayer, cdbar, 'trace bars').each(function() {
         var plotGroup = d3.select(this);
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
-        var bars = pointGroup.selectAll('g.point').data(Lib.identity);
+        var bars = pointGroup.selectAll('g.point')
+            .data(Lib.identity)
+            .enter()
+            .append('g');
 
-        bars.enter().append('g')
+        bars.exit().remove();
+
+        bars
             .style('vector-effect', 'non-scaling-stroke')
             .style('stroke-miterlimit', 2)
             .classed('point', true);
-
-        bars.exit().remove();
 
         bars.each(function(di) {
             var bar = d3.select(this);
