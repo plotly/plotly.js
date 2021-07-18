@@ -319,7 +319,9 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
     });
 
     var join = _this.framework.selectAll('.layer')
-        .data(layerData, String);
+        .data(layerData, String)
+        .enter()
+        .append('g');
 
     join.exit().each(function(d) {
         delete layers[d];
@@ -327,7 +329,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         d3.select(this).remove();
     });
 
-    join.enter().append('g')
+    join
         .attr('class', function(d) { return 'layer ' + d; })
         .each(function(d) {
             var layer = layers[d] = d3.select(this);

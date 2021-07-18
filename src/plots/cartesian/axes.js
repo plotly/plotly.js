@@ -1902,14 +1902,16 @@ axes.makeClipPaths = function(gd) {
     // have to use class instead
     // https://groups.google.com/forum/#!topic/d3-js/6EpAzQ2gU9I
     var axClips = fullLayout._clips.selectAll('.axesclip')
-        .data(clipList, function(d) { return d.x._id + d.y._id; });
-
-    axClips.enter().append('clipPath')
-        .classed('axesclip', true)
-        .attr('id', function(d) { return 'clip' + fullLayout._uid + d.x._id + d.y._id; })
-      .append('rect');
+        .data(clipList, function(d) { return d.x._id + d.y._id; })
+        .enter()
+        .append('clipPath');
 
     axClips.exit().remove();
+
+    axClips
+        .classed('axesclip', true)
+        .attr('id', function(d) { return 'clip' + fullLayout._uid + d.x._id + d.y._id; })
+        .append('rect');
 
     axClips.each(function(d) {
         d3.select(this).select('rect').attrs({
@@ -2801,11 +2803,13 @@ axes.drawTicks = function(gd, ax, opts) {
     }
 
     var ticks = opts.layer.selectAll('path.' + cls)
-        .data(ax.ticks ? vals : [], tickDataFn);
+        .data(ax.ticks ? vals : [], tickDataFn)
+        .enter()
+        .append('path');
 
     ticks.exit().remove();
 
-    ticks.enter().append('path')
+    ticks
         .classed(cls, 1)
         .classed('ticks', 1)
         .classed('crisp', opts.crisp !== false)
@@ -2864,11 +2868,13 @@ axes.drawGrid = function(gd, ax, opts) {
     }
 
     var grid = opts.layer.selectAll('path.' + cls)
-        .data(vals, tickDataFn);
+        .data(vals, tickDataFn)
+        .enter()
+        .append('path');
 
     grid.exit().remove();
 
-    grid.enter().append('path')
+    grid
         .classed(cls, 1)
         .classed('crisp', opts.crisp !== false);
 
@@ -2883,6 +2889,8 @@ axes.drawGrid = function(gd, ax, opts) {
     hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
+
+
 };
 
 /**
@@ -2909,11 +2917,13 @@ axes.drawZeroLine = function(gd, ax, opts) {
     var show = axes.shouldShowZeroLine(gd, ax, opts.counterAxis);
 
     var zl = opts.layer.selectAll('path.' + cls)
-        .data(show ? [{x: 0, id: ax._id}] : []);
+        .data(show ? [{x: 0, id: ax._id}] : [])
+        .enter()
+        .append('path');
 
     zl.exit().remove();
 
-    zl.enter().append('path')
+    zl
         .classed(cls, 1)
         .classed('zl', 1)
         .classed('crisp', opts.crisp !== false)
@@ -2924,9 +2934,8 @@ axes.drawZeroLine = function(gd, ax, opts) {
             opts.layer.selectAll('path').sort(function(da, db) {
                 return idSort(da.id, db.id);
             });
-        });
-
-    zl.attr('transform', opts.transFn)
+        })
+        .attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
         .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
@@ -2972,44 +2981,46 @@ axes.drawLabels = function(gd, ax, opts) {
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
     var prevAngle = (ax._prevTickAngles || {})[cls];
 
-    var tickLabels = opts.layer.selectAll('g.' + cls)
-        .data(ax.showticklabels ? vals : [], tickDataFn);
-
     var labelsReady = [];
 
-    tickLabels.enter().append('g')
-        .classed(cls, 1)
-        .append('text')
-            // only so tex has predictable alignment that we can
-            // alter later
-            .attr('text-anchor', 'middle')
-            .each(function(d) {
-                var thisLabel = d3.select(this);
-                var newPromise = gd._promises.length;
-
-                thisLabel
-                    .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
-                    .call(Drawing.font, d.font, d.fontSize, d.fontColor)
-                    .text(d.text)
-                    .call(svgTextUtils.convertToTspans, gd);
-
-                if(gd._promises[newPromise]) {
-                    // if we have an async label, we'll deal with that
-                    // all here so take it out of gd._promises and
-                    // instead position the label and promise this in
-                    // labelsReady
-                    labelsReady.push(gd._promises.pop().then(function() {
-                        positionLabels(thisLabel, tickAngle);
-                    }));
-                } else {
-                    // sync label: just position it now.
-                    positionLabels(thisLabel, tickAngle);
-                }
-            });
-
-    hideCounterAxisInsideTickLabels(ax, [TICK_TEXT]);
+    var tickLabels = opts.layer.selectAll('g.' + cls)
+        .data(ax.showticklabels ? vals : [], tickDataFn)
+        .enter()
+        .append('g');
 
     tickLabels.exit().remove();
+
+    tickLabels
+        .classed(cls, 1)
+        .append('text')
+        // only so tex has predictable alignment that we can
+        // alter later
+        .attr('text-anchor', 'middle')
+        .each(function(d) {
+            var thisLabel = d3.select(this);
+            var newPromise = gd._promises.length;
+
+            thisLabel
+                .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
+                .call(Drawing.font, d.font, d.fontSize, d.fontColor)
+                .text(d.text)
+                .call(svgTextUtils.convertToTspans, gd);
+
+            if(gd._promises[newPromise]) {
+                // if we have an async label, we'll deal with that
+                // all here so take it out of gd._promises and
+                // instead position the label and promise this in
+                // labelsReady
+                labelsReady.push(gd._promises.pop().then(function() {
+                    positionLabels(thisLabel, tickAngle);
+                }));
+            } else {
+                // sync label: just position it now.
+                positionLabels(thisLabel, tickAngle);
+            }
+        });
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_TEXT]);
 
     if(opts.repositionOnUpdate) {
         tickLabels.each(function(d) {
@@ -3362,17 +3373,17 @@ function drawDividers(gd, ax, opts) {
     var vals = opts.vals;
 
     var dividers = opts.layer.selectAll('path.' + cls)
-        .data(vals, tickDataFn);
+        .data(vals, tickDataFn)
+        .enter()
+        .insert('path', ':first-child');
 
     dividers.exit().remove();
 
-    dividers.enter().insert('path', ':first-child')
+    dividers
         .classed(cls, 1)
         .classed('crisp', 1)
         .call(Color.stroke, ax.dividercolor)
-        .style('stroke-width', Drawing.crispRound(gd, ax.dividerwidth, 1) + 'px');
-
-    dividers
+        .style('stroke-width', Drawing.crispRound(gd, ax.dividerwidth, 1) + 'px')
         .attr('transform', opts.transFn)
         .attr('d', opts.path);
 }

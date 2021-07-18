@@ -162,7 +162,7 @@ plots.addLinks = function(gd) {
         attrs.x = fullLayout._paper.attr('width') - 7;
     }
 
-    linkContainer.attr(attrs);
+    linkContainer.attrs(attrs);
 
     var toolspan = linkContainer.select('.js-link-to-tool');
     var spacespan = linkContainer.select('.js-link-spacer');

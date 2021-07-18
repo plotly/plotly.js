@@ -114,9 +114,13 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     if(!isRadialAxisBelowTraces) layerData.push('radial-axis');
 
     var join = _this.framework.selectAll('.polarsublayer')
-        .data(layerData, String);
+        .data(layerData, String)
+        .enter()
+        .append('g');
 
-    join.enter().append('g')
+    join.exit().remove();
+
+    join
         .attr('class', function(d) { return 'polarsublayer ' + d;})
         .each(function(d) {
             var sel = layers[d] = d3.select(this);
@@ -1427,7 +1431,7 @@ function snapToVertexAngle(a, vangles) {
 function updateElement(sel, showAttr, attrs) {
     if(showAttr) {
         sel.attr('display', null);
-        sel.attr(attrs);
+        sel.attrs(attrs);
     } else if(sel) {
         sel.attr('display', 'none');
     }
