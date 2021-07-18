@@ -153,12 +153,14 @@ function lsInner(gd) {
     // now create all the lower-layer backgrounds at once now that
     // we have the list of subplots that need them
     var lowerBackgrounds = fullLayout._bgLayer.selectAll('.bg')
-        .data(lowerBackgroundIDs);
-
-    lowerBackgrounds.enter().append('rect')
-        .classed('bg', true);
+        .data(lowerBackgroundIDs)
+        .enter()
+        .append('rect');
 
     lowerBackgrounds.exit().remove();
+
+    lowerBackgrounds
+        .classed('bg', true);
 
     lowerBackgrounds.each(function(subplot) {
         fullLayout._plots[subplot].bg = d3.select(this);

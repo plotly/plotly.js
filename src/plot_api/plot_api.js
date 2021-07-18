@@ -195,21 +195,22 @@ function _doPlot(gd, data, layout, config) {
         }
 
         if(!fullLayout._glcanvas && fullLayout._has('gl')) {
-            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas').data([{
-                key: 'contextLayer',
-                context: true,
-                pick: false
-            }, {
-                key: 'focusLayer',
-                context: false,
-                pick: false
-            }, {
-                key: 'pickLayer',
-                context: false,
-                pick: true
-            }], function(d) { return d.key; });
-
-            fullLayout._glcanvas.enter().append('canvas')
+            fullLayout._glcanvas = fullLayout._glcontainer.selectAll('.gl-canvas')
+                .data([{
+                    key: 'contextLayer',
+                    context: true,
+                    pick: false
+                }, {
+                    key: 'focusLayer',
+                    context: false,
+                    pick: false
+                }, {
+                    key: 'pickLayer',
+                    context: false,
+                    pick: true
+                }], function(d) { return d.key; })
+                .enter()
+                .append('canvas')
                 .attr('class', function(d) {
                     return 'gl-canvas gl-canvas-' + d.key.replace('Layer', '');
                 })
@@ -3639,15 +3640,18 @@ function makePlotFramework(gd) {
     fullLayout._calcInverseTransform(gd);
 
     // Plot container
-    fullLayout._container = gd3.selectAll('.plot-container').data([0]);
-    fullLayout._container.enter()
+    fullLayout._container = gd3.selectAll('.plot-container')
+        .data([0])
+        .enter()
         .insert('div', ':first-child')
         .classed('plot-container', true)
         .classed('plotly', true);
 
     // Make the svg container
-    fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
-    fullLayout._paperdiv.enter().append('div')
+    fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container')
+        .data([0])
+        .enter()
+        .append('div')
         .classed('user-select-none', true)
         .classed('svg-container', true)
         .style('position', 'relative');
@@ -3659,9 +3663,9 @@ function makePlotFramework(gd) {
     // explicitly delete anything
     // FIXME: parcoords reuses this object, not the best pattern
     fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
-        .data([{}]);
-
-    fullLayout._glcontainer.enter().append('div')
+        .data([{}])
+        .enter()
+        .append('div')
         .classed('gl-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
@@ -3674,6 +3678,7 @@ function makePlotFramework(gd) {
         .classed('main-svg', true);
 
     fullLayout._modebardiv = fullLayout._paperdiv.append('div');
+
     delete fullLayout._modeBar;
 
     fullLayout._hoverpaper = fullLayout._paperdiv.append('svg')
