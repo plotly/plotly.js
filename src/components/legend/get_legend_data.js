@@ -118,7 +118,7 @@ module.exports = function getLegendData(calcdata, opts) {
         legendData[i].forEach(function(a, k) { a._preSort = k; });
         legendData[i].sort(orderFn2);
 
-        var firstItem = legendData[i][0];
+        var firstItemTrace = legendData[i][0].trace;
 
         var groupTitle = null;
         // get group title text
@@ -134,12 +134,23 @@ module.exports = function getLegendData(calcdata, opts) {
         if(reversed) legendData[i].reverse();
 
         if(groupTitle) {
+            var hasPieLike = false;
+            for(j = 0; j < legendData[i].length; j++) {
+                if(Registry.traceIs(legendData[i][j].trace, 'pie-like')) {
+                    hasPieLike = true;
+                    break;
+                }
+            }
+
             // set group title text
             legendData[i].unshift({
                 i: -1,
                 groupTitle: groupTitle,
+                noClick: hasPieLike,
                 trace: {
-                    showlegend: firstItem.trace.showlegend
+                    showlegend: firstItemTrace.showlegend,
+                    legendgroup: firstItemTrace.legendgroup,
+                    visible: firstItemTrace.visible
                 }
             });
         }

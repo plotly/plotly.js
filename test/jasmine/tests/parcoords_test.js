@@ -894,6 +894,58 @@ describe('parcoords Lifecycle methods', function() {
     });
 });
 
+describe('parcoords hover', function() {
+    var mockCopy;
+    var gd;
+
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+
+        mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.data[0].domain = {
+            x: [0.1, 0.9],
+            y: [0.05, 0.85]
+        };
+
+        if(!mockCopy.config) mockCopy.config = {};
+        mockCopy.config.plotGlPixelRatio = 1;
+
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('@gl Should emit a \'plotly_hover\' event', function(done) {
+        var hoverCalls = 0;
+        var unhoverCalls = 0;
+
+        Plotly.react(gd, mockCopy)
+        .then(function() {
+            gd.on('plotly_hover', function() { hoverCalls++; });
+            gd.on('plotly_unhover', function() { unhoverCalls++; });
+
+            expect(hoverCalls).toBe(0);
+            expect(unhoverCalls).toBe(0);
+
+            mouseTo(324, 216);
+            mouseTo(315, 218);
+
+            return delay(20)();
+        })
+        .then(function() {
+            expect(hoverCalls).toBe(1);
+            expect(unhoverCalls).toBe(0);
+            mouseTo(329, 153);
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(hoverCalls).toBe(1);
+            expect(unhoverCalls).toBe(1);
+        })
+        .then(done, done.fail);
+    });
+});
+
 describe('parcoords basic use', function() {
     var mockCopy;
     var gd;
@@ -1061,36 +1113,6 @@ describe('parcoords basic use', function() {
         })
         .then(function() {
             expect(tester.get()).toBe(true);
-        })
-        .then(done, done.fail);
-    });
-
-    it('@gl Should emit a \'plotly_hover\' event', function(done) {
-        var hoverCalls = 0;
-        var unhoverCalls = 0;
-
-        Plotly.react(gd, mockCopy)
-        .then(function() {
-            gd.on('plotly_hover', function() { hoverCalls++; });
-            gd.on('plotly_unhover', function() { unhoverCalls++; });
-
-            expect(hoverCalls).toBe(0);
-            expect(unhoverCalls).toBe(0);
-
-            mouseTo(324, 216);
-            mouseTo(315, 218);
-
-            return delay(20)();
-        })
-        .then(function() {
-            expect(hoverCalls).toBe(1);
-            expect(unhoverCalls).toBe(0);
-            mouseTo(329, 153);
-        })
-        .then(delay(20))
-        .then(function() {
-            expect(hoverCalls).toBe(1);
-            expect(unhoverCalls).toBe(1);
         })
         .then(done, done.fail);
     });

@@ -1,10 +1,11 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
+var Lib = require('../../lib');
+var numberFormat = Lib.numberFormat;
 var rgba = require('color-rgba');
 
 var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
 var strRotate = Lib.strRotate;
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = require('../../lib/svg_text_utils');
@@ -79,7 +80,7 @@ function domainScale(height, padding, dimension, tickvals, ticktext) {
     var extent = dimensionExtent(dimension);
     if(tickvals) {
         return d3.scale.ordinal()
-            .domain(tickvals.map(toText(d3.format(dimension.tickformat), ticktext)))
+            .domain(tickvals.map(toText(numberFormat(dimension.tickformat), ticktext)))
             .range(tickvals
                 .map(function(d) {
                     var unitVal = (d - extent[0]) / (extent[1] - extent[0]);
@@ -266,7 +267,7 @@ function viewModel(state, callbacks, model) {
 
             // ensure ticktext and tickvals have same length
             if(!Array.isArray(ticktext) || !ticktext.length) {
-                ticktext = tickvals.map(d3.format(dimension.tickformat));
+                ticktext = tickvals.map(numberFormat(dimension.tickformat));
             } else if(ticktext.length > tickvals.length) {
                 ticktext = ticktext.slice(0, tickvals.length);
             } else if(tickvals.length > ticktext.length) {
@@ -369,7 +370,7 @@ function calcTilt(angle, position) {
     };
 }
 
-function updatePanelLayout(yAxis, vm) {
+function updatePanelLayout(yAxis, vm, plotGlPixelRatio) {
     var panels = vm.panels || (vm.panels = []);
     var data = yAxis.data();
     for(var i = 0; i < data.length - 1; i++) {
@@ -383,6 +384,7 @@ function updatePanelLayout(yAxis, vm) {
         p.panelSizeY = vm.model.canvasHeight;
         p.y = 0;
         p.canvasY = 0;
+        p.plotGlPixelRatio = plotGlPixelRatio;
     }
 }
 
@@ -433,6 +435,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
     var paperColor = gd._fullLayout.paper_bgcolor;
 
     calcAllTicks(cdModule);
@@ -452,6 +455,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
+            d.viewModel.plotGlPixelRatio = plotGlPixelRatio;
             d.viewModel.paperColor = paperColor;
             d.model = d.viewModel ? d.viewModel.model : null;
         });
@@ -536,7 +540,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.yAxis, true);
 
     parcoordsControlView.each(function(p) {
-        updatePanelLayout(yAxis, p);
+        updatePanelLayout(yAxis, p, plotGlPixelRatio);
     });
 
     glLayers
@@ -575,7 +579,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
                     e.canvasX = e.x * e.model.canvasPixelRatio;
                 });
 
-            updatePanelLayout(yAxis, p);
+            updatePanelLayout(yAxis, p, plotGlPixelRatio);
 
             yAxis.filter(function(e) { return Math.abs(d.xIndex - e.xIndex) !== 0; })
                 .attr('transform', function(d) { return strTranslate(d.xScale(d.xIndex), 0); });
@@ -588,7 +592,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             var p = d.parent;
             d.x = d.xScale(d.xIndex);
             d.canvasX = d.x * d.model.canvasPixelRatio;
-            updatePanelLayout(yAxis, p);
+            updatePanelLayout(yAxis, p, plotGlPixelRatio);
             d3.select(this)
                 .attr('transform', function(d) { return strTranslate(d.x, 0); });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));

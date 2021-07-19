@@ -1,6 +1,7 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
+var interpolate = require('d3-interpolate').interpolate;
 
 var helpers = require('../sunburst/helpers');
 
@@ -349,7 +350,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             }
         }
 
-        return d3.interpolate(prev, next);
+        return interpolate(prev, next);
     };
 
     var makeUpdateSliceInterpolator = function(pt, onPathbar, refRect, size, opts) {
@@ -395,7 +396,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             }
         }
 
-        return d3.interpolate(prev, {
+        return interpolate(prev, {
             x0: pt.x0,
             x1: pt.x1,
             y0: pt.y0,
@@ -436,7 +437,7 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
             recordMinTextSize(trace.type, transform, fullLayout);
         }
 
-        return d3.interpolate(prev, {
+        return interpolate(prev, {
             transform: {
                 scale: transform.scale,
                 rotate: transform.rotate,
