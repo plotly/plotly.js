@@ -1,8 +1,8 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var helpers = require('@src/snapshot/helpers');
-var getImageSize = require('@src/traces/image/helpers').getImageSize;
+// var helpers = require('@src/snapshot/helpers');
+// var getImageSize = require('@src/traces/image/helpers').getImageSize;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -137,8 +137,8 @@ describe('Plotly.downloadImage', function() {
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
-
-    it('should produce right output in Safari', function(done) {
+/*
+    it('should produce right output in Old Safari', function(done) {
         spyOn(Lib, 'isSafari').and.callFake(function() { return true; });
         spyOn(helpers, 'octetStream');
 
@@ -157,7 +157,7 @@ describe('Plotly.downloadImage', function() {
         .then(done, done.fail);
     });
 
-    it('should default width & height for downloadImage to match with the live graph', function(done) {
+    it('should default width & height for downloadImage to match with the live graph on Old Safari', function(done) {
         spyOn(Lib, 'isSafari').and.callFake(function() { return true; });
         spyOn(helpers, 'octetStream');
 
@@ -182,6 +182,7 @@ describe('Plotly.downloadImage', function() {
         })
         .then(done, done.fail);
     });
+*/
 });
 
 function downloadTest(gd, format) {
