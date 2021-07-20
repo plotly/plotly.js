@@ -627,12 +627,6 @@ describe('hover with (x|y)period positioning', function() {
 
     it('@gl shows hover info for scattergl', function(done) {
         Plotly.newPlot(gd, require('@mocks/gl2d_period_positioning.json'))
-        .then(function() {
-            return Plotly.restyle(gd, {
-                xperiodalignment: 'start',
-                yperiodalignment: 'start'
-            });
-        })
         .then(function() { _hover(100, 255); })
         .then(function() {
             assertHoverLabelContent({
@@ -647,50 +641,6 @@ describe('hover with (x|y)period positioning', function() {
                 nums: '(Jan 2006, Jun 1, 1970)'
             });
         })
-
-        .then(function() {
-            return Plotly.restyle(gd, {
-                xperiodalignment: 'middle',
-                yperiodalignment: 'middle'
-            });
-        })
-        .then(function() { _hover(100, 255); })
-        .then(function() { _hover(100, 255); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: '',
-                nums: '(Jul 2001, Jan 16, 1970)'
-            });
-        })
-        .then(function() { _hover(470, 45); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: '',
-                nums: '(Jul 2006, Jun 16, 1970)'
-            });
-        })
-
-        .then(function() {
-            return Plotly.restyle(gd, {
-                xperiodalignment: 'end',
-                yperiodalignment: 'end'
-            });
-        })
-        .then(function() { _hover(100, 255); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: '',
-                nums: '(Jan 2002, Feb 1, 1970)'
-            });
-        })
-        .then(function() { _hover(470, 45); })
-        .then(function() {
-            assertHoverLabelContent({
-                name: '',
-                nums: '(Jan 2007, Jul 1, 1970)'
-            });
-        })
-
         .then(done, done.fail);
     });
 });
