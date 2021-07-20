@@ -627,9 +627,12 @@ describe('hover with (x|y)period positioning', function() {
 
     it('@gl shows hover info for scattergl', function(done) {
         Plotly.newPlot(gd, require('@mocks/gl2d_period_positioning.json'))
-        .then(function() { return Plotly.restyle(gd, 'xperiodalignment', 'start'); })
-        .then(function() { return Plotly.restyle(gd, 'yperiodalignment', 'start'); })
-
+        .then(function() {
+            return Plotly.restyle(gd, {
+                xperiodalignment: 'start',
+                yperiodalignment: 'start'
+            });
+        })
         .then(function() { _hover(100, 255); })
         .then(function() {
             assertHoverLabelContent({
@@ -645,8 +648,12 @@ describe('hover with (x|y)period positioning', function() {
             });
         })
 
-        .then(function() { return Plotly.restyle(gd, 'xperiodalignment', 'middle'); })
-        .then(function() { return Plotly.restyle(gd, 'yperiodalignment', 'middle'); })
+        .then(function() {
+            return Plotly.restyle(gd, {
+                xperiodalignment: 'middle',
+                yperiodalignment: 'middle'
+            });
+        })
         .then(function() { _hover(100, 255); })
         .then(function() { _hover(100, 255); })
         .then(function() {
@@ -663,9 +670,12 @@ describe('hover with (x|y)period positioning', function() {
             });
         })
 
-        .then(function() { return Plotly.restyle(gd, 'xperiodalignment', 'end'); })
-        .then(function() { return Plotly.restyle(gd, 'yperiodalignment', 'end'); })
-
+        .then(function() {
+            return Plotly.restyle(gd, {
+                xperiodalignment: 'end',
+                yperiodalignment: 'end'
+            });
+        })
         .then(function() { _hover(100, 255); })
         .then(function() {
             assertHoverLabelContent({
