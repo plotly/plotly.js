@@ -23,13 +23,6 @@ function fileSaver(url, name, format) {
         var blob;
         var objectUrl;
 
-        // Safari doesn't allow downloading of blob urls
-        if(Lib.isSafari()) {
-            var prefix = format === 'svg' ? ',' : ';base64,';
-            helpers.octetStream(prefix + encodeURIComponent(url));
-            return resolve(name);
-        }
-
         // IE 10+ (native saveAs)
         if(Lib.isIE()) {
             // At this point we are only dealing with a decoded SVG as
@@ -53,6 +46,13 @@ function fileSaver(url, name, format) {
             helpers.revokeObjectURL(objectUrl);
             blob = null;
 
+            return resolve(name);
+        }
+
+        // Older versions of Safari did not allow downloading of blob urls
+        if(Lib.isSafari()) {
+            var prefix = format === 'svg' ? ',' : ';base64,';
+            helpers.octetStream(prefix + encodeURIComponent(url));
             return resolve(name);
         }
 
