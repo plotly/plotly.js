@@ -5359,7 +5359,7 @@ describe('hovermode: (x|y)unified', function() {
                     },
                     {
                         name: 'end',
-                        type: 'scatter',
+                        type: scatterType,
                         x: ['2000-01', '2000-02'],
                         y: [1, 2],
                         xhoverformat: '%b',
