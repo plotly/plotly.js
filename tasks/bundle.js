@@ -1,16 +1,11 @@
-var path = require('path');
-var glob = require('glob');
 var runSeries = require('run-series');
 var prependFile = require('prepend-file');
 
 var constants = require('./util/constants');
 var common = require('./util/common');
 var _bundle = require('./util/browserify_wrapper');
-var wrapLocale = require('./util/wrap_locale');
 
 var header = constants.licenseDist + '\n';
-var pathToLib = constants.pathToLib;
-var pathToDist = constants.pathToDist;
 var pathToPlotlyDist = constants.pathToPlotlyDist;
 var pathToPlotlyIndex = constants.pathToPlotlyIndex;
 var pathToPlotlyDistMin = constants.pathToPlotlyDistMin;
@@ -26,16 +21,6 @@ if(!doesFileExist(constants.pathToCSSBuild)) {
         'Please run `npm run preprocess` first'
     ].join('\n'));
 }
-
-// "Browserify" the locales
-var localeGlob = path.join(pathToLib, 'locales', '*.js');
-glob(localeGlob, function(err, files) {
-    files.forEach(function(file) {
-        var outName = 'plotly-locale-' + path.basename(file);
-        var outPath = path.join(pathToDist, outName);
-        wrapLocale(file, outPath);
-    });
-});
 
 // list of tasks to pass to run-series to not blow up
 // memory consumption.

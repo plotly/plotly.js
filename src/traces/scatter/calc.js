@@ -51,9 +51,6 @@ function calc(gd, trace) {
         calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     }
 
-    var hasPeriodX = !!trace.xperiodalignment;
-    var hasPeriodY = !!trace.yperiodalignment;
-
     for(i = 0; i < serieslen; i++) {
         var cdi = cd[i] = {};
         var xValid = isNumeric(x[i]);
@@ -61,13 +58,6 @@ function calc(gd, trace) {
         if(xValid && yValid) {
             cdi[xAttr] = x[i];
             cdi[yAttr] = y[i];
-
-            if(hasPeriodX) {
-                cdi.orig_x = origX[i]; // used by hover
-            }
-            if(hasPeriodY) {
-                cdi.orig_y = origY[i]; // used by hover
-            }
         } else if(stackGroupOpts && (isV ? xValid : yValid)) {
             // if we're stacking we need to hold on to all valid positions
             // even with invalid sizes
