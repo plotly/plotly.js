@@ -1,9 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-// var helpers = require('@src/snapshot/helpers');
-// var getImageSize = require('@src/traces/image/helpers').getImageSize;
-
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -137,52 +134,6 @@ describe('Plotly.downloadImage', function() {
         })
         .then(done, done.fail);
     }, LONG_TIMEOUT_INTERVAL);
-/*
-    it('should produce right output in Old Safari', function(done) {
-        spyOn(Lib, 'isSafari').and.callFake(function() { return true; });
-        spyOn(helpers, 'octetStream');
-
-        Plotly.newPlot(gd, textchartMock.data, textchartMock.layout)
-        .then(function() { return Plotly.downloadImage(gd, {format: 'svg'}); })
-        .then(function() { return Plotly.downloadImage(gd, {format: 'png'}); })
-        .then(function() { return Plotly.downloadImage(gd, {format: 'jpeg'}); })
-        .then(function() { return Plotly.downloadImage(gd, {format: 'webp'}); })
-        .then(function() {
-            var args = helpers.octetStream.calls.allArgs();
-            expect(args[0][0].slice(0, 15)).toBe(',%3Csvg%20class', 'format:svg');
-            expect(args[1][0].slice(0, 8)).toBe(';base64,', 'format:png');
-            expect(args[2][0].slice(0, 8)).toBe(';base64,', 'format:jpeg');
-            expect(args[3][0].slice(0, 8)).toBe(';base64,', 'format:webp');
-        })
-        .then(done, done.fail);
-    });
-
-    it('should default width & height for downloadImage to match with the live graph on Old Safari', function(done) {
-        spyOn(Lib, 'isSafari').and.callFake(function() { return true; });
-        spyOn(helpers, 'octetStream');
-
-        var fig = {
-            data: [{y: [0, 1]}]
-        };
-
-        gd.style.width = '500px';
-        gd.style.height = '300px';
-
-        Plotly.newPlot(gd, fig)
-        .then(function() { return Plotly.downloadImage(gd, {format: 'png'}); })
-        .then(function() {
-            var args = helpers.octetStream.calls.allArgs();
-            var blob = args[0][0];
-            expect(blob.slice(0, 8)).toBe(';base64,', 'format:png');
-            var size = getImageSize('data:image/png' + blob);
-            expect(size.width).toBe(gd._fullLayout.width, 'fullLayout width');
-            expect(size.height).toBe(gd._fullLayout.height, 'fullLayout height');
-            expect(size.width).toBe(500, 'div width');
-            expect(size.height).toBe(300, 'div height');
-        })
-        .then(done, done.fail);
-    });
-*/
 });
 
 function downloadTest(gd, format) {
