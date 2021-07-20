@@ -1072,11 +1072,8 @@ function createHoverText(hoverData, opts, gd) {
 
         // Position the hover
         var winningPoint = hoverData[0];
-        var ly = axLetter === 'y' ?
-            (winningPoint.y0 + winningPoint.y1) / 2 : Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
-        var lx = axLetter === 'x' ?
-            (winningPoint.x0 + winningPoint.x1) / 2 : Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
-
+        var ly = (winningPoint.y0 + winningPoint.y1) / 2;
+        var lx = (winningPoint.x0 + winningPoint.x1) / 2;
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
         lx += xa._offset;
