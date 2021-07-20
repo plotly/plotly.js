@@ -1934,7 +1934,10 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var val = winningPoint[axLetter + 'Val'];
 
     if(ax.type === 'category') val = ax._categoriesMap[val];
-    else if(ax.type === 'date') val = ax.d2c(val);
+    else if(ax.type === 'date') {
+        var period = winningPoint[axLetter + 'Period'];
+        val = ax.d2c(period !== undefined ? period : val);
+    }
 
     var cd0 = winningPoint.cd[winningPoint.index];
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {

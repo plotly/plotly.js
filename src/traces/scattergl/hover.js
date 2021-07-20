@@ -41,42 +41,43 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var id, ptx, pty, i, dx, dy, dist, dxy;
+    var k, closestId, ptx, pty, i, dx, dy, dist, dxy;
 
     var minDist = maxDistance;
     if(hovermode === 'x') {
         for(i = 0; i < ids.length; i++) {
-            ptx = x[ids[i]];
+            k = ids[i];
+            ptx = x[k];
             dx = Math.abs(xa.c2p(ptx) - xpx);
-            if(trace._origX && trace._origX[i] !== undefined) dx += xa.c2p(trace._origX[i]) - xa.c2p(ptx);
             if(dx < minDist) {
                 minDist = dx;
-                dy = ya.c2p(y[ids[i]]) - ypx;
-                if(trace._origY && trace._origY[i] !== undefined) dy += ya.c2p(trace._origY[i]) - ya.c2p(pty);
+                pty = y[k];
+                dy = ya.c2p(pty) - ypx;
                 dxy = Math.sqrt(dx * dx + dy * dy);
-                id = ids[i];
+                closestId = ids[i];
             }
         }
     } else {
         for(i = ids.length - 1; i > -1; i--) {
-            ptx = x[ids[i]];
-            pty = y[ids[i]];
+            k = ids[i];
+            ptx = x[k];
+            pty = y[k];
             dx = xa.c2p(ptx) - xpx;
             dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
             if(dist < minDist) {
                 minDist = dxy = dist;
-                id = ids[i];
+                closestId = k;
             }
         }
     }
 
-    pointData.index = id;
+    pointData.index = closestId;
     pointData.distance = minDist;
     pointData.dxy = dxy;
 
-    if(id === undefined) return [pointData];
+    if(closestId === undefined) return [pointData];
 
     return [calcHover(pointData, x, y, trace)];
 }
@@ -175,6 +176,9 @@ function calcHover(pointData, x, y, trace) {
 
         hovertemplate: di.ht
     });
+
+    if(origX) pointData2.xPeriod = di.x;
+    if(origY) pointData2.yPeriod = di.y;
 
     if(di.htx) pointData2.text = di.htx;
     else if(di.tx) pointData2.text = di.tx;

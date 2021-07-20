@@ -5407,6 +5407,52 @@ describe('hovermode: (x|y)unified', function() {
         });
     });
 
+    it('two end positioned scatter period', function(done) {
+        var fig = {
+            data: [{
+                x: [
+                    '1970-01-01',
+                    '1970-07-01',
+                    '1971-01-01'
+                ],
+                xperiod: 'M6',
+                xperiodalignment: 'end',
+                y: [1, 2, 3]
+            }, {
+                x: [
+                    '1970-01-01',
+                    '1970-07-01',
+                    '1971-01-01',
+                ],
+                xperiod: 'M6',
+                xperiodalignment: 'end',
+                y: [11, 12, 13]
+            }],
+            layout: {
+                showlegend: false,
+                width: 600,
+                height: 400,
+                hovermode: 'x unified'
+            }
+        };
+
+        Plotly.newPlot(gd, fig)
+        .then(function(gd) {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: 'Jul 1, 1970', items: [
+                'trace 0 : 2',
+                'trace 1 : 12'
+            ]});
+
+            _hover(gd, { xpx: 400, ypx: 200 });
+            assertLabel({title: 'Jan 1, 1971', items: [
+                'trace 0 : 3',
+                'trace 1 : 13'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
     it('period with hover distance -1 include closest not farthest', function(done) {
         Plotly.newPlot(gd, {
             data: [
