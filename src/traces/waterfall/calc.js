@@ -23,7 +23,6 @@ module.exports = function calc(gd, trace) {
         size = xa.makeCalcdata(trace, 'x');
         origPos = ya.makeCalcdata(trace, 'y');
         pObj = alignPeriod(trace, ya, 'y', origPos);
-        pos = pObj.vals;
         hasPeriod = !!trace.yperiodalignment;
     } else {
         size = ya.makeCalcdata(trace, 'y');
