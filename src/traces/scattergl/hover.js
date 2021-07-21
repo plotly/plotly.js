@@ -45,14 +45,39 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     var minDist = maxDistance;
     if(hovermode === 'x') {
+        var xPeriod = !!trace.xperiodalignment;
+        var yPeriod = !!trace.yperiodalignment;
+
         for(i = 0; i < ids.length; i++) {
             k = ids[i];
             ptx = x[k];
+
             dx = Math.abs(xa.c2p(ptx) - xpx);
+            if(xPeriod) {
+                var x0 = xa.c2p(trace._xStarts[k]);
+                var x1 = xa.c2p(trace._xEnds[k]);
+
+                dx = (
+                    xpx >= Math.min(x0, x1) &&
+                    xpx <= Math.max(x0, x1)
+                ) ? 0 : Infinity;
+            }
+
             if(dx < minDist) {
                 minDist = dx;
                 pty = y[k];
                 dy = ya.c2p(pty) - ypx;
+
+                if(yPeriod) {
+                    var y0 = ya.c2p(trace._yStarts[k]);
+                    var y1 = ya.c2p(trace._yEnds[k]);
+
+                    dy = (
+                        ypx >= Math.min(y0, y1) &&
+                        ypx <= Math.max(y0, y1)
+                    ) ? 0 : Infinity;
+                }
+
                 dxy = Math.sqrt(dx * dx + dy * dy);
                 closestId = ids[i];
             }
@@ -176,9 +201,6 @@ function calcHover(pointData, x, y, trace) {
 
         hovertemplate: di.ht
     });
-
-    if(origX) pointData2.xPeriod = di.x;
-    if(origY) pointData2.yPeriod = di.y;
 
     if(di.htx) pointData2.text = di.htx;
     else if(di.tx) pointData2.text = di.tx;
