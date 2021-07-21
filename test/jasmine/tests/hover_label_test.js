@@ -5406,7 +5406,7 @@ describe('hovermode: (x|y)unified', function() {
         alignment: 'end',
         x: 150
     }].forEach(function(t) {
-        it('two ' + t.alignment + ' period positioned ' + (t.barmode ? t.barmode + ' ' : '') + t.type + 's', function(done) {
+        it('two ' + t.alignment + ' period positioned ' + t.type + ' points', function(done) {
             var fig = {
                 data: [{
                     x: [
@@ -5432,7 +5432,6 @@ describe('hovermode: (x|y)unified', function() {
                     y: [1, 2, 3]
                 }],
                 layout: {
-                    barmode: t.barmode,
                     showlegend: false,
                     width: 600,
                     height: 400,
@@ -5488,7 +5487,7 @@ describe('hovermode: (x|y)unified', function() {
             barmode: 'stacked',
             alignment: 'end'
         }].forEach(function(t) {
-            it('two ' + t.alignment + ' period positioned ' + (t.barmode ? t.barmode + ' ' : '') + t.type + 's', function(done) {
+            it('two ' + t.alignment + ' period positioned ' + t.barmode + ' bars', function(done) {
                 var fig = {
                     data: [{
                         x: [
