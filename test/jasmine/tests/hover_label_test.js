@@ -5337,7 +5337,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     ['scatter', 'scattergl'].forEach(function(scatterType) {
-        fit(scatterType + ' period points alignments', function(done) {
+        it(scatterType + ' period points alignments', function(done) {
             Plotly.newPlot(gd, {
                 data: [
                     {
