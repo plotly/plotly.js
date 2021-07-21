@@ -18,8 +18,8 @@ function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
-    var x = alignPeriod(trace, xa, 'x', origX);
-    var y = alignPeriod(trace, ya, 'y', origY);
+    var x = alignPeriod(trace, xa, 'x', origX).vals;
+    var y = alignPeriod(trace, ya, 'y', origY).vals;
 
     var serieslen = trace._length;
     var cd = new Array(serieslen);

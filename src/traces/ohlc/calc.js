@@ -144,7 +144,7 @@ function convertTickWidth(gd, xa, trace) {
                 var origX = xa.makeCalcdata(tracei, 'x');
                 tracei._origX = origX;
 
-                var xcalc = alignPeriod(trace, xa, 'x', origX);
+                var xcalc = alignPeriod(trace, xa, 'x', origX).vals;
                 tracei._xcalc = xcalc;
 
                 var _minDiff = Lib.distinctVals(xcalc).minDiff;

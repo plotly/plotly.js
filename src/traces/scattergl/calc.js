@@ -31,8 +31,8 @@ module.exports = function calc(gd, trace) {
 
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
-    var x = alignPeriod(trace, xa, 'x', origX);
-    var y = alignPeriod(trace, ya, 'y', origY);
+    var x = alignPeriod(trace, xa, 'x', origX).vals;
+    var y = alignPeriod(trace, ya, 'y', origY).vals;
     trace._x = x;
     trace._y = y;
 
