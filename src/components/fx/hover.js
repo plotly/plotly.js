@@ -1071,25 +1071,38 @@ function createHoverText(hoverData, opts, gd) {
         legendDraw(gd, mockLegend);
 
         // Position the hover
-        var ly = axLetter === 'y' ?
-            Math.min.apply(null, hoverData.map(function(c) {return c.y1;})) :
-            Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
-        var lx = axLetter === 'x' ?
-            Math.max.apply(null, hoverData.map(function(c) {return c.x1;})) :
-            Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
+        var ly;
+        if(axLetter === 'y') {
+            ly = Math.min.apply(null, hoverData.map(function(c) {return c.y1;}));
+        } else {
+            ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
+        }
+
+        var lxRight, lxLeft;
+        if(axLetter === 'x') {
+            lxRight = Math.max.apply(null, hoverData.map(function(c) {return c.x1;}));
+            lxLeft = Math.min.apply(null, hoverData.map(function(c) {return c.x0;}));
+        } else {
+            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
+        }
 
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
-        lx += xa._offset;
+        lxRight += xa._offset;
+        lxLeft += xa._offset;
         ly += ya._offset - tbb.height / 2;
+
+        var lx = lxRight;
 
         // Change horizontal alignment to end up on screen
         var txWidth = tbb.width + 2 * HOVERTEXTPAD;
-        var anchorStartOK = lx + txWidth <= outerWidth;
-        var anchorEndOK = lx - txWidth >= 0;
-        if(!anchorStartOK && anchorEndOK) {
+        var anchorRightOK = lxRight + txWidth <= outerWidth;
+        var anchorLeftOK = lxLeft - txWidth >= 0;
+        if(!anchorRightOK && anchorLeftOK) {
+            lx = lxLeft;
             lx -= txWidth;
         } else {
+            lx = lxRight;
             lx += 2 * HOVERTEXTPAD;
         }
 
