@@ -46,6 +46,12 @@ var multipleHoverPoints = {
     candlestick: true
 };
 
+var cartesianScatterPoints = {
+    scatter: true,
+    scattergl: true,
+    splom: true
+};
+
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -574,12 +580,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     findHoverPoints();
 
-    function selectClosestPoint(pointsData, spikedistance) {
+    function selectClosestPoint(pointsData, spikedistance, spikeOnWinning) {
         var resultPoint = null;
         var minDistance = Infinity;
         var thisSpikeDistance;
+
         for(var i = 0; i < pointsData.length; i++) {
             thisSpikeDistance = pointsData[i].spikeDistance;
+            if(spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
+
             if(thisSpikeDistance <= minDistance && thisSpikeDistance <= spikedistance) {
                 resultPoint = pointsData[i];
                 minDistance = thisSpikeDistance;
@@ -616,19 +625,30 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     };
     gd._spikepoints = newspikepoints;
 
+    var sortHoverData = function() {
+        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+
+        // move period positioned points and box/bar-like traces to the end of the list
+        hoverData = orderRangePoints(hoverData, hovermode);
+    };
+    sortHoverData();
+
+    var axLetter = hovermode.charAt(0);
+    var spikeOnWinning = (axLetter === 'x' || axLetter === 'y') && hoverData[0] && cartesianScatterPoints[hoverData[0].trace.type];
+
     // Now if it is not restricted by spikedistance option, set the points to draw the spikelines
     if(hasCartesian && (spikedistance !== 0)) {
         if(hoverData.length !== 0) {
             var tmpHPointData = hoverData.filter(function(point) {
                 return point.ya.showspikes;
             });
-            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance);
+            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance, spikeOnWinning);
             spikePoints.hLinePoint = fillSpikePoint(tmpHPoint);
 
             var tmpVPointData = hoverData.filter(function(point) {
                 return point.xa.showspikes;
             });
-            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance);
+            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance, spikeOnWinning);
             spikePoints.vLinePoint = fillSpikePoint(tmpVPoint);
         }
     }
@@ -649,14 +669,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             createSpikelines(gd, spikePoints, spikelineOpts);
         }
     }
-
-    var sortHoverData = function() {
-        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
-
-        // move period positioned points and box/bar-like traces to the end of the list
-        hoverData = orderRangePoints(hoverData, hovermode);
-    };
-    sortHoverData();
 
     if(
         helpers.isXYhover(_mode) &&
@@ -1074,7 +1086,7 @@ function createHoverText(hoverData, opts, gd) {
         var winningPoint = hoverData[0];
 
         // When the scatter point wins, it's OK for the hovelabel to occlude the bar and other points.
-        var scatterWon = winningPoint.trace.type === 'scatter';
+        var scatterWon = cartesianScatterPoints[winningPoint.trace.type];
 
         var lyBottom, lyTop;
         if(axLetter === 'y') {
