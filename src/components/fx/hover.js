@@ -1117,11 +1117,11 @@ function createHoverText(hoverData, opts, gd) {
         var lx, ly; // top and left positions of the hover box
 
         // horizontal alignment to end up on screen
-        if(lxRight + tWidth <= outerWidth && lxRight >= 0) {
+        if(lxRight + tWidth < outerWidth && lxRight >= 0) {
             lx = lxRight;
-        } else if(lxLeft + tWidth <= outerWidth && lxLeft >= 0) {
+        } else if(lxLeft + tWidth < outerWidth && lxLeft >= 0) {
             lx = lxLeft;
-        } else if(xOffset + tWidth <= outerWidth) {
+        } else if(xOffset + tWidth < outerWidth) {
             lx = xOffset; // subplot left corner
         } else {
             lx = 0; // paper left corner
@@ -1129,11 +1129,11 @@ function createHoverText(hoverData, opts, gd) {
         lx += HOVERTEXTPAD;
 
         // vertical alignement to end up on screen
-        if(lyBottom + tHeight <= outerHeight && lyBottom >= 0) {
+        if(lyBottom + tHeight < outerHeight && lyBottom >= 0) {
             ly = lyBottom;
-        } else if(lyTop + tHeight <= outerHeight && lyTop >= 0) {
+        } else if(lyTop + tHeight < outerHeight && lyTop >= 0) {
             ly = lyTop;
-        } else if(yOffset + tHeight <= outerHeight) {
+        } else if(yOffset + tHeight < outerHeight) {
             ly = yOffset; // subplot top corner
         } else {
             ly = 0; // paper top corner
