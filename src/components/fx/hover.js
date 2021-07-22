@@ -1089,39 +1089,34 @@ function createHoverText(hoverData, opts, gd) {
 
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
-        var txWidth = tbb.width + 2 * HOVERTEXTPAD;
-        var txHeight = tbb.height + 2 * HOVERTEXTPAD;
+        var tWidth = tbb.width;
+        var tHeight = tbb.height;
 
         var xOffset = xa._offset;
         var yOffset = ya._offset;
-        lxRight += xOffset;
-        lxLeft += xOffset;
-        lyTop += yOffset;
-        lyBottom += yOffset;
+        lyBottom += yOffset + HOVERTEXTPAD;
+        lxRight += xOffset + HOVERTEXTPAD;
+        lxLeft += xOffset - tWidth - HOVERTEXTPAD;
+        lyTop += yOffset - tHeight - HOVERTEXTPAD;
 
-        var lx = lxRight;
-        var ly = lyTop;
+        var lx, ly;
 
-        // Change horizontal alignment to end up on screen
-        var anchorRightOK = lxRight + txWidth <= outerWidth;
-        var anchorLeftOK = lxLeft - txWidth >= 0;
-        if(!anchorRightOK && anchorLeftOK) {
-            lx = lxLeft;
-            lx -= txWidth;
-        } else {
+        // horizontal alignment to end up on screen
+        if(lxRight + tWidth + HOVERTEXTPAD <= outerWidth && lxRight - HOVERTEXTPAD >= 0) {
             lx = lxRight;
-            lx += 2 * HOVERTEXTPAD;
+        } else if(lxLeft + HOVERTEXTPAD <= outerWidth && lxLeft - HOVERTEXTPAD >= 0) {
+            lx = lxLeft;
+        } else {
+            lx = xOffset;
         }
 
-        // Change vertical alignement to end up on screen
-        var anchorBottomOK = lyBottom + txHeight <= outerHeight;
-        var anchorTopOK = lyTop - txHeight >= 0;
-        if(!anchorTopOK && anchorBottomOK) {
+        // vertical alignement to end up on screen
+        if(lyBottom + tHeight + HOVERTEXTPAD <= outerHeight && lyBottom - HOVERTEXTPAD >= 0) {
             ly = lyBottom;
-            ly += 2 * HOVERTEXTPAD;
-        } else {
+        } else if(lyTop + HOVERTEXTPAD <= outerHeight && lyTop - HOVERTEXTPAD >= 0) {
             ly = lyTop;
-            ly -= txHeight;
+        } else {
+            ly = yOffset;
         }
 
         legendContainer.attr('transform', strTranslate(lx, ly));
