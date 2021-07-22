@@ -1089,6 +1089,9 @@ function createHoverText(hoverData, opts, gd) {
 
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
+        var txWidth = tbb.width + 2 * HOVERTEXTPAD;
+        var txHeight = tbb.height + 2 * HOVERTEXTPAD;
+
         var xOffset = xa._offset;
         var yOffset = ya._offset;
         lxRight += xOffset;
@@ -1100,7 +1103,6 @@ function createHoverText(hoverData, opts, gd) {
         var ly = lyTop;
 
         // Change horizontal alignment to end up on screen
-        var txWidth = tbb.width + 2 * HOVERTEXTPAD;
         var anchorRightOK = lxRight + txWidth <= outerWidth;
         var anchorLeftOK = lxLeft - txWidth >= 0;
         if(!anchorRightOK && anchorLeftOK) {
@@ -1112,7 +1114,6 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         // Change vertical alignement to end up on screen
-        var txHeight = tbb.height + 2 * HOVERTEXTPAD;
         var anchorBottomOK = lyBottom + txHeight <= outerHeight;
         var anchorTopOK = lyTop - txHeight >= 0;
         if(!anchorTopOK && anchorBottomOK) {
