@@ -1071,28 +1071,33 @@ function createHoverText(hoverData, opts, gd) {
         legendDraw(gd, mockLegend);
 
         // Position the hover
-        var ly;
+        var lyBottom, lyTop;
         if(axLetter === 'y') {
-            ly = Math.min.apply(null, hoverData.map(function(c) {return c.y1;}));
+            lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1);}));
+            lyBottom = Math.max.apply(null, hoverData.map(function(c) {return Math.max(c.y0, c.y1);}));
         } else {
-            ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
+            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
         }
 
         var lxRight, lxLeft;
         if(axLetter === 'x') {
-            lxRight = Math.max.apply(null, hoverData.map(function(c) {return c.x1;}));
-            lxLeft = Math.min.apply(null, hoverData.map(function(c) {return c.x0;}));
+            lxRight = Math.max.apply(null, hoverData.map(function(c) {return Math.max(c.x0, c.x1);}));
+            lxLeft = Math.min.apply(null, hoverData.map(function(c) {return Math.min(c.x0, c.x1);}));
         } else {
             lxRight = lxLeft = Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
         }
 
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
-        lxRight += xa._offset;
-        lxLeft += xa._offset;
-        ly += ya._offset - tbb.height / 2;
+        var xOffset = xa._offset;
+        var yOffset = ya._offset;
+        lxRight += xOffset;
+        lxLeft += xOffset;
+        lyTop += yOffset;
+        lyBottom += yOffset;
 
         var lx = lxRight;
+        var ly = lyTop;
 
         // Change horizontal alignment to end up on screen
         var txWidth = tbb.width + 2 * HOVERTEXTPAD;
@@ -1108,18 +1113,17 @@ function createHoverText(hoverData, opts, gd) {
 
         // Change vertical alignement to end up on screen
         var txHeight = tbb.height + 2 * HOVERTEXTPAD;
-        var overflowTop = ly <= outerTop;
-        var overflowBottom = ly + txHeight >= outerHeight;
-        var canFit = txHeight <= outerHeight;
-        if(canFit) {
-            if(overflowTop) {
-                ly = ya._offset + 2 * HOVERTEXTPAD;
-            } else if(overflowBottom) {
-                ly = outerHeight - txHeight;
-            }
+        var anchorBottomOK = lyBottom + txHeight <= outerHeight;
+        var anchorTopOK = lyTop - txHeight >= 0;
+        if(!anchorTopOK && anchorBottomOK) {
+            ly = lyBottom;
+            ly += 2 * HOVERTEXTPAD;
+        } else {
+            ly = lyTop;
+            ly -= txHeight;
         }
-        legendContainer.attr('transform', strTranslate(lx, ly));
 
+        legendContainer.attr('transform', strTranslate(lx, ly));
         return legendContainer;
     }
 
