@@ -1095,7 +1095,7 @@ function createHoverText(hoverData, opts, gd) {
                 lxRight = Math.max(winningPoint.x0, winningPoint.x1);
                 lxLeft = Math.min(winningPoint.x0, winningPoint.x1);
             } else {
-                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }) );
+                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
                 lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
             }
         } else {
