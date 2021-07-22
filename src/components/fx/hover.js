@@ -1089,35 +1089,41 @@ function createHoverText(hoverData, opts, gd) {
 
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
-        var tWidth = tbb.width;
-        var tHeight = tbb.height;
+        var tWidth = tbb.width + 2 * HOVERTEXTPAD;
+        var tHeight = tbb.height + 2 * HOVERTEXTPAD;
 
         var xOffset = xa._offset;
         var yOffset = ya._offset;
-        lyBottom += yOffset + HOVERTEXTPAD;
-        lxRight += xOffset + HOVERTEXTPAD;
-        lxLeft += xOffset - tWidth - HOVERTEXTPAD;
-        lyTop += yOffset - tHeight - HOVERTEXTPAD;
+        lyBottom += yOffset;
+        lxRight += xOffset;
+        lxLeft += xOffset - tWidth;
+        lyTop += yOffset - tHeight;
 
-        var lx, ly;
+        var lx, ly; // top and left positions of the hover box
 
         // horizontal alignment to end up on screen
-        if(lxRight + tWidth + HOVERTEXTPAD <= outerWidth && lxRight - HOVERTEXTPAD >= 0) {
+        if(lxRight + tWidth <= outerWidth && lxRight >= 0) {
             lx = lxRight;
-        } else if(lxLeft + HOVERTEXTPAD <= outerWidth && lxLeft - HOVERTEXTPAD >= 0) {
+        } else if(lxLeft + tWidth <= outerWidth && lxLeft >= 0) {
             lx = lxLeft;
+        } else if(xOffset + tWidth <= outerWidth) {
+            lx = xOffset; // subplot left corner
         } else {
-            lx = xOffset;
+            lx = 0; // paper left corner
         }
+        lx += HOVERTEXTPAD;
 
         // vertical alignement to end up on screen
-        if(lyBottom + tHeight + HOVERTEXTPAD <= outerHeight && lyBottom - HOVERTEXTPAD >= 0) {
+        if(lyBottom + tHeight <= outerHeight && lyBottom >= 0) {
             ly = lyBottom;
-        } else if(lyTop + HOVERTEXTPAD <= outerHeight && lyTop - HOVERTEXTPAD >= 0) {
+        } else if(lyTop + tHeight <= outerHeight && lyTop >= 0) {
             ly = lyTop;
+        } else if(yOffset + tHeight <= outerHeight) {
+            ly = yOffset; // subplot top corner
         } else {
-            ly = yOffset;
+            ly = 0; // paper top corner
         }
+        ly += HOVERTEXTPAD;
 
         legendContainer.attr('transform', strTranslate(lx, ly));
         return legendContainer;
