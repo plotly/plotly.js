@@ -1071,20 +1071,35 @@ function createHoverText(hoverData, opts, gd) {
         legendDraw(gd, mockLegend);
 
         // Position the hover
+        var winningPoint = hoverData[0];
+
+        // When the scatter point wins, it's OK for the hovelabel to occlude the bar and other points.
+        var scatterWon = winningPoint.trace.type === 'scatter';
+
         var lyBottom, lyTop;
         if(axLetter === 'y') {
-            lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1);}));
-            lyBottom = Math.max.apply(null, hoverData.map(function(c) {return Math.max(c.y0, c.y1);}));
+            if(scatterWon) {
+                lyTop = Math.min(winningPoint.y0, winningPoint.y1);
+                lyBottom = Math.max(winningPoint.y0, winningPoint.y1);
+            } else {
+                lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
+                lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
+            }
         } else {
-            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
+            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; }));
         }
 
         var lxRight, lxLeft;
         if(axLetter === 'x') {
-            lxRight = Math.max.apply(null, hoverData.map(function(c) {return Math.max(c.x0, c.x1);}));
-            lxLeft = Math.min.apply(null, hoverData.map(function(c) {return Math.min(c.x0, c.x1);}));
+            if(scatterWon) {
+                lxRight = Math.max(winningPoint.x0, winningPoint.x1);
+                lxLeft = Math.min(winningPoint.x0, winningPoint.x1);
+            } else {
+                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }) );
+                lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
+            }
         } else {
-            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
+            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; }));
         }
 
         var legendContainer = container.select('g.legend');
