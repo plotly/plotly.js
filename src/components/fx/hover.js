@@ -1088,6 +1088,8 @@ function createHoverText(hoverData, opts, gd) {
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
         var winningPoint = hoverData[0];
+        var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
+        var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
         // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
         var pointWon = !(
             Registry.traceIs(winningPoint.trace, 'bar-like') ||
@@ -1097,8 +1099,8 @@ function createHoverText(hoverData, opts, gd) {
         var lyBottom, lyTop;
         if(axLetter === 'y') {
             if(pointWon) {
-                lyTop = (winningPoint.y0 + winningPoint.y1) / 2 - HOVERTEXTPAD;
-                lyBottom = (winningPoint.y0 + winningPoint.y1) / 2 + HOVERTEXTPAD;
+                lyTop = avgY - HOVERTEXTPAD;
+                lyBottom = avgY + HOVERTEXTPAD;
             } else {
                 lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
                 lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
@@ -1110,8 +1112,8 @@ function createHoverText(hoverData, opts, gd) {
         var lxRight, lxLeft;
         if(axLetter === 'x') {
             if(pointWon) {
-                lxRight = (winningPoint.x0 + winningPoint.x1) / 2 + HOVERTEXTPAD;
-                lxLeft = (winningPoint.x0 + winningPoint.x1) / 2 - HOVERTEXTPAD;
+                lxRight = avgX + HOVERTEXTPAD;
+                lxLeft = avgX - HOVERTEXTPAD;
             } else {
                 lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
                 lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
@@ -1137,7 +1139,12 @@ function createHoverText(hoverData, opts, gd) {
         } else if(xOffset + tWidth < outerWidth) {
             lx = xOffset; // subplot left corner
         } else {
-            lx = 0; // paper left corner
+            // closest left or right side of the paper
+            if(lxRight - avgX < avgX - lxLeft + tWidth) {
+                lx = outerWidth - tWidth;
+            } else {
+                lx = 0;
+            }
         }
         lx += HOVERTEXTPAD;
 
@@ -1149,7 +1156,12 @@ function createHoverText(hoverData, opts, gd) {
         } else if(yOffset + tHeight < outerHeight) {
             ly = yOffset; // subplot top corner
         } else {
-            ly = 0; // paper top corner
+            // closest top or bottom side of the paper
+            if(lyBottom - avgY < avgY - lyTop + tHeight) {
+                ly = outerHeight - tHeight;
+            } else {
+                ly = 0;
+            }
         }
         ly += HOVERTEXTPAD;
 
