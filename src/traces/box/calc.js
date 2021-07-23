@@ -311,7 +311,7 @@ function getPosArrays(trace, posLetter, posAxis, num) {
 
     if(hasPosArray || (hasPos0 && hasPosStep)) {
         var origPos = posAxis.makeCalcdata(trace, posLetter);
-        var pos = alignPeriod(trace, posAxis, posLetter, origPos);
+        var pos = alignPeriod(trace, posAxis, posLetter, origPos).vals;
         return [pos, origPos];
     }
 
