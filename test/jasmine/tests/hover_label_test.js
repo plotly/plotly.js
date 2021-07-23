@@ -5393,6 +5393,64 @@ describe('hovermode: (x|y)unified', function() {
         });
     });
 
+    ['scatter', 'scattergl'].forEach(function(scatterType) {
+        it(scatterType + ' period points alignments (all end edge case)', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        name: 'bar',
+                        type: 'bar',
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                    {
+                        name: 'start',
+                        type: scatterType,
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                    {
+                        name: 'end',
+                        type: scatterType,
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                ],
+                layout: {
+                    showlegend: false,
+                    width: 600,
+                    height: 400,
+                    hovermode: 'x unified'
+                }
+            })
+            .then(function(gd) {
+                _hover(gd, { xpx: 50, ypx: 200 });
+                assertLabel({title: 'Jan', items: [
+                    'bar : 1',
+                    'start : 1',
+                    'end : 1',
+                ]});
+
+                _hover(gd, { xpx: 350, ypx: 200 });
+                assertLabel({title: 'Feb', items: [
+                    'bar : 2',
+                    'start : 2',
+                    'end : 2',
+                ]});
+            })
+            .then(done, done.fail);
+        });
+    });
+
     [{
         type: 'scatter',
         alignment: 'start',

@@ -202,6 +202,9 @@ function calcHover(pointData, x, y, trace) {
         hovertemplate: di.ht
     });
 
+    if(trace.xperiodalignment === 'end') pointData2.xPeriod = di.x;
+    if(trace.yperiodalignment === 'end') pointData2.yPeriod = di.y;
+
     if(di.htx) pointData2.text = di.htx;
     else if(di.tx) pointData2.text = di.tx;
     else if(trace.text) pointData2.text = trace.text;
