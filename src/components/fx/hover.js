@@ -1165,7 +1165,7 @@ function createHoverText(hoverData, opts, gd) {
         }
         ly += HOVERTEXTPAD;
 
-        legendContainer.attr('transform', strTranslate(lx, ly));
+        legendContainer.attr('transform', strTranslate(lx - 1, ly - 1));
         return legendContainer;
     }
 
