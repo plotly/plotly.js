@@ -57,10 +57,9 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        if(period) {
-            return di.p + sgn * Math.abs(di.p - di.orig_p);
-        }
-        return di[posLetter] + sgn * di.w / 2;
+        var w = (period) ? di.wPeriod : di.w;
+
+        return di[posLetter] + sgn * w / 2;
     }
 
     var minPos = isClosest || period ?
@@ -180,6 +179,9 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
 
     var hasPeriod = di.orig_p !== undefined;
     pointData[posLetter + 'LabelVal'] = hasPeriod ? di.orig_p : di.p;
+    if(hasPeriod) {
+        pointData[posLetter + 'Period'] = di.p;
+    }
 
     pointData.labelLabel = hoverLabelText(pa, pointData[posLetter + 'LabelVal'], trace[posLetter + 'hoverformat']);
     pointData.valueLabel = hoverLabelText(sa, pointData[sizeLetter + 'LabelVal'], trace[sizeLetter + 'hoverformat']);

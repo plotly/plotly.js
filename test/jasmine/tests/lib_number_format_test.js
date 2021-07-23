@@ -128,4 +128,10 @@ describe('number format', function() {
             expect(numberFormat(format)(String(-number))).toEqual(negExp, 'string negative');
         });
     });
+
+    it('padding and alignment without formatting numbers', function() {
+        expect(numberFormat('<10c')(123.456)).toEqual('123.456   ', 'left');
+        expect(numberFormat('>10c')(123.456)).toEqual('   123.456', 'right');
+        expect(numberFormat('^10c')(123.456)).toEqual(' 123.456  ', 'center');
+    });
 });
