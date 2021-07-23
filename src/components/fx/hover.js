@@ -1088,14 +1088,17 @@ function createHoverText(hoverData, opts, gd) {
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
         var winningPoint = hoverData[0];
-        // When the scatter point wins, it's OK for the hovelabel to occlude the bar and other points.
-        var scatterWon = cartesianScatterPoints[winningPoint.trace.type];
+        // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
+        var pointWon = !(
+            Registry.traceIs(winningPoint.trace, 'bar-like') ||
+            Registry.traceIs(winningPoint.trace, 'box-violin')
+        );
 
         var lyBottom, lyTop;
         if(axLetter === 'y') {
-            if(scatterWon) {
-                lyTop = Math.min(winningPoint.y0, winningPoint.y1);
-                lyBottom = Math.max(winningPoint.y0, winningPoint.y1);
+            if(pointWon) {
+                lyTop = (winningPoint.y0 + winningPoint.y1) / 2 - HOVERTEXTPAD;
+                lyBottom = (winningPoint.y0 + winningPoint.y1) / 2 + HOVERTEXTPAD;
             } else {
                 lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
                 lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
@@ -1106,9 +1109,9 @@ function createHoverText(hoverData, opts, gd) {
 
         var lxRight, lxLeft;
         if(axLetter === 'x') {
-            if(scatterWon) {
-                lxRight = Math.max(winningPoint.x0, winningPoint.x1);
-                lxLeft = Math.min(winningPoint.x0, winningPoint.x1);
+            if(pointWon) {
+                lxRight = (winningPoint.x0 + winningPoint.x1) / 2 + HOVERTEXTPAD;
+                lxLeft = (winningPoint.x0 + winningPoint.x1) / 2 - HOVERTEXTPAD;
             } else {
                 lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
                 lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
