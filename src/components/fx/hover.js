@@ -1083,8 +1083,11 @@ function createHoverText(hoverData, opts, gd) {
         legendDraw(gd, mockLegend);
 
         // Position the hover
+        var legendContainer = container.select('g.legend');
+        var tbb = legendContainer.node().getBoundingClientRect();
+        var tWidth = tbb.width + 2 * HOVERTEXTPAD;
+        var tHeight = tbb.height + 2 * HOVERTEXTPAD;
         var winningPoint = hoverData[0];
-
         // When the scatter point wins, it's OK for the hovelabel to occlude the bar and other points.
         var scatterWon = cartesianScatterPoints[winningPoint.trace.type];
 
@@ -1098,7 +1101,7 @@ function createHoverText(hoverData, opts, gd) {
                 lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
             }
         } else {
-            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; }));
+            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
         }
 
         var lxRight, lxLeft;
@@ -1111,13 +1114,8 @@ function createHoverText(hoverData, opts, gd) {
                 lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
             }
         } else {
-            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; }));
+            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
         }
-
-        var legendContainer = container.select('g.legend');
-        var tbb = legendContainer.node().getBoundingClientRect();
-        var tWidth = tbb.width + 2 * HOVERTEXTPAD;
-        var tHeight = tbb.height + 2 * HOVERTEXTPAD;
 
         var xOffset = xa._offset;
         var yOffset = ya._offset;
