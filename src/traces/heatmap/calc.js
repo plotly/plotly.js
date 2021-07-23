@@ -54,8 +54,8 @@ module.exports = function calc(gd, trace) {
         } else {
             origX = trace.x ? xa.makeCalcdata(trace, 'x') : [];
             origY = trace.y ? ya.makeCalcdata(trace, 'y') : [];
-            x = alignPeriod(trace, xa, 'x', origX);
-            y = alignPeriod(trace, ya, 'y', origY);
+            x = alignPeriod(trace, xa, 'x', origX).vals;
+            y = alignPeriod(trace, ya, 'y', origY).vals;
             trace._x = x;
             trace._y = y;
         }

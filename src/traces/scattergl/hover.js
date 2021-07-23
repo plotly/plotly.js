@@ -41,40 +41,68 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var id, ptx, pty, i, dx, dy, dist, dxy;
+    var k, closestId, ptx, pty, i, dx, dy, dist, dxy;
 
     var minDist = maxDistance;
     if(hovermode === 'x') {
+        var xPeriod = !!trace.xperiodalignment;
+        var yPeriod = !!trace.yperiodalignment;
+
         for(i = 0; i < ids.length; i++) {
-            ptx = x[ids[i]];
+            k = ids[i];
+            ptx = x[k];
+
             dx = Math.abs(xa.c2p(ptx) - xpx);
+            if(xPeriod) {
+                var x0 = xa.c2p(trace._xStarts[k]);
+                var x1 = xa.c2p(trace._xEnds[k]);
+
+                dx = (
+                    xpx >= Math.min(x0, x1) &&
+                    xpx <= Math.max(x0, x1)
+                ) ? 0 : Infinity;
+            }
+
             if(dx < minDist) {
                 minDist = dx;
-                dy = ya.c2p(y[ids[i]]) - ypx;
+                pty = y[k];
+                dy = ya.c2p(pty) - ypx;
+
+                if(yPeriod) {
+                    var y0 = ya.c2p(trace._yStarts[k]);
+                    var y1 = ya.c2p(trace._yEnds[k]);
+
+                    dy = (
+                        ypx >= Math.min(y0, y1) &&
+                        ypx <= Math.max(y0, y1)
+                    ) ? 0 : Infinity;
+                }
+
                 dxy = Math.sqrt(dx * dx + dy * dy);
-                id = ids[i];
+                closestId = ids[i];
             }
         }
     } else {
         for(i = ids.length - 1; i > -1; i--) {
-            ptx = x[ids[i]];
-            pty = y[ids[i]];
+            k = ids[i];
+            ptx = x[k];
+            pty = y[k];
             dx = xa.c2p(ptx) - xpx;
             dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
             if(dist < minDist) {
                 minDist = dxy = dist;
-                id = ids[i];
+                closestId = k;
             }
         }
     }
 
-    pointData.index = id;
+    pointData.index = closestId;
     pointData.distance = minDist;
     pointData.dxy = dxy;
 
-    if(id === undefined) return [pointData];
+    if(closestId === undefined) return [pointData];
 
     return [calcHover(pointData, x, y, trace)];
 }
@@ -153,16 +181,19 @@ function calcHover(pointData, x, y, trace) {
     var fakeCd = {};
     fakeCd[pointData.index] = di;
 
+    var origX = trace._origX;
+    var origY = trace._origY;
+
     var pointData2 = Lib.extendFlat({}, pointData, {
         color: getTraceColor(trace, di),
 
         x0: xp - rad,
         x1: xp + rad,
-        xLabelVal: di.x,
+        xLabelVal: origX ? origX[id] : di.x,
 
         y0: yp - rad,
         y1: yp + rad,
-        yLabelVal: di.y,
+        yLabelVal: origY ? origY[id] : di.y,
 
         cd: fakeCd,
         distance: minDist,
@@ -170,6 +201,9 @@ function calcHover(pointData, x, y, trace) {
 
         hovertemplate: di.ht
     });
+
+    if(trace.xperiodalignment === 'end') pointData2.xPeriod = di.x;
+    if(trace.yperiodalignment === 'end') pointData2.yPeriod = di.y;
 
     if(di.htx) pointData2.text = di.htx;
     else if(di.tx) pointData2.text = di.tx;
