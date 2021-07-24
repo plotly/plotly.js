@@ -1395,4 +1395,3 @@ lib.getPositionFromD3Event = function() {
         ];
     }
 };
-

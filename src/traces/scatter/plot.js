@@ -280,8 +280,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     lineJoin
         .classed('js-line', true)
         .style('vector-effect', 'non-scaling-stroke')
-        .call(Drawing.lineGroupStyle)
-        //.each(makeUpdate(true));
+        .call(Drawing.lineGroupStyle);
+        // .each(makeUpdate(true));
 
     transition(lineJoin.exit())
         .style('opacity', 0)

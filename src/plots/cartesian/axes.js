@@ -2889,8 +2889,6 @@ axes.drawGrid = function(gd, ax, opts) {
     hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
-
-
 };
 
 /**
