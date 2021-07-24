@@ -675,15 +675,18 @@ console.log('Total succeeded now:', succeeded.length);
 console.log(JSON.stringify({ succeeded: succeeded }, null, 2));
 
 if(failed.length || skipped.length) {
+    console.error(JSON.stringify({
+        failed: failed,
+        skipped: skipped
+    }, null, 2));
+
+    var c = 0;
     for(var k = 0; k < failed.length; k++) {
         var f = failed[k];
         if(whiteList.indexOf(f) !== -1) {
             console.error('"' + f + '" used to pass; but now it does not pass!');
+            c++;
         }
     }
-
-    throw JSON.stringify({
-        failed: failed,
-        skipped: skipped
-    }, null, 2);
+    if(c) throw 'Reduced success rate!';
 }
