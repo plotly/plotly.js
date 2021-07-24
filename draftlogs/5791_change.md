@@ -1,1 +1,0 @@
- - Adjust CONTRIBUTING document on how to clone plotly.js and submit pull requests from your fork [[#5791](https://github.com/plotly/plotly.js/pull/5791)]

@@ -523,12 +523,17 @@ describe('spikeline hover', function() {
             _hover({xpx: 200, ypx: 200});
             lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
-            expect(lines[0][1].getAttribute('stroke')).toBe('blue');
+            expect(lines[0][1].getAttribute('stroke')).toBe('green');
 
             _hover({xpx: 200, ypx: 350});
             lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
             expect(lines[0][1].getAttribute('stroke')).toBe('green');
+
+            _hover({xpx: 300, ypx: 350});
+            lines = d3SelectAll('line.spikeline');
+            expect(lines.size()).toBe(4);
+            expect(lines[0][1].getAttribute('stroke')).toBe('blue');
         })
         .then(done, done.fail);
     });
@@ -717,10 +722,10 @@ describe('spikeline hover', function() {
         .then(done, done.fail);
     });
 
-    it('correctly draws lines up to the last point', function(done) {
+    it('correctly draws lines up to the winning point', function(done) {
         Plotly.newPlot(gd, [
             {type: 'bar', y: [5, 7, 9, 6, 4, 3]},
-            {y: [5, 7, 9, 6, 4, 3]},
+            {y: [5, 7, 9, 6, 4, 3], marker: {color: 'green'}},
             {y: [5, 7, 9, 6, 4, 3], marker: {color: 'red'}}
         ], {
             hovermode: 'x',
@@ -735,8 +740,8 @@ describe('spikeline hover', function() {
 
             var lines = d3SelectAll('line.spikeline');
             expect(lines.size()).toBe(4);
-            expect(lines[0][1].getAttribute('stroke')).toBe('red');
-            expect(lines[0][3].getAttribute('stroke')).toBe('red');
+            expect(lines[0][1].getAttribute('stroke')).toBe('green');
+            expect(lines[0][3].getAttribute('stroke')).toBe('green');
         })
         .then(done, done.fail);
     });
