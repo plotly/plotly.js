@@ -57,6 +57,7 @@ function unique(value, index, self) {
 }
 allMockList = allMockList.filter(unique);
 
+var succeeded = [];
 var skipped = [];
 var failed = [];
 var fail = function(mockName) {
@@ -140,8 +141,13 @@ for(var i = 0; i < allMockList.length; i++) {
     } else {
         // remove when identical
         fs.unlinkSync(imagePaths.test);
+
+        succeeded.push(mockName);
     }
 }
+
+console.log('Total succeeded:', succeeded.length);
+console.log(JSON.stringify({ succeeded: succeeded }, null, 2));
 
 if(failed.length || skipped.length) {
     throw JSON.stringify({
