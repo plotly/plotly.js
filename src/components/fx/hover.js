@@ -813,10 +813,7 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(allHoverData, opts, gd) {
-    var hoverData = allHoverData.filter(function(d) {
-        return d.hoverinfo !== 'none';
-    });
+function createHoverText(hoverData, opts, gd) {
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -1028,11 +1025,14 @@ function createHoverText(allHoverData, opts, gd) {
 
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
+        var unifiedHoverData = hoverData.filter(function(d) {
+            return d.hoverinfo !== 'none';
+        });
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
 
         // Return early if nothing is hovered on
-        if(hoverData.length === 0) return;
+        if(unifiedHoverData.length === 0) return;
 
         // mock legend
         var mockLayoutIn = {
@@ -1054,11 +1054,11 @@ function createHoverText(allHoverData, opts, gd) {
 
         // prepare items for the legend
         mockLegend.entries = [];
-        for(var j = 0; j < hoverData.length; j++) {
-            var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
+        for(var j = 0; j < unifiedHoverData.length; j++) {
+            var texts = getHoverLabelText(unifiedHoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
-            var pt = hoverData[j];
+            var pt = unifiedHoverData[j];
             pt.name = name;
             if(name !== '') {
                 pt.text = name + ' : ' + text;
@@ -1093,7 +1093,7 @@ function createHoverText(allHoverData, opts, gd) {
         var tbb = legendContainer.node().getBoundingClientRect();
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
-        var winningPoint = hoverData[0];
+        var winningPoint = unifiedHoverData[0];
         var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
         var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
         // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
@@ -1108,11 +1108,11 @@ function createHoverText(allHoverData, opts, gd) {
                 lyTop = avgY - HOVERTEXTPAD;
                 lyBottom = avgY + HOVERTEXTPAD;
             } else {
-                lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
-                lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
+                lyTop = Math.min.apply(null, unifiedHoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
+                lyBottom = Math.max.apply(null, unifiedHoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
             }
         } else {
-            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
+            lyTop = lyBottom = Lib.mean(unifiedHoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
         }
 
         var lxRight, lxLeft;
@@ -1121,11 +1121,11 @@ function createHoverText(allHoverData, opts, gd) {
                 lxRight = avgX + HOVERTEXTPAD;
                 lxLeft = avgX - HOVERTEXTPAD;
             } else {
-                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
-                lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
+                lxRight = Math.max.apply(null, unifiedHoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
+                lxLeft = Math.min.apply(null, unifiedHoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
             }
         } else {
-            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
+            lxRight = lxLeft = Lib.mean(unifiedHoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
         }
 
         var xOffset = xa._offset;
