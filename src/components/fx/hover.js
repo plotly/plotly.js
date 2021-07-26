@@ -772,7 +772,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         hoverdistance: fullLayout.hoverdistance
     };
 
-    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
+    var actualHoverData = hoverData.filter(function(d) {
+        return d.hoverinfo !== 'none';
+    });
+    var hoverLabels = createHoverText(actualHoverData, labelOpts, gd);
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
