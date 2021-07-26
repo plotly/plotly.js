@@ -813,7 +813,10 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(allHoverData, opts, gd) {
+    var hoverData = allHoverData.filter(function(d) {
+        return d.hoverinfo !== 'none';
+    });
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
