@@ -12,7 +12,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [2.3.0] -- 2021-07-23
 
 ### Added
- - Add new number formatting and text alignment options by upgrading `d3.format` method from d3@v3 to version 1.4.5 of `d3-format` module [[#5615](https://github.com/plotly/plotly.js/pull/5615), [#5842](https://github.com/plotly/plotly.js/pull/5842)]
+ - Add new number formatting and text alignment options by upgrading `d3.format` method from d3@v3 to version 1.4.5 of `d3-format` module [[#5125](https://github.com/plotly/plotly.js/pull/5125), [#5842](https://github.com/plotly/plotly.js/pull/5842)]
  - Add "satellite" and several other projection types to geo subplots [[#5801](https://github.com/plotly/plotly.js/pull/5801)]
  - Improve rendering of `scattergl`, `splom` and `parcoords` by implementing `plotGlPixelRatio` for those traces [[#5500](https://github.com/plotly/plotly.js/pull/5500)]
 
