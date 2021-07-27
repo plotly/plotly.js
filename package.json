@@ -105,7 +105,7 @@
     "gl-pointcloud2d": "^1.0.3",
     "gl-scatter3d": "^1.2.3",
     "gl-select-box": "^1.0.4",
-    "gl-shader": "^4.2.1",
+    "gl-shader": "git://github.com/archmoj/gl-shader.git#3a80df3b6c2411e335da1120c29fed0984e893fe",
     "gl-spikes2d": "^1.0.2",
     "gl-streamtube3d": "^1.4.1",
     "gl-surface3d": "^1.6.0",
