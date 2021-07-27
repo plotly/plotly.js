@@ -28,7 +28,8 @@ where X.Y.Z is the semver of most recent plotly.js release.
  - Preview plot-schema changes between releases when building dist on master [[#5814](https://github.com/plotly/plotly.js/pull/5814)]
  - Display changes made to package.json between versions and add identical tags to draft bundles created by `publish-dist` job on CircleCI [[#5815](https://github.com/plotly/plotly.js/pull/5815)]
  - Simplify devtool by relying on `XMLHttpRequest` instead of `d3.json` [[#5832](https://github.com/plotly/plotly.js/pull/5832)]
- - Update CONTRIBUTING guidelines on how to submit pull requests and generate new baseline [[#5791](https://github.com/plotly/plotly.js/pull/5791), [[#5792](https://github.com/plotly/plotly.js/pull/5792)]]
+ - Update CONTRIBUTING guidelines on how to submit pull requests and generate new baseline [[#5791](https://github.com/plotly/plotly.js/pull/5791), [#5792](https://github.com/plotly/plotly.js/pull/5792)]
+ - More maintenance work listed under [the v2.3.0 milestone](https://github.com/plotly/plotly.js/milestone/63)
 
 ### Fixed
  - Fix unknown filename when exporting charts using new versions of Safari [[#5609](https://github.com/plotly/plotly.js/pull/5609), [5838](https://github.com/plotly/plotly.js/pull/5838)],
