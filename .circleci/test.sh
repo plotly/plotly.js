@@ -33,16 +33,23 @@ retry () {
     fi
 }
 
-# set timezone to Alaska time (arbitrary timezone to test date logic)
-set_tz () {
-    sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
-    export TZ='America/Anchorage'
+set_timezone () {
+    # Alaska time (arbitrary timezone to test date logic)
+    TZ="America/Anchorage"
+
+    echo "set timezone to $TZ"
+    sudo cp /usr/share/zoneinfo/$TZ /etc/localtime
+
+    echo "display date in timezone"
+    date
+
+    export TZ
 }
 
 case $1 in
 
     no-gl-jasmine)
-        set_tz
+        set_timezone
 
         SUITE=$(circleci tests glob "$ROOT/test/jasmine/tests/*" | circleci tests split)
         MAX_AUTO_RETRY=2
@@ -52,7 +59,7 @@ case $1 in
         ;;
 
     webgl-jasmine)
-        set_tz
+        set_timezone
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=5 --tag=gl | circleci tests split))
         for s in ${SHARDS[@]}; do
@@ -64,7 +71,7 @@ case $1 in
         ;;
 
     flaky-no-gl-jasmine)
-        set_tz
+        set_timezone
 
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))
 
@@ -88,7 +95,8 @@ case $1 in
         ;;
 
     jasmine-bundle)
-        set_tz
+        set_timezone
+
         npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
