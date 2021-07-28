@@ -28,7 +28,8 @@ where X.Y.Z is the semver of most recent plotly.js release.
  - Preview plot-schema changes between releases when building dist on master [[#5814](https://github.com/plotly/plotly.js/pull/5814)]
  - Display changes made to package.json between versions and add identical tags to draft bundles created by `publish-dist` job on CircleCI [[#5815](https://github.com/plotly/plotly.js/pull/5815)]
  - Simplify devtool by relying on `XMLHttpRequest` instead of `d3.json` [[#5832](https://github.com/plotly/plotly.js/pull/5832)]
- - Update CONTRIBUTING guidelines on how to submit pull requests and generate new baseline [[#5791](https://github.com/plotly/plotly.js/pull/5791), [[#5792](https://github.com/plotly/plotly.js/pull/5792)]]
+ - Update CONTRIBUTING guidelines on how to submit pull requests and generate new baseline [[#5791](https://github.com/plotly/plotly.js/pull/5791), [#5792](https://github.com/plotly/plotly.js/pull/5792)]
+ - More maintenance work listed under [the v2.3.0 milestone](https://github.com/plotly/plotly.js/milestone/63?closed=1)
 
 ### Fixed
  - Fix unknown filename when exporting charts using new versions of Safari [[#5609](https://github.com/plotly/plotly.js/pull/5609), [5838](https://github.com/plotly/plotly.js/pull/5838)],
@@ -68,6 +69,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
  - Centralize jsdom utility to return Plotly object in node.js test scripts and use it in generating plot-schema [[#5755](https://github.com/plotly/plotly.js/pull/5755)]
  - Bump turf bbox dependency to v6.4.0 [[#5747](https://github.com/plotly/plotly.js/pull/5747)]
  - Bump turf area dependency to v6.4.0 [[#5748](https://github.com/plotly/plotly.js/pull/5748)]
+ - More maintenance work listed under [the v2.2.0 milestone](https://github.com/plotly/plotly.js/milestone/62?closed=1)
 
 ### Fixed
  - Cache values and patterns in set_convert for axes with `rangebreaks` to improve performance [[#5659](https://github.com/plotly/plotly.js/pull/5659)],
@@ -88,7 +90,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ### Changed
  - Replace deprecated [node-sass](https://www.npmjs.com/package/node-sass) modules with [Sass](https://www.npmjs.com/package/sass) and update plot CSS [[#5729](https://github.com/plotly/plotly.js/pull/5729)]
  - Bump `probe-image-size` to v7.2.1 [[#5739](https://github.com/plotly/plotly.js/pull/5739)]
- - More maintenance work listed under [the v2.1.0 milestone](https://github.com/plotly/plotly.js/milestone/61)
+ - More maintenance work listed under [the v2.1.0 milestone](https://github.com/plotly/plotly.js/milestone/61?closed=1)
 
 ### Fixed
  - Fix setting the width of categorical bars & boxes to unit [[#5732](https://github.com/plotly/plotly.js/pull/5732)]
@@ -157,7 +159,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
    dist files at build time [[#5436](https://github.com/plotly/plotly.js/pull/5436), [#5446](https://github.com/plotly/plotly.js/pull/5446)]
  - Guard against unexpected characters at build time [[#5424](https://github.com/plotly/plotly.js/pull/5424)]
  - Minimize indentation in plot-schema [[#5663](https://github.com/plotly/plotly.js/pull/5663)]
- - More maintenance work listed under [the 60th milestone](https://github.com/plotly/plotly.js/milestone/60)!
+ - More maintenance work listed under [the 60th milestone](https://github.com/plotly/plotly.js/milestone/60?closed=1)!
 
 ### Fixed
  - Fix "toself" `fill` for `scattergl` traces to handle multiple polygons [[#5355](https://github.com/plotly/plotly.js/pull/5355)],
