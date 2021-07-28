@@ -112,26 +112,6 @@ extendFlat(
 var angularAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
-    period: {
-        valType: 'number',
-        editType: 'calc',
-        min: 0,
-        description: [
-            'Set the angular period.',
-            'Has an effect only when `imaginaryaxis.type` is *category*.',
-        ].join(' ')
-        // Examples for date axes:
-        //
-        // - period that equals the timeseries length
-        //  http://flowingdata.com/2017/01/24/one-dataset-visualized-25-ways/18-polar-coordinates/
-        // - and 1-year periods (focusing on seasonal change0
-        //  http://otexts.org/fpp2/seasonal-plots.html
-        //  https://blogs.scientificamerican.com/sa-visual/why-are-so-many-babies-born-around-8-00-a-m/
-        //  http://www.seasonaladjustment.com/2012/09/05/clock-plot-visualising-seasonality-using-r-and-ggplot2-part-3/
-        //  https://i.pinimg.com/736x/49/b9/72/49b972ccb3206a1a6d6f870dac543280.jpg
-        //  https://www.climate-lab-book.ac.uk/spirals/
-    },
-
     direction: {
         valType: 'enumerated',
         values: ['counterclockwise', 'clockwise'],
