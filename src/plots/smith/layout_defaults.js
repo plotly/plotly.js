@@ -173,37 +173,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 }
 
 function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, options) {
-    var autotypenumbers = coerce('autotypenumbers', options.autotypenumbersDflt);
-    var axType = coerce('type');
-
-    if(axType === '-') {
-        var trace;
-
-        for(var i = 0; i < subplotData.length; i++) {
-            if(subplotData[i].visible) {
-                trace = subplotData[i];
-                break;
-            }
-        }
-
-        if(trace && trace[dataAttr]) {
-            axOut.type = autoType(trace[dataAttr], 'gregorian', {
-                noMultiCategory: true,
-                autotypenumbers: autotypenumbers
-            });
-        }
-
-        if(axOut.type === '-') {
-            axOut.type = 'linear';
-        } else {
-            // copy autoType back to input axis
-            // note that if this object didn't exist
-            // in the input layout, we have to put it in
-            // this happens in the main supplyDefaults function
-            axIn.type = axOut.type;
-        }
-    }
-
+    axOut.type = 'linear';
     return axOut.type;
 }
 

@@ -42,10 +42,6 @@ var axisTickAttrs = overrideAll({
 
 var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
-    type: extendFlat({}, axesAttrs.type, {
-        values: ['-', 'linear', 'log', 'date', 'category']
-    }),
-    autotypenumbers: axesAttrs.autotypenumbers,
 
     autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
@@ -141,25 +137,6 @@ extendFlat(
 
 var angularAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
-    type: {
-        valType: 'enumerated',
-        // 'linear' should maybe be called 'angle' or 'angular' here
-        // to make clear that axis here is periodic and more tightly match
-        // `thetaunit`?
-        //
-        // skip 'date' for first push
-        // no 'log' for now
-        values: ['-', 'linear', 'category'],
-        dflt: '-',
-        editType: 'calc',
-        _noTemplating: true,
-        description: [
-            'Sets the angular axis type.',
-            'If *linear*, set `thetaunit` to determine the unit in which axis value are shown.',
-            'If *category, use `period` to set the number of integer coordinates around polar axis.'
-        ].join(' ')
-    },
-    autotypenumbers: axesAttrs.autotypenumbers,
 
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,
