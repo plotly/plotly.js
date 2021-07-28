@@ -134,10 +134,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         if(visible) {
-            handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
-            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
-                tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
-            });
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
 
             var showTickLabels = coerceAxis('showticklabels');

@@ -14,18 +14,10 @@ var axisLineGridAttr = overrideAll({
     showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
     gridwidth: axesAttrs.gridwidth
-
-    // TODO add spike* attributes down the road
-
-    // should we add zeroline* attributes?
-
 }, 'plot', 'from-root');
 
 var axisTickAttrs = overrideAll({
     tickmode: axesAttrs.tickmode,
-    nticks: axesAttrs.nticks,
-    tick0: axesAttrs.tick0,
-    dtick: axesAttrs.dtick,
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
     ticks: axesAttrs.ticks,
