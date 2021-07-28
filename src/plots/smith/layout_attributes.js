@@ -43,28 +43,28 @@ var axisTickAttrs = overrideAll({
 var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
-    autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
-    rangemode: {
-        valType: 'enumerated',
-        values: ['tozero', 'nonnegative', 'normal'],
-        dflt: 'tozero',
-        editType: 'calc',
-        description: [
-            'If *tozero*`, the range extends to 0,',
-            'regardless of the input data',
-            'If *nonnegative*, the range is non-negative,',
-            'regardless of the input data.',
-            'If *normal*, the range is computed in relation to the extrema',
-            'of the input data (same behavior as for cartesian axes).'
-        ].join(' ')
-    },
-    range: extendFlat({}, axesAttrs.range, {
-        items: [
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
-            {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
-        ],
-        editType: 'plot'
-    }),
+    // autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
+    // rangemode: {
+        // valType: 'enumerated',
+        // values: ['tozero', 'nonnegative', 'normal'],
+        // dflt: 'tozero',
+        // editType: 'calc',
+        // description: [
+            // 'If *tozero*`, the range extends to 0,',
+            // 'regardless of the input data',
+            // 'If *nonnegative*, the range is non-negative,',
+            // 'regardless of the input data.',
+            // 'If *normal*, the range is computed in relation to the extrema',
+            // 'of the input data (same behavior as for cartesian axes).'
+        // ].join(' ')
+    // },
+    // range: extendFlat({}, axesAttrs.range, {
+        // items: [
+            // {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},
+            // {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}}
+        // ],
+        // editType: 'plot'
+    // }),
 
     categoryorder: axesAttrs.categoryorder,
     categoryarray: axesAttrs.categoryarray,

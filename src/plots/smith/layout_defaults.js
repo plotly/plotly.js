@@ -84,8 +84,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         switch(axName) {
             case 'realaxis':
                 axIn.autorange = false;
-
-                coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
 
                 if(visible) {
