@@ -5433,14 +5433,14 @@ describe('hovermode: (x|y)unified', function() {
                 }
             })
             .then(function(gd) {
-                _hover(gd, { xpx: 50, ypx: 200 });
+                _hover(gd, { xpx: 100, ypx: 200 });
                 assertLabel({title: 'Jan', items: [
                     'bar : 1',
                     'one : 1',
                     'two : 1',
                 ]});
 
-                _hover(gd, { xpx: 350, ypx: 200 });
+                _hover(gd, { xpx: 300, ypx: 200 });
                 assertLabel({title: 'Feb', items: [
                     'bar : 2',
                     'one : 2',
