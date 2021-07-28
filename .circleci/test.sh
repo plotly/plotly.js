@@ -83,7 +83,7 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    jasmine-bundle)
+    bundle-jasmine)
         set_timezone
 
         npm run test-bundle || EXIT_STATE=$?
