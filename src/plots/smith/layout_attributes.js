@@ -112,17 +112,6 @@ extendFlat(
 var angularAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
-    thetaunit: {
-        valType: 'enumerated',
-        values: ['radians', 'degrees'],
-        dflt: 'degrees',
-        editType: 'calc',
-        description: [
-            'Sets the format unit of the formatted *theta* values.',
-            'Has an effect only when `imaginaryaxis.type` is *linear*.'
-        ].join(' ')
-    },
-
     period: {
         valType: 'number',
         editType: 'calc',

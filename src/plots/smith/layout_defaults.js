@@ -94,8 +94,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 break;
 
             case 'imaginaryaxis':
-                coerceAxis('thetaunit');
-
                 var direction = coerceAxis('direction');
                 coerceAxis('rotation', {counterclockwise: 0, clockwise: 90}[direction]);
                 break;
