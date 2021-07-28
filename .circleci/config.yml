@@ -69,6 +69,18 @@ jobs:
           name: Run jasmine tests (part C)
           command: .circleci/test.sh flaky-no-gl-jasmine
 
+  bundle-jasmine:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:12.22.1-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run jasmine tests (part D)
+          command: .circleci/test.sh bundle-jasmine
+
   make-baselines:
     parallelism: 4
     docker:
@@ -161,18 +173,6 @@ jobs:
       - run:
           name: Run syntax tests on source files
           command: .circleci/test.sh source-syntax
-
-  bundle-jasmine:
-    docker:
-      # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.22.1-browsers
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Run jasmine tests (part D)
-          command: .circleci/test.sh bundle-jasmine
 
   publish-dist:
     docker:
