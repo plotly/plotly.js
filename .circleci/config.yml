@@ -162,7 +162,7 @@ jobs:
           name: Run syntax tests on source files
           command: .circleci/test.sh source-syntax
 
-  jasmine-bundle:
+  bundle-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: circleci/node:12.22.1-browsers
@@ -172,7 +172,7 @@ jobs:
           at: ~/
       - run:
           name: Run jasmine tests (part D)
-          command: .circleci/test.sh jasmine-bundle
+          command: .circleci/test.sh bundle-jasmine
 
   publish-dist:
     docker:
@@ -246,7 +246,7 @@ workflows:
   build-and-test:
     jobs:
       - install-and-cibuild
-      - jasmine-bundle:
+      - bundle-jasmine:
           requires:
             - install-and-cibuild
       - no-gl-jasmine:
