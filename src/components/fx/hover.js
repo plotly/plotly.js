@@ -1993,16 +1993,33 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
-    if(ax.type === 'category') val = ax._categoriesMap[val];
-    else if(ax.type === 'date') val = ax.d2c(val);
+    var trace = winningPoint.trace;
+    var cd = winningPoint.cd;
+    var d = cd[winningPoint.index];
 
-    var cd0 = winningPoint.cd[winningPoint.index];
-    if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    else if(ax.type === 'date') {
+        var periodalignment = trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var start = d[axLetter + 'Start'];
+            var end = d[axLetter + 'End'];
+            var diff = end - start;
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
+    }
+
+    if(d && d.t && d.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||
             fullLayout.violinmode === 'group'
         ) {
-            val += cd0.t.dPos;
+            val += d.t.dPos;
         }
     }
 
