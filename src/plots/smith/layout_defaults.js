@@ -100,31 +100,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 break;
 
             case 'imaginaryaxis':
-                // We do not support 'true' date angular axes yet,
-                // users can still plot dates on angular axes by setting
-                // `imaginaryaxis.type: 'category'`.
-                //
-                // Here, if a date angular axes is detected, we make
-                // all its corresponding traces invisible, so that
-                // when we do add support for data angular axes, the new
-                // behavior won't conflict with existing behavior
-                if(axType === 'date') {
-                    Lib.log('Polar plots do not support date angular axes yet.');
-
-                    for(var j = 0; j < subplotData.length; j++) {
-                        subplotData[j].visible = false;
-                    }
-
-                    // turn this into a 'dummy' linear axis so that
-                    // the subplot still renders ok
-                    axType = axIn.type = axOut.type = 'linear';
-                }
-
-                if(axType === 'linear') {
-                    coerceAxis('thetaunit');
-                } else {
-                    coerceAxis('period');
-                }
+                coerceAxis('thetaunit');
 
                 var direction = coerceAxis('direction');
                 coerceAxis('rotation', {counterclockwise: 0, clockwise: 90}[direction]);
