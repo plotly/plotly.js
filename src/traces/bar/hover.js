@@ -70,7 +70,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     var minPos = isClosest ?
         thisBarMinPos : period ?
         function(di) {
-            return di.p + periodLength(di) / 2 - di.wPeriod;
+            return di.p - periodLength(di) / 2;
         } :
         function(di) {
             /*

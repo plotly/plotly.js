@@ -436,20 +436,12 @@ function setBarCenterAndWidth(pa, sieve) {
         var barwidth = t.barwidth;
         var barwidthIsArray = Array.isArray(barwidth);
 
-        var trace = calcTrace[0].trace;
-        var isPeriod = !!trace[pLetter + 'periodalignment'];
-
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j];
 
             // store the actual bar width and position, for use by hover
             var width = calcBar.w = barwidthIsArray ? barwidth[j] : barwidth;
             calcBar[pLetter] = calcBar.p + (poffsetIsArray ? poffset[j] : poffset) + width / 2;
-
-            if(isPeriod) {
-                calcBar.wPeriod =
-                    calcBar[pLetter + 'End'] - calcBar[pLetter + 'Start'];
-            }
         }
     }
 }
