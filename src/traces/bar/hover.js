@@ -63,11 +63,14 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
         return di[posLetter] + sgn * w / 2;
     }
 
+    function periodLength(di) {
+        return di[posLetter + 'End'] - di[posLetter + 'Start'];
+    }
+
     var minPos = isClosest ?
         thisBarMinPos : period ?
         function(di) {
-            var diff = di.pEnd - di.pStart;
-            return di.p + diff / 2 - di.wPeriod;
+            return di.p + periodLength(di) / 2 - di.wPeriod;
         } :
         function(di) {
             /*
@@ -88,8 +91,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     var maxPos = isClosest ?
         thisBarMaxPos : period ?
         function(di) {
-            var diff = di.pEnd - di.pStart;
-            return di.p + diff / 2;
+            return di.p + periodLength(di) / 2;
         } :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);

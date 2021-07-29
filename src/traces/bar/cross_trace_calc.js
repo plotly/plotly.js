@@ -448,7 +448,7 @@ function setBarCenterAndWidth(pa, sieve) {
 
             if(isPeriod) {
                 calcBar.wPeriod =
-                    calcBar.pEnd - calcBar.pStart;
+                    calcBar[pLetter + 'End'] - calcBar[pLetter + 'Start'];
             }
         }
     }

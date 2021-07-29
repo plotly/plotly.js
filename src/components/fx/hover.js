@@ -1993,14 +1993,13 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
-    var trace = winningPoint.trace;
-    var cd = winningPoint.cd;
-    var d = cd[winningPoint.index];
+    var cd0 = winningPoint.cd[0];
 
     if(ax.type === 'category') val = ax._categoriesMap[val];
     else if(ax.type === 'date') {
-        var periodalignment = trace[axLetter + 'periodalignment'];
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
         if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
             var start = d[axLetter + 'Start'];
             var end = d[axLetter + 'End'];
             var diff = end - start;
@@ -2014,7 +2013,6 @@ function getCoord(axLetter, winningPoint, fullLayout) {
         val = ax.d2c(val);
     }
 
-    var cd0 = cd[0];
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||
