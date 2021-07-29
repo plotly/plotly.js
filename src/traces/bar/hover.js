@@ -58,13 +58,17 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        var w = (period) ? di.wPeriod : di.w;
+        var w = di.w;
 
         return di[posLetter] + sgn * w / 2;
     }
 
-    var minPos = isClosestOrPeriod ?
-        thisBarMinPos :
+    var minPos = isClosest ?
+        thisBarMinPos : period ?
+        function(di) {
+            var diff = di.pEnd - di.pStart;
+            return di.p + diff / 2 - di.wPeriod;
+        } :
         function(di) {
             /*
              * In compare mode, accept a bar if you're on it *or* its group.
@@ -81,8 +85,12 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosestOrPeriod ?
-        thisBarMaxPos :
+    var maxPos = isClosest ?
+        thisBarMaxPos : period ?
+        function(di) {
+            var diff = di.pEnd - di.pStart;
+            return di.p + diff / 2;
+        } :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
