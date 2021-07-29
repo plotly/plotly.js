@@ -5581,10 +5581,46 @@ describe('hovermode: (x|y)unified', function() {
 
                 Plotly.newPlot(gd, fig)
                 .then(function(gd) {
+                    _hover(gd, { xpx: 50, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1970', items: [
+                        'trace 0 : 11',
+                        'trace 1 : 1'
+                    ]});
+
                     _hover(gd, { xpx: 100, ypx: 200 });
                     assertLabel({title: 'Jan 1, 1970', items: [
                         'trace 0 : 11',
                         'trace 1 : 1'
+                    ]});
+
+                    _hover(gd, { xpx: 150, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 200, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 250, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 300, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1971', items: [
+                        'trace 0 : 13',
+                        'trace 1 : 3'
+                    ]});
+
+                    _hover(gd, { xpx: 350, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1971', items: [
+                        'trace 0 : 13',
+                        'trace 1 : 3'
                     ]});
 
                     _hover(gd, { xpx: 400, ypx: 200 });
