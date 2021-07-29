@@ -2000,9 +2000,15 @@ function getCoord(axLetter, winningPoint, fullLayout) {
         var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
         if(periodalignment) {
             var d = winningPoint.cd[winningPoint.index];
+
             var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
             var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
             var diff = end - start;
+
             if(periodalignment === 'end') {
                 val += diff;
             } else if(periodalignment === 'middle') {
