@@ -52,6 +52,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     }
 
     var period = trace[posLetter + 'period'];
+    var isClosestOrPeriod = isClosest || period;
 
     function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
@@ -62,7 +63,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
         return di[posLetter] + sgn * w / 2;
     }
 
-    var minPos = isClosest || period ?
+    var minPos = isClosestOrPeriod ?
         thisBarMinPos :
         function(di) {
             /*
@@ -80,7 +81,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosest || period ?
+    var maxPos = isClosestOrPeriod ?
         thisBarMaxPos :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
@@ -156,7 +157,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     // if we get here and we're not in 'closest' mode, push min/max pos back
     // onto the group - even though that means occasionally the mouse will be
     // over the hover label.
-    if(!isClosest && !period) {
+    if(!isClosestOrPeriod) {
         minPos = function(di) {
             return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
         };
