@@ -2014,12 +2014,13 @@ function getCoord(axLetter, winningPoint, fullLayout) {
         val = ax.d2c(val);
     }
 
-    if(d && d.t && d.t.posLetter === ax._id) {
+    var cd0 = cd[0];
+    if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||
             fullLayout.violinmode === 'group'
         ) {
-            val += d.t.dPos;
+            val += cd0.t.dPos;
         }
     }
 
