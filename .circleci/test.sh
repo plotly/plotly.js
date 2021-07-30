@@ -33,17 +33,9 @@ retry () {
     fi
 }
 
-# set timezone to Alaska time (arbitrary timezone to test date logic)
-set_tz () {
-    sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
-    export TZ='America/Anchorage'
-}
-
 case $1 in
 
     no-gl-jasmine)
-        set_tz
-
         SUITE=$(circleci tests glob "$ROOT/test/jasmine/tests/*" | circleci tests split)
         MAX_AUTO_RETRY=2
         retry npm run test-jasmine -- $SUITE --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
@@ -52,8 +44,6 @@ case $1 in
         ;;
 
     webgl-jasmine)
-        set_tz
-
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=5 --tag=gl | circleci tests split))
         for s in ${SHARDS[@]}; do
             MAX_AUTO_RETRY=2
@@ -64,8 +54,6 @@ case $1 in
         ;;
 
     flaky-no-gl-jasmine)
-        set_tz
-
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))
 
         for s in ${SHARDS[@]}; do
@@ -73,6 +61,11 @@ case $1 in
             retry npm run test-jasmine -- "$s" --tags=flaky --skip-tags=noCI
         done
 
+        exit $EXIT_STATE
+        ;;
+
+    bundle-jasmine)
+        npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
@@ -84,12 +77,6 @@ case $1 in
 
     test-image)
         node test/image/compare_pixels_test.js || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
-        exit $EXIT_STATE
-        ;;
-
-    jasmine-bundle)
-        set_tz
-        npm run test-bundle || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 

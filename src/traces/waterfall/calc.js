@@ -17,18 +17,20 @@ function isTotal(a) {
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, origPos, pObj, hasPeriod;
+    var size, pos, origPos, pObj, hasPeriod, pLetter;
 
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
         origPos = ya.makeCalcdata(trace, 'y');
         pObj = alignPeriod(trace, ya, 'y', origPos);
         hasPeriod = !!trace.yperiodalignment;
+        pLetter = 'y';
     } else {
         size = ya.makeCalcdata(trace, 'y');
         origPos = xa.makeCalcdata(trace, 'x');
         pObj = alignPeriod(trace, xa, 'x', origPos);
         hasPeriod = !!trace.xperiodalignment;
+        pLetter = 'x';
     }
     pos = pObj.vals;
 
@@ -85,8 +87,8 @@ module.exports = function calc(gd, trace) {
 
         if(hasPeriod) {
             cd[i].orig_p = origPos[i]; // used by hover
-            cd[i].pEnd = pObj.ends[i];
-            cd[i].pStart = pObj.starts[i];
+            cd[i][pLetter + 'End'] = pObj.ends[i];
+            cd[i][pLetter + 'Start'] = pObj.starts[i];
         }
 
         if(trace.ids) {
