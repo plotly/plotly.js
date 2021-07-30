@@ -113,9 +113,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 hovertemplate: trace.hovertemplate
             });
 
-            if(trace.xperiodalignment === 'end') pointData.xPeriod = di.x;
-            if(trace.yperiodalignment === 'end') pointData.yPeriod = di.y;
-
             fillText(di, trace, pointData);
             Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 

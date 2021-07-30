@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.3.0
+* plotly.js (cartesian) v2.3.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -36967,7 +36967,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 }
 
 function hoverDataKey(d) {
-    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa, d.ya || ''].join(',');
+    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa ? d.xa._id : '', d.ya ? d.ya._id : ''].join(',');
 }
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
@@ -38155,13 +38155,32 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
+    var cd0 = winningPoint.cd[0];
+
     if(ax.type === 'category') val = ax._categoriesMap[val];
     else if(ax.type === 'date') {
-        var period = winningPoint[axLetter + 'Period'];
-        val = ax.d2c(period !== undefined ? period : val);
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
+
+            var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
+            var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
+            var diff = end - start;
+
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
     }
 
-    var cd0 = winningPoint.cd[winningPoint.index];
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||
@@ -83791,7 +83810,7 @@ var calcSelection = _dereq_('../scatter/calc_selection');
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, origPos, pObj, hasPeriod;
+    var size, pos, origPos, pObj, hasPeriod, pLetter;
 
     var sizeOpts = {
         msUTC: !!(trace.base || trace.base === 0)
@@ -83802,11 +83821,13 @@ module.exports = function calc(gd, trace) {
         origPos = ya.makeCalcdata(trace, 'y');
         pObj = alignPeriod(trace, ya, 'y', origPos);
         hasPeriod = !!trace.yperiodalignment;
+        pLetter = 'y';
     } else {
         size = ya.makeCalcdata(trace, 'y', sizeOpts);
         origPos = xa.makeCalcdata(trace, 'x');
         pObj = alignPeriod(trace, xa, 'x', origPos);
         hasPeriod = !!trace.xperiodalignment;
+        pLetter = 'x';
     }
     pos = pObj.vals;
 
@@ -83820,8 +83841,8 @@ module.exports = function calc(gd, trace) {
 
         if(hasPeriod) {
             cd[i].orig_p = origPos[i]; // used by hover
-            cd[i].pEnd = pObj.ends[i];
-            cd[i].pStart = pObj.starts[i];
+            cd[i][pLetter + 'End'] = pObj.ends[i];
+            cd[i][pLetter + 'Start'] = pObj.starts[i];
         }
 
         if(trace.ids) {
@@ -84303,20 +84324,12 @@ function setBarCenterAndWidth(pa, sieve) {
         var barwidth = t.barwidth;
         var barwidthIsArray = Array.isArray(barwidth);
 
-        var trace = calcTrace[0].trace;
-        var isPeriod = !!trace[pLetter + 'periodalignment'];
-
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j];
 
             // store the actual bar width and position, for use by hover
             var width = calcBar.w = barwidthIsArray ? barwidth[j] : barwidth;
             calcBar[pLetter] = calcBar.p + (poffsetIsArray ? poffset[j] : poffset) + width / 2;
-
-            if(isPeriod) {
-                calcBar.wPeriod =
-                    calcBar.pEnd - calcBar.pStart;
-            }
         }
     }
 }
@@ -84972,18 +84985,26 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     }
 
     var period = trace[posLetter + 'period'];
+    var isClosestOrPeriod = isClosest || period;
 
     function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        var w = (period) ? di.wPeriod : di.w;
+        var w = di.w;
 
         return di[posLetter] + sgn * w / 2;
     }
 
-    var minPos = isClosest || period ?
-        thisBarMinPos :
+    function periodLength(di) {
+        return di[posLetter + 'End'] - di[posLetter + 'Start'];
+    }
+
+    var minPos = isClosest ?
+        thisBarMinPos : period ?
+        function(di) {
+            return di.p - periodLength(di) / 2;
+        } :
         function(di) {
             /*
              * In compare mode, accept a bar if you're on it *or* its group.
@@ -85000,8 +85021,11 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosest || period ?
-        thisBarMaxPos :
+    var maxPos = isClosest ?
+        thisBarMaxPos : period ?
+        function(di) {
+            return di.p + periodLength(di) / 2;
+        } :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
@@ -85076,7 +85100,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     // if we get here and we're not in 'closest' mode, push min/max pos back
     // onto the group - even though that means occasionally the mouse will be
     // over the hover label.
-    if(!isClosest) {
+    if(!isClosestOrPeriod) {
         minPos = function(di) {
             return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
         };
@@ -85099,9 +85123,6 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
 
     var hasPeriod = di.orig_p !== undefined;
     pointData[posLetter + 'LabelVal'] = hasPeriod ? di.orig_p : di.p;
-    if(hasPeriod) {
-        pointData[posLetter + 'Period'] = di.p;
-    }
 
     pointData.labelLabel = hoverLabelText(pa, pointData[posLetter + 'LabelVal'], trace[posLetter + 'hoverformat']);
     pointData.valueLabel = hoverLabelText(sa, pointData[sizeLetter + 'LabelVal'], trace[sizeLetter + 'hoverformat']);
@@ -97889,9 +97910,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 hovertemplate: trace.hovertemplate
             });
 
-            if(trace.xperiodalignment === 'end') pointData.xPeriod = di.x;
-            if(trace.yperiodalignment === 'end') pointData.yPeriod = di.y;
-
             fillText(di, trace, pointData);
             Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
@@ -101940,7 +101958,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.3.0';
+exports.version = '2.3.1';
 
 },{}]},{},[15])(15)
 });
