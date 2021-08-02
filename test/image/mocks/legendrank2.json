@@ -1,0 +1,49 @@
+{
+    "data": [
+        {
+            "name": "A",
+            "legendrank": 2,
+            "y": [-2],
+            "legendgrouptitle": { "text": "Middle" }
+        },
+        {
+            "name": "D",
+            "legendrank": 4,
+            "y": [-4],
+            "legendgroup": "bottom",
+            "legendgrouptitle": { "text": "Bottom" }
+        },
+        {
+            "name": "E",
+            "legendrank": 4,
+            "y": [-4],
+            "legendgroup": "bottom",
+            "legendgrouptitle": { "text": "Second" }
+        },
+        {
+            "name": "B",
+            "legendrank": 1,
+            "y": [-1],
+            "legendgroup": "top",
+            "legendgrouptitle": { "text": "Top" }
+        },
+        {
+            "name": "C",
+            "legendrank": 3,
+            "y": [-3],
+            "legendgroup": "top",
+            "legendgrouptitle": { "text": "Not first" }
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "rank groups using<br>minimum of the group"
+        },
+        "width": 300,
+        "height": 300,
+        "margin": {
+            "b": 25
+        },
+        "hovermode": "x unified"
+    }
+}

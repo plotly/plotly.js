@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Polar = require('@src/plots/polar');
 var constants = require('@src/plots/polar/constants');

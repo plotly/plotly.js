@@ -1321,6 +1321,7 @@ describe('finance trace hover via Fx.hover():', function() {
                 y: [1, 2, 3, 4],
                 type: 'bar'
             }], {
+                hovermode: 'x',
                 xaxis: { rangeslider: {visible: false} },
                 width: 500,
                 height: 500

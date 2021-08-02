@@ -5,8 +5,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
 
 var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),
@@ -45,11 +44,7 @@ var attrs = module.exports = overrideAll({
         format: {
             valType: 'data_array',
             dflt: [],
-            description: [
-                'Sets the cell value formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('cell value')
         },
 
         prefix: {
@@ -117,11 +112,7 @@ var attrs = module.exports = overrideAll({
         format: {
             valType: 'data_array',
             dflt: [],
-            description: [
-                'Sets the cell value formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('cell value')
         },
 
         prefix: {

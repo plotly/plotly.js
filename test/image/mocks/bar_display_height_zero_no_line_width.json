@@ -23,7 +23,6 @@
                 0.75,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false
         },
@@ -55,7 +54,6 @@
                 null,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false
         },
@@ -82,7 +80,6 @@
                 0.75,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false,
             "xaxis": "x2",
@@ -116,7 +113,6 @@
                 null,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false,
             "xaxis": "x2",
@@ -146,7 +142,6 @@
                 0.75,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false,
             "xaxis": "x3",
@@ -181,7 +176,6 @@
                 null,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false,
             "xaxis": "x3",
@@ -211,7 +205,6 @@
                 0.75,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false,
             "xaxis": "x4",
@@ -246,7 +239,6 @@
                 null,
                 1
             ],
-            "textposition": "auto",
             "insidetextanchor": "middle",
             "cliponaxis": false,
             "xaxis": "x4",

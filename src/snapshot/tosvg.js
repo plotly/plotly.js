@@ -33,7 +33,7 @@ module.exports = function toSVG(gd, format, scale) {
     var toppaper = fullLayout._toppaper;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var i;
+    var i, k;
 
     // make background color a rect in the svg, then revert after scraping
     // all other alterations have been dealt with by properly preparing the svg
@@ -106,28 +106,31 @@ module.exports = function toSVG(gd, format, scale) {
             }
         });
 
-
+    var queryParts = [];
     if(fullLayout._gradientUrlQueryParts) {
-        var queryParts = [];
-        for(var k in fullLayout._gradientUrlQueryParts) queryParts.push(k);
+        for(k in fullLayout._gradientUrlQueryParts) queryParts.push(k);
+    }
 
-        if(queryParts.length) {
-            svg.selectAll(queryParts.join(',')).each(function() {
-                var pt = d3.select(this);
+    if(fullLayout._patternUrlQueryParts) {
+        for(k in fullLayout._patternUrlQueryParts) queryParts.push(k);
+    }
 
-                // similar to font family styles above,
-                // we must remove " after the SVG DOM has been serialized
-                var fill = this.style.fill;
-                if(fill && fill.indexOf('url(') !== -1) {
-                    pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
-                }
+    if(queryParts.length) {
+        svg.selectAll(queryParts.join(',')).each(function() {
+            var pt = d3.select(this);
 
-                var stroke = this.style.stroke;
-                if(stroke && stroke.indexOf('url(') !== -1) {
-                    pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
-                }
-            });
-        }
+            // similar to font family styles above,
+            // we must remove " after the SVG DOM has been serialized
+            var fill = this.style.fill;
+            if(fill && fill.indexOf('url(') !== -1) {
+                pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+            }
+
+            var stroke = this.style.stroke;
+            if(stroke && stroke.indexOf('url(') !== -1) {
+                pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+            }
+        });
     }
 
     if(format === 'pdf' || format === 'eps') {

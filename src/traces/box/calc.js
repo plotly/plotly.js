@@ -40,7 +40,7 @@ module.exports = function calc(gd, trace) {
     var allPosArrays = getPosArrays(trace, posLetter, posAxis, fullLayout[numKey]);
     var posArray = allPosArrays[0];
     var origPos = allPosArrays[1];
-    var dv = Lib.distinctVals(posArray);
+    var dv = Lib.distinctVals(posArray, posAxis);
     var posDistinct = dv.vals;
     var dPos = dv.minDiff / 2;
 
@@ -311,7 +311,7 @@ function getPosArrays(trace, posLetter, posAxis, num) {
 
     if(hasPosArray || (hasPos0 && hasPosStep)) {
         var origPos = posAxis.makeCalcdata(trace, posLetter);
-        var pos = alignPeriod(trace, posAxis, posLetter, origPos);
+        var pos = alignPeriod(trace, posAxis, posLetter, origPos).vals;
         return [pos, origPos];
     }
 

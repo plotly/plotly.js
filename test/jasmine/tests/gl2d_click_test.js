@@ -416,6 +416,7 @@ describe('Test hover and click interactions', function() {
 
     it('@gl scattergl should propagate marker colors to hover labels', function(done) {
         var _mock = Lib.extendDeep({}, mock0);
+        _mock.layout.hovermode = 'x';
         _mock.layout.width = 800;
         _mock.layout.height = 600;
 

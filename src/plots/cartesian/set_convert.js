@@ -2,9 +2,10 @@
 
 var d3 = require('@plotly/d3');
 var utcFormat = require('d3-time-format').utcFormat;
+var Lib = require('../../lib');
+var numberFormat = Lib.numberFormat;
 var isNumeric = require('fast-isnumeric');
 
-var Lib = require('../../lib');
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
@@ -600,16 +601,29 @@ module.exports = function setConvert(ax, fullLayout) {
         var rangebreaksIn = ax.rangebreaks || [];
         var bnds, b0, b1, vb, vDate;
 
+
+        if(!rangebreaksIn._cachedPatterns) {
+            rangebreaksIn._cachedPatterns = rangebreaksIn.map(function(brk) {
+                return brk.enabled && brk.bounds ? Lib.simpleMap(brk.bounds, brk.pattern ?
+                    cleanNumber :
+                    ax.d2c // case of pattern: ''
+                ) : null;
+            });
+        }
+        if(!rangebreaksIn._cachedValues) {
+            rangebreaksIn._cachedValues = rangebreaksIn.map(function(brk) {
+                return brk.enabled && brk.values ? Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc) : null;
+            });
+        }
+
+
         for(var i = 0; i < rangebreaksIn.length; i++) {
             var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
                 if(brk.bounds) {
                     var pattern = brk.pattern;
-                    bnds = Lib.simpleMap(brk.bounds, pattern ?
-                        cleanNumber :
-                        ax.d2c // case of pattern: ''
-                    );
+                    bnds = rangebreaksIn._cachedPatterns[i];
                     b0 = bnds[0];
                     b1 = bnds[1];
 
@@ -653,7 +667,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
                     if(vb >= b0 && vb < b1) return BADNUM;
                 } else {
-                    var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
+                    var vals = rangebreaksIn._cachedValues[i];
                     for(var j = 0; j < vals.length; j++) {
                         b0 = vals[j];
                         b1 = b0 + brk.dvalue;
@@ -940,7 +954,7 @@ module.exports = function setConvert(ax, fullLayout) {
     // occasionally we need _numFormat to pass through
     // even though it won't be needed by this axis
     ax._separators = fullLayout.separators;
-    ax._numFormat = locale ? locale.numberFormat : d3.format;
+    ax._numFormat = locale ? locale.numberFormat : numberFormat;
 
     // and for bar charts and box plots: reset forced minimum tick spacing
     delete ax._minDtick;

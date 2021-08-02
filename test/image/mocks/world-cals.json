@@ -121,8 +121,6 @@
             ],
             "xcalendar": "islamic",
             "name": "islamic histogram2d",
-            "nbinsx": 3,
-            "nbinsy": 2,
             "showscale": false,
             "xbins": {
                 "start": "1388-12-14 12:00",
@@ -157,8 +155,6 @@
             ],
             "xcalendar": "julian",
             "name": "julian histogram2dcontour",
-            "nbinsx": 3,
-            "nbinsy": 2,
             "showscale": false,
             "xbins": {
                 "start": "1969-10-16 12:00",

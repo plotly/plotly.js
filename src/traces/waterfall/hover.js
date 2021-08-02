@@ -10,18 +10,19 @@ var DIRSYMBOL = {
     decreasing: delta.DECREASING.SYMBOL
 };
 
-module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
-    var point = hoverOnBars(pointData, xval, yval, hovermode);
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
+    var point = hoverOnBars(pointData, xval, yval, hovermode, opts);
     if(!point) return;
 
     var cd = point.cd;
     var trace = cd[0].trace;
     var isHorizontal = (trace.orientation === 'h');
 
+    var vLetter = isHorizontal ? 'x' : 'y';
     var vAxis = isHorizontal ? pointData.xa : pointData.ya;
 
     function formatNumber(a) {
-        return hoverLabelText(vAxis, a);
+        return hoverLabelText(vAxis, a, trace[vLetter + 'hoverformat']);
     }
 
     // the closest data point

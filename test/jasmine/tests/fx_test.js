@@ -26,11 +26,7 @@ describe('Fx defaults', function() {
 
     it('should default (blank version)', function() {
         var layoutOut = _supply().layout;
-        // we get a blank cartesian subplot that has no traces...
-        // so all traces are horizontal -> hovermode defaults to y
-        // we could add a special case to push this back to x, but
-        // it seems like it has no practical consequence.
-        expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
+        expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
 
@@ -41,9 +37,8 @@ describe('Fx defaults', function() {
         }])
         .layout;
 
-        expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
+        expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
-        expect(layoutOut._isHoriz).toBe(false, 'isHoriz to false');
     });
 
     it('should default (cartesian horizontal version)', function() {
@@ -55,9 +50,8 @@ describe('Fx defaults', function() {
         }])
         .layout;
 
-        expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
+        expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
-        expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
     });
 
     it('should default (cartesian horizontal version, stacked scatter)', function() {
@@ -73,9 +67,8 @@ describe('Fx defaults', function() {
         }])
         .layout;
 
-        expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
+        expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
-        expect(layoutOut._isHoriz).toBe(true, 'isHoriz to true');
     });
 
     it('should default (gl3d version)', function() {
@@ -115,7 +108,7 @@ describe('Fx defaults', function() {
         }])
         .layout;
 
-        expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
+        expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
         expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
     });
 

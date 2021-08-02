@@ -27,26 +27,37 @@ module.exports = function calc(gd, trace) {
     var hasTooManyPoints = len >= TOO_MANY_POINTS;
     var len2 = len * 2;
     var stash = {};
-    var i, xx, yy;
+    var i;
 
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
-    var x = alignPeriod(trace, xa, 'x', origX);
-    var y = alignPeriod(trace, ya, 'y', origY);
+    var xObj = alignPeriod(trace, xa, 'x', origX);
+    var yObj = alignPeriod(trace, ya, 'y', origY);
+    var x = xObj.vals;
+    var y = yObj.vals;
     trace._x = x;
     trace._y = y;
 
-    if(trace.xperiodalignment) trace._origX = origX;
-    if(trace.yperiodalignment) trace._origY = origY;
+    if(trace.xperiodalignment) {
+        trace._origX = origX;
+        trace._xStarts = xObj.starts;
+        trace._xEnds = xObj.ends;
+    }
+    if(trace.yperiodalignment) {
+        trace._origY = origY;
+        trace._yStarts = yObj.starts;
+        trace._yEnds = yObj.ends;
+    }
 
     // we need hi-precision for scatter2d,
     // regl-scatter2d uses NaNs for bad/missing values
     var positions = new Array(len2);
+    var _ids = new Array(len);
     for(i = 0; i < len; i++) {
-        xx = x[i];
-        yy = y[i];
-        positions[i * 2] = xx === BADNUM ? NaN : xx;
-        positions[i * 2 + 1] = yy === BADNUM ? NaN : yy;
+        positions[i * 2] = x[i] === BADNUM ? NaN : x[i];
+        positions[i * 2 + 1] = y[i] === BADNUM ? NaN : y[i];
+        // Pre-compute ids.
+        _ids[i] = i;
     }
 
     if(xa.type === 'log') {
@@ -66,10 +77,7 @@ module.exports = function calc(gd, trace) {
         // FIXME: delegate this to webworker
         stash.tree = cluster(positions);
     } else {
-        var ids = stash.ids = new Array(len);
-        for(i = 0; i < len; i++) {
-            ids[i] = i;
-        }
+        stash.ids = _ids;
     }
 
     // create scene options and scene
@@ -85,7 +93,7 @@ module.exports = function calc(gd, trace) {
     if(!hasTooManyPoints) {
         ppad = calcMarkerSize(trace, len);
     } else if(opts.marker) {
-        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+        ppad = opts.marker.sizeAvg || Math.max(opts.marker.size, 3);
     }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);

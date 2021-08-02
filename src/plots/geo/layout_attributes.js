@@ -4,6 +4,7 @@ var colorAttrs = require('../../components/color/attributes');
 var domainAttrs = require('../domain').attributes;
 var constants = require('./constants');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var sortObjectKeys = require('../../lib/sort_object_keys');
 
 var geoAxesAttrs = {
     range: {
@@ -100,14 +101,14 @@ var attrs = module.exports = overrideAll({
     },
     scope: {
         valType: 'enumerated',
-        values: Object.keys(constants.scopeDefaults),
+        values: sortObjectKeys(constants.scopeDefaults),
         dflt: 'world',
         description: 'Set the scope of the map.'
     },
     projection: {
         type: {
             valType: 'enumerated',
-            values: Object.keys(constants.projNames),
+            values: sortObjectKeys(constants.projNames),
             description: 'Sets the projection type.'
         },
         rotation: {
@@ -133,6 +134,24 @@ var attrs = module.exports = overrideAll({
                     'For example, a roll of *180* makes the map appear upside down.'
                 ].join(' ')
             }
+        },
+        tilt: {
+            valType: 'number',
+            dflt: 0,
+            description: [
+                'For satellite projection type only.',
+                'Sets the tilt angle of perspective projection.'
+            ].join(' ')
+        },
+        distance: {
+            valType: 'number',
+            min: 1.001,
+            dflt: 2,
+            description: [
+                'For satellite projection type only.',
+                'Sets the distance from the center of the sphere to the point of view',
+                'as a proportion of the sphere’s radius.'
+            ].join(' ')
         },
         parallels: {
             valType: 'info_array',

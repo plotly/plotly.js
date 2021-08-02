@@ -72,6 +72,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('zhoverformat');
 
     // Coerce remaining properties
     [

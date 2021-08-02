@@ -3,14 +3,12 @@
     "type": "bar",
     "x": ["giraffes", "orangutans", "monkeys"],
     "y": [20, 14, 1],
-    "text": ["giraffes", "orangutans", "monkeys"],
-    "textposition": "auto"
+    "text": ["giraffes", "orangutans", "monkeys"]
   }, {
     "type": "bar",
     "x": ["giraffes", "orangutans", "monkeys"],
     "y": [20, 14, 1],
     "text": ["giraffes", "orangutans", "monkeys"],
-    "textposition": "auto",
     "xaxis": "x2",
     "yaxis": "y2"
   }, {
@@ -19,7 +17,6 @@
     "x": [20, 14, 1],
     "text": ["giraffes", "orangutans", "monkeys"],
     "orientation": "h",
-    "textposition": "auto",
     "xaxis": "x3",
     "yaxis": "y3"
   }, {
@@ -28,7 +25,6 @@
     "x": [20, 14, 1],
     "text": ["giraffes", "orangutans", "monkeys"],
     "orientation": "h",
-    "textposition": "auto",
     "xaxis": "x4",
     "yaxis": "y4"
   }],

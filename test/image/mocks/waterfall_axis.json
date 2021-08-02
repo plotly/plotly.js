@@ -17,7 +17,6 @@
                 "r",
                 "r"
             ],
-            "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x",
             "yaxis": "y"
@@ -40,7 +39,6 @@
                 "r",
                 "r"
             ],
-            "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x2",
             "yaxis": "y2"
@@ -64,7 +62,6 @@
                 "r",
                 "r"
             ],
-            "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x3",
             "yaxis": "y3"
@@ -88,7 +85,6 @@
                 "r",
                 "r"
             ],
-            "textposition": "auto",
             "textinfo": "initial+delta+final",
             "xaxis": "x4",
             "yaxis": "y4"

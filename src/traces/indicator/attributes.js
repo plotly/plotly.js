@@ -9,7 +9,7 @@ var domainAttrs = require('../../plots/domain').attributes;
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var delta = require('../../constants/delta.js');
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
 
 var textFontAttrs = fontAttrs({
     editType: 'plot',
@@ -147,11 +147,7 @@ module.exports = {
             valType: 'string',
             dflt: '',
             editType: 'plot',
-            description: [
-                'Sets the value formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('value')
         },
         font: extendFlat({}, textFontAttrs, {
             description: [
@@ -205,11 +201,7 @@ module.exports = {
         valueformat: {
             valType: 'string',
             editType: 'plot',
-            description: [
-                'Sets the value formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('value')
         },
         increasing: {
             symbol: {

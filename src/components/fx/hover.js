@@ -39,6 +39,19 @@ var YSHIFTY = Math.sin(YA_RADIANS);
 var HOVERARROWSIZE = constants.HOVERARROWSIZE;
 var HOVERTEXTPAD = constants.HOVERTEXTPAD;
 
+var multipleHoverPoints = {
+    box: true,
+    ohlc: true,
+    violin: true,
+    candlestick: true
+};
+
+var cartesianScatterPoints = {
+    scatter: true,
+    scattergl: true,
+    splom: true
+};
+
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
 //   to hover on
@@ -248,8 +261,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return dragElement.unhoverRaw(gd, evt);
     }
 
-    var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
-    var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
+    var hoverdistance = fullLayout.hoverdistance;
+    if(hoverdistance === -1) hoverdistance = Infinity;
+
+    var spikedistance = fullLayout.spikedistance;
+    if(spikedistance === -1) spikedistance = Infinity;
 
     // hoverData: the set of candidate points we've found to highlight
     var hoverData = [];
@@ -264,7 +280,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     // mapped onto each of the currently selected overlaid subplots
     var xvalArray, yvalArray;
 
-    var itemnum, curvenum, cd, trace, subplotId, subploti, mode,
+    var itemnum, curvenum, cd, trace, subplotId, subploti, _mode,
         xval, yval, pointData, closedataPreviousLength;
 
     // spikePoints: the set of candidate points we've found to draw spikes to
@@ -399,9 +415,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
 
             // within one trace mode can sometimes be overridden
-            mode = hovermode;
-            if(helpers.isUnifiedHover(mode)) {
-                mode = mode.charAt(0);
+            _mode = hovermode;
+            if(helpers.isUnifiedHover(_mode)) {
+                _mode = _mode.charAt(0);
             }
 
             // container for new point, also used to pass info into module.hoverPoints
@@ -459,20 +475,20 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // for a highlighting array, figure out what
             // we're searching for with this element
-            if(mode === 'array') {
+            if(_mode === 'array') {
                 var selection = evt[curvenum];
                 if('pointNumber' in selection) {
                     pointData.index = selection.pointNumber;
-                    mode = 'closest';
+                    _mode = 'closest';
                 } else {
-                    mode = '';
+                    _mode = '';
                     if('xval' in selection) {
                         xval = selection.xval;
-                        mode = 'x';
+                        _mode = 'x';
                     }
                     if('yval' in selection) {
                         yval = selection.yval;
-                        mode = mode ? 'closest' : 'y';
+                        _mode = _mode ? 'closest' : 'y';
                     }
                 }
             } else if(customXVal !== undefined && customYVal !== undefined) {
@@ -486,7 +502,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
-                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
+                        finiteRange: true,
+                        hoverLayer: fullLayout._hoverlayer
+                    });
+
                     if(newPoints) {
                         var newPoint;
                         for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
@@ -515,7 +535,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 if(hoverData.length === 0) {
                     pointData.distance = spikedistance;
                     pointData.index = false;
-                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
+                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
                     if(closestPoints) {
                         closestPoints = closestPoints.filter(function(point) {
                             // some hover points, like scatter fills, do not allow spikes,
@@ -558,12 +580,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     findHoverPoints();
 
-    function selectClosestPoint(pointsData, spikedistance) {
+    function selectClosestPoint(pointsData, spikedistance, spikeOnWinning) {
         var resultPoint = null;
         var minDistance = Infinity;
         var thisSpikeDistance;
+
         for(var i = 0; i < pointsData.length; i++) {
             thisSpikeDistance = pointsData[i].spikeDistance;
+            if(spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
+
             if(thisSpikeDistance <= minDistance && thisSpikeDistance <= spikedistance) {
                 resultPoint = pointsData[i];
                 minDistance = thisSpikeDistance;
@@ -600,19 +625,30 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     };
     gd._spikepoints = newspikepoints;
 
+    var sortHoverData = function() {
+        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+
+        // move period positioned points and box/bar-like traces to the end of the list
+        hoverData = orderRangePoints(hoverData, hovermode);
+    };
+    sortHoverData();
+
+    var axLetter = hovermode.charAt(0);
+    var spikeOnWinning = (axLetter === 'x' || axLetter === 'y') && hoverData[0] && cartesianScatterPoints[hoverData[0].trace.type];
+
     // Now if it is not restricted by spikedistance option, set the points to draw the spikelines
     if(hasCartesian && (spikedistance !== 0)) {
         if(hoverData.length !== 0) {
             var tmpHPointData = hoverData.filter(function(point) {
                 return point.ya.showspikes;
             });
-            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance);
+            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance, spikeOnWinning);
             spikePoints.hLinePoint = fillSpikePoint(tmpHPoint);
 
             var tmpVPointData = hoverData.filter(function(point) {
                 return point.xa.showspikes;
             });
-            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance);
+            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance, spikeOnWinning);
             spikePoints.vLinePoint = fillSpikePoint(tmpVPoint);
         }
     }
@@ -634,46 +670,62 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
     }
 
-    hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
-
-    // If in compare mode, select every point at position
     if(
-        helpers.isXYhover(mode) &&
+        helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
-        var hd = hoverData[0];
-        var cd0 = hd.cd[hd.index];
-        var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
-
-        var xVal = hd.xVal;
-        var ax = hd.xa;
-        if(ax.type === 'category') xVal = ax._categoriesMap[xVal];
-        if(ax.type === 'date') xVal = ax.d2c(xVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            xVal += cd0.t.dPos;
+        // pick winning point
+        var winningPoint = hoverData[0];
+        // discard other points
+        if(multipleHoverPoints[winningPoint.trace.type]) {
+            hoverData = hoverData.filter(function(d) {
+                return d.trace.index === winningPoint.trace.index;
+            });
+        } else {
+            hoverData = [winningPoint];
         }
+        var initLen = hoverData.length;
 
-        var yVal = hd.yVal;
-        ax = hd.ya;
-        if(ax.type === 'category') yVal = ax._categoriesMap[yVal];
-        if(ax.type === 'date') yVal = ax.d2c(yVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            yVal += cd0.t.dPos;
-        }
+        var winX = getCoord('x', winningPoint, fullLayout);
+        var winY = getCoord('y', winningPoint, fullLayout);
 
-        findHoverPoints(xVal, yVal);
+        // in compare mode, select every point at position
+        findHoverPoints(winX, winY);
 
-        // Remove duplicated hoverData points
-        // note that d3 also filters identical points in the rendering steps
-        var repeated = {};
-        hoverData = hoverData.filter(function(hd) {
-            var key = hoverDataKey(hd);
-            if(!repeated[key]) {
-                repeated[key] = true;
-                return repeated[key];
+        var finalPoints = [];
+        var seen = {};
+        var id = 0;
+        var insert = function(newHd) {
+            var key = multipleHoverPoints[newHd.trace.type] ? hoverDataKey(newHd) : newHd.trace.index;
+            if(!seen[key]) {
+                id++;
+                seen[key] = id;
+                finalPoints.push(newHd);
+            } else {
+                var oldId = seen[key] - 1;
+                var oldHd = finalPoints[oldId];
+                if(oldId > 0 &&
+                    Math.abs(newHd.distance) <
+                    Math.abs(oldHd.distance)
+                ) {
+                    // replace with closest
+                    finalPoints[oldId] = newHd;
+                }
             }
-        });
+        };
+
+        var k;
+        // insert the winnig point(s) first
+        for(k = 0; k < initLen; k++) {
+            insert(hoverData[k]);
+        }
+        // override from the end
+        for(k = hoverData.length - 1; k > initLen - 1; k--) {
+            insert(hoverData[k]);
+        }
+        hoverData = finalPoints;
+        sortHoverData();
     }
 
     // lastly, emit custom hover/unhover events
@@ -767,7 +819,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 }
 
 function hoverDataKey(d) {
-    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa, d.ya || ''].join(',');
+    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa ? d.xa._id : '', d.ya ? d.ya._id : ''].join(',');
 }
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
@@ -790,9 +842,8 @@ function createHoverText(hoverData, opts, gd) {
     var c0 = hoverData[0];
     var xa = c0.xa;
     var ya = c0.ya;
-    var commonAttr = hovermode.charAt(0) === 'y' ? 'yLabel' : 'xLabel';
-    var t0 = c0[commonAttr];
-    var t00 = (String(t0) || '').split(' ')[0];
+    var axLetter = hovermode.charAt(0);
+    var t0 = c0[axLetter + 'Label'];
     var outerContainerBB = outerContainer.node().getBoundingClientRect();
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
@@ -981,26 +1032,12 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         label.attr('transform', strTranslate(lx, ly));
-
-        // remove the "close but not quite" points
-        // because of error bars, only take up to a space
-        hoverData = filterClosePoints(hoverData);
     });
-
-    function filterClosePoints(hoverData) {
-        return hoverData.filter(function(d) {
-            return (d.zLabelVal !== undefined) ||
-                (d[commonAttr] || '').split(' ')[0] === t00;
-        });
-    }
 
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
-
-        // similarly to compare mode, we remove the "close but not quite together" points
-        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
 
         // Return early if nothing is hovered on
         if(hoverData.length === 0) return;
@@ -1021,10 +1058,10 @@ function createHoverText(hoverData, opts, gd) {
         };
         var mockLayoutOut = {};
         legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
-        var legendOpts = mockLayoutOut.legend;
+        var mockLegend = mockLayoutOut.legend;
 
         // prepare items for the legend
-        legendOpts.entries = [];
+        mockLegend.entries = [];
         for(var j = 0; j < hoverData.length; j++) {
             var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
@@ -1050,46 +1087,99 @@ function createHoverText(hoverData, opts, gd) {
             }
             pt._distinct = true;
 
-            legendOpts.entries.push([pt]);
+            mockLegend.entries.push([pt]);
         }
-        legendOpts.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
-        legendOpts.layer = container;
+        mockLegend.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
+        mockLegend.layer = container;
 
         // Draw unified hover label
-        legendDraw(gd, legendOpts);
+        mockLegend._inHover = true;
+        legendDraw(gd, mockLegend);
 
         // Position the hover
-        var ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
-        var lx = Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
-        lx += xa._offset;
-        ly += ya._offset - tbb.height / 2;
+        var tWidth = tbb.width + 2 * HOVERTEXTPAD;
+        var tHeight = tbb.height + 2 * HOVERTEXTPAD;
+        var winningPoint = hoverData[0];
+        var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
+        var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
+        // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
+        var pointWon = !(
+            Registry.traceIs(winningPoint.trace, 'bar-like') ||
+            Registry.traceIs(winningPoint.trace, 'box-violin')
+        );
 
-        // Change horizontal alignment to end up on screen
-        var txWidth = tbb.width + 2 * HOVERTEXTPAD;
-        var anchorStartOK = lx + txWidth <= outerWidth;
-        var anchorEndOK = lx - txWidth >= 0;
-        if(!anchorStartOK && anchorEndOK) {
-            lx -= txWidth;
+        var lyBottom, lyTop;
+        if(axLetter === 'y') {
+            if(pointWon) {
+                lyTop = avgY - HOVERTEXTPAD;
+                lyBottom = avgY + HOVERTEXTPAD;
+            } else {
+                lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
+                lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
+            }
         } else {
-            lx += 2 * HOVERTEXTPAD;
+            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
         }
 
-        // Change vertical alignement to end up on screen
-        var txHeight = tbb.height + 2 * HOVERTEXTPAD;
-        var overflowTop = ly <= outerTop;
-        var overflowBottom = ly + txHeight >= outerHeight;
-        var canFit = txHeight <= outerHeight;
-        if(canFit) {
-            if(overflowTop) {
-                ly = ya._offset + 2 * HOVERTEXTPAD;
-            } else if(overflowBottom) {
-                ly = outerHeight - txHeight;
+        var lxRight, lxLeft;
+        if(axLetter === 'x') {
+            if(pointWon) {
+                lxRight = avgX + HOVERTEXTPAD;
+                lxLeft = avgX - HOVERTEXTPAD;
+            } else {
+                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
+                lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
+            }
+        } else {
+            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
+        }
+
+        var xOffset = xa._offset;
+        var yOffset = ya._offset;
+        lyBottom += yOffset;
+        lxRight += xOffset;
+        lxLeft += xOffset - tWidth;
+        lyTop += yOffset - tHeight;
+
+        var lx, ly; // top and left positions of the hover box
+
+        // horizontal alignment to end up on screen
+        if(lxRight + tWidth < outerWidth && lxRight >= 0) {
+            lx = lxRight;
+        } else if(lxLeft + tWidth < outerWidth && lxLeft >= 0) {
+            lx = lxLeft;
+        } else if(xOffset + tWidth < outerWidth) {
+            lx = xOffset; // subplot left corner
+        } else {
+            // closest left or right side of the paper
+            if(lxRight - avgX < avgX - lxLeft + tWidth) {
+                lx = outerWidth - tWidth;
+            } else {
+                lx = 0;
             }
         }
-        legendContainer.attr('transform', strTranslate(lx, ly));
+        lx += HOVERTEXTPAD;
 
+        // vertical alignement to end up on screen
+        if(lyBottom + tHeight < outerHeight && lyBottom >= 0) {
+            ly = lyBottom;
+        } else if(lyTop + tHeight < outerHeight && lyTop >= 0) {
+            ly = lyTop;
+        } else if(yOffset + tHeight < outerHeight) {
+            ly = yOffset; // subplot top corner
+        } else {
+            // closest top or bottom side of the paper
+            if(lyBottom - avgY < avgY - lyTop + tHeight) {
+                ly = outerHeight - tHeight;
+            } else {
+                ly = 0;
+            }
+        }
+        ly += HOVERTEXTPAD;
+
+        legendContainer.attr('transform', strTranslate(lx - 1, ly - 1));
         return legendContainer;
     }
 
@@ -1257,14 +1347,17 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
         name = plainText(d.name, d.nameLength);
     }
 
+    var h0 = hovermode.charAt(0);
+    var h1 = h0 === 'x' ? 'y' : 'x';
+
     if(d.zLabel !== undefined) {
         if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
         if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
         if(d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox') {
             text += (text ? 'z: ' : '') + d.zLabel;
         }
-    } else if(showCommonLabel && d[hovermode.charAt(0) + 'Label'] === t0) {
-        text = d[(hovermode.charAt(0) === 'x' ? 'y' : 'x') + 'Label'] || '';
+    } else if(showCommonLabel && d[h0 + 'Label'] === t0) {
+        text = d[h1 + 'Label'] || '';
     } else if(d.xLabel === undefined) {
         if(d.yLabel !== undefined && d.trace.type !== 'scattercarpet') {
             text = d.yLabel;
@@ -1293,16 +1386,20 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     }
 
     // hovertemplate
-    var d3locale = fullLayout._d3locale;
     var hovertemplate = d.hovertemplate || false;
-    var hovertemplateLabels = d.hovertemplateLabels || d;
-    var eventData = d.eventData[0] || {};
     if(hovertemplate) {
+        var labels = d.hovertemplateLabels || d;
+
+        if(d[h0 + 'Label'] !== t0) {
+            labels[h0 + 'other'] = labels[h0 + 'Val'];
+            labels[h0 + 'otherLabel'] = labels[h0 + 'Label'];
+        }
+
         text = Lib.hovertemplateString(
             hovertemplate,
-            hovertemplateLabels,
-            d3locale,
-            eventData,
+            labels,
+            fullLayout._d3locale,
+            d.eventData[0] || {},
             d.trace._meta
         );
 
@@ -1619,11 +1716,11 @@ function cleanPoint(d, hovermode) {
 
     // and convert the x and y label values into formatted text
     if(d.xLabelVal !== undefined) {
-        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal);
+        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal, trace.xhoverformat);
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
     if(d.yLabelVal !== undefined) {
-        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal);
+        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal, trace.yhoverformat);
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
 
@@ -1879,4 +1976,71 @@ function plainText(s, len) {
         len: len,
         allowedTags: ['br', 'sub', 'sup', 'b', 'i', 'em']
     });
+}
+
+function orderRangePoints(hoverData, hovermode) {
+    var axLetter = hovermode.charAt(0);
+
+    var first = [];
+    var second = [];
+    var last = [];
+
+    for(var i = 0; i < hoverData.length; i++) {
+        var d = hoverData[i];
+
+        if(
+            Registry.traceIs(d.trace, 'bar-like') ||
+            Registry.traceIs(d.trace, 'box-violin')
+        ) {
+            last.push(d);
+        } else if(d.trace[axLetter + 'period']) {
+            second.push(d);
+        } else {
+            first.push(d);
+        }
+    }
+
+    return first.concat(second).concat(last);
+}
+
+function getCoord(axLetter, winningPoint, fullLayout) {
+    var ax = winningPoint[axLetter + 'a'];
+    var val = winningPoint[axLetter + 'Val'];
+
+    var cd0 = winningPoint.cd[0];
+
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    else if(ax.type === 'date') {
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
+
+            var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
+            var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
+            var diff = end - start;
+
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
+    }
+
+    if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
+        if(
+            fullLayout.boxmode === 'group' ||
+            fullLayout.violinmode === 'group'
+        ) {
+            val += cd0.t.dPos;
+        }
+    }
+
+    return val;
 }

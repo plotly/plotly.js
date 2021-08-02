@@ -43,6 +43,10 @@ var attrs = module.exports = overrideAll(extendFlat({
     caps: isosurfaceAttrs.caps,
     text: isosurfaceAttrs.text,
     hovertext: isosurfaceAttrs.hovertext,
+    xhoverformat: isosurfaceAttrs.xhoverformat,
+    yhoverformat: isosurfaceAttrs.yhoverformat,
+    zhoverformat: isosurfaceAttrs.zhoverformat,
+    valuehoverformat: isosurfaceAttrs.valuehoverformat,
     hovertemplate: isosurfaceAttrs.hovertemplate
 },
 

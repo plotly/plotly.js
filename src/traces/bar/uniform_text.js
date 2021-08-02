@@ -17,6 +17,7 @@ function resizeText(gd, gTrace, traceType) {
                 selector = 'g.slice';
                 break;
             case 'treemap' :
+            case 'icicle' :
                 selector = 'g.slice, g.pathbar';
                 break;
             default :
