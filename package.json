@@ -108,7 +108,7 @@
     "gl-spikes2d": "^1.0.2",
     "gl-streamtube3d": "^1.4.1",
     "gl-surface3d": "^1.6.0",
-    "gl-text": "git://github.com/gl-vis/gl-text.git#e215cddf18bda17d8a0d4960d03b4b30fe7cc9df",
+    "gl-text": "git://github.com/gl-vis/gl-text.git#6ae296c411d8611b548057adbb9ff126b590638f",
     "glslify": "^7.1.1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
