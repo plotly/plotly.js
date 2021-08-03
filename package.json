@@ -132,6 +132,7 @@
     "regl-splom": "^1.0.14",
     "right-now": "^1.0.0",
     "robust-in-sphere": "git://github.com/archmoj/robust-in-sphere.git#3ade496980943e284ccd4aead0881d932474cd9c",
+    "robust-linear-solve": "^1.0.0",
     "robust-orientation": "git://github.com/archmoj/robust-orientation.git#e63554deef4fefa28ffd79bcc9a0f62d814d4036",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
