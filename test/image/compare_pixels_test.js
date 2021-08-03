@@ -128,6 +128,7 @@ for(var i = 0; i < allMockList.length; i++) {
                 // more flaky
                 'mapbox_angles',
                 'mapbox_layers',
+                'mapbox_custom-style',
                 'mapbox_geojson-attributes'
             ].indexOf(mockName) !== -1 ? 0.5 : 0.15
     });
