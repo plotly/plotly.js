@@ -47,12 +47,9 @@
     "smith": {
       "bgcolor": "rgb(255, 255, 255)",
       "realaxis": {
-        "tickangle": 45,
-        "tick0": 0,
-        "dtick": 0.1
+        "tickangle": 45
       },
       "imaginaryaxis": {
-        "thetaunit": "radians",
         "showgrid": true,
         "tickwidth": 2,
         "ticklen": 5
