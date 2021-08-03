@@ -461,6 +461,28 @@ describe('@noCIdep Plotly.react', function() {
         .then(done, done.fail);
     });
 
+    it('can put smith plots into staticPlot mode', function(done) {
+        var data = [{re: [0, 1, 2, 3, 4, 5], im: [0, 1, 2, 3, 4, 5], type: 'scattersmith'}];
+        var layout = {};
+
+        Plotly.newPlot(gd, data, layout)
+        .then(countPlots)
+        .then(function() {
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(4);
+
+            return Plotly.react(gd, data, layout, {staticPlot: true});
+        })
+        .then(function() {
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(0);
+
+            return Plotly.react(gd, data, layout, {});
+        })
+        .then(function() {
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(4);
+        })
+        .then(done, done.fail);
+    });
+
     it('can change from scatter to category scatterpolar and back', function(done) {
         function scatter() {
             return {
