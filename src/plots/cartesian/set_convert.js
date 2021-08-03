@@ -6,6 +6,7 @@ var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
 var isNumeric = require('fast-isnumeric');
 
+
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
@@ -178,8 +179,8 @@ module.exports = function setConvert(ax, fullLayout) {
         if(isNumeric(v)) return +v;
     }
 
-    function getRangePosition(v) {
-        return isNumeric(v) ? +v : getCategoryIndex(v);
+    function getRangePositionForCategory(v) {
+        return (typeof v !== 'string') ? v : getCategoryIndex(v);
     }
 
     // include 2 fractional digits on pixel, for PDF zooming etc
@@ -313,12 +314,12 @@ module.exports = function setConvert(ax, fullLayout) {
         ax.d2r = ax.d2l_noadd = getCategoryPosition;
 
         ax.r2c = function(v) {
-            var index = getRangePosition(v);
+            var index = getRangePositionForCategory(v);
             return index !== undefined ? index : ax.fraction2r(0.5);
         };
 
         ax.l2r = ax.c2r = ensureNumber;
-        ax.r2l = getRangePosition;
+        ax.r2l = getRangePositionForCategory;
 
         ax.d2p = function(v) { return ax.l2p(ax.r2c(v)); };
         ax.p2d = function(px) { return getCategoryName(p2l(px)); };
