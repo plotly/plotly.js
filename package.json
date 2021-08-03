@@ -131,6 +131,7 @@
     "regl-scatter2d": "^3.2.6",
     "regl-splom": "^1.0.14",
     "right-now": "^1.0.0",
+    "robust-in-sphere": "^1.1.3",
     "robust-orientation": "git://github.com/archmoj/robust-orientation.git#e63554deef4fefa28ffd79bcc9a0f62d814d4036",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
