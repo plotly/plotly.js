@@ -5274,7 +5274,7 @@ describe('hovermode: (x|y)unified', function() {
                     'bar : 2'
                 ]});
 
-                _hover(gd, { xpx: 100, ypx: 200 });
+                _hover(gd, { xpx: 110, ypx: 200 });
                 assertLabel({title: 'Jan 1, 2000', items: [
                     'bar : (Jan, 1)',
                     'scatter : 1.1'
@@ -5345,7 +5345,7 @@ describe('hovermode: (x|y)unified', function() {
                         type: 'bar',
                         x: ['2000-01', '2000-02'],
                         y: [1, 2],
-                        xhoverfrmat: '%b',
+                        xhoverformat: '%b',
                         xperiod: 'M1'
                     },
                     {
@@ -5359,7 +5359,7 @@ describe('hovermode: (x|y)unified', function() {
                     },
                     {
                         name: 'end',
-                        type: 'scatter',
+                        type: scatterType,
                         x: ['2000-01', '2000-02'],
                         y: [1, 2],
                         xhoverformat: '%b',
@@ -5375,35 +5375,262 @@ describe('hovermode: (x|y)unified', function() {
                 }
             })
             .then(function(gd) {
-                _hover(gd, { xpx: 40, ypx: 200 });
+                _hover(gd, { xpx: 50, ypx: 200 });
                 assertLabel({title: 'Jan', items: [
-                    'bar : (Jan 1, 2000, 1)',
+                    'bar : 1',
                     'start : 1',
-                    'end : 1'
+                    'end : 1',
                 ]});
 
-                _hover(gd, { xpx: 100, ypx: 200 });
+                _hover(gd, { xpx: 150, ypx: 200 });
                 assertLabel({title: 'Jan', items: [
-                    'bar : (Jan 1, 2000, 1)',
+                    'bar : 1',
                     'start : 1',
-                    'end : 1'
-                ]});
-
-                _hover(gd, { xpx: 360, ypx: 200 });
-                assertLabel({title: 'Feb', items: [
-                    'bar : (Feb 1, 2000, 2)',
-                    'start : 2',
-                    'end : 2'
-                ]});
-
-                _hover(gd, { xpx: 400, ypx: 200 });
-                assertLabel({title: 'Feb', items: [
-                    'bar : (Feb 1, 2000, 2)',
-                    'start : 2',
-                    'end : 2'
+                    'end : 1',
                 ]});
             })
             .then(done, done.fail);
+        });
+    });
+
+    ['scatter', 'scattergl'].forEach(function(scatterType) {
+        it(scatterType + ' period points alignments (all end edge case)', function(done) {
+            Plotly.newPlot(gd, {
+                data: [
+                    {
+                        name: 'bar',
+                        type: 'bar',
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                    {
+                        name: 'one',
+                        type: scatterType,
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                    {
+                        name: 'two',
+                        type: scatterType,
+                        x: ['2000-01', '2000-02'],
+                        y: [1, 2],
+                        xhoverformat: '%b',
+                        xperiod: 'M1',
+                        xperiodalignment: 'end'
+                    },
+                ],
+                layout: {
+                    showlegend: false,
+                    width: 600,
+                    height: 400,
+                    hovermode: 'x unified'
+                }
+            })
+            .then(function(gd) {
+                _hover(gd, { xpx: 100, ypx: 200 });
+                assertLabel({title: 'Jan', items: [
+                    'bar : 1',
+                    'one : 1',
+                    'two : 1',
+                ]});
+
+                _hover(gd, { xpx: 300, ypx: 200 });
+                assertLabel({title: 'Feb', items: [
+                    'bar : 2',
+                    'one : 2',
+                    'two : 2',
+                ]});
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    [{
+        type: 'scatter',
+        alignment: 'start',
+        x: 350
+    }, {
+        type: 'scatter',
+        alignment: 'middle',
+        x: 250
+    }, {
+        type: 'scatter',
+        alignment: 'end',
+        x: 150
+    }].forEach(function(t) {
+        it('two ' + t.alignment + ' period positioned ' + t.type + ' points', function(done) {
+            var fig = {
+                data: [{
+                    x: [
+                        '1970-01-01',
+                        '1970-07-01',
+                        '1971-01-01'
+                    ],
+                    xperiod: 'M6',
+                    xperiodalignment: t.alignment,
+                    type: t.type,
+                    hovertemplate: '%{y}',
+                    y: [11, 12, 13]
+                }, {
+                    x: [
+                        '1970-01-01',
+                        '1970-07-01',
+                        '1971-01-01',
+                    ],
+                    xperiod: 'M6',
+                    xperiodalignment: t.alignment,
+                    type: t.type,
+                    hovertemplate: '%{y}',
+                    y: [1, 2, 3]
+                }],
+                layout: {
+                    showlegend: false,
+                    width: 600,
+                    height: 400,
+                    hovermode: 'x unified'
+                }
+            };
+
+            Plotly.newPlot(gd, fig)
+            .then(function(gd) {
+                _hover(gd, { xpx: t.x, ypx: 200 });
+                assertLabel({title: 'Jul 1, 1970', items: [
+                    'trace 0 : 12',
+                    'trace 1 : 2'
+                ]});
+            })
+            .then(done, done.fail);
+        });
+
+        [{
+            type: 'bar',
+            barmode: 'overlay',
+            alignment: 'start'
+        }, {
+            type: 'bar',
+            barmode: 'group',
+            alignment: 'middle'
+        }, {
+            type: 'bar',
+            barmode: 'group',
+            alignment: 'end'
+        }, {
+            type: 'bar',
+            barmode: 'group',
+            alignment: 'start'
+        }, {
+            type: 'bar',
+            barmode: 'overlay',
+            alignment: 'middle'
+        }, {
+            type: 'bar',
+            barmode: 'overlay',
+            alignment: 'end'
+        }, {
+            type: 'bar',
+            barmode: 'stacked',
+            alignment: 'start'
+        }, {
+            type: 'bar',
+            barmode: 'stacked',
+            alignment: 'middle'
+        }, {
+            type: 'bar',
+            barmode: 'stacked',
+            alignment: 'end'
+        }].forEach(function(t) {
+            it('two ' + t.alignment + ' period positioned ' + t.barmode + ' bars', function(done) {
+                var fig = {
+                    data: [{
+                        x: [
+                            '1970-01-01',
+                            '1970-07-01',
+                            '1971-01-01'
+                        ],
+                        xperiod: 'M6',
+                        xperiodalignment: t.alignment,
+                        type: t.type,
+                        hovertemplate: '%{y}',
+                        y: [11, 12, 13]
+                    }, {
+                        x: [
+                            '1970-01-01',
+                            '1970-07-01',
+                            '1971-01-01',
+                        ],
+                        xperiod: 'M6',
+                        xperiodalignment: t.alignment,
+                        type: t.type,
+                        hovertemplate: '%{y}',
+                        y: [1, 2, 3]
+                    }],
+                    layout: {
+                        barmode: t.barmode,
+                        showlegend: false,
+                        width: 600,
+                        height: 400,
+                        hovermode: 'x unified'
+                    }
+                };
+
+                Plotly.newPlot(gd, fig)
+                .then(function(gd) {
+                    _hover(gd, { xpx: 50, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1970', items: [
+                        'trace 0 : 11',
+                        'trace 1 : 1'
+                    ]});
+
+                    _hover(gd, { xpx: 100, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1970', items: [
+                        'trace 0 : 11',
+                        'trace 1 : 1'
+                    ]});
+
+                    _hover(gd, { xpx: 150, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 200, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 250, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 300, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1971', items: [
+                        'trace 0 : 13',
+                        'trace 1 : 3'
+                    ]});
+
+                    _hover(gd, { xpx: 350, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1971', items: [
+                        'trace 0 : 13',
+                        'trace 1 : 3'
+                    ]});
+
+                    _hover(gd, { xpx: 400, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1971', items: [
+                        'trace 0 : 13',
+                        'trace 1 : 3'
+                    ]});
+                })
+                .then(done, done.fail);
+            });
         });
     });
 

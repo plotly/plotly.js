@@ -9,6 +9,49 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.3.1] -- 2021-07-30
+
+### Fixed
+ - Fix period positioned hover to work in different time zones as well as on grouped bars [[#5864](https://github.com/plotly/plotly.js/pull/5864)]
+ - Use ids from axes when making hover data keys [[#5852](https://github.com/plotly/plotly.js/pull/5852)]
+ - Do not include regl based traces `parcoords`, `splom`, `scattergl` and `scatterpolargl` in the "strict" bundle so that it could be used with CSP without WebGL warning [[#5865](https://github.com/plotly/plotly.js/pull/5865)]
+
+
+## [2.3.0] -- 2021-07-23
+
+### Added
+ - Add new number formatting and text alignment options by upgrading `d3.format` method from d3@v3 to version 1.4.5 of `d3-format` module [[#5125](https://github.com/plotly/plotly.js/pull/5125), [#5842](https://github.com/plotly/plotly.js/pull/5842)]
+ - Add "satellite" and several other projection types to geo subplots [[#5801](https://github.com/plotly/plotly.js/pull/5801)]
+ - Improve rendering of `scattergl`, `splom` and `parcoords` by implementing `plotGlPixelRatio` for those traces [[#5500](https://github.com/plotly/plotly.js/pull/5500)]
+
+### Changed
+ - Upgrade `d3.geo` method from d3@v3 to version 1.12.1 of `d3-geo` module and version 2.9.0 of `d3-geo-projection` module [[#5112](https://github.com/plotly/plotly.js/pull/5112)]
+ - Upgrade `d3.interpolate` method from d3@v3 to version 1.4.0 of `d3-interpolate` module in `icicle`, `indicator`, `parcats`, `sunburst` and `treemap` [[#5826](https://github.com/plotly/plotly.js/pull/5826)]
+ - Upgrade `regl-scatter2d`, `regl-line2d` and `regl-error2d` modules to use version 1.1.0 of `to-float32` module to improve the performance [[#5786](https://github.com/plotly/plotly.js/pull/5786)],
+   with thanks to @Seranicio for the contribution!
+ - Edit the type of `constraintrange` in `parcoords` trace to pass validation [[#5673](https://github.com/plotly/plotly.js/pull/5673)]
+ - Sort object key values in schema [[#5813](https://github.com/plotly/plotly.js/pull/5813)]
+ - Sort plot-schema and add test to track plot-schema changes [[#5776](https://github.com/plotly/plotly.js/pull/5776)]
+ - Preview CHANGELOG when building dist on master [[#5780](https://github.com/plotly/plotly.js/pull/5780), [#5808](https://github.com/plotly/plotly.js/pull/5808)]
+ - Preview plot-schema changes between releases when building dist on master [[#5814](https://github.com/plotly/plotly.js/pull/5814)]
+ - Display changes made to package.json between versions and add identical tags to draft bundles created by `publish-dist` job on CircleCI [[#5815](https://github.com/plotly/plotly.js/pull/5815)]
+ - Simplify devtool by relying on `XMLHttpRequest` instead of `d3.json` [[#5832](https://github.com/plotly/plotly.js/pull/5832)]
+ - Update CONTRIBUTING guidelines on how to submit pull requests and generate new baseline [[#5791](https://github.com/plotly/plotly.js/pull/5791), [#5792](https://github.com/plotly/plotly.js/pull/5792)]
+ - More maintenance work listed under [the v2.3.0 milestone](https://github.com/plotly/plotly.js/milestone/63?closed=1)
+
+### Fixed
+ - Fix unknown filename when exporting charts using new versions of Safari [[#5609](https://github.com/plotly/plotly.js/pull/5609), [5838](https://github.com/plotly/plotly.js/pull/5838)],
+ with thanks to @rlreamy for the contribution!
+ - Improve README for ES6 module import [[#5779](https://github.com/plotly/plotly.js/pull/5779)],
+   with thanks to @andreafonso for the contribution!
+ - Position hover in respect to the average of values in (x|y) unified modes (regression introduced in 2.0.0) [[#5845](https://github.com/plotly/plotly.js/pull/5845)]
+ - Fix hover with period alignment points and improve positioning of spikes and unified hover label
+   in order not to obscure referring data points and fit inside plotting area [[#5846](https://github.com/plotly/plotly.js/pull/5846)]
+ - Allow clickable legend group titles when group has no pie-like traces [[#5771](https://github.com/plotly/plotly.js/pull/5771)]
+ - Fix mapbox line text example [[#5804](https://github.com/plotly/plotly.js/pull/5804)]
+ - Fix links to time format options so that they point to the d3-time-format v2.2.3 applied not the latest [[#5818](https://github.com/plotly/plotly.js/pull/5818)]
+
+
 ## [2.2.1] -- 2021-07-06
 
 ### Fixed
@@ -34,6 +77,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
  - Centralize jsdom utility to return Plotly object in node.js test scripts and use it in generating plot-schema [[#5755](https://github.com/plotly/plotly.js/pull/5755)]
  - Bump turf bbox dependency to v6.4.0 [[#5747](https://github.com/plotly/plotly.js/pull/5747)]
  - Bump turf area dependency to v6.4.0 [[#5748](https://github.com/plotly/plotly.js/pull/5748)]
+ - More maintenance work listed under [the v2.2.0 milestone](https://github.com/plotly/plotly.js/milestone/62?closed=1)
 
 ### Fixed
  - Cache values and patterns in set_convert for axes with `rangebreaks` to improve performance [[#5659](https://github.com/plotly/plotly.js/pull/5659)],
@@ -54,7 +98,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ### Changed
  - Replace deprecated [node-sass](https://www.npmjs.com/package/node-sass) modules with [Sass](https://www.npmjs.com/package/sass) and update plot CSS [[#5729](https://github.com/plotly/plotly.js/pull/5729)]
  - Bump `probe-image-size` to v7.2.1 [[#5739](https://github.com/plotly/plotly.js/pull/5739)]
- - More maintenance work listed under [the v2.1.0 milestone](https://github.com/plotly/plotly.js/milestone/61)
+ - More maintenance work listed under [the v2.1.0 milestone](https://github.com/plotly/plotly.js/milestone/61?closed=1)
 
 ### Fixed
  - Fix setting the width of categorical bars & boxes to unit [[#5732](https://github.com/plotly/plotly.js/pull/5732)]
@@ -123,7 +167,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
    dist files at build time [[#5436](https://github.com/plotly/plotly.js/pull/5436), [#5446](https://github.com/plotly/plotly.js/pull/5446)]
  - Guard against unexpected characters at build time [[#5424](https://github.com/plotly/plotly.js/pull/5424)]
  - Minimize indentation in plot-schema [[#5663](https://github.com/plotly/plotly.js/pull/5663)]
- - More maintenance work listed under [the 60th milestone](https://github.com/plotly/plotly.js/milestone/60)!
+ - More maintenance work listed under [the 60th milestone](https://github.com/plotly/plotly.js/milestone/60?closed=1)!
 
 ### Fixed
  - Fix "toself" `fill` for `scattergl` traces to handle multiple polygons [[#5355](https://github.com/plotly/plotly.js/pull/5355)],

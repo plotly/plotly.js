@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v2.2.1
+* plotly.js (gl2d) v2.3.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -72,37 +72,37 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":517}],2:[function(_dereq_,module,exports){
+},{"../src/lib":519}],2:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/aggregate');
 
-},{"../src/transforms/aggregate":708}],3:[function(_dereq_,module,exports){
+},{"../src/transforms/aggregate":711}],3:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/components/calendars');
 
-},{"../src/components/calendars":383}],4:[function(_dereq_,module,exports){
+},{"../src/components/calendars":385}],4:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/core');
 
-},{"../src/core":497}],5:[function(_dereq_,module,exports){
+},{"../src/core":499}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/filter');
 
-},{"../src/transforms/filter":709}],6:[function(_dereq_,module,exports){
+},{"../src/transforms/filter":712}],6:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/groupby');
 
-},{"../src/transforms/groupby":710}],7:[function(_dereq_,module,exports){
+},{"../src/transforms/groupby":713}],7:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/heatmapgl');
 
-},{"../src/traces/heatmapgl":629}],8:[function(_dereq_,module,exports){
+},{"../src/traces/heatmapgl":632}],8:[function(_dereq_,module,exports){
 'use strict';
 
 var Plotly = _dereq_('./core');
@@ -132,35 +132,35 @@ module.exports = Plotly;
 
 module.exports = _dereq_('../src/traces/parcoords');
 
-},{"../src/traces/parcoords":643}],10:[function(_dereq_,module,exports){
+},{"../src/traces/parcoords":646}],10:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/pointcloud');
 
-},{"../src/traces/pointcloud":653}],11:[function(_dereq_,module,exports){
+},{"../src/traces/pointcloud":656}],11:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/scattergl');
 
-},{"../src/traces/scattergl":693}],12:[function(_dereq_,module,exports){
+},{"../src/traces/scattergl":696}],12:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/sort');
 
-},{"../src/transforms/sort":712}],13:[function(_dereq_,module,exports){
+},{"../src/transforms/sort":715}],13:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/splom');
 
-},{"../src/traces/splom":704}],14:[function(_dereq_,module,exports){
+},{"../src/traces/splom":707}],14:[function(_dereq_,module,exports){
 !function() {
   var d3 = {
-    version: "3.6.1"
+    version: "3.8.0"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
   };
-  var d3_document = this.document;
+  var d3_document = self.document;
   function d3_documentElement(node) {
     return node && (node.ownerDocument || node.document || node).documentElement;
   }
@@ -2341,2619 +2341,9 @@ module.exports = _dereq_('../src/traces/splom');
     d3_timer_queueTail = t0;
     return time;
   }
-  function d3_format_precision(x, p) {
-    return p - (x ? Math.ceil(Math.log(x) / Math.LN10) : 1);
-  }
   d3.round = function(x, n) {
     return n ? Math.round(x * (n = Math.pow(10, n))) / n : Math.round(x);
   };
-  var d3_formatPrefixes = [ "y", "z", "a", "f", "p", "n", "µ", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y" ].map(d3_formatPrefix);
-  d3.formatPrefix = function(value, precision) {
-    var i = 0;
-    if (value = +value) {
-      if (value < 0) value *= -1;
-      if (precision) value = d3.round(value, d3_format_precision(value, precision));
-      i = 1 + Math.floor(1e-12 + Math.log(value) / Math.LN10);
-      i = Math.max(-24, Math.min(24, Math.floor((i - 1) / 3) * 3));
-    }
-    return d3_formatPrefixes[8 + i / 3];
-  };
-  function d3_formatPrefix(d, i) {
-    var k = Math.pow(10, abs(8 - i) * 3);
-    return {
-      scale: i > 8 ? function(d) {
-        return d / k;
-      } : function(d) {
-        return d * k;
-      },
-      symbol: d
-    };
-  }
-  function d3_locale_numberFormat(locale) {
-    var locale_decimal = locale.decimal, locale_thousands = locale.thousands, locale_grouping = locale.grouping, locale_currency = locale.currency, formatGroup = locale_grouping && locale_thousands ? function(value, width) {
-      var i = value.length, t = [], j = 0, g = locale_grouping[0], length = 0;
-      while (i > 0 && g > 0) {
-        if (length + g + 1 > width) g = Math.max(1, width - length);
-        t.push(value.substring(i -= g, i + g));
-        if ((length += g + 1) > width) break;
-        g = locale_grouping[j = (j + 1) % locale_grouping.length];
-      }
-      return t.reverse().join(locale_thousands);
-    } : d3_identity;
-    return function(specifier) {
-      var match = d3_format_re.exec(specifier), fill = match[1] || " ", align = match[2] || ">", sign = match[3] || "-", symbol = match[4] || "", zfill = match[5], width = +match[6], comma = match[7], precision = match[8], type = match[9], scale = 1, prefix = "", suffix = "", integer = false, exponent = true;
-      if (precision) precision = +precision.substring(1);
-      if (zfill || fill === "0" && align === "=") {
-        zfill = fill = "0";
-        align = "=";
-      }
-      switch (type) {
-       case "n":
-        comma = true;
-        type = "g";
-        break;
-
-       case "%":
-        scale = 100;
-        suffix = "%";
-        type = "f";
-        break;
-
-       case "p":
-        scale = 100;
-        suffix = "%";
-        type = "r";
-        break;
-
-       case "b":
-       case "o":
-       case "x":
-       case "X":
-        if (symbol === "#") prefix = "0" + type.toLowerCase();
-
-       case "c":
-        exponent = false;
-
-       case "d":
-        integer = true;
-        precision = 0;
-        break;
-
-       case "s":
-        scale = -1;
-        type = "r";
-        break;
-      }
-      if (symbol === "$") prefix = locale_currency[0], suffix = locale_currency[1];
-      if (type == "r" && !precision) type = "g";
-      if (precision != null) {
-        if (type == "g") precision = Math.max(1, Math.min(21, precision)); else if (type == "e" || type == "f") precision = Math.max(0, Math.min(20, precision));
-      }
-      type = d3_format_types.get(type) || d3_format_typeDefault;
-      var zcomma = zfill && comma;
-      return function(value) {
-        var fullSuffix = suffix;
-        if (integer && value % 1) return "";
-        var negative = value < 0 || value === 0 && 1 / value < 0 ? (value = -value, "-") : sign === "-" ? "" : sign;
-        if (scale < 0) {
-          var unit = d3.formatPrefix(value, precision);
-          value = unit.scale(value);
-          fullSuffix = unit.symbol + suffix;
-        } else {
-          value *= scale;
-        }
-        value = type(value, precision);
-        var i = value.lastIndexOf("."), before, after;
-        if (i < 0) {
-          var j = exponent ? value.lastIndexOf("e") : -1;
-          if (j < 0) before = value, after = ""; else before = value.substring(0, j), after = value.substring(j);
-        } else {
-          before = value.substring(0, i);
-          after = locale_decimal + value.substring(i + 1);
-        }
-        if (!zfill && comma) before = formatGroup(before, Infinity);
-        var length = prefix.length + before.length + after.length + (zcomma ? 0 : negative.length), padding = length < width ? new Array(length = width - length + 1).join(fill) : "";
-        if (zcomma) before = formatGroup(padding + before, padding.length ? width - after.length : Infinity);
-        negative += prefix;
-        value = before + after;
-        return (align === "<" ? negative + value + padding : align === ">" ? padding + negative + value : align === "^" ? padding.substring(0, length >>= 1) + negative + value + padding.substring(length) : negative + (zcomma ? value : padding + value)) + fullSuffix;
-      };
-    };
-  }
-  var d3_format_re = /(?:([^{])?([<>=^]))?([+\- ])?([$#])?(0)?(\d+)?(,)?(\.-?\d+)?([a-z%])?/i;
-  var d3_format_types = d3.map({
-    b: function(x) {
-      return x.toString(2);
-    },
-    c: function(x) {
-      return String.fromCharCode(x);
-    },
-    o: function(x) {
-      return x.toString(8);
-    },
-    x: function(x) {
-      return x.toString(16);
-    },
-    X: function(x) {
-      return x.toString(16).toUpperCase();
-    },
-    g: function(x, p) {
-      return x.toPrecision(p);
-    },
-    e: function(x, p) {
-      return x.toExponential(p);
-    },
-    f: function(x, p) {
-      return x.toFixed(p);
-    },
-    r: function(x, p) {
-      return (x = d3.round(x, d3_format_precision(x, p))).toFixed(Math.max(0, Math.min(20, d3_format_precision(x * (1 + 1e-15), p))));
-    }
-  });
-  function d3_format_typeDefault(x) {
-    return x + "";
-  }
-  var d3_time = d3.time = {}, d3_date = Date;
-  function d3_date_utc() {
-    this._ = new Date(arguments.length > 1 ? Date.UTC.apply(this, arguments) : arguments[0]);
-  }
-  d3_date_utc.prototype = {
-    getDate: function() {
-      return this._.getUTCDate();
-    },
-    getDay: function() {
-      return this._.getUTCDay();
-    },
-    getFullYear: function() {
-      return this._.getUTCFullYear();
-    },
-    getHours: function() {
-      return this._.getUTCHours();
-    },
-    getMilliseconds: function() {
-      return this._.getUTCMilliseconds();
-    },
-    getMinutes: function() {
-      return this._.getUTCMinutes();
-    },
-    getMonth: function() {
-      return this._.getUTCMonth();
-    },
-    getSeconds: function() {
-      return this._.getUTCSeconds();
-    },
-    getTime: function() {
-      return this._.getTime();
-    },
-    getTimezoneOffset: function() {
-      return 0;
-    },
-    valueOf: function() {
-      return this._.valueOf();
-    },
-    setDate: function() {
-      d3_time_prototype.setUTCDate.apply(this._, arguments);
-    },
-    setDay: function() {
-      d3_time_prototype.setUTCDay.apply(this._, arguments);
-    },
-    setFullYear: function() {
-      d3_time_prototype.setUTCFullYear.apply(this._, arguments);
-    },
-    setHours: function() {
-      d3_time_prototype.setUTCHours.apply(this._, arguments);
-    },
-    setMilliseconds: function() {
-      d3_time_prototype.setUTCMilliseconds.apply(this._, arguments);
-    },
-    setMinutes: function() {
-      d3_time_prototype.setUTCMinutes.apply(this._, arguments);
-    },
-    setMonth: function() {
-      d3_time_prototype.setUTCMonth.apply(this._, arguments);
-    },
-    setSeconds: function() {
-      d3_time_prototype.setUTCSeconds.apply(this._, arguments);
-    },
-    setTime: function() {
-      d3_time_prototype.setTime.apply(this._, arguments);
-    }
-  };
-  var d3_time_prototype = Date.prototype;
-  function d3_time_interval(local, step, number) {
-    function round(date) {
-      var d0 = local(date), d1 = offset(d0, 1);
-      return date - d0 < d1 - date ? d0 : d1;
-    }
-    function ceil(date) {
-      step(date = local(new d3_date(date - 1)), 1);
-      return date;
-    }
-    function offset(date, k) {
-      step(date = new d3_date(+date), k);
-      return date;
-    }
-    function range(t0, t1, dt) {
-      var time = ceil(t0), times = [];
-      if (dt > 1) {
-        while (time < t1) {
-          if (!(number(time) % dt)) times.push(new Date(+time));
-          step(time, 1);
-        }
-      } else {
-        while (time < t1) times.push(new Date(+time)), step(time, 1);
-      }
-      return times;
-    }
-    function range_utc(t0, t1, dt) {
-      try {
-        d3_date = d3_date_utc;
-        var utc = new d3_date_utc();
-        utc._ = t0;
-        return range(utc, t1, dt);
-      } finally {
-        d3_date = Date;
-      }
-    }
-    local.floor = local;
-    local.round = round;
-    local.ceil = ceil;
-    local.offset = offset;
-    local.range = range;
-    var utc = local.utc = d3_time_interval_utc(local);
-    utc.floor = utc;
-    utc.round = d3_time_interval_utc(round);
-    utc.ceil = d3_time_interval_utc(ceil);
-    utc.offset = d3_time_interval_utc(offset);
-    utc.range = range_utc;
-    return local;
-  }
-  function d3_time_interval_utc(method) {
-    return function(date, k) {
-      try {
-        d3_date = d3_date_utc;
-        var utc = new d3_date_utc();
-        utc._ = date;
-        return method(utc, k)._;
-      } finally {
-        d3_date = Date;
-      }
-    };
-  }
-  d3_time.year = d3_time_interval(function(date) {
-    date = d3_time.day(date);
-    date.setMonth(0, 1);
-    return date;
-  }, function(date, offset) {
-    date.setFullYear(date.getFullYear() + offset);
-  }, function(date) {
-    return date.getFullYear();
-  });
-  d3_time.years = d3_time.year.range;
-  d3_time.years.utc = d3_time.year.utc.range;
-  d3_time.day = d3_time_interval(function(date) {
-    var day = new d3_date(2e3, 0);
-    day.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-    return day;
-  }, function(date, offset) {
-    date.setDate(date.getDate() + offset);
-  }, function(date) {
-    return date.getDate() - 1;
-  });
-  d3_time.days = d3_time.day.range;
-  d3_time.days.utc = d3_time.day.utc.range;
-  d3_time.dayOfYear = function(date) {
-    var year = d3_time.year(date);
-    return Math.floor((date - year - (date.getTimezoneOffset() - year.getTimezoneOffset()) * 6e4) / 864e5);
-  };
-  [ "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ].forEach(function(day, i) {
-    i = 7 - i;
-    var interval = d3_time[day] = d3_time_interval(function(date) {
-      (date = d3_time.day(date)).setDate(date.getDate() - (date.getDay() + i) % 7);
-      return date;
-    }, function(date, offset) {
-      date.setDate(date.getDate() + Math.floor(offset) * 7);
-    }, function(date) {
-      var day = d3_time.year(date).getDay();
-      return Math.floor((d3_time.dayOfYear(date) + (day + i) % 7) / 7) - (day !== i);
-    });
-    d3_time[day + "s"] = interval.range;
-    d3_time[day + "s"].utc = interval.utc.range;
-    d3_time[day + "OfYear"] = function(date) {
-      var day = d3_time.year(date).getDay();
-      return Math.floor((d3_time.dayOfYear(date) + (day + i) % 7) / 7);
-    };
-  });
-  d3_time.week = d3_time.sunday;
-  d3_time.weeks = d3_time.sunday.range;
-  d3_time.weeks.utc = d3_time.sunday.utc.range;
-  d3_time.weekOfYear = d3_time.sundayOfYear;
-  function d3_locale_timeFormat(locale) {
-    var locale_dateTime = locale.dateTime, locale_date = locale.date, locale_time = locale.time, locale_periods = locale.periods, locale_days = locale.days, locale_shortDays = locale.shortDays, locale_months = locale.months, locale_shortMonths = locale.shortMonths;
-    function d3_time_format(template) {
-      var n = template.length;
-      function format(date) {
-        var string = [], i = -1, j = 0, c, p, f;
-        while (++i < n) {
-          if (template.charCodeAt(i) === 37) {
-            string.push(template.slice(j, i));
-            if ((p = d3_time_formatPads[c = template.charAt(++i)]) != null) c = template.charAt(++i);
-            if (f = d3_time_formats[c]) c = f(date, p == null ? c === "e" ? " " : "0" : p);
-            string.push(c);
-            j = i + 1;
-          }
-        }
-        string.push(template.slice(j, i));
-        return string.join("");
-      }
-      format.parse = function(string) {
-        var d = {
-          y: 1900,
-          m: 0,
-          d: 1,
-          H: 0,
-          M: 0,
-          S: 0,
-          L: 0,
-          Z: null
-        }, i = d3_time_parse(d, template, string, 0);
-        if (i != string.length) return null;
-        if ("p" in d) d.H = d.H % 12 + d.p * 12;
-        var localZ = d.Z != null && d3_date !== d3_date_utc, date = new (localZ ? d3_date_utc : d3_date)();
-        if ("j" in d) date.setFullYear(d.y, 0, d.j); else if ("W" in d || "U" in d) {
-          if (!("w" in d)) d.w = "W" in d ? 1 : 0;
-          date.setFullYear(d.y, 0, 1);
-          date.setFullYear(d.y, 0, "W" in d ? (d.w + 6) % 7 + d.W * 7 - (date.getDay() + 5) % 7 : d.w + d.U * 7 - (date.getDay() + 6) % 7);
-        } else date.setFullYear(d.y, d.m, d.d);
-        date.setHours(d.H + (d.Z / 100 | 0), d.M + d.Z % 100, d.S, d.L);
-        return localZ ? date._ : date;
-      };
-      format.toString = function() {
-        return template;
-      };
-      return format;
-    }
-    function d3_time_parse(date, template, string, j) {
-      var c, p, t, i = 0, n = template.length, m = string.length;
-      while (i < n) {
-        if (j >= m) return -1;
-        c = template.charCodeAt(i++);
-        if (c === 37) {
-          t = template.charAt(i++);
-          p = d3_time_parsers[t in d3_time_formatPads ? template.charAt(i++) : t];
-          if (!p || (j = p(date, string, j)) < 0) return -1;
-        } else if (c != string.charCodeAt(j++)) {
-          return -1;
-        }
-      }
-      return j;
-    }
-    d3_time_format.utc = function(template) {
-      var local = d3_time_format(template);
-      function format(date) {
-        try {
-          d3_date = d3_date_utc;
-          var utc = new d3_date();
-          utc._ = date;
-          return local(utc);
-        } finally {
-          d3_date = Date;
-        }
-      }
-      format.parse = function(string) {
-        try {
-          d3_date = d3_date_utc;
-          var date = local.parse(string);
-          return date && date._;
-        } finally {
-          d3_date = Date;
-        }
-      };
-      format.toString = local.toString;
-      return format;
-    };
-    d3_time_format.multi = d3_time_format.utc.multi = d3_time_formatMulti;
-    var d3_time_periodLookup = d3.map(), d3_time_dayRe = d3_time_formatRe(locale_days), d3_time_dayLookup = d3_time_formatLookup(locale_days), d3_time_dayAbbrevRe = d3_time_formatRe(locale_shortDays), d3_time_dayAbbrevLookup = d3_time_formatLookup(locale_shortDays), d3_time_monthRe = d3_time_formatRe(locale_months), d3_time_monthLookup = d3_time_formatLookup(locale_months), d3_time_monthAbbrevRe = d3_time_formatRe(locale_shortMonths), d3_time_monthAbbrevLookup = d3_time_formatLookup(locale_shortMonths);
-    locale_periods.forEach(function(p, i) {
-      d3_time_periodLookup.set(p.toLowerCase(), i);
-    });
-    var d3_time_formats = {
-      a: function(d) {
-        return locale_shortDays[d.getDay()];
-      },
-      A: function(d) {
-        return locale_days[d.getDay()];
-      },
-      b: function(d) {
-        return locale_shortMonths[d.getMonth()];
-      },
-      B: function(d) {
-        return locale_months[d.getMonth()];
-      },
-      c: d3_time_format(locale_dateTime),
-      d: function(d, p) {
-        return d3_time_formatPad(d.getDate(), p, 2);
-      },
-      e: function(d, p) {
-        return d3_time_formatPad(d.getDate(), p, 2);
-      },
-      H: function(d, p) {
-        return d3_time_formatPad(d.getHours(), p, 2);
-      },
-      I: function(d, p) {
-        return d3_time_formatPad(d.getHours() % 12 || 12, p, 2);
-      },
-      j: function(d, p) {
-        return d3_time_formatPad(1 + d3_time.dayOfYear(d), p, 3);
-      },
-      L: function(d, p) {
-        return d3_time_formatPad(d.getMilliseconds(), p, 3);
-      },
-      m: function(d, p) {
-        return d3_time_formatPad(d.getMonth() + 1, p, 2);
-      },
-      M: function(d, p) {
-        return d3_time_formatPad(d.getMinutes(), p, 2);
-      },
-      p: function(d) {
-        return locale_periods[+(d.getHours() >= 12)];
-      },
-      S: function(d, p) {
-        return d3_time_formatPad(d.getSeconds(), p, 2);
-      },
-      U: function(d, p) {
-        return d3_time_formatPad(d3_time.sundayOfYear(d), p, 2);
-      },
-      w: function(d) {
-        return d.getDay();
-      },
-      W: function(d, p) {
-        return d3_time_formatPad(d3_time.mondayOfYear(d), p, 2);
-      },
-      x: d3_time_format(locale_date),
-      X: d3_time_format(locale_time),
-      y: function(d, p) {
-        return d3_time_formatPad(d.getFullYear() % 100, p, 2);
-      },
-      Y: function(d, p) {
-        return d3_time_formatPad(d.getFullYear() % 1e4, p, 4);
-      },
-      Z: d3_time_zone,
-      "%": function() {
-        return "%";
-      }
-    };
-    var d3_time_parsers = {
-      a: d3_time_parseWeekdayAbbrev,
-      A: d3_time_parseWeekday,
-      b: d3_time_parseMonthAbbrev,
-      B: d3_time_parseMonth,
-      c: d3_time_parseLocaleFull,
-      d: d3_time_parseDay,
-      e: d3_time_parseDay,
-      H: d3_time_parseHour24,
-      I: d3_time_parseHour24,
-      j: d3_time_parseDayOfYear,
-      L: d3_time_parseMilliseconds,
-      m: d3_time_parseMonthNumber,
-      M: d3_time_parseMinutes,
-      p: d3_time_parseAmPm,
-      S: d3_time_parseSeconds,
-      U: d3_time_parseWeekNumberSunday,
-      w: d3_time_parseWeekdayNumber,
-      W: d3_time_parseWeekNumberMonday,
-      x: d3_time_parseLocaleDate,
-      X: d3_time_parseLocaleTime,
-      y: d3_time_parseYear,
-      Y: d3_time_parseFullYear,
-      Z: d3_time_parseZone,
-      "%": d3_time_parseLiteralPercent
-    };
-    function d3_time_parseWeekdayAbbrev(date, string, i) {
-      d3_time_dayAbbrevRe.lastIndex = 0;
-      var n = d3_time_dayAbbrevRe.exec(string.slice(i));
-      return n ? (date.w = d3_time_dayAbbrevLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseWeekday(date, string, i) {
-      d3_time_dayRe.lastIndex = 0;
-      var n = d3_time_dayRe.exec(string.slice(i));
-      return n ? (date.w = d3_time_dayLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseMonthAbbrev(date, string, i) {
-      d3_time_monthAbbrevRe.lastIndex = 0;
-      var n = d3_time_monthAbbrevRe.exec(string.slice(i));
-      return n ? (date.m = d3_time_monthAbbrevLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseMonth(date, string, i) {
-      d3_time_monthRe.lastIndex = 0;
-      var n = d3_time_monthRe.exec(string.slice(i));
-      return n ? (date.m = d3_time_monthLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseLocaleFull(date, string, i) {
-      return d3_time_parse(date, d3_time_formats.c.toString(), string, i);
-    }
-    function d3_time_parseLocaleDate(date, string, i) {
-      return d3_time_parse(date, d3_time_formats.x.toString(), string, i);
-    }
-    function d3_time_parseLocaleTime(date, string, i) {
-      return d3_time_parse(date, d3_time_formats.X.toString(), string, i);
-    }
-    function d3_time_parseAmPm(date, string, i) {
-      var n = d3_time_periodLookup.get(string.slice(i, i += 2).toLowerCase());
-      return n == null ? -1 : (date.p = n, i);
-    }
-    return d3_time_format;
-  }
-  var d3_time_formatPads = {
-    "-": "",
-    _: " ",
-    "0": "0"
-  }, d3_time_numberRe = /^\s*\d+/, d3_time_percentRe = /^%/;
-  function d3_time_formatPad(value, fill, width) {
-    var sign = value < 0 ? "-" : "", string = (sign ? -value : value) + "", length = string.length;
-    return sign + (length < width ? new Array(width - length + 1).join(fill) + string : string);
-  }
-  function d3_time_formatRe(names) {
-    return new RegExp("^(?:" + names.map(d3.requote).join("|") + ")", "i");
-  }
-  function d3_time_formatLookup(names) {
-    var map = new d3_Map(), i = -1, n = names.length;
-    while (++i < n) map.set(names[i].toLowerCase(), i);
-    return map;
-  }
-  function d3_time_parseWeekdayNumber(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 1));
-    return n ? (date.w = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseWeekNumberSunday(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i));
-    return n ? (date.U = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseWeekNumberMonday(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i));
-    return n ? (date.W = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseFullYear(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 4));
-    return n ? (date.y = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseYear(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.y = d3_time_expandYear(+n[0]), i + n[0].length) : -1;
-  }
-  function d3_time_parseZone(date, string, i) {
-    return /^[+-]\d{4}$/.test(string = string.slice(i, i + 5)) ? (date.Z = -string, 
-    i + 5) : -1;
-  }
-  function d3_time_expandYear(d) {
-    return d + (d > 68 ? 1900 : 2e3);
-  }
-  function d3_time_parseMonthNumber(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.m = n[0] - 1, i + n[0].length) : -1;
-  }
-  function d3_time_parseDay(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.d = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseDayOfYear(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 3));
-    return n ? (date.j = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseHour24(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.H = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseMinutes(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.M = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseSeconds(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.S = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseMilliseconds(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 3));
-    return n ? (date.L = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_zone(d) {
-    var z = d.getTimezoneOffset(), zs = z > 0 ? "-" : "+", zh = abs(z) / 60 | 0, zm = abs(z) % 60;
-    return zs + d3_time_formatPad(zh, "0", 2) + d3_time_formatPad(zm, "0", 2);
-  }
-  function d3_time_parseLiteralPercent(date, string, i) {
-    d3_time_percentRe.lastIndex = 0;
-    var n = d3_time_percentRe.exec(string.slice(i, i + 1));
-    return n ? i + n[0].length : -1;
-  }
-  function d3_time_formatMulti(formats) {
-    var n = formats.length, i = -1;
-    while (++i < n) formats[i][0] = this(formats[i][0]);
-    return function(date) {
-      var i = 0, f = formats[i];
-      while (!f[1](date)) f = formats[++i];
-      return f[0](date);
-    };
-  }
-  d3.locale = function(locale) {
-    return {
-      numberFormat: d3_locale_numberFormat(locale),
-      timeFormat: d3_locale_timeFormat(locale)
-    };
-  };
-  var d3_locale_enUS = d3.locale({
-    decimal: ".",
-    thousands: ",",
-    grouping: [ 3 ],
-    currency: [ "$", "" ],
-    dateTime: "%a %b %e %X %Y",
-    date: "%m/%d/%Y",
-    time: "%H:%M:%S",
-    periods: [ "AM", "PM" ],
-    days: [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ],
-    shortDays: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-    months: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
-    shortMonths: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
-  });
-  d3.format = d3_locale_enUS.numberFormat;
-  d3.geo = {};
-  function d3_adder() {}
-  d3_adder.prototype = {
-    s: 0,
-    t: 0,
-    add: function(y) {
-      d3_adderSum(y, this.t, d3_adderTemp);
-      d3_adderSum(d3_adderTemp.s, this.s, this);
-      if (this.s) this.t += d3_adderTemp.t; else this.s = d3_adderTemp.t;
-    },
-    reset: function() {
-      this.s = this.t = 0;
-    },
-    valueOf: function() {
-      return this.s;
-    }
-  };
-  var d3_adderTemp = new d3_adder();
-  function d3_adderSum(a, b, o) {
-    var x = o.s = a + b, bv = x - a, av = x - bv;
-    o.t = a - av + (b - bv);
-  }
-  d3.geo.stream = function(object, listener) {
-    if (object && d3_geo_streamObjectType.hasOwnProperty(object.type)) {
-      d3_geo_streamObjectType[object.type](object, listener);
-    } else {
-      d3_geo_streamGeometry(object, listener);
-    }
-  };
-  function d3_geo_streamGeometry(geometry, listener) {
-    if (geometry && d3_geo_streamGeometryType.hasOwnProperty(geometry.type)) {
-      d3_geo_streamGeometryType[geometry.type](geometry, listener);
-    }
-  }
-  var d3_geo_streamObjectType = {
-    Feature: function(feature, listener) {
-      d3_geo_streamGeometry(feature.geometry, listener);
-    },
-    FeatureCollection: function(object, listener) {
-      var features = object.features, i = -1, n = features.length;
-      while (++i < n) d3_geo_streamGeometry(features[i].geometry, listener);
-    }
-  };
-  var d3_geo_streamGeometryType = {
-    Sphere: function(object, listener) {
-      listener.sphere();
-    },
-    Point: function(object, listener) {
-      object = object.coordinates;
-      listener.point(object[0], object[1], object[2]);
-    },
-    MultiPoint: function(object, listener) {
-      var coordinates = object.coordinates, i = -1, n = coordinates.length;
-      while (++i < n) object = coordinates[i], listener.point(object[0], object[1], object[2]);
-    },
-    LineString: function(object, listener) {
-      d3_geo_streamLine(object.coordinates, listener, 0);
-    },
-    MultiLineString: function(object, listener) {
-      var coordinates = object.coordinates, i = -1, n = coordinates.length;
-      while (++i < n) d3_geo_streamLine(coordinates[i], listener, 0);
-    },
-    Polygon: function(object, listener) {
-      d3_geo_streamPolygon(object.coordinates, listener);
-    },
-    MultiPolygon: function(object, listener) {
-      var coordinates = object.coordinates, i = -1, n = coordinates.length;
-      while (++i < n) d3_geo_streamPolygon(coordinates[i], listener);
-    },
-    GeometryCollection: function(object, listener) {
-      var geometries = object.geometries, i = -1, n = geometries.length;
-      while (++i < n) d3_geo_streamGeometry(geometries[i], listener);
-    }
-  };
-  function d3_geo_streamLine(coordinates, listener, closed) {
-    var i = -1, n = coordinates.length - closed, coordinate;
-    listener.lineStart();
-    while (++i < n) coordinate = coordinates[i], listener.point(coordinate[0], coordinate[1], coordinate[2]);
-    listener.lineEnd();
-  }
-  function d3_geo_streamPolygon(coordinates, listener) {
-    var i = -1, n = coordinates.length;
-    listener.polygonStart();
-    while (++i < n) d3_geo_streamLine(coordinates[i], listener, 1);
-    listener.polygonEnd();
-  }
-  d3.geo.area = function(object) {
-    d3_geo_areaSum = 0;
-    d3.geo.stream(object, d3_geo_area);
-    return d3_geo_areaSum;
-  };
-  var d3_geo_areaSum, d3_geo_areaRingSum = new d3_adder();
-  var d3_geo_area = {
-    sphere: function() {
-      d3_geo_areaSum += 4 * π;
-    },
-    point: d3_noop,
-    lineStart: d3_noop,
-    lineEnd: d3_noop,
-    polygonStart: function() {
-      d3_geo_areaRingSum.reset();
-      d3_geo_area.lineStart = d3_geo_areaRingStart;
-    },
-    polygonEnd: function() {
-      var area = 2 * d3_geo_areaRingSum;
-      d3_geo_areaSum += area < 0 ? 4 * π + area : area;
-      d3_geo_area.lineStart = d3_geo_area.lineEnd = d3_geo_area.point = d3_noop;
-    }
-  };
-  function d3_geo_areaRingStart() {
-    var λ00, φ00, λ0, cosφ0, sinφ0;
-    d3_geo_area.point = function(λ, φ) {
-      d3_geo_area.point = nextPoint;
-      λ0 = (λ00 = λ) * d3_radians, cosφ0 = Math.cos(φ = (φ00 = φ) * d3_radians / 2 + π / 4), 
-      sinφ0 = Math.sin(φ);
-    };
-    function nextPoint(λ, φ) {
-      λ *= d3_radians;
-      φ = φ * d3_radians / 2 + π / 4;
-      var dλ = λ - λ0, sdλ = dλ >= 0 ? 1 : -1, adλ = sdλ * dλ, cosφ = Math.cos(φ), sinφ = Math.sin(φ), k = sinφ0 * sinφ, u = cosφ0 * cosφ + k * Math.cos(adλ), v = k * sdλ * Math.sin(adλ);
-      d3_geo_areaRingSum.add(Math.atan2(v, u));
-      λ0 = λ, cosφ0 = cosφ, sinφ0 = sinφ;
-    }
-    d3_geo_area.lineEnd = function() {
-      nextPoint(λ00, φ00);
-    };
-  }
-  function d3_geo_cartesian(spherical) {
-    var λ = spherical[0], φ = spherical[1], cosφ = Math.cos(φ);
-    return [ cosφ * Math.cos(λ), cosφ * Math.sin(λ), Math.sin(φ) ];
-  }
-  function d3_geo_cartesianDot(a, b) {
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  }
-  function d3_geo_cartesianCross(a, b) {
-    return [ a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] ];
-  }
-  function d3_geo_cartesianAdd(a, b) {
-    a[0] += b[0];
-    a[1] += b[1];
-    a[2] += b[2];
-  }
-  function d3_geo_cartesianScale(vector, k) {
-    return [ vector[0] * k, vector[1] * k, vector[2] * k ];
-  }
-  function d3_geo_cartesianNormalize(d) {
-    var l = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
-    d[0] /= l;
-    d[1] /= l;
-    d[2] /= l;
-  }
-  function d3_geo_spherical(cartesian) {
-    return [ Math.atan2(cartesian[1], cartesian[0]), d3_asin(cartesian[2]) ];
-  }
-  function d3_geo_sphericalEqual(a, b) {
-    return abs(a[0] - b[0]) < ε && abs(a[1] - b[1]) < ε;
-  }
-  d3.geo.bounds = function() {
-    var λ0, φ0, λ1, φ1, λ_, λ__, φ__, p0, dλSum, ranges, range;
-    var bound = {
-      point: point,
-      lineStart: lineStart,
-      lineEnd: lineEnd,
-      polygonStart: function() {
-        bound.point = ringPoint;
-        bound.lineStart = ringStart;
-        bound.lineEnd = ringEnd;
-        dλSum = 0;
-        d3_geo_area.polygonStart();
-      },
-      polygonEnd: function() {
-        d3_geo_area.polygonEnd();
-        bound.point = point;
-        bound.lineStart = lineStart;
-        bound.lineEnd = lineEnd;
-        if (d3_geo_areaRingSum < 0) λ0 = -(λ1 = 180), φ0 = -(φ1 = 90); else if (dλSum > ε) φ1 = 90; else if (dλSum < -ε) φ0 = -90;
-        range[0] = λ0, range[1] = λ1;
-      }
-    };
-    function point(λ, φ) {
-      ranges.push(range = [ λ0 = λ, λ1 = λ ]);
-      if (φ < φ0) φ0 = φ;
-      if (φ > φ1) φ1 = φ;
-    }
-    function linePoint(λ, φ) {
-      var p = d3_geo_cartesian([ λ * d3_radians, φ * d3_radians ]);
-      if (p0) {
-        var normal = d3_geo_cartesianCross(p0, p), equatorial = [ normal[1], -normal[0], 0 ], inflection = d3_geo_cartesianCross(equatorial, normal);
-        d3_geo_cartesianNormalize(inflection);
-        inflection = d3_geo_spherical(inflection);
-        var dλ = λ - λ_, s = dλ > 0 ? 1 : -1, λi = inflection[0] * d3_degrees * s, antimeridian = abs(dλ) > 180;
-        if (antimeridian ^ (s * λ_ < λi && λi < s * λ)) {
-          var φi = inflection[1] * d3_degrees;
-          if (φi > φ1) φ1 = φi;
-        } else if (λi = (λi + 360) % 360 - 180, antimeridian ^ (s * λ_ < λi && λi < s * λ)) {
-          var φi = -inflection[1] * d3_degrees;
-          if (φi < φ0) φ0 = φi;
-        } else {
-          if (φ < φ0) φ0 = φ;
-          if (φ > φ1) φ1 = φ;
-        }
-        if (antimeridian) {
-          if (λ < λ_) {
-            if (angle(λ0, λ) > angle(λ0, λ1)) λ1 = λ;
-          } else {
-            if (angle(λ, λ1) > angle(λ0, λ1)) λ0 = λ;
-          }
-        } else {
-          if (λ1 >= λ0) {
-            if (λ < λ0) λ0 = λ;
-            if (λ > λ1) λ1 = λ;
-          } else {
-            if (λ > λ_) {
-              if (angle(λ0, λ) > angle(λ0, λ1)) λ1 = λ;
-            } else {
-              if (angle(λ, λ1) > angle(λ0, λ1)) λ0 = λ;
-            }
-          }
-        }
-      } else {
-        point(λ, φ);
-      }
-      p0 = p, λ_ = λ;
-    }
-    function lineStart() {
-      bound.point = linePoint;
-    }
-    function lineEnd() {
-      range[0] = λ0, range[1] = λ1;
-      bound.point = point;
-      p0 = null;
-    }
-    function ringPoint(λ, φ) {
-      if (p0) {
-        var dλ = λ - λ_;
-        dλSum += abs(dλ) > 180 ? dλ + (dλ > 0 ? 360 : -360) : dλ;
-      } else λ__ = λ, φ__ = φ;
-      d3_geo_area.point(λ, φ);
-      linePoint(λ, φ);
-    }
-    function ringStart() {
-      d3_geo_area.lineStart();
-    }
-    function ringEnd() {
-      ringPoint(λ__, φ__);
-      d3_geo_area.lineEnd();
-      if (abs(dλSum) > ε) λ0 = -(λ1 = 180);
-      range[0] = λ0, range[1] = λ1;
-      p0 = null;
-    }
-    function angle(λ0, λ1) {
-      return (λ1 -= λ0) < 0 ? λ1 + 360 : λ1;
-    }
-    function compareRanges(a, b) {
-      return a[0] - b[0];
-    }
-    function withinRange(x, range) {
-      return range[0] <= range[1] ? range[0] <= x && x <= range[1] : x < range[0] || range[1] < x;
-    }
-    return function(feature) {
-      φ1 = λ1 = -(λ0 = φ0 = Infinity);
-      ranges = [];
-      d3.geo.stream(feature, bound);
-      var n = ranges.length;
-      if (n) {
-        ranges.sort(compareRanges);
-        for (var i = 1, a = ranges[0], b, merged = [ a ]; i < n; ++i) {
-          b = ranges[i];
-          if (withinRange(b[0], a) || withinRange(b[1], a)) {
-            if (angle(a[0], b[1]) > angle(a[0], a[1])) a[1] = b[1];
-            if (angle(b[0], a[1]) > angle(a[0], a[1])) a[0] = b[0];
-          } else {
-            merged.push(a = b);
-          }
-        }
-        var best = -Infinity, dλ;
-        for (var n = merged.length - 1, i = 0, a = merged[n], b; i <= n; a = b, ++i) {
-          b = merged[i];
-          if ((dλ = angle(a[1], b[0])) > best) best = dλ, λ0 = b[0], λ1 = a[1];
-        }
-      }
-      ranges = range = null;
-      return λ0 === Infinity || φ0 === Infinity ? [ [ NaN, NaN ], [ NaN, NaN ] ] : [ [ λ0, φ0 ], [ λ1, φ1 ] ];
-    };
-  }();
-  d3.geo.centroid = function(object) {
-    d3_geo_centroidW0 = d3_geo_centroidW1 = d3_geo_centroidX0 = d3_geo_centroidY0 = d3_geo_centroidZ0 = d3_geo_centroidX1 = d3_geo_centroidY1 = d3_geo_centroidZ1 = d3_geo_centroidX2 = d3_geo_centroidY2 = d3_geo_centroidZ2 = 0;
-    d3.geo.stream(object, d3_geo_centroid);
-    var x = d3_geo_centroidX2, y = d3_geo_centroidY2, z = d3_geo_centroidZ2, m = x * x + y * y + z * z;
-    if (m < ε2) {
-      x = d3_geo_centroidX1, y = d3_geo_centroidY1, z = d3_geo_centroidZ1;
-      if (d3_geo_centroidW1 < ε) x = d3_geo_centroidX0, y = d3_geo_centroidY0, z = d3_geo_centroidZ0;
-      m = x * x + y * y + z * z;
-      if (m < ε2) return [ NaN, NaN ];
-    }
-    return [ Math.atan2(y, x) * d3_degrees, d3_asin(z / Math.sqrt(m)) * d3_degrees ];
-  };
-  var d3_geo_centroidW0, d3_geo_centroidW1, d3_geo_centroidX0, d3_geo_centroidY0, d3_geo_centroidZ0, d3_geo_centroidX1, d3_geo_centroidY1, d3_geo_centroidZ1, d3_geo_centroidX2, d3_geo_centroidY2, d3_geo_centroidZ2;
-  var d3_geo_centroid = {
-    sphere: d3_noop,
-    point: d3_geo_centroidPoint,
-    lineStart: d3_geo_centroidLineStart,
-    lineEnd: d3_geo_centroidLineEnd,
-    polygonStart: function() {
-      d3_geo_centroid.lineStart = d3_geo_centroidRingStart;
-    },
-    polygonEnd: function() {
-      d3_geo_centroid.lineStart = d3_geo_centroidLineStart;
-    }
-  };
-  function d3_geo_centroidPoint(λ, φ) {
-    λ *= d3_radians;
-    var cosφ = Math.cos(φ *= d3_radians);
-    d3_geo_centroidPointXYZ(cosφ * Math.cos(λ), cosφ * Math.sin(λ), Math.sin(φ));
-  }
-  function d3_geo_centroidPointXYZ(x, y, z) {
-    ++d3_geo_centroidW0;
-    d3_geo_centroidX0 += (x - d3_geo_centroidX0) / d3_geo_centroidW0;
-    d3_geo_centroidY0 += (y - d3_geo_centroidY0) / d3_geo_centroidW0;
-    d3_geo_centroidZ0 += (z - d3_geo_centroidZ0) / d3_geo_centroidW0;
-  }
-  function d3_geo_centroidLineStart() {
-    var x0, y0, z0;
-    d3_geo_centroid.point = function(λ, φ) {
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians);
-      x0 = cosφ * Math.cos(λ);
-      y0 = cosφ * Math.sin(λ);
-      z0 = Math.sin(φ);
-      d3_geo_centroid.point = nextPoint;
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    };
-    function nextPoint(λ, φ) {
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians), x = cosφ * Math.cos(λ), y = cosφ * Math.sin(λ), z = Math.sin(φ), w = Math.atan2(Math.sqrt((w = y0 * z - z0 * y) * w + (w = z0 * x - x0 * z) * w + (w = x0 * y - y0 * x) * w), x0 * x + y0 * y + z0 * z);
-      d3_geo_centroidW1 += w;
-      d3_geo_centroidX1 += w * (x0 + (x0 = x));
-      d3_geo_centroidY1 += w * (y0 + (y0 = y));
-      d3_geo_centroidZ1 += w * (z0 + (z0 = z));
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    }
-  }
-  function d3_geo_centroidLineEnd() {
-    d3_geo_centroid.point = d3_geo_centroidPoint;
-  }
-  function d3_geo_centroidRingStart() {
-    var λ00, φ00, x0, y0, z0;
-    d3_geo_centroid.point = function(λ, φ) {
-      λ00 = λ, φ00 = φ;
-      d3_geo_centroid.point = nextPoint;
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians);
-      x0 = cosφ * Math.cos(λ);
-      y0 = cosφ * Math.sin(λ);
-      z0 = Math.sin(φ);
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    };
-    d3_geo_centroid.lineEnd = function() {
-      nextPoint(λ00, φ00);
-      d3_geo_centroid.lineEnd = d3_geo_centroidLineEnd;
-      d3_geo_centroid.point = d3_geo_centroidPoint;
-    };
-    function nextPoint(λ, φ) {
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians), x = cosφ * Math.cos(λ), y = cosφ * Math.sin(λ), z = Math.sin(φ), cx = y0 * z - z0 * y, cy = z0 * x - x0 * z, cz = x0 * y - y0 * x, m = Math.sqrt(cx * cx + cy * cy + cz * cz), u = x0 * x + y0 * y + z0 * z, v = m && -d3_acos(u) / m, w = Math.atan2(m, u);
-      d3_geo_centroidX2 += v * cx;
-      d3_geo_centroidY2 += v * cy;
-      d3_geo_centroidZ2 += v * cz;
-      d3_geo_centroidW1 += w;
-      d3_geo_centroidX1 += w * (x0 + (x0 = x));
-      d3_geo_centroidY1 += w * (y0 + (y0 = y));
-      d3_geo_centroidZ1 += w * (z0 + (z0 = z));
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    }
-  }
-  function d3_geo_compose(a, b) {
-    function compose(x, y) {
-      return x = a(x, y), b(x[0], x[1]);
-    }
-    if (a.invert && b.invert) compose.invert = function(x, y) {
-      return x = b.invert(x, y), x && a.invert(x[0], x[1]);
-    };
-    return compose;
-  }
-  function d3_true() {
-    return true;
-  }
-  function d3_geo_clipPolygon(segments, compare, clipStartInside, interpolate, listener) {
-    var subject = [], clip = [];
-    segments.forEach(function(segment) {
-      if ((n = segment.length - 1) <= 0) return;
-      var n, p0 = segment[0], p1 = segment[n];
-      if (d3_geo_sphericalEqual(p0, p1)) {
-        listener.lineStart();
-        for (var i = 0; i < n; ++i) listener.point((p0 = segment[i])[0], p0[1]);
-        listener.lineEnd();
-        return;
-      }
-      var a = new d3_geo_clipPolygonIntersection(p0, segment, null, true), b = new d3_geo_clipPolygonIntersection(p0, null, a, false);
-      a.o = b;
-      subject.push(a);
-      clip.push(b);
-      a = new d3_geo_clipPolygonIntersection(p1, segment, null, false);
-      b = new d3_geo_clipPolygonIntersection(p1, null, a, true);
-      a.o = b;
-      subject.push(a);
-      clip.push(b);
-    });
-    clip.sort(compare);
-    d3_geo_clipPolygonLinkCircular(subject);
-    d3_geo_clipPolygonLinkCircular(clip);
-    if (!subject.length) return;
-    for (var i = 0, entry = clipStartInside, n = clip.length; i < n; ++i) {
-      clip[i].e = entry = !entry;
-    }
-    var start = subject[0], points, point;
-    while (1) {
-      var current = start, isSubject = true;
-      while (current.v) if ((current = current.n) === start) return;
-      points = current.z;
-      listener.lineStart();
-      do {
-        current.v = current.o.v = true;
-        if (current.e) {
-          if (isSubject) {
-            for (var i = 0, n = points.length; i < n; ++i) listener.point((point = points[i])[0], point[1]);
-          } else {
-            interpolate(current.x, current.n.x, 1, listener);
-          }
-          current = current.n;
-        } else {
-          if (isSubject) {
-            points = current.p.z;
-            for (var i = points.length - 1; i >= 0; --i) listener.point((point = points[i])[0], point[1]);
-          } else {
-            interpolate(current.x, current.p.x, -1, listener);
-          }
-          current = current.p;
-        }
-        current = current.o;
-        points = current.z;
-        isSubject = !isSubject;
-      } while (!current.v);
-      listener.lineEnd();
-    }
-  }
-  function d3_geo_clipPolygonLinkCircular(array) {
-    if (!(n = array.length)) return;
-    var n, i = 0, a = array[0], b;
-    while (++i < n) {
-      a.n = b = array[i];
-      b.p = a;
-      a = b;
-    }
-    a.n = b = array[0];
-    b.p = a;
-  }
-  function d3_geo_clipPolygonIntersection(point, points, other, entry) {
-    this.x = point;
-    this.z = points;
-    this.o = other;
-    this.e = entry;
-    this.v = false;
-    this.n = this.p = null;
-  }
-  function d3_geo_clip(pointVisible, clipLine, interpolate, clipStart) {
-    return function(rotate, listener) {
-      var line = clipLine(listener), rotatedClipStart = rotate.invert(clipStart[0], clipStart[1]);
-      var clip = {
-        point: point,
-        lineStart: lineStart,
-        lineEnd: lineEnd,
-        polygonStart: function() {
-          clip.point = pointRing;
-          clip.lineStart = ringStart;
-          clip.lineEnd = ringEnd;
-          segments = [];
-          polygon = [];
-        },
-        polygonEnd: function() {
-          clip.point = point;
-          clip.lineStart = lineStart;
-          clip.lineEnd = lineEnd;
-          segments = d3.merge(segments);
-          var clipStartInside = d3_geo_pointInPolygon(rotatedClipStart, polygon);
-          if (segments.length) {
-            if (!polygonStarted) listener.polygonStart(), polygonStarted = true;
-            d3_geo_clipPolygon(segments, d3_geo_clipSort, clipStartInside, interpolate, listener);
-          } else if (clipStartInside) {
-            if (!polygonStarted) listener.polygonStart(), polygonStarted = true;
-            listener.lineStart();
-            interpolate(null, null, 1, listener);
-            listener.lineEnd();
-          }
-          if (polygonStarted) listener.polygonEnd(), polygonStarted = false;
-          segments = polygon = null;
-        },
-        sphere: function() {
-          listener.polygonStart();
-          listener.lineStart();
-          interpolate(null, null, 1, listener);
-          listener.lineEnd();
-          listener.polygonEnd();
-        }
-      };
-      function point(λ, φ) {
-        var point = rotate(λ, φ);
-        if (pointVisible(λ = point[0], φ = point[1])) listener.point(λ, φ);
-      }
-      function pointLine(λ, φ) {
-        var point = rotate(λ, φ);
-        line.point(point[0], point[1]);
-      }
-      function lineStart() {
-        clip.point = pointLine;
-        line.lineStart();
-      }
-      function lineEnd() {
-        clip.point = point;
-        line.lineEnd();
-      }
-      var segments;
-      var buffer = d3_geo_clipBufferListener(), ringListener = clipLine(buffer), polygonStarted = false, polygon, ring;
-      function pointRing(λ, φ) {
-        ring.push([ λ, φ ]);
-        var point = rotate(λ, φ);
-        ringListener.point(point[0], point[1]);
-      }
-      function ringStart() {
-        ringListener.lineStart();
-        ring = [];
-      }
-      function ringEnd() {
-        pointRing(ring[0][0], ring[0][1]);
-        ringListener.lineEnd();
-        var clean = ringListener.clean(), ringSegments = buffer.buffer(), segment, n = ringSegments.length;
-        ring.pop();
-        polygon.push(ring);
-        ring = null;
-        if (!n) return;
-        if (clean & 1) {
-          segment = ringSegments[0];
-          var n = segment.length - 1, i = -1, point;
-          if (n > 0) {
-            if (!polygonStarted) listener.polygonStart(), polygonStarted = true;
-            listener.lineStart();
-            while (++i < n) listener.point((point = segment[i])[0], point[1]);
-            listener.lineEnd();
-          }
-          return;
-        }
-        if (n > 1 && clean & 2) ringSegments.push(ringSegments.pop().concat(ringSegments.shift()));
-        segments.push(ringSegments.filter(d3_geo_clipSegmentLength1));
-      }
-      return clip;
-    };
-  }
-  function d3_geo_clipSegmentLength1(segment) {
-    return segment.length > 1;
-  }
-  function d3_geo_clipBufferListener() {
-    var lines = [], line;
-    return {
-      lineStart: function() {
-        lines.push(line = []);
-      },
-      point: function(λ, φ) {
-        line.push([ λ, φ ]);
-      },
-      lineEnd: d3_noop,
-      buffer: function() {
-        var buffer = lines;
-        lines = [];
-        line = null;
-        return buffer;
-      },
-      rejoin: function() {
-        if (lines.length > 1) lines.push(lines.pop().concat(lines.shift()));
-      }
-    };
-  }
-  function d3_geo_clipSort(a, b) {
-    return ((a = a.x)[0] < 0 ? a[1] - halfπ - ε : halfπ - a[1]) - ((b = b.x)[0] < 0 ? b[1] - halfπ - ε : halfπ - b[1]);
-  }
-  var d3_geo_clipAntimeridian = d3_geo_clip(d3_true, d3_geo_clipAntimeridianLine, d3_geo_clipAntimeridianInterpolate, [ -π, -π / 2 ]);
-  function d3_geo_clipAntimeridianLine(listener) {
-    var λ0 = NaN, φ0 = NaN, sλ0 = NaN, clean;
-    return {
-      lineStart: function() {
-        listener.lineStart();
-        clean = 1;
-      },
-      point: function(λ1, φ1) {
-        var sλ1 = λ1 > 0 ? π : -π, dλ = abs(λ1 - λ0);
-        if (abs(dλ - π) < ε) {
-          listener.point(λ0, φ0 = (φ0 + φ1) / 2 > 0 ? halfπ : -halfπ);
-          listener.point(sλ0, φ0);
-          listener.lineEnd();
-          listener.lineStart();
-          listener.point(sλ1, φ0);
-          listener.point(λ1, φ0);
-          clean = 0;
-        } else if (sλ0 !== sλ1 && dλ >= π) {
-          if (abs(λ0 - sλ0) < ε) λ0 -= sλ0 * ε;
-          if (abs(λ1 - sλ1) < ε) λ1 -= sλ1 * ε;
-          φ0 = d3_geo_clipAntimeridianIntersect(λ0, φ0, λ1, φ1);
-          listener.point(sλ0, φ0);
-          listener.lineEnd();
-          listener.lineStart();
-          listener.point(sλ1, φ0);
-          clean = 0;
-        }
-        listener.point(λ0 = λ1, φ0 = φ1);
-        sλ0 = sλ1;
-      },
-      lineEnd: function() {
-        listener.lineEnd();
-        λ0 = φ0 = NaN;
-      },
-      clean: function() {
-        return 2 - clean;
-      }
-    };
-  }
-  function d3_geo_clipAntimeridianIntersect(λ0, φ0, λ1, φ1) {
-    var cosφ0, cosφ1, sinλ0_λ1 = Math.sin(λ0 - λ1);
-    return abs(sinλ0_λ1) > ε ? Math.atan((Math.sin(φ0) * (cosφ1 = Math.cos(φ1)) * Math.sin(λ1) - Math.sin(φ1) * (cosφ0 = Math.cos(φ0)) * Math.sin(λ0)) / (cosφ0 * cosφ1 * sinλ0_λ1)) : (φ0 + φ1) / 2;
-  }
-  function d3_geo_clipAntimeridianInterpolate(from, to, direction, listener) {
-    var φ;
-    if (from == null) {
-      φ = direction * halfπ;
-      listener.point(-π, φ);
-      listener.point(0, φ);
-      listener.point(π, φ);
-      listener.point(π, 0);
-      listener.point(π, -φ);
-      listener.point(0, -φ);
-      listener.point(-π, -φ);
-      listener.point(-π, 0);
-      listener.point(-π, φ);
-    } else if (abs(from[0] - to[0]) > ε) {
-      var s = from[0] < to[0] ? π : -π;
-      φ = direction * s / 2;
-      listener.point(-s, φ);
-      listener.point(0, φ);
-      listener.point(s, φ);
-    } else {
-      listener.point(to[0], to[1]);
-    }
-  }
-  function d3_geo_pointInPolygon(point, polygon) {
-    var meridian = point[0], parallel = point[1], meridianNormal = [ Math.sin(meridian), -Math.cos(meridian), 0 ], polarAngle = 0, winding = 0;
-    d3_geo_areaRingSum.reset();
-    for (var i = 0, n = polygon.length; i < n; ++i) {
-      var ring = polygon[i], m = ring.length;
-      if (!m) continue;
-      var point0 = ring[0], λ0 = point0[0], φ0 = point0[1] / 2 + π / 4, sinφ0 = Math.sin(φ0), cosφ0 = Math.cos(φ0), j = 1;
-      while (true) {
-        if (j === m) j = 0;
-        point = ring[j];
-        var λ = point[0], φ = point[1] / 2 + π / 4, sinφ = Math.sin(φ), cosφ = Math.cos(φ), dλ = λ - λ0, sdλ = dλ >= 0 ? 1 : -1, adλ = sdλ * dλ, antimeridian = adλ > π, k = sinφ0 * sinφ;
-        d3_geo_areaRingSum.add(Math.atan2(k * sdλ * Math.sin(adλ), cosφ0 * cosφ + k * Math.cos(adλ)));
-        polarAngle += antimeridian ? dλ + sdλ * τ : dλ;
-        if (antimeridian ^ λ0 >= meridian ^ λ >= meridian) {
-          var arc = d3_geo_cartesianCross(d3_geo_cartesian(point0), d3_geo_cartesian(point));
-          d3_geo_cartesianNormalize(arc);
-          var intersection = d3_geo_cartesianCross(meridianNormal, arc);
-          d3_geo_cartesianNormalize(intersection);
-          var φarc = (antimeridian ^ dλ >= 0 ? -1 : 1) * d3_asin(intersection[2]);
-          if (parallel > φarc || parallel === φarc && (arc[0] || arc[1])) {
-            winding += antimeridian ^ dλ >= 0 ? 1 : -1;
-          }
-        }
-        if (!j++) break;
-        λ0 = λ, sinφ0 = sinφ, cosφ0 = cosφ, point0 = point;
-      }
-    }
-    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < -ε) ^ winding & 1;
-  }
-  function d3_geo_clipCircle(radius) {
-    var cr = Math.cos(radius), smallRadius = cr > 0, notHemisphere = abs(cr) > ε, interpolate = d3_geo_circleInterpolate(radius, 6 * d3_radians);
-    return d3_geo_clip(visible, clipLine, interpolate, smallRadius ? [ 0, -radius ] : [ -π, radius - π ]);
-    function visible(λ, φ) {
-      return Math.cos(λ) * Math.cos(φ) > cr;
-    }
-    function clipLine(listener) {
-      var point0, c0, v0, v00, clean;
-      return {
-        lineStart: function() {
-          v00 = v0 = false;
-          clean = 1;
-        },
-        point: function(λ, φ) {
-          var point1 = [ λ, φ ], point2, v = visible(λ, φ), c = smallRadius ? v ? 0 : code(λ, φ) : v ? code(λ + (λ < 0 ? π : -π), φ) : 0;
-          if (!point0 && (v00 = v0 = v)) listener.lineStart();
-          if (v !== v0) {
-            point2 = intersect(point0, point1);
-            if (d3_geo_sphericalEqual(point0, point2) || d3_geo_sphericalEqual(point1, point2)) {
-              point1[0] += ε;
-              point1[1] += ε;
-              v = visible(point1[0], point1[1]);
-            }
-          }
-          if (v !== v0) {
-            clean = 0;
-            if (v) {
-              listener.lineStart();
-              point2 = intersect(point1, point0);
-              listener.point(point2[0], point2[1]);
-            } else {
-              point2 = intersect(point0, point1);
-              listener.point(point2[0], point2[1]);
-              listener.lineEnd();
-            }
-            point0 = point2;
-          } else if (notHemisphere && point0 && smallRadius ^ v) {
-            var t;
-            if (!(c & c0) && (t = intersect(point1, point0, true))) {
-              clean = 0;
-              if (smallRadius) {
-                listener.lineStart();
-                listener.point(t[0][0], t[0][1]);
-                listener.point(t[1][0], t[1][1]);
-                listener.lineEnd();
-              } else {
-                listener.point(t[1][0], t[1][1]);
-                listener.lineEnd();
-                listener.lineStart();
-                listener.point(t[0][0], t[0][1]);
-              }
-            }
-          }
-          if (v && (!point0 || !d3_geo_sphericalEqual(point0, point1))) {
-            listener.point(point1[0], point1[1]);
-          }
-          point0 = point1, v0 = v, c0 = c;
-        },
-        lineEnd: function() {
-          if (v0) listener.lineEnd();
-          point0 = null;
-        },
-        clean: function() {
-          return clean | (v00 && v0) << 1;
-        }
-      };
-    }
-    function intersect(a, b, two) {
-      var pa = d3_geo_cartesian(a), pb = d3_geo_cartesian(b);
-      var n1 = [ 1, 0, 0 ], n2 = d3_geo_cartesianCross(pa, pb), n2n2 = d3_geo_cartesianDot(n2, n2), n1n2 = n2[0], determinant = n2n2 - n1n2 * n1n2;
-      if (!determinant) return !two && a;
-      var c1 = cr * n2n2 / determinant, c2 = -cr * n1n2 / determinant, n1xn2 = d3_geo_cartesianCross(n1, n2), A = d3_geo_cartesianScale(n1, c1), B = d3_geo_cartesianScale(n2, c2);
-      d3_geo_cartesianAdd(A, B);
-      var u = n1xn2, w = d3_geo_cartesianDot(A, u), uu = d3_geo_cartesianDot(u, u), t2 = w * w - uu * (d3_geo_cartesianDot(A, A) - 1);
-      if (t2 < 0) return;
-      var t = Math.sqrt(t2), q = d3_geo_cartesianScale(u, (-w - t) / uu);
-      d3_geo_cartesianAdd(q, A);
-      q = d3_geo_spherical(q);
-      if (!two) return q;
-      var λ0 = a[0], λ1 = b[0], φ0 = a[1], φ1 = b[1], z;
-      if (λ1 < λ0) z = λ0, λ0 = λ1, λ1 = z;
-      var δλ = λ1 - λ0, polar = abs(δλ - π) < ε, meridian = polar || δλ < ε;
-      if (!polar && φ1 < φ0) z = φ0, φ0 = φ1, φ1 = z;
-      if (meridian ? polar ? φ0 + φ1 > 0 ^ q[1] < (abs(q[0] - λ0) < ε ? φ0 : φ1) : φ0 <= q[1] && q[1] <= φ1 : δλ > π ^ (λ0 <= q[0] && q[0] <= λ1)) {
-        var q1 = d3_geo_cartesianScale(u, (-w + t) / uu);
-        d3_geo_cartesianAdd(q1, A);
-        return [ q, d3_geo_spherical(q1) ];
-      }
-    }
-    function code(λ, φ) {
-      var r = smallRadius ? radius : π - radius, code = 0;
-      if (λ < -r) code |= 1; else if (λ > r) code |= 2;
-      if (φ < -r) code |= 4; else if (φ > r) code |= 8;
-      return code;
-    }
-  }
-  function d3_geom_clipLine(x0, y0, x1, y1) {
-    return function(line) {
-      var a = line.a, b = line.b, ax = a.x, ay = a.y, bx = b.x, by = b.y, t0 = 0, t1 = 1, dx = bx - ax, dy = by - ay, r;
-      r = x0 - ax;
-      if (!dx && r > 0) return;
-      r /= dx;
-      if (dx < 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      } else if (dx > 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      }
-      r = x1 - ax;
-      if (!dx && r < 0) return;
-      r /= dx;
-      if (dx < 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      } else if (dx > 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      }
-      r = y0 - ay;
-      if (!dy && r > 0) return;
-      r /= dy;
-      if (dy < 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      } else if (dy > 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      }
-      r = y1 - ay;
-      if (!dy && r < 0) return;
-      r /= dy;
-      if (dy < 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      } else if (dy > 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      }
-      if (t0 > 0) line.a = {
-        x: ax + t0 * dx,
-        y: ay + t0 * dy
-      };
-      if (t1 < 1) line.b = {
-        x: ax + t1 * dx,
-        y: ay + t1 * dy
-      };
-      return line;
-    };
-  }
-  var d3_geo_clipExtentMAX = 1e9;
-  d3.geo.clipExtent = function() {
-    var x0, y0, x1, y1, stream, clip, clipExtent = {
-      stream: function(output) {
-        if (stream) stream.valid = false;
-        stream = clip(output);
-        stream.valid = true;
-        return stream;
-      },
-      extent: function(_) {
-        if (!arguments.length) return [ [ x0, y0 ], [ x1, y1 ] ];
-        clip = d3_geo_clipExtent(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]);
-        if (stream) stream.valid = false, stream = null;
-        return clipExtent;
-      }
-    };
-    return clipExtent.extent([ [ 0, 0 ], [ 960, 500 ] ]);
-  };
-  function d3_geo_clipExtent(x0, y0, x1, y1) {
-    return function(listener) {
-      var listener_ = listener, bufferListener = d3_geo_clipBufferListener(), clipLine = d3_geom_clipLine(x0, y0, x1, y1), segments, polygon, ring;
-      var clip = {
-        point: point,
-        lineStart: lineStart,
-        lineEnd: lineEnd,
-        polygonStart: function() {
-          listener = bufferListener;
-          segments = [];
-          polygon = [];
-          clean = true;
-        },
-        polygonEnd: function() {
-          listener = listener_;
-          segments = d3.merge(segments);
-          var clipStartInside = insidePolygon([ x0, y1 ]), inside = clean && clipStartInside, visible = segments.length;
-          if (inside || visible) {
-            listener.polygonStart();
-            if (inside) {
-              listener.lineStart();
-              interpolate(null, null, 1, listener);
-              listener.lineEnd();
-            }
-            if (visible) {
-              d3_geo_clipPolygon(segments, compare, clipStartInside, interpolate, listener);
-            }
-            listener.polygonEnd();
-          }
-          segments = polygon = ring = null;
-        }
-      };
-      function insidePolygon(p) {
-        var wn = 0, n = polygon.length, y = p[1];
-        for (var i = 0; i < n; ++i) {
-          for (var j = 1, v = polygon[i], m = v.length, a = v[0], b; j < m; ++j) {
-            b = v[j];
-            if (a[1] <= y) {
-              if (b[1] > y && d3_cross2d(a, b, p) > 0) ++wn;
-            } else {
-              if (b[1] <= y && d3_cross2d(a, b, p) < 0) --wn;
-            }
-            a = b;
-          }
-        }
-        return wn !== 0;
-      }
-      function interpolate(from, to, direction, listener) {
-        var a = 0, a1 = 0;
-        if (from == null || (a = corner(from, direction)) !== (a1 = corner(to, direction)) || comparePoints(from, to) < 0 ^ direction > 0) {
-          do {
-            listener.point(a === 0 || a === 3 ? x0 : x1, a > 1 ? y1 : y0);
-          } while ((a = (a + direction + 4) % 4) !== a1);
-        } else {
-          listener.point(to[0], to[1]);
-        }
-      }
-      function pointVisible(x, y) {
-        return x0 <= x && x <= x1 && y0 <= y && y <= y1;
-      }
-      function point(x, y) {
-        if (pointVisible(x, y)) listener.point(x, y);
-      }
-      var x__, y__, v__, x_, y_, v_, first, clean;
-      function lineStart() {
-        clip.point = linePoint;
-        if (polygon) polygon.push(ring = []);
-        first = true;
-        v_ = false;
-        x_ = y_ = NaN;
-      }
-      function lineEnd() {
-        if (segments) {
-          linePoint(x__, y__);
-          if (v__ && v_) bufferListener.rejoin();
-          segments.push(bufferListener.buffer());
-        }
-        clip.point = point;
-        if (v_) listener.lineEnd();
-      }
-      function linePoint(x, y) {
-        x = Math.max(-d3_geo_clipExtentMAX, Math.min(d3_geo_clipExtentMAX, x));
-        y = Math.max(-d3_geo_clipExtentMAX, Math.min(d3_geo_clipExtentMAX, y));
-        var v = pointVisible(x, y);
-        if (polygon) ring.push([ x, y ]);
-        if (first) {
-          x__ = x, y__ = y, v__ = v;
-          first = false;
-          if (v) {
-            listener.lineStart();
-            listener.point(x, y);
-          }
-        } else {
-          if (v && v_) listener.point(x, y); else {
-            var l = {
-              a: {
-                x: x_,
-                y: y_
-              },
-              b: {
-                x: x,
-                y: y
-              }
-            };
-            if (clipLine(l)) {
-              if (!v_) {
-                listener.lineStart();
-                listener.point(l.a.x, l.a.y);
-              }
-              listener.point(l.b.x, l.b.y);
-              if (!v) listener.lineEnd();
-              clean = false;
-            } else if (v) {
-              listener.lineStart();
-              listener.point(x, y);
-              clean = false;
-            }
-          }
-        }
-        x_ = x, y_ = y, v_ = v;
-      }
-      return clip;
-    };
-    function corner(p, direction) {
-      return abs(p[0] - x0) < ε ? direction > 0 ? 0 : 3 : abs(p[0] - x1) < ε ? direction > 0 ? 2 : 1 : abs(p[1] - y0) < ε ? direction > 0 ? 1 : 0 : direction > 0 ? 3 : 2;
-    }
-    function compare(a, b) {
-      return comparePoints(a.x, b.x);
-    }
-    function comparePoints(a, b) {
-      var ca = corner(a, 1), cb = corner(b, 1);
-      return ca !== cb ? ca - cb : ca === 0 ? b[1] - a[1] : ca === 1 ? a[0] - b[0] : ca === 2 ? a[1] - b[1] : b[0] - a[0];
-    }
-  }
-  function d3_geo_conic(projectAt) {
-    var φ0 = 0, φ1 = π / 3, m = d3_geo_projectionMutator(projectAt), p = m(φ0, φ1);
-    p.parallels = function(_) {
-      if (!arguments.length) return [ φ0 / π * 180, φ1 / π * 180 ];
-      return m(φ0 = _[0] * π / 180, φ1 = _[1] * π / 180);
-    };
-    return p;
-  }
-  function d3_geo_conicEqualArea(φ0, φ1) {
-    var sinφ0 = Math.sin(φ0), n = (sinφ0 + Math.sin(φ1)) / 2, C = 1 + sinφ0 * (2 * n - sinφ0), ρ0 = Math.sqrt(C) / n;
-    function forward(λ, φ) {
-      var ρ = Math.sqrt(C - 2 * n * Math.sin(φ)) / n;
-      return [ ρ * Math.sin(λ *= n), ρ0 - ρ * Math.cos(λ) ];
-    }
-    forward.invert = function(x, y) {
-      var ρ0_y = ρ0 - y;
-      return [ Math.atan2(x, ρ0_y) / n, d3_asin((C - (x * x + ρ0_y * ρ0_y) * n * n) / (2 * n)) ];
-    };
-    return forward;
-  }
-  (d3.geo.conicEqualArea = function() {
-    return d3_geo_conic(d3_geo_conicEqualArea);
-  }).raw = d3_geo_conicEqualArea;
-  d3.geo.albers = function() {
-    return d3.geo.conicEqualArea().rotate([ 96, 0 ]).center([ -.6, 38.7 ]).parallels([ 29.5, 45.5 ]).scale(1070);
-  };
-  d3.geo.albersUsa = function() {
-    var lower48 = d3.geo.albers();
-    var alaska = d3.geo.conicEqualArea().rotate([ 154, 0 ]).center([ -2, 58.5 ]).parallels([ 55, 65 ]);
-    var hawaii = d3.geo.conicEqualArea().rotate([ 157, 0 ]).center([ -3, 19.9 ]).parallels([ 8, 18 ]);
-    var point, pointStream = {
-      point: function(x, y) {
-        point = [ x, y ];
-      }
-    }, lower48Point, alaskaPoint, hawaiiPoint;
-    function albersUsa(coordinates) {
-      var x = coordinates[0], y = coordinates[1];
-      point = null;
-      (lower48Point(x, y), point) || (alaskaPoint(x, y), point) || hawaiiPoint(x, y);
-      return point;
-    }
-    albersUsa.invert = function(coordinates) {
-      var k = lower48.scale(), t = lower48.translate(), x = (coordinates[0] - t[0]) / k, y = (coordinates[1] - t[1]) / k;
-      return (y >= .12 && y < .234 && x >= -.425 && x < -.214 ? alaska : y >= .166 && y < .234 && x >= -.214 && x < -.115 ? hawaii : lower48).invert(coordinates);
-    };
-    albersUsa.stream = function(stream) {
-      var lower48Stream = lower48.stream(stream), alaskaStream = alaska.stream(stream), hawaiiStream = hawaii.stream(stream);
-      return {
-        point: function(x, y) {
-          lower48Stream.point(x, y);
-          alaskaStream.point(x, y);
-          hawaiiStream.point(x, y);
-        },
-        sphere: function() {
-          lower48Stream.sphere();
-          alaskaStream.sphere();
-          hawaiiStream.sphere();
-        },
-        lineStart: function() {
-          lower48Stream.lineStart();
-          alaskaStream.lineStart();
-          hawaiiStream.lineStart();
-        },
-        lineEnd: function() {
-          lower48Stream.lineEnd();
-          alaskaStream.lineEnd();
-          hawaiiStream.lineEnd();
-        },
-        polygonStart: function() {
-          lower48Stream.polygonStart();
-          alaskaStream.polygonStart();
-          hawaiiStream.polygonStart();
-        },
-        polygonEnd: function() {
-          lower48Stream.polygonEnd();
-          alaskaStream.polygonEnd();
-          hawaiiStream.polygonEnd();
-        }
-      };
-    };
-    albersUsa.precision = function(_) {
-      if (!arguments.length) return lower48.precision();
-      lower48.precision(_);
-      alaska.precision(_);
-      hawaii.precision(_);
-      return albersUsa;
-    };
-    albersUsa.scale = function(_) {
-      if (!arguments.length) return lower48.scale();
-      lower48.scale(_);
-      alaska.scale(_ * .35);
-      hawaii.scale(_);
-      return albersUsa.translate(lower48.translate());
-    };
-    albersUsa.translate = function(_) {
-      if (!arguments.length) return lower48.translate();
-      var k = lower48.scale(), x = +_[0], y = +_[1];
-      lower48Point = lower48.translate(_).clipExtent([ [ x - .455 * k, y - .238 * k ], [ x + .455 * k, y + .238 * k ] ]).stream(pointStream).point;
-      alaskaPoint = alaska.translate([ x - .307 * k, y + .201 * k ]).clipExtent([ [ x - .425 * k + ε, y + .12 * k + ε ], [ x - .214 * k - ε, y + .234 * k - ε ] ]).stream(pointStream).point;
-      hawaiiPoint = hawaii.translate([ x - .205 * k, y + .212 * k ]).clipExtent([ [ x - .214 * k + ε, y + .166 * k + ε ], [ x - .115 * k - ε, y + .234 * k - ε ] ]).stream(pointStream).point;
-      return albersUsa;
-    };
-    return albersUsa.scale(1070);
-  };
-  var d3_geo_pathAreaSum, d3_geo_pathAreaPolygon, d3_geo_pathArea = {
-    point: d3_noop,
-    lineStart: d3_noop,
-    lineEnd: d3_noop,
-    polygonStart: function() {
-      d3_geo_pathAreaPolygon = 0;
-      d3_geo_pathArea.lineStart = d3_geo_pathAreaRingStart;
-    },
-    polygonEnd: function() {
-      d3_geo_pathArea.lineStart = d3_geo_pathArea.lineEnd = d3_geo_pathArea.point = d3_noop;
-      d3_geo_pathAreaSum += abs(d3_geo_pathAreaPolygon / 2);
-    }
-  };
-  function d3_geo_pathAreaRingStart() {
-    var x00, y00, x0, y0;
-    d3_geo_pathArea.point = function(x, y) {
-      d3_geo_pathArea.point = nextPoint;
-      x00 = x0 = x, y00 = y0 = y;
-    };
-    function nextPoint(x, y) {
-      d3_geo_pathAreaPolygon += y0 * x - x0 * y;
-      x0 = x, y0 = y;
-    }
-    d3_geo_pathArea.lineEnd = function() {
-      nextPoint(x00, y00);
-    };
-  }
-  var d3_geo_pathBoundsX0, d3_geo_pathBoundsY0, d3_geo_pathBoundsX1, d3_geo_pathBoundsY1;
-  var d3_geo_pathBounds = {
-    point: d3_geo_pathBoundsPoint,
-    lineStart: d3_noop,
-    lineEnd: d3_noop,
-    polygonStart: d3_noop,
-    polygonEnd: d3_noop
-  };
-  function d3_geo_pathBoundsPoint(x, y) {
-    if (x < d3_geo_pathBoundsX0) d3_geo_pathBoundsX0 = x;
-    if (x > d3_geo_pathBoundsX1) d3_geo_pathBoundsX1 = x;
-    if (y < d3_geo_pathBoundsY0) d3_geo_pathBoundsY0 = y;
-    if (y > d3_geo_pathBoundsY1) d3_geo_pathBoundsY1 = y;
-  }
-  function d3_geo_pathBuffer() {
-    var pointCircle = d3_geo_pathBufferCircle(4.5), buffer = [];
-    var stream = {
-      point: point,
-      lineStart: function() {
-        stream.point = pointLineStart;
-      },
-      lineEnd: lineEnd,
-      polygonStart: function() {
-        stream.lineEnd = lineEndPolygon;
-      },
-      polygonEnd: function() {
-        stream.lineEnd = lineEnd;
-        stream.point = point;
-      },
-      pointRadius: function(_) {
-        pointCircle = d3_geo_pathBufferCircle(_);
-        return stream;
-      },
-      result: function() {
-        if (buffer.length) {
-          var result = buffer.join("");
-          buffer = [];
-          return result;
-        }
-      }
-    };
-    function point(x, y) {
-      buffer.push("M", x, ",", y, pointCircle);
-    }
-    function pointLineStart(x, y) {
-      buffer.push("M", x, ",", y);
-      stream.point = pointLine;
-    }
-    function pointLine(x, y) {
-      buffer.push("L", x, ",", y);
-    }
-    function lineEnd() {
-      stream.point = point;
-    }
-    function lineEndPolygon() {
-      buffer.push("Z");
-    }
-    return stream;
-  }
-  function d3_geo_pathBufferCircle(radius) {
-    return "m0," + radius + "a" + radius + "," + radius + " 0 1,1 0," + -2 * radius + "a" + radius + "," + radius + " 0 1,1 0," + 2 * radius + "z";
-  }
-  var d3_geo_pathCentroid = {
-    point: d3_geo_pathCentroidPoint,
-    lineStart: d3_geo_pathCentroidLineStart,
-    lineEnd: d3_geo_pathCentroidLineEnd,
-    polygonStart: function() {
-      d3_geo_pathCentroid.lineStart = d3_geo_pathCentroidRingStart;
-    },
-    polygonEnd: function() {
-      d3_geo_pathCentroid.point = d3_geo_pathCentroidPoint;
-      d3_geo_pathCentroid.lineStart = d3_geo_pathCentroidLineStart;
-      d3_geo_pathCentroid.lineEnd = d3_geo_pathCentroidLineEnd;
-    }
-  };
-  function d3_geo_pathCentroidPoint(x, y) {
-    d3_geo_centroidX0 += x;
-    d3_geo_centroidY0 += y;
-    ++d3_geo_centroidZ0;
-  }
-  function d3_geo_pathCentroidLineStart() {
-    var x0, y0;
-    d3_geo_pathCentroid.point = function(x, y) {
-      d3_geo_pathCentroid.point = nextPoint;
-      d3_geo_pathCentroidPoint(x0 = x, y0 = y);
-    };
-    function nextPoint(x, y) {
-      var dx = x - x0, dy = y - y0, z = Math.sqrt(dx * dx + dy * dy);
-      d3_geo_centroidX1 += z * (x0 + x) / 2;
-      d3_geo_centroidY1 += z * (y0 + y) / 2;
-      d3_geo_centroidZ1 += z;
-      d3_geo_pathCentroidPoint(x0 = x, y0 = y);
-    }
-  }
-  function d3_geo_pathCentroidLineEnd() {
-    d3_geo_pathCentroid.point = d3_geo_pathCentroidPoint;
-  }
-  function d3_geo_pathCentroidRingStart() {
-    var x00, y00, x0, y0;
-    d3_geo_pathCentroid.point = function(x, y) {
-      d3_geo_pathCentroid.point = nextPoint;
-      d3_geo_pathCentroidPoint(x00 = x0 = x, y00 = y0 = y);
-    };
-    function nextPoint(x, y) {
-      var dx = x - x0, dy = y - y0, z = Math.sqrt(dx * dx + dy * dy);
-      d3_geo_centroidX1 += z * (x0 + x) / 2;
-      d3_geo_centroidY1 += z * (y0 + y) / 2;
-      d3_geo_centroidZ1 += z;
-      z = y0 * x - x0 * y;
-      d3_geo_centroidX2 += z * (x0 + x);
-      d3_geo_centroidY2 += z * (y0 + y);
-      d3_geo_centroidZ2 += z * 3;
-      d3_geo_pathCentroidPoint(x0 = x, y0 = y);
-    }
-    d3_geo_pathCentroid.lineEnd = function() {
-      nextPoint(x00, y00);
-    };
-  }
-  function d3_geo_pathContext(context) {
-    var pointRadius = 4.5;
-    var stream = {
-      point: point,
-      lineStart: function() {
-        stream.point = pointLineStart;
-      },
-      lineEnd: lineEnd,
-      polygonStart: function() {
-        stream.lineEnd = lineEndPolygon;
-      },
-      polygonEnd: function() {
-        stream.lineEnd = lineEnd;
-        stream.point = point;
-      },
-      pointRadius: function(_) {
-        pointRadius = _;
-        return stream;
-      },
-      result: d3_noop
-    };
-    function point(x, y) {
-      context.moveTo(x + pointRadius, y);
-      context.arc(x, y, pointRadius, 0, τ);
-    }
-    function pointLineStart(x, y) {
-      context.moveTo(x, y);
-      stream.point = pointLine;
-    }
-    function pointLine(x, y) {
-      context.lineTo(x, y);
-    }
-    function lineEnd() {
-      stream.point = point;
-    }
-    function lineEndPolygon() {
-      context.closePath();
-    }
-    return stream;
-  }
-  function d3_geo_resample(project) {
-    var δ2 = .5, cosMinDistance = Math.cos(30 * d3_radians), maxDepth = 16;
-    function resample(stream) {
-      return (maxDepth ? resampleRecursive : resampleNone)(stream);
-    }
-    function resampleNone(stream) {
-      return d3_geo_transformPoint(stream, function(x, y) {
-        x = project(x, y);
-        stream.point(x[0], x[1]);
-      });
-    }
-    function resampleRecursive(stream) {
-      var λ00, φ00, x00, y00, a00, b00, c00, λ0, x0, y0, a0, b0, c0;
-      var resample = {
-        point: point,
-        lineStart: lineStart,
-        lineEnd: lineEnd,
-        polygonStart: function() {
-          stream.polygonStart();
-          resample.lineStart = ringStart;
-        },
-        polygonEnd: function() {
-          stream.polygonEnd();
-          resample.lineStart = lineStart;
-        }
-      };
-      function point(x, y) {
-        x = project(x, y);
-        stream.point(x[0], x[1]);
-      }
-      function lineStart() {
-        x0 = NaN;
-        resample.point = linePoint;
-        stream.lineStart();
-      }
-      function linePoint(λ, φ) {
-        var c = d3_geo_cartesian([ λ, φ ]), p = project(λ, φ);
-        resampleLineTo(x0, y0, λ0, a0, b0, c0, x0 = p[0], y0 = p[1], λ0 = λ, a0 = c[0], b0 = c[1], c0 = c[2], maxDepth, stream);
-        stream.point(x0, y0);
-      }
-      function lineEnd() {
-        resample.point = point;
-        stream.lineEnd();
-      }
-      function ringStart() {
-        lineStart();
-        resample.point = ringPoint;
-        resample.lineEnd = ringEnd;
-      }
-      function ringPoint(λ, φ) {
-        linePoint(λ00 = λ, φ00 = φ), x00 = x0, y00 = y0, a00 = a0, b00 = b0, c00 = c0;
-        resample.point = linePoint;
-      }
-      function ringEnd() {
-        resampleLineTo(x0, y0, λ0, a0, b0, c0, x00, y00, λ00, a00, b00, c00, maxDepth, stream);
-        resample.lineEnd = lineEnd;
-        lineEnd();
-      }
-      return resample;
-    }
-    function resampleLineTo(x0, y0, λ0, a0, b0, c0, x1, y1, λ1, a1, b1, c1, depth, stream) {
-      var dx = x1 - x0, dy = y1 - y0, d2 = dx * dx + dy * dy;
-      if (d2 > 4 * δ2 && depth--) {
-        var a = a0 + a1, b = b0 + b1, c = c0 + c1, m = Math.sqrt(a * a + b * b + c * c), φ2 = Math.asin(c /= m), λ2 = abs(abs(c) - 1) < ε || abs(λ0 - λ1) < ε ? (λ0 + λ1) / 2 : Math.atan2(b, a), p = project(λ2, φ2), x2 = p[0], y2 = p[1], dx2 = x2 - x0, dy2 = y2 - y0, dz = dy * dx2 - dx * dy2;
-        if (dz * dz / d2 > δ2 || abs((dx * dx2 + dy * dy2) / d2 - .5) > .3 || a0 * a1 + b0 * b1 + c0 * c1 < cosMinDistance) {
-          resampleLineTo(x0, y0, λ0, a0, b0, c0, x2, y2, λ2, a /= m, b /= m, c, depth, stream);
-          stream.point(x2, y2);
-          resampleLineTo(x2, y2, λ2, a, b, c, x1, y1, λ1, a1, b1, c1, depth, stream);
-        }
-      }
-    }
-    resample.precision = function(_) {
-      if (!arguments.length) return Math.sqrt(δ2);
-      maxDepth = (δ2 = _ * _) > 0 && 16;
-      return resample;
-    };
-    return resample;
-  }
-  d3.geo.path = function() {
-    var pointRadius = 4.5, projection, context, projectStream, contextStream, cacheStream;
-    function path(object) {
-      if (object) {
-        if (typeof pointRadius === "function") contextStream.pointRadius(+pointRadius.apply(this, arguments));
-        if (!cacheStream || !cacheStream.valid) cacheStream = projectStream(contextStream);
-        d3.geo.stream(object, cacheStream);
-      }
-      return contextStream.result();
-    }
-    path.area = function(object) {
-      d3_geo_pathAreaSum = 0;
-      d3.geo.stream(object, projectStream(d3_geo_pathArea));
-      return d3_geo_pathAreaSum;
-    };
-    path.centroid = function(object) {
-      d3_geo_centroidX0 = d3_geo_centroidY0 = d3_geo_centroidZ0 = d3_geo_centroidX1 = d3_geo_centroidY1 = d3_geo_centroidZ1 = d3_geo_centroidX2 = d3_geo_centroidY2 = d3_geo_centroidZ2 = 0;
-      d3.geo.stream(object, projectStream(d3_geo_pathCentroid));
-      return d3_geo_centroidZ2 ? [ d3_geo_centroidX2 / d3_geo_centroidZ2, d3_geo_centroidY2 / d3_geo_centroidZ2 ] : d3_geo_centroidZ1 ? [ d3_geo_centroidX1 / d3_geo_centroidZ1, d3_geo_centroidY1 / d3_geo_centroidZ1 ] : d3_geo_centroidZ0 ? [ d3_geo_centroidX0 / d3_geo_centroidZ0, d3_geo_centroidY0 / d3_geo_centroidZ0 ] : [ NaN, NaN ];
-    };
-    path.bounds = function(object) {
-      d3_geo_pathBoundsX1 = d3_geo_pathBoundsY1 = -(d3_geo_pathBoundsX0 = d3_geo_pathBoundsY0 = Infinity);
-      d3.geo.stream(object, projectStream(d3_geo_pathBounds));
-      return [ [ d3_geo_pathBoundsX0, d3_geo_pathBoundsY0 ], [ d3_geo_pathBoundsX1, d3_geo_pathBoundsY1 ] ];
-    };
-    path.projection = function(_) {
-      if (!arguments.length) return projection;
-      projectStream = (projection = _) ? _.stream || d3_geo_pathProjectStream(_) : d3_identity;
-      return reset();
-    };
-    path.context = function(_) {
-      if (!arguments.length) return context;
-      contextStream = (context = _) == null ? new d3_geo_pathBuffer() : new d3_geo_pathContext(_);
-      if (typeof pointRadius !== "function") contextStream.pointRadius(pointRadius);
-      return reset();
-    };
-    path.pointRadius = function(_) {
-      if (!arguments.length) return pointRadius;
-      pointRadius = typeof _ === "function" ? _ : (contextStream.pointRadius(+_), +_);
-      return path;
-    };
-    function reset() {
-      cacheStream = null;
-      return path;
-    }
-    return path.projection(d3.geo.albersUsa()).context(null);
-  };
-  function d3_geo_pathProjectStream(project) {
-    var resample = d3_geo_resample(function(x, y) {
-      return project([ x * d3_degrees, y * d3_degrees ]);
-    });
-    return function(stream) {
-      return d3_geo_projectionRadians(resample(stream));
-    };
-  }
-  d3.geo.transform = function(methods) {
-    return {
-      stream: function(stream) {
-        var transform = new d3_geo_transform(stream);
-        for (var k in methods) transform[k] = methods[k];
-        return transform;
-      }
-    };
-  };
-  function d3_geo_transform(stream) {
-    this.stream = stream;
-  }
-  d3_geo_transform.prototype = {
-    point: function(x, y) {
-      this.stream.point(x, y);
-    },
-    sphere: function() {
-      this.stream.sphere();
-    },
-    lineStart: function() {
-      this.stream.lineStart();
-    },
-    lineEnd: function() {
-      this.stream.lineEnd();
-    },
-    polygonStart: function() {
-      this.stream.polygonStart();
-    },
-    polygonEnd: function() {
-      this.stream.polygonEnd();
-    }
-  };
-  function d3_geo_transformPoint(stream, point) {
-    return {
-      point: point,
-      sphere: function() {
-        stream.sphere();
-      },
-      lineStart: function() {
-        stream.lineStart();
-      },
-      lineEnd: function() {
-        stream.lineEnd();
-      },
-      polygonStart: function() {
-        stream.polygonStart();
-      },
-      polygonEnd: function() {
-        stream.polygonEnd();
-      }
-    };
-  }
-  d3.geo.projection = d3_geo_projection;
-  d3.geo.projectionMutator = d3_geo_projectionMutator;
-  function d3_geo_projection(project) {
-    return d3_geo_projectionMutator(function() {
-      return project;
-    })();
-  }
-  function d3_geo_projectionMutator(projectAt) {
-    var project, rotate, projectRotate, projectResample = d3_geo_resample(function(x, y) {
-      x = project(x, y);
-      return [ x[0] * k + δx, δy - x[1] * k ];
-    }), k = 150, x = 480, y = 250, λ = 0, φ = 0, δλ = 0, δφ = 0, δγ = 0, δx, δy, preclip = d3_geo_clipAntimeridian, postclip = d3_identity, clipAngle = null, clipExtent = null, stream;
-    function projection(point) {
-      point = projectRotate(point[0] * d3_radians, point[1] * d3_radians);
-      return [ point[0] * k + δx, δy - point[1] * k ];
-    }
-    function invert(point) {
-      point = projectRotate.invert((point[0] - δx) / k, (δy - point[1]) / k);
-      return point && [ point[0] * d3_degrees, point[1] * d3_degrees ];
-    }
-    projection.stream = function(output) {
-      if (stream) stream.valid = false;
-      stream = d3_geo_projectionRadians(preclip(rotate, projectResample(postclip(output))));
-      stream.valid = true;
-      return stream;
-    };
-    projection.clipAngle = function(_) {
-      if (!arguments.length) return clipAngle;
-      preclip = _ == null ? (clipAngle = _, d3_geo_clipAntimeridian) : d3_geo_clipCircle((clipAngle = +_) * d3_radians);
-      return invalidate();
-    };
-    projection.clipExtent = function(_) {
-      if (!arguments.length) return clipExtent;
-      clipExtent = _;
-      postclip = _ ? d3_geo_clipExtent(_[0][0], _[0][1], _[1][0], _[1][1]) : d3_identity;
-      return invalidate();
-    };
-    projection.scale = function(_) {
-      if (!arguments.length) return k;
-      k = +_;
-      return reset();
-    };
-    projection.translate = function(_) {
-      if (!arguments.length) return [ x, y ];
-      x = +_[0];
-      y = +_[1];
-      return reset();
-    };
-    projection.center = function(_) {
-      if (!arguments.length) return [ λ * d3_degrees, φ * d3_degrees ];
-      λ = _[0] % 360 * d3_radians;
-      φ = _[1] % 360 * d3_radians;
-      return reset();
-    };
-    projection.rotate = function(_) {
-      if (!arguments.length) return [ δλ * d3_degrees, δφ * d3_degrees, δγ * d3_degrees ];
-      δλ = _[0] % 360 * d3_radians;
-      δφ = _[1] % 360 * d3_radians;
-      δγ = _.length > 2 ? _[2] % 360 * d3_radians : 0;
-      return reset();
-    };
-    d3.rebind(projection, projectResample, "precision");
-    function reset() {
-      projectRotate = d3_geo_compose(rotate = d3_geo_rotation(δλ, δφ, δγ), project);
-      var center = project(λ, φ);
-      δx = x - center[0] * k;
-      δy = y + center[1] * k;
-      return invalidate();
-    }
-    function invalidate() {
-      if (stream) stream.valid = false, stream = null;
-      return projection;
-    }
-    return function() {
-      project = projectAt.apply(this, arguments);
-      projection.invert = project.invert && invert;
-      return reset();
-    };
-  }
-  function d3_geo_projectionRadians(stream) {
-    return d3_geo_transformPoint(stream, function(x, y) {
-      stream.point(x * d3_radians, y * d3_radians);
-    });
-  }
-  function d3_geo_equirectangular(λ, φ) {
-    return [ λ, φ ];
-  }
-  (d3.geo.equirectangular = function() {
-    return d3_geo_projection(d3_geo_equirectangular);
-  }).raw = d3_geo_equirectangular.invert = d3_geo_equirectangular;
-  d3.geo.rotation = function(rotate) {
-    rotate = d3_geo_rotation(rotate[0] % 360 * d3_radians, rotate[1] * d3_radians, rotate.length > 2 ? rotate[2] * d3_radians : 0);
-    function forward(coordinates) {
-      coordinates = rotate(coordinates[0] * d3_radians, coordinates[1] * d3_radians);
-      return coordinates[0] *= d3_degrees, coordinates[1] *= d3_degrees, coordinates;
-    }
-    forward.invert = function(coordinates) {
-      coordinates = rotate.invert(coordinates[0] * d3_radians, coordinates[1] * d3_radians);
-      return coordinates[0] *= d3_degrees, coordinates[1] *= d3_degrees, coordinates;
-    };
-    return forward;
-  };
-  function d3_geo_identityRotation(λ, φ) {
-    return [ λ > π ? λ - τ : λ < -π ? λ + τ : λ, φ ];
-  }
-  d3_geo_identityRotation.invert = d3_geo_equirectangular;
-  function d3_geo_rotation(δλ, δφ, δγ) {
-    return δλ ? δφ || δγ ? d3_geo_compose(d3_geo_rotationλ(δλ), d3_geo_rotationφγ(δφ, δγ)) : d3_geo_rotationλ(δλ) : δφ || δγ ? d3_geo_rotationφγ(δφ, δγ) : d3_geo_identityRotation;
-  }
-  function d3_geo_forwardRotationλ(δλ) {
-    return function(λ, φ) {
-      return λ += δλ, [ λ > π ? λ - τ : λ < -π ? λ + τ : λ, φ ];
-    };
-  }
-  function d3_geo_rotationλ(δλ) {
-    var rotation = d3_geo_forwardRotationλ(δλ);
-    rotation.invert = d3_geo_forwardRotationλ(-δλ);
-    return rotation;
-  }
-  function d3_geo_rotationφγ(δφ, δγ) {
-    var cosδφ = Math.cos(δφ), sinδφ = Math.sin(δφ), cosδγ = Math.cos(δγ), sinδγ = Math.sin(δγ);
-    function rotation(λ, φ) {
-      var cosφ = Math.cos(φ), x = Math.cos(λ) * cosφ, y = Math.sin(λ) * cosφ, z = Math.sin(φ), k = z * cosδφ + x * sinδφ;
-      return [ Math.atan2(y * cosδγ - k * sinδγ, x * cosδφ - z * sinδφ), d3_asin(k * cosδγ + y * sinδγ) ];
-    }
-    rotation.invert = function(λ, φ) {
-      var cosφ = Math.cos(φ), x = Math.cos(λ) * cosφ, y = Math.sin(λ) * cosφ, z = Math.sin(φ), k = z * cosδγ - y * sinδγ;
-      return [ Math.atan2(y * cosδγ + z * sinδγ, x * cosδφ + k * sinδφ), d3_asin(k * cosδφ - x * sinδφ) ];
-    };
-    return rotation;
-  }
-  d3.geo.circle = function() {
-    var origin = [ 0, 0 ], angle, precision = 6, interpolate;
-    function circle() {
-      var center = typeof origin === "function" ? origin.apply(this, arguments) : origin, rotate = d3_geo_rotation(-center[0] * d3_radians, -center[1] * d3_radians, 0).invert, ring = [];
-      interpolate(null, null, 1, {
-        point: function(x, y) {
-          ring.push(x = rotate(x, y));
-          x[0] *= d3_degrees, x[1] *= d3_degrees;
-        }
-      });
-      return {
-        type: "Polygon",
-        coordinates: [ ring ]
-      };
-    }
-    circle.origin = function(x) {
-      if (!arguments.length) return origin;
-      origin = x;
-      return circle;
-    };
-    circle.angle = function(x) {
-      if (!arguments.length) return angle;
-      interpolate = d3_geo_circleInterpolate((angle = +x) * d3_radians, precision * d3_radians);
-      return circle;
-    };
-    circle.precision = function(_) {
-      if (!arguments.length) return precision;
-      interpolate = d3_geo_circleInterpolate(angle * d3_radians, (precision = +_) * d3_radians);
-      return circle;
-    };
-    return circle.angle(90);
-  };
-  function d3_geo_circleInterpolate(radius, precision) {
-    var cr = Math.cos(radius), sr = Math.sin(radius);
-    return function(from, to, direction, listener) {
-      var step = direction * precision;
-      if (from != null) {
-        from = d3_geo_circleAngle(cr, from);
-        to = d3_geo_circleAngle(cr, to);
-        if (direction > 0 ? from < to : from > to) from += direction * τ;
-      } else {
-        from = radius + direction * τ;
-        to = radius - .5 * step;
-      }
-      for (var point, t = from; direction > 0 ? t > to : t < to; t -= step) {
-        listener.point((point = d3_geo_spherical([ cr, -sr * Math.cos(t), -sr * Math.sin(t) ]))[0], point[1]);
-      }
-    };
-  }
-  function d3_geo_circleAngle(cr, point) {
-    var a = d3_geo_cartesian(point);
-    a[0] -= cr;
-    d3_geo_cartesianNormalize(a);
-    var angle = d3_acos(-a[1]);
-    return ((-a[2] < 0 ? -angle : angle) + 2 * Math.PI - ε) % (2 * Math.PI);
-  }
-  d3.geo.distance = function(a, b) {
-    var Δλ = (b[0] - a[0]) * d3_radians, φ0 = a[1] * d3_radians, φ1 = b[1] * d3_radians, sinΔλ = Math.sin(Δλ), cosΔλ = Math.cos(Δλ), sinφ0 = Math.sin(φ0), cosφ0 = Math.cos(φ0), sinφ1 = Math.sin(φ1), cosφ1 = Math.cos(φ1), t;
-    return Math.atan2(Math.sqrt((t = cosφ1 * sinΔλ) * t + (t = cosφ0 * sinφ1 - sinφ0 * cosφ1 * cosΔλ) * t), sinφ0 * sinφ1 + cosφ0 * cosφ1 * cosΔλ);
-  };
-  d3.geo.graticule = function() {
-    var x1, x0, X1, X0, y1, y0, Y1, Y0, dx = 10, dy = dx, DX = 90, DY = 360, x, y, X, Y, precision = 2.5;
-    function graticule() {
-      return {
-        type: "MultiLineString",
-        coordinates: lines()
-      };
-    }
-    function lines() {
-      return d3.range(Math.ceil(X0 / DX) * DX, X1, DX).map(X).concat(d3.range(Math.ceil(Y0 / DY) * DY, Y1, DY).map(Y)).concat(d3.range(Math.ceil(x0 / dx) * dx, x1, dx).filter(function(x) {
-        return abs(x % DX) > ε;
-      }).map(x)).concat(d3.range(Math.ceil(y0 / dy) * dy, y1, dy).filter(function(y) {
-        return abs(y % DY) > ε;
-      }).map(y));
-    }
-    graticule.lines = function() {
-      return lines().map(function(coordinates) {
-        return {
-          type: "LineString",
-          coordinates: coordinates
-        };
-      });
-    };
-    graticule.outline = function() {
-      return {
-        type: "Polygon",
-        coordinates: [ X(X0).concat(Y(Y1).slice(1), X(X1).reverse().slice(1), Y(Y0).reverse().slice(1)) ]
-      };
-    };
-    graticule.extent = function(_) {
-      if (!arguments.length) return graticule.minorExtent();
-      return graticule.majorExtent(_).minorExtent(_);
-    };
-    graticule.majorExtent = function(_) {
-      if (!arguments.length) return [ [ X0, Y0 ], [ X1, Y1 ] ];
-      X0 = +_[0][0], X1 = +_[1][0];
-      Y0 = +_[0][1], Y1 = +_[1][1];
-      if (X0 > X1) _ = X0, X0 = X1, X1 = _;
-      if (Y0 > Y1) _ = Y0, Y0 = Y1, Y1 = _;
-      return graticule.precision(precision);
-    };
-    graticule.minorExtent = function(_) {
-      if (!arguments.length) return [ [ x0, y0 ], [ x1, y1 ] ];
-      x0 = +_[0][0], x1 = +_[1][0];
-      y0 = +_[0][1], y1 = +_[1][1];
-      if (x0 > x1) _ = x0, x0 = x1, x1 = _;
-      if (y0 > y1) _ = y0, y0 = y1, y1 = _;
-      return graticule.precision(precision);
-    };
-    graticule.step = function(_) {
-      if (!arguments.length) return graticule.minorStep();
-      return graticule.majorStep(_).minorStep(_);
-    };
-    graticule.majorStep = function(_) {
-      if (!arguments.length) return [ DX, DY ];
-      DX = +_[0], DY = +_[1];
-      return graticule;
-    };
-    graticule.minorStep = function(_) {
-      if (!arguments.length) return [ dx, dy ];
-      dx = +_[0], dy = +_[1];
-      return graticule;
-    };
-    graticule.precision = function(_) {
-      if (!arguments.length) return precision;
-      precision = +_;
-      x = d3_geo_graticuleX(y0, y1, 90);
-      y = d3_geo_graticuleY(x0, x1, precision);
-      X = d3_geo_graticuleX(Y0, Y1, 90);
-      Y = d3_geo_graticuleY(X0, X1, precision);
-      return graticule;
-    };
-    return graticule.majorExtent([ [ -180, -90 + ε ], [ 180, 90 - ε ] ]).minorExtent([ [ -180, -80 - ε ], [ 180, 80 + ε ] ]);
-  };
-  function d3_geo_graticuleX(y0, y1, dy) {
-    var y = d3.range(y0, y1 - ε, dy).concat(y1);
-    return function(x) {
-      return y.map(function(y) {
-        return [ x, y ];
-      });
-    };
-  }
-  function d3_geo_graticuleY(x0, x1, dx) {
-    var x = d3.range(x0, x1 - ε, dx).concat(x1);
-    return function(y) {
-      return x.map(function(x) {
-        return [ x, y ];
-      });
-    };
-  }
-  function d3_source(d) {
-    return d.source;
-  }
-  function d3_target(d) {
-    return d.target;
-  }
-  d3.geo.greatArc = function() {
-    var source = d3_source, source_, target = d3_target, target_;
-    function greatArc() {
-      return {
-        type: "LineString",
-        coordinates: [ source_ || source.apply(this, arguments), target_ || target.apply(this, arguments) ]
-      };
-    }
-    greatArc.distance = function() {
-      return d3.geo.distance(source_ || source.apply(this, arguments), target_ || target.apply(this, arguments));
-    };
-    greatArc.source = function(_) {
-      if (!arguments.length) return source;
-      source = _, source_ = typeof _ === "function" ? null : _;
-      return greatArc;
-    };
-    greatArc.target = function(_) {
-      if (!arguments.length) return target;
-      target = _, target_ = typeof _ === "function" ? null : _;
-      return greatArc;
-    };
-    greatArc.precision = function() {
-      return arguments.length ? greatArc : 0;
-    };
-    return greatArc;
-  };
-  d3.geo.interpolate = function(source, target) {
-    return d3_geo_interpolate(source[0] * d3_radians, source[1] * d3_radians, target[0] * d3_radians, target[1] * d3_radians);
-  };
-  function d3_geo_interpolate(x0, y0, x1, y1) {
-    var cy0 = Math.cos(y0), sy0 = Math.sin(y0), cy1 = Math.cos(y1), sy1 = Math.sin(y1), kx0 = cy0 * Math.cos(x0), ky0 = cy0 * Math.sin(x0), kx1 = cy1 * Math.cos(x1), ky1 = cy1 * Math.sin(x1), d = 2 * Math.asin(Math.sqrt(d3_haversin(y1 - y0) + cy0 * cy1 * d3_haversin(x1 - x0))), k = 1 / Math.sin(d);
-    var interpolate = d ? function(t) {
-      var B = Math.sin(t *= d) * k, A = Math.sin(d - t) * k, x = A * kx0 + B * kx1, y = A * ky0 + B * ky1, z = A * sy0 + B * sy1;
-      return [ Math.atan2(y, x) * d3_degrees, Math.atan2(z, Math.sqrt(x * x + y * y)) * d3_degrees ];
-    } : function() {
-      return [ x0 * d3_degrees, y0 * d3_degrees ];
-    };
-    interpolate.distance = d;
-    return interpolate;
-  }
-  d3.geo.length = function(object) {
-    d3_geo_lengthSum = 0;
-    d3.geo.stream(object, d3_geo_length);
-    return d3_geo_lengthSum;
-  };
-  var d3_geo_lengthSum;
-  var d3_geo_length = {
-    sphere: d3_noop,
-    point: d3_noop,
-    lineStart: d3_geo_lengthLineStart,
-    lineEnd: d3_noop,
-    polygonStart: d3_noop,
-    polygonEnd: d3_noop
-  };
-  function d3_geo_lengthLineStart() {
-    var λ0, sinφ0, cosφ0;
-    d3_geo_length.point = function(λ, φ) {
-      λ0 = λ * d3_radians, sinφ0 = Math.sin(φ *= d3_radians), cosφ0 = Math.cos(φ);
-      d3_geo_length.point = nextPoint;
-    };
-    d3_geo_length.lineEnd = function() {
-      d3_geo_length.point = d3_geo_length.lineEnd = d3_noop;
-    };
-    function nextPoint(λ, φ) {
-      var sinφ = Math.sin(φ *= d3_radians), cosφ = Math.cos(φ), t = abs((λ *= d3_radians) - λ0), cosΔλ = Math.cos(t);
-      d3_geo_lengthSum += Math.atan2(Math.sqrt((t = cosφ * Math.sin(t)) * t + (t = cosφ0 * sinφ - sinφ0 * cosφ * cosΔλ) * t), sinφ0 * sinφ + cosφ0 * cosφ * cosΔλ);
-      λ0 = λ, sinφ0 = sinφ, cosφ0 = cosφ;
-    }
-  }
-  function d3_geo_azimuthal(scale, angle) {
-    function azimuthal(λ, φ) {
-      var cosλ = Math.cos(λ), cosφ = Math.cos(φ), k = scale(cosλ * cosφ);
-      return [ k * cosφ * Math.sin(λ), k * Math.sin(φ) ];
-    }
-    azimuthal.invert = function(x, y) {
-      var ρ = Math.sqrt(x * x + y * y), c = angle(ρ), sinc = Math.sin(c), cosc = Math.cos(c);
-      return [ Math.atan2(x * sinc, ρ * cosc), Math.asin(ρ && y * sinc / ρ) ];
-    };
-    return azimuthal;
-  }
-  var d3_geo_azimuthalEqualArea = d3_geo_azimuthal(function(cosλcosφ) {
-    return Math.sqrt(2 / (1 + cosλcosφ));
-  }, function(ρ) {
-    return 2 * Math.asin(ρ / 2);
-  });
-  (d3.geo.azimuthalEqualArea = function() {
-    return d3_geo_projection(d3_geo_azimuthalEqualArea);
-  }).raw = d3_geo_azimuthalEqualArea;
-  var d3_geo_azimuthalEquidistant = d3_geo_azimuthal(function(cosλcosφ) {
-    var c = Math.acos(cosλcosφ);
-    return c && c / Math.sin(c);
-  }, d3_identity);
-  (d3.geo.azimuthalEquidistant = function() {
-    return d3_geo_projection(d3_geo_azimuthalEquidistant);
-  }).raw = d3_geo_azimuthalEquidistant;
-  function d3_geo_conicConformal(φ0, φ1) {
-    var cosφ0 = Math.cos(φ0), t = function(φ) {
-      return Math.tan(π / 4 + φ / 2);
-    }, n = φ0 === φ1 ? Math.sin(φ0) : Math.log(cosφ0 / Math.cos(φ1)) / Math.log(t(φ1) / t(φ0)), F = cosφ0 * Math.pow(t(φ0), n) / n;
-    if (!n) return d3_geo_mercator;
-    function forward(λ, φ) {
-      if (F > 0) {
-        if (φ < -halfπ + ε) φ = -halfπ + ε;
-      } else {
-        if (φ > halfπ - ε) φ = halfπ - ε;
-      }
-      var ρ = F / Math.pow(t(φ), n);
-      return [ ρ * Math.sin(n * λ), F - ρ * Math.cos(n * λ) ];
-    }
-    forward.invert = function(x, y) {
-      var ρ0_y = F - y, ρ = d3_sgn(n) * Math.sqrt(x * x + ρ0_y * ρ0_y);
-      return [ Math.atan2(x, ρ0_y) / n, 2 * Math.atan(Math.pow(F / ρ, 1 / n)) - halfπ ];
-    };
-    return forward;
-  }
-  (d3.geo.conicConformal = function() {
-    return d3_geo_conic(d3_geo_conicConformal);
-  }).raw = d3_geo_conicConformal;
-  function d3_geo_conicEquidistant(φ0, φ1) {
-    var cosφ0 = Math.cos(φ0), n = φ0 === φ1 ? Math.sin(φ0) : (cosφ0 - Math.cos(φ1)) / (φ1 - φ0), G = cosφ0 / n + φ0;
-    if (abs(n) < ε) return d3_geo_equirectangular;
-    function forward(λ, φ) {
-      var ρ = G - φ;
-      return [ ρ * Math.sin(n * λ), G - ρ * Math.cos(n * λ) ];
-    }
-    forward.invert = function(x, y) {
-      var ρ0_y = G - y;
-      return [ Math.atan2(x, ρ0_y) / n, G - d3_sgn(n) * Math.sqrt(x * x + ρ0_y * ρ0_y) ];
-    };
-    return forward;
-  }
-  (d3.geo.conicEquidistant = function() {
-    return d3_geo_conic(d3_geo_conicEquidistant);
-  }).raw = d3_geo_conicEquidistant;
-  var d3_geo_gnomonic = d3_geo_azimuthal(function(cosλcosφ) {
-    return 1 / cosλcosφ;
-  }, Math.atan);
-  (d3.geo.gnomonic = function() {
-    return d3_geo_projection(d3_geo_gnomonic);
-  }).raw = d3_geo_gnomonic;
-  function d3_geo_mercator(λ, φ) {
-    return [ λ, Math.log(Math.tan(π / 4 + φ / 2)) ];
-  }
-  d3_geo_mercator.invert = function(x, y) {
-    return [ x, 2 * Math.atan(Math.exp(y)) - halfπ ];
-  };
-  function d3_geo_mercatorProjection(project) {
-    var m = d3_geo_projection(project), scale = m.scale, translate = m.translate, clipExtent = m.clipExtent, clipAuto;
-    m.scale = function() {
-      var v = scale.apply(m, arguments);
-      return v === m ? clipAuto ? m.clipExtent(null) : m : v;
-    };
-    m.translate = function() {
-      var v = translate.apply(m, arguments);
-      return v === m ? clipAuto ? m.clipExtent(null) : m : v;
-    };
-    m.clipExtent = function(_) {
-      var v = clipExtent.apply(m, arguments);
-      if (v === m) {
-        if (clipAuto = _ == null) {
-          var k = π * scale(), t = translate();
-          clipExtent([ [ t[0] - k, t[1] - k ], [ t[0] + k, t[1] + k ] ]);
-        }
-      } else if (clipAuto) {
-        v = null;
-      }
-      return v;
-    };
-    return m.clipExtent(null);
-  }
-  (d3.geo.mercator = function() {
-    return d3_geo_mercatorProjection(d3_geo_mercator);
-  }).raw = d3_geo_mercator;
-  var d3_geo_orthographic = d3_geo_azimuthal(function() {
-    return 1;
-  }, Math.asin);
-  (d3.geo.orthographic = function() {
-    return d3_geo_projection(d3_geo_orthographic);
-  }).raw = d3_geo_orthographic;
-  var d3_geo_stereographic = d3_geo_azimuthal(function(cosλcosφ) {
-    return 1 / (1 + cosλcosφ);
-  }, function(ρ) {
-    return 2 * Math.atan(ρ);
-  });
-  (d3.geo.stereographic = function() {
-    return d3_geo_projection(d3_geo_stereographic);
-  }).raw = d3_geo_stereographic;
-  function d3_geo_transverseMercator(λ, φ) {
-    return [ Math.log(Math.tan(π / 4 + φ / 2)), -λ ];
-  }
-  d3_geo_transverseMercator.invert = function(x, y) {
-    return [ -y, 2 * Math.atan(Math.exp(x)) - halfπ ];
-  };
-  (d3.geo.transverseMercator = function() {
-    var projection = d3_geo_mercatorProjection(d3_geo_transverseMercator), center = projection.center, rotate = projection.rotate;
-    projection.center = function(_) {
-      return _ ? center([ -_[1], _[0] ]) : (_ = center(), [ _[1], -_[0] ]);
-    };
-    projection.rotate = function(_) {
-      return _ ? rotate([ _[0], _[1], _.length > 2 ? _[2] + 90 : 90 ]) : (_ = rotate(), 
-      [ _[0], _[1], _[2] - 90 ]);
-    };
-    return rotate([ 0, 0, 90 ]);
-  }).raw = d3_geo_transverseMercator;
   d3.geom = {};
   function d3_geom_pointX(d) {
     return d[0];
@@ -5275,6 +2665,60 @@ module.exports = _dereq_('../src/traces/splom');
       d3_geom_voronoiRedBlackNode(circle);
       arc.circle = null;
     }
+  }
+  function d3_geom_clipLine(x0, y0, x1, y1) {
+    return function(line) {
+      var a = line.a, b = line.b, ax = a.x, ay = a.y, bx = b.x, by = b.y, t0 = 0, t1 = 1, dx = bx - ax, dy = by - ay, r;
+      r = x0 - ax;
+      if (!dx && r > 0) return;
+      r /= dx;
+      if (dx < 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      } else if (dx > 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      }
+      r = x1 - ax;
+      if (!dx && r < 0) return;
+      r /= dx;
+      if (dx < 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      } else if (dx > 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      }
+      r = y0 - ay;
+      if (!dy && r > 0) return;
+      r /= dy;
+      if (dy < 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      } else if (dy > 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      }
+      r = y1 - ay;
+      if (!dy && r < 0) return;
+      r /= dy;
+      if (dy < 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      } else if (dy > 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      }
+      if (t0 > 0) line.a = {
+        x: ax + t0 * dx,
+        y: ay + t0 * dy
+      };
+      if (t1 < 1) line.b = {
+        x: ax + t1 * dx,
+        y: ay + t1 * dy
+      };
+      return line;
+    };
   }
   function d3_geom_voronoiClipEdges(extent) {
     var edges = d3_geom_voronoiEdges, clip = d3_geom_clipLine(extent[0][0], extent[0][1], extent[1][0], extent[1][1]), i = edges.length, e;
@@ -7742,27 +5186,6 @@ module.exports = _dereq_('../src/traces/splom');
   function d3_scale_linearTicks(domain, m) {
     return d3.range.apply(d3, d3_scale_linearTickRange(domain, m));
   }
-  function d3_scale_linearTickFormat(domain, m, format) {
-    var range = d3_scale_linearTickRange(domain, m);
-    if (format) {
-      var match = d3_format_re.exec(format);
-      match.shift();
-      if (match[8] === "s") {
-        var prefix = d3.formatPrefix(Math.max(abs(range[0]), abs(range[1])));
-        if (!match[7]) match[7] = "." + d3_scale_linearPrecision(prefix.scale(range[2]));
-        match[8] = "f";
-        format = d3.format(match.join(""));
-        return function(d) {
-          return format(prefix.scale(d)) + prefix.symbol;
-        };
-      }
-      if (!match[7]) match[7] = "." + d3_scale_linearFormatPrecision(match[8], range);
-      format = match.join("");
-    } else {
-      format = ",." + d3_scale_linearPrecision(range[2]) + "f";
-    }
-    return d3.format(format);
-  }
   var d3_scale_linearFormatSignificant = {
     s: 1,
     g: 1,
@@ -7827,22 +5250,12 @@ module.exports = _dereq_('../src/traces/splom');
       }
       return ticks;
     };
-    scale.tickFormat = function(n, format) {
-      if (!arguments.length) return d3_scale_logFormat;
-      if (arguments.length < 2) format = d3_scale_logFormat; else if (typeof format !== "function") format = d3.format(format);
-      var k = Math.max(1, base * n / scale.ticks().length);
-      return function(d) {
-        var i = d / pow(Math.round(log(d)));
-        if (i * base < base - .5) i *= base;
-        return i <= k ? format(d) : "";
-      };
-    };
     scale.copy = function() {
       return d3_scale_log(linear.copy(), base, positive, domain);
     };
     return d3_scale_linearRebind(scale, linear);
   }
-  var d3_scale_logFormat = d3.format(".0e"), d3_scale_logNiceNegative = {
+  var d3_scale_logNiceNegative = {
     floor: function(x) {
       return -Math.ceil(-x);
     },
@@ -8278,6 +5691,9 @@ module.exports = _dereq_('../src/traces/splom');
     if (dx0 * dx0 + dy0 * dy0 > dx1 * dx1 + dy1 * dy1) cx0 = cx1, cy0 = cy1;
     return [ [ cx0 - ox, cy0 - oy ], [ cx0 * r1 / r, cy0 * r1 / r ] ];
   }
+  function d3_true() {
+    return true;
+  }
   function d3_svg_line(projection) {
     var x = d3_geom_pointX, y = d3_geom_pointY, defined = d3_true, interpolate = d3_svg_lineLinear, interpolateKey = interpolate.key, tension = .7;
     function line(data) {
@@ -8632,6 +6048,12 @@ module.exports = _dereq_('../src/traces/splom');
     area.endAngle = area.y1, delete area.y1;
     return area;
   };
+  function d3_source(d) {
+    return d.source;
+  }
+  function d3_target(d) {
+    return d.target;
+  }
   d3.svg.chord = function() {
     var source = d3_source, target = d3_target, radius = d3_svg_chordRadius, startAngle = d3_svg_arcStartAngle, endAngle = d3_svg_arcEndAngle;
     function chord(d, i) {
@@ -9536,160 +6958,6 @@ module.exports = _dereq_('../src/traces/splom');
     sw: "nesw-resize"
   };
   var d3_svg_brushResizes = [ [ "n", "e", "s", "w", "nw", "ne", "se", "sw" ], [ "e", "w" ], [ "n", "s" ], [] ];
-  var d3_time_format = d3_time.format = d3_locale_enUS.timeFormat;
-  var d3_time_formatUtc = d3_time_format.utc;
-  var d3_time_formatIso = d3_time_formatUtc("%Y-%m-%dT%H:%M:%S.%LZ");
-  d3_time_format.iso = Date.prototype.toISOString && +new Date("2000-01-01T00:00:00.000Z") ? d3_time_formatIsoNative : d3_time_formatIso;
-  function d3_time_formatIsoNative(date) {
-    return date.toISOString();
-  }
-  d3_time_formatIsoNative.parse = function(string) {
-    var date = new Date(string);
-    return isNaN(date) ? null : date;
-  };
-  d3_time_formatIsoNative.toString = d3_time_formatIso.toString;
-  d3_time.second = d3_time_interval(function(date) {
-    return new d3_date(Math.floor(date / 1e3) * 1e3);
-  }, function(date, offset) {
-    date.setTime(date.getTime() + Math.floor(offset) * 1e3);
-  }, function(date) {
-    return date.getSeconds();
-  });
-  d3_time.seconds = d3_time.second.range;
-  d3_time.seconds.utc = d3_time.second.utc.range;
-  d3_time.minute = d3_time_interval(function(date) {
-    return new d3_date(Math.floor(date / 6e4) * 6e4);
-  }, function(date, offset) {
-    date.setTime(date.getTime() + Math.floor(offset) * 6e4);
-  }, function(date) {
-    return date.getMinutes();
-  });
-  d3_time.minutes = d3_time.minute.range;
-  d3_time.minutes.utc = d3_time.minute.utc.range;
-  d3_time.hour = d3_time_interval(function(date) {
-    var timezone = date.getTimezoneOffset() / 60;
-    return new d3_date((Math.floor(date / 36e5 - timezone) + timezone) * 36e5);
-  }, function(date, offset) {
-    date.setTime(date.getTime() + Math.floor(offset) * 36e5);
-  }, function(date) {
-    return date.getHours();
-  });
-  d3_time.hours = d3_time.hour.range;
-  d3_time.hours.utc = d3_time.hour.utc.range;
-  d3_time.month = d3_time_interval(function(date) {
-    date = d3_time.day(date);
-    date.setDate(1);
-    return date;
-  }, function(date, offset) {
-    date.setMonth(date.getMonth() + offset);
-  }, function(date) {
-    return date.getMonth();
-  });
-  d3_time.months = d3_time.month.range;
-  d3_time.months.utc = d3_time.month.utc.range;
-  function d3_time_scale(linear, methods, format) {
-    function scale(x) {
-      return linear(x);
-    }
-    scale.invert = function(x) {
-      return d3_time_scaleDate(linear.invert(x));
-    };
-    scale.domain = function(x) {
-      if (!arguments.length) return linear.domain().map(d3_time_scaleDate);
-      linear.domain(x);
-      return scale;
-    };
-    function tickMethod(extent, count) {
-      var span = extent[1] - extent[0], target = span / count, i = d3.bisect(d3_time_scaleSteps, target);
-      return i == d3_time_scaleSteps.length ? [ methods.year, d3_scale_linearTickRange(extent.map(function(d) {
-        return d / 31536e6;
-      }), count)[2] ] : !i ? [ d3_time_scaleMilliseconds, d3_scale_linearTickRange(extent, count)[2] ] : methods[target / d3_time_scaleSteps[i - 1] < d3_time_scaleSteps[i] / target ? i - 1 : i];
-    }
-    scale.nice = function(interval, skip) {
-      var domain = scale.domain(), extent = d3_scaleExtent(domain), method = interval == null ? tickMethod(extent, 10) : typeof interval === "number" && tickMethod(extent, interval);
-      if (method) interval = method[0], skip = method[1];
-      function skipped(date) {
-        return !isNaN(date) && !interval.range(date, d3_time_scaleDate(+date + 1), skip).length;
-      }
-      return scale.domain(d3_scale_nice(domain, skip > 1 ? {
-        floor: function(date) {
-          while (skipped(date = interval.floor(date))) date = d3_time_scaleDate(date - 1);
-          return date;
-        },
-        ceil: function(date) {
-          while (skipped(date = interval.ceil(date))) date = d3_time_scaleDate(+date + 1);
-          return date;
-        }
-      } : interval));
-    };
-    scale.ticks = function(interval, skip) {
-      var extent = d3_scaleExtent(scale.domain()), method = interval == null ? tickMethod(extent, 10) : typeof interval === "number" ? tickMethod(extent, interval) : !interval.range && [ {
-        range: interval
-      }, skip ];
-      if (method) interval = method[0], skip = method[1];
-      return interval.range(extent[0], d3_time_scaleDate(+extent[1] + 1), skip < 1 ? 1 : skip);
-    };
-    scale.tickFormat = function() {
-      return format;
-    };
-    scale.copy = function() {
-      return d3_time_scale(linear.copy(), methods, format);
-    };
-    return d3_scale_linearRebind(scale, linear);
-  }
-  function d3_time_scaleDate(t) {
-    return new Date(t);
-  }
-  var d3_time_scaleSteps = [ 1e3, 5e3, 15e3, 3e4, 6e4, 3e5, 9e5, 18e5, 36e5, 108e5, 216e5, 432e5, 864e5, 1728e5, 6048e5, 2592e6, 7776e6, 31536e6 ];
-  var d3_time_scaleLocalMethods = [ [ d3_time.second, 1 ], [ d3_time.second, 5 ], [ d3_time.second, 15 ], [ d3_time.second, 30 ], [ d3_time.minute, 1 ], [ d3_time.minute, 5 ], [ d3_time.minute, 15 ], [ d3_time.minute, 30 ], [ d3_time.hour, 1 ], [ d3_time.hour, 3 ], [ d3_time.hour, 6 ], [ d3_time.hour, 12 ], [ d3_time.day, 1 ], [ d3_time.day, 2 ], [ d3_time.week, 1 ], [ d3_time.month, 1 ], [ d3_time.month, 3 ], [ d3_time.year, 1 ] ];
-  var d3_time_scaleLocalFormat = d3_time_format.multi([ [ ".%L", function(d) {
-    return d.getMilliseconds();
-  } ], [ ":%S", function(d) {
-    return d.getSeconds();
-  } ], [ "%I:%M", function(d) {
-    return d.getMinutes();
-  } ], [ "%I %p", function(d) {
-    return d.getHours();
-  } ], [ "%a %d", function(d) {
-    return d.getDay() && d.getDate() != 1;
-  } ], [ "%b %d", function(d) {
-    return d.getDate() != 1;
-  } ], [ "%B", function(d) {
-    return d.getMonth();
-  } ], [ "%Y", d3_true ] ]);
-  var d3_time_scaleMilliseconds = {
-    range: function(start, stop, step) {
-      return d3.range(Math.ceil(start / step) * step, +stop, step).map(d3_time_scaleDate);
-    },
-    floor: d3_identity,
-    ceil: d3_identity
-  };
-  d3_time_scaleLocalMethods.year = d3_time.year;
-  d3_time.scale = function() {
-    return d3_time_scale(d3.scale.linear(), d3_time_scaleLocalMethods, d3_time_scaleLocalFormat);
-  };
-  var d3_time_scaleUtcMethods = d3_time_scaleLocalMethods.map(function(m) {
-    return [ m[0].utc, m[1] ];
-  });
-  var d3_time_scaleUtcFormat = d3_time_formatUtc.multi([ [ ".%L", function(d) {
-    return d.getUTCMilliseconds();
-  } ], [ ":%S", function(d) {
-    return d.getUTCSeconds();
-  } ], [ "%I:%M", function(d) {
-    return d.getUTCMinutes();
-  } ], [ "%I %p", function(d) {
-    return d.getUTCHours();
-  } ], [ "%a %d", function(d) {
-    return d.getUTCDay() && d.getUTCDate() != 1;
-  } ], [ "%b %d", function(d) {
-    return d.getUTCDate() != 1;
-  } ], [ "%B", function(d) {
-    return d.getUTCMonth();
-  } ], [ "%Y", d3_true ] ]);
-  d3_time_scaleUtcMethods.year = d3_time.year.utc;
-  d3_time.scale.utc = function() {
-    return d3_time_scale(d3.scale.linear(), d3_time_scaleUtcMethods, d3_time_scaleUtcFormat);
-  };
   d3.text = d3_xhrType(function(request) {
     return request.responseText;
   });
@@ -10070,7 +7338,7 @@ function normalize (pts, bounds) {
 	return result
 }
 
-},{"array-bounds":19,"binary-search-bounds":45,"clamp":64,"defined":92,"dtype":96,"flatten-vertex-data":160,"is-obj":247,"math-log2":251,"parse-rect":265,"pick-by-alias":271}],17:[function(_dereq_,module,exports){
+},{"array-bounds":19,"binary-search-bounds":45,"clamp":64,"defined":94,"dtype":98,"flatten-vertex-data":162,"is-obj":249,"math-log2":253,"parse-rect":267,"pick-by-alias":273}],17:[function(_dereq_,module,exports){
 
 module.exports = absolutize
 
@@ -10157,7 +7425,7 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":263}],19:[function(_dereq_,module,exports){
+},{"pad-left":265}],19:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = normalize;
@@ -10791,7 +8059,7 @@ var objectKeys = Object.keys || function (obj) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"object-assign":262,"util/":26}],24:[function(_dereq_,module,exports){
+},{"object-assign":264,"util/":26}],24:[function(_dereq_,module,exports){
 if (typeof Object.create === 'function') {
   // implementation from standard node.js 'util' module
   module.exports = function inherits(ctor, superCtor) {
@@ -11413,7 +8681,7 @@ function hasOwnProperty(obj, prop) {
 }
 
 }).call(this)}).call(this,_dereq_('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./support/isBuffer":25,"_process":285,"inherits":24}],27:[function(_dereq_,module,exports){
+},{"./support/isBuffer":25,"_process":287,"inherits":24}],27:[function(_dereq_,module,exports){
 module.exports = function _atob(str) {
   return atob(str)
 }
@@ -11735,7 +9003,7 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":46,"double-bits":94}],37:[function(_dereq_,module,exports){
+},{"bit-twiddle":46,"double-bits":96}],37:[function(_dereq_,module,exports){
 'use strict'
 
 var BN = _dereq_('bn.js')
@@ -11765,7 +9033,7 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":48,"double-bits":94}],39:[function(_dereq_,module,exports){
+},{"bn.js":48,"double-bits":96}],39:[function(_dereq_,module,exports){
 'use strict'
 
 var num2bn = _dereq_('./num-to-bn')
@@ -15857,7 +13125,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":51,"./lib/sweep":55,"typedarray-pool":338}],50:[function(_dereq_,module,exports){
+},{"./lib/intersect":51,"./lib/sweep":55,"typedarray-pool":340}],50:[function(_dereq_,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -16497,7 +13765,7 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":50,"./median":52,"./partition":53,"./sweep":55,"bit-twiddle":46,"typedarray-pool":338}],52:[function(_dereq_,module,exports){
+},{"./brute":50,"./median":52,"./partition":53,"./sweep":55,"bit-twiddle":46,"typedarray-pool":340}],52:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = findMedian
@@ -17333,7 +14601,7 @@ red_loop:
     }
   }
 }
-},{"./sort":54,"bit-twiddle":46,"typedarray-pool":338}],56:[function(_dereq_,module,exports){
+},{"./sort":54,"bit-twiddle":46,"typedarray-pool":340}],56:[function(_dereq_,module,exports){
 
 },{}],57:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
@@ -19594,7 +16862,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,_dereq_("buffer").Buffer)
-},{"base64-js":28,"buffer":58,"ieee754":238}],59:[function(_dereq_,module,exports){
+},{"base64-js":28,"buffer":58,"ieee754":240}],59:[function(_dereq_,module,exports){
 'use strict'
 
 var monotoneTriangulate = _dereq_('./lib/monotone')
@@ -19795,7 +17063,7 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":45,"robust-in-sphere":297}],61:[function(_dereq_,module,exports){
+},{"binary-search-bounds":45,"robust-in-sphere":299}],61:[function(_dereq_,module,exports){
 'use strict'
 
 var bsearch = _dereq_('binary-search-bounds')
@@ -20166,7 +17434,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":45,"robust-orientation":298}],63:[function(_dereq_,module,exports){
+},{"binary-search-bounds":45,"robust-orientation":300}],63:[function(_dereq_,module,exports){
 'use strict'
 
 var bsearch = _dereq_('binary-search-bounds')
@@ -20664,7 +17932,7 @@ function cleanPSLG (points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":66,"big-rat":32,"big-rat/cmp":30,"big-rat/to-float":44,"box-intersect":49,"nextafter":260,"rat-vec":288,"robust-segment-intersect":301,"union-find":339}],66:[function(_dereq_,module,exports){
+},{"./lib/rat-seg-intersect":66,"big-rat":32,"big-rat/cmp":30,"big-rat/to-float":44,"box-intersect":49,"nextafter":262,"rat-vec":290,"robust-segment-intersect":303,"union-find":341}],66:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = solveIntersection
@@ -20708,7 +17976,7 @@ function solveIntersection (a, b, c, d) {
   return r
 }
 
-},{"big-rat/div":31,"big-rat/mul":41,"big-rat/sign":42,"big-rat/sub":43,"rat-vec/add":287,"rat-vec/muls":289,"rat-vec/sub":290}],67:[function(_dereq_,module,exports){
+},{"big-rat/div":31,"big-rat/mul":41,"big-rat/sign":42,"big-rat/sub":43,"rat-vec/add":289,"rat-vec/muls":291,"rat-vec/sub":292}],67:[function(_dereq_,module,exports){
 /** @module  color-id */
 
 'use strict'
@@ -20984,7 +18252,7 @@ function isInt(color) {
 	return false
 }
 
-},{"clamp":64,"color-rgba":71,"dtype":96}],70:[function(_dereq_,module,exports){
+},{"clamp":64,"color-rgba":71,"dtype":98}],70:[function(_dereq_,module,exports){
 (function (global){(function (){
 /**
  * @module color-parse
@@ -21163,7 +18431,7 @@ function parse (cstr) {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"color-name":68,"defined":92,"is-plain-obj":248}],71:[function(_dereq_,module,exports){
+},{"color-name":68,"defined":94,"is-plain-obj":250}],71:[function(_dereq_,module,exports){
 /** @module  color-rgba */
 
 'use strict'
@@ -21405,7 +18673,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":298,"robust-product":299,"robust-sum":303,"signum":304,"two-sum":326}],75:[function(_dereq_,module,exports){
+},{"robust-orientation":300,"robust-product":301,"robust-sum":305,"signum":306,"two-sum":328}],75:[function(_dereq_,module,exports){
 module.exports=[
 	"xx-small",
 	"x-small",
@@ -21585,7 +18853,7 @@ function parseLineHeight(value) {
 	return value
 }
 
-},{"./lib/util":80,"css-font-stretch-keywords":76,"css-font-style-keywords":77,"css-font-weight-keywords":78,"css-global-keywords":83,"css-system-font-keywords":84,"string-split-by":313,"unquote":341}],82:[function(_dereq_,module,exports){
+},{"./lib/util":80,"css-font-stretch-keywords":76,"css-font-style-keywords":77,"css-font-weight-keywords":78,"css-global-keywords":83,"css-system-font-keywords":84,"string-split-by":315,"unquote":343}],82:[function(_dereq_,module,exports){
 'use strict'
 
 var pick = _dereq_('pick-by-alias')
@@ -21689,7 +18957,7 @@ function a2o (a) {
 	return o
 }
 
-},{"./lib/util":80,"css-font-stretch-keywords":76,"css-font-style-keywords":77,"css-font-weight-keywords":78,"css-global-keywords":83,"css-system-font-keywords":84,"pick-by-alias":271}],83:[function(_dereq_,module,exports){
+},{"./lib/util":80,"css-font-stretch-keywords":76,"css-font-style-keywords":77,"css-font-weight-keywords":78,"css-global-keywords":83,"css-system-font-keywords":84,"pick-by-alias":273}],83:[function(_dereq_,module,exports){
 module.exports=[
 	"inherit",
 	"initial",
@@ -22177,7 +19445,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":340}],87:[function(_dereq_,module,exports){
+},{"uniq":342}],87:[function(_dereq_,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -22300,7 +19568,7 @@ module.exports = function (props/*, options*/) {
 	return map(props, function (desc, name) { return define(name, desc, options); });
 };
 
-},{"es5-ext/object/copy":116,"es5-ext/object/map":124,"es5-ext/object/normalize-options":125,"type/plain-function/ensure":332,"type/value/ensure":336,"type/value/is":337}],89:[function(_dereq_,module,exports){
+},{"es5-ext/object/copy":118,"es5-ext/object/map":126,"es5-ext/object/normalize-options":127,"type/plain-function/ensure":334,"type/value/ensure":338,"type/value/is":339}],89:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue         = _dereq_("type/value/is")
@@ -22364,7 +19632,354 @@ d.gs = function (dscr, get, set/*, options*/) {
 	return !options ? desc : assign(normalizeOpts(options), desc);
 };
 
-},{"es5-ext/object/assign":113,"es5-ext/object/normalize-options":125,"es5-ext/string/#/contains":132,"type/plain-function/is":333,"type/value/is":337}],90:[function(_dereq_,module,exports){
+},{"es5-ext/object/assign":115,"es5-ext/object/normalize-options":127,"es5-ext/string/#/contains":134,"type/plain-function/is":335,"type/value/is":339}],90:[function(_dereq_,module,exports){
+// https://d3js.org/d3-format/ v1.4.5 Copyright 2020 Mike Bostock
+(function (global, factory) {
+typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+typeof define === 'function' && define.amd ? define(['exports'], factory) :
+(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.d3 = global.d3 || {}));
+}(this, (function (exports) { 'use strict';
+
+function formatDecimal(x) {
+  return Math.abs(x = Math.round(x)) >= 1e21
+      ? x.toLocaleString("en").replace(/,/g, "")
+      : x.toString(10);
+}
+
+// Computes the decimal coefficient and exponent of the specified number x with
+// significant digits p, where x is positive and p is in [1, 21] or undefined.
+// For example, formatDecimalParts(1.23) returns ["123", 0].
+function formatDecimalParts(x, p) {
+  if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
+  var i, coefficient = x.slice(0, i);
+
+  // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
+  // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
+  return [
+    coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient,
+    +x.slice(i + 1)
+  ];
+}
+
+function exponent(x) {
+  return x = formatDecimalParts(Math.abs(x)), x ? x[1] : NaN;
+}
+
+function formatGroup(grouping, thousands) {
+  return function(value, width) {
+    var i = value.length,
+        t = [],
+        j = 0,
+        g = grouping[0],
+        length = 0;
+
+    while (i > 0 && g > 0) {
+      if (length + g + 1 > width) g = Math.max(1, width - length);
+      t.push(value.substring(i -= g, i + g));
+      if ((length += g + 1) > width) break;
+      g = grouping[j = (j + 1) % grouping.length];
+    }
+
+    return t.reverse().join(thousands);
+  };
+}
+
+function formatNumerals(numerals) {
+  return function(value) {
+    return value.replace(/[0-9]/g, function(i) {
+      return numerals[+i];
+    });
+  };
+}
+
+// [[fill]align][sign][symbol][0][width][,][.precision][~][type]
+var re = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
+
+function formatSpecifier(specifier) {
+  if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
+  var match;
+  return new FormatSpecifier({
+    fill: match[1],
+    align: match[2],
+    sign: match[3],
+    symbol: match[4],
+    zero: match[5],
+    width: match[6],
+    comma: match[7],
+    precision: match[8] && match[8].slice(1),
+    trim: match[9],
+    type: match[10]
+  });
+}
+
+formatSpecifier.prototype = FormatSpecifier.prototype; // instanceof
+
+function FormatSpecifier(specifier) {
+  this.fill = specifier.fill === undefined ? " " : specifier.fill + "";
+  this.align = specifier.align === undefined ? ">" : specifier.align + "";
+  this.sign = specifier.sign === undefined ? "-" : specifier.sign + "";
+  this.symbol = specifier.symbol === undefined ? "" : specifier.symbol + "";
+  this.zero = !!specifier.zero;
+  this.width = specifier.width === undefined ? undefined : +specifier.width;
+  this.comma = !!specifier.comma;
+  this.precision = specifier.precision === undefined ? undefined : +specifier.precision;
+  this.trim = !!specifier.trim;
+  this.type = specifier.type === undefined ? "" : specifier.type + "";
+}
+
+FormatSpecifier.prototype.toString = function() {
+  return this.fill
+      + this.align
+      + this.sign
+      + this.symbol
+      + (this.zero ? "0" : "")
+      + (this.width === undefined ? "" : Math.max(1, this.width | 0))
+      + (this.comma ? "," : "")
+      + (this.precision === undefined ? "" : "." + Math.max(0, this.precision | 0))
+      + (this.trim ? "~" : "")
+      + this.type;
+};
+
+// Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
+function formatTrim(s) {
+  out: for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
+    switch (s[i]) {
+      case ".": i0 = i1 = i; break;
+      case "0": if (i0 === 0) i0 = i; i1 = i; break;
+      default: if (!+s[i]) break out; if (i0 > 0) i0 = 0; break;
+    }
+  }
+  return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
+}
+
+var prefixExponent;
+
+function formatPrefixAuto(x, p) {
+  var d = formatDecimalParts(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1],
+      i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
+      n = coefficient.length;
+  return i === n ? coefficient
+      : i > n ? coefficient + new Array(i - n + 1).join("0")
+      : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
+      : "0." + new Array(1 - i).join("0") + formatDecimalParts(x, Math.max(0, p + i - 1))[0]; // less than 1y!
+}
+
+function formatRounded(x, p) {
+  var d = formatDecimalParts(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1];
+  return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
+      : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
+      : coefficient + new Array(exponent - coefficient.length + 2).join("0");
+}
+
+var formatTypes = {
+  "%": function(x, p) { return (x * 100).toFixed(p); },
+  "b": function(x) { return Math.round(x).toString(2); },
+  "c": function(x) { return x + ""; },
+  "d": formatDecimal,
+  "e": function(x, p) { return x.toExponential(p); },
+  "f": function(x, p) { return x.toFixed(p); },
+  "g": function(x, p) { return x.toPrecision(p); },
+  "o": function(x) { return Math.round(x).toString(8); },
+  "p": function(x, p) { return formatRounded(x * 100, p); },
+  "r": formatRounded,
+  "s": formatPrefixAuto,
+  "X": function(x) { return Math.round(x).toString(16).toUpperCase(); },
+  "x": function(x) { return Math.round(x).toString(16); }
+};
+
+function identity(x) {
+  return x;
+}
+
+var map = Array.prototype.map,
+    prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
+
+function formatLocale(locale) {
+  var group = locale.grouping === undefined || locale.thousands === undefined ? identity : formatGroup(map.call(locale.grouping, Number), locale.thousands + ""),
+      currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
+      currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
+      decimal = locale.decimal === undefined ? "." : locale.decimal + "",
+      numerals = locale.numerals === undefined ? identity : formatNumerals(map.call(locale.numerals, String)),
+      percent = locale.percent === undefined ? "%" : locale.percent + "",
+      minus = locale.minus === undefined ? "-" : locale.minus + "",
+      nan = locale.nan === undefined ? "NaN" : locale.nan + "";
+
+  function newFormat(specifier) {
+    specifier = formatSpecifier(specifier);
+
+    var fill = specifier.fill,
+        align = specifier.align,
+        sign = specifier.sign,
+        symbol = specifier.symbol,
+        zero = specifier.zero,
+        width = specifier.width,
+        comma = specifier.comma,
+        precision = specifier.precision,
+        trim = specifier.trim,
+        type = specifier.type;
+
+    // The "n" type is an alias for ",g".
+    if (type === "n") comma = true, type = "g";
+
+    // The "" type, and any invalid type, is an alias for ".12~g".
+    else if (!formatTypes[type]) precision === undefined && (precision = 12), trim = true, type = "g";
+
+    // If zero fill is specified, padding goes after sign and before digits.
+    if (zero || (fill === "0" && align === "=")) zero = true, fill = "0", align = "=";
+
+    // Compute the prefix and suffix.
+    // For SI-prefix, the suffix is lazily computed.
+    var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
+        suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
+
+    // What format function should we use?
+    // Is this an integer type?
+    // Can this type generate exponential notation?
+    var formatType = formatTypes[type],
+        maybeSuffix = /[defgprs%]/.test(type);
+
+    // Set the default precision if not specified,
+    // or clamp the specified precision to the supported range.
+    // For significant precision, it must be in [1, 21].
+    // For fixed precision, it must be in [0, 20].
+    precision = precision === undefined ? 6
+        : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision))
+        : Math.max(0, Math.min(20, precision));
+
+    function format(value) {
+      var valuePrefix = prefix,
+          valueSuffix = suffix,
+          i, n, c;
+
+      if (type === "c") {
+        valueSuffix = formatType(value) + valueSuffix;
+        value = "";
+      } else {
+        value = +value;
+
+        // Determine the sign. -0 is not less than 0, but 1 / -0 is!
+        var valueNegative = value < 0 || 1 / value < 0;
+
+        // Perform the initial formatting.
+        value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
+
+        // Trim insignificant zeros.
+        if (trim) value = formatTrim(value);
+
+        // If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
+        if (valueNegative && +value === 0 && sign !== "+") valueNegative = false;
+
+        // Compute the prefix and suffix.
+        valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
+        valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
+
+        // Break the formatted value into the integer “value” part that can be
+        // grouped, and fractional or exponential “suffix” part that is not.
+        if (maybeSuffix) {
+          i = -1, n = value.length;
+          while (++i < n) {
+            if (c = value.charCodeAt(i), 48 > c || c > 57) {
+              valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
+              value = value.slice(0, i);
+              break;
+            }
+          }
+        }
+      }
+
+      // If the fill character is not "0", grouping is applied before padding.
+      if (comma && !zero) value = group(value, Infinity);
+
+      // Compute the padding.
+      var length = valuePrefix.length + value.length + valueSuffix.length,
+          padding = length < width ? new Array(width - length + 1).join(fill) : "";
+
+      // If the fill character is "0", grouping is applied after padding.
+      if (comma && zero) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
+
+      // Reconstruct the final output based on the desired alignment.
+      switch (align) {
+        case "<": value = valuePrefix + value + valueSuffix + padding; break;
+        case "=": value = valuePrefix + padding + value + valueSuffix; break;
+        case "^": value = padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length); break;
+        default: value = padding + valuePrefix + value + valueSuffix; break;
+      }
+
+      return numerals(value);
+    }
+
+    format.toString = function() {
+      return specifier + "";
+    };
+
+    return format;
+  }
+
+  function formatPrefix(specifier, value) {
+    var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)),
+        e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
+        k = Math.pow(10, -e),
+        prefix = prefixes[8 + e / 3];
+    return function(value) {
+      return f(k * value) + prefix;
+    };
+  }
+
+  return {
+    format: newFormat,
+    formatPrefix: formatPrefix
+  };
+}
+
+var locale;
+
+defaultLocale({
+  decimal: ".",
+  thousands: ",",
+  grouping: [3],
+  currency: ["$", ""],
+  minus: "-"
+});
+
+function defaultLocale(definition) {
+  locale = formatLocale(definition);
+  exports.format = locale.format;
+  exports.formatPrefix = locale.formatPrefix;
+  return locale;
+}
+
+function precisionFixed(step) {
+  return Math.max(0, -exponent(Math.abs(step)));
+}
+
+function precisionPrefix(step, value) {
+  return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3 - exponent(Math.abs(step)));
+}
+
+function precisionRound(step, max) {
+  step = Math.abs(step), max = Math.abs(max) - step;
+  return Math.max(0, exponent(max) - exponent(step)) + 1;
+}
+
+exports.FormatSpecifier = FormatSpecifier;
+exports.formatDefaultLocale = defaultLocale;
+exports.formatLocale = formatLocale;
+exports.formatSpecifier = formatSpecifier;
+exports.precisionFixed = precisionFixed;
+exports.precisionPrefix = precisionPrefix;
+exports.precisionRound = precisionRound;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+},{}],91:[function(_dereq_,module,exports){
 // https://d3js.org/d3-time-format/ v2.2.3 Copyright 2019 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, _dereq_('d3-time')) :
@@ -23073,7 +20688,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 
-},{"d3-time":91}],91:[function(_dereq_,module,exports){
+},{"d3-time":92}],92:[function(_dereq_,module,exports){
 // https://d3js.org/d3-time/ v1.1.0 Copyright 2019 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -23448,14 +21063,16 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 
-},{}],92:[function(_dereq_,module,exports){
+},{}],93:[function(_dereq_,module,exports){
+arguments[4][92][0].apply(exports,arguments)
+},{"dup":92}],94:[function(_dereq_,module,exports){
 module.exports = function () {
     for (var i = 0; i < arguments.length; i++) {
         if (arguments[i] !== undefined) return arguments[i];
     }
 };
 
-},{}],93:[function(_dereq_,module,exports){
+},{}],95:[function(_dereq_,module,exports){
 'use strict'
 
 
@@ -23525,7 +21142,7 @@ function createPairs (range) {
 	return pairs
 }
 
-},{}],94:[function(_dereq_,module,exports){
+},{}],96:[function(_dereq_,module,exports){
 (function (Buffer){(function (){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -23629,7 +21246,7 @@ module.exports.denormalized = function(n) {
   return !(hi & 0x7ff00000)
 }
 }).call(this)}).call(this,_dereq_("buffer").Buffer)
-},{"buffer":58}],95:[function(_dereq_,module,exports){
+},{"buffer":58}],97:[function(_dereq_,module,exports){
 var abs = _dereq_('abs-svg-path')
 var normalize = _dereq_('normalize-svg-path')
 
@@ -23655,7 +21272,7 @@ module.exports = function(context, segments) {
   context.closePath()
 }
 
-},{"abs-svg-path":17,"normalize-svg-path":261}],96:[function(_dereq_,module,exports){
+},{"abs-svg-path":17,"normalize-svg-path":263}],98:[function(_dereq_,module,exports){
 module.exports = function(dtype) {
   switch (dtype) {
     case 'int8':
@@ -23681,7 +21298,7 @@ module.exports = function(dtype) {
   }
 }
 
-},{}],97:[function(_dereq_,module,exports){
+},{}],99:[function(_dereq_,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -23731,7 +21348,7 @@ function dupe(count, value) {
 }
 
 module.exports = dupe
-},{}],98:[function(_dereq_,module,exports){
+},{}],100:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -24412,7 +22029,7 @@ earcut.flatten = function (data) {
     return result;
 };
 
-},{}],99:[function(_dereq_,module,exports){
+},{}],101:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
@@ -24446,7 +22063,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":340}],100:[function(_dereq_,module,exports){
+},{"uniq":342}],102:[function(_dereq_,module,exports){
 // Inspired by Google Closure:
 // http://closure-library.googlecode.com/svn/docs/
 // closure_goog_array_array.js.html#goog.array.clear
@@ -24460,12 +22077,12 @@ module.exports = function () {
 	return this;
 };
 
-},{"../../object/valid-value":131}],101:[function(_dereq_,module,exports){
+},{"../../object/valid-value":133}],103:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? Array.from : _dereq_("./shim");
 
-},{"./is-implemented":102,"./shim":103}],102:[function(_dereq_,module,exports){
+},{"./is-implemented":104,"./shim":105}],104:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -24476,7 +22093,7 @@ module.exports = function () {
 	return Boolean(result && result !== arr && result[1] === "dwa");
 };
 
-},{}],103:[function(_dereq_,module,exports){
+},{}],105:[function(_dereq_,module,exports){
 "use strict";
 
 var iteratorSymbol = _dereq_("es6-symbol").iterator
@@ -24597,7 +22214,7 @@ module.exports = function (arrayLike/*, mapFn, thisArg*/) {
 	return arr;
 };
 
-},{"../../function/is-arguments":104,"../../function/is-function":105,"../../number/to-pos-integer":111,"../../object/is-value":120,"../../object/valid-callable":129,"../../object/valid-value":131,"../../string/is-string":135,"es6-symbol":144}],104:[function(_dereq_,module,exports){
+},{"../../function/is-arguments":106,"../../function/is-function":107,"../../number/to-pos-integer":113,"../../object/is-value":122,"../../object/valid-callable":131,"../../object/valid-value":133,"../../string/is-string":137,"es6-symbol":146}],106:[function(_dereq_,module,exports){
 "use strict";
 
 var objToString = Object.prototype.toString
@@ -24605,7 +22222,7 @@ var objToString = Object.prototype.toString
 
 module.exports = function (value) { return objToString.call(value) === id; };
 
-},{}],105:[function(_dereq_,module,exports){
+},{}],107:[function(_dereq_,module,exports){
 "use strict";
 
 var objToString = Object.prototype.toString
@@ -24615,18 +22232,18 @@ module.exports = function (value) {
 	return typeof value === "function" && isFunctionStringTag(objToString.call(value));
 };
 
-},{}],106:[function(_dereq_,module,exports){
+},{}],108:[function(_dereq_,module,exports){
 "use strict";
 
 // eslint-disable-next-line no-empty-function
 module.exports = function () {};
 
-},{}],107:[function(_dereq_,module,exports){
+},{}],109:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? Math.sign : _dereq_("./shim");
 
-},{"./is-implemented":108,"./shim":109}],108:[function(_dereq_,module,exports){
+},{"./is-implemented":110,"./shim":111}],110:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -24635,7 +22252,7 @@ module.exports = function () {
 	return sign(10) === 1 && sign(-20) === -1;
 };
 
-},{}],109:[function(_dereq_,module,exports){
+},{}],111:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function (value) {
@@ -24644,7 +22261,7 @@ module.exports = function (value) {
 	return value > 0 ? 1 : -1;
 };
 
-},{}],110:[function(_dereq_,module,exports){
+},{}],112:[function(_dereq_,module,exports){
 "use strict";
 
 var sign  = _dereq_("../math/sign")
@@ -24658,7 +22275,7 @@ module.exports = function (value) {
 	return sign(value) * floor(abs(value));
 };
 
-},{"../math/sign":107}],111:[function(_dereq_,module,exports){
+},{"../math/sign":109}],113:[function(_dereq_,module,exports){
 "use strict";
 
 var toInteger = _dereq_("./to-integer")
@@ -24666,7 +22283,7 @@ var toInteger = _dereq_("./to-integer")
 
 module.exports = function (value) { return max(0, toInteger(value)); };
 
-},{"./to-integer":110}],112:[function(_dereq_,module,exports){
+},{"./to-integer":112}],114:[function(_dereq_,module,exports){
 // Internal method, used by iteration functions.
 // Calls a function for each key-value pair found in object
 // Optionally takes compareFn to iterate object in specific order
@@ -24698,12 +22315,12 @@ module.exports = function (method, defVal) {
 	};
 };
 
-},{"./valid-callable":129,"./valid-value":131}],113:[function(_dereq_,module,exports){
+},{"./valid-callable":131,"./valid-value":133}],115:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? Object.assign : _dereq_("./shim");
 
-},{"./is-implemented":114,"./shim":115}],114:[function(_dereq_,module,exports){
+},{"./is-implemented":116,"./shim":117}],116:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -24714,7 +22331,7 @@ module.exports = function () {
 	return obj.foo + obj.bar + obj.trzy === "razdwatrzy";
 };
 
-},{}],115:[function(_dereq_,module,exports){
+},{}],117:[function(_dereq_,module,exports){
 "use strict";
 
 var keys  = _dereq_("../keys")
@@ -24739,7 +22356,7 @@ module.exports = function (dest, src/*, …srcn*/) {
 	return dest;
 };
 
-},{"../keys":121,"../valid-value":131}],116:[function(_dereq_,module,exports){
+},{"../keys":123,"../valid-value":133}],118:[function(_dereq_,module,exports){
 "use strict";
 
 var aFrom  = _dereq_("../array/from")
@@ -24760,7 +22377,7 @@ module.exports = function (obj/*, propertyNames, options*/) {
 	return result;
 };
 
-},{"../array/from":101,"./assign":113,"./valid-value":131}],117:[function(_dereq_,module,exports){
+},{"../array/from":103,"./assign":115,"./valid-value":133}],119:[function(_dereq_,module,exports){
 // Workaround for http://code.google.com/p/v8/issues/detail?id=2804
 
 "use strict";
@@ -24805,12 +22422,12 @@ module.exports = (function () {
 	};
 })();
 
-},{"./set-prototype-of/is-implemented":127,"./set-prototype-of/shim":128}],118:[function(_dereq_,module,exports){
+},{"./set-prototype-of/is-implemented":129,"./set-prototype-of/shim":130}],120:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./_iterate")("forEach");
 
-},{"./_iterate":112}],119:[function(_dereq_,module,exports){
+},{"./_iterate":114}],121:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue = _dereq_("./is-value");
@@ -24819,19 +22436,19 @@ var map = { function: true, object: true };
 
 module.exports = function (value) { return (isValue(value) && map[typeof value]) || false; };
 
-},{"./is-value":120}],120:[function(_dereq_,module,exports){
+},{"./is-value":122}],122:[function(_dereq_,module,exports){
 "use strict";
 
 var _undefined = _dereq_("../function/noop")(); // Support ES3 engines
 
 module.exports = function (val) { return val !== _undefined && val !== null; };
 
-},{"../function/noop":106}],121:[function(_dereq_,module,exports){
+},{"../function/noop":108}],123:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? Object.keys : _dereq_("./shim");
 
-},{"./is-implemented":122,"./shim":123}],122:[function(_dereq_,module,exports){
+},{"./is-implemented":124,"./shim":125}],124:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -24843,7 +22460,7 @@ module.exports = function () {
 	}
 };
 
-},{}],123:[function(_dereq_,module,exports){
+},{}],125:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue = _dereq_("../is-value");
@@ -24852,7 +22469,7 @@ var keys = Object.keys;
 
 module.exports = function (object) { return keys(isValue(object) ? Object(object) : object); };
 
-},{"../is-value":120}],124:[function(_dereq_,module,exports){
+},{"../is-value":122}],126:[function(_dereq_,module,exports){
 "use strict";
 
 var callable = _dereq_("./valid-callable")
@@ -24868,7 +22485,7 @@ module.exports = function (obj, cb/*, thisArg*/) {
 	return result;
 };
 
-},{"./for-each":118,"./valid-callable":129}],125:[function(_dereq_,module,exports){
+},{"./for-each":120,"./valid-callable":131}],127:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue = _dereq_("./is-value");
@@ -24890,12 +22507,12 @@ module.exports = function (opts1/*, …options*/) {
 	return result;
 };
 
-},{"./is-value":120}],126:[function(_dereq_,module,exports){
+},{"./is-value":122}],128:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? Object.setPrototypeOf : _dereq_("./shim");
 
-},{"./is-implemented":127,"./shim":128}],127:[function(_dereq_,module,exports){
+},{"./is-implemented":129,"./shim":130}],129:[function(_dereq_,module,exports){
 "use strict";
 
 var create = Object.create, getPrototypeOf = Object.getPrototypeOf, plainObject = {};
@@ -24906,7 +22523,7 @@ module.exports = function (/* CustomCreate*/) {
 	return getPrototypeOf(setPrototypeOf(customCreate(null), plainObject)) === plainObject;
 };
 
-},{}],128:[function(_dereq_,module,exports){
+},{}],130:[function(_dereq_,module,exports){
 /* eslint no-proto: "off" */
 
 // Big thanks to @WebReflection for sorting this out
@@ -24989,7 +22606,7 @@ module.exports = (function (status) {
 
 _dereq_("../create");
 
-},{"../create":117,"../is-object":119,"../valid-value":131}],129:[function(_dereq_,module,exports){
+},{"../create":119,"../is-object":121,"../valid-value":133}],131:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function (fn) {
@@ -24997,7 +22614,7 @@ module.exports = function (fn) {
 	return fn;
 };
 
-},{}],130:[function(_dereq_,module,exports){
+},{}],132:[function(_dereq_,module,exports){
 "use strict";
 
 var isObject = _dereq_("./is-object");
@@ -25007,7 +22624,7 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-object":119}],131:[function(_dereq_,module,exports){
+},{"./is-object":121}],133:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue = _dereq_("./is-value");
@@ -25017,12 +22634,12 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-value":120}],132:[function(_dereq_,module,exports){
+},{"./is-value":122}],134:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? String.prototype.contains : _dereq_("./shim");
 
-},{"./is-implemented":133,"./shim":134}],133:[function(_dereq_,module,exports){
+},{"./is-implemented":135,"./shim":136}],135:[function(_dereq_,module,exports){
 "use strict";
 
 var str = "razdwatrzy";
@@ -25032,7 +22649,7 @@ module.exports = function () {
 	return str.contains("dwa") === true && str.contains("foo") === false;
 };
 
-},{}],134:[function(_dereq_,module,exports){
+},{}],136:[function(_dereq_,module,exports){
 "use strict";
 
 var indexOf = String.prototype.indexOf;
@@ -25041,7 +22658,7 @@ module.exports = function (searchString/*, position*/) {
 	return indexOf.call(this, searchString, arguments[1]) > -1;
 };
 
-},{}],135:[function(_dereq_,module,exports){
+},{}],137:[function(_dereq_,module,exports){
 "use strict";
 
 var objToString = Object.prototype.toString, id = objToString.call("");
@@ -25056,7 +22673,7 @@ module.exports = function (value) {
 	);
 };
 
-},{}],136:[function(_dereq_,module,exports){
+},{}],138:[function(_dereq_,module,exports){
 "use strict";
 
 var generated = Object.create(null), random = Math.random;
@@ -25069,7 +22686,7 @@ module.exports = function () {
 	return str;
 };
 
-},{}],137:[function(_dereq_,module,exports){
+},{}],139:[function(_dereq_,module,exports){
 "use strict";
 
 var setPrototypeOf = _dereq_("es5-ext/object/set-prototype-of")
@@ -25103,7 +22720,7 @@ ArrayIterator.prototype = Object.create(Iterator.prototype, {
 });
 defineProperty(ArrayIterator.prototype, Symbol.toStringTag, d("c", "Array Iterator"));
 
-},{"./":140,"d":89,"es5-ext/object/set-prototype-of":126,"es5-ext/string/#/contains":132,"es6-symbol":144}],138:[function(_dereq_,module,exports){
+},{"./":142,"d":89,"es5-ext/object/set-prototype-of":128,"es5-ext/string/#/contains":134,"es6-symbol":146}],140:[function(_dereq_,module,exports){
 "use strict";
 
 var isArguments = _dereq_("es5-ext/function/is-arguments")
@@ -25152,7 +22769,7 @@ module.exports = function (iterable, cb /*, thisArg*/) {
 	}
 };
 
-},{"./get":139,"es5-ext/function/is-arguments":104,"es5-ext/object/valid-callable":129,"es5-ext/string/is-string":135}],139:[function(_dereq_,module,exports){
+},{"./get":141,"es5-ext/function/is-arguments":106,"es5-ext/object/valid-callable":131,"es5-ext/string/is-string":137}],141:[function(_dereq_,module,exports){
 "use strict";
 
 var isArguments    = _dereq_("es5-ext/function/is-arguments")
@@ -25169,7 +22786,7 @@ module.exports = function (obj) {
 	return new ArrayIterator(obj);
 };
 
-},{"./array":137,"./string":142,"./valid-iterable":143,"es5-ext/function/is-arguments":104,"es5-ext/string/is-string":135,"es6-symbol":144}],140:[function(_dereq_,module,exports){
+},{"./array":139,"./string":144,"./valid-iterable":145,"es5-ext/function/is-arguments":106,"es5-ext/string/is-string":137,"es6-symbol":146}],142:[function(_dereq_,module,exports){
 "use strict";
 
 var clear    = _dereq_("es5-ext/array/#/clear")
@@ -25277,7 +22894,7 @@ defineProperty(
 	})
 );
 
-},{"d":89,"d/auto-bind":88,"es5-ext/array/#/clear":100,"es5-ext/object/assign":113,"es5-ext/object/valid-callable":129,"es5-ext/object/valid-value":131,"es6-symbol":144}],141:[function(_dereq_,module,exports){
+},{"d":89,"d/auto-bind":88,"es5-ext/array/#/clear":102,"es5-ext/object/assign":115,"es5-ext/object/valid-callable":131,"es5-ext/object/valid-value":133,"es6-symbol":146}],143:[function(_dereq_,module,exports){
 "use strict";
 
 var isArguments = _dereq_("es5-ext/function/is-arguments")
@@ -25295,7 +22912,7 @@ module.exports = function (value) {
 	return typeof value[iteratorSymbol] === "function";
 };
 
-},{"es5-ext/function/is-arguments":104,"es5-ext/object/is-value":120,"es5-ext/string/is-string":135,"es6-symbol":144}],142:[function(_dereq_,module,exports){
+},{"es5-ext/function/is-arguments":106,"es5-ext/object/is-value":122,"es5-ext/string/is-string":137,"es6-symbol":146}],144:[function(_dereq_,module,exports){
 // Thanks @mathiasbynens
 // http://mathiasbynens.be/notes/javascript-unicode#iterating-over-symbols
 
@@ -25336,7 +22953,7 @@ StringIterator.prototype = Object.create(Iterator.prototype, {
 });
 defineProperty(StringIterator.prototype, Symbol.toStringTag, d("c", "String Iterator"));
 
-},{"./":140,"d":89,"es5-ext/object/set-prototype-of":126,"es6-symbol":144}],143:[function(_dereq_,module,exports){
+},{"./":142,"d":89,"es5-ext/object/set-prototype-of":128,"es6-symbol":146}],145:[function(_dereq_,module,exports){
 "use strict";
 
 var isIterable = _dereq_("./is-iterable");
@@ -25346,14 +22963,14 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-iterable":141}],144:[function(_dereq_,module,exports){
+},{"./is-iterable":143}],146:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")()
 	? _dereq_("ext/global-this").Symbol
 	: _dereq_("./polyfill");
 
-},{"./is-implemented":145,"./polyfill":150,"ext/global-this":157}],145:[function(_dereq_,module,exports){
+},{"./is-implemented":147,"./polyfill":152,"ext/global-this":159}],147:[function(_dereq_,module,exports){
 "use strict";
 
 var global     = _dereq_("ext/global-this")
@@ -25375,7 +22992,7 @@ module.exports = function () {
 	return true;
 };
 
-},{"ext/global-this":157}],146:[function(_dereq_,module,exports){
+},{"ext/global-this":159}],148:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function (value) {
@@ -25386,7 +23003,7 @@ module.exports = function (value) {
 	return value[value.constructor.toStringTag] === "Symbol";
 };
 
-},{}],147:[function(_dereq_,module,exports){
+},{}],149:[function(_dereq_,module,exports){
 "use strict";
 
 var d = _dereq_("d");
@@ -25417,7 +23034,7 @@ module.exports = function (desc) {
 	return name;
 };
 
-},{"d":89}],148:[function(_dereq_,module,exports){
+},{"d":89}],150:[function(_dereq_,module,exports){
 "use strict";
 
 var d            = _dereq_("d")
@@ -25453,7 +23070,7 @@ module.exports = function (SymbolPolyfill) {
 	});
 };
 
-},{"d":89,"ext/global-this":157}],149:[function(_dereq_,module,exports){
+},{"d":89,"ext/global-this":159}],151:[function(_dereq_,module,exports){
 "use strict";
 
 var d              = _dereq_("d")
@@ -25478,7 +23095,7 @@ module.exports = function (SymbolPolyfill) {
 	});
 };
 
-},{"../../../validate-symbol":151,"d":89}],150:[function(_dereq_,module,exports){
+},{"../../../validate-symbol":153,"d":89}],152:[function(_dereq_,module,exports){
 // ES2015 Symbol polyfill for environments that do not (or partially) support it
 
 "use strict";
@@ -25567,7 +23184,7 @@ defineProperty(
 	d("c", SymbolPolyfill.prototype[SymbolPolyfill.toPrimitive])
 );
 
-},{"./lib/private/generate-name":147,"./lib/private/setup/standard-symbols":148,"./lib/private/setup/symbol-registry":149,"./validate-symbol":151,"d":89,"ext/global-this":157}],151:[function(_dereq_,module,exports){
+},{"./lib/private/generate-name":149,"./lib/private/setup/standard-symbols":150,"./lib/private/setup/symbol-registry":151,"./validate-symbol":153,"d":89,"ext/global-this":159}],153:[function(_dereq_,module,exports){
 "use strict";
 
 var isSymbol = _dereq_("./is-symbol");
@@ -25577,12 +23194,12 @@ module.exports = function (value) {
 	return value;
 };
 
-},{"./is-symbol":146}],152:[function(_dereq_,module,exports){
+},{"./is-symbol":148}],154:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? WeakMap : _dereq_("./polyfill");
 
-},{"./is-implemented":153,"./polyfill":155}],153:[function(_dereq_,module,exports){
+},{"./is-implemented":155,"./polyfill":157}],155:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -25605,7 +23222,7 @@ module.exports = function () {
 	return true;
 };
 
-},{}],154:[function(_dereq_,module,exports){
+},{}],156:[function(_dereq_,module,exports){
 // Exports true if environment provides native `WeakMap` implementation, whatever that is.
 
 "use strict";
@@ -25615,7 +23232,7 @@ module.exports = (function () {
 	return Object.prototype.toString.call(new WeakMap()) === "[object WeakMap]";
 }());
 
-},{}],155:[function(_dereq_,module,exports){
+},{}],157:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue           = _dereq_("es5-ext/object/is-value")
@@ -25682,7 +23299,7 @@ Object.defineProperties(WeakMapPoly.prototype, {
 });
 defineProperty(WeakMapPoly.prototype, toStringTagSymbol, d("c", "WeakMap"));
 
-},{"./is-native-implemented":154,"d":89,"es5-ext/object/is-value":120,"es5-ext/object/set-prototype-of":126,"es5-ext/object/valid-object":130,"es5-ext/object/valid-value":131,"es5-ext/string/random-uniq":136,"es6-iterator/for-of":138,"es6-iterator/get":139,"es6-symbol":144}],156:[function(_dereq_,module,exports){
+},{"./is-native-implemented":156,"d":89,"es5-ext/object/is-value":122,"es5-ext/object/set-prototype-of":128,"es5-ext/object/valid-object":132,"es5-ext/object/valid-value":133,"es5-ext/string/random-uniq":138,"es6-iterator/for-of":140,"es6-iterator/get":141,"es6-symbol":146}],158:[function(_dereq_,module,exports){
 var naiveFallback = function () {
 	if (typeof self === "object" && self) return self;
 	if (typeof window === "object" && window) return window;
@@ -25715,12 +23332,12 @@ module.exports = (function () {
 	}
 })();
 
-},{}],157:[function(_dereq_,module,exports){
+},{}],159:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = _dereq_("./is-implemented")() ? globalThis : _dereq_("./implementation");
 
-},{"./implementation":156,"./is-implemented":158}],158:[function(_dereq_,module,exports){
+},{"./implementation":158,"./is-implemented":160}],160:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function () {
@@ -25729,7 +23346,7 @@ module.exports = function () {
 	return globalThis.Array === Array;
 };
 
-},{}],159:[function(_dereq_,module,exports){
+},{}],161:[function(_dereq_,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -25755,7 +23372,7 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{"is-string-blank":249}],160:[function(_dereq_,module,exports){
+},{"is-string-blank":251}],162:[function(_dereq_,module,exports){
 /*eslint new-cap:0*/
 var dtype = _dereq_('dtype')
 
@@ -25815,7 +23432,7 @@ function flattenVertexData (data, output, offset) {
   return output
 }
 
-},{"dtype":96}],161:[function(_dereq_,module,exports){
+},{"dtype":98}],163:[function(_dereq_,module,exports){
 'use strict'
 
 var stringifyFont = _dereq_('css-font/stringify')
@@ -25874,7 +23491,7 @@ function atlas(options) {
   return canvas
 }
 
-},{"css-font/stringify":82}],162:[function(_dereq_,module,exports){
+},{"css-font/stringify":82}],164:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = measure
@@ -26061,7 +23678,7 @@ function firstBottom(iData) {
 	}
 }
 
-},{}],163:[function(_dereq_,module,exports){
+},{}],165:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -27058,7 +24675,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],164:[function(_dereq_,module,exports){
+},{}],166:[function(_dereq_,module,exports){
 // transliterated from the python snippet here:
 // http://en.wikipedia.org/wiki/Lanczos_approximation
 
@@ -27127,7 +24744,7 @@ module.exports = function gamma (z) {
 
 module.exports.log = lngamma;
 
-},{}],165:[function(_dereq_,module,exports){
+},{}],167:[function(_dereq_,module,exports){
 module.exports = getCanvasContext
 function getCanvasContext (type, opts) {
   if (typeof type !== 'string') {
@@ -27167,7 +24784,7 @@ function getCanvasContext (type, opts) {
   return (gl || null) // ensure null on fail
 }
 
-},{}],166:[function(_dereq_,module,exports){
+},{}],168:[function(_dereq_,module,exports){
 "use strict"
 
 var pool = _dereq_("typedarray-pool")
@@ -27321,7 +24938,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":259,"ndarray-ops":258,"typedarray-pool":338}],167:[function(_dereq_,module,exports){
+},{"ndarray":261,"ndarray-ops":260,"typedarray-pool":340}],169:[function(_dereq_,module,exports){
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -27621,14 +25238,14 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],168:[function(_dereq_,module,exports){
+},{}],170:[function(_dereq_,module,exports){
 var gl10 = _dereq_('./1.0/numbers')
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":167}],169:[function(_dereq_,module,exports){
+},{"./1.0/numbers":169}],171:[function(_dereq_,module,exports){
 'use strict'
 
 var createTexture = _dereq_('gl-texture2d')
@@ -28095,7 +25712,7 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":225}],170:[function(_dereq_,module,exports){
+},{"gl-texture2d":227}],172:[function(_dereq_,module,exports){
 
 var sprintf = _dereq_('sprintf-js').sprintf;
 var glConstants = _dereq_('gl-constants/lookup');
@@ -28150,7 +25767,7 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":18,"gl-constants/lookup":168,"glsl-shader-name":227,"sprintf-js":312}],171:[function(_dereq_,module,exports){
+},{"add-line-numbers":18,"gl-constants/lookup":170,"glsl-shader-name":229,"sprintf-js":314}],173:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createHeatmap2D
@@ -28502,7 +26119,7 @@ function createHeatmap2D (plot, options) {
   return heatmap
 }
 
-},{"./lib/shaders":172,"binary-search-bounds":45,"gl-buffer":166,"gl-shader":216,"iota-array":242,"typedarray-pool":338}],172:[function(_dereq_,module,exports){
+},{"./lib/shaders":174,"binary-search-bounds":45,"gl-buffer":168,"gl-shader":218,"iota-array":244,"typedarray-pool":340}],174:[function(_dereq_,module,exports){
 'use strict'
 
 var glslify = _dereq_('glslify')
@@ -28514,7 +26131,7 @@ module.exports = {
   pickVertex:   glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\nattribute vec2 weight;\n\nuniform vec2 shape;\nuniform mat3 viewTransform;\n\nvarying vec4 fragId;\nvarying vec2 vWeight;\n\nvoid main() {\n  vWeight = weight;\n\n  fragId = pickId;\n\n  vec3 vPosition = viewTransform * vec3( position + (weight-.5)/(shape-1.) , 1.0);\n  gl_Position = vec4(vPosition.xy, 0, vPosition.z);\n}\n"])
 }
 
-},{"glslify":235}],173:[function(_dereq_,module,exports){
+},{"glslify":237}],175:[function(_dereq_,module,exports){
 module.exports = adjoint;
 
 /**
@@ -28548,7 +26165,7 @@ function adjoint(out, a) {
     out[15] =  (a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11));
     return out;
 };
-},{}],174:[function(_dereq_,module,exports){
+},{}],176:[function(_dereq_,module,exports){
 module.exports = clone;
 
 /**
@@ -28577,7 +26194,7 @@ function clone(a) {
     out[15] = a[15];
     return out;
 };
-},{}],175:[function(_dereq_,module,exports){
+},{}],177:[function(_dereq_,module,exports){
 module.exports = copy;
 
 /**
@@ -28606,7 +26223,7 @@ function copy(out, a) {
     out[15] = a[15];
     return out;
 };
-},{}],176:[function(_dereq_,module,exports){
+},{}],178:[function(_dereq_,module,exports){
 module.exports = create;
 
 /**
@@ -28634,7 +26251,7 @@ function create() {
     out[15] = 1;
     return out;
 };
-},{}],177:[function(_dereq_,module,exports){
+},{}],179:[function(_dereq_,module,exports){
 module.exports = determinant;
 
 /**
@@ -28665,7 +26282,7 @@ function determinant(a) {
     // Calculate the determinant
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 };
-},{}],178:[function(_dereq_,module,exports){
+},{}],180:[function(_dereq_,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -28713,7 +26330,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],179:[function(_dereq_,module,exports){
+},{}],181:[function(_dereq_,module,exports){
 module.exports = fromRotation
 
 /**
@@ -28768,7 +26385,7 @@ function fromRotation(out, rad, axis) {
   return out
 }
 
-},{}],180:[function(_dereq_,module,exports){
+},{}],182:[function(_dereq_,module,exports){
 module.exports = fromRotationTranslation;
 
 /**
@@ -28822,7 +26439,7 @@ function fromRotationTranslation(out, q, v) {
     
     return out;
 };
-},{}],181:[function(_dereq_,module,exports){
+},{}],183:[function(_dereq_,module,exports){
 module.exports = fromScaling
 
 /**
@@ -28856,7 +26473,7 @@ function fromScaling(out, v) {
   return out
 }
 
-},{}],182:[function(_dereq_,module,exports){
+},{}],184:[function(_dereq_,module,exports){
 module.exports = fromTranslation
 
 /**
@@ -28890,7 +26507,7 @@ function fromTranslation(out, v) {
   return out
 }
 
-},{}],183:[function(_dereq_,module,exports){
+},{}],185:[function(_dereq_,module,exports){
 module.exports = fromXRotation
 
 /**
@@ -28927,7 +26544,7 @@ function fromXRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],184:[function(_dereq_,module,exports){
+},{}],186:[function(_dereq_,module,exports){
 module.exports = fromYRotation
 
 /**
@@ -28964,7 +26581,7 @@ function fromYRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],185:[function(_dereq_,module,exports){
+},{}],187:[function(_dereq_,module,exports){
 module.exports = fromZRotation
 
 /**
@@ -29001,7 +26618,7 @@ function fromZRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],186:[function(_dereq_,module,exports){
+},{}],188:[function(_dereq_,module,exports){
 module.exports = frustum;
 
 /**
@@ -29038,7 +26655,7 @@ function frustum(out, left, right, bottom, top, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],187:[function(_dereq_,module,exports){
+},{}],189:[function(_dereq_,module,exports){
 module.exports = identity;
 
 /**
@@ -29066,7 +26683,7 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],188:[function(_dereq_,module,exports){
+},{}],190:[function(_dereq_,module,exports){
 module.exports = {
   create: _dereq_('./create')
   , clone: _dereq_('./clone')
@@ -29099,7 +26716,7 @@ module.exports = {
   , str: _dereq_('./str')
 }
 
-},{"./adjoint":173,"./clone":174,"./copy":175,"./create":176,"./determinant":177,"./fromQuat":178,"./fromRotation":179,"./fromRotationTranslation":180,"./fromScaling":181,"./fromTranslation":182,"./fromXRotation":183,"./fromYRotation":184,"./fromZRotation":185,"./frustum":186,"./identity":187,"./invert":189,"./lookAt":190,"./multiply":191,"./ortho":192,"./perspective":193,"./perspectiveFromFieldOfView":194,"./rotate":195,"./rotateX":196,"./rotateY":197,"./rotateZ":198,"./scale":199,"./str":200,"./translate":201,"./transpose":202}],189:[function(_dereq_,module,exports){
+},{"./adjoint":175,"./clone":176,"./copy":177,"./create":178,"./determinant":179,"./fromQuat":180,"./fromRotation":181,"./fromRotationTranslation":182,"./fromScaling":183,"./fromTranslation":184,"./fromXRotation":185,"./fromYRotation":186,"./fromZRotation":187,"./frustum":188,"./identity":189,"./invert":191,"./lookAt":192,"./multiply":193,"./ortho":194,"./perspective":195,"./perspectiveFromFieldOfView":196,"./rotate":197,"./rotateX":198,"./rotateY":199,"./rotateZ":200,"./scale":201,"./str":202,"./translate":203,"./transpose":204}],191:[function(_dereq_,module,exports){
 module.exports = invert;
 
 /**
@@ -29155,7 +26772,7 @@ function invert(out, a) {
 
     return out;
 };
-},{}],190:[function(_dereq_,module,exports){
+},{}],192:[function(_dereq_,module,exports){
 var identity = _dereq_('./identity');
 
 module.exports = lookAt;
@@ -29246,7 +26863,7 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":187}],191:[function(_dereq_,module,exports){
+},{"./identity":189}],193:[function(_dereq_,module,exports){
 module.exports = multiply;
 
 /**
@@ -29289,7 +26906,7 @@ function multiply(out, a, b) {
     out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
     return out;
 };
-},{}],192:[function(_dereq_,module,exports){
+},{}],194:[function(_dereq_,module,exports){
 module.exports = ortho;
 
 /**
@@ -29326,7 +26943,7 @@ function ortho(out, left, right, bottom, top, near, far) {
     out[15] = 1;
     return out;
 };
-},{}],193:[function(_dereq_,module,exports){
+},{}],195:[function(_dereq_,module,exports){
 module.exports = perspective;
 
 /**
@@ -29360,7 +26977,7 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],194:[function(_dereq_,module,exports){
+},{}],196:[function(_dereq_,module,exports){
 module.exports = perspectiveFromFieldOfView;
 
 /**
@@ -29402,7 +27019,7 @@ function perspectiveFromFieldOfView(out, fov, near, far) {
 }
 
 
-},{}],195:[function(_dereq_,module,exports){
+},{}],197:[function(_dereq_,module,exports){
 module.exports = rotate;
 
 /**
@@ -29467,7 +27084,7 @@ function rotate(out, a, rad, axis) {
     }
     return out;
 };
-},{}],196:[function(_dereq_,module,exports){
+},{}],198:[function(_dereq_,module,exports){
 module.exports = rotateX;
 
 /**
@@ -29512,7 +27129,7 @@ function rotateX(out, a, rad) {
     out[11] = a23 * c - a13 * s;
     return out;
 };
-},{}],197:[function(_dereq_,module,exports){
+},{}],199:[function(_dereq_,module,exports){
 module.exports = rotateY;
 
 /**
@@ -29557,7 +27174,7 @@ function rotateY(out, a, rad) {
     out[11] = a03 * s + a23 * c;
     return out;
 };
-},{}],198:[function(_dereq_,module,exports){
+},{}],200:[function(_dereq_,module,exports){
 module.exports = rotateZ;
 
 /**
@@ -29602,7 +27219,7 @@ function rotateZ(out, a, rad) {
     out[7] = a13 * c - a03 * s;
     return out;
 };
-},{}],199:[function(_dereq_,module,exports){
+},{}],201:[function(_dereq_,module,exports){
 module.exports = scale;
 
 /**
@@ -29634,7 +27251,7 @@ function scale(out, a, v) {
     out[15] = a[15];
     return out;
 };
-},{}],200:[function(_dereq_,module,exports){
+},{}],202:[function(_dereq_,module,exports){
 module.exports = str;
 
 /**
@@ -29649,7 +27266,7 @@ function str(a) {
                     a[8] + ', ' + a[9] + ', ' + a[10] + ', ' + a[11] + ', ' + 
                     a[12] + ', ' + a[13] + ', ' + a[14] + ', ' + a[15] + ')';
 };
-},{}],201:[function(_dereq_,module,exports){
+},{}],203:[function(_dereq_,module,exports){
 module.exports = translate;
 
 /**
@@ -29688,7 +27305,7 @@ function translate(out, a, v) {
 
     return out;
 };
-},{}],202:[function(_dereq_,module,exports){
+},{}],204:[function(_dereq_,module,exports){
 module.exports = transpose;
 
 /**
@@ -29738,7 +27355,7 @@ function transpose(out, a) {
     
     return out;
 };
-},{}],203:[function(_dereq_,module,exports){
+},{}],205:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createBoxes
@@ -29801,7 +27418,7 @@ function createBoxes(plot) {
   return new Boxes(plot, vbo, shader)
 }
 
-},{"./shaders":206,"gl-buffer":166,"gl-shader":216}],204:[function(_dereq_,module,exports){
+},{"./shaders":208,"gl-buffer":168,"gl-shader":218}],206:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createGrid
@@ -30048,7 +27665,7 @@ function createGrid(plot) {
   return grid
 }
 
-},{"./shaders":206,"binary-search-bounds":45,"gl-buffer":166,"gl-shader":216}],205:[function(_dereq_,module,exports){
+},{"./shaders":208,"binary-search-bounds":45,"gl-buffer":168,"gl-shader":218}],207:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createLines
@@ -30113,7 +27730,7 @@ function createLines(plot) {
   return lines
 }
 
-},{"./shaders":206,"gl-buffer":166,"gl-shader":216}],206:[function(_dereq_,module,exports){
+},{"./shaders":208,"gl-buffer":168,"gl-shader":218}],208:[function(_dereq_,module,exports){
 'use strict'
 
 var glslify = _dereq_('glslify')
@@ -30131,7 +27748,7 @@ module.exports = {
   tickVert: glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"])
 }
 
-},{"glslify":208}],207:[function(_dereq_,module,exports){
+},{"glslify":210}],209:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createTextElements
@@ -30409,7 +28026,7 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":206,"binary-search-bounds":45,"gl-buffer":166,"gl-shader":216,"text-cache":319}],208:[function(_dereq_,module,exports){
+},{"./shaders":208,"binary-search-bounds":45,"gl-buffer":168,"gl-shader":218,"text-cache":321}],210:[function(_dereq_,module,exports){
 module.exports = function(strings) {
   if (typeof strings === 'string') strings = [strings]
   var exprs = [].slice.call(arguments,1)
@@ -30421,7 +28038,7 @@ module.exports = function(strings) {
   return parts.join('')
 }
 
-},{}],209:[function(_dereq_,module,exports){
+},{}],211:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createGLPlot2D
@@ -31004,7 +28621,7 @@ function createGLPlot2D(options) {
   return plot
 }
 
-},{"./lib/box":203,"./lib/grid":204,"./lib/line":205,"./lib/text":207,"gl-select-static":215}],210:[function(_dereq_,module,exports){
+},{"./lib/box":205,"./lib/grid":206,"./lib/line":207,"./lib/text":209,"gl-select-static":217}],212:[function(_dereq_,module,exports){
 var glslify = _dereq_('glslify')
 
 exports.pointVertex       = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"])
@@ -31012,7 +28629,7 @@ exports.pointFragment     = glslify(["precision mediump float;\n#define GLSLIFY 
 exports.pickVertex        = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"])
 exports.pickFragment      = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"])
 
-},{"glslify":235}],211:[function(_dereq_,module,exports){
+},{"glslify":237}],213:[function(_dereq_,module,exports){
 'use strict'
 
 var createShader = _dereq_('gl-shader')
@@ -31232,7 +28849,7 @@ function createPointcloud2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":210,"gl-buffer":166,"gl-shader":216,"typedarray-pool":338}],212:[function(_dereq_,module,exports){
+},{"./lib/shader":212,"gl-buffer":168,"gl-shader":218,"typedarray-pool":340}],214:[function(_dereq_,module,exports){
 'use strict'
 
 var glslify = _dereq_('glslify')
@@ -31240,9 +28857,9 @@ var glslify = _dereq_('glslify')
 exports.boxVertex = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"])
 exports.boxFragment = glslify(["precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"])
 
-},{"glslify":213}],213:[function(_dereq_,module,exports){
-arguments[4][208][0].apply(exports,arguments)
-},{"dup":208}],214:[function(_dereq_,module,exports){
+},{"glslify":215}],215:[function(_dereq_,module,exports){
+arguments[4][210][0].apply(exports,arguments)
+},{"dup":210}],216:[function(_dereq_,module,exports){
 'use strict'
 
 var createShader = _dereq_('gl-shader')
@@ -31368,7 +28985,7 @@ function createSelectBox(plot, options) {
   return selectBox
 }
 
-},{"./lib/shaders":212,"gl-buffer":166,"gl-shader":216}],215:[function(_dereq_,module,exports){
+},{"./lib/shaders":214,"gl-buffer":168,"gl-shader":218}],217:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
@@ -31553,7 +29170,7 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":46,"gl-fbo":169,"ndarray":259,"typedarray-pool":338}],216:[function(_dereq_,module,exports){
+},{"bit-twiddle":46,"gl-fbo":171,"ndarray":261,"typedarray-pool":340}],218:[function(_dereq_,module,exports){
 'use strict'
 
 var createUniformWrapper   = _dereq_('./lib/create-uniforms')
@@ -31819,7 +29436,7 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":217,"./lib/create-attributes":218,"./lib/create-uniforms":219,"./lib/reflect":220,"./lib/runtime-reflect":221,"./lib/shader-cache":222}],217:[function(_dereq_,module,exports){
+},{"./lib/GLError":219,"./lib/create-attributes":220,"./lib/create-uniforms":221,"./lib/reflect":222,"./lib/runtime-reflect":223,"./lib/shader-cache":224}],219:[function(_dereq_,module,exports){
 function GLError (rawError, shortMessage, longMessage) {
     this.shortMessage = shortMessage || ''
     this.longMessage = longMessage || ''
@@ -31834,7 +29451,7 @@ GLError.prototype.name = 'GLError'
 GLError.prototype.constructor = GLError
 module.exports = GLError
 
-},{}],218:[function(_dereq_,module,exports){
+},{}],220:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createAttributeWrapper
@@ -32099,7 +29716,7 @@ function createAttributeWrapper(
   return obj
 }
 
-},{"./GLError":217}],219:[function(_dereq_,module,exports){
+},{"./GLError":219}],221:[function(_dereq_,module,exports){
 'use strict'
 
 var coallesceUniforms = _dereq_('./reflect')
@@ -32292,7 +29909,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 }
 
-},{"./GLError":217,"./reflect":220}],220:[function(_dereq_,module,exports){
+},{"./GLError":219,"./reflect":222}],222:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = makeReflectTypes
@@ -32350,7 +29967,7 @@ function makeReflectTypes(uniforms, useIndex) {
   }
   return obj
 }
-},{}],221:[function(_dereq_,module,exports){
+},{}],223:[function(_dereq_,module,exports){
 'use strict'
 
 exports.uniforms    = runtimeUniforms
@@ -32430,7 +30047,7 @@ function runtimeAttributes(gl, program) {
   return result
 }
 
-},{}],222:[function(_dereq_,module,exports){
+},{}],224:[function(_dereq_,module,exports){
 'use strict'
 
 exports.shader   = getShaderReference
@@ -32568,7 +30185,7 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":217,"gl-format-compiler-error":170,"weakmap-shim":347}],223:[function(_dereq_,module,exports){
+},{"./GLError":219,"gl-format-compiler-error":172,"weakmap-shim":349}],225:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createSpikes2D
@@ -32656,7 +30273,7 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],224:[function(_dereq_,module,exports){
+},{}],226:[function(_dereq_,module,exports){
 'use strict'
 
 var Font = _dereq_('css-font')
@@ -33384,7 +31001,7 @@ function isRegl (o) {
 module.exports = GlText
 
 
-},{"bit-twiddle":46,"color-normalize":69,"css-font":79,"detect-kerning":93,"es6-weak-map":152,"flatten-vertex-data":160,"font-atlas":161,"font-measure":162,"gl-util/context":226,"is-plain-obj":248,"object-assign":262,"parse-rect":265,"parse-unit":267,"pick-by-alias":271,"regl":295,"to-px":323,"typedarray-pool":338}],225:[function(_dereq_,module,exports){
+},{"bit-twiddle":46,"color-normalize":69,"css-font":79,"detect-kerning":95,"es6-weak-map":154,"flatten-vertex-data":162,"font-atlas":163,"font-measure":164,"gl-util/context":228,"is-plain-obj":250,"object-assign":264,"parse-rect":267,"parse-unit":269,"pick-by-alias":273,"regl":297,"to-px":325,"typedarray-pool":340}],227:[function(_dereq_,module,exports){
 'use strict'
 
 var ndarray = _dereq_('ndarray')
@@ -33947,7 +31564,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":259,"ndarray-ops":258,"typedarray-pool":338}],226:[function(_dereq_,module,exports){
+},{"ndarray":261,"ndarray-ops":260,"typedarray-pool":340}],228:[function(_dereq_,module,exports){
 (function (global){(function (){
 /** @module  gl-util/context */
 'use strict'
@@ -34079,7 +31696,7 @@ function createCanvas () {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"pick-by-alias":271}],227:[function(_dereq_,module,exports){
+},{"pick-by-alias":273}],229:[function(_dereq_,module,exports){
 var tokenize = _dereq_('glsl-tokenizer')
 var atob     = _dereq_('atob-lite')
 
@@ -34104,7 +31721,7 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":27,"glsl-tokenizer":234}],228:[function(_dereq_,module,exports){
+},{"atob-lite":27,"glsl-tokenizer":236}],230:[function(_dereq_,module,exports){
 module.exports = tokenize
 
 var literals100 = _dereq_('./lib/literals')
@@ -34481,7 +32098,7 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":230,"./lib/builtins-300es":229,"./lib/literals":232,"./lib/literals-300es":231,"./lib/operators":233}],229:[function(_dereq_,module,exports){
+},{"./lib/builtins":232,"./lib/builtins-300es":231,"./lib/literals":234,"./lib/literals-300es":233,"./lib/operators":235}],231:[function(_dereq_,module,exports){
 // 300es builtins/reserved words that were previously valid in v100
 var v100 = _dereq_('./builtins')
 
@@ -34552,7 +32169,7 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":230}],230:[function(_dereq_,module,exports){
+},{"./builtins":232}],232:[function(_dereq_,module,exports){
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -34704,7 +32321,7 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],231:[function(_dereq_,module,exports){
+},{}],233:[function(_dereq_,module,exports){
 var v100 = _dereq_('./literals')
 
 module.exports = v100.slice().concat([
@@ -34793,7 +32410,7 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":232}],232:[function(_dereq_,module,exports){
+},{"./literals":234}],234:[function(_dereq_,module,exports){
 module.exports = [
   // current
     'precision'
@@ -34889,7 +32506,7 @@ module.exports = [
   , 'using'
 ]
 
-},{}],233:[function(_dereq_,module,exports){
+},{}],235:[function(_dereq_,module,exports){
 module.exports = [
     '<<='
   , '>>='
@@ -34938,7 +32555,7 @@ module.exports = [
   , '}'
 ]
 
-},{}],234:[function(_dereq_,module,exports){
+},{}],236:[function(_dereq_,module,exports){
 var tokenize = _dereq_('./index')
 
 module.exports = tokenizeString
@@ -34953,9 +32570,9 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":228}],235:[function(_dereq_,module,exports){
-arguments[4][208][0].apply(exports,arguments)
-},{"dup":208}],236:[function(_dereq_,module,exports){
+},{"./index":230}],237:[function(_dereq_,module,exports){
+arguments[4][210][0].apply(exports,arguments)
+},{"dup":210}],238:[function(_dereq_,module,exports){
 (function (global){(function (){
 'use strict'
 
@@ -34972,7 +32589,7 @@ else {
 module.exports = hasHover
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"is-browser":243}],237:[function(_dereq_,module,exports){
+},{"is-browser":245}],239:[function(_dereq_,module,exports){
 'use strict'
 
 var isBrowser = _dereq_('is-browser')
@@ -34998,7 +32615,7 @@ function detect() {
 
 module.exports = isBrowser && detect()
 
-},{"is-browser":243}],238:[function(_dereq_,module,exports){
+},{"is-browser":245}],240:[function(_dereq_,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -35084,7 +32701,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],239:[function(_dereq_,module,exports){
+},{}],241:[function(_dereq_,module,exports){
 "use strict"
 
 var bounds = _dereq_("binary-search-bounds")
@@ -35451,7 +33068,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":240}],240:[function(_dereq_,module,exports){
+},{"binary-search-bounds":242}],242:[function(_dereq_,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, useNdarray, earlyOut) {
@@ -35513,7 +33130,7 @@ module.exports = {
   eq: compileBoundsSearch("-", true, "EQ", true)
 }
 
-},{}],241:[function(_dereq_,module,exports){
+},{}],243:[function(_dereq_,module,exports){
 "use strict"
 
 function invertPermutation(pi, result) {
@@ -35525,7 +33142,7 @@ function invertPermutation(pi, result) {
 }
 
 module.exports = invertPermutation
-},{}],242:[function(_dereq_,module,exports){
+},{}],244:[function(_dereq_,module,exports){
 "use strict"
 
 function iota(n) {
@@ -35537,9 +33154,9 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],243:[function(_dereq_,module,exports){
+},{}],245:[function(_dereq_,module,exports){
 module.exports = true;
-},{}],244:[function(_dereq_,module,exports){
+},{}],246:[function(_dereq_,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -35562,12 +33179,12 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],245:[function(_dereq_,module,exports){
+},{}],247:[function(_dereq_,module,exports){
 'use strict';
 module.exports = typeof navigator !== 'undefined' &&
 	(/MSIE/.test(navigator.userAgent) || /Trident\//.test(navigator.appVersion));
 
-},{}],246:[function(_dereq_,module,exports){
+},{}],248:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = isMobile
@@ -35604,14 +33221,14 @@ function isMobile (opts) {
   return result
 }
 
-},{}],247:[function(_dereq_,module,exports){
+},{}],249:[function(_dereq_,module,exports){
 'use strict';
 module.exports = function (x) {
 	var type = typeof x;
 	return x !== null && (type === 'object' || type === 'function');
 };
 
-},{}],248:[function(_dereq_,module,exports){
+},{}],250:[function(_dereq_,module,exports){
 'use strict';
 var toString = Object.prototype.toString;
 
@@ -35620,7 +33237,7 @@ module.exports = function (x) {
 	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
 };
 
-},{}],249:[function(_dereq_,module,exports){
+},{}],251:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -35657,7 +33274,7 @@ module.exports = function(str){
     return true;
 }
 
-},{}],250:[function(_dereq_,module,exports){
+},{}],252:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = function isPath(str) {
@@ -35671,13 +33288,13 @@ module.exports = function isPath(str) {
 	return false
 }
 
-},{}],251:[function(_dereq_,module,exports){
+},{}],253:[function(_dereq_,module,exports){
 'use strict';
 module.exports = Math.log2 || function (x) {
 	return Math.log(x) * Math.LOG2E;
 };
 
-},{}],252:[function(_dereq_,module,exports){
+},{}],254:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -35884,7 +33501,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":254}],253:[function(_dereq_,module,exports){
+},{"mouse-event":256}],255:[function(_dereq_,module,exports){
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -35911,7 +33528,7 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],254:[function(_dereq_,module,exports){
+},{}],256:[function(_dereq_,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -35973,7 +33590,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],255:[function(_dereq_,module,exports){
+},{}],257:[function(_dereq_,module,exports){
 'use strict'
 
 var toPX = _dereq_('to-px')
@@ -36015,7 +33632,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":323}],256:[function(_dereq_,module,exports){
+},{"to-px":325}],258:[function(_dereq_,module,exports){
 (function (global,setImmediate){(function (){
 /*! Native Promise Only
     v0.8.1 (c) Kyle Simpson
@@ -36392,7 +34009,7 @@ function mouseWheelListen(element, callback, noScroll) {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("timers").setImmediate)
-},{"timers":320}],257:[function(_dereq_,module,exports){
+},{"timers":322}],259:[function(_dereq_,module,exports){
 "use strict"
 
 var pool = _dereq_("typedarray-pool")
@@ -36808,7 +34425,7 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":338}],258:[function(_dereq_,module,exports){
+},{"typedarray-pool":340}],260:[function(_dereq_,module,exports){
 "use strict"
 
 var compile = _dereq_("cwise-compiler")
@@ -37271,7 +34888,7 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":85}],259:[function(_dereq_,module,exports){
+},{"cwise-compiler":85}],261:[function(_dereq_,module,exports){
 var iota = _dereq_("iota-array")
 var isBuffer = _dereq_("is-buffer")
 
@@ -37622,7 +35239,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":242,"is-buffer":244}],260:[function(_dereq_,module,exports){
+},{"iota-array":244,"is-buffer":246}],262:[function(_dereq_,module,exports){
 "use strict"
 
 var doubleBits = _dereq_("double-bits")
@@ -37665,7 +35282,7 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":94}],261:[function(_dereq_,module,exports){
+},{"double-bits":96}],263:[function(_dereq_,module,exports){
 
 var π = Math.PI
 var _120 = radians(120)
@@ -37867,7 +35484,7 @@ function radians(degress){
 	return degress * (π / 180)
 }
 
-},{}],262:[function(_dereq_,module,exports){
+},{}],264:[function(_dereq_,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -37959,7 +35576,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],263:[function(_dereq_,module,exports){
+},{}],265:[function(_dereq_,module,exports){
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -37975,7 +35592,7 @@ module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":296}],264:[function(_dereq_,module,exports){
+},{"repeat-string":298}],266:[function(_dereq_,module,exports){
 'use strict'
 
 /**
@@ -38112,7 +35729,7 @@ parenthesis.stringify = stringify
 
 module.exports = parenthesis
 
-},{}],265:[function(_dereq_,module,exports){
+},{}],267:[function(_dereq_,module,exports){
 'use strict'
 
 var pick = _dereq_('pick-by-alias')
@@ -38199,7 +35816,7 @@ function parseRect (arg) {
   return rect
 }
 
-},{"pick-by-alias":271}],266:[function(_dereq_,module,exports){
+},{"pick-by-alias":273}],268:[function(_dereq_,module,exports){
 
 module.exports = parse
 
@@ -38258,7 +35875,7 @@ function parseValues(args) {
 	return numbers ? numbers.map(Number) : []
 }
 
-},{}],267:[function(_dereq_,module,exports){
+},{}],269:[function(_dereq_,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -38269,7 +35886,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],268:[function(_dereq_,module,exports){
+},{}],270:[function(_dereq_,module,exports){
 (function (process){(function (){
 // Generated by CoffeeScript 1.12.2
 (function() {
@@ -38309,7 +35926,7 @@ module.exports = function parseUnit(str, out) {
 
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"_process":285}],269:[function(_dereq_,module,exports){
+},{"_process":287}],271:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = permutationSign
@@ -38361,7 +35978,7 @@ function permutationSign(p) {
     return sgn
   }
 }
-},{"typedarray-pool":338}],270:[function(_dereq_,module,exports){
+},{"typedarray-pool":340}],272:[function(_dereq_,module,exports){
 "use strict"
 
 var pool = _dereq_("typedarray-pool")
@@ -38448,7 +36065,7 @@ function unrank(n, r, p) {
 exports.rank = rank
 exports.unrank = unrank
 
-},{"invert-permutation":241,"typedarray-pool":338}],271:[function(_dereq_,module,exports){
+},{"invert-permutation":243,"typedarray-pool":340}],273:[function(_dereq_,module,exports){
 'use strict'
 
 
@@ -38527,7 +36144,7 @@ function toList(arg) {
 	return arg
 }
 
-},{}],272:[function(_dereq_,module,exports){
+},{}],274:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -38658,7 +36275,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":74}],273:[function(_dereq_,module,exports){
+},{"compare-angle":74}],275:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -38714,7 +36331,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":99}],274:[function(_dereq_,module,exports){
+},{"edges-to-adjacency-list":101}],276:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -38919,9 +36536,9 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":273,"edges-to-adjacency-list":99,"planar-dual":272,"point-in-big-polygon":276,"robust-sum":303,"two-product":325,"uniq":340}],275:[function(_dereq_,module,exports){
-arguments[4][240][0].apply(exports,arguments)
-},{"dup":240}],276:[function(_dereq_,module,exports){
+},{"./lib/trim-leaves":275,"edges-to-adjacency-list":101,"planar-dual":274,"point-in-big-polygon":278,"robust-sum":305,"two-product":327,"uniq":342}],277:[function(_dereq_,module,exports){
+arguments[4][242][0].apply(exports,arguments)
+},{"dup":242}],278:[function(_dereq_,module,exports){
 module.exports = preprocessPolygon
 
 var orient = _dereq_('robust-orientation')[3]
@@ -39073,7 +36690,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":275,"interval-tree-1d":239,"robust-orientation":298,"slab-decomposition":311}],277:[function(_dereq_,module,exports){
+},{"binary-search-bounds":277,"interval-tree-1d":241,"robust-orientation":300,"slab-decomposition":313}],279:[function(_dereq_,module,exports){
 /*
  * @copyright 2016 Sean Connelly (@voidqk), http://syntheti.cc
  * @license MIT
@@ -39201,7 +36818,7 @@ if (typeof window === 'object')
 
 module.exports = PolyBool;
 
-},{"./lib/build-log":278,"./lib/epsilon":279,"./lib/geojson":280,"./lib/intersecter":281,"./lib/segment-chainer":283,"./lib/segment-selector":284}],278:[function(_dereq_,module,exports){
+},{"./lib/build-log":280,"./lib/epsilon":281,"./lib/geojson":282,"./lib/intersecter":283,"./lib/segment-chainer":285,"./lib/segment-selector":286}],280:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -39316,7 +36933,7 @@ function BuildLog(){
 
 module.exports = BuildLog;
 
-},{}],279:[function(_dereq_,module,exports){
+},{}],281:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -39488,7 +37105,7 @@ function Epsilon(eps){
 
 module.exports = Epsilon;
 
-},{}],280:[function(_dereq_,module,exports){
+},{}],282:[function(_dereq_,module,exports){
 // (c) Copyright 2017, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -39678,7 +37295,7 @@ var GeoJSON = {
 
 module.exports = GeoJSON;
 
-},{}],281:[function(_dereq_,module,exports){
+},{}],283:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -40185,7 +37802,7 @@ function Intersecter(selfIntersection, eps, buildLog){
 
 module.exports = Intersecter;
 
-},{"./linked-list":282}],282:[function(_dereq_,module,exports){
+},{"./linked-list":284}],284:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -40268,7 +37885,7 @@ var LinkedList = {
 
 module.exports = LinkedList;
 
-},{}],283:[function(_dereq_,module,exports){
+},{}],285:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -40522,7 +38139,7 @@ function SegmentChainer(segments, eps, buildLog){
 
 module.exports = SegmentChainer;
 
-},{}],284:[function(_dereq_,module,exports){
+},{}],286:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -40690,7 +38307,7 @@ var SegmentSelector = {
 
 module.exports = SegmentSelector;
 
-},{}],285:[function(_dereq_,module,exports){
+},{}],287:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -40876,7 +38493,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],286:[function(_dereq_,module,exports){
+},{}],288:[function(_dereq_,module,exports){
 (function (global){(function (){
 var now = _dereq_('performance-now')
   , root = typeof window === 'undefined' ? global : window
@@ -40955,7 +38572,7 @@ module.exports.polyfill = function(object) {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"performance-now":268}],287:[function(_dereq_,module,exports){
+},{"performance-now":270}],289:[function(_dereq_,module,exports){
 'use strict'
 
 var bnadd = _dereq_('big-rat/add')
@@ -40971,7 +38588,7 @@ function add (a, b) {
   return r
 }
 
-},{"big-rat/add":29}],288:[function(_dereq_,module,exports){
+},{"big-rat/add":29}],290:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = float2rat
@@ -40986,7 +38603,7 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":32}],289:[function(_dereq_,module,exports){
+},{"big-rat":32}],291:[function(_dereq_,module,exports){
 'use strict'
 
 var rat = _dereq_('big-rat')
@@ -41004,7 +38621,7 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":32,"big-rat/mul":41}],290:[function(_dereq_,module,exports){
+},{"big-rat":32,"big-rat/mul":41}],292:[function(_dereq_,module,exports){
 'use strict'
 
 var bnsub = _dereq_('big-rat/sub')
@@ -41020,7 +38637,7 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":43}],291:[function(_dereq_,module,exports){
+},{"big-rat/sub":43}],293:[function(_dereq_,module,exports){
 'use strict'
 
 var getBounds = _dereq_('array-bounds')
@@ -41490,8 +39107,10 @@ function Error2D (regl, options) {
 				positionData.set(positions, offset * 2)
 			})
 
-			positionBuffer(float32(positionData))
-			positionFractBuffer(fract32(positionData))
+			var float_data = float32(positionData)
+			positionBuffer(float_data)
+			var frac_data = fract32(positionData, float_data)
+			positionFractBuffer(frac_data)
 			colorBuffer(colorData)
 			errorBuffer(errorData)
 		}
@@ -41507,7 +39126,7 @@ function Error2D (regl, options) {
 	}
 }
 
-},{"array-bounds":19,"color-normalize":69,"flatten-vertex-data":160,"object-assign":262,"pick-by-alias":271,"to-float32":322,"update-diff":342}],292:[function(_dereq_,module,exports){
+},{"array-bounds":19,"color-normalize":69,"flatten-vertex-data":162,"object-assign":264,"pick-by-alias":273,"to-float32":324,"update-diff":344}],294:[function(_dereq_,module,exports){
 'use strict'
 
 
@@ -42151,8 +39770,10 @@ Line2D.prototype.update = function (options) {
 				positionData[count*2 + 5] = npos[count*2 - 1]
 			}
 
-			state.positionBuffer(float32(positionData))
-			state.positionFractBuffer(fract32(positionData))
+			var float_data = float32(positionData)
+			state.positionBuffer(float_data)
+			var frac_data = fract32(positionData, float_data)
+			state.positionFractBuffer(frac_data)
 		}
 
 		if (o.range) {
@@ -42287,7 +39908,7 @@ Line2D.prototype.destroy = function () {
 	return this
 }
 
-},{"array-bounds":19,"array-find-index":20,"array-normalize":21,"color-normalize":69,"earcut":98,"es6-weak-map":152,"flatten-vertex-data":160,"glslify":235,"object-assign":262,"parse-rect":265,"pick-by-alias":271,"to-float32":322}],293:[function(_dereq_,module,exports){
+},{"array-bounds":19,"array-find-index":20,"array-normalize":21,"color-normalize":69,"earcut":100,"es6-weak-map":154,"flatten-vertex-data":162,"glslify":237,"object-assign":264,"parse-rect":267,"pick-by-alias":273,"to-float32":324}],295:[function(_dereq_,module,exports){
 'use strict';
 
 function _slicedToArray(arr, i) {
@@ -42307,18 +39928,21 @@ function _arrayWithHoles(arr) {
 }
 
 function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
+  if (typeof Symbol !== "undefined" && iter[Symbol.iterator] != null || iter["@@iterator"] != null) return Array.from(iter);
 }
 
 function _iterableToArrayLimit(arr, i) {
-  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
+  var _i = arr == null ? null : typeof Symbol !== "undefined" && arr[Symbol.iterator] || arr["@@iterator"];
+
+  if (_i == null) return;
   var _arr = [];
   var _n = true;
   var _d = false;
-  var _e = undefined;
+
+  var _s, _e;
 
   try {
-    for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+    for (_i = _i.call(arr); !(_n = (_s = _i.next()).done); _n = true) {
       _arr.push(_s.value);
 
       if (i && _arr.length === i) break;
@@ -42952,12 +40576,14 @@ Scatter.prototype.update = function () {
         } // update position buffers
 
 
+        var float_data = f32.float32(_positions);
         positionBuffer({
-          data: f32.float(_positions),
+          data: float_data,
           usage: 'dynamic'
         });
+        var frac_data = f32.fract32(_positions, float_data);
         positionFractBuffer({
-          data: f32.fract(_positions),
+          data: frac_data,
           usage: 'dynamic'
         }); // expand selectionBuffer
 
@@ -43271,7 +40897,7 @@ var reglScatter2d = function reglScatter2d(regl, options) {
 
 module.exports = reglScatter2d;
 
-},{"@plotly/point-cluster":15,"array-bounds":19,"color-id":67,"color-normalize":69,"flatten-vertex-data":160,"glslify":235,"is-iexplorer":245,"object-assign":262,"parse-rect":265,"pick-by-alias":271,"to-float32":322,"update-diff":342}],294:[function(_dereq_,module,exports){
+},{"@plotly/point-cluster":15,"array-bounds":19,"color-id":67,"color-normalize":69,"flatten-vertex-data":162,"glslify":237,"is-iexplorer":247,"object-assign":264,"parse-rect":267,"pick-by-alias":273,"to-float32":324,"update-diff":344}],296:[function(_dereq_,module,exports){
 'use strict'
 
 
@@ -43693,7 +41319,7 @@ function getPad (arg) {
 	}
 }
 
-},{"array-bounds":19,"array-range":22,"flatten-vertex-data":160,"parse-rect":265,"pick-by-alias":271,"raf":286,"regl-scatter2d":293}],295:[function(_dereq_,module,exports){
+},{"array-bounds":19,"array-range":22,"flatten-vertex-data":162,"parse-rect":267,"pick-by-alias":273,"raf":288,"regl-scatter2d":295}],297:[function(_dereq_,module,exports){
 (function(ja,N){"object"===typeof exports&&"undefined"!==typeof module?module.exports=N():"function"===typeof define&&define.amd?define(N):ja.createREGL=N()})(this,function(){function ja(a,b){this.id=Bb++;this.type=a;this.data=b}function N(a){if(0===a.length)return[];var b=a.charAt(0),c=a.charAt(a.length-1);if(1<a.length&&b===c&&('"'===b||"'"===b))return['"'+a.substr(1,a.length-2).replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];if(b=/\[(false|true|null|\d+|'[^']*'|"[^"]*")\]/.exec(a))return N(a.substr(0,
 b.index)).concat(N(b[1])).concat(N(a.substr(b.index+b[0].length)));b=a.split(".");if(1===b.length)return['"'+a.replace(/\\/g,"\\\\").replace(/"/g,'\\"')+'"'];a=[];for(c=0;c<b.length;++c)a=a.concat(N(b[c]));return a}function bb(a){return"["+N(a).join("][")+"]"}function Cb(){var a={"":0},b=[""];return{id:function(c){var e=a[c];if(e)return e;e=a[c]=b.length;b.push(c);return e},str:function(a){return b[a]}}}function Db(a,b,c){function e(){var b=window.innerWidth,e=window.innerHeight;a!==document.body&&
 (e=a.getBoundingClientRect(),b=e.right-e.left,e=e.bottom-e.top);g.width=c*b;g.height=c*e;H(g.style,{width:b+"px",height:e+"px"})}var g=document.createElement("canvas");H(g.style,{border:0,margin:0,padding:0,top:0,left:0});a.appendChild(g);a===document.body&&(g.style.position="absolute",H(a.style,{margin:0,padding:0}));var d;a!==document.body&&"function"===typeof ResizeObserver?(d=new ResizeObserver(function(){setTimeout(e)}),d.observe(a)):window.addEventListener("resize",e,!1);e();return{canvas:g,
@@ -43856,7 +41482,7 @@ a)if(a.framebuffer&&"framebufferCube"===a.framebuffer_reglType)for(var b=0;6>b;+
 b){var c;switch(a){case "frame":return u(b);case "lost":c=V;break;case "restore":c=X;break;case "destroy":c=Y}c.push(b);return{cancel:function(){for(var a=0;a<c.length;++a)if(c[a]===b){c[a]=c[c.length-1];c.pop();break}}}},limits:G,hasExtension:function(a){return 0<=G.extensions.indexOf(a.toLowerCase())},read:p,destroy:function(){B.length=0;e();K&&(K.removeEventListener("webglcontextlost",g),K.removeEventListener("webglcontextrestored",d));D.clear();T.clear();N.clear();x.clear();P.clear();R.clear();
 J.clear();w&&w.clear();Y.forEach(function(a){a()})},_gl:k,_refresh:m,poll:function(){t();w&&w.update()},now:z,stats:l});a.onDone(null,h);return h}});
 
-},{}],296:[function(_dereq_,module,exports){
+},{}],298:[function(_dereq_,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -43928,7 +41554,7 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],297:[function(_dereq_,module,exports){
+},{}],299:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -44096,7 +41722,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":300,"robust-subtract":302,"robust-sum":303,"two-product":325}],298:[function(_dereq_,module,exports){
+},{"robust-scale":302,"robust-subtract":304,"robust-sum":305,"two-product":327}],300:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -44287,7 +41913,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":300,"robust-subtract":302,"robust-sum":303,"two-product":325}],299:[function(_dereq_,module,exports){
+},{"robust-scale":302,"robust-subtract":304,"robust-sum":305,"two-product":327}],301:[function(_dereq_,module,exports){
 "use strict"
 
 var robustSum = _dereq_("robust-sum")
@@ -44317,7 +41943,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":300,"robust-sum":303}],300:[function(_dereq_,module,exports){
+},{"robust-scale":302,"robust-sum":305}],302:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -44368,7 +41994,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":325,"two-sum":326}],301:[function(_dereq_,module,exports){
+},{"two-product":327,"two-sum":328}],303:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
@@ -44416,7 +42042,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":298}],302:[function(_dereq_,module,exports){
+},{"robust-orientation":300}],304:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -44573,7 +42199,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],303:[function(_dereq_,module,exports){
+},{}],305:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -44730,7 +42356,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],304:[function(_dereq_,module,exports){
+},{}],306:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -44738,9 +42364,9 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],305:[function(_dereq_,module,exports){
+},{}],307:[function(_dereq_,module,exports){
 arguments[4][46][0].apply(exports,arguments)
-},{"dup":46}],306:[function(_dereq_,module,exports){
+},{"dup":46}],308:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 var bits      = _dereq_("bit-twiddle")
@@ -45084,7 +42710,7 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":305,"union-find":307}],307:[function(_dereq_,module,exports){
+},{"bit-twiddle":307,"union-find":309}],309:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -45141,7 +42767,7 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],308:[function(_dereq_,module,exports){
+},{}],310:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -45413,7 +43039,7 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":298,"simplicial-complex":306}],309:[function(_dereq_,module,exports){
+},{"robust-orientation":300,"simplicial-complex":308}],311:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -45509,9 +43135,9 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":298}],310:[function(_dereq_,module,exports){
-arguments[4][240][0].apply(exports,arguments)
-},{"dup":240}],311:[function(_dereq_,module,exports){
+},{"robust-orientation":300}],312:[function(_dereq_,module,exports){
+arguments[4][242][0].apply(exports,arguments)
+},{"dup":242}],313:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -45742,7 +43368,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":309,"binary-search-bounds":310,"functional-red-black-tree":163,"robust-orientation":298}],312:[function(_dereq_,module,exports){
+},{"./lib/order-segments":311,"binary-search-bounds":312,"functional-red-black-tree":165,"robust-orientation":300}],314:[function(_dereq_,module,exports){
 /* global window, exports, define */
 
 !function() {
@@ -45975,7 +43601,7 @@ function createSlabDecomposition(segments) {
     /* eslint-enable quote-props */
 }(); // eslint-disable-line
 
-},{}],313:[function(_dereq_,module,exports){
+},{}],315:[function(_dereq_,module,exports){
 'use strict'
 
 var paren = _dereq_('parenthesis')
@@ -46033,7 +43659,7 @@ module.exports = function splitBy (string, separator, o) {
 	return parts
 }
 
-},{"parenthesis":264}],314:[function(_dereq_,module,exports){
+},{"parenthesis":266}],316:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = surfaceNets
@@ -46241,7 +43867,7 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":257,"triangulate-hypercube":324,"zero-crossings":366}],315:[function(_dereq_,module,exports){
+},{"ndarray-extract-contour":259,"triangulate-hypercube":326,"zero-crossings":368}],317:[function(_dereq_,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -46432,7 +44058,7 @@ var arcToBezier = function arcToBezier(_ref2) {
 
 exports.default = arcToBezier;
 module.exports = exports.default;
-},{}],316:[function(_dereq_,module,exports){
+},{}],318:[function(_dereq_,module,exports){
 'use strict'
 
 var parse = _dereq_('parse-svg-path')
@@ -46477,7 +44103,7 @@ function pathBounds(path) {
   return bounds
 }
 
-},{"abs-svg-path":17,"assert":23,"is-svg-path":250,"normalize-svg-path":317,"parse-svg-path":266}],317:[function(_dereq_,module,exports){
+},{"abs-svg-path":17,"assert":23,"is-svg-path":252,"normalize-svg-path":319,"parse-svg-path":268}],319:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = normalize
@@ -46601,7 +44227,7 @@ function quadratic(x1, y1, cx, cy, x2, y2){
   ]
 }
 
-},{"svg-arc-to-cubic-bezier":315}],318:[function(_dereq_,module,exports){
+},{"svg-arc-to-cubic-bezier":317}],320:[function(_dereq_,module,exports){
 'use strict'
 
 var pathBounds = _dereq_('svg-path-bounds')
@@ -46704,7 +44330,7 @@ function isPath2DSupported () {
 	return path2DSupported = idata && idata.data && idata.data[3] === 255
 }
 
-},{"bitmap-sdf":47,"draw-svg-path":95,"is-svg-path":250,"parse-svg-path":266,"svg-path-bounds":316}],319:[function(_dereq_,module,exports){
+},{"bitmap-sdf":47,"draw-svg-path":97,"is-svg-path":252,"parse-svg-path":268,"svg-path-bounds":318}],321:[function(_dereq_,module,exports){
 (function (process){(function (){
 'use strict'
 
@@ -46801,7 +44427,7 @@ function textGet(font, text, opts) {
 }
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"_process":285,"vectorize-text":343}],320:[function(_dereq_,module,exports){
+},{"_process":287,"vectorize-text":345}],322:[function(_dereq_,module,exports){
 (function (setImmediate,clearImmediate){(function (){
 var nextTick = _dereq_('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -46880,7 +44506,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this)}).call(this,_dereq_("timers").setImmediate,_dereq_("timers").clearImmediate)
-},{"process/browser.js":285,"timers":320}],321:[function(_dereq_,module,exports){
+},{"process/browser.js":287,"timers":322}],323:[function(_dereq_,module,exports){
 // TinyColor v1.4.2
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -48077,7 +45703,7 @@ else {
 
 })(Math);
 
-},{}],322:[function(_dereq_,module,exports){
+},{}],324:[function(_dereq_,module,exports){
 /* @module to-float32 */
 
 'use strict'
@@ -48090,10 +45716,11 @@ module.exports.fract = fract32
 
 var narr = new Float32Array(1)
 
-// return fractional part of float32 array
-function fract32 (arr) {
+// Returns fractional part of float32 array
+function fract32 (arr, fract) {
 	if (arr.length) {
-		var fract = float32(arr)
+		if (arr instanceof Float32Array) return new Float32Array(arr.length);
+		if (!(fract instanceof Float32Array)) fract = float32(arr)
 		for (var i = 0, l = fract.length; i < l; i++) {
 			fract[i] = arr[i] - fract[i]
 		}
@@ -48104,13 +45731,11 @@ function fract32 (arr) {
 	return float32(arr - float32(arr))
 }
 
-// make sure data is float32 array
+// Make sure data is float32 array
 function float32 (arr) {
 	if (arr.length) {
 		if (arr instanceof Float32Array) return arr
-		var float = new Float32Array(arr)
-		float.set(arr)
-		return float
+		return new Float32Array(arr);
 	}
 
 	// number
@@ -48118,7 +45743,7 @@ function float32 (arr) {
 	return narr[0]
 }
 
-},{}],323:[function(_dereq_,module,exports){
+},{}],325:[function(_dereq_,module,exports){
 'use strict'
 
 var parseUnit = _dereq_('parse-unit')
@@ -48179,7 +45804,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":267}],324:[function(_dereq_,module,exports){
+},{"parse-unit":269}],326:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = triangulateCube
@@ -48213,7 +45838,7 @@ function triangulateCube(dimension) {
   }
   return result
 }
-},{"gamma":164,"permutation-parity":269,"permutation-rank":270}],325:[function(_dereq_,module,exports){
+},{"gamma":166,"permutation-parity":271,"permutation-rank":272}],327:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -48247,7 +45872,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],326:[function(_dereq_,module,exports){
+},{}],328:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -48265,7 +45890,7 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],327:[function(_dereq_,module,exports){
+},{}],329:[function(_dereq_,module,exports){
 "use strict";
 
 var isPrototype = _dereq_("../prototype/is");
@@ -48286,7 +45911,7 @@ module.exports = function (value) {
 	return !isPrototype(value);
 };
 
-},{"../prototype/is":334}],328:[function(_dereq_,module,exports){
+},{"../prototype/is":336}],330:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue       = _dereq_("../value/is")
@@ -48309,7 +45934,7 @@ module.exports = function (value, defaultMessage, inputOptions) {
 	throw new TypeError(resolveMessage(errorMessage, value));
 };
 
-},{"../object/is":331,"../string/coerce":335,"../value/is":337,"./to-short-string":330}],329:[function(_dereq_,module,exports){
+},{"../object/is":333,"../string/coerce":337,"../value/is":339,"./to-short-string":332}],331:[function(_dereq_,module,exports){
 "use strict";
 
 module.exports = function (value) {
@@ -48321,7 +45946,7 @@ module.exports = function (value) {
 	}
 };
 
-},{}],330:[function(_dereq_,module,exports){
+},{}],332:[function(_dereq_,module,exports){
 "use strict";
 
 var safeToString = _dereq_("./safe-to-string");
@@ -48352,7 +45977,7 @@ module.exports = function (value) {
 	return string;
 };
 
-},{"./safe-to-string":329}],331:[function(_dereq_,module,exports){
+},{"./safe-to-string":331}],333:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue = _dereq_("../value/is");
@@ -48365,7 +45990,7 @@ module.exports = function (value) {
 	return hasOwnProperty.call(possibleTypes, typeof value);
 };
 
-},{"../value/is":337}],332:[function(_dereq_,module,exports){
+},{"../value/is":339}],334:[function(_dereq_,module,exports){
 "use strict";
 
 var resolveException = _dereq_("../lib/resolve-exception")
@@ -48376,7 +46001,7 @@ module.exports = function (value/*, options*/) {
 	return resolveException(value, "%v is not a plain function", arguments[1]);
 };
 
-},{"../lib/resolve-exception":328,"./is":333}],333:[function(_dereq_,module,exports){
+},{"../lib/resolve-exception":330,"./is":335}],335:[function(_dereq_,module,exports){
 "use strict";
 
 var isFunction = _dereq_("../function/is");
@@ -48389,7 +46014,7 @@ module.exports = function (value) {
 	return true;
 };
 
-},{"../function/is":327}],334:[function(_dereq_,module,exports){
+},{"../function/is":329}],336:[function(_dereq_,module,exports){
 "use strict";
 
 var isObject = _dereq_("../object/is");
@@ -48404,7 +46029,7 @@ module.exports = function (value) {
 	}
 };
 
-},{"../object/is":331}],335:[function(_dereq_,module,exports){
+},{"../object/is":333}],337:[function(_dereq_,module,exports){
 "use strict";
 
 var isValue  = _dereq_("../value/is")
@@ -48429,7 +46054,7 @@ module.exports = function (value) {
 	}
 };
 
-},{"../object/is":331,"../value/is":337}],336:[function(_dereq_,module,exports){
+},{"../object/is":333,"../value/is":339}],338:[function(_dereq_,module,exports){
 "use strict";
 
 var resolveException = _dereq_("../lib/resolve-exception")
@@ -48440,7 +46065,7 @@ module.exports = function (value/*, options*/) {
 	return resolveException(value, "Cannot use %v", arguments[1]);
 };
 
-},{"../lib/resolve-exception":328,"./is":337}],337:[function(_dereq_,module,exports){
+},{"../lib/resolve-exception":330,"./is":339}],339:[function(_dereq_,module,exports){
 "use strict";
 
 // ES3 safe
@@ -48448,7 +46073,7 @@ var _undefined = void 0;
 
 module.exports = function (value) { return value !== _undefined && value !== null; };
 
-},{}],338:[function(_dereq_,module,exports){
+},{}],340:[function(_dereq_,module,exports){
 (function (global){(function (){
 'use strict'
 
@@ -48703,7 +46328,7 @@ exports.clearCache = function clearCache() {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bit-twiddle":46,"buffer":58,"dup":97}],339:[function(_dereq_,module,exports){
+},{"bit-twiddle":46,"buffer":58,"dup":99}],341:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -48766,7 +46391,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],340:[function(_dereq_,module,exports){
+},{}],342:[function(_dereq_,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -48825,7 +46450,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],341:[function(_dereq_,module,exports){
+},{}],343:[function(_dereq_,module,exports){
 var reg = /[\'\"]/
 
 module.exports = function unquote(str) {
@@ -48841,7 +46466,7 @@ module.exports = function unquote(str) {
   return str
 }
 
-},{}],342:[function(_dereq_,module,exports){
+},{}],344:[function(_dereq_,module,exports){
 /**
  * @module update-diff
  */
@@ -48874,7 +46499,7 @@ module.exports = function updateDiff (obj, diff, mappers) {
 	return obj
 }
 
-},{}],343:[function(_dereq_,module,exports){
+},{}],345:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createText
@@ -48901,7 +46526,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":344}],344:[function(_dereq_,module,exports){
+},{"./lib/vtext":346}],346:[function(_dereq_,module,exports){
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
@@ -49356,7 +46981,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":59,"clean-pslg":65,"ndarray":259,"planar-graph-to-polyline":274,"simplify-planar-graph":308,"surface-nets":314}],345:[function(_dereq_,module,exports){
+},{"cdt2d":59,"clean-pslg":65,"ndarray":261,"planar-graph-to-polyline":276,"simplify-planar-graph":310,"surface-nets":316}],347:[function(_dereq_,module,exports){
 var hiddenStore = _dereq_('./hidden-store.js');
 
 module.exports = createStore;
@@ -49377,7 +47002,7 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":346}],346:[function(_dereq_,module,exports){
+},{"./hidden-store.js":348}],348:[function(_dereq_,module,exports){
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -49395,7 +47020,7 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],347:[function(_dereq_,module,exports){
+},{}],349:[function(_dereq_,module,exports){
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
@@ -49426,14 +47051,14 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":345}],348:[function(_dereq_,module,exports){
+},{"./create-store.js":347}],350:[function(_dereq_,module,exports){
 var getContext = _dereq_('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":165}],349:[function(_dereq_,module,exports){
+},{"get-canvas-context":167}],351:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -50166,7 +47791,7 @@ function toSolar(yearOrDate, monthOrResult, day, isIntercalaryOrResult, result) 
 }
 
 
-},{"../main":363,"object-assign":262}],350:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],352:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -50350,7 +47975,7 @@ assign(CopticCalendar.prototype, {
 main.calendars.coptic = CopticCalendar;
 
 
-},{"../main":363,"object-assign":262}],351:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],353:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -50578,7 +48203,7 @@ var centuries = {
 main.calendars.discworld = DiscworldCalendar;
 
 
-},{"../main":363,"object-assign":262}],352:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],354:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -50762,7 +48387,7 @@ assign(EthiopianCalendar.prototype, {
 main.calendars.ethiopian = EthiopianCalendar;
 
 
-},{"../main":363,"object-assign":262}],353:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],355:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -51036,7 +48661,7 @@ function mod(a, b) {
 main.calendars.hebrew = HebrewCalendar;
 
 
-},{"../main":363,"object-assign":262}],354:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],356:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -51217,7 +48842,7 @@ assign(IslamicCalendar.prototype, {
 main.calendars.islamic = IslamicCalendar;
 
 
-},{"../main":363,"object-assign":262}],355:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],357:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -51400,7 +49025,7 @@ assign(JulianCalendar.prototype, {
 main.calendars.julian = JulianCalendar;
 
 
-},{"../main":363,"object-assign":262}],356:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],358:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -51695,7 +49320,7 @@ function amod(a, b) {
 main.calendars.mayan = MayanCalendar;
 
 
-},{"../main":363,"object-assign":262}],357:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],359:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -51875,7 +49500,7 @@ assign(NanakshahiCalendar.prototype, {
 main.calendars.nanakshahi = NanakshahiCalendar;
 
 
-},{"../main":363,"object-assign":262}],358:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],360:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -52298,7 +49923,7 @@ assign(NepaliCalendar.prototype, {
 main.calendars.nepali = NepaliCalendar;
 
 
-},{"../main":363,"object-assign":262}],359:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],361:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -52488,7 +50113,7 @@ main.calendars.persian = PersianCalendar;
 main.calendars.jalali = PersianCalendar;
 
 
-},{"../main":363,"object-assign":262}],360:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],362:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -52674,7 +50299,7 @@ assign(TaiwanCalendar.prototype, {
 main.calendars.taiwan = TaiwanCalendar;
 
 
-},{"../main":363,"object-assign":262}],361:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],363:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -52860,7 +50485,7 @@ assign(ThaiCalendar.prototype, {
 main.calendars.thai = ThaiCalendar;
 
 
-},{"../main":363,"object-assign":262}],362:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],364:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -53225,7 +50850,7 @@ var ummalqura_dat = [
     79990];
 
 
-},{"../main":363,"object-assign":262}],363:[function(_dereq_,module,exports){
+},{"../main":365,"object-assign":264}],365:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -54130,7 +51755,7 @@ _exports.baseCalendar = BaseCalendar;
 _exports.calendars.gregorian = GregorianCalendar;
 
 
-},{"object-assign":262}],364:[function(_dereq_,module,exports){
+},{"object-assign":264}],366:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -54632,7 +52257,7 @@ assign(main.baseCalendar.prototype, {
 });
 
 
-},{"./main":363,"object-assign":262}],365:[function(_dereq_,module,exports){
+},{"./main":365,"object-assign":264}],367:[function(_dereq_,module,exports){
 module.exports = _dereq_('cwise-compiler')({
     args: ['array', {
         offset: [1],
@@ -54684,7 +52309,7 @@ module.exports = _dereq_('cwise-compiler')({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":85}],366:[function(_dereq_,module,exports){
+},{"cwise-compiler":85}],368:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
@@ -54697,7 +52322,7 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":365}],367:[function(_dereq_,module,exports){
+},{"./lib/zc-core":367}],369:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -54760,7 +52385,7 @@ module.exports = [
     }
 ];
 
-},{}],368:[function(_dereq_,module,exports){
+},{}],370:[function(_dereq_,module,exports){
 'use strict';
 
 var ARROWPATHS = _dereq_('./arrow_paths');
@@ -55048,7 +52673,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../constants/axis_placeable_objects":491,"../../plot_api/plot_template":555,"../../plots/cartesian/constants":573,"../../plots/font_attributes":595,"./arrow_paths":367}],369:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":493,"../../plot_api/plot_template":558,"../../plots/cartesian/constants":576,"../../plots/font_attributes":598,"./arrow_paths":369}],371:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -55130,7 +52755,7 @@ function calcAxisExpansion(ann, ax) {
     ann._extremes[axId] = extremes;
 }
 
-},{"../../lib":517,"../../plots/cartesian/axes":566,"./draw":374}],370:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/cartesian/axes":569,"./draw":376}],372:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -55260,7 +52885,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"../../registry":607}],371:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"../../registry":610}],373:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -55331,7 +52956,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":517,"../color":385}],372:[function(_dereq_,module,exports){
+},{"../../lib":519,"../color":387}],374:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -55385,7 +53010,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":544,"fast-isnumeric":159}],373:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":547,"fast-isnumeric":161}],375:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -55484,7 +53109,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     }
 }
 
-},{"../../lib":517,"../../plots/array_container_defaults":561,"../../plots/cartesian/axes":566,"./attributes":368,"./common_defaults":371}],374:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/array_container_defaults":564,"../../plots/cartesian/axes":569,"./attributes":370,"./common_defaults":373}],376:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -56237,7 +53862,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     } else annText.call(textLayout);
 }
 
-},{"../../lib":517,"../../lib/setcursor":538,"../../lib/svg_text_utils":542,"../../plot_api/plot_template":555,"../../plots/cartesian/axes":566,"../../plots/plots":605,"../../registry":607,"../color":385,"../dragelement":404,"../drawing":407,"../fx":425,"./draw_arrow_head":375,"@plotly/d3":14}],375:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../lib/setcursor":540,"../../lib/svg_text_utils":545,"../../plot_api/plot_template":558,"../../plots/cartesian/axes":569,"../../plots/plots":608,"../../registry":610,"../color":387,"../dragelement":406,"../drawing":409,"../fx":427,"./draw_arrow_head":377,"@plotly/d3":14}],377:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -56384,7 +54009,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../../lib":517,"../color":385,"./arrow_paths":367,"@plotly/d3":14}],376:[function(_dereq_,module,exports){
+},{"../../lib":519,"../color":387,"./arrow_paths":369,"@plotly/d3":14}],378:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -56409,7 +54034,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":579,"./attributes":368,"./calc_autorange":369,"./click":370,"./convert_coords":372,"./defaults":373,"./draw":374}],377:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":582,"./attributes":370,"./calc_autorange":371,"./click":372,"./convert_coords":374,"./defaults":375,"./draw":376}],379:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -56478,7 +54103,7 @@ module.exports = overrideAll(templatedArray('annotation', {
     // zref: 'z'
 }), 'calc', 'from-root');
 
-},{"../../plot_api/edit_types":548,"../../plot_api/plot_template":555,"../annotations/attributes":368}],378:[function(_dereq_,module,exports){
+},{"../../plot_api/edit_types":551,"../../plot_api/plot_template":558,"../annotations/attributes":370}],380:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -56535,7 +54160,7 @@ function mockAnnAxes(ann, scene) {
     };
 }
 
-},{"../../lib":517,"../../plots/cartesian/axes":566}],379:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/cartesian/axes":569}],381:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -56603,7 +54228,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
     }
 }
 
-},{"../../lib":517,"../../plots/array_container_defaults":561,"../../plots/cartesian/axes":566,"../annotations/common_defaults":371,"./attributes":377}],380:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/array_container_defaults":564,"../../plots/cartesian/axes":569,"../annotations/common_defaults":373,"./attributes":379}],382:[function(_dereq_,module,exports){
 'use strict';
 
 var drawRaw = _dereq_('../annotations/draw').drawRaw;
@@ -56647,7 +54272,7 @@ module.exports = function draw(scene) {
     }
 };
 
-},{"../../plots/gl3d/project":602,"../annotations/draw":374}],381:[function(_dereq_,module,exports){
+},{"../../plots/gl3d/project":605,"../annotations/draw":376}],383:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -56687,7 +54312,7 @@ function includeGL3D(layoutIn, layoutOut) {
     }
 }
 
-},{"../../lib":517,"../../registry":607,"./attributes":377,"./convert":378,"./defaults":379,"./draw":380}],382:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"./attributes":379,"./convert":380,"./defaults":381,"./draw":382}],384:[function(_dereq_,module,exports){
 'use strict';
 
 // a trimmed down version of:
@@ -56712,7 +54337,7 @@ _dereq_('world-calendars/dist/calendars/taiwan');
 _dereq_('world-calendars/dist/calendars/thai');
 _dereq_('world-calendars/dist/calendars/ummalqura');
 
-},{"world-calendars/dist/calendars/chinese":349,"world-calendars/dist/calendars/coptic":350,"world-calendars/dist/calendars/discworld":351,"world-calendars/dist/calendars/ethiopian":352,"world-calendars/dist/calendars/hebrew":353,"world-calendars/dist/calendars/islamic":354,"world-calendars/dist/calendars/julian":355,"world-calendars/dist/calendars/mayan":356,"world-calendars/dist/calendars/nanakshahi":357,"world-calendars/dist/calendars/nepali":358,"world-calendars/dist/calendars/persian":359,"world-calendars/dist/calendars/taiwan":360,"world-calendars/dist/calendars/thai":361,"world-calendars/dist/calendars/ummalqura":362,"world-calendars/dist/main":363,"world-calendars/dist/plus":364}],383:[function(_dereq_,module,exports){
+},{"world-calendars/dist/calendars/chinese":351,"world-calendars/dist/calendars/coptic":352,"world-calendars/dist/calendars/discworld":353,"world-calendars/dist/calendars/ethiopian":354,"world-calendars/dist/calendars/hebrew":355,"world-calendars/dist/calendars/islamic":356,"world-calendars/dist/calendars/julian":357,"world-calendars/dist/calendars/mayan":358,"world-calendars/dist/calendars/nanakshahi":359,"world-calendars/dist/calendars/nepali":360,"world-calendars/dist/calendars/persian":361,"world-calendars/dist/calendars/taiwan":362,"world-calendars/dist/calendars/thai":363,"world-calendars/dist/calendars/ummalqura":364,"world-calendars/dist/main":365,"world-calendars/dist/plus":366}],385:[function(_dereq_,module,exports){
 'use strict';
 
 var calendars = _dereq_('./calendars');
@@ -56725,7 +54350,7 @@ var ONEDAY = constants.ONEDAY;
 
 var attributes = {
     valType: 'enumerated',
-    values: Object.keys(calendars.calendars),
+    values: Lib.sortObjectKeys(calendars.calendars),
     editType: 'calc',
     dflt: 'gregorian'
 };
@@ -56978,7 +54603,7 @@ module.exports = {
     worldCalFmt: worldCalFmt
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"./calendars":382}],384:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"./calendars":384}],386:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -57010,7 +54635,7 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],385:[function(_dereq_,module,exports){
+},{}],387:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
@@ -57176,7 +54801,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"../../lib/array":501,"./attributes":384,"fast-isnumeric":159,"tinycolor2":321}],386:[function(_dereq_,module,exports){
+},{"../../lib/array":503,"./attributes":386,"fast-isnumeric":161,"tinycolor2":323}],388:[function(_dereq_,module,exports){
 'use strict';
 
 var axesAttrs = _dereq_('../../plots/cartesian/layout_attributes');
@@ -57323,7 +54948,7 @@ module.exports = overrideAll({
     }
 }, 'colorbars', 'from-root');
 
-},{"../../lib/extend":509,"../../plot_api/edit_types":548,"../../plots/cartesian/layout_attributes":581,"../../plots/font_attributes":595}],387:[function(_dereq_,module,exports){
+},{"../../lib/extend":511,"../../plot_api/edit_types":551,"../../plots/cartesian/layout_attributes":584,"../../plots/font_attributes":598}],389:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -57343,7 +54968,7 @@ module.exports = {
     }
 };
 
-},{}],388:[function(_dereq_,module,exports){
+},{}],390:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -57413,7 +55038,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('title.side');
 };
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"../../plots/cartesian/tick_label_defaults":588,"../../plots/cartesian/tick_mark_defaults":589,"../../plots/cartesian/tick_value_defaults":590,"./attributes":386}],389:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"../../plots/cartesian/tick_label_defaults":591,"../../plots/cartesian/tick_mark_defaults":592,"../../plots/cartesian/tick_value_defaults":593,"./attributes":388}],391:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -58140,7 +55765,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":490,"../../lib":517,"../../lib/extend":509,"../../lib/setcursor":538,"../../lib/svg_text_utils":542,"../../plots/cartesian/axes":566,"../../plots/cartesian/axis_defaults":568,"../../plots/cartesian/layout_attributes":581,"../../plots/cartesian/position_defaults":584,"../../plots/plots":605,"../../registry":607,"../color":385,"../colorscale/helpers":396,"../dragelement":404,"../drawing":407,"../titles":483,"./constants":387,"@plotly/d3":14,"tinycolor2":321}],390:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../lib":519,"../../lib/extend":511,"../../lib/setcursor":540,"../../lib/svg_text_utils":545,"../../plots/cartesian/axes":569,"../../plots/cartesian/axis_defaults":571,"../../plots/cartesian/layout_attributes":584,"../../plots/cartesian/position_defaults":587,"../../plots/plots":608,"../../registry":610,"../color":387,"../colorscale/helpers":398,"../dragelement":406,"../drawing":409,"../titles":485,"./constants":389,"@plotly/d3":14,"tinycolor2":323}],392:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -58150,7 +55775,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":517}],391:[function(_dereq_,module,exports){
+},{"../../lib":519}],393:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -58164,14 +55789,15 @@ module.exports = {
     hasColorbar: _dereq_('./has_colorbar')
 };
 
-},{"./attributes":386,"./defaults":388,"./draw":389,"./has_colorbar":390}],392:[function(_dereq_,module,exports){
+},{"./attributes":388,"./defaults":390,"./draw":391,"./has_colorbar":392}],394:[function(_dereq_,module,exports){
 'use strict';
 
 var colorbarAttrs = _dereq_('../colorbar/attributes');
 var counterRegex = _dereq_('../../lib/regex').counter;
+var sortObjectKeys = _dereq_('../../lib/sort_object_keys');
 
 var palettes = _dereq_('./scales.js').scales;
-var paletteStr = Object.keys(palettes);
+var paletteStr = sortObjectKeys(palettes);
 
 function code(s) {
     return '`' + s + '`';
@@ -58344,7 +55970,7 @@ module.exports = function colorScaleAttrs(context, opts) {
     return attrs;
 };
 
-},{"../../lib/regex":534,"../colorbar/attributes":386,"./scales.js":400}],393:[function(_dereq_,module,exports){
+},{"../../lib/regex":536,"../../lib/sort_object_keys":542,"../colorbar/attributes":388,"./scales.js":402}],395:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -58415,7 +56041,7 @@ module.exports = function calc(gd, trace, opts) {
     }
 };
 
-},{"../../lib":517,"./helpers":396,"fast-isnumeric":159}],394:[function(_dereq_,module,exports){
+},{"../../lib":519,"./helpers":398,"fast-isnumeric":161}],396:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -58484,7 +56110,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
     }
 };
 
-},{"../../lib":517,"./helpers":396}],395:[function(_dereq_,module,exports){
+},{"../../lib":519,"./helpers":398}],397:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -58601,7 +56227,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
     }
 };
 
-},{"../../lib":517,"../../registry":607,"../colorbar/defaults":388,"../colorbar/has_colorbar":390,"./scales":400,"fast-isnumeric":159}],396:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"../colorbar/defaults":390,"../colorbar/has_colorbar":392,"./scales":402,"fast-isnumeric":161}],398:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -58833,7 +56459,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: makeColorScaleFuncFromTrace
 };
 
-},{"../../lib":517,"../color":385,"./scales":400,"@plotly/d3":14,"fast-isnumeric":159,"tinycolor2":321}],397:[function(_dereq_,module,exports){
+},{"../../lib":519,"../color":387,"./scales":402,"@plotly/d3":14,"fast-isnumeric":161,"tinycolor2":323}],399:[function(_dereq_,module,exports){
 'use strict';
 
 var scales = _dereq_('./scales');
@@ -58867,7 +56493,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: helpers.makeColorScaleFuncFromTrace
 };
 
-},{"./attributes":392,"./calc":393,"./cross_trace_defaults":394,"./defaults":395,"./helpers":396,"./layout_attributes":398,"./layout_defaults":399,"./scales":400}],398:[function(_dereq_,module,exports){
+},{"./attributes":394,"./calc":395,"./cross_trace_defaults":396,"./defaults":397,"./helpers":398,"./layout_attributes":400,"./layout_defaults":401,"./scales":402}],400:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
@@ -58913,7 +56539,7 @@ module.exports = {
     }))
 };
 
-},{"../../lib/extend":509,"./attributes":392,"./scales":400}],399:[function(_dereq_,module,exports){
+},{"../../lib/extend":511,"./attributes":394,"./scales":402}],401:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -58956,7 +56582,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 };
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"./defaults":395,"./layout_attributes":398}],400:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"./defaults":397,"./layout_attributes":400}],402:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
@@ -59152,7 +56778,7 @@ module.exports = {
     isValid: isValidScale
 };
 
-},{"tinycolor2":321}],401:[function(_dereq_,module,exports){
+},{"tinycolor2":323}],403:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -59176,7 +56802,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],402:[function(_dereq_,module,exports){
+},{}],404:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -59205,7 +56831,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":517}],403:[function(_dereq_,module,exports){
+},{"../../lib":519}],405:[function(_dereq_,module,exports){
 'use strict';
 
 exports.selectMode = function(dragmode) {
@@ -59256,7 +56882,7 @@ exports.selectingOrDrawing = function(dragmode) {
     );
 };
 
-},{}],404:[function(_dereq_,module,exports){
+},{}],406:[function(_dereq_,module,exports){
 'use strict';
 
 var mouseOffset = _dereq_('mouse-event-offset');
@@ -59540,7 +57166,7 @@ function pointerOffset(e) {
     );
 }
 
-},{"../../lib":517,"../../plots/cartesian/constants":573,"./align":401,"./cursor":402,"./unhover":405,"has-hover":236,"has-passive-events":237,"mouse-event-offset":253}],405:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/cartesian/constants":576,"./align":403,"./cursor":404,"./unhover":407,"has-hover":238,"has-passive-events":239,"mouse-event-offset":255}],407:[function(_dereq_,module,exports){
 'use strict';
 
 var Events = _dereq_('../../lib/events');
@@ -59587,7 +57213,7 @@ unhover.raw = function raw(gd, evt) {
     }
 };
 
-},{"../../lib/dom":507,"../../lib/events":508,"../../lib/throttle":543,"../fx/constants":419}],406:[function(_dereq_,module,exports){
+},{"../../lib/dom":509,"../../lib/events":510,"../../lib/throttle":546,"../fx/constants":421}],408:[function(_dereq_,module,exports){
 'use strict';
 
 exports.dash = {
@@ -59649,17 +57275,18 @@ exports.pattern = {
     editType: 'style',
 };
 
-},{}],407:[function(_dereq_,module,exports){
+},{}],409:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
+var Lib = _dereq_('../../lib');
+var numberFormat = Lib.numberFormat;
 var isNumeric = _dereq_('fast-isnumeric');
 var tinycolor = _dereq_('tinycolor2');
 
 var Registry = _dereq_('../../registry');
 var Color = _dereq_('../color');
 var Colorscale = _dereq_('../colorscale');
-var Lib = _dereq_('../../lib');
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = _dereq_('../../lib/svg_text_utils');
 
@@ -59927,7 +57554,7 @@ function makePointPath(symbolNumber, r) {
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
 var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
-var stopFormatter = d3.format('~.1f');
+var stopFormatter = numberFormat('~f');
 var gradientInfo = {
     radial: {node: 'radialGradient'},
     radialreversed: {node: 'radialGradient', reversed: true},
@@ -61092,7 +58719,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../components/fx/helpers":421,"../../constants/alignment":490,"../../constants/interactions":494,"../../constants/xmlns_namespaces":496,"../../lib":517,"../../lib/svg_text_utils":542,"../../registry":607,"../../traces/scatter/make_bubble_size_func":672,"../../traces/scatter/subtypes":680,"../color":385,"../colorscale":397,"./symbol_defs":408,"@plotly/d3":14,"fast-isnumeric":159,"tinycolor2":321}],408:[function(_dereq_,module,exports){
+},{"../../components/fx/helpers":423,"../../constants/alignment":492,"../../constants/interactions":496,"../../constants/xmlns_namespaces":498,"../../lib":519,"../../lib/svg_text_utils":545,"../../registry":610,"../../traces/scatter/make_bubble_size_func":675,"../../traces/scatter/subtypes":683,"../color":387,"../colorscale":399,"./symbol_defs":410,"@plotly/d3":14,"fast-isnumeric":161,"tinycolor2":323}],410:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -61647,7 +59274,7 @@ module.exports = {
     }
 };
 
-},{"@plotly/d3":14}],409:[function(_dereq_,module,exports){
+},{"@plotly/d3":14}],411:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -61730,7 +59357,7 @@ module.exports = {
     }
 };
 
-},{}],410:[function(_dereq_,module,exports){
+},{}],412:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -61808,7 +59435,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }
 
-},{"../../lib":517,"../../plots/cartesian/axes":566,"../../registry":607,"./compute_error":411,"fast-isnumeric":159}],411:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/cartesian/axes":569,"../../registry":610,"./compute_error":413,"fast-isnumeric":161}],413:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -61900,7 +59527,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],412:[function(_dereq_,module,exports){
+},{}],414:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -61967,7 +59594,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"../../registry":607,"./attributes":409,"fast-isnumeric":159}],413:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"../../registry":610,"./attributes":411,"fast-isnumeric":161}],415:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -62028,7 +59655,7 @@ function hoverInfo(calcPoint, trace, hoverPoint) {
     }
 }
 
-},{"../../lib":517,"../../plot_api/edit_types":548,"./attributes":409,"./calc":410,"./compute_error":411,"./defaults":412,"./plot":414,"./style":415}],414:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/edit_types":551,"./attributes":411,"./calc":412,"./compute_error":413,"./defaults":414,"./plot":416,"./style":417}],416:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -62191,7 +59818,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":680,"../drawing":407,"@plotly/d3":14,"fast-isnumeric":159}],415:[function(_dereq_,module,exports){
+},{"../../traces/scatter/subtypes":683,"../drawing":409,"@plotly/d3":14,"fast-isnumeric":161}],417:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -62219,7 +59846,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":385,"@plotly/d3":14}],416:[function(_dereq_,module,exports){
+},{"../color":387,"@plotly/d3":14}],418:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -62244,7 +59871,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":509,"../../plots/font_attributes":595,"./layout_attributes":426}],417:[function(_dereq_,module,exports){
+},{"../../lib/extend":511,"../../plots/font_attributes":598,"./layout_attributes":428}],419:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -62295,7 +59922,7 @@ function paste(traceAttr, cd, cdAttr, fn) {
     }
 }
 
-},{"../../lib":517,"../../registry":607}],418:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610}],420:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -62324,7 +59951,7 @@ module.exports = function click(gd, evt, subplot) {
     }
 };
 
-},{"../../registry":607,"./hover":422}],419:[function(_dereq_,module,exports){
+},{"../../registry":610,"./hover":424}],421:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -62348,7 +59975,7 @@ module.exports = {
     HOVERID: '-hover'
 };
 
-},{}],420:[function(_dereq_,module,exports){
+},{}],422:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -62366,7 +59993,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(traceIn, traceOut, coerce, opts);
 };
 
-},{"../../lib":517,"./attributes":416,"./hoverlabel_defaults":423}],421:[function(_dereq_,module,exports){
+},{"../../lib":519,"./attributes":418,"./hoverlabel_defaults":425}],423:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -62620,7 +60247,7 @@ exports.isXYhover = function(hovermode) {
     return !!xyHoverMode[hovermode];
 };
 
-},{"../../lib":517}],422:[function(_dereq_,module,exports){
+},{"../../lib":519}],424:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -62667,6 +60294,12 @@ var multipleHoverPoints = {
     ohlc: true,
     violin: true,
     candlestick: true
+};
+
+var cartesianScatterPoints = {
+    scatter: true,
+    scattergl: true,
+    splom: true
 };
 
 // fx.hover: highlight data on hover
@@ -63197,12 +60830,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     findHoverPoints();
 
-    function selectClosestPoint(pointsData, spikedistance) {
+    function selectClosestPoint(pointsData, spikedistance, spikeOnWinning) {
         var resultPoint = null;
         var minDistance = Infinity;
         var thisSpikeDistance;
+
         for(var i = 0; i < pointsData.length; i++) {
             thisSpikeDistance = pointsData[i].spikeDistance;
+            if(spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
+
             if(thisSpikeDistance <= minDistance && thisSpikeDistance <= spikedistance) {
                 resultPoint = pointsData[i];
                 minDistance = thisSpikeDistance;
@@ -63239,19 +60875,30 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     };
     gd._spikepoints = newspikepoints;
 
+    var sortHoverData = function() {
+        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+
+        // move period positioned points and box/bar-like traces to the end of the list
+        hoverData = orderRangePoints(hoverData, hovermode);
+    };
+    sortHoverData();
+
+    var axLetter = hovermode.charAt(0);
+    var spikeOnWinning = (axLetter === 'x' || axLetter === 'y') && hoverData[0] && cartesianScatterPoints[hoverData[0].trace.type];
+
     // Now if it is not restricted by spikedistance option, set the points to draw the spikelines
     if(hasCartesian && (spikedistance !== 0)) {
         if(hoverData.length !== 0) {
             var tmpHPointData = hoverData.filter(function(point) {
                 return point.ya.showspikes;
             });
-            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance);
+            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance, spikeOnWinning);
             spikePoints.hLinePoint = fillSpikePoint(tmpHPoint);
 
             var tmpVPointData = hoverData.filter(function(point) {
                 return point.xa.showspikes;
             });
-            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance);
+            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance, spikeOnWinning);
             spikePoints.vLinePoint = fillSpikePoint(tmpVPoint);
         }
     }
@@ -63272,14 +60919,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             createSpikelines(gd, spikePoints, spikelineOpts);
         }
     }
-
-    var sortHoverData = function() {
-        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
-
-        // move period positioned points and box/bar-like traces to the end of the list
-        hoverData = orderRangePoints(hoverData, hovermode);
-    };
-    sortHoverData();
 
     if(
         helpers.isXYhover(_mode) &&
@@ -63416,7 +61055,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 }
 
 function hoverDataKey(d) {
-    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa, d.ya || ''].join(',');
+    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa ? d.xa._id : '', d.ya ? d.ya._id : ''].join(',');
 }
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
@@ -63694,38 +61333,89 @@ function createHoverText(hoverData, opts, gd) {
         legendDraw(gd, mockLegend);
 
         // Position the hover
-        var winningPoint = hoverData[0];
-        var ly = (winningPoint.y0 + winningPoint.y1) / 2;
-        var lx = (winningPoint.x0 + winningPoint.x1) / 2;
         var legendContainer = container.select('g.legend');
         var tbb = legendContainer.node().getBoundingClientRect();
-        lx += xa._offset;
-        ly += ya._offset - tbb.height / 2;
+        var tWidth = tbb.width + 2 * HOVERTEXTPAD;
+        var tHeight = tbb.height + 2 * HOVERTEXTPAD;
+        var winningPoint = hoverData[0];
+        var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
+        var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
+        // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
+        var pointWon = !(
+            Registry.traceIs(winningPoint.trace, 'bar-like') ||
+            Registry.traceIs(winningPoint.trace, 'box-violin')
+        );
 
-        // Change horizontal alignment to end up on screen
-        var txWidth = tbb.width + 2 * HOVERTEXTPAD;
-        var anchorStartOK = lx + txWidth <= outerWidth;
-        var anchorEndOK = lx - txWidth >= 0;
-        if(!anchorStartOK && anchorEndOK) {
-            lx -= txWidth;
+        var lyBottom, lyTop;
+        if(axLetter === 'y') {
+            if(pointWon) {
+                lyTop = avgY - HOVERTEXTPAD;
+                lyBottom = avgY + HOVERTEXTPAD;
+            } else {
+                lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
+                lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
+            }
         } else {
-            lx += 2 * HOVERTEXTPAD;
+            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
         }
 
-        // Change vertical alignement to end up on screen
-        var txHeight = tbb.height + 2 * HOVERTEXTPAD;
-        var overflowTop = ly <= outerTop;
-        var overflowBottom = ly + txHeight >= outerHeight;
-        var canFit = txHeight <= outerHeight;
-        if(canFit) {
-            if(overflowTop) {
-                ly = ya._offset + 2 * HOVERTEXTPAD;
-            } else if(overflowBottom) {
-                ly = outerHeight - txHeight;
+        var lxRight, lxLeft;
+        if(axLetter === 'x') {
+            if(pointWon) {
+                lxRight = avgX + HOVERTEXTPAD;
+                lxLeft = avgX - HOVERTEXTPAD;
+            } else {
+                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
+                lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
+            }
+        } else {
+            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
+        }
+
+        var xOffset = xa._offset;
+        var yOffset = ya._offset;
+        lyBottom += yOffset;
+        lxRight += xOffset;
+        lxLeft += xOffset - tWidth;
+        lyTop += yOffset - tHeight;
+
+        var lx, ly; // top and left positions of the hover box
+
+        // horizontal alignment to end up on screen
+        if(lxRight + tWidth < outerWidth && lxRight >= 0) {
+            lx = lxRight;
+        } else if(lxLeft + tWidth < outerWidth && lxLeft >= 0) {
+            lx = lxLeft;
+        } else if(xOffset + tWidth < outerWidth) {
+            lx = xOffset; // subplot left corner
+        } else {
+            // closest left or right side of the paper
+            if(lxRight - avgX < avgX - lxLeft + tWidth) {
+                lx = outerWidth - tWidth;
+            } else {
+                lx = 0;
             }
         }
-        legendContainer.attr('transform', strTranslate(lx, ly));
+        lx += HOVERTEXTPAD;
 
+        // vertical alignement to end up on screen
+        if(lyBottom + tHeight < outerHeight && lyBottom >= 0) {
+            ly = lyBottom;
+        } else if(lyTop + tHeight < outerHeight && lyTop >= 0) {
+            ly = lyTop;
+        } else if(yOffset + tHeight < outerHeight) {
+            ly = yOffset; // subplot top corner
+        } else {
+            // closest top or bottom side of the paper
+            if(lyBottom - avgY < avgY - lyTop + tHeight) {
+                ly = outerHeight - tHeight;
+            } else {
+                ly = 0;
+            }
+        }
+        ly += HOVERTEXTPAD;
+
+        legendContainer.attr('transform', strTranslate(lx - 1, ly - 1));
         return legendContainer;
     }
 
@@ -64553,10 +62243,32 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
-    if(ax.type === 'category') val = ax._categoriesMap[val];
-    else if(ax.type === 'date') val = ax.d2c(val);
+    var cd0 = winningPoint.cd[0];
 
-    var cd0 = winningPoint.cd[winningPoint.index];
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    else if(ax.type === 'date') {
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
+
+            var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
+            var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
+            var diff = end - start;
+
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
+    }
+
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||
@@ -64569,7 +62281,7 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     return val;
 }
 
-},{"../../lib":517,"../../lib/events":508,"../../lib/override_cursor":528,"../../lib/svg_text_utils":542,"../../plots/cartesian/axes":566,"../../registry":607,"../color":385,"../dragelement":404,"../drawing":407,"../legend/defaults":437,"../legend/draw":438,"./constants":419,"./helpers":421,"@plotly/d3":14,"fast-isnumeric":159,"tinycolor2":321}],423:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../lib/events":510,"../../lib/override_cursor":530,"../../lib/svg_text_utils":545,"../../plots/cartesian/axes":569,"../../registry":610,"../color":387,"../dragelement":406,"../drawing":409,"../legend/defaults":439,"../legend/draw":440,"./constants":421,"./helpers":423,"@plotly/d3":14,"fast-isnumeric":161,"tinycolor2":323}],425:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -64607,7 +62319,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     coerce('hoverlabel.align', opts.align);
 };
 
-},{"../../lib":517,"../color":385,"./helpers":421}],424:[function(_dereq_,module,exports){
+},{"../../lib":519,"../color":387,"./helpers":423}],426:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -64625,7 +62337,7 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
     return coerce('hovermode');
 };
 
-},{"../../lib":517,"./layout_attributes":426}],425:[function(_dereq_,module,exports){
+},{"../../lib":519,"./layout_attributes":428}],427:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -64696,7 +62408,7 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
     return Lib.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }
 
-},{"../../lib":517,"../dragelement":404,"./attributes":416,"./calc":417,"./click":418,"./constants":419,"./defaults":420,"./helpers":421,"./hover":422,"./layout_attributes":426,"./layout_defaults":427,"./layout_global_defaults":428,"@plotly/d3":14}],426:[function(_dereq_,module,exports){
+},{"../../lib":519,"../dragelement":406,"./attributes":418,"./calc":419,"./click":420,"./constants":421,"./defaults":422,"./helpers":423,"./hover":424,"./layout_attributes":428,"./layout_defaults":429,"./layout_global_defaults":430,"@plotly/d3":14}],428:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -64784,7 +62496,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":595,"./constants":419}],427:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":598,"./constants":421}],429:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -64823,7 +62535,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":517,"./hoverlabel_defaults":423,"./hovermode_defaults":424,"./layout_attributes":426}],428:[function(_dereq_,module,exports){
+},{"../../lib":519,"./hoverlabel_defaults":425,"./hovermode_defaults":426,"./layout_attributes":428}],430:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -64838,7 +62550,7 @@ module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":517,"./hoverlabel_defaults":423,"./layout_attributes":426}],429:[function(_dereq_,module,exports){
+},{"../../lib":519,"./hoverlabel_defaults":425,"./layout_attributes":428}],431:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -65181,7 +62893,7 @@ module.exports = {
     contentDefaults: contentDefaults
 };
 
-},{"../../lib":517,"../../lib/regex":534,"../../plot_api/plot_template":555,"../../plots/cartesian/constants":573,"../../plots/domain":594}],430:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../lib/regex":536,"../../plot_api/plot_template":558,"../../plots/cartesian/constants":576,"../../plots/domain":597}],432:[function(_dereq_,module,exports){
 'use strict';
 
 var cartesianConstants = _dereq_('../../plots/cartesian/constants');
@@ -65283,7 +62995,7 @@ module.exports = templatedArray('image', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":491,"../../plot_api/plot_template":555,"../../plots/cartesian/constants":573}],431:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":493,"../../plot_api/plot_template":558,"../../plots/cartesian/constants":576}],433:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -65355,7 +63067,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":544,"fast-isnumeric":159}],432:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":547,"fast-isnumeric":161}],434:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -65412,7 +63124,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":517,"../../plots/array_container_defaults":561,"../../plots/cartesian/axes":566,"./attributes":430}],433:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/array_container_defaults":564,"../../plots/cartesian/axes":569,"./attributes":432}],435:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -65662,7 +63374,7 @@ module.exports = function draw(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":496,"../../plots/cartesian/axes":566,"../../plots/cartesian/axis_ids":570,"../drawing":407,"@plotly/d3":14}],434:[function(_dereq_,module,exports){
+},{"../../constants/xmlns_namespaces":498,"../../plots/cartesian/axes":569,"../../plots/cartesian/axis_ids":573,"../drawing":409,"@plotly/d3":14}],436:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -65678,7 +63390,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":579,"./attributes":430,"./convert_coords":431,"./defaults":432,"./draw":433}],435:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":582,"./attributes":432,"./convert_coords":433,"./defaults":434,"./draw":435}],437:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -65801,7 +63513,7 @@ module.exports = {
     editType: 'legend'
 };
 
-},{"../../plots/font_attributes":595,"../color/attributes":384}],436:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":598,"../color/attributes":386}],438:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -65817,7 +63529,7 @@ module.exports = {
     itemGap: 5
 };
 
-},{}],437:[function(_dereq_,module,exports){
+},{}],439:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -65949,7 +63661,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"../../plots/layout_attributes":603,"../../registry":607,"./attributes":435,"./helpers":441}],438:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"../../plots/layout_attributes":606,"../../registry":610,"./attributes":437,"./helpers":443}],440:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -66774,7 +64486,7 @@ function getYanchor(legendObj) {
         'top';
 }
 
-},{"../../constants/alignment":490,"../../lib":517,"../../lib/events":508,"../../lib/svg_text_utils":542,"../../plots/plots":605,"../../registry":607,"../color":385,"../dragelement":404,"../drawing":407,"./constants":436,"./get_legend_data":439,"./handle_click":440,"./helpers":441,"./style":443,"@plotly/d3":14}],439:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../lib":519,"../../lib/events":510,"../../lib/svg_text_utils":545,"../../plots/plots":608,"../../registry":610,"../color":387,"../dragelement":406,"../drawing":409,"./constants":438,"./get_legend_data":441,"./handle_click":442,"./helpers":443,"./style":445,"@plotly/d3":14}],441:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -66895,7 +64607,7 @@ module.exports = function getLegendData(calcdata, opts) {
         legendData[i].forEach(function(a, k) { a._preSort = k; });
         legendData[i].sort(orderFn2);
 
-        var firstItem = legendData[i][0];
+        var firstItemTrace = legendData[i][0].trace;
 
         var groupTitle = null;
         // get group title text
@@ -66911,12 +64623,23 @@ module.exports = function getLegendData(calcdata, opts) {
         if(reversed) legendData[i].reverse();
 
         if(groupTitle) {
+            var hasPieLike = false;
+            for(j = 0; j < legendData[i].length; j++) {
+                if(Registry.traceIs(legendData[i][j].trace, 'pie-like')) {
+                    hasPieLike = true;
+                    break;
+                }
+            }
+
             // set group title text
             legendData[i].unshift({
                 i: -1,
                 groupTitle: groupTitle,
+                noClick: hasPieLike,
                 trace: {
-                    showlegend: firstItem.trace.showlegend
+                    showlegend: firstItemTrace.showlegend,
+                    legendgroup: firstItemTrace.legendgroup,
+                    visible: firstItemTrace.visible
                 }
             });
         }
@@ -66937,7 +64660,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":607,"./helpers":441}],440:[function(_dereq_,module,exports){
+},{"../../registry":610,"./helpers":443}],442:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -66972,7 +64695,7 @@ module.exports = function handleClick(g, gd, numClicks) {
         [];
 
     var legendItem = g.data()[0][0];
-    if(legendItem.groupTitle) return; // no click on group legends for now
+    if(legendItem.groupTitle && legendItem.noClick) return;
 
     var fullData = gd._fullData;
     var fullTrace = legendItem.trace;
@@ -67170,7 +64893,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 };
 
-},{"../../lib":517,"../../registry":607}],441:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610}],443:[function(_dereq_,module,exports){
 'use strict';
 
 exports.isGrouped = function isGrouped(legendLayout) {
@@ -67185,7 +64908,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{}],442:[function(_dereq_,module,exports){
+},{}],444:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -67200,7 +64923,7 @@ module.exports = {
     style: _dereq_('./style')
 };
 
-},{"./attributes":435,"./defaults":437,"./draw":438,"./style":443}],443:[function(_dereq_,module,exports){
+},{"./attributes":437,"./defaults":439,"./draw":440,"./style":445}],445:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -67887,7 +65610,7 @@ function dimAttr(v, dflt, max) {
     return v;
 }
 
-},{"../../lib":517,"../../registry":607,"../../traces/pie/helpers":648,"../../traces/pie/style_one":649,"../../traces/scatter/subtypes":680,"../color":385,"../colorscale/helpers":396,"../drawing":407,"./constants":436,"@plotly/d3":14}],444:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"../../traces/pie/helpers":651,"../../traces/pie/style_one":652,"../../traces/scatter/subtypes":683,"../color":387,"../colorscale/helpers":398,"../drawing":409,"./constants":438,"@plotly/d3":14}],446:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -67931,7 +65654,7 @@ module.exports = {
     }
 };
 
-},{"./constants":446}],445:[function(_dereq_,module,exports){
+},{"./constants":448}],447:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -68683,7 +66406,7 @@ function resetView(gd, subplotType) {
     Registry.call('_guiRelayout', gd, aObj);
 }
 
-},{"../../fonts/ploticon":498,"../../lib":517,"../../plots/cartesian/axis_ids":570,"../../plots/plots":605,"../../registry":607,"../shapes/draw":469}],446:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":500,"../../lib":519,"../../plots/cartesian/axis_ids":573,"../../plots/plots":608,"../../registry":610,"../shapes/draw":471}],448:[function(_dereq_,module,exports){
 'use strict';
 
 var modeBarButtons = _dereq_('./buttons');
@@ -68726,7 +66449,7 @@ module.exports = {
     foreButtons: foreButtons
 };
 
-},{"./buttons":445}],447:[function(_dereq_,module,exports){
+},{"./buttons":447}],449:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -68752,7 +66475,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('remove');
 };
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"../color":385,"./attributes":444}],448:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"../color":387,"./attributes":446}],450:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -68765,7 +66488,7 @@ module.exports = {
     manage: _dereq_('./manage')
 };
 
-},{"./attributes":444,"./defaults":447,"./manage":449}],449:[function(_dereq_,module,exports){
+},{"./attributes":446,"./defaults":449,"./manage":451}],451:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIds = _dereq_('../../plots/cartesian/axis_ids');
@@ -69120,7 +66843,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":570,"../../registry":607,"../../traces/scatter/subtypes":680,"../fx/helpers":421,"./buttons":445,"./constants":446,"./modebar":450}],450:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axis_ids":573,"../../registry":610,"../../traces/scatter/subtypes":683,"../fx/helpers":423,"./buttons":447,"./constants":448,"./modebar":452}],452:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -69457,7 +67180,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../fonts/ploticon":498,"../../lib":517,"@plotly/d3":14,"fast-isnumeric":159}],451:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":500,"../../lib":519,"@plotly/d3":14,"fast-isnumeric":161}],453:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -69555,7 +67278,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{"../../plot_api/plot_template":555,"../../plots/font_attributes":595,"../color/attributes":384}],452:[function(_dereq_,module,exports){
+},{"../../plot_api/plot_template":558,"../../plots/font_attributes":598,"../color/attributes":386}],454:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -69576,7 +67299,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],453:[function(_dereq_,module,exports){
+},{}],455:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -69660,7 +67383,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"../../plots/array_container_defaults":561,"../color":385,"./attributes":451,"./constants":452}],454:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"../../plots/array_container_defaults":564,"../color":387,"./attributes":453,"./constants":454}],456:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -69907,10 +67630,11 @@ function reposition(gd, buttons, opts, axName, selector) {
     selector.attr('transform', strTranslate(lx, ly));
 }
 
-},{"../../constants/alignment":490,"../../lib":517,"../../lib/svg_text_utils":542,"../../plots/cartesian/axis_ids":570,"../../plots/plots":605,"../../registry":607,"../color":385,"../drawing":407,"./constants":452,"./get_update_object":455,"@plotly/d3":14}],455:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../lib":519,"../../lib/svg_text_utils":545,"../../plots/cartesian/axis_ids":573,"../../plots/plots":608,"../../registry":610,"../color":387,"../drawing":409,"./constants":454,"./get_update_object":457,"@plotly/d3":14}],457:[function(_dereq_,module,exports){
 'use strict';
 
-var d3 = _dereq_('@plotly/d3');
+var d3Time = _dereq_('d3-time');
+var titleCase = _dereq_('../../lib').titleCase;
 
 module.exports = function getUpdateObject(axisLayout, buttonLayout) {
     var axName = axisLayout._name;
@@ -69932,18 +67656,21 @@ function getXRange(axisLayout, buttonLayout) {
     var currentRange = axisLayout.range;
     var base = new Date(axisLayout.r2l(currentRange[1]));
     var step = buttonLayout.step;
+
+    var utcStep = d3Time['utc' + titleCase(step)];
+
     var count = buttonLayout.count;
     var range0;
 
     switch(buttonLayout.stepmode) {
         case 'backward':
-            range0 = axisLayout.l2r(+d3.time[step].utc.offset(base, -count));
+            range0 = axisLayout.l2r(+utcStep.offset(base, -count));
             break;
 
         case 'todate':
-            var base2 = d3.time[step].utc.offset(base, -count);
+            var base2 = utcStep.offset(base, -count);
 
-            range0 = axisLayout.l2r(+d3.time[step].utc.ceil(base2));
+            range0 = axisLayout.l2r(+utcStep.ceil(base2));
             break;
     }
 
@@ -69952,7 +67679,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"@plotly/d3":14}],456:[function(_dereq_,module,exports){
+},{"../../lib":519,"d3-time":93}],458:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -69971,7 +67698,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":451,"./defaults":453,"./draw":454}],457:[function(_dereq_,module,exports){
+},{"./attributes":453,"./defaults":455,"./draw":456}],459:[function(_dereq_,module,exports){
 'use strict';
 
 var colorAttributes = _dereq_('../color/attributes');
@@ -70023,7 +67750,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{"../color/attributes":384}],458:[function(_dereq_,module,exports){
+},{"../color/attributes":386}],460:[function(_dereq_,module,exports){
 'use strict';
 
 var listAxes = _dereq_('../../plots/cartesian/axis_ids').list;
@@ -70049,7 +67776,7 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
-},{"../../plots/cartesian/autorange":565,"../../plots/cartesian/axis_ids":570,"./constants":459}],459:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/autorange":568,"../../plots/cartesian/axis_ids":573,"./constants":461}],461:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -70097,7 +67824,7 @@ module.exports = {
     extraPad: 15
 };
 
-},{}],460:[function(_dereq_,module,exports){
+},{}],462:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -70175,7 +67902,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":517,"../../plot_api/plot_template":555,"../../plots/cartesian/axis_ids":570,"./attributes":457,"./oppaxis_attributes":464}],461:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plot_api/plot_template":558,"../../plots/cartesian/axis_ids":573,"./attributes":459,"./oppaxis_attributes":466}],463:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -70811,7 +68538,7 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     grabAreaMax.attr('height', opts._height);
 }
 
-},{"../../lib":517,"../../lib/setcursor":538,"../../plots/cartesian":580,"../../plots/cartesian/axis_ids":570,"../../plots/plots":605,"../../registry":607,"../color":385,"../dragelement":404,"../drawing":407,"../titles":483,"./constants":459,"@plotly/d3":14}],462:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../lib/setcursor":540,"../../plots/cartesian":583,"../../plots/cartesian/axis_ids":573,"../../plots/plots":608,"../../registry":610,"../color":387,"../dragelement":406,"../drawing":409,"../titles":485,"./constants":461,"@plotly/d3":14}],464:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIDs = _dereq_('../../plots/cartesian/axis_ids');
@@ -70878,7 +68605,7 @@ exports.autoMarginOpts = function(gd, ax) {
     };
 };
 
-},{"../../constants/alignment":490,"../../lib/svg_text_utils":542,"../../plots/cartesian/axis_ids":570,"./constants":459}],463:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../lib/svg_text_utils":545,"../../plots/cartesian/axis_ids":573,"./constants":461}],465:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -70909,7 +68636,7 @@ module.exports = {
     autoMarginOpts: helpers.autoMarginOpts
 };
 
-},{"../../lib":517,"./attributes":457,"./calc_autorange":458,"./defaults":460,"./draw":461,"./helpers":462,"./oppaxis_attributes":464}],464:[function(_dereq_,module,exports){
+},{"../../lib":519,"./attributes":459,"./calc_autorange":460,"./defaults":462,"./draw":463,"./helpers":464,"./oppaxis_attributes":466}],466:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -70935,7 +68662,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{}],465:[function(_dereq_,module,exports){
+},{}],467:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -71045,7 +68772,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":491,"../../lib/extend":509,"../../plot_api/plot_template":555,"../../traces/scatter/attributes":655,"../annotations/attributes":368,"../drawing/attributes":406}],466:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":493,"../../lib/extend":511,"../../plot_api/plot_template":558,"../../traces/scatter/attributes":658,"../annotations/attributes":370,"../drawing/attributes":408}],468:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -71157,7 +68884,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":517,"../../plots/cartesian/axes":566,"./constants":467,"./helpers":476}],467:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/cartesian/axes":569,"./constants":469,"./helpers":478}],469:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -71212,7 +68939,7 @@ module.exports = {
     }
 };
 
-},{}],468:[function(_dereq_,module,exports){
+},{}],470:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -71334,7 +69061,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     }
 }
 
-},{"../../lib":517,"../../plots/array_container_defaults":561,"../../plots/cartesian/axes":566,"./attributes":465,"./helpers":476}],469:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/array_container_defaults":564,"../../plots/cartesian/axes":569,"./attributes":467,"./helpers":478}],471:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -72099,7 +69826,7 @@ function eraseActiveShape(gd) {
     }
 }
 
-},{"../../lib":517,"../../lib/setcursor":538,"../../plot_api/plot_template":555,"../../plots/cartesian/axes":566,"../../plots/cartesian/handle_outline":577,"../../registry":607,"../color":385,"../dragelement":404,"../drawing":407,"./constants":467,"./draw_newshape/display_outlines":473,"./draw_newshape/helpers":474,"./helpers":476}],470:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../lib/setcursor":540,"../../plot_api/plot_template":558,"../../plots/cartesian/axes":569,"../../plots/cartesian/handle_outline":580,"../../registry":610,"../color":387,"../dragelement":406,"../drawing":409,"./constants":469,"./draw_newshape/display_outlines":475,"./draw_newshape/helpers":476,"./helpers":478}],472:[function(_dereq_,module,exports){
 'use strict';
 
 var dash = _dereq_('../../drawing/attributes').dash;
@@ -72175,7 +69902,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":509,"../../drawing/attributes":406}],471:[function(_dereq_,module,exports){
+},{"../../../lib/extend":511,"../../drawing/attributes":408}],473:[function(_dereq_,module,exports){
 'use strict';
 
 var CIRCLE_SIDES = 32;  // should be divisible by 4
@@ -72191,7 +69918,7 @@ module.exports = {
     SQRT2: Math.sqrt(2)
 };
 
-},{}],472:[function(_dereq_,module,exports){
+},{}],474:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../color');
@@ -72214,7 +69941,7 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
     coerce('activeshape.opacity');
 };
 
-},{"../../color":385}],473:[function(_dereq_,module,exports){
+},{"../../color":387}],475:[function(_dereq_,module,exports){
 'use strict';
 
 var dragElement = _dereq_('../../dragelement');
@@ -72500,7 +70227,7 @@ function recordPositions(polygonsOut, polygonsIn) {
     return polygonsOut;
 }
 
-},{"../../../plots/cartesian/handle_outline":577,"../../../registry":607,"../../dragelement":404,"../../dragelement/helpers":403,"./constants":471,"./helpers":474,"./newshapes":475}],474:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/handle_outline":580,"../../../registry":610,"../../dragelement":406,"../../dragelement/helpers":405,"./constants":473,"./helpers":476,"./newshapes":477}],476:[function(_dereq_,module,exports){
 'use strict';
 
 var parseSvgPath = _dereq_('parse-svg-path');
@@ -72829,7 +70556,7 @@ exports.ellipseOver = function(pos) {
     };
 };
 
-},{"../../../plots/cartesian/helpers":578,"./constants":471,"parse-svg-path":266}],475:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/helpers":581,"./constants":473,"parse-svg-path":268}],477:[function(_dereq_,module,exports){
 'use strict';
 
 var dragHelpers = _dereq_('../../dragelement/helpers');
@@ -73079,7 +70806,7 @@ function fixDatesForPaths(polygons, xaxis, yaxis) {
     return polygons;
 }
 
-},{"../../../plots/cartesian/handle_outline":577,"../../../plots/cartesian/helpers":578,"../../dragelement/helpers":403,"./constants":471,"./helpers":474}],476:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/handle_outline":580,"../../../plots/cartesian/helpers":581,"../../dragelement/helpers":405,"./constants":473,"./helpers":476}],478:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -73228,7 +70955,7 @@ exports.makeOptionsAndPlotinfo = function(gd, index) {
     };
 };
 
-},{"../../lib":517,"./constants":467}],477:[function(_dereq_,module,exports){
+},{"../../lib":519,"./constants":469}],479:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -73247,7 +70974,7 @@ module.exports = {
     drawOne: drawModule.drawOne
 };
 
-},{"../../plots/cartesian/include_components":579,"./attributes":465,"./calc_autorange":466,"./defaults":468,"./draw":469,"./draw_newshape/defaults":472}],478:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":582,"./attributes":467,"./calc_autorange":468,"./defaults":470,"./draw":471,"./draw_newshape/defaults":474}],480:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -73421,7 +71148,7 @@ module.exports = overrideAll(templatedArray('slider', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":509,"../../plot_api/edit_types":548,"../../plot_api/plot_template":555,"../../plots/animation_attributes":560,"../../plots/font_attributes":595,"../../plots/pad_attributes":604,"./constants":479}],479:[function(_dereq_,module,exports){
+},{"../../lib/extend":511,"../../plot_api/edit_types":551,"../../plot_api/plot_template":558,"../../plots/animation_attributes":563,"../../plots/font_attributes":598,"../../plots/pad_attributes":607,"./constants":481}],481:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -73506,7 +71233,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],480:[function(_dereq_,module,exports){
+},{}],482:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -73613,7 +71340,7 @@ function stepDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../lib":517,"../../plots/array_container_defaults":561,"./attributes":478,"./constants":479}],481:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/array_container_defaults":564,"./attributes":480,"./constants":481}],483:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -74236,7 +71963,7 @@ function drawRail(sliderGroup, sliderOpts) {
     );
 }
 
-},{"../../constants/alignment":490,"../../lib":517,"../../lib/svg_text_utils":542,"../../plot_api/plot_template":555,"../../plots/plots":605,"../color":385,"../drawing":407,"./constants":479,"@plotly/d3":14}],482:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../lib":519,"../../lib/svg_text_utils":545,"../../plot_api/plot_template":558,"../../plots/plots":608,"../color":387,"../drawing":409,"./constants":481,"@plotly/d3":14}],484:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -74251,7 +71978,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":478,"./constants":479,"./defaults":480,"./draw":481}],483:[function(_dereq_,module,exports){
+},{"./attributes":480,"./constants":481,"./defaults":482,"./draw":483}],485:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -74510,7 +72237,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":490,"../../constants/interactions":494,"../../lib":517,"../../lib/svg_text_utils":542,"../../plots/plots":605,"../../registry":607,"../color":385,"../drawing":407,"@plotly/d3":14,"fast-isnumeric":159}],484:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../constants/interactions":496,"../../lib":519,"../../lib/svg_text_utils":545,"../../plots/plots":608,"../../registry":610,"../color":387,"../drawing":409,"@plotly/d3":14,"fast-isnumeric":161}],486:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -74633,7 +72360,7 @@ module.exports = overrideAll(templatedArray('updatemenu', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":509,"../../plot_api/edit_types":548,"../../plot_api/plot_template":555,"../../plots/font_attributes":595,"../../plots/pad_attributes":604,"../color/attributes":384}],485:[function(_dereq_,module,exports){
+},{"../../lib/extend":511,"../../plot_api/edit_types":551,"../../plot_api/plot_template":558,"../../plots/font_attributes":598,"../../plots/pad_attributes":607,"../color/attributes":386}],487:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -74705,7 +72432,7 @@ module.exports = {
     }
 };
 
-},{}],486:[function(_dereq_,module,exports){
+},{}],488:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -74780,7 +72507,7 @@ function buttonDefaults(buttonIn, buttonOut) {
     }
 }
 
-},{"../../lib":517,"../../plots/array_container_defaults":561,"./attributes":484,"./constants":485}],487:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/array_container_defaults":564,"./attributes":486,"./constants":487}],489:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -75422,9 +73149,9 @@ function removeAllButtons(gButton, newMenuIndexAttr) {
         .selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
 
-},{"../../constants/alignment":490,"../../lib":517,"../../lib/svg_text_utils":542,"../../plot_api/plot_template":555,"../../plots/plots":605,"../color":385,"../drawing":407,"./constants":485,"./scrollbox":489,"@plotly/d3":14}],488:[function(_dereq_,module,exports){
-arguments[4][482][0].apply(exports,arguments)
-},{"./attributes":484,"./constants":485,"./defaults":486,"./draw":487,"dup":482}],489:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../lib":519,"../../lib/svg_text_utils":545,"../../plot_api/plot_template":558,"../../plots/plots":608,"../color":387,"../drawing":409,"./constants":487,"./scrollbox":491,"@plotly/d3":14}],490:[function(_dereq_,module,exports){
+arguments[4][484][0].apply(exports,arguments)
+},{"./attributes":486,"./constants":487,"./defaults":488,"./draw":489,"dup":484}],491:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = ScrollBox;
@@ -75881,7 +73608,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     }
 };
 
-},{"../../lib":517,"../color":385,"../drawing":407,"@plotly/d3":14}],490:[function(_dereq_,module,exports){
+},{"../../lib":519,"../color":387,"../drawing":409,"@plotly/d3":14}],492:[function(_dereq_,module,exports){
 'use strict';
 
 // fraction of some size to get to a named position
@@ -75938,7 +73665,7 @@ module.exports = {
     }
 };
 
-},{}],491:[function(_dereq_,module,exports){
+},{}],493:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -75961,15 +73688,15 @@ module.exports = {
     }
 };
 
-},{}],492:[function(_dereq_,module,exports){
+},{}],494:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
-    FORMAT_LINK: 'https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format',
-    DATE_FORMAT_LINK: 'https://github.com/d3/d3-time-format#locale_format'
+    FORMAT_LINK: 'https://github.com/d3/d3-format/tree/v1.4.5#d3-format',
+    DATE_FORMAT_LINK: 'https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format'
 };
 
-},{}],493:[function(_dereq_,module,exports){
+},{}],495:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -75999,7 +73726,7 @@ module.exports = {
     }
 };
 
-},{}],494:[function(_dereq_,module,exports){
+},{}],496:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -76014,7 +73741,7 @@ module.exports = {
     DESELECTDIM: 0.2
 };
 
-},{}],495:[function(_dereq_,module,exports){
+},{}],497:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -76079,7 +73806,7 @@ module.exports = {
     MINUS_SIGN: '\u2212'
 };
 
-},{}],496:[function(_dereq_,module,exports){
+},{}],498:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -76094,7 +73821,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],497:[function(_dereq_,module,exports){
+},{}],499:[function(_dereq_,module,exports){
 'use strict';
 
 exports.version = _dereq_('./version').version;
@@ -76178,7 +73905,7 @@ exports.Fx = {
 exports.Snapshot = _dereq_('./snapshot');
 exports.PlotSchema = _dereq_('./plot_api/plot_schema');
 
-},{"../build/plotcss":1,"./components/annotations":376,"./components/annotations3d":381,"./components/colorbar":391,"./components/colorscale":397,"./components/errorbars":413,"./components/fx":425,"./components/grid":429,"./components/images":434,"./components/legend":442,"./components/modebar":448,"./components/rangeselector":456,"./components/rangeslider":463,"./components/shapes":477,"./components/sliders":482,"./components/updatemenus":488,"./fonts/ploticon":498,"./locale-en":546,"./locale-en-us":545,"./plot_api":550,"./plot_api/plot_schema":554,"./plots/plots":605,"./registry":607,"./snapshot":612,"./traces/scatter":667,"./version":713,"native-promise-only":256}],498:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"./components/annotations":378,"./components/annotations3d":383,"./components/colorbar":393,"./components/colorscale":399,"./components/errorbars":415,"./components/fx":427,"./components/grid":431,"./components/images":436,"./components/legend":444,"./components/modebar":450,"./components/rangeselector":458,"./components/rangeslider":465,"./components/shapes":479,"./components/sliders":484,"./components/updatemenus":490,"./fonts/ploticon":500,"./locale-en":549,"./locale-en-us":548,"./plot_api":553,"./plot_api/plot_schema":557,"./plots/plots":608,"./registry":610,"./snapshot":615,"./traces/scatter":670,"./version":716,"native-promise-only":258}],500:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -76350,7 +74077,7 @@ module.exports = {
     }
 };
 
-},{}],499:[function(_dereq_,module,exports){
+},{}],501:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -76405,7 +74132,7 @@ exports.isBottomAnchor = function isBottomAnchor(opts) {
     );
 };
 
-},{}],500:[function(_dereq_,module,exports){
+},{}],502:[function(_dereq_,module,exports){
 'use strict';
 
 var modModule = _dereq_('./mod');
@@ -76638,7 +74365,7 @@ module.exports = {
     pathAnnulus: pathAnnulus
 };
 
-},{"./mod":524}],501:[function(_dereq_,module,exports){
+},{"./mod":526}],503:[function(_dereq_,module,exports){
 'use strict';
 
 var isArray = Array.isArray;
@@ -76780,7 +74507,7 @@ function _rowLength(z, fn, len0) {
     return 0;
 }
 
-},{}],502:[function(_dereq_,module,exports){
+},{}],504:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -76804,7 +74531,7 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":495,"fast-isnumeric":159}],503:[function(_dereq_,module,exports){
+},{"../constants/numerical":497,"fast-isnumeric":161}],505:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -76824,7 +74551,7 @@ module.exports = function clearGlCanvases(gd) {
     }
 };
 
-},{}],504:[function(_dereq_,module,exports){
+},{}],506:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -76839,7 +74566,7 @@ module.exports = function clearResponsive(gd) {
     }
 };
 
-},{}],505:[function(_dereq_,module,exports){
+},{}],507:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -77284,7 +75011,7 @@ function validate(value, opts) {
 }
 exports.validate = validate;
 
-},{"../components/color":385,"../components/colorscale/scales":400,"../constants/interactions":494,"../plots/attributes":562,"./array":501,"./mod":524,"./nested_property":525,"./regex":534,"fast-isnumeric":159,"tinycolor2":321}],506:[function(_dereq_,module,exports){
+},{"../components/color":387,"../components/colorscale/scales":402,"../constants/interactions":496,"../plots/attributes":565,"./array":503,"./mod":526,"./nested_property":527,"./regex":536,"fast-isnumeric":161,"tinycolor2":323}],508:[function(_dereq_,module,exports){
 'use strict';
 
 var timeFormat = _dereq_('d3-time-format').timeFormat;
@@ -77888,7 +75615,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":495,"../registry":607,"./loggers":521,"./mod":524,"d3-time-format":90,"fast-isnumeric":159}],507:[function(_dereq_,module,exports){
+},{"../constants/numerical":497,"../registry":610,"./loggers":523,"./mod":526,"d3-time-format":91,"fast-isnumeric":161}],509:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -78058,7 +75785,7 @@ module.exports = {
     equalDomRects: equalDomRects
 };
 
-},{"./loggers":521,"./matrix":523,"@plotly/d3":14,"gl-mat4":188}],508:[function(_dereq_,module,exports){
+},{"./loggers":523,"./matrix":525,"@plotly/d3":14,"gl-mat4":190}],510:[function(_dereq_,module,exports){
 'use strict';
 
 /* global jQuery:false */
@@ -78222,7 +75949,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":57}],509:[function(_dereq_,module,exports){
+},{"events":57}],511:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('./is_plain_object.js');
@@ -78327,7 +76054,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":518}],510:[function(_dereq_,module,exports){
+},{"./is_plain_object.js":520}],512:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -78369,7 +76096,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],511:[function(_dereq_,module,exports){
+},{}],513:[function(_dereq_,module,exports){
 'use strict';
 
 /** Filter out object items with visible !== true
@@ -78409,7 +76136,7 @@ function isCalcData(cont) {
     );
 }
 
-},{}],512:[function(_dereq_,module,exports){
+},{}],514:[function(_dereq_,module,exports){
 'use strict';
 
 var mod = _dereq_('./mod').mod;
@@ -78645,7 +76372,7 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     return pt;
 };
 
-},{"./mod":524}],513:[function(_dereq_,module,exports){
+},{"./mod":526}],515:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -78738,7 +76465,7 @@ module.exports = {
     parseColorScale: parseColorScale
 };
 
-},{"../components/color/attributes":384,"../components/colorscale":397,"./array":501,"color-normalize":69,"fast-isnumeric":159,"tinycolor2":321}],514:[function(_dereq_,module,exports){
+},{"../components/color/attributes":386,"../components/colorscale":399,"./array":503,"color-normalize":69,"fast-isnumeric":161,"tinycolor2":323}],516:[function(_dereq_,module,exports){
 'use strict';
 
 var identity = _dereq_('./identity');
@@ -78766,7 +76493,7 @@ module.exports = {
     unwrap: function(d) {return d[0];}
 };
 
-},{"./identity":515}],515:[function(_dereq_,module,exports){
+},{"./identity":517}],517:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -78774,7 +76501,7 @@ module.exports = {
 
 module.exports = function identity(d) { return d; };
 
-},{}],516:[function(_dereq_,module,exports){
+},{}],518:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function incrementNumeric(x, delta) {
@@ -78807,11 +76534,12 @@ module.exports = function incrementNumeric(x, delta) {
     return newX;
 };
 
-},{}],517:[function(_dereq_,module,exports){
+},{}],519:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
 var utcFormat = _dereq_('d3-time-format').utcFormat;
+var d3Format = _dereq_('d3-format').format;
 var isNumeric = _dereq_('fast-isnumeric');
 
 var numConstants = _dereq_('../constants/numerical');
@@ -78820,6 +76548,48 @@ var MIN_SAFE = -MAX_SAFE;
 var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
+
+lib.adjustFormat = function adjustFormat(formatStr) {
+    if(
+        !formatStr ||
+        /^\d[.]\df/.test(formatStr) ||
+        /[.]\d%/.test(formatStr)
+    ) return formatStr;
+
+    if(formatStr === '0.f') return '~f';
+    if(/^\d%/.test(formatStr)) return '~%';
+    if(/^\ds/.test(formatStr)) return '~s';
+
+    // try adding tilde to the start of format in order to trim
+    if(!(/^[~,.0$]/.test(formatStr)) && /[&fps]/.test(formatStr)) return '~' + formatStr;
+
+    return formatStr;
+};
+
+var seenBadFormats = {};
+lib.warnBadFormat = function(f) {
+    var key = String(f);
+    if(!seenBadFormats[key]) {
+        seenBadFormats[key] = 1;
+        lib.warn('encountered bad format: "' + key + '"');
+    }
+};
+
+lib.noFormat = function(value) {
+    return String(value);
+};
+
+lib.numberFormat = function(formatStr) {
+    var fn;
+    try {
+        fn = d3Format(lib.adjustFormat(formatStr));
+    } catch(e) {
+        lib.warnBadFormat(formatStr);
+        return lib.noFormat;
+    }
+
+    return fn;
+};
 
 lib.nestedProperty = _dereq_('./nested_property');
 lib.keyedContainer = _dereq_('./keyed_container');
@@ -78874,6 +76644,8 @@ lib.distinctVals = searchModule.distinctVals;
 lib.roundUp = searchModule.roundUp;
 lib.sort = searchModule.sort;
 lib.findIndexOfMin = searchModule.findIndexOfMin;
+
+lib.sortObjectKeys = _dereq_('./sort_object_keys');
 
 var statsModule = _dereq_('./stats');
 lib.aggNums = statsModule.aggNums;
@@ -79928,7 +77700,7 @@ function templateFormatString(string, labels, d3locale) {
         if(format) {
             var fmt;
             if(format[0] === ':') {
-                fmt = d3locale ? d3locale.numberFormat : d3.format;
+                fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
 
@@ -80151,7 +77923,7 @@ lib.getPositionFromD3Event = function() {
     }
 };
 
-},{"../constants/numerical":495,"./anchor_utils":499,"./angles":500,"./array":501,"./clean_number":502,"./clear_responsive":504,"./coerce":505,"./dates":506,"./dom":507,"./extend":509,"./filter_unique":510,"./filter_visible":511,"./geometry2d":512,"./identity":515,"./increment":516,"./is_plain_object":518,"./keyed_container":519,"./localize":520,"./loggers":521,"./make_trace_groups":522,"./matrix":523,"./mod":524,"./nested_property":525,"./noop":526,"./notifier":527,"./preserve_drawing_buffer":531,"./push_unique":532,"./regex":534,"./relative_attr":535,"./relink_private":536,"./search":537,"./stats":540,"./throttle":543,"./to_log_range":544,"@plotly/d3":14,"d3-time-format":90,"fast-isnumeric":159}],518:[function(_dereq_,module,exports){
+},{"../constants/numerical":497,"./anchor_utils":501,"./angles":502,"./array":503,"./clean_number":504,"./clear_responsive":506,"./coerce":507,"./dates":508,"./dom":509,"./extend":511,"./filter_unique":512,"./filter_visible":513,"./geometry2d":514,"./identity":517,"./increment":518,"./is_plain_object":520,"./keyed_container":521,"./localize":522,"./loggers":523,"./make_trace_groups":524,"./matrix":525,"./mod":526,"./nested_property":527,"./noop":528,"./notifier":529,"./preserve_drawing_buffer":533,"./push_unique":534,"./regex":536,"./relative_attr":537,"./relink_private":538,"./search":539,"./sort_object_keys":542,"./stats":543,"./throttle":546,"./to_log_range":547,"@plotly/d3":14,"d3-format":90,"d3-time-format":91,"fast-isnumeric":161}],520:[function(_dereq_,module,exports){
 'use strict';
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
@@ -80170,7 +77942,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],519:[function(_dereq_,module,exports){
+},{}],521:[function(_dereq_,module,exports){
 'use strict';
 
 var nestedProperty = _dereq_('./nested_property');
@@ -80355,7 +78127,7 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     return obj;
 };
 
-},{"./nested_property":525}],520:[function(_dereq_,module,exports){
+},{"./nested_property":527}],522:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -80402,7 +78174,7 @@ module.exports = function localize(gd, s) {
     return s;
 };
 
-},{"../registry":607}],521:[function(_dereq_,module,exports){
+},{"../registry":610}],523:[function(_dereq_,module,exports){
 'use strict';
 
 /* eslint-disable no-console */
@@ -80479,7 +78251,7 @@ loggers.error = function() {
     }
 };
 
-},{"../plot_api/plot_config":553,"./notifier":527}],522:[function(_dereq_,module,exports){
+},{"../plot_api/plot_config":556,"./notifier":529}],524:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -80514,7 +78286,7 @@ module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
     return traces;
 };
 
-},{"@plotly/d3":14}],523:[function(_dereq_,module,exports){
+},{"@plotly/d3":14}],525:[function(_dereq_,module,exports){
 'use strict';
 
 var mat4X4 = _dereq_('gl-mat4');
@@ -80657,7 +78429,7 @@ exports.inverseTransformMatrix = function(m) {
     ];
 };
 
-},{"gl-mat4":188}],524:[function(_dereq_,module,exports){
+},{"gl-mat4":190}],526:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -80684,7 +78456,7 @@ module.exports = {
     modHalf: modHalf
 };
 
-},{}],525:[function(_dereq_,module,exports){
+},{}],527:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -80921,7 +78693,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./array":501,"fast-isnumeric":159}],526:[function(_dereq_,module,exports){
+},{"./array":503,"fast-isnumeric":161}],528:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -80929,7 +78701,7 @@ function badContainer(container, propStr, propParts) {
 
 module.exports = function noop() {};
 
-},{}],527:[function(_dereq_,module,exports){
+},{}],529:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -81008,7 +78780,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"@plotly/d3":14,"fast-isnumeric":159}],528:[function(_dereq_,module,exports){
+},{"@plotly/d3":14,"fast-isnumeric":161}],530:[function(_dereq_,module,exports){
 'use strict';
 
 var setCursor = _dereq_('./setcursor');
@@ -81047,7 +78819,7 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":538}],529:[function(_dereq_,module,exports){
+},{"./setcursor":540}],531:[function(_dereq_,module,exports){
 'use strict';
 
 var dot = _dereq_('./matrix').dot;
@@ -81290,7 +79062,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"../constants/numerical":495,"./matrix":523}],530:[function(_dereq_,module,exports){
+},{"../constants/numerical":497,"./matrix":525}],532:[function(_dereq_,module,exports){
 (function (global){(function (){
 'use strict';
 
@@ -81356,7 +79128,7 @@ module.exports = function prepareRegl(gd, extensions) {
 };
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./show_no_webgl_msg":539,"regl":295}],531:[function(_dereq_,module,exports){
+},{"./show_no_webgl_msg":541,"regl":297}],533:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -81418,7 +79190,7 @@ function getUserAgent() {
     return ua;
 }
 
-},{"fast-isnumeric":159,"is-mobile":246}],532:[function(_dereq_,module,exports){
+},{"fast-isnumeric":161,"is-mobile":248}],534:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -81448,7 +79220,7 @@ module.exports = function pushUnique(array, item) {
     return array;
 };
 
-},{}],533:[function(_dereq_,module,exports){
+},{}],535:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -81640,7 +79412,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":517,"../plot_api/plot_config":553}],534:[function(_dereq_,module,exports){
+},{"../lib":519,"../plot_api/plot_config":556}],536:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -81662,7 +79434,7 @@ exports.counter = function(head, tail, openEnded, matchBeginning) {
     return new RegExp(startWithPrefix + head + '([2-9]|[1-9][0-9]+)?' + fullTail);
 };
 
-},{}],535:[function(_dereq_,module,exports){
+},{}],537:[function(_dereq_,module,exports){
 'use strict';
 
 // ASCEND: chop off the last nesting level - either [<n>] or .<key> - to ascend
@@ -81706,7 +79478,7 @@ module.exports = function(baseAttr, relativeAttr) {
     return baseAttr + relativeAttr;
 };
 
-},{}],536:[function(_dereq_,module,exports){
+},{}],538:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('./array').isArrayOrTypedArray;
@@ -81754,7 +79526,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     }
 };
 
-},{"./array":501,"./is_plain_object":518}],537:[function(_dereq_,module,exports){
+},{"./array":503,"./is_plain_object":520}],539:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -81946,7 +79718,7 @@ exports.findIndexOfMin = function(arr, fn) {
     return ind;
 };
 
-},{"../constants/numerical":495,"./identity":515,"./loggers":521,"fast-isnumeric":159}],538:[function(_dereq_,module,exports){
+},{"../constants/numerical":497,"./identity":517,"./loggers":523,"fast-isnumeric":161}],540:[function(_dereq_,module,exports){
 'use strict';
 
 // works with our CSS cursor classes (see css/_cursor.scss)
@@ -81960,7 +79732,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],539:[function(_dereq_,module,exports){
+},{}],541:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../components/color');
@@ -82015,7 +79787,14 @@ module.exports = function showNoWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":385}],540:[function(_dereq_,module,exports){
+},{"../components/color":387}],542:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = function sortObjectKeys(obj) {
+    return Object.keys(obj).sort();
+};
+
+},{}],543:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -82116,7 +79895,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"./array":501,"fast-isnumeric":159}],541:[function(_dereq_,module,exports){
+},{"./array":503,"fast-isnumeric":161}],544:[function(_dereq_,module,exports){
 'use strict';
 
 var rgba = _dereq_('color-normalize');
@@ -82128,7 +79907,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"color-normalize":69}],542:[function(_dereq_,module,exports){
+},{"color-normalize":69}],545:[function(_dereq_,module,exports){
 'use strict';
 
 /* global MathJax:false */
@@ -83037,7 +80816,7 @@ exports.makeEditable = function(context, options) {
     return d3.rebind(context, dispatch, 'on');
 };
 
-},{"../constants/alignment":490,"../constants/xmlns_namespaces":496,"../lib":517,"@plotly/d3":14}],543:[function(_dereq_,module,exports){
+},{"../constants/alignment":492,"../constants/xmlns_namespaces":498,"../lib":519,"@plotly/d3":14}],546:[function(_dereq_,module,exports){
 'use strict';
 
 var timerCache = {};
@@ -83132,7 +80911,7 @@ function _clearTimeout(cache) {
     }
 }
 
-},{}],544:[function(_dereq_,module,exports){
+},{}],547:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -83152,7 +80931,7 @@ module.exports = function toLogRange(val, range) {
     return newVal;
 };
 
-},{"fast-isnumeric":159}],545:[function(_dereq_,module,exports){
+},{"fast-isnumeric":161}],548:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -83166,7 +80945,7 @@ module.exports = {
     }
 };
 
-},{}],546:[function(_dereq_,module,exports){
+},{}],549:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -83201,7 +80980,7 @@ module.exports = {
     }
 };
 
-},{}],547:[function(_dereq_,module,exports){
+},{}],550:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -83250,7 +81029,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":607}],548:[function(_dereq_,module,exports){
+},{"../registry":610}],551:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -83365,7 +81144,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     }
 }
 
-},{"../lib":517}],549:[function(_dereq_,module,exports){
+},{"../lib":519}],552:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -84059,7 +81838,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     }
 };
 
-},{"../components/color":385,"../lib":517,"../plots/cartesian/axis_ids":570,"../plots/plots":605,"../registry":607,"fast-isnumeric":159,"gl-mat4/fromQuat":178}],550:[function(_dereq_,module,exports){
+},{"../components/color":387,"../lib":519,"../plots/cartesian/axis_ids":573,"../plots/plots":608,"../registry":610,"fast-isnumeric":161,"gl-mat4/fromQuat":180}],553:[function(_dereq_,module,exports){
 'use strict';
 
 var main = _dereq_('./plot_api');
@@ -84094,7 +81873,7 @@ var templateApi = _dereq_('./template_api');
 exports.makeTemplate = templateApi.makeTemplate;
 exports.validateTemplate = templateApi.validateTemplate;
 
-},{"../snapshot/download":609,"./plot_api":552,"./template_api":557,"./to_image":558,"./validate":559}],551:[function(_dereq_,module,exports){
+},{"../snapshot/download":612,"./plot_api":555,"./template_api":560,"./to_image":561,"./validate":562}],554:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('../lib/is_plain_object');
@@ -84298,7 +82077,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":518,"../lib/loggers":521,"../lib/noop":526,"../lib/search":537,"../registry":607,"./container_array_match":547}],552:[function(_dereq_,module,exports){
+},{"../lib/is_plain_object":520,"../lib/loggers":523,"../lib/noop":528,"../lib/search":539,"../registry":610,"./container_array_match":550}],555:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -84523,17 +82302,20 @@ function _doPlot(gd, data, layout, config) {
                 });
         }
 
+        var plotGlPixelRatio = gd._context.plotGlPixelRatio;
         if(fullLayout._glcanvas) {
             fullLayout._glcanvas
-                .attr('width', fullLayout.width)
-                .attr('height', fullLayout.height);
+                .attr('width', fullLayout.width * plotGlPixelRatio)
+                .attr('height', fullLayout.height * plotGlPixelRatio)
+                .style('width', fullLayout.width + 'px')
+                .style('height', fullLayout.height + 'px');
 
             var regl = fullLayout._glcanvas.data()[0].regl;
             if(regl) {
                 // Unfortunately, this can happen when relayouting to large
                 // width/height on some browsers.
-                if(Math.floor(fullLayout.width) !== regl._gl.drawingBufferWidth ||
-                    Math.floor(fullLayout.height) !== regl._gl.drawingBufferHeight
+                if(Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
+                    Math.floor(fullLayout.height * plotGlPixelRatio) !== regl._gl.drawingBufferHeight
                  ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
                     if(drawFrameworkCalls) {
@@ -88109,7 +85891,7 @@ exports._guiUpdate = guiEdit(update);
 
 exports._storeDirectGUIEdit = _storeDirectGUIEdit;
 
-},{"../components/color":385,"../components/drawing":407,"../constants/xmlns_namespaces":496,"../lib":517,"../lib/events":508,"../lib/queue":533,"../plots/cartesian/axes":566,"../plots/cartesian/constants":573,"../plots/cartesian/graph_interact":576,"../plots/cartesian/select":586,"../plots/plots":605,"../registry":607,"./edit_types":548,"./helpers":549,"./manage_arrays":551,"./plot_config":553,"./plot_schema":554,"./subroutines":556,"@plotly/d3":14,"fast-isnumeric":159,"has-hover":236}],553:[function(_dereq_,module,exports){
+},{"../components/color":387,"../components/drawing":409,"../constants/xmlns_namespaces":498,"../lib":519,"../lib/events":510,"../lib/queue":535,"../plots/cartesian/axes":569,"../plots/cartesian/constants":576,"../plots/cartesian/graph_interact":579,"../plots/cartesian/select":589,"../plots/plots":608,"../registry":610,"./edit_types":551,"./helpers":552,"./manage_arrays":554,"./plot_config":556,"./plot_schema":557,"./subroutines":559,"@plotly/d3":14,"fast-isnumeric":161,"has-hover":238}],556:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -88370,7 +86152,7 @@ module.exports = {
     dfltConfig: dfltConfig
 };
 
-},{}],554:[function(_dereq_,module,exports){
+},{}],557:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -89035,7 +86817,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":517,"../plots/animation_attributes":560,"../plots/attributes":562,"../plots/frame_attributes":596,"../plots/layout_attributes":603,"../registry":607,"./edit_types":548,"./plot_config":553}],555:[function(_dereq_,module,exports){
+},{"../lib":519,"../plots/animation_attributes":563,"../plots/attributes":565,"../plots/frame_attributes":599,"../plots/layout_attributes":606,"../registry":610,"./edit_types":551,"./plot_config":556}],558:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -89334,7 +87116,7 @@ exports.arrayEditor = function(parentIn, containerStr, itemOut) {
     };
 };
 
-},{"../lib":517,"../plots/attributes":562}],556:[function(_dereq_,module,exports){
+},{"../lib":519,"../plots/attributes":565}],559:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -90050,7 +87832,7 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('colorbar', 'draw')(gd);
 };
 
-},{"../components/color":385,"../components/drawing":407,"../components/modebar":448,"../components/titles":483,"../constants/alignment":490,"../lib":517,"../lib/clear_gl_canvases":503,"../plots/cartesian/autorange":565,"../plots/cartesian/axes":566,"../plots/cartesian/constraints":574,"../plots/plots":605,"../registry":607,"@plotly/d3":14}],557:[function(_dereq_,module,exports){
+},{"../components/color":387,"../components/drawing":409,"../components/modebar":450,"../components/titles":485,"../constants/alignment":492,"../lib":519,"../lib/clear_gl_canvases":505,"../plots/cartesian/autorange":568,"../plots/cartesian/axes":569,"../plots/cartesian/constraints":577,"../plots/plots":608,"../registry":610,"@plotly/d3":14}],560:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -90503,7 +88285,7 @@ function format(opts) {
     return opts;
 }
 
-},{"../lib":517,"../plots/attributes":562,"../plots/plots":605,"./plot_config":553,"./plot_schema":554,"./plot_template":555}],558:[function(_dereq_,module,exports){
+},{"../lib":519,"../plots/attributes":565,"../plots/plots":608,"./plot_config":556,"./plot_schema":557,"./plot_template":558}],561:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -90710,7 +88492,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":517,"../plots/plots":605,"../snapshot/helpers":611,"../snapshot/svgtoimg":613,"../snapshot/tosvg":615,"../version":713,"./plot_api":552,"fast-isnumeric":159}],559:[function(_dereq_,module,exports){
+},{"../lib":519,"../plots/plots":608,"../snapshot/helpers":614,"../snapshot/svgtoimg":616,"../snapshot/tosvg":618,"../version":716,"./plot_api":555,"fast-isnumeric":161}],562:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -91133,7 +88915,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":517,"../plots/plots":605,"./plot_config":553,"./plot_schema":554}],560:[function(_dereq_,module,exports){
+},{"../lib":519,"../plots/plots":608,"./plot_config":556,"./plot_schema":557}],563:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -91221,7 +89003,7 @@ module.exports = {
     }
 };
 
-},{}],561:[function(_dereq_,module,exports){
+},{}],564:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -91308,7 +89090,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     return contOut;
 };
 
-},{"../lib":517,"../plot_api/plot_template":555}],562:[function(_dereq_,module,exports){
+},{"../lib":519,"../plot_api/plot_template":558}],565:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
@@ -91430,7 +89212,7 @@ module.exports = {
     }
 };
 
-},{"../components/fx/attributes":416,"./font_attributes":595}],563:[function(_dereq_,module,exports){
+},{"../components/fx/attributes":418,"./font_attributes":598}],566:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -91441,21 +89223,21 @@ var constants = _dereq_('../../constants/numerical');
 var ONEAVGMONTH = constants.ONEAVGMONTH;
 
 module.exports = function alignPeriod(trace, ax, axLetter, vals) {
-    if(ax.type !== 'date') return vals;
+    if(ax.type !== 'date') return {vals: vals};
 
     var alignment = trace[axLetter + 'periodalignment'];
-    if(!alignment) return vals;
+    if(!alignment) return {vals: vals};
 
     var period = trace[axLetter + 'period'];
     var mPeriod;
     if(isNumeric(period)) {
         period = +period;
-        if(period <= 0) return vals;
+        if(period <= 0) return {vals: vals};
     } else if(typeof period === 'string' && period.charAt(0) === 'M') {
         var n = +(period.substring(1));
         if(n > 0 && Math.round(n) === n) {
             mPeriod = n;
-        } else return vals;
+        } else return {vals: vals};
     }
 
     var calendar = ax.calendar;
@@ -91468,6 +89250,9 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var base = dateTime2ms(period0, calendar) || 0;
 
     var newVals = [];
+    var starts = [];
+    var ends = [];
+
     var len = vals.length;
     for(var i = 0; i < len; i++) {
         var v = vals[i];
@@ -91510,11 +89295,19 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
             isEnd ? endTime :
             (startTime + endTime) / 2
         );
+
+        starts[i] = startTime;
+        ends[i] = endTime;
     }
-    return newVals;
+
+    return {
+        vals: newVals,
+        starts: starts,
+        ends: ends
+    };
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"fast-isnumeric":159}],564:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"fast-isnumeric":161}],567:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -91531,7 +89324,7 @@ module.exports = {
     }
 };
 
-},{}],565:[function(_dereq_,module,exports){
+},{}],568:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -92158,7 +89951,7 @@ function goodNumber(v) {
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
-},{"../../components/drawing":407,"../../constants/numerical":495,"../../lib":517,"../../registry":607,"./axis_ids":570,"@plotly/d3":14,"fast-isnumeric":159}],566:[function(_dereq_,module,exports){
+},{"../../components/drawing":409,"../../constants/numerical":497,"../../lib":519,"../../registry":610,"./axis_ids":573,"@plotly/d3":14,"fast-isnumeric":161}],569:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -96000,7 +93793,7 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
     }
 }
 
-},{"../../components/color":385,"../../components/drawing":407,"../../components/titles":483,"../../constants/alignment":490,"../../constants/numerical":495,"../../lib":517,"../../lib/svg_text_utils":542,"../../plots/plots":605,"../../registry":607,"./autorange":565,"./axis_autotype":567,"./axis_ids":570,"./clean_ticks":572,"./layout_attributes":581,"./set_convert":587,"@plotly/d3":14,"fast-isnumeric":159}],567:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../components/drawing":409,"../../components/titles":485,"../../constants/alignment":492,"../../constants/numerical":497,"../../lib":519,"../../lib/svg_text_utils":545,"../../plots/plots":608,"../../registry":610,"./autorange":568,"./axis_autotype":570,"./axis_ids":573,"./clean_ticks":575,"./layout_attributes":584,"./set_convert":590,"@plotly/d3":14,"fast-isnumeric":161}],570:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -96122,7 +93915,7 @@ function multiCategory(a) {
     return isArrayOrTypedArray(a[0]) && isArrayOrTypedArray(a[1]);
 }
 
-},{"../../constants/numerical":495,"../../lib":517,"fast-isnumeric":159}],568:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"fast-isnumeric":161}],571:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -96434,7 +94227,7 @@ function indexOfDay(v) {
     ];
 }
 
-},{"../../lib":517,"../../registry":607,"../array_container_defaults":561,"./category_order_defaults":571,"./constants":573,"./layout_attributes":581,"./line_grid_defaults":583,"./set_convert":587,"./tick_label_defaults":588,"./tick_mark_defaults":589,"./tick_value_defaults":590,"fast-isnumeric":159}],569:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"../array_container_defaults":564,"./category_order_defaults":574,"./constants":576,"./layout_attributes":584,"./line_grid_defaults":586,"./set_convert":590,"./tick_label_defaults":591,"./tick_mark_defaults":592,"./tick_value_defaults":593,"fast-isnumeric":161}],572:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../../constants/docs');
@@ -96483,7 +94276,7 @@ module.exports = {
     descriptionWithDates: descriptionWithDates
 };
 
-},{"../../constants/docs":492}],570:[function(_dereq_,module,exports){
+},{"../../constants/docs":494}],573:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -96631,7 +94424,7 @@ exports.isLinked = function(fullLayout, axId) {
     );
 };
 
-},{"../../registry":607,"./constants":573}],571:[function(_dereq_,module,exports){
+},{"../../registry":610,"./constants":576}],574:[function(_dereq_,module,exports){
 'use strict';
 
 function findCategories(ax, opts) {
@@ -96717,7 +94510,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],572:[function(_dereq_,module,exports){
+},{}],575:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -96801,7 +94594,7 @@ exports.tick0 = function(tick0, axType, calendar, dtick) {
     return isNumeric(tick0) ? Number(tick0) : 0;
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"fast-isnumeric":159}],573:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"fast-isnumeric":161}],576:[function(_dereq_,module,exports){
 'use strict';
 
 var counterRegex = _dereq_('../../lib/regex').counter;
@@ -96885,7 +94678,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/regex":534}],574:[function(_dereq_,module,exports){
+},{"../../lib/regex":536}],577:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -97528,15 +95321,16 @@ function updateDomain(ax, factor) {
     ax.setScale();
 }
 
-},{"../../constants/alignment":490,"../../constants/numerical":495,"../../lib":517,"./autorange":565,"./axis_ids":570,"./layout_attributes":581,"./scale_zoom":585,"./set_convert":587}],575:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492,"../../constants/numerical":497,"../../lib":519,"./autorange":568,"./axis_ids":573,"./layout_attributes":584,"./scale_zoom":588,"./set_convert":590}],578:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
+var Lib = _dereq_('../../lib');
+var numberFormat = Lib.numberFormat;
 var tinycolor = _dereq_('tinycolor2');
 var supportsPassive = _dereq_('has-passive-events');
 
 var Registry = _dereq_('../../registry');
-var Lib = _dereq_('../../lib');
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = _dereq_('../../lib/svg_text_utils');
 var Color = _dereq_('../../components/color');
@@ -98560,11 +96354,11 @@ function getEndText(ax, end) {
         return initialVal;
     } else if(ax.type === 'log') {
         dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
-        return d3.format('.' + dig + 'g')(Math.pow(10, initialVal));
+        return numberFormat('.' + dig + 'g')(Math.pow(10, initialVal));
     } else { // linear numeric (or category... but just show numbers here)
         dig = Math.floor(Math.log(Math.abs(initialVal)) / Math.LN10) -
             Math.floor(Math.log(diff) / Math.LN10) + 4;
-        return d3.format('.' + String(dig) + 'g')(initialVal);
+        return numberFormat('.' + String(dig) + 'g')(initialVal);
     }
 }
 
@@ -98859,7 +96653,7 @@ module.exports = {
     attachWheelEventHandler: attachWheelEventHandler
 };
 
-},{"../../components/color":385,"../../components/dragelement":404,"../../components/dragelement/helpers":403,"../../components/drawing":407,"../../components/fx":425,"../../constants/alignment":490,"../../lib":517,"../../lib/clear_gl_canvases":503,"../../lib/setcursor":538,"../../lib/svg_text_utils":542,"../../plot_api/subroutines":556,"../../registry":607,"../plots":605,"./axes":566,"./axis_ids":570,"./constants":573,"./scale_zoom":585,"./select":586,"@plotly/d3":14,"has-passive-events":237,"tinycolor2":321}],576:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../components/dragelement":406,"../../components/dragelement/helpers":405,"../../components/drawing":409,"../../components/fx":427,"../../constants/alignment":492,"../../lib":519,"../../lib/clear_gl_canvases":505,"../../lib/setcursor":540,"../../lib/svg_text_utils":545,"../../plot_api/subroutines":559,"../../registry":610,"../plots":608,"./axes":569,"./axis_ids":573,"./constants":576,"./scale_zoom":588,"./select":589,"@plotly/d3":14,"has-passive-events":239,"tinycolor2":323}],579:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -99018,7 +96812,7 @@ exports.updateFx = function(gd) {
     setCursor(fullLayout._draggers, cursor);
 };
 
-},{"../../components/dragelement":404,"../../components/fx":425,"../../lib/setcursor":538,"./constants":573,"./dragbox":575,"@plotly/d3":14}],577:[function(_dereq_,module,exports){
+},{"../../components/dragelement":406,"../../components/fx":427,"../../lib/setcursor":540,"./constants":576,"./dragbox":578,"@plotly/d3":14}],580:[function(_dereq_,module,exports){
 'use strict';
 
 function clearOutlineControllers(gd) {
@@ -99045,7 +96839,7 @@ module.exports = {
     clearSelect: clearSelect
 };
 
-},{}],578:[function(_dereq_,module,exports){
+},{}],581:[function(_dereq_,module,exports){
 'use strict';
 
 var strTranslate = _dereq_('../../lib').strTranslate;
@@ -99093,7 +96887,7 @@ module.exports = {
     getTransform: getTransform
 };
 
-},{"../../lib":517}],579:[function(_dereq_,module,exports){
+},{"../../lib":519}],582:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -99162,7 +96956,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
     };
 };
 
-},{"../../lib":517,"../../registry":607,"./axis_ids":570}],580:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"./axis_ids":573}],583:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -99761,8 +97555,8 @@ exports.toSVG = function(gd) {
             preserveAspectRatio: 'none',
             x: 0,
             y: 0,
-            width: canvas.width,
-            height: canvas.height
+            width: canvas.style.width,
+            height: canvas.style.height
         });
     }
 
@@ -99771,7 +97565,7 @@ exports.toSVG = function(gd) {
 
 exports.updateFx = _dereq_('./graph_interact').updateFx;
 
-},{"../../components/drawing":407,"../../constants/xmlns_namespaces":496,"../../lib":517,"../../registry":607,"../get_data":597,"../plots":605,"./attributes":564,"./axis_ids":570,"./constants":573,"./graph_interact":576,"./layout_attributes":581,"./layout_defaults":582,"./transition_axes":591,"@plotly/d3":14}],581:[function(_dereq_,module,exports){
+},{"../../components/drawing":409,"../../constants/xmlns_namespaces":498,"../../lib":519,"../../registry":610,"../get_data":600,"../plots":608,"./attributes":567,"./axis_ids":573,"./constants":576,"./graph_interact":579,"./layout_attributes":584,"./layout_defaults":585,"./transition_axes":594,"@plotly/d3":14}],584:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../font_attributes');
@@ -100332,7 +98126,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":384,"../../components/drawing/attributes":406,"../../constants/numerical":495,"../../lib/extend":509,"../../plot_api/plot_template":555,"../../plots/cartesian/axis_format_attributes":569,"../font_attributes":595,"./constants":573}],582:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":386,"../../components/drawing/attributes":408,"../../constants/numerical":497,"../../lib/extend":511,"../../plot_api/plot_template":558,"../../plots/cartesian/axis_format_attributes":572,"../font_attributes":598,"./constants":576}],585:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -100710,7 +98504,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":385,"../../components/fx/helpers":421,"../../components/fx/hovermode_defaults":424,"../../lib":517,"../../plot_api/plot_template":555,"../../registry":607,"../layout_attributes":603,"./axis_defaults":568,"./axis_ids":570,"./constants":573,"./constraints":574,"./layout_attributes":581,"./position_defaults":584,"./type_defaults":592}],583:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../components/fx/helpers":423,"../../components/fx/hovermode_defaults":426,"../../lib":519,"../../plot_api/plot_template":558,"../../registry":610,"../layout_attributes":606,"./axis_defaults":571,"./axis_ids":573,"./constants":576,"./constraints":577,"./layout_attributes":584,"./position_defaults":587,"./type_defaults":595}],586:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
@@ -100767,7 +98561,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     }
 };
 
-},{"../../components/color/attributes":384,"../../lib":517,"tinycolor2":321}],584:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":386,"../../lib":519,"tinycolor2":323}],587:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -100846,7 +98640,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":517,"fast-isnumeric":159}],585:[function(_dereq_,module,exports){
+},{"../../lib":519,"fast-isnumeric":161}],588:[function(_dereq_,module,exports){
 'use strict';
 
 var FROM_BL = _dereq_('../../constants/alignment').FROM_BL;
@@ -100866,7 +98660,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     ax.setScale();
 };
 
-},{"../../constants/alignment":490}],586:[function(_dereq_,module,exports){
+},{"../../constants/alignment":492}],589:[function(_dereq_,module,exports){
 'use strict';
 
 var polybool = _dereq_('polybooljs');
@@ -101800,14 +99594,15 @@ module.exports = {
     selectOnClick: selectOnClick
 };
 
-},{"../../components/color":385,"../../components/dragelement/helpers":403,"../../components/drawing":407,"../../components/fx":425,"../../components/fx/helpers":421,"../../components/shapes/draw_newshape/display_outlines":473,"../../components/shapes/draw_newshape/helpers":474,"../../components/shapes/draw_newshape/newshapes":475,"../../lib":517,"../../lib/clear_gl_canvases":503,"../../lib/polygon":529,"../../lib/throttle":543,"../../plot_api/subroutines":556,"../../registry":607,"./axis_ids":570,"./constants":573,"./handle_outline":577,"./helpers":578,"polybooljs":277}],587:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../components/dragelement/helpers":405,"../../components/drawing":409,"../../components/fx":427,"../../components/fx/helpers":423,"../../components/shapes/draw_newshape/display_outlines":475,"../../components/shapes/draw_newshape/helpers":476,"../../components/shapes/draw_newshape/newshapes":477,"../../lib":519,"../../lib/clear_gl_canvases":505,"../../lib/polygon":531,"../../lib/throttle":546,"../../plot_api/subroutines":559,"../../registry":610,"./axis_ids":573,"./constants":576,"./handle_outline":580,"./helpers":581,"polybooljs":279}],590:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
 var utcFormat = _dereq_('d3-time-format').utcFormat;
+var Lib = _dereq_('../../lib');
+var numberFormat = Lib.numberFormat;
 var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = _dereq_('../../lib');
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
@@ -102756,14 +100551,14 @@ module.exports = function setConvert(ax, fullLayout) {
     // occasionally we need _numFormat to pass through
     // even though it won't be needed by this axis
     ax._separators = fullLayout.separators;
-    ax._numFormat = locale ? locale.numberFormat : d3.format;
+    ax._numFormat = locale ? locale.numberFormat : numberFormat;
 
     // and for bar charts and box plots: reset forced minimum tick spacing
     delete ax._minDtick;
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"./axis_ids":570,"./constants":573,"@plotly/d3":14,"d3-time-format":90,"fast-isnumeric":159}],588:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"./axis_ids":573,"./constants":576,"@plotly/d3":14,"d3-time-format":91,"fast-isnumeric":161}],591:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -102881,7 +100676,7 @@ function tickformatstopDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../components/color":385,"../../lib":517,"../array_container_defaults":561,"./layout_attributes":581}],589:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../lib":519,"../array_container_defaults":564,"./layout_attributes":584}],592:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -102905,7 +100700,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":517,"./layout_attributes":581}],590:[function(_dereq_,module,exports){
+},{"../../lib":519,"./layout_attributes":584}],593:[function(_dereq_,module,exports){
 'use strict';
 
 var cleanTicks = _dereq_('./clean_ticks');
@@ -102944,7 +100739,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../lib":517,"./clean_ticks":572}],591:[function(_dereq_,module,exports){
+},{"../../lib":519,"./clean_ticks":575}],594:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -103149,7 +100944,7 @@ module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnComple
     return Promise.resolve();
 };
 
-},{"../../components/drawing":407,"../../lib":517,"../../registry":607,"./axes":566,"@plotly/d3":14}],592:[function(_dereq_,module,exports){
+},{"../../components/drawing":409,"../../lib":519,"../../registry":610,"./axes":569,"@plotly/d3":14}],595:[function(_dereq_,module,exports){
 'use strict';
 
 var traceIs = _dereq_('../../registry').traceIs;
@@ -103281,7 +101076,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-},{"../../registry":607,"./axis_autotype":567}],593:[function(_dereq_,module,exports){
+},{"../../registry":610,"./axis_autotype":570}],596:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -103700,7 +101495,7 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":517,"../registry":607}],594:[function(_dereq_,module,exports){
+},{"../lib":519,"../registry":610}],597:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../lib/extend').extendFlat;
@@ -103797,7 +101592,7 @@ exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
     if(!(y[0] < y[1])) containerOut.domain.y = dfltY.slice();
 };
 
-},{"../lib/extend":509}],595:[function(_dereq_,module,exports){
+},{"../lib/extend":511}],598:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -103849,7 +101644,7 @@ module.exports = function(opts) {
     return attrs;
 };
 
-},{}],596:[function(_dereq_,module,exports){
+},{}],599:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -103875,7 +101670,7 @@ module.exports = {
     }
 };
 
-},{}],597:[function(_dereq_,module,exports){
+},{}],600:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -103996,7 +101791,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-},{"../registry":607,"./cartesian/constants":573}],598:[function(_dereq_,module,exports){
+},{"../registry":610,"./cartesian/constants":576}],601:[function(_dereq_,module,exports){
 'use strict';
 
 var mouseChange = _dereq_('mouse-change');
@@ -104282,7 +102077,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"../cartesian/constants":573,"has-passive-events":237,"mouse-change":252,"mouse-event-offset":253,"mouse-wheel":255}],599:[function(_dereq_,module,exports){
+},{"../cartesian/constants":576,"has-passive-events":239,"mouse-change":254,"mouse-event-offset":255,"mouse-wheel":257}],602:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../cartesian/axes');
@@ -104516,7 +102311,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/str2rgbarray":541,"../cartesian/axes":566}],600:[function(_dereq_,module,exports){
+},{"../../lib/str2rgbarray":544,"../cartesian/axes":569}],603:[function(_dereq_,module,exports){
 'use strict';
 
 var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
@@ -104658,7 +102453,7 @@ exports.updateFx = function(gd) {
     }
 };
 
-},{"../../components/fx/layout_attributes":426,"../../constants/xmlns_namespaces":496,"../../plot_api/edit_types":548,"../cartesian":580,"../cartesian/attributes":564,"../cartesian/constants":573,"../get_data":597,"../layout_attributes":603,"./scene2d":601}],601:[function(_dereq_,module,exports){
+},{"../../components/fx/layout_attributes":428,"../../constants/xmlns_namespaces":498,"../../plot_api/edit_types":551,"../cartesian":583,"../cartesian/attributes":567,"../cartesian/constants":576,"../get_data":600,"../layout_attributes":606,"./scene2d":604}],604:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -105370,7 +103165,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../components/dragelement/helpers":403,"../../components/fx":425,"../../lib/show_no_webgl_msg":539,"../../plots/cartesian/axes":566,"../../registry":607,"../cartesian/autorange":565,"../cartesian/constants":573,"../cartesian/constraints":574,"./camera":598,"./convert":599,"gl-plot2d":209,"gl-select-box":214,"gl-spikes2d":223,"webgl-context":348}],602:[function(_dereq_,module,exports){
+},{"../../components/dragelement/helpers":405,"../../components/fx":427,"../../lib/show_no_webgl_msg":541,"../../plots/cartesian/axes":569,"../../registry":610,"../cartesian/autorange":568,"../cartesian/constants":576,"../cartesian/constraints":577,"./camera":601,"./convert":602,"gl-plot2d":211,"gl-select-box":216,"gl-spikes2d":225,"webgl-context":350}],605:[function(_dereq_,module,exports){
 'use strict';
 
 function xformMatrix(m, v) {
@@ -105395,7 +103190,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],603:[function(_dereq_,module,exports){
+},{}],606:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
@@ -105622,7 +103417,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":384,"../components/shapes/draw_newshape/attributes":470,"../lib/extend":509,"./animation_attributes":560,"./font_attributes":595,"./pad_attributes":604}],604:[function(_dereq_,module,exports){
+},{"../components/color/attributes":386,"../components/shapes/draw_newshape/attributes":472,"../lib/extend":511,"./animation_attributes":563,"./font_attributes":598,"./pad_attributes":607}],607:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -105661,11 +103456,12 @@ module.exports = function(opts) {
     };
 };
 
-},{}],605:[function(_dereq_,module,exports){
+},{}],608:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
 var timeFormatLocale = _dereq_('d3-time-format').timeFormatLocale;
+var formatLocale = _dereq_('d3-format').formatLocale;
 var isNumeric = _dereq_('fast-isnumeric');
 
 var Registry = _dereq_('../registry');
@@ -106366,7 +104162,18 @@ function getFormatter(formatObj, separators) {
     formatObj.thousands = separators.charAt(1);
 
     return {
-        numberFormat: d3.locale(formatObj).numberFormat,
+        numberFormat: function(formatStr) {
+            try {
+                formatStr = formatLocale(formatObj).format(
+                    Lib.adjustFormat(formatStr)
+                );
+            } catch(e) {
+                Lib.warnBadFormat(formatStr);
+                return Lib.noFormat;
+            }
+
+            return formatStr;
+        },
         timeFormat: timeFormatLocale(formatObj).utcFormat
     };
 }
@@ -109075,7 +106882,7 @@ plots.cleanBasePlot = function(desiredType, newFullData, newFullLayout, oldFullD
     }
 };
 
-},{"../components/color":385,"../constants/numerical":495,"../lib":517,"../plot_api/plot_schema":554,"../plot_api/plot_template":555,"../plots/get_data":597,"../registry":607,"./animation_attributes":560,"./attributes":562,"./cartesian/axis_ids":570,"./cartesian/handle_outline":577,"./command":593,"./font_attributes":595,"./frame_attributes":596,"./layout_attributes":603,"@plotly/d3":14,"d3-time-format":90,"fast-isnumeric":159}],606:[function(_dereq_,module,exports){
+},{"../components/color":387,"../constants/numerical":497,"../lib":519,"../plot_api/plot_schema":557,"../plot_api/plot_template":558,"../plots/get_data":600,"../registry":610,"./animation_attributes":563,"./attributes":565,"./cartesian/axis_ids":573,"./cartesian/handle_outline":580,"./command":596,"./font_attributes":598,"./frame_attributes":599,"./layout_attributes":606,"@plotly/d3":14,"d3-format":90,"d3-time-format":91,"fast-isnumeric":161}],609:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../constants/docs');
@@ -109156,7 +106963,7 @@ exports.texttemplateAttrs = function(opts, extra) {
     return texttemplate;
 };
 
-},{"../constants/docs":492}],607:[function(_dereq_,module,exports){
+},{"../constants/docs":494}],610:[function(_dereq_,module,exports){
 'use strict';
 
 var Loggers = _dereq_('./lib/loggers');
@@ -109614,7 +107421,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib/dom":507,"./lib/extend":509,"./lib/is_plain_object":518,"./lib/loggers":521,"./lib/noop":526,"./lib/push_unique":532,"./plots/attributes":562,"./plots/layout_attributes":603}],608:[function(_dereq_,module,exports){
+},{"./lib/dom":509,"./lib/extend":511,"./lib/is_plain_object":520,"./lib/loggers":523,"./lib/noop":528,"./lib/push_unique":534,"./plots/attributes":565,"./plots/layout_attributes":606}],611:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -109774,7 +107581,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":517,"../registry":607}],609:[function(_dereq_,module,exports){
+},{"../lib":519,"../registry":610}],612:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -109838,7 +107645,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":517,"../plot_api/to_image":558,"./filesaver":610,"./helpers":611}],610:[function(_dereq_,module,exports){
+},{"../lib":519,"../plot_api/to_image":561,"./filesaver":613,"./helpers":614}],613:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -109863,13 +107670,6 @@ function fileSaver(url, name, format) {
     var promise = new Promise(function(resolve, reject) {
         var blob;
         var objectUrl;
-
-        // Safari doesn't allow downloading of blob urls
-        if(Lib.isSafari()) {
-            var prefix = format === 'svg' ? ',' : ';base64,';
-            helpers.octetStream(prefix + encodeURIComponent(url));
-            return resolve(name);
-        }
 
         // IE 10+ (native saveAs)
         if(Lib.isIE()) {
@@ -109897,6 +107697,13 @@ function fileSaver(url, name, format) {
             return resolve(name);
         }
 
+        // Older versions of Safari did not allow downloading of blob urls
+        if(Lib.isSafari()) {
+            var prefix = format === 'svg' ? ',' : ';base64,';
+            helpers.octetStream(prefix + encodeURIComponent(url));
+            return resolve(name);
+        }
+
         reject(new Error('download error'));
     });
 
@@ -109906,7 +107713,7 @@ function fileSaver(url, name, format) {
 
 module.exports = fileSaver;
 
-},{"../lib":517,"./helpers":611}],611:[function(_dereq_,module,exports){
+},{"../lib":519,"./helpers":614}],614:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -109975,7 +107782,7 @@ exports.IMAGE_URL_PREFIX = /^data:image\/\w+;base64,/;
 
 exports.MSG_IE_BAD_FORMAT = 'Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.';
 
-},{"../registry":607}],612:[function(_dereq_,module,exports){
+},{"../registry":610}],615:[function(_dereq_,module,exports){
 'use strict';
 
 var helpers = _dereq_('./helpers');
@@ -109992,7 +107799,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":608,"./download":609,"./helpers":611,"./svgtoimg":613,"./toimage":614,"./tosvg":615}],613:[function(_dereq_,module,exports){
+},{"./cloneplot":611,"./download":612,"./helpers":614,"./svgtoimg":616,"./toimage":617,"./tosvg":618}],616:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -110111,7 +107918,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":517,"./helpers":611,"events":57}],614:[function(_dereq_,module,exports){
+},{"../lib":519,"./helpers":614,"events":57}],617:[function(_dereq_,module,exports){
 'use strict';
 
 var EventEmitter = _dereq_('events').EventEmitter;
@@ -110180,7 +107987,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":517,"../registry":607,"./cloneplot":608,"./helpers":611,"./svgtoimg":613,"./tosvg":615,"events":57}],615:[function(_dereq_,module,exports){
+},{"../lib":519,"../registry":610,"./cloneplot":611,"./helpers":614,"./svgtoimg":616,"./tosvg":618,"events":57}],618:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -110365,7 +108172,7 @@ module.exports = function toSVG(gd, format, scale) {
     return s;
 };
 
-},{"../components/color":385,"../components/drawing":407,"../constants/xmlns_namespaces":496,"../lib":517,"@plotly/d3":14}],616:[function(_dereq_,module,exports){
+},{"../components/color":387,"../components/drawing":409,"../constants/xmlns_namespaces":498,"../lib":519,"@plotly/d3":14}],619:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -110390,7 +108197,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":517}],617:[function(_dereq_,module,exports){
+},{"../../lib":519}],620:[function(_dereq_,module,exports){
 'use strict';
 
 var scatterAttrs = _dereq_('../scatter/attributes');
@@ -110482,7 +108289,7 @@ module.exports = extendFlat({
     colorScaleAttrs('', {cLetter: 'z', autoColorDflt: false})
 );
 
-},{"../../components/colorscale/attributes":392,"../../lib/extend":509,"../../plots/attributes":562,"../../plots/cartesian/axis_format_attributes":569,"../../plots/template_attributes":606,"../scatter/attributes":655}],618:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":394,"../../lib/extend":511,"../../plots/attributes":565,"../../plots/cartesian/axis_format_attributes":572,"../../plots/template_attributes":609,"../scatter/attributes":658}],621:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -110539,8 +108346,8 @@ module.exports = function calc(gd, trace) {
         } else {
             origX = trace.x ? xa.makeCalcdata(trace, 'x') : [];
             origY = trace.y ? ya.makeCalcdata(trace, 'y') : [];
-            x = alignPeriod(trace, xa, 'x', origX);
-            y = alignPeriod(trace, ya, 'y', origY);
+            x = alignPeriod(trace, xa, 'x', origX).vals;
+            y = alignPeriod(trace, ya, 'y', origY).vals;
             trace._x = x;
             trace._y = y;
         }
@@ -110683,7 +108490,7 @@ function dropZonBreaks(x, y, z) {
     return newZ;
 }
 
-},{"../../components/colorscale/calc":393,"../../constants/numerical":495,"../../lib":517,"../../plots/cartesian/align_period":563,"../../plots/cartesian/axes":566,"../../registry":607,"../histogram2d/calc":635,"./clean_2d_array":619,"./convert_column_xyz":621,"./find_empties":622,"./interp2d":623,"./make_bound_array":624}],619:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":395,"../../constants/numerical":497,"../../lib":519,"../../plots/cartesian/align_period":566,"../../plots/cartesian/axes":569,"../../registry":610,"../histogram2d/calc":638,"./clean_2d_array":622,"./convert_column_xyz":624,"./find_empties":625,"./interp2d":626,"./make_bound_array":627}],622:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -110752,7 +108559,7 @@ module.exports = function clean2dArray(zOld, trace, xa, ya) {
     return zNew;
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"fast-isnumeric":159}],620:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"fast-isnumeric":161}],623:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -110760,7 +108567,7 @@ module.exports = {
     max: 'zmax'
 };
 
-},{}],621:[function(_dereq_,module,exports){
+},{}],624:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -110771,8 +108578,8 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     var colLen = trace._length;
     var col1 = ax1.makeCalcdata(trace, var1Name);
     var col2 = ax2.makeCalcdata(trace, var2Name);
-    col1 = alignPeriod(trace, ax1, var1Name, col1);
-    col2 = alignPeriod(trace, ax2, var2Name, col2);
+    col1 = alignPeriod(trace, ax1, var1Name, col1).vals;
+    col2 = alignPeriod(trace, ax2, var2Name, col2).vals;
 
     var textCol = trace.text;
     var hasColumnText = (textCol !== undefined && Lib.isArray1D(textCol));
@@ -110841,7 +108648,7 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     trace._after2before = after2before;
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"../../plots/cartesian/align_period":563}],622:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"../../plots/cartesian/align_period":566}],625:[function(_dereq_,module,exports){
 'use strict';
 
 var maxRowLength = _dereq_('../../lib').maxRowLength;
@@ -110938,7 +108745,7 @@ module.exports = function findEmpties(z) {
     return empties.sort(function(a, b) { return b[2] - a[2]; });
 };
 
-},{"../../lib":517}],623:[function(_dereq_,module,exports){
+},{"../../lib":519}],626:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -111063,7 +108870,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../lib":517}],624:[function(_dereq_,module,exports){
+},{"../../lib":519}],627:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -111143,7 +108950,7 @@ module.exports = function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, 
     return arrayOut;
 };
 
-},{"../../lib":517,"../../registry":607}],625:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610}],628:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -111234,7 +109041,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"../../lib":517,"../../registry":607,"fast-isnumeric":159}],626:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"fast-isnumeric":161}],629:[function(_dereq_,module,exports){
 'use strict';
 
 var heatmapAttrs = _dereq_('../heatmap/attributes');
@@ -111272,7 +109079,7 @@ extendFlat(
 
 module.exports = overrideAll(attrs, 'calc', 'nested');
 
-},{"../../components/colorscale/attributes":392,"../../lib/extend":509,"../../plot_api/edit_types":548,"../heatmap/attributes":617}],627:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":394,"../../lib/extend":511,"../../plot_api/edit_types":551,"../heatmap/attributes":620}],630:[function(_dereq_,module,exports){
 'use strict';
 
 var createHeatmap2D = _dereq_('gl-heatmap2d');
@@ -111415,7 +109222,7 @@ function createHeatmap(scene, fullTrace, calcTrace) {
 
 module.exports = createHeatmap;
 
-},{"../../lib/str2rgbarray":541,"../../plots/cartesian/axes":566,"gl-heatmap2d":171}],628:[function(_dereq_,module,exports){
+},{"../../lib/str2rgbarray":544,"../../plots/cartesian/axes":569,"gl-heatmap2d":173}],631:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -111442,7 +109249,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":395,"../../lib":517,"../heatmap/xyz_defaults":625,"./attributes":626}],629:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":397,"../../lib":519,"../heatmap/xyz_defaults":628,"./attributes":629}],632:[function(_dereq_,module,exports){
 'use strict';
 
 var deprecationWarning = [
@@ -111468,7 +109275,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl2d":600,"../heatmap/calc":618,"../heatmap/colorbar":620,"./attributes":626,"./convert":627,"./defaults":628}],630:[function(_dereq_,module,exports){
+},{"../../plots/gl2d":603,"../heatmap/calc":621,"../heatmap/colorbar":623,"./attributes":629,"./convert":630,"./defaults":631}],633:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -111484,7 +109291,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],631:[function(_dereq_,module,exports){
+},{}],634:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -111549,7 +109356,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":159}],632:[function(_dereq_,module,exports){
+},{"fast-isnumeric":161}],635:[function(_dereq_,module,exports){
 'use strict';
 
 var numConstants = _dereq_('../../constants/numerical');
@@ -111716,7 +109523,7 @@ function dateParts(v, pa, calendar) {
     return parts;
 }
 
-},{"../../constants/numerical":495,"../../plots/cartesian/axes":566}],633:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../plots/cartesian/axes":569}],636:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -112287,7 +110094,7 @@ module.exports = {
     calcAllAutoBins: calcAllAutoBins
 };
 
-},{"../../lib":517,"../../plots/cartesian/axes":566,"../../registry":607,"../bar/arrays_to_calcdata":616,"./average":630,"./bin_functions":631,"./bin_label_vals":632,"./norm_functions":634,"fast-isnumeric":159}],634:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/cartesian/axes":569,"../../registry":610,"../bar/arrays_to_calcdata":619,"./average":633,"./bin_functions":634,"./bin_label_vals":635,"./norm_functions":637,"fast-isnumeric":161}],637:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -112313,7 +110120,7 @@ module.exports = {
     }
 };
 
-},{}],635:[function(_dereq_,module,exports){
+},{}],638:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -112524,7 +110331,7 @@ function getRanges(edges, uniqueVals, gapLow, gapHigh, ax, calendar) {
     return out;
 }
 
-},{"../../lib":517,"../../plots/cartesian/axes":566,"../histogram/average":630,"../histogram/bin_functions":631,"../histogram/bin_label_vals":632,"../histogram/calc":633,"../histogram/norm_functions":634}],636:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/cartesian/axes":569,"../histogram/average":633,"../histogram/bin_functions":634,"../histogram/bin_label_vals":635,"../histogram/calc":636,"../histogram/norm_functions":637}],639:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -112595,8 +110402,8 @@ module.exports = {
             freeLength: true,
             dimensions: '1-2',
             items: [
-                {valType: 'number', editType: 'plot'},
-                {valType: 'number', editType: 'plot'}
+                {valType: 'any', editType: 'plot'},
+                {valType: 'any', editType: 'plot'}
             ],
             editType: 'plot',
         },
@@ -112623,7 +110430,7 @@ module.exports = {
     )
 };
 
-},{"../../components/colorscale/attributes":392,"../../lib/extend":509,"../../plot_api/plot_template":555,"../../plots/cartesian/layout_attributes":581,"../../plots/domain":594,"../../plots/font_attributes":595}],637:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":394,"../../lib/extend":511,"../../plot_api/plot_template":558,"../../plots/cartesian/layout_attributes":584,"../../plots/domain":597,"../../plots/font_attributes":598}],640:[function(_dereq_,module,exports){
 'use strict';
 
 var c = _dereq_('./constants');
@@ -113160,7 +110967,7 @@ module.exports = {
     cleanRanges: cleanRanges
 };
 
-},{"../../lib":517,"../../lib/gup":514,"./constants":640,"@plotly/d3":14}],638:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../lib/gup":516,"./constants":643,"@plotly/d3":14}],641:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -113202,8 +111009,8 @@ exports.toSVG = function(gd) {
             preserveAspectRatio: 'none',
             x: 0,
             y: 0,
-            width: canvas.width,
-            height: canvas.height
+            width: canvas.style.width,
+            height: canvas.style.height
         });
     }
 
@@ -113219,7 +111026,7 @@ exports.toSVG = function(gd) {
     }, 60);
 };
 
-},{"../../constants/xmlns_namespaces":496,"../../plots/get_data":597,"./plot":647,"@plotly/d3":14}],639:[function(_dereq_,module,exports){
+},{"../../constants/xmlns_namespaces":498,"../../plots/get_data":600,"./plot":650,"@plotly/d3":14}],642:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
@@ -113255,7 +111062,7 @@ function constHalf(len) {
     return out;
 }
 
-},{"../../components/colorscale":397,"../../lib":517,"../../lib/gup":514}],640:[function(_dereq_,module,exports){
+},{"../../components/colorscale":399,"../../lib":519,"../../lib/gup":516}],643:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -113308,7 +111115,7 @@ module.exports = {
     }
 };
 
-},{}],641:[function(_dereq_,module,exports){
+},{}],644:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -113420,7 +111227,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('labelside');
 };
 
-},{"../../components/colorscale/defaults":395,"../../components/colorscale/helpers":396,"../../lib":517,"../../plots/array_container_defaults":561,"../../plots/cartesian/axes":566,"../../plots/domain":594,"./attributes":636,"./axisbrush":637,"./constants":640,"./merge_length":645}],642:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":397,"../../components/colorscale/helpers":398,"../../lib":519,"../../plots/array_container_defaults":564,"../../plots/cartesian/axes":569,"../../plots/domain":597,"./attributes":639,"./axisbrush":640,"./constants":643,"./merge_length":648}],645:[function(_dereq_,module,exports){
 'use strict';
 
 var isTypedArray = _dereq_('../../lib').isTypedArray;
@@ -113437,7 +111244,7 @@ exports.isVisible = function(dimension) {
     return dimension.visible || !('visible' in dimension);
 };
 
-},{"../../lib":517}],643:[function(_dereq_,module,exports){
+},{"../../lib":519}],646:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -113459,7 +111266,7 @@ module.exports = {
     }
 };
 
-},{"./attributes":636,"./base_plot":638,"./calc":639,"./defaults":641,"./plot":647}],644:[function(_dereq_,module,exports){
+},{"./attributes":639,"./base_plot":641,"./calc":642,"./defaults":644,"./plot":650}],647:[function(_dereq_,module,exports){
 'use strict';
 
 var glslify = _dereq_('glslify');
@@ -113622,17 +111429,27 @@ function emptyAttributes(regl) {
     return attributes;
 }
 
-function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY, crossfilterDimensionIndex, drwLayer, constraints) {
+function makeItem(
+    model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSizeX, panelSizeY,
+    crossfilterDimensionIndex, drwLayer, constraints, plotGlPixelRatio
+) {
     var dims = [[], []];
     for(var k = 0; k < 64; k++) {
         dims[0][k] = (k === i0) ? 1 : 0;
         dims[1][k] = (k === i1) ? 1 : 0;
     }
-
-    var overdrag = model.lines.canvasOverdrag;
+    x *= plotGlPixelRatio;
+    y *= plotGlPixelRatio;
+    panelSizeX *= plotGlPixelRatio;
+    panelSizeY *= plotGlPixelRatio;
+    var overdrag = model.lines.canvasOverdrag * plotGlPixelRatio;
     var domain = model.domain;
-    var canvasWidth = model.canvasWidth;
-    var canvasHeight = model.canvasHeight;
+    var canvasWidth = model.canvasWidth * plotGlPixelRatio;
+    var canvasHeight = model.canvasHeight * plotGlPixelRatio;
+    var padL = model.pad.l * plotGlPixelRatio;
+    var padB = model.pad.b * plotGlPixelRatio;
+    var layoutHeight = model.layoutHeight * plotGlPixelRatio;
+    var layoutWidth = model.layoutWidth * plotGlPixelRatio;
 
     var deselectedLinesColor = model.deselectedLines.color;
 
@@ -113663,13 +111480,13 @@ function makeItem(model, leftmost, rightmost, itemNumber, i0, i1, x, y, panelSiz
                 Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
         ],
 
-        scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (model.pad.l - overdrag) + model.layoutWidth * domain.x[0],
+        scissorX: (itemNumber === leftmost ? 0 : x + overdrag) + (padL - overdrag) + layoutWidth * domain.x[0],
         scissorWidth: (itemNumber === rightmost ? canvasWidth - x + overdrag : panelSizeX + 0.5) + (itemNumber === leftmost ? x + overdrag : 0),
-        scissorY: y + model.pad.b + model.layoutHeight * domain.y[0],
+        scissorY: y + padB + layoutHeight * domain.y[0],
         scissorHeight: panelSizeY,
 
-        viewportX: model.pad.l - overdrag + model.layoutWidth * domain.x[0],
-        viewportY: model.pad.b + model.layoutHeight * domain.y[0],
+        viewportX: padL - overdrag + layoutWidth * domain.x[0],
+        viewportY: padB + layoutHeight * domain.y[0],
         viewportWidth: canvasWidth,
         viewportHeight: canvasHeight
     }, constraints);
@@ -113693,6 +111510,16 @@ module.exports = function(canvasGL, d) {
     var isPick = d.pick;
 
     var regl = d.regl;
+    var gl = regl._gl;
+    var supportedLineWidth = gl.getParameter(gl.ALIASED_LINE_WIDTH_RANGE);
+    // ensure here that plotGlPixelRatio is within supported range; otherwise regl throws error
+    var plotGlPixelRatio = Math.max(
+        supportedLineWidth[0],
+        Math.min(
+            supportedLineWidth[1],
+            d.viewModel.plotGlPixelRatio
+        )
+    );
 
     var renderState = {
         currentRafs: {},
@@ -113769,7 +111596,7 @@ module.exports = function(canvasGL, d) {
         frag: fragmentShaderSource,
 
         primitive: 'lines',
-        lineWidth: 1,
+        lineWidth: plotGlPixelRatio,
         attributes: attributes,
         uniforms: {
             resolution: regl.prop('resolution'),
@@ -113916,6 +111743,7 @@ module.exports = function(canvasGL, d) {
             var x = p.canvasX;
             var y = p.canvasY;
             var nextX = x + p.panelSizeX;
+            var plotGlPixelRatio = p.plotGlPixelRatio;
             if(setChanged ||
                 !prevAxisOrder[i0] ||
                 prevAxisOrder[i0][0] !== x ||
@@ -113929,7 +111757,8 @@ module.exports = function(canvasGL, d) {
                     p.panelSizeX, p.panelSizeY,
                     p.dim0.crossfilterDimensionIndex,
                     isContext ? 0 : isPick ? 2 : 1,
-                    constraints
+                    constraints,
+                    plotGlPixelRatio
                 );
 
                 renderState.clearOnly = clearOnly;
@@ -113981,7 +111810,7 @@ module.exports = function(canvasGL, d) {
     };
 };
 
-},{"../../lib":517,"./constants":640,"glslify":235}],645:[function(_dereq_,module,exports){
+},{"../../lib":519,"./constants":643,"glslify":237}],648:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -114011,14 +111840,15 @@ module.exports = function(traceOut, dimensions, dataAttr, len) {
     return len;
 };
 
-},{}],646:[function(_dereq_,module,exports){
+},{}],649:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
+var Lib = _dereq_('../../lib');
+var numberFormat = Lib.numberFormat;
 var rgba = _dereq_('color-rgba');
 
 var Axes = _dereq_('../../plots/cartesian/axes');
-var Lib = _dereq_('../../lib');
 var strRotate = Lib.strRotate;
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = _dereq_('../../lib/svg_text_utils');
@@ -114093,7 +111923,7 @@ function domainScale(height, padding, dimension, tickvals, ticktext) {
     var extent = dimensionExtent(dimension);
     if(tickvals) {
         return d3.scale.ordinal()
-            .domain(tickvals.map(toText(d3.format(dimension.tickformat), ticktext)))
+            .domain(tickvals.map(toText(numberFormat(dimension.tickformat), ticktext)))
             .range(tickvals
                 .map(function(d) {
                     var unitVal = (d - extent[0]) / (extent[1] - extent[0]);
@@ -114280,7 +112110,7 @@ function viewModel(state, callbacks, model) {
 
             // ensure ticktext and tickvals have same length
             if(!Array.isArray(ticktext) || !ticktext.length) {
-                ticktext = tickvals.map(d3.format(dimension.tickformat));
+                ticktext = tickvals.map(numberFormat(dimension.tickformat));
             } else if(ticktext.length > tickvals.length) {
                 ticktext = ticktext.slice(0, tickvals.length);
             } else if(tickvals.length > ticktext.length) {
@@ -114383,7 +112213,7 @@ function calcTilt(angle, position) {
     };
 }
 
-function updatePanelLayout(yAxis, vm) {
+function updatePanelLayout(yAxis, vm, plotGlPixelRatio) {
     var panels = vm.panels || (vm.panels = []);
     var data = yAxis.data();
     for(var i = 0; i < data.length - 1; i++) {
@@ -114397,6 +112227,7 @@ function updatePanelLayout(yAxis, vm) {
         p.panelSizeY = vm.model.canvasHeight;
         p.y = 0;
         p.canvasY = 0;
+        p.plotGlPixelRatio = plotGlPixelRatio;
     }
 }
 
@@ -114447,6 +112278,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
     var paperColor = gd._fullLayout.paper_bgcolor;
 
     calcAllTicks(cdModule);
@@ -114466,6 +112298,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .each(function(d) {
             // FIXME: figure out how to handle multiple instances
             d.viewModel = vm[0];
+            d.viewModel.plotGlPixelRatio = plotGlPixelRatio;
             d.viewModel.paperColor = paperColor;
             d.model = d.viewModel ? d.viewModel.model : null;
         });
@@ -114550,7 +112383,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.yAxis, true);
 
     parcoordsControlView.each(function(p) {
-        updatePanelLayout(yAxis, p);
+        updatePanelLayout(yAxis, p, plotGlPixelRatio);
     });
 
     glLayers
@@ -114589,7 +112422,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
                     e.canvasX = e.x * e.model.canvasPixelRatio;
                 });
 
-            updatePanelLayout(yAxis, p);
+            updatePanelLayout(yAxis, p, plotGlPixelRatio);
 
             yAxis.filter(function(e) { return Math.abs(d.xIndex - e.xIndex) !== 0; })
                 .attr('transform', function(d) { return strTranslate(d.xScale(d.xIndex), 0); });
@@ -114602,7 +112435,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             var p = d.parent;
             d.x = d.xScale(d.xIndex);
             d.canvasX = d.x * d.model.canvasPixelRatio;
-            updatePanelLayout(yAxis, p);
+            updatePanelLayout(yAxis, p, plotGlPixelRatio);
             d3.select(this)
                 .attr('transform', function(d) { return strTranslate(d.x, 0); });
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
@@ -114768,7 +112601,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     brush.ensureAxisBrush(axisOverlays, paperColor);
 };
 
-},{"../../components/colorscale":397,"../../components/drawing":407,"../../lib":517,"../../lib/gup":514,"../../lib/svg_text_utils":542,"../../plots/cartesian/axes":566,"./axisbrush":637,"./constants":640,"./helpers":642,"./lines":644,"@plotly/d3":14,"color-rgba":71}],647:[function(_dereq_,module,exports){
+},{"../../components/colorscale":399,"../../components/drawing":409,"../../lib":519,"../../lib/gup":516,"../../lib/svg_text_utils":545,"../../plots/cartesian/axes":569,"./axisbrush":640,"./constants":643,"./helpers":645,"./lines":647,"@plotly/d3":14,"color-rgba":71}],650:[function(_dereq_,module,exports){
 'use strict';
 
 var parcoords = _dereq_('./parcoords');
@@ -114915,7 +112748,7 @@ module.exports = function plot(gd, cdModule) {
     );
 };
 
-},{"../../lib/prepare_regl":530,"./helpers":642,"./parcoords":646}],648:[function(_dereq_,module,exports){
+},{"../../lib/prepare_regl":532,"./helpers":645,"./parcoords":649}],651:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -114955,7 +112788,7 @@ exports.getRotationAngle = function(rotation) {
     return (rotation === 'auto' ? 0 : rotation) * Math.PI / 180;
 };
 
-},{"../../lib":517}],649:[function(_dereq_,module,exports){
+},{"../../lib":519}],652:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -114971,7 +112804,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":385,"./helpers":648}],650:[function(_dereq_,module,exports){
+},{"../../components/color":387,"./helpers":651}],653:[function(_dereq_,module,exports){
 'use strict';
 
 var scatterglAttrs = _dereq_('../scatter/attributes');
@@ -115055,7 +112888,7 @@ module.exports = {
     transforms: undefined
 };
 
-},{"../scatter/attributes":655}],651:[function(_dereq_,module,exports){
+},{"../scatter/attributes":658}],654:[function(_dereq_,module,exports){
 'use strict';
 
 var createPointCloudRenderer = _dereq_('gl-pointcloud2d');
@@ -115249,7 +113082,7 @@ function createPointcloud(scene, data) {
 
 module.exports = createPointcloud;
 
-},{"../../lib/str2rgbarray":541,"../../plots/cartesian/autorange":565,"../scatter/get_trace_color":665,"gl-pointcloud2d":211}],652:[function(_dereq_,module,exports){
+},{"../../lib/str2rgbarray":544,"../../plots/cartesian/autorange":568,"../scatter/get_trace_color":668,"gl-pointcloud2d":213}],655:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -115288,7 +113121,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     traceOut._length = null;
 };
 
-},{"../../lib":517,"./attributes":650}],653:[function(_dereq_,module,exports){
+},{"../../lib":519,"./attributes":653}],656:[function(_dereq_,module,exports){
 'use strict';
 
 var deprecationWarning = [
@@ -115312,7 +113145,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl2d":600,"../scatter3d/calc":683,"./attributes":650,"./convert":651,"./defaults":652}],654:[function(_dereq_,module,exports){
+},{"../../plots/gl2d":603,"../scatter3d/calc":686,"./attributes":653,"./convert":654,"./defaults":655}],657:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -115355,7 +113188,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":517}],655:[function(_dereq_,module,exports){
+},{"../../lib":519}],658:[function(_dereq_,module,exports){
 'use strict';
 
 var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
@@ -115705,7 +113538,7 @@ module.exports = {
     }),
 };
 
-},{"../../components/colorscale/attributes":392,"../../components/drawing":407,"../../components/drawing/attributes":406,"../../lib/extend":509,"../../plots/cartesian/axis_format_attributes":569,"../../plots/font_attributes":595,"../../plots/template_attributes":606,"./constants":659}],656:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":394,"../../components/drawing":409,"../../components/drawing/attributes":408,"../../lib/extend":511,"../../plots/cartesian/axis_format_attributes":572,"../../plots/font_attributes":598,"../../plots/template_attributes":609,"./constants":662}],659:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -115726,8 +113559,10 @@ function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
-    var x = alignPeriod(trace, xa, 'x', origX);
-    var y = alignPeriod(trace, ya, 'y', origY);
+    var xObj = alignPeriod(trace, xa, 'x', origX);
+    var yObj = alignPeriod(trace, ya, 'y', origY);
+    var x = xObj.vals;
+    var y = yObj.vals;
 
     var serieslen = trace._length;
     var cd = new Array(serieslen);
@@ -115772,9 +113607,13 @@ function calc(gd, trace) {
 
             if(hasPeriodX) {
                 cdi.orig_x = origX[i]; // used by hover
+                cdi.xEnd = xObj.ends[i];
+                cdi.xStart = xObj.starts[i];
             }
             if(hasPeriodY) {
                 cdi.orig_y = origY[i]; // used by hover
+                cdi.yEnd = yObj.ends[i];
+                cdi.yStart = yObj.starts[i];
             }
         } else if(stackGroupOpts && (isV ? xValid : yValid)) {
             // if we're stacking we need to hold on to all valid positions
@@ -115996,7 +113835,7 @@ module.exports = {
     getStackOpts: getStackOpts
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"../../plots/cartesian/align_period":563,"../../plots/cartesian/axes":566,"./arrays_to_calcdata":654,"./calc_selection":657,"./colorscale_calc":658,"./subtypes":680,"fast-isnumeric":159}],657:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"../../plots/cartesian/align_period":566,"../../plots/cartesian/axes":569,"./arrays_to_calcdata":657,"./calc_selection":660,"./colorscale_calc":661,"./subtypes":683,"fast-isnumeric":161}],660:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -116007,7 +113846,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":517}],658:[function(_dereq_,module,exports){
+},{"../../lib":519}],661:[function(_dereq_,module,exports){
 'use strict';
 
 var hasColorscale = _dereq_('../../components/colorscale/helpers').hasColorscale;
@@ -116042,7 +113881,7 @@ module.exports = function calcMarkerColorscale(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":393,"../../components/colorscale/helpers":396,"./subtypes":680}],659:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":395,"../../components/colorscale/helpers":398,"./subtypes":683}],662:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -116062,7 +113901,7 @@ module.exports = {
     eventDataKeys: []
 };
 
-},{}],660:[function(_dereq_,module,exports){
+},{}],663:[function(_dereq_,module,exports){
 'use strict';
 
 var calc = _dereq_('./calc');
@@ -116234,7 +114073,7 @@ function getInterp(calcTrace, index, position, posAttr) {
     return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
 }
 
-},{"./calc":656}],661:[function(_dereq_,module,exports){
+},{"./calc":659}],664:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -116264,7 +114103,7 @@ module.exports = function crossTraceDefaults(fullData) {
     }
 };
 
-},{}],662:[function(_dereq_,module,exports){
+},{}],665:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -116351,7 +114190,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":517,"../../registry":607,"./attributes":655,"./constants":659,"./fillcolor_defaults":663,"./line_defaults":668,"./line_shape_defaults":670,"./marker_defaults":674,"./period_defaults":675,"./stack_defaults":678,"./subtypes":680,"./text_defaults":681,"./xy_defaults":682}],663:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"./attributes":658,"./constants":662,"./fillcolor_defaults":666,"./line_defaults":671,"./line_shape_defaults":673,"./marker_defaults":677,"./period_defaults":678,"./stack_defaults":681,"./subtypes":683,"./text_defaults":684,"./xy_defaults":685}],666:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -116379,7 +114218,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":385,"../../lib":517}],664:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../lib":519}],667:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../../plots/cartesian/axes');
@@ -116397,7 +114236,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     return labels;
 };
 
-},{"../../plots/cartesian/axes":566}],665:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axes":569}],668:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -116437,7 +114276,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":385,"./subtypes":680}],666:[function(_dereq_,module,exports){
+},{"../../components/color":387,"./subtypes":683}],669:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -116458,31 +114297,54 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var hoveron = trace.hoveron || '';
     var minRad = (trace.mode.indexOf('markers') !== -1) ? 3 : 0.5;
 
+    var xPeriod = !!trace.xperiodalignment;
+    var yPeriod = !!trace.yperiodalignment;
+
     // look for points to hover on first, then take fills only if we
     // didn't find a point
+
     if(hoveron.indexOf('points') !== -1) {
+        // dx and dy are used in compare modes - here we want to always
+        // prioritize the closest data point, at least as long as markers are
+        // the same size or nonexistent, but still try to prioritize small markers too.
         var dx = function(di) {
-            // dx and dy are used in compare modes - here we want to always
-            // prioritize the closest data point, at least as long as markers are
-            // the same size or nonexistent, but still try to prioritize small markers too.
+            if(xPeriod) {
+                var x0 = xa.c2p(di.xStart);
+                var x1 = xa.c2p(di.xEnd);
+
+                return (
+                    xpx >= Math.min(x0, x1) &&
+                    xpx <= Math.max(x0, x1)
+                ) ? 0 : Infinity;
+            }
+
             var rad = Math.max(3, di.mrc || 0);
             var kink = 1 - 1 / rad;
             var dxRaw = Math.abs(xa.c2p(di.x) - xpx);
-            if(di.orig_x !== undefined) dxRaw += xa.c2p(di.orig_x) - xa.c2p(di.x);
             return (dxRaw < rad) ? (kink * dxRaw / rad) : (dxRaw - rad + kink);
         };
         var dy = function(di) {
+            if(yPeriod) {
+                var y0 = ya.c2p(di.yStart);
+                var y1 = ya.c2p(di.yEnd);
+
+                return (
+                    ypx >= Math.min(y0, y1) &&
+                    ypx <= Math.max(y0, y1)
+                ) ? 0 : Infinity;
+            }
+
             var rad = Math.max(3, di.mrc || 0);
             var kink = 1 - 1 / rad;
             var dyRaw = Math.abs(ya.c2p(di.y) - ypx);
-            if(di.orig_y !== undefined) dyRaw += ya.c2p(di.orig_y) - ya.c2p(di.y);
             return (dyRaw < rad) ? (kink * dyRaw / rad) : (dyRaw - rad + kink);
         };
+
+        // scatter points: d.mrc is the calculated marker radius
+        // adjust the distance so if you're inside the marker it
+        // always will show up regardless of point size, but
+        // prioritize smaller points
         var dxy = function(di) {
-            // scatter points: d.mrc is the calculated marker radius
-            // adjust the distance so if you're inside the marker it
-            // always will show up regardless of point size, but
-            // prioritize smaller points
             var rad = Math.max(minRad, di.mrc || 0);
             var dx = xa.c2p(di.x) - xpx;
             var dy = ya.c2p(di.y) - ypx;
@@ -116625,7 +114487,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":385,"../../components/fx":425,"../../lib":517,"../../registry":607,"./get_trace_color":665}],667:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../components/fx":427,"../../lib":519,"../../registry":610,"./get_trace_color":668}],670:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -116662,7 +114524,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian":580,"./arrays_to_calcdata":654,"./attributes":655,"./calc":656,"./cross_trace_calc":660,"./cross_trace_defaults":661,"./defaults":662,"./format_labels":664,"./hover":666,"./marker_colorbar":673,"./plot":676,"./select":677,"./style":679,"./subtypes":680}],668:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":583,"./arrays_to_calcdata":657,"./attributes":658,"./calc":659,"./cross_trace_calc":663,"./cross_trace_defaults":664,"./defaults":665,"./format_labels":667,"./hover":669,"./marker_colorbar":676,"./plot":679,"./select":680,"./style":682,"./subtypes":683}],671:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
@@ -116685,7 +114547,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":395,"../../components/colorscale/helpers":396,"../../lib":517}],669:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":397,"../../components/colorscale/helpers":398,"../../lib":519}],672:[function(_dereq_,module,exports){
 'use strict';
 
 var numConstants = _dereq_('../../constants/numerical');
@@ -117137,7 +114999,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"./constants":659}],670:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"./constants":662}],673:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -117147,7 +115009,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],671:[function(_dereq_,module,exports){
+},{}],674:[function(_dereq_,module,exports){
 'use strict';
 
 var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
@@ -117229,7 +115091,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     return cdscatterSorted;
 };
 
-},{}],672:[function(_dereq_,module,exports){
+},{}],675:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -117237,7 +115099,10 @@ var isNumeric = _dereq_('fast-isnumeric');
 
 // used in the drawing step for 'scatter' and 'scattegeo' and
 // in the convert step for 'scatter3d'
-module.exports = function makeBubbleSizeFn(trace) {
+module.exports = function makeBubbleSizeFn(trace, factor) {
+    if(!factor) {
+        factor = 2;
+    }
     var marker = trace.marker;
     var sizeRef = marker.sizeref || 1;
     var sizeMin = marker.sizemin || 0;
@@ -117253,7 +115118,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     // TODO add support for position/negative bubbles?
     // TODO add 'sizeoffset' attribute?
     return function(v) {
-        var baseSize = baseFn(v / 2);
+        var baseSize = baseFn(v / factor);
 
         // don't show non-numeric and negative sizes
         return (isNumeric(baseSize) && (baseSize > 0)) ?
@@ -117262,7 +115127,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":159}],673:[function(_dereq_,module,exports){
+},{"fast-isnumeric":161}],676:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -117271,7 +115136,7 @@ module.exports = {
     max: 'cmax'
 };
 
-},{}],674:[function(_dereq_,module,exports){
+},{}],677:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -117344,7 +115209,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":385,"../../components/colorscale/defaults":395,"../../components/colorscale/helpers":396,"./subtypes":680}],675:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../components/colorscale/defaults":397,"../../components/colorscale/helpers":398,"./subtypes":683}],678:[function(_dereq_,module,exports){
 'use strict';
 
 var dateTick0 = _dereq_('../../lib').dateTick0;
@@ -117383,7 +115248,7 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     }
 };
 
-},{"../../constants/numerical":495,"../../lib":517}],676:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519}],679:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -117935,7 +115800,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":407,"../../lib":517,"../../lib/polygon":529,"../../registry":607,"./line_points":669,"./link_traces":671,"./subtypes":680,"@plotly/d3":14}],677:[function(_dereq_,module,exports){
+},{"../../components/drawing":409,"../../lib":519,"../../lib/polygon":531,"../../registry":610,"./line_points":672,"./link_traces":674,"./subtypes":683,"@plotly/d3":14}],680:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -117980,7 +115845,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"./subtypes":680}],678:[function(_dereq_,module,exports){
+},{"./subtypes":683}],681:[function(_dereq_,module,exports){
 'use strict';
 
 var perStackAttrs = ['orientation', 'groupnorm', 'stackgaps'];
@@ -118077,7 +115942,7 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
     }
 };
 
-},{}],679:[function(_dereq_,module,exports){
+},{}],682:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -118139,7 +116004,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/drawing":407,"../../registry":607,"@plotly/d3":14}],680:[function(_dereq_,module,exports){
+},{"../../components/drawing":409,"../../registry":610,"@plotly/d3":14}],683:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -118169,7 +116034,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":517}],681:[function(_dereq_,module,exports){
+},{"../../lib":519}],684:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -118190,7 +116055,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":517}],682:[function(_dereq_,module,exports){
+},{"../../lib":519}],685:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -118226,7 +116091,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../lib":517,"../../registry":607}],683:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610}],686:[function(_dereq_,module,exports){
 'use strict';
 
 var arraysToCalcdata = _dereq_('../scatter/arrays_to_calcdata');
@@ -118246,7 +116111,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":654,"../scatter/colorscale_calc":658}],684:[function(_dereq_,module,exports){
+},{"../scatter/arrays_to_calcdata":657,"../scatter/colorscale_calc":661}],687:[function(_dereq_,module,exports){
 'use strict';
 
 var baseAttrs = _dereq_('../../plots/attributes');
@@ -118254,6 +116119,7 @@ var scatterAttrs = _dereq_('../scatter/attributes');
 var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
 
+var sortObjectKeys = _dereq_('../../lib/sort_object_keys');
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
 var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 var DASHES = _dereq_('./constants').DASHES;
@@ -118301,7 +116167,7 @@ var attrs = module.exports = overrideAll({
         },
         dash: {
             valType: 'enumerated',
-            values: Object.keys(DASHES),
+            values: sortObjectKeys(DASHES),
             dflt: 'solid',
         }
     },
@@ -118340,7 +116206,7 @@ attrs.x.editType = attrs.y.editType = attrs.x0.editType = attrs.y0.editType = 'c
 attrs.hovertemplate = scatterAttrs.hovertemplate;
 attrs.texttemplate = scatterAttrs.texttemplate;
 
-},{"../../components/colorscale/attributes":392,"../../lib/extend":509,"../../plot_api/edit_types":548,"../../plots/attributes":562,"../../plots/cartesian/axis_format_attributes":569,"../scatter/attributes":655,"./constants":686}],685:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":394,"../../lib/extend":511,"../../lib/sort_object_keys":542,"../../plot_api/edit_types":551,"../../plots/attributes":565,"../../plots/cartesian/axis_format_attributes":572,"../scatter/attributes":658,"./constants":689}],688:[function(_dereq_,module,exports){
 'use strict';
 
 var cluster = _dereq_('@plotly/point-cluster');
@@ -118374,13 +116240,23 @@ module.exports = function calc(gd, trace) {
 
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
-    var x = alignPeriod(trace, xa, 'x', origX);
-    var y = alignPeriod(trace, ya, 'y', origY);
+    var xObj = alignPeriod(trace, xa, 'x', origX);
+    var yObj = alignPeriod(trace, ya, 'y', origY);
+    var x = xObj.vals;
+    var y = yObj.vals;
     trace._x = x;
     trace._y = y;
 
-    if(trace.xperiodalignment) trace._origX = origX;
-    if(trace.yperiodalignment) trace._origY = origY;
+    if(trace.xperiodalignment) {
+        trace._origX = origX;
+        trace._xStarts = xObj.starts;
+        trace._xEnds = xObj.ends;
+    }
+    if(trace.yperiodalignment) {
+        trace._origY = origY;
+        trace._yStarts = yObj.starts;
+        trace._yEnds = yObj.ends;
+    }
 
     // we need hi-precision for scatter2d,
     // regl-scatter2d uses NaNs for bad/missing values
@@ -118426,7 +116302,7 @@ module.exports = function calc(gd, trace) {
     if(!hasTooManyPoints) {
         ppad = calcMarkerSize(trace, len);
     } else if(opts.marker) {
-        ppad = 2 * (opts.marker.sizeAvg || Math.max(opts.marker.size, 3));
+        ppad = opts.marker.sizeAvg || Math.max(opts.marker.size, 3);
     }
     calcAxisExpansion(gd, trace, xa, ya, x, y, ppad);
     if(opts.errorX) expandForErrorBars(trace, xa, opts.errorX);
@@ -118516,7 +116392,7 @@ function sceneOptions(gd, subplot, trace, positions, x, y) {
     return opts;
 }
 
-},{"../../constants/numerical":495,"../../lib":517,"../../plots/cartesian/align_period":563,"../../plots/cartesian/autorange":565,"../../plots/cartesian/axis_ids":570,"../scatter/calc":656,"../scatter/colorscale_calc":658,"./constants":686,"./convert":687,"./scene_update":695,"@plotly/point-cluster":15}],686:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"../../plots/cartesian/align_period":566,"../../plots/cartesian/autorange":568,"../../plots/cartesian/axis_ids":573,"../scatter/calc":659,"../scatter/colorscale_calc":661,"./constants":689,"./convert":690,"./scene_update":698,"@plotly/point-cluster":15}],689:[function(_dereq_,module,exports){
 'use strict';
 
 var SYMBOL_SIZE = 20;
@@ -118541,7 +116417,7 @@ module.exports = {
     }
 };
 
-},{}],687:[function(_dereq_,module,exports){
+},{}],690:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -118583,6 +116459,8 @@ function convertStyle(gd, trace) {
         textUnsel: undefined
     };
 
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
+
     if(trace.visible !== true) return opts;
 
     if(subTypes.hasText(trace)) {
@@ -118608,24 +116486,24 @@ function convertStyle(gd, trace) {
     if(subTypes.hasLines(trace)) {
         opts.line = {
             overlay: true,
-            thickness: trace.line.width,
+            thickness: trace.line.width * plotGlPixelRatio,
             color: trace.line.color,
             opacity: trace.opacity
         };
 
         var dashes = (constants.DASHES[trace.line.dash] || [1]).slice();
         for(i = 0; i < dashes.length; ++i) {
-            dashes[i] *= trace.line.width;
+            dashes[i] *= trace.line.width * plotGlPixelRatio;
         }
         opts.line.dashes = dashes;
     }
 
     if(trace.error_x && trace.error_x.visible) {
-        opts.errorX = convertErrorBarStyle(trace, trace.error_x);
+        opts.errorX = convertErrorBarStyle(trace, trace.error_x, plotGlPixelRatio);
     }
 
     if(trace.error_y && trace.error_y.visible) {
-        opts.errorY = convertErrorBarStyle(trace, trace.error_y);
+        opts.errorY = convertErrorBarStyle(trace, trace.error_y, plotGlPixelRatio);
     }
 
     if(!!trace.fill && trace.fill !== 'none') {
@@ -118650,6 +116528,7 @@ function convertTextStyle(gd, trace) {
     var tff = textfontIn.family;
     var optsOut = {};
     var i;
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
 
     var texttemplate = trace.texttemplate;
     if(texttemplate) {
@@ -118735,13 +116614,13 @@ function convertTextStyle(gd, trace) {
                 Array.isArray(tfs) ? (
                     isNumeric(tfs[i]) ? tfs[i] : 0
                 ) : tfs
-            );
+            ) * plotGlPixelRatio;
 
             fonti.family = Array.isArray(tff) ? tff[i] : tff;
         }
     } else {
         // if both are single values, make render fast single-value
-        optsOut.font = {size: tfs, family: tff};
+        optsOut.font = {size: tfs * plotGlPixelRatio, family: tff};
     }
 
     return optsOut;
@@ -118827,7 +116706,8 @@ function convertMarkerStyle(trace) {
     }
 
     // prepare sizes
-    var markerSizeFunc = makeBubbleSizeFn(trace);
+    var sizeFactor = 1;
+    var markerSizeFunc = makeBubbleSizeFn(trace, sizeFactor);
     var s;
 
     if(multiSize || multiLineWidth) {
@@ -118852,10 +116732,10 @@ function convertMarkerStyle(trace) {
         // See  https://github.com/plotly/plotly.js/pull/1781#discussion_r121820798
         if(multiLineWidth) {
             for(i = 0; i < count; i++) {
-                borderSizes[i] = optsIn.line.width[i] / 2;
+                borderSizes[i] = optsIn.line.width[i];
             }
         } else {
-            s = optsIn.line.width / 2;
+            s = optsIn.line.width;
             for(i = 0; i < count; i++) {
                 borderSizes[i] = s;
             }
@@ -118879,7 +116759,7 @@ function convertMarkerSelection(trace, target) {
     if(target.marker && target.marker.symbol) {
         optsOut = convertMarkerStyle(Lib.extendFlat({}, optsIn, target.marker));
     } else if(target.marker) {
-        if(target.marker.size) optsOut.size = target.marker.size / 2;
+        if(target.marker.size) optsOut.size = target.marker.size;
         if(target.marker.color) optsOut.colors = target.marker.color;
         if(target.marker.opacity !== undefined) optsOut.opacity = target.marker.opacity;
     }
@@ -118909,10 +116789,10 @@ function convertTextSelection(gd, trace, target) {
     return optsOut;
 }
 
-function convertErrorBarStyle(trace, target) {
+function convertErrorBarStyle(trace, target, plotGlPixelRatio) {
     var optsOut = {
-        capSize: target.width * 2,
-        lineWidth: target.thickness,
+        capSize: target.width * 2 * plotGlPixelRatio,
+        lineWidth: target.thickness * plotGlPixelRatio,
         color: target.color
     };
 
@@ -119184,7 +117064,7 @@ module.exports = {
     textPosition: convertTextPosition
 };
 
-},{"../../components/drawing":407,"../../components/fx/helpers":421,"../../constants/interactions":494,"../../lib":517,"../../lib/gl_format_color":513,"../../plots/cartesian/axis_ids":570,"../../registry":607,"../scatter/make_bubble_size_func":672,"../scatter/subtypes":680,"./constants":686,"./helpers":691,"color-normalize":69,"fast-isnumeric":159,"svg-path-sdf":318}],688:[function(_dereq_,module,exports){
+},{"../../components/drawing":409,"../../components/fx/helpers":423,"../../constants/interactions":496,"../../lib":519,"../../lib/gl_format_color":515,"../../plots/cartesian/axis_ids":573,"../../registry":610,"../scatter/make_bubble_size_func":675,"../scatter/subtypes":683,"./constants":689,"./helpers":694,"color-normalize":69,"fast-isnumeric":161,"svg-path-sdf":320}],691:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -119257,7 +117137,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":517,"../../registry":607,"../scatter/constants":659,"../scatter/fillcolor_defaults":663,"../scatter/line_defaults":668,"../scatter/marker_defaults":674,"../scatter/period_defaults":675,"../scatter/subtypes":680,"../scatter/text_defaults":681,"../scatter/xy_defaults":682,"./attributes":684,"./helpers":691}],689:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"../scatter/constants":662,"../scatter/fillcolor_defaults":666,"../scatter/line_defaults":671,"../scatter/marker_defaults":677,"../scatter/period_defaults":678,"../scatter/subtypes":683,"../scatter/text_defaults":684,"../scatter/xy_defaults":685,"./attributes":687,"./helpers":694}],692:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -119305,7 +117185,7 @@ module.exports = {
     styleTextSelection: styleTextSelection
 };
 
-},{"../../components/color":385,"../../constants/interactions":494,"../../lib":517}],690:[function(_dereq_,module,exports){
+},{"../../components/color":387,"../../constants/interactions":496,"../../lib":519}],693:[function(_dereq_,module,exports){
 'use strict';
 
 var scatterFormatLabels = _dereq_('../scatter/format_labels');
@@ -119317,7 +117197,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     return scatterFormatLabels(cdi, trace, fullLayout);
 };
 
-},{"../scatter/format_labels":664}],691:[function(_dereq_,module,exports){
+},{"../scatter/format_labels":667}],694:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -119334,7 +117214,7 @@ exports.isDotSymbol = function(symbol) {
         symbol > 200;
 };
 
-},{"./constants":686}],692:[function(_dereq_,module,exports){
+},{"./constants":689}],695:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -119378,42 +117258,68 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 
     // pick the id closest to the point
     // note that point possibly may not be found
-    var id, ptx, pty, i, dx, dy, dist, dxy;
+    var k, closestId, ptx, pty, i, dx, dy, dist, dxy;
 
     var minDist = maxDistance;
     if(hovermode === 'x') {
+        var xPeriod = !!trace.xperiodalignment;
+        var yPeriod = !!trace.yperiodalignment;
+
         for(i = 0; i < ids.length; i++) {
-            ptx = x[ids[i]];
+            k = ids[i];
+            ptx = x[k];
+
             dx = Math.abs(xa.c2p(ptx) - xpx);
-            if(trace._origX && trace._origX[i] !== undefined) dx += xa.c2p(trace._origX[i]) - xa.c2p(ptx);
+            if(xPeriod) {
+                var x0 = xa.c2p(trace._xStarts[k]);
+                var x1 = xa.c2p(trace._xEnds[k]);
+
+                dx = (
+                    xpx >= Math.min(x0, x1) &&
+                    xpx <= Math.max(x0, x1)
+                ) ? 0 : Infinity;
+            }
+
             if(dx < minDist) {
                 minDist = dx;
-                dy = ya.c2p(y[ids[i]]) - ypx;
-                if(trace._origY && trace._origY[i] !== undefined) dy += ya.c2p(trace._origY[i]) - ya.c2p(pty);
+                pty = y[k];
+                dy = ya.c2p(pty) - ypx;
+
+                if(yPeriod) {
+                    var y0 = ya.c2p(trace._yStarts[k]);
+                    var y1 = ya.c2p(trace._yEnds[k]);
+
+                    dy = (
+                        ypx >= Math.min(y0, y1) &&
+                        ypx <= Math.max(y0, y1)
+                    ) ? 0 : Infinity;
+                }
+
                 dxy = Math.sqrt(dx * dx + dy * dy);
-                id = ids[i];
+                closestId = ids[i];
             }
         }
     } else {
         for(i = ids.length - 1; i > -1; i--) {
-            ptx = x[ids[i]];
-            pty = y[ids[i]];
+            k = ids[i];
+            ptx = x[k];
+            pty = y[k];
             dx = xa.c2p(ptx) - xpx;
             dy = ya.c2p(pty) - ypx;
 
             dist = Math.sqrt(dx * dx + dy * dy);
             if(dist < minDist) {
                 minDist = dxy = dist;
-                id = ids[i];
+                closestId = k;
             }
         }
     }
 
-    pointData.index = id;
+    pointData.index = closestId;
     pointData.distance = minDist;
     pointData.dxy = dxy;
 
-    if(id === undefined) return [pointData];
+    if(closestId === undefined) return [pointData];
 
     return [calcHover(pointData, x, y, trace)];
 }
@@ -119528,7 +117434,7 @@ module.exports = {
     calcHover: calcHover
 };
 
-},{"../../lib":517,"../../registry":607,"../scatter/get_trace_color":665}],693:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../registry":610,"../scatter/get_trace_color":668}],696:[function(_dereq_,module,exports){
 'use strict';
 
 var hover = _dereq_('./hover');
@@ -119553,7 +117459,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian":580,"../scatter/cross_trace_defaults":661,"../scatter/marker_colorbar":673,"./attributes":684,"./calc":685,"./defaults":688,"./format_labels":690,"./hover":692,"./plot":694,"./select":696}],694:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":583,"../scatter/cross_trace_defaults":664,"../scatter/marker_colorbar":676,"./attributes":687,"./calc":688,"./defaults":691,"./format_labels":693,"./hover":695,"./plot":697,"./select":699}],697:[function(_dereq_,module,exports){
 'use strict';
 
 var createScatter = _dereq_('regl-scatter2d');
@@ -119570,15 +117476,23 @@ var linkTraces = _dereq_('../scatter/link_traces');
 
 var styleTextSelection = _dereq_('./edit_style').styleTextSelection;
 
-function getViewport(fullLayout, xaxis, yaxis) {
+
+function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var gs = fullLayout._size;
-    var width = fullLayout.width;
-    var height = fullLayout.height;
+    var width = fullLayout.width * plotGlPixelRatio;
+    var height = fullLayout.height * plotGlPixelRatio;
+
+    var l = gs.l * plotGlPixelRatio;
+    var b = gs.b * plotGlPixelRatio;
+    var r = gs.r * plotGlPixelRatio;
+    var t = gs.t * plotGlPixelRatio;
+    var w = gs.w * plotGlPixelRatio;
+    var h = gs.h * plotGlPixelRatio;
     return [
-        gs.l + xaxis.domain[0] * gs.w,
-        gs.b + yaxis.domain[0] * gs.h,
-        (width - gs.r) - (1 - xaxis.domain[1]) * gs.w,
-        (height - gs.t) - (1 - yaxis.domain[1]) * gs.h
+        l + xaxis.domain[0] * w,
+        b + yaxis.domain[0] * h,
+        (width - r) - (1 - xaxis.domain[1]) * w,
+        (height - t) - (1 - yaxis.domain[1]) * h
     ];
 }
 
@@ -119615,7 +117529,7 @@ module.exports = function plot(gd, subplot, cdata) {
             scene.line2d = createLine(regl);
         }
         if(scene.scatter2d === true) {
-            scene.scatter2d = createScatter(regl, { constPointSize: true });
+            scene.scatter2d = createScatter(regl);
         }
         if(scene.fill2d === true) {
             scene.fill2d = createLine(regl);
@@ -119886,7 +117800,7 @@ module.exports = function plot(gd, subplot, cdata) {
 
     // provide viewport and range
     var vpRange0 = {
-        viewport: getViewport(fullLayout, xaxis, yaxis),
+        viewport: getViewport(fullLayout, xaxis, yaxis, gd._context.plotGlPixelRatio),
         // TODO do we need those fallbacks?
         range: [
             (xaxis._rl || xaxis.range)[0],
@@ -119918,7 +117832,7 @@ module.exports = function plot(gd, subplot, cdata) {
     }
 };
 
-},{"../../components/dragelement/helpers":403,"../../lib":517,"../../lib/prepare_regl":530,"../scatter/link_traces":671,"../scatter/subtypes":680,"./edit_style":689,"gl-text":224,"regl-error2d":291,"regl-line2d":292,"regl-scatter2d":293}],695:[function(_dereq_,module,exports){
+},{"../../components/dragelement/helpers":405,"../../lib":519,"../../lib/prepare_regl":532,"../scatter/link_traces":674,"../scatter/subtypes":683,"./edit_style":692,"gl-text":226,"regl-error2d":293,"regl-line2d":294,"regl-scatter2d":295}],698:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -120068,7 +117982,7 @@ module.exports = function sceneUpdate(gd, subplot) {
     return scene;
 };
 
-},{"../../lib":517}],696:[function(_dereq_,module,exports){
+},{"../../lib":519}],699:[function(_dereq_,module,exports){
 'use strict';
 
 var subTypes = _dereq_('../scatter/subtypes');
@@ -120141,7 +118055,7 @@ module.exports = function select(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"../scatter/subtypes":680,"./edit_style":689}],697:[function(_dereq_,module,exports){
+},{"../scatter/subtypes":683,"./edit_style":692}],700:[function(_dereq_,module,exports){
 'use strict';
 
 var scatterAttrs = _dereq_('../scatter/attributes');
@@ -120284,7 +118198,7 @@ module.exports = {
     opacity: scatterGlAttrs.opacity
 };
 
-},{"../../components/colorscale/attributes":392,"../../lib/extend":509,"../../plot_api/plot_template":555,"../../plots/cartesian/axis_format_attributes":569,"../../plots/cartesian/constants":573,"../../plots/template_attributes":606,"../scatter/attributes":655,"../scattergl/attributes":684}],698:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":394,"../../lib/extend":511,"../../plot_api/plot_template":558,"../../plots/cartesian/axis_format_attributes":572,"../../plots/cartesian/constants":576,"../../plots/template_attributes":609,"../scatter/attributes":658,"../scattergl/attributes":687}],701:[function(_dereq_,module,exports){
 'use strict';
 
 var createLine = _dereq_('regl-line2d');
@@ -120373,13 +118287,23 @@ function updateGrid(gd) {
 }
 
 function makeGridData(gd) {
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
-    var fullView = [0, 0, fullLayout.width, fullLayout.height];
+    var fullView = [
+        0, 0,
+        fullLayout.width * plotGlPixelRatio,
+        fullLayout.height * plotGlPixelRatio
+    ];
     var lookup = {};
     var k;
 
     function push(prefix, ax, x0, x1, y0, y1) {
+        x0 *= plotGlPixelRatio;
+        x1 *= plotGlPixelRatio;
+        y0 *= plotGlPixelRatio;
+        y1 *= plotGlPixelRatio;
+
         var lcolor = ax[prefix + 'color'];
         var lwidth = ax[prefix + 'width'];
         var key = String(lcolor + lwidth);
@@ -120390,7 +118314,7 @@ function makeGridData(gd) {
             lookup[key] = {
                 data: [x0, x1, y0, y1],
                 join: 'rect',
-                thickness: lwidth,
+                thickness: lwidth * plotGlPixelRatio,
                 color: lcolor,
                 viewport: fullView,
                 range: fullView,
@@ -120405,6 +118329,10 @@ function makeGridData(gd) {
         var ya = sp.yaxis;
         var xVals = xa._gridVals;
         var yVals = ya._gridVals;
+        var xOffset = xa._offset;
+        var xLength = xa._length;
+        var yLength = ya._length;
+
         // ya.l2p assumes top-to-bottom coordinate system (a la SVG),
         // we need to compute bottom-to-top offsets and slopes:
         var yOffset = gs.b + ya.domain[0] * gs.h;
@@ -120414,23 +118342,23 @@ function makeGridData(gd) {
 
         if(xa.showgrid) {
             for(k = 0; k < xVals.length; k++) {
-                x = xa._offset + xa.l2p(xVals[k].x);
-                push('grid', xa, x, yOffset, x, yOffset + ya._length);
+                x = xOffset + xa.l2p(xVals[k].x);
+                push('grid', xa, x, yOffset, x, yOffset + yLength);
             }
         }
         if(ya.showgrid) {
             for(k = 0; k < yVals.length; k++) {
                 y = yOffset + yb + ym * yVals[k].x;
-                push('grid', ya, xa._offset, y, xa._offset + xa._length, y);
+                push('grid', ya, xOffset, y, xOffset + xLength, y);
             }
         }
         if(shouldShowZeroLine(gd, xa, ya)) {
-            x = xa._offset + xa.l2p(0);
-            push('zeroline', xa, x, yOffset, x, yOffset + ya._length);
+            x = xOffset + xa.l2p(0);
+            push('zeroline', xa, x, yOffset, x, yOffset + yLength);
         }
         if(shouldShowZeroLine(gd, ya, xa)) {
             y = yOffset + yb + 0;
-            push('zeroline', ya, xa._offset, y, xa._offset + xa._length, y);
+            push('zeroline', ya, xOffset, y, xOffset + xLength, y);
         }
     }
 
@@ -120495,7 +118423,7 @@ module.exports = {
     toSVG: Cartesian.toSVG
 };
 
-},{"../../lib/prepare_regl":530,"../../plots/cartesian":580,"../../plots/cartesian/axes":566,"../../plots/cartesian/axis_ids":570,"../../plots/get_data":597,"../../registry":607,"regl-line2d":292}],699:[function(_dereq_,module,exports){
+},{"../../lib/prepare_regl":532,"../../plots/cartesian":583,"../../plots/cartesian/axes":569,"../../plots/cartesian/axis_ids":573,"../../plots/get_data":600,"../../registry":610,"regl-line2d":294}],702:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -120575,7 +118503,7 @@ module.exports = function calc(gd, trace) {
     // use average marker size instead to speed things up.
     var ppad;
     if(hasTooManyPoints) {
-        ppad = 2 * (opts.sizeAvg || Math.max(opts.size, 3));
+        ppad = opts.sizeAvg || Math.max(opts.size, 3);
     } else {
         ppad = calcMarkerSize(trace, commonLength);
     }
@@ -120598,7 +118526,7 @@ module.exports = function calc(gd, trace) {
     return [{x: false, y: false, t: {}, trace: trace}];
 };
 
-},{"../../constants/numerical":495,"../../lib":517,"../../plots/cartesian/axis_ids":570,"../scatter/calc":656,"../scatter/colorscale_calc":658,"../scattergl/constants":686,"../scattergl/convert":687,"./scene_update":706}],700:[function(_dereq_,module,exports){
+},{"../../constants/numerical":497,"../../lib":519,"../../plots/cartesian/axis_ids":573,"../scatter/calc":659,"../scatter/colorscale_calc":661,"../scattergl/constants":689,"../scattergl/convert":690,"./scene_update":709}],703:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -120769,7 +118697,7 @@ function handleAxisDefaults(traceIn, traceOut, layout, coerce) {
     }
 }
 
-},{"../../lib":517,"../../plots/array_container_defaults":561,"../parcoords/merge_length":645,"../scatter/marker_defaults":674,"../scatter/subtypes":680,"../scattergl/helpers":691,"./attributes":697}],701:[function(_dereq_,module,exports){
+},{"../../lib":519,"../../plots/array_container_defaults":564,"../parcoords/merge_length":648,"../scatter/marker_defaults":677,"../scatter/subtypes":683,"../scattergl/helpers":694,"./attributes":700}],704:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -120793,7 +118721,7 @@ module.exports = function editStyle(gd, cd0) {
     }
 };
 
-},{"../../lib":517,"../scatter/colorscale_calc":658,"../scattergl/convert":687}],702:[function(_dereq_,module,exports){
+},{"../../lib":519,"../scatter/colorscale_calc":661,"../scattergl/convert":690}],705:[function(_dereq_,module,exports){
 'use strict';
 
 exports.getDimIndex = function getDimIndex(trace, ax) {
@@ -120809,7 +118737,7 @@ exports.getDimIndex = function getDimIndex(trace, ax) {
     return false;
 };
 
-},{}],703:[function(_dereq_,module,exports){
+},{}],706:[function(_dereq_,module,exports){
 'use strict';
 
 var helpers = _dereq_('./helpers');
@@ -120862,7 +118790,7 @@ module.exports = {
     hoverPoints: hoverPoints
 };
 
-},{"../scattergl/hover":692,"./helpers":702}],704:[function(_dereq_,module,exports){
+},{"../scattergl/hover":695,"./helpers":705}],707:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -120893,7 +118821,7 @@ module.exports = {
 // register it here
 Registry.register(Grid);
 
-},{"../../components/grid":429,"../../registry":607,"../scatter/marker_colorbar":673,"./attributes":697,"./base_plot":698,"./calc":699,"./defaults":700,"./edit_style":701,"./hover":703,"./plot":705,"./select":707}],705:[function(_dereq_,module,exports){
+},{"../../components/grid":431,"../../registry":610,"../scatter/marker_colorbar":676,"./attributes":700,"./base_plot":701,"./calc":702,"./defaults":703,"./edit_style":704,"./hover":706,"./plot":708,"./select":710}],708:[function(_dereq_,module,exports){
 'use strict';
 
 var createMatrix = _dereq_('regl-splom');
@@ -120960,7 +118888,13 @@ function plotOne(gd, cd0) {
         }
     }
 
-    viewOpts.viewport = [gs.l, gs.b, gs.w + gs.l, gs.h + gs.b];
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
+    var l = gs.l * plotGlPixelRatio;
+    var b = gs.b * plotGlPixelRatio;
+    var w = gs.w * plotGlPixelRatio;
+    var h = gs.h * plotGlPixelRatio;
+
+    viewOpts.viewport = [l, b, w + l, h + b];
 
     if(scene.matrix === true) {
         scene.matrix = createMatrix(regl);
@@ -121030,7 +118964,7 @@ function plotOne(gd, cd0) {
     }
 }
 
-},{"../../components/dragelement/helpers":403,"../../lib":517,"../../plots/cartesian/axis_ids":570,"regl-splom":294}],706:[function(_dereq_,module,exports){
+},{"../../components/dragelement/helpers":405,"../../lib":519,"../../plots/cartesian/axis_ids":573,"regl-splom":296}],709:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -121094,7 +119028,7 @@ module.exports = function sceneUpdate(gd, trace) {
     return scene;
 };
 
-},{"../../lib":517}],707:[function(_dereq_,module,exports){
+},{"../../lib":519}],710:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -121161,7 +119095,7 @@ module.exports = function select(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"../../lib":517,"../scatter/subtypes":680,"./helpers":702}],708:[function(_dereq_,module,exports){
+},{"../../lib":519,"../scatter/subtypes":683,"./helpers":705}],711:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../plots/cartesian/axes');
@@ -121565,7 +119499,7 @@ function last(array, indices) {
     return array[indices[indices.length - 1]];
 }
 
-},{"../constants/numerical":495,"../lib":517,"../plot_api/plot_schema":554,"../plots/cartesian/axes":566,"./helpers":711}],709:[function(_dereq_,module,exports){
+},{"../constants/numerical":497,"../lib":519,"../plot_api/plot_schema":557,"../plots/cartesian/axes":569,"./helpers":714}],712:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -121825,7 +119759,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
     }
 }
 
-},{"../constants/filter_ops":493,"../lib":517,"../plots/cartesian/axes":566,"../registry":607,"./helpers":711}],710:[function(_dereq_,module,exports){
+},{"../constants/filter_ops":495,"../lib":519,"../plots/cartesian/axes":569,"../registry":610,"./helpers":714}],713:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -122069,7 +120003,7 @@ function transformOne(trace, state) {
     return newData;
 }
 
-},{"../lib":517,"../plot_api/plot_schema":554,"../plots/plots":605,"./helpers":711}],711:[function(_dereq_,module,exports){
+},{"../lib":519,"../plot_api/plot_schema":557,"../plots/plots":608,"./helpers":714}],714:[function(_dereq_,module,exports){
 'use strict';
 
 exports.pointsAccessorFunction = function(transforms, opts) {
@@ -122087,7 +120021,7 @@ exports.pointsAccessorFunction = function(transforms, opts) {
     return originalPointsAccessor;
 };
 
-},{}],712:[function(_dereq_,module,exports){
+},{}],715:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -122225,11 +120159,11 @@ function getSortFunc(opts, d2c) {
     }
 }
 
-},{"../constants/numerical":495,"../lib":517,"../plots/cartesian/axes":566,"./helpers":711}],713:[function(_dereq_,module,exports){
+},{"../constants/numerical":497,"../lib":519,"../plots/cartesian/axes":569,"./helpers":714}],716:[function(_dereq_,module,exports){
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.2.1';
+exports.version = '2.3.1';
 
 },{}]},{},[8])(8)
 });
