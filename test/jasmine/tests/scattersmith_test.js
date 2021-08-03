@@ -1,15 +1,4 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
 var ScatterSmith = require('@src/traces/scattersmith');
-
-var createGraphDiv = require('../assets/create_graph_div');
-var destroyGraphDiv = require('../assets/destroy_graph_div');
-
-var mouseEvent = require('../assets/mouse_event');
-
-var customAssertions = require('../assets/custom_assertions');
-var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
-var checkTextTemplate = require('../assets/check_texttemplate');
 
 describe('Test scattersmith trace defaults:', function() {
     var traceOut;

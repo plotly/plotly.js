@@ -7,11 +7,8 @@ var Template = require('../../plot_api/plot_template');
 var handleSubplotDefaults = require('../subplot_defaults');
 var getSubplotData = require('../get_data').getSubplotData;
 
-var handleTickValueDefaults = require('../cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
-var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
-var autoType = require('../cartesian/axis_autotype');
 
 var layoutAttributes = require('./layout_attributes');
 var setConvert = require('./set_convert');
@@ -138,7 +135,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     }
 }
 
-function handleAxisTypeDefaults(axIn, axOut, coerce, subplotData, dataAttr, options) {
+function handleAxisTypeDefaults(axIn, axOut) {
     axOut.type = 'linear';
     return axOut.type;
 }
