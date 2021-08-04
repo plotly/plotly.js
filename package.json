@@ -142,6 +142,7 @@
     "tinycolor2": "^1.4.2",
     "to-px": "1.0.1",
     "topojson-client": "^3.1.0",
+    "vectorize-text": "^3.2.2",
     "webgl-context": "^2.2.0",
     "world-calendars": "^1.0.3"
   },
