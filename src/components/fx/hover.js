@@ -775,9 +775,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var actualHoverData = hoverData.filter(function(d) {
         return d.hoverinfo !== 'none';
     });
-    var hoverLabels = createHoverText(actualHoverData, labelOpts, gd);
+    var hoverLabels = actualHoverData.length && createHoverText(actualHoverData, labelOpts, gd);
 
-    if(!helpers.isUnifiedHover(hovermode)) {
+    if(hoverLabels && !helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
     }    // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
