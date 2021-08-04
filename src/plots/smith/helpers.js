@@ -1,7 +1,6 @@
 'use strict';
 
 var Lib = require('../../lib');
-var polygonTester = require('../../lib/polygon').tester;
 
 var findIndexOfMin = Lib.findIndexOfMin;
 var isAngleInsideSector = Lib.isAngleInsideSector;
