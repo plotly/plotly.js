@@ -131,6 +131,7 @@
     "regl-scatter2d": "^3.2.6",
     "regl-splom": "^1.0.14",
     "right-now": "^1.0.0",
+    "robust-determinant": "^1.1.0",
     "robust-in-sphere": "git://github.com/archmoj/robust-in-sphere.git#3ade496980943e284ccd4aead0881d932474cd9c",
     "robust-linear-solve": "git://github.com/archmoj/robust-linear-solve.git#0cd1ce1ff68da9b96786e383aba0ff78777be119",
     "robust-orientation": "git://github.com/archmoj/robust-orientation.git#e63554deef4fefa28ffd79bcc9a0f62d814d4036",
