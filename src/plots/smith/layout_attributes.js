@@ -118,7 +118,7 @@ var angularAxisAttrs = {
         editType: 'none',
         description: [
             'Controls persistence of user-driven changes in axis `rotation`.',
-            'Defaults to `polar<N>.uirevision`.'
+            'Defaults to `smith<N>.uirevision`.'
         ].join(' ')
     },
 
