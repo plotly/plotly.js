@@ -5407,7 +5407,7 @@ describe('hovermode: (x|y)unified', function() {
                         xperiodalignment: 'end'
                     },
                     {
-                        name: 'start',
+                        name: 'one',
                         type: scatterType,
                         x: ['2000-01', '2000-02'],
                         y: [1, 2],
@@ -5416,7 +5416,7 @@ describe('hovermode: (x|y)unified', function() {
                         xperiodalignment: 'end'
                     },
                     {
-                        name: 'end',
+                        name: 'two',
                         type: scatterType,
                         x: ['2000-01', '2000-02'],
                         y: [1, 2],
@@ -5433,18 +5433,18 @@ describe('hovermode: (x|y)unified', function() {
                 }
             })
             .then(function(gd) {
-                _hover(gd, { xpx: 50, ypx: 200 });
+                _hover(gd, { xpx: 100, ypx: 200 });
                 assertLabel({title: 'Jan', items: [
                     'bar : 1',
-                    'start : 1',
-                    'end : 1',
+                    'one : 1',
+                    'two : 1',
                 ]});
 
-                _hover(gd, { xpx: 350, ypx: 200 });
+                _hover(gd, { xpx: 300, ypx: 200 });
                 assertLabel({title: 'Feb', items: [
                     'bar : 2',
-                    'start : 2',
-                    'end : 2',
+                    'one : 2',
+                    'two : 2',
                 ]});
             })
             .then(done, done.fail);
@@ -5581,10 +5581,46 @@ describe('hovermode: (x|y)unified', function() {
 
                 Plotly.newPlot(gd, fig)
                 .then(function(gd) {
+                    _hover(gd, { xpx: 50, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1970', items: [
+                        'trace 0 : 11',
+                        'trace 1 : 1'
+                    ]});
+
                     _hover(gd, { xpx: 100, ypx: 200 });
                     assertLabel({title: 'Jan 1, 1970', items: [
                         'trace 0 : 11',
                         'trace 1 : 1'
+                    ]});
+
+                    _hover(gd, { xpx: 150, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 200, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 250, ypx: 200 });
+                    assertLabel({title: 'Jul 1, 1970', items: [
+                        'trace 0 : 12',
+                        'trace 1 : 2'
+                    ]});
+
+                    _hover(gd, { xpx: 300, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1971', items: [
+                        'trace 0 : 13',
+                        'trace 1 : 3'
+                    ]});
+
+                    _hover(gd, { xpx: 350, ypx: 200 });
+                    assertLabel({title: 'Jan 1, 1971', items: [
+                        'trace 0 : 13',
+                        'trace 1 : 3'
                     ]});
 
                     _hover(gd, { xpx: 400, ypx: 200 });

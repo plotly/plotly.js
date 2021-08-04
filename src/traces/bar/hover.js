@@ -52,18 +52,26 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     }
 
     var period = trace[posLetter + 'period'];
+    var isClosestOrPeriod = isClosest || period;
 
     function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        var w = (period) ? di.wPeriod : di.w;
+        var w = di.w;
 
         return di[posLetter] + sgn * w / 2;
     }
 
-    var minPos = isClosest || period ?
-        thisBarMinPos :
+    function periodLength(di) {
+        return di[posLetter + 'End'] - di[posLetter + 'Start'];
+    }
+
+    var minPos = isClosest ?
+        thisBarMinPos : period ?
+        function(di) {
+            return di.p - periodLength(di) / 2;
+        } :
         function(di) {
             /*
              * In compare mode, accept a bar if you're on it *or* its group.
@@ -80,8 +88,11 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosest || period ?
-        thisBarMaxPos :
+    var maxPos = isClosest ?
+        thisBarMaxPos : period ?
+        function(di) {
+            return di.p + periodLength(di) / 2;
+        } :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
@@ -156,7 +167,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     // if we get here and we're not in 'closest' mode, push min/max pos back
     // onto the group - even though that means occasionally the mouse will be
     // over the hover label.
-    if(!isClosest) {
+    if(!isClosestOrPeriod) {
         minPos = function(di) {
             return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
         };
@@ -179,9 +190,6 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
 
     var hasPeriod = di.orig_p !== undefined;
     pointData[posLetter + 'LabelVal'] = hasPeriod ? di.orig_p : di.p;
-    if(hasPeriod) {
-        pointData[posLetter + 'Period'] = di.p;
-    }
 
     pointData.labelLabel = hoverLabelText(pa, pointData[posLetter + 'LabelVal'], trace[posLetter + 'hoverformat']);
     pointData.valueLabel = hoverLabelText(sa, pointData[sizeLetter + 'LabelVal'], trace[sizeLetter + 'hoverformat']);
