@@ -78,9 +78,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
 
                 if(visible) {
-                    coerceAxis('side');
-                    coerceAxis('angle', sector[0]);
-
                     coerceAxis('title.text');
                     Lib.coerceFont(coerceAxis, 'title.font', {
                         family: opts.font.family,

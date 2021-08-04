@@ -43,30 +43,6 @@ var axisTickAttrs = overrideAll({
 var radialAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
-    angle: {
-        valType: 'angle',
-        editType: 'plot',
-        description: [
-            'Sets the angle (in degrees) from which the radial axis is drawn.',
-            'Note that by default, radial axis line on the theta=0 line',
-            'corresponds to a line pointing right (like what mathematicians prefer).',
-            'Defaults to the first `polar.sector` angle.'
-        ].join(' ')
-    },
-
-    side: {
-        valType: 'enumerated',
-        // TODO add 'center' for `showline: false` radial axes
-        values: ['clockwise', 'counterclockwise'],
-        dflt: 'clockwise',
-        editType: 'plot',
-        description: [
-            'Determines on which side of radial axis line',
-            'the tick and tick labels appear.'
-        ].join(' ')
-    },
-
-
     title: {
         // radial title is not gui-editable at the moment,
         // so it needs dflt: '', similar to carpet axes.
