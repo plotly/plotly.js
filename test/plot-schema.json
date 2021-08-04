@@ -7355,7 +7355,7 @@
      ]
     },
     "hole": {
-     "description": "Sets the fraction of the radius to cut out of the polar subplot.",
+     "description": "Sets the fraction of the radius to cut out of the smith subplot.",
      "dflt": 0,
      "editType": "plot",
      "max": 1,
@@ -7445,7 +7445,7 @@
      },
      "role": "object",
      "rotation": {
-      "description": "Sets that start position (in degrees) of the angular axis By default, polar subplots with `direction` set to *counterclockwise* get a `rotation` of *0* which corresponds to due East (like what mathematicians prefer). In turn, polar with `direction` set to *clockwise* get a rotation of *90* which corresponds to due North (like on a compass),",
+      "description": "Sets that start position (in degrees) of the angular axis By default, smith subplots with `direction` set to *counterclockwise* get a `rotation` of *0* which corresponds to due East (like what mathematicians prefer). In turn, smith with `direction` set to *clockwise* get a rotation of *90* which corresponds to due North (like on a compass),",
       "editType": "calc",
       "valType": "angle"
      },
@@ -7662,7 +7662,7 @@
       "valType": "number"
      },
      "uirevision": {
-      "description": "Controls persistence of user-driven changes in axis `rotation`. Defaults to `polar<N>.uirevision`.",
+      "description": "Controls persistence of user-driven changes in axis `rotation`. Defaults to `smith<N>.uirevision`.",
       "editType": "none",
       "valType": "any"
      },
@@ -7674,38 +7674,6 @@
      }
     },
     "realaxis": {
-     "_deprecated": {
-      "title": {
-       "description": "Value of `title` is no longer a simple *string* but a set of sub-attributes. To set the axis' title, please use `title.text` now.",
-       "editType": "ticks",
-       "valType": "string"
-      },
-      "titlefont": {
-       "color": {
-        "editType": "ticks",
-        "valType": "color"
-       },
-       "description": "Former `titlefont` is now the sub-attribute `font` of `title`. To customize title font properties, please use `title.font` now.",
-       "editType": "ticks",
-       "family": {
-        "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
-        "editType": "ticks",
-        "noBlank": true,
-        "strict": true,
-        "valType": "string"
-       },
-       "size": {
-        "editType": "ticks",
-        "min": 1,
-        "valType": "number"
-       }
-      }
-     },
-     "angle": {
-      "description": "Sets the angle (in degrees) from which the radial axis is drawn. Note that by default, radial axis line on the theta=0 line corresponds to a line pointing right (like what mathematicians prefer). Defaults to the first `polar.sector` angle.",
-      "editType": "plot",
-      "valType": "angle"
-     },
      "color": {
       "description": "Sets default for all colors associated with this axis all at once: line, font, tick, and grid colors. Grid color is lightened by blending this with the plot background Individual pieces can override this.",
       "dflt": "#444",
@@ -7835,16 +7803,6 @@
        "first",
        "last",
        "none"
-      ]
-     },
-     "side": {
-      "description": "Determines on which side of radial axis line the tick and tick labels appear.",
-      "dflt": "clockwise",
-      "editType": "plot",
-      "valType": "enumerated",
-      "values": [
-       "clockwise",
-       "counterclockwise"
       ]
      },
      "tickangle": {
@@ -8031,7 +7989,7 @@
       }
      },
      "uirevision": {
-      "description": "Controls persistence of user-driven changes in axis `range`, `autorange`, `angle`, and `title` if in `editable: true` configuration. Defaults to `polar<N>.uirevision`.",
+      "description": "Controls persistence of user-driven changes in axis `range`, `autorange`, `angle`, and `title` if in `editable: true` configuration. Defaults to `smith<N>.uirevision`.",
       "editType": "none",
       "valType": "any"
      },
@@ -8044,7 +8002,7 @@
     },
     "role": "object",
     "sector": {
-     "description": "Sets angular span of this polar subplot with two angles (in degrees). Sector are assumed to be spanned in the counterclockwise direction with *0* corresponding to rightmost limit of the polar subplot.",
+     "description": "Sets angular span of this smith subplot with two angles (in degrees). Sector are assumed to be spanned in the counterclockwise direction with *0* corresponding to rightmost limit of the smith subplot.",
      "dflt": [
       0,
       360
@@ -58178,7 +58136,7 @@
      }
     },
     "subplot": {
-     "description": "Sets a reference between this trace's data coordinates and a polar subplot. If *polar* (the default value), the data refer to `layout.polar`. If *polar2*, the data refer to `layout.polar2`, and so on.",
+     "description": "Sets a reference between this trace's data coordinates and a smith subplot. If *smith* (the default value), the data refer to `layout.smith`. If *smith2*, the data refer to `layout.smith2`, and so on.",
      "dflt": "smith",
      "editType": "calc",
      "valType": "subplotid"
@@ -58338,7 +58296,6 @@
     }
    },
    "categories": [
-    "polar",
     "symbols",
     "showLegend",
     "scatter-like"
