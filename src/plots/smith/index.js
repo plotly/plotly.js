@@ -17,9 +17,9 @@ attributes[attr] = {
     editType: 'calc',
     description: [
         'Sets a reference between this trace\'s data coordinates and',
-        'a polar subplot.',
-        'If *polar* (the default value), the data refer to `layout.polar`.',
-        'If *polar2*, the data refer to `layout.polar2`, and so on.'
+        'a smith subplot.',
+        'If *smith* (the default value), the data refer to `layout.polar`.',
+        'If *smith2*, the data refer to `layout.smith2`, and so on.'
     ].join(' ')
 };
 
