@@ -8,36 +8,6 @@ var isAngleInsideSector = Lib.isAngleInsideSector;
 var angleDelta = Lib.angleDelta;
 var angleDist = Lib.angleDist;
 
-/**
- * is pt (r,a) inside polygon made up vertices at angles 'vangles'
- * inside a given polar sector
- *
- * @param {number} r : pt's radial coordinate
- * @param {number} a : pt's angular coordinate in *radians*
- * @param {2-item array} rBnds : sector's radial bounds
- * @param {2-item array} aBnds : sector's angular bounds *radians*
- * @param {array} vangles : angles of polygon vertices in *radians*
- * @return {boolean}
- */
-function isPtInsidePolygon(r, a, rBnds, aBnds, vangles) {
-    if(!isAngleInsideSector(a, aBnds)) return false;
-
-    var r0, r1;
-
-    if(rBnds[0] < rBnds[1]) {
-        r0 = rBnds[0];
-        r1 = rBnds[1];
-    } else {
-        r0 = rBnds[1];
-        r1 = rBnds[0];
-    }
-
-    var polygonIn = polygonTester(makePolygon(r0, aBnds[0], aBnds[1], vangles));
-    var polygonOut = polygonTester(makePolygon(r1, aBnds[0], aBnds[1], vangles));
-    var xy = [r * Math.cos(a), r * Math.sin(a)];
-    return polygonOut.contains(xy) && !polygonIn.contains(xy);
-}
-
 // find intersection of 'v0' <-> 'v1' edge with a ray at angle 'a'
 // (i.e. a line that starts from the origin at angle 'a')
 // given an (xp,yp) pair on the 'v0' <-> 'v1' line
@@ -274,7 +244,6 @@ function pathPolygonAnnulus(r0, r1, a0, a1, vangles, cx, cy) {
 }
 
 module.exports = {
-    isPtInsidePolygon: isPtInsidePolygon,
     findPolygonOffset: findPolygonOffset,
     findEnclosingVertexAngles: findEnclosingVertexAngles,
     findIntersectionXY: findIntersectionXY,
