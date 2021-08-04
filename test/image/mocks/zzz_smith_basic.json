@@ -55,9 +55,6 @@
       "domain": {
         "x": [0.54, 1],
         "y": [0.56, 1]
-      },
-      "realaxis": {
-        "title": {"text": "blank"}
       }
     },
     "smith4": {
