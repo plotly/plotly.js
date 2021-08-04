@@ -18,7 +18,7 @@ attributes[attr] = {
     description: [
         'Sets a reference between this trace\'s data coordinates and',
         'a smith subplot.',
-        'If *smith* (the default value), the data refer to `layout.polar`.',
+        'If *smith* (the default value), the data refer to `layout.smith`.',
         'If *smith2*, the data refer to `layout.smith2`, and so on.'
     ].join(' ')
 };

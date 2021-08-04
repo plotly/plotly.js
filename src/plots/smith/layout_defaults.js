@@ -64,7 +64,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // as both radial and angular axes don't have a set domain.
         // Furthermore, angular axes don't have a set range.
         //
-        // Mocked domains and ranges are set by the polar subplot instances,
+        // Mocked domains and ranges are set by the smith subplot instances,
         // but Axes.findExtremes uses the sign of _m to determine which padding value
         // to use.
         //

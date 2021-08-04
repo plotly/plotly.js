@@ -64,7 +64,7 @@ var radialAxisAttrs = {
         description: [
             'Controls persistence of user-driven changes in axis `range`,',
             '`autorange`, `angle`, and `title` if in `editable: true` configuration.',
-            'Defaults to `polar<N>.uirevision`.'
+            'Defaults to `smith<N>.uirevision`.'
         ].join(' ')
     },
 
@@ -98,10 +98,10 @@ var angularAxisAttrs = {
         editType: 'calc',
         description: [
             'Sets that start position (in degrees) of the angular axis',
-            'By default, polar subplots with `direction` set to *counterclockwise*',
+            'By default, smith subplots with `direction` set to *counterclockwise*',
             'get a `rotation` of *0*',
             'which corresponds to due East (like what mathematicians prefer).',
-            'In turn, polar with `direction` set to *clockwise* get a rotation of *90*',
+            'In turn, smith with `direction` set to *clockwise* get a rotation of *90*',
             'which corresponds to due North (like on a compass),'
         ].join(' ')
     },
@@ -124,7 +124,7 @@ extendFlat(
     angularAxisAttrs,
 
     // N.B. angular grid lines are straight lines from circle center to outer bound
-    // the angular line is circular bounding the polar plot area.
+    // the angular line is circular bounding the smith plot area.
     axisLineGridAttr,
 
     // N.B. ticksuffix defaults to '°' for angular axes with `thetaunit: 'degrees'`
@@ -148,9 +148,9 @@ module.exports = {
         dflt: [0, 360],
         editType: 'plot',
         description: [
-            'Sets angular span of this polar subplot with two angles (in degrees).',
+            'Sets angular span of this smith subplot with two angles (in degrees).',
             'Sector are assumed to be spanned in the counterclockwise direction',
-            'with *0* corresponding to rightmost limit of the polar subplot.'
+            'with *0* corresponding to rightmost limit of the smith subplot.'
         ].join(' ')
     },
     hole: {
@@ -160,7 +160,7 @@ module.exports = {
         dflt: 0,
         editType: 'plot',
         description: [
-            'Sets the fraction of the radius to cut out of the polar subplot.'
+            'Sets the fraction of the radius to cut out of the smith subplot.'
         ].join(' ')
     },
 

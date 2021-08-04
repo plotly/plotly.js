@@ -7,12 +7,12 @@ var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
 
 /**
- * setConvert for polar axes!
+ * setConvert for smith axes!
  *
  * @param {object} ax
  *   axis in question (works for both radial and angular axes)
- * @param {object} polarLayout
- *   full polar layout of the subplot associated with 'ax'
+ * @param {object} smithLayout
+ *   full smith layout of the subplot associated with 'ax'
  * @param {object} fullLayout
  *   full layout
  *
@@ -26,7 +26,7 @@ var rad2deg = Lib.rad2deg;
  *
  * Radial axis coordinate systems:
  * - d, c and l: same as for cartesian axes
- * - g: like calcdata but translated about `realaxis.range[0]` & `polar.hole`
+ * - g: like calcdata but translated about `realaxis.range[0]` & `smith.hole`
  *
  * Angular axis coordinate systems:
  * - d: data, in whatever form it's provided
@@ -38,25 +38,25 @@ var rad2deg = Lib.rad2deg;
  *
  * Then, 'g'eometric data is ready to be converted to (x,y).
  */
-module.exports = function setConvert(ax, polarLayout, fullLayout) {
+module.exports = function setConvert(ax, smithLayout, fullLayout) {
     setConvertCartesian(ax, fullLayout);
 
     switch(ax._id) {
         case 'x':
         case 'realaxis':
-            setConvertRadial(ax, polarLayout);
+            setConvertRadial(ax, smithLayout);
             break;
         case 'imaginaryaxis':
-            setConvertAngular(ax, polarLayout);
+            setConvertAngular(ax, smithLayout);
             break;
         case 'realaxis2':
-            setConvertReal(ax, polarLayout);
+            setConvertReal(ax, smithLayout);
             break;
     }
 };
 
-function setConvertReal(ax, polarLayout) {
-    var subplot = polarLayout._subplot;
+function setConvertReal(ax, smithLayout) {
+    var subplot = smithLayout._subplot;
     var radius = subplot.radius;
 
     ax.setGeometry = function() {
@@ -84,8 +84,8 @@ function setConvertReal(ax, polarLayout) {
     };
 }
 
-function setConvertRadial(ax, polarLayout) {
-    var subplot = polarLayout._subplot;
+function setConvertRadial(ax, smithLayout) {
+    var subplot = smithLayout._subplot;
 
     ax.setGeometry = function() {
         var rl0 = ax._rl[0];
@@ -121,7 +121,7 @@ function fromRadians(v, unit) {
     return unit === 'degrees' ? rad2deg(v) : v;
 }
 
-function setConvertAngular(ax, polarLayout) {
+function setConvertAngular(ax, smithLayout) {
     var axType = ax.type;
 
     if(axType === 'linear') {
@@ -170,7 +170,7 @@ function setConvertAngular(ax, polarLayout) {
 
     // N.B. we mock the axis 'range' here
     ax.setGeometry = function() {
-        var sector = polarLayout.sector;
+        var sector = smithLayout.sector;
         var sectorInRad = sector.map(deg2rad);
         var dir = {clockwise: -1, counterclockwise: 1}[ax.direction];
         var rot = deg2rad(ax.rotation);
