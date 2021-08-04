@@ -4,7 +4,7 @@ module.exports = {
     moduleType: 'trace',
     name: 'scattersmith',
     basePlotModule: require('../../plots/smith'),
-    categories: ['polar', 'symbols', 'showLegend', 'scatter-like'],
+    categories: ['symbols', 'showLegend', 'scatter-like'],
 
     attributes: require('./attributes'),
     supplyDefaults: require('./defaults').supplyDefaults,
