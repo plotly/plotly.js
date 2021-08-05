@@ -138,6 +138,7 @@
     "robust-orientation": "^1.2.1",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
+    "surface-nets": "^1.0.2",
     "svg-path-sdf": "^1.1.3",
     "tinycolor2": "^1.4.2",
     "to-px": "1.0.1",
