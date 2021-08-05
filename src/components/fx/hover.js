@@ -1049,10 +1049,13 @@ function createHoverText(hoverData, opts, gd) {
         // prepare items for the legend
         mockLegend.entries = [];
         for(var j = 0; j < hoverData.length; j++) {
-            var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
+            var pt = hoverData[j];
+            if(pt.hoverinfo === 'none') continue;
+
+            var texts = getHoverLabelText(pt, true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
-            var pt = hoverData[j];
+
             pt.name = name;
             if(name !== '') {
                 pt.text = name + ' : ' + text;
