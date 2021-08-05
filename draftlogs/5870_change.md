@@ -1,0 +1,1 @@
+ - Upgrade `regl` module from version 1.6.1 to version 2.1.0 [[#5870](https://github.com/plotly/plotly.js/pull/5870)]
