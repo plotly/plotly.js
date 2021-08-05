@@ -269,6 +269,8 @@ describe('Test plot api', function() {
             .then(done, done.fail);
         });
 
+        // TODO: Make this test work for the case where categories are numeric
+        // strings
         it('annotations, shapes and images linked to category axes should update properly on zoom/pan', function(done) {
             var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
 

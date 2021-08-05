@@ -10,6 +10,7 @@ var isDateTime = Lib.isDateTime;
 var cleanNumber = Lib.cleanNumber;
 var round = Math.round;
 
+// Determines a type for an axis based on the contents of array.
 module.exports = function autoType(array, calendar, opts) {
     var a = array;
 
