@@ -114,7 +114,7 @@
     "glslify": "^7.1.1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
-    "incremental-convex-hull": "^1.0.1",
+    "incremental-convex-hull": "git://github.com/archmoj/incremental-convex-hull.git#f34c97097239a25f69cca0f7252b1a8517876f9f",
     "is-mobile": "^2.2.2",
     "mapbox-gl": "1.10.1",
     "matrix-camera-controller": "^2.1.4",
