@@ -22,7 +22,6 @@ var prepSelect = require('../cartesian/select').prepSelect;
 var selectOnClick = require('../cartesian/select').selectOnClick;
 var clearSelect = require('../cartesian/select').clearSelect;
 var setCursor = require('../../lib/setcursor');
-var clearGlCanvases = require('../../lib/clear_gl_canvases');
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
@@ -1155,7 +1154,6 @@ proto.updateRadialDrag = function(fullLayout, smithLayout, rngIndex) {
         }
 
         if(hasRegl) {
-            clearGlCanvases(gd);
             redrawReglTraces(gd);
         }
     }
@@ -1286,7 +1284,6 @@ proto.updateAngularDrag = function(fullLayout) {
         }
 
         if(hasRegl) {
-            clearGlCanvases(gd);
             redrawReglTraces(gd);
         }
 

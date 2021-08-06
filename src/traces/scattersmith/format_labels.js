@@ -10,16 +10,8 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     var radialAxis;
     var angularAxis;
 
-    // for scatterpolargl texttemplate, _subplot is NOT defined, this takes part during the convert step
-    // TODO we should consider moving the texttemplate formatting logic to the plot step
-    if(!subplot) {
-        subplot = fullLayout[trace.subplot];
-        radialAxis = subplot.realaxis;
-        angularAxis = subplot.imaginaryaxis;
-    } else {
-        radialAxis = subplot.radialAxis;
-        angularAxis = subplot.angularAxis;
-    }
+    radialAxis = subplot.radialAxis;
+    angularAxis = subplot.angularAxis;
 
     var rVal = radialAxis.c2l(cdi.re);
     labels.rLabel = Axes.tickText(radialAxis, rVal, true).text;
