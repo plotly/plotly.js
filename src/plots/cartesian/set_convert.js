@@ -180,6 +180,7 @@ module.exports = function setConvert(ax, fullLayout) {
     }
 
     function getRangePositionForCategory(v) {
+        //debugger;
         return (typeof v !== 'string') ? v : getCategoryIndex(v);
     }
 
