@@ -20,8 +20,5 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     var thetaVal = angularAxis.thetaunit === 'degrees' ? Lib.rad2deg(cdi.im) : cdi.im;
     labels.thetaLabel = Axes.tickText(angularAxis, thetaVal, true).text;
 
-    // labels.reLabel = Axes.tickText(radialAxis, cdi.re, true).text;
-    // labels.imLabel = Axes.tickText(radialAxis, cdi.im, true).text;
-
     return labels;
 };
