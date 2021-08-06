@@ -136,7 +136,7 @@
     "robust-in-sphere": "^1.2.1",
     "robust-linear-solve": "git://github.com/archmoj/robust-linear-solve.git#0cd1ce1ff68da9b96786e383aba0ff78777be119",
     "robust-orientation": "^1.2.1",
-    "simplicial-complex-contour": "^1.0.2",
+    "simplicial-complex-contour": "git://github.com/archmoj/simplicial-complex-contour.git#5ca6fe1e36642e25a451d6b39534939f7f229e5d",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
     "surface-nets": "git://github.com/archmoj/surface-nets.git#805acfc4c52a1c9a6aaf989cb98ffd5136001896",
