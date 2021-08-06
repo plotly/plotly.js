@@ -52,7 +52,7 @@ module.exports = {
         description: [
             'Sets the area to fill with a solid color.',
             'Use with `fillcolor` if not *none*.',
-            'scatterpolar has a subset of the options available to scatter.',
+            'scattersmith has a subset of the options available to scatter.',
             '*toself* connects the endpoints of the trace (or each segment',
             'of the trace if it has gaps) into a closed shape.',
             '*tonext* fills the space between two traces if one completely',

@@ -12,7 +12,7 @@ var Drawing = require('../../components/drawing');
 var Plots = require('../plots');
 var Axes = require('../../plots/cartesian/axes');
 var setConvertCartesian = require('../cartesian/set_convert');
-var setConvertPolar = require('./set_convert');
+var setConvertSmith = require('./set_convert');
 var doAutoRange = require('../cartesian/autorange').doAutoRange;
 var dragBox = require('../cartesian/dragbox');
 var dragElement = require('../../components/dragelement');
@@ -305,7 +305,7 @@ proto.updateLayout = function(fullLayout, smithLayout) {
 
 proto.mockAxis = function(fullLayout, smithLayout, axLayout, opts) {
     var ax = Lib.extendFlat({}, axLayout, opts);
-    setConvertPolar(ax, smithLayout, fullLayout);
+    setConvertSmith(ax, smithLayout, fullLayout);
     return ax;
 };
 
