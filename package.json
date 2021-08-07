@@ -122,7 +122,7 @@
     "mouse-event-offset": "^3.0.2",
     "mouse-wheel": "^1.2.0",
     "native-promise-only": "^0.8.1",
-    "ndarray": "^1.0.19",
+    "ndarray": "git://github.com/archmoj/ndarray.git#210ccfbf32d085f40603a8b44f81d50ddf2b7d83",
     "ndarray-linear-interpolate": "^1.0.0",
     "parse-svg-path": "^0.1.2",
     "polybooljs": "^1.2.0",
