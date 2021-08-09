@@ -74,6 +74,7 @@ exports.getDataToPixel = function(gd, axis, isVertical, refType) {
             };
 
             if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
+            if(axis.type === 'category') dataToPixel = exports.castNumericStringsToNumbers(dataToPixel);
         }
     } else if(isVertical) {
         dataToPixel = function(v) { return gs.t + gs.h * (1 - v); };

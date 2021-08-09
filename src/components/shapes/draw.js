@@ -383,27 +383,44 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         removeVisualCues(shapeLayer);
     }
 
+    // Compute moveX or moveY, ax is xa or ya, p2xy is p2x or p2y, xy2p is x2p
+    // or y2p, dxy is dx or dy
+    function computeMove(ax, p2xy, xy2p, dxy) {
+        var move = function(xy) { return p2xy(xy2p(xy) + dxy); };
+        if(ax && ax.type === 'date') {
+            move = helpers.encodeDate(move);
+        }
+        if(ax && ax.type === 'category') {
+            move = function(xy) {
+                return p2xy(helpers.castNumericStringsToNumbers(xy2p)(xy) + dxy);
+            };
+        }
+        return move;
+    }
+
+    function doPathMoveOrResize(dx, dy) {
+        var noOp = function(coord) { return coord; };
+        var moveX = noOp;
+        var moveY = noOp;
+
+        if(xPixelSized) {
+            modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
+        } else {
+            moveX = computeMove(xa, p2x, x2p, dx);
+        }
+
+        if(yPixelSized) {
+            modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
+        } else {
+            moveY = computeMove(ya, p2y, y2p, dy);
+        }
+
+        modifyItem('path', shapeOptions.path = movePath(pathIn, moveX, moveY));
+    }
+
     function moveShape(dx, dy) {
         if(shapeOptions.type === 'path') {
-            var noOp = function(coord) { return coord; };
-            var moveX = noOp;
-            var moveY = noOp;
-
-            if(xPixelSized) {
-                modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
-            } else {
-                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
-                if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
-            }
-
-            if(yPixelSized) {
-                modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
-            } else {
-                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
-                if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
-            }
-
-            modifyItem('path', shapeOptions.path = movePath(pathIn, moveX, moveY));
+            doPathMoveOrResize(dx, dy);
         } else {
             if(xPixelSized) {
                 modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
@@ -426,26 +443,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
     function resizeShape(dx, dy) {
         if(isPath) {
-            // TODO: implement path resize, don't forget to update dragMode code
-            var noOp = function(coord) { return coord; };
-            var moveX = noOp;
-            var moveY = noOp;
-
-            if(xPixelSized) {
-                modifyItem('xanchor', shapeOptions.xanchor = p2x(xAnchor + dx));
-            } else {
-                moveX = function moveX(x) { return p2x(x2p(x) + dx); };
-                if(xa && xa.type === 'date') moveX = helpers.encodeDate(moveX);
-            }
-
-            if(yPixelSized) {
-                modifyItem('yanchor', shapeOptions.yanchor = p2y(yAnchor + dy));
-            } else {
-                moveY = function moveY(y) { return p2y(y2p(y) + dy); };
-                if(ya && ya.type === 'date') moveY = helpers.encodeDate(moveY);
-            }
-
-            modifyItem('path', shapeOptions.path = movePath(pathIn, moveX, moveY));
+            doPathMoveOrResize(dx, dy);
         } else if(isLine) {
             if(dragMode === 'resize-over-start-point') {
                 var newX0 = x0 + dx;
