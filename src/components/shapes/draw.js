@@ -613,6 +613,10 @@ function getPathString(gd, options) {
     if(type === 'path') {
         if(xa && xa.type === 'date') x2p = helpers.decodeDate(x2p);
         if(ya && ya.type === 'date') y2p = helpers.decodeDate(y2p);
+        // the SVG path is always a string, so for categories numeric strings
+        // are always converted to numbers when seen in a SVG path
+        if(xa && xa.type === 'category') x2p = helpers.castNumericStringsToNumbers(x2p);
+        if(ya && ya.type === 'category') y2p = helpers.castNumericStringsToNumbers(y2p);
         return convertPath(options, x2p, y2p);
     }
 

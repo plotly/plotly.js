@@ -4,6 +4,8 @@ var constants = require('./constants');
 
 var Lib = require('../../lib');
 
+var isNumeric = require('fast-isnumeric');
+
 // special position conversion functions... category axis positions can't be
 // specified by their data values, because they don't make a continuous mapping.
 // so these have to be specified in terms of the category serial numbers,
@@ -30,6 +32,12 @@ exports.decodeDate = function(convertToPx) {
 
 exports.encodeDate = function(convertToDate) {
     return function(v) { return convertToDate(v).replace(' ', '_'); };
+};
+
+exports.castNumericStringsToNumbers = function(convertToPx) {
+    return function(v) {
+        return convertToPx(isNumeric(v) ? Number(v) : v);
+    };
 };
 
 exports.extractPathCoords = function(path, paramsToUse) {
