@@ -63,14 +63,6 @@ module.exports = {
     }),
     fillcolor: scatterAttrs.fillcolor,
 
-    // TODO error bars
-    // https://stackoverflow.com/a/26597487/4068492
-    // error_x (error_r, error_theta)
-    // error_y
-
-    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
-        flags: ['re', 'im', 'text', 'name']
-    }),
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
 
