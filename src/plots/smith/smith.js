@@ -247,20 +247,6 @@ proto.updateLayout = function(fullLayout, smithLayout) {
         domain: [0, 100]
     });
 
-    // _this.radialAxis = _this.mockAxis(fullLayout, smithLayout, radialLayout, {
-        // // make this an 'x' axis to make positioning (especially rotation) easier
-        // _id: 'x',
-        // // convert to 'x' axis equivalent
-        // side: {
-            // counterclockwise: 'top',
-            // clockwise: 'bottom'
-        // }[radialLayout.side],
-        // // keep track of real side
-        // _realSide: radialLayout.side,
-        // // spans length 1 radius
-        // domain: [innerRadius / gs.w, radius / gs.w]
-    // });
-
     _this.angularAxis = _this.mockAxis(fullLayout, smithLayout, angularLayout, {
         side: 'right',
         // to get auto nticks right
