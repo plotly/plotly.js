@@ -26,7 +26,7 @@ var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var constants = require('./constants');
-var helpers = require('./helpers');
+var helpers = require('../polar/helpers');
 
 var _ = Lib._;
 var mod = Lib.mod;
