@@ -69,7 +69,7 @@
     ]
   },
   "dependencies": {
-    "3d-view": "^2.0.0",
+    "3d-view": "git://github.com/archmoj/3d-view.git#96b0d7d2176b4c60256bb05404dfddfb02e7485d",
     "@plotly/d3": "3.8.0",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
