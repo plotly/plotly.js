@@ -10,7 +10,6 @@ module.exports = {
     layerNames: [
         'draglayer',
         'plotbg',
-        'backplot',
         'angular-grid',
         'radial-grid',
         'frontplot',
