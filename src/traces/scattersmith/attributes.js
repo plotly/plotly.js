@@ -23,9 +23,9 @@ module.exports = {
     },
 
     text: scatterAttrs.text,
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['re', 'im', 'text']
-    }),
+    // texttemplate: texttemplateAttrs({editType: 'plot'}, {
+    //     keys: ['re', 'im', 'text']
+    // }),
     hovertext: scatterAttrs.hovertext,
 
     line: {
