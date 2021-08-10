@@ -193,19 +193,6 @@ function setConvertAngular(ax, smithLayout) {
                     [sector[0], sector[0] + 360] :
                     sectorInRad.map(g2rad).map(rad2deg);
                 break;
-
-            case 'category':
-                var catLen = ax._categories.length;
-                var _period = ax.period ? Math.max(ax.period, catLen) : catLen;
-
-                // fallback in case all categories have been filtered out
-                if(_period === 0) _period = 1;
-
-                c2rad = t2rad = function(v) { return v * 2 * Math.PI / _period; };
-                rad2c = rad2t = function(v) { return v * _period / Math.PI / 2; };
-
-                ax.range = [0, _period];
-                break;
         }
 
         ax.c2g = function(v) { return rad2g(c2rad(v)); };
