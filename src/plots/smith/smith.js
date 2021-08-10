@@ -353,6 +353,8 @@ proto.updateRadialAxis = function(fullLayout, smithLayout) {
     var ax = _this.radialAxis;
     var hasRoomForIt = true;
 
+    var realStops = [0.2, 0.5, 1.0, 2.0, 5.0];
+
     _this.fillViewInitialKey('realaxis.angle', radialLayout.angle);
     _this.fillViewInitialKey('realaxis.range', ax.range.slice());
 
@@ -408,7 +410,7 @@ proto.updateRadialAxis = function(fullLayout, smithLayout) {
 
         // circular grid lines
         Axes.drawGrid(gd, ax, {
-            vals: [{x: 0.2 }, {x: 0.5 }, {x: 1.0 }, {x: 2.0 }, {x: 5.0 } ],
+            vals: realStops.map(v => ({x: v})),
             layer: layers['radial-grid'],
             path: gridPathFn,
             transFn: Lib.noop,
@@ -416,7 +418,7 @@ proto.updateRadialAxis = function(fullLayout, smithLayout) {
         });
 
         Axes.drawLabels(gd, ax, {
-            vals: [0.2, 0.5, 1.0, 2.0, 5.0].map(function(d) {
+            vals: realStops.map(function(d) {
                 return {
                     x: d,
                     text: d,
@@ -517,6 +519,9 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
     var angularLayout = smithLayout.imaginaryaxis;
     var ax = _this.angularAxis;
 
+    var angleLabelStops = [-5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 1.0, 2.0, 5.0, Infinity];
+    var angleGridStops = [-5.0, -2.0, -1.0, -0.5, -0.2, 0.2, 0.5, 1.0, 2.0, 5.0];
+
     _this.fillViewInitialKey('imaginaryaxis.rotation', angularLayout.rotation);
 
     ax.setGeometry();
@@ -614,8 +619,7 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
 
     if(ax.visible) {
         Axes.drawGrid(gd, ax, {
-            // vals: vals,
-            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.2, 0.5, 1.0, 2.0, 5.0].map(function(v) {
+            vals: angleGridStops.map(function(v) {
                 return {
                     x: v,
                 };
@@ -627,7 +631,7 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
         });
 
         Axes.drawLabels(gd, ax, {
-            vals: [-5.0, -2.0, -1.0, -0.5, -0.2, 0.0, 0.2, 0.5, 1.0, 2.0, 5.0, Infinity].map(function(v) {
+            vals: angleLabelStops.map(function(v) {
                 var radius = _this.radius / v;
                 var theta = 2.0 * Math.atan2(radius, _this.radius);
 
