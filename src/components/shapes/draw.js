@@ -206,8 +206,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     var xRefType = Axes.getRefType(shapeOptions.xref);
     var ya = Axes.getFromId(gd, shapeOptions.yref);
     var yRefType = Axes.getRefType(shapeOptions.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType, helpers.keyIfDefined(xa,'type'));
+    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType, helpers.keyIfDefined(ya,'type'));
     var p2x = helpers.getPixelToData(gd, xa, false, xRefType);
     var p2y = helpers.getPixelToData(gd, ya, true, yRefType);
 
@@ -392,7 +392,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         }
         if(ax && ax.type === 'category') {
             move = function(xy) {
-                return p2xy(helpers.castNumericStringsToNumbers(xy2p)(xy) + dxy);
+                return p2xy(xy2p(xy) + dxy);
             };
         }
         return move;
@@ -585,36 +585,16 @@ function getPathString(gd, options) {
     var gs = gd._fullLayout._size;
     var x2r, x2p, y2r, y2p;
     var x0, x1, y0, y1;
-
-    if(xa) {
-        if(xRefType === 'domain') {
-            x2p = function(v) { return xa._offset + xa._length * v; };
-        } else {
-            x2r = helpers.shapePositionToRange(xa);
-            x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
-        }
-    } else {
-        x2p = function(v) { return gs.l + gs.w * v; };
-    }
-
-    if(ya) {
-        if(yRefType === 'domain') {
-            y2p = function(v) { return ya._offset + ya._length * (1 - v); };
-        } else {
-            y2r = helpers.shapePositionToRange(ya);
-            y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
-        }
-    } else {
-        y2p = function(v) { return gs.t + gs.h * (1 - v); };
-    }
+    var x2pDecoSelect, y2pDecoSelect;
 
     if(type === 'path') {
-        if(xa && xa.type === 'date') x2p = helpers.decodeDate(x2p);
-        if(ya && ya.type === 'date') y2p = helpers.decodeDate(y2p);
-        // the SVG path is always a string, so for categories numeric strings
-        // are always converted to numbers when seen in a SVG path
-        if(xa && xa.type === 'category') x2p = helpers.castNumericStringsToNumbers(x2p);
-        if(ya && ya.type === 'category') y2p = helpers.castNumericStringsToNumbers(y2p);
+        x2pDecoSelect = helpers.keyIfDefined(xa,'type');
+        y2pDecoSelect = helpers.keyIfDefined(ya,'type');
+    }
+    x2p = helpers.getDataToPixel(gd,xa,false,xRefType,x2pDecoSelect);
+    y2p = helpers.getDataToPixel(gd,ya,true,yRefType,y2pDecoSelect);
+
+    if (type === 'path') {
         return convertPath(options, x2p, y2p);
     }
 
