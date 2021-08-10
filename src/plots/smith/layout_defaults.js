@@ -122,13 +122,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             coerceAxis('layer');
         }
 
-        if(axType !== 'category') coerceAxis('hoverformat');
-
         axOut._input = axIn;
-    }
-
-    if(contOut.imaginaryaxis.type === 'category') {
-        coerce('gridshape');
     }
 }
 
