@@ -150,7 +150,8 @@
     "topojson-client": "^3.1.0",
     "vectorize-text": "^3.2.2",
     "webgl-context": "^2.2.0",
-    "world-calendars": "^1.0.3"
+    "world-calendars": "^1.0.3",
+    "zero-crossings": "^1.0.1"
   },
   "devDependencies": {
     "amdefine": "^1.0.1",
