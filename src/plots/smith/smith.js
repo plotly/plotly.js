@@ -422,9 +422,9 @@ proto.updateRadialAxis = function(fullLayout, smithLayout) {
                 return {
                     x: d,
                     text: d,
-                    font: '"Open Sans", verdana, arial, sans-serif',
-                    fontColor: '#444',
-                    fontSize: 12,
+                    font: ax.tickfont.family,
+                    fontColor: ax.tickfont.color,
+                    fontSize: ax.tickfont.size
                 };
             }),
             layer: layers['radial-axis'],
@@ -638,9 +638,9 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
                 return {
                     x: theta * 360.0 / (2 * Math.PI),
                     text: v === Infinity ? '∞' : ((v === 0.0 ? '0 + 0' : v) + 'j'),
-                    font: '"Open Sans", verdana, arial, sans-serif',
-                    fontColor: '#444',
-                    fontSize: v === Infinity ? 16 : 12,
+                    font: ax.tickfont.family,
+                    fontColor: ax.tickfont.color,
+                    fontSize: ax.tickfont.size
                 };
             }),
             layer: layers['angular-axis'],
