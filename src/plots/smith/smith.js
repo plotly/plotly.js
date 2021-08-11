@@ -54,7 +54,7 @@ function Smith(gd, id) {
         .attr('id', this.clipIds.forTraces);
     this.clipPaths.forTraces.append('path');
 
-    this.framework = fullLayout._polarlayer.append('g')
+    this.framework = fullLayout._smithlayer.append('g')
         .attr('class', id);
 
     // unfortunately, we have to keep track of some axis tick settings
