@@ -126,7 +126,7 @@
     "ndarray": "git://github.com/archmoj/ndarray.git#210ccfbf32d085f40603a8b44f81d50ddf2b7d83",
     "ndarray-gradient": "git://github.com/archmoj/ndarray-gradient.git#19b7f9509de3049b9a1c16c821a1e094ccf4701d",
     "ndarray-linear-interpolate": "^1.0.0",
-    "ndarray-ops": "git://github.com/archmoj/ndarray-ops.git#4f4827c1d243d161545052238b32feaa10932924",
+    "ndarray-ops": "git://github.com/archmoj/ndarray-ops.git#ce9969aa054262e6df6d54c2a07a39fcf7b7bb6d",
     "ndarray-pack": "git://github.com/archmoj/ndarray-pack.git#ea900ab2929ea38e6754531f9249a9b462a6eec7",
     "parse-svg-path": "^0.1.2",
     "polybooljs": "^1.2.0",
