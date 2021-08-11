@@ -124,7 +124,7 @@
     "mouse-wheel": "^1.2.0",
     "native-promise-only": "^0.8.1",
     "ndarray": "git://github.com/archmoj/ndarray.git#210ccfbf32d085f40603a8b44f81d50ddf2b7d83",
-    "ndarray-gradient": "git://github.com/archmoj/ndarray-gradient.git#dbd50af92b1d7f0cdc21052288222fbfd90b4a05",
+    "ndarray-gradient": "git://github.com/archmoj/ndarray-gradient.git#19b7f9509de3049b9a1c16c821a1e094ccf4701d",
     "ndarray-linear-interpolate": "^1.0.0",
     "ndarray-ops": "git://github.com/archmoj/ndarray-ops.git#4f4827c1d243d161545052238b32feaa10932924",
     "parse-svg-path": "^0.1.2",
