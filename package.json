@@ -151,7 +151,7 @@
     "vectorize-text": "^3.2.2",
     "webgl-context": "^2.2.0",
     "world-calendars": "^1.0.3",
-    "zero-crossings": "^1.0.1"
+    "zero-crossings": "git://github.com/archmoj/zero-crossings.git#6ed800a885b18ec791ac2fbb91fb9edf33a8df07"
   },
   "devDependencies": {
     "amdefine": "^1.0.1",
