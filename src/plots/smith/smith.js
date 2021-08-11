@@ -112,11 +112,11 @@ proto.updateLayers = function(fullLayout, smithLayout) {
     if(!isAngularAxisBelowTraces) layerData.push('angular-axis');
     if(!isRadialAxisBelowTraces) layerData.push('radial-axis');
 
-    var join = _this.framework.selectAll('.polarsublayer')
+    var join = _this.framework.selectAll('.smithsublayer')
         .data(layerData, String);
 
     join.enter().append('g')
-        .attr('class', function(d) { return 'polarsublayer ' + d;})
+        .attr('class', function(d) { return 'smithsublayer ' + d;})
         .each(function(d) {
             var sel = layers[d] = d3.select(this);
 
