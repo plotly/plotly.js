@@ -57,18 +57,9 @@ exports.extractPathCoords = function(path, paramsToUse) {
     return extractedCoordinates;
 };
 
-exports.getDataToPixel = function(gd, axis, isVertical, refType, d2pDecoSelect) {
+exports.getDataToPixel = function(gd, axis, isVertical, refType) {
     var gs = gd._fullLayout._size;
     var dataToPixel;
-    var d2pDecorator;
-    var d2pDecos = {
-        date: exports.decodeDate,
-        category: exports.castNumericStringsToNumbers
-    };
-    d2pDecorator = d2pDecos[d2pDecoSelect];
-    if (d2pDecorator === undefined) {
-        d2pDecorator = function (f) { return f; }
-    }
 
     if(axis) {
         if(refType === 'domain') {
@@ -82,6 +73,7 @@ exports.getDataToPixel = function(gd, axis, isVertical, refType, d2pDecoSelect) 
                 return axis._offset + axis.r2p(d2r(v, true));
             };
 
+            if(axis.type === 'date') dataToPixel = exports.decodeDate(dataToPixel);
         }
     } else if(isVertical) {
         dataToPixel = function(v) { return gs.t + gs.h * (1 - v); };
@@ -89,7 +81,7 @@ exports.getDataToPixel = function(gd, axis, isVertical, refType, d2pDecoSelect) 
         dataToPixel = function(v) { return gs.l + gs.w * v; };
     }
 
-    return d2pDecorator(dataToPixel);
+    return dataToPixel;
 };
 
 exports.getPixelToData = function(gd, axis, isVertical, opt) {
@@ -161,8 +153,3 @@ exports.makeOptionsAndPlotinfo = function(gd, index) {
         plotinfo: plotinfo
     };
 };
-
-exports.keyIfDefined = function (o,k) {
-    if (o !== undefined) { return o[k]; }
-    return undefined;
-}

@@ -1516,6 +1516,10 @@ describe('Test shapes', function() {
         var ya = Axes.getFromId(gd, layoutShape.yref);
         var x2p = helpers.getDataToPixel(gd, xa);
         var y2p = helpers.getDataToPixel(gd, ya, true);
+        // This is required to match what src/components/shapes/draw.js does for
+        // category axes, so the test is done correctly.
+        if (xa && xa.type == 'category') { x2p = helpers.castNumericStringsToNumbers(x2p); }
+        if (ya && ya.type == 'category') { y2p = helpers.castNumericStringsToNumbers(y2p); }
 
         var initialPath = layoutShape.path;
         var initialCoordinates = getPathCoordinates(initialPath, x2p, y2p);
