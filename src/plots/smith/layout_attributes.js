@@ -137,7 +137,7 @@ module.exports = {
     // y: {},
     // zoom: {},
 
-    domain: domainAttrs({name: 'polar', editType: 'plot'}),
+    domain: domainAttrs({name: 'smith', editType: 'plot'}),
 
     sector: {
         valType: 'info_array',
