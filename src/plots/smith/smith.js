@@ -18,15 +18,12 @@ var dragBox = require('../cartesian/dragbox');
 var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
-var prepSelect = require('../cartesian/select').prepSelect;
-var clearSelect = require('../cartesian/select').clearSelect;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var constants = require('./constants');
 var helpers = require('../polar/helpers');
 
 var _ = Lib._;
-var mod = Lib.mod;
 var deg2rad = Lib.deg2rad;
 var rad2deg = Lib.rad2deg;
 
@@ -776,21 +773,6 @@ proto.updateMainDrag = function(fullLayout) {
             'L' + outerPts.reverse().join('L') + 'Z';
     }
 
-    function zoomPrep() {
-        r0 = null;
-        r1 = null;
-        path0 = _this.pathSubplot();
-        dimmed = false;
-
-        var smithLayoutNow = gd._fullLayout[_this.id];
-        lum = tinycolor(smithLayoutNow.bgcolor).getLuminance();
-
-        zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
-        zb.attr('fill-rule', 'evenodd');
-        corners = dragBox.makeCorners(zoomlayer, cx, cy);
-        clearSelect(gd);
-    }
-
     // N.B. this sets scoped 'r0' and 'r1'
     // return true if 'valid' zoom distance, false otherwise
     function clampAndSetR0R1(rr0, rr1) {
@@ -895,34 +877,6 @@ proto.updateMainDrag = function(fullLayout) {
         ];
         update[_this.id + '.realaxis.range'] = newRng;
     }
-
-    dragOpts.prepFn = function(evt, startX, startY) {
-        var dragModeNow = gd._fullLayout.dragmode;
-
-        var bbox = mainDrag.getBoundingClientRect();
-        gd._fullLayout._calcInverseTransform(gd);
-        var inverse = gd._fullLayout._invTransform;
-        scaleX = gd._fullLayout._invScaleX;
-        scaleY = gd._fullLayout._invScaleY;
-        var transformedCoords = Lib.apply3DTransform(inverse)(startX - bbox.left, startY - bbox.top);
-        x0 = transformedCoords[0];
-        y0 = transformedCoords[1];
-
-        // need to offset x/y as bbox center does not
-        // match origin for asymmetric polygons
-        if(vangles) {
-            var offset = helpers.findPolygonOffset(radius, sectorInRad[0], sectorInRad[1], vangles);
-            x0 += cxx + offset[0];
-            y0 += cyy + offset[1];
-        }
-
-        switch(dragModeNow) {
-            case 'select':
-            case 'lasso':
-                prepSelect(evt, startX, startY, dragOpts, dragModeNow);
-                break;
-        }
-    };
 
     mainDrag.onmousemove = function(evt) {
         Fx.hover(gd, evt, _this.id);
