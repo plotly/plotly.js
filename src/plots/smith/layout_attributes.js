@@ -139,21 +139,6 @@ module.exports = {
 
     domain: domainAttrs({name: 'smith', editType: 'plot'}),
 
-    sector: {
-        valType: 'info_array',
-        items: [
-            {valType: 'number', editType: 'plot'},
-            {valType: 'number', editType: 'plot'}
-        ],
-        dflt: [0, 360],
-        editType: 'plot',
-        description: [
-            'Sets angular span of this smith subplot with two angles (in degrees).',
-            'Sector are assumed to be spanned in the counterclockwise direction',
-            'with *0* corresponding to rightmost limit of the smith subplot.'
-        ].join(' ')
-    },
-
     bgcolor: {
         valType: 'color',
         editType: 'plot',

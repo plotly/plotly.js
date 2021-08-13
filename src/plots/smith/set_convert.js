@@ -170,30 +170,17 @@ function setConvertAngular(ax, smithLayout) {
 
     // N.B. we mock the axis 'range' here
     ax.setGeometry = function() {
-        var sector = smithLayout.sector;
-        var sectorInRad = sector.map(deg2rad);
-        var dir = {clockwise: -1, counterclockwise: 1}[ax.direction];
-        var rot = deg2rad(ax.rotation);
-
-        var rad2g = function(v) { return dir * v + rot; };
-        var g2rad = function(v) { return (v - rot) / dir; };
+        var rad2g = function(v) { return v; };
+        var g2rad = function(v) { return v; };
 
         var rad2c, c2rad;
         var rad2t, t2rad;
 
-        switch(axType) {
-            case 'linear':
-                c2rad = rad2c = Lib.identity;
-                t2rad = deg2rad;
-                rad2t = rad2deg;
+        c2rad = rad2c = Lib.identity;
+        t2rad = deg2rad;
+        rad2t = rad2deg;
 
-                // Set the angular range in degrees to make auto-tick computation cleaner,
-                // changing rotation/direction should not affect the angular tick value.
-                ax.range = Lib.isFullCircle(sectorInRad) ?
-                    [sector[0], sector[0] + 360] :
-                    sectorInRad.map(g2rad).map(rad2deg);
-                break;
-        }
+        ax.range = [0, 360];
 
         ax.c2g = function(v) { return rad2g(c2rad(v)); };
         ax.g2c = function(v) { return rad2c(g2rad(v)); };

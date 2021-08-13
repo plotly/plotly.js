@@ -19,8 +19,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     var bgColor = coerce('bgcolor');
     opts.bgColor = Color.combine(bgColor, opts.paper_bgcolor);
 
-    coerce('sector');
-
     // could optimize, subplotData is not always needed!
     var subplotData = getSubplotData(opts.fullData, constants.name, opts.id);
     var layoutOut = opts.layoutOut;

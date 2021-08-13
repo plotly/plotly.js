@@ -195,9 +195,9 @@ proto.updateLayout = function(fullLayout, smithLayout) {
     var xLength = _this.xLength = gs.w * (xDomain[1] - xDomain[0]);
     var yLength = _this.yLength = gs.h * (yDomain[1] - yDomain[0]);
     // sector to plot
-    var sector = smithLayout.sector;
+    var sector = [0, 360];
     _this.sectorInRad = sector.map(deg2rad);
-    var sectorBBox = _this.sectorBBox = computeSectorBBox(sector);
+    var sectorBBox = _this.sectorBBox = [-1, -1, 1, 1];
     var dxSectorBBox = sectorBBox[2] - sectorBBox[0];
     var dySectorBBox = sectorBBox[3] - sectorBBox[1];
     // aspect ratios
@@ -349,7 +349,7 @@ proto.updateRadialAxis = function(fullLayout, smithLayout) {
     var cx = _this.cx;
     var cy = _this.cy;
     var radialLayout = smithLayout.realaxis;
-    var a0 = mod(smithLayout.sector[0], 360);
+    var a0 = 0;
     var ax = _this.radialAxis;
     var hasRoomForIt = true;
 
@@ -1041,61 +1041,6 @@ function strTickLayout(axLayout) {
     var out = axLayout.ticks + String(axLayout.ticklen) + String(axLayout.showticklabels);
     if('side' in axLayout) out += axLayout.side;
     return out;
-}
-
-// Finds the bounding box of a given circle sector,
-// inspired by https://math.stackexchange.com/q/1852703
-//
-// assumes:
-// - sector[0] < sector[1]
-// - counterclockwise rotation
-function computeSectorBBox(sector) {
-    var s0 = sector[0];
-    var s1 = sector[1];
-    var arc = s1 - s0;
-    var a0 = mod(s0, 360);
-    var a1 = a0 + arc;
-
-    var ax0 = Math.cos(deg2rad(a0));
-    var ay0 = Math.sin(deg2rad(a0));
-    var ax1 = Math.cos(deg2rad(a1));
-    var ay1 = Math.sin(deg2rad(a1));
-
-    var x0, y0, x1, y1;
-
-    if((a0 <= 90 && a1 >= 90) || (a0 > 90 && a1 >= 450)) {
-        y1 = 1;
-    } else if(ay0 <= 0 && ay1 <= 0) {
-        y1 = 0;
-    } else {
-        y1 = Math.max(ay0, ay1);
-    }
-
-    if((a0 <= 180 && a1 >= 180) || (a0 > 180 && a1 >= 540)) {
-        x0 = -1;
-    } else if(ax0 >= 0 && ax1 >= 0) {
-        x0 = 0;
-    } else {
-        x0 = Math.min(ax0, ax1);
-    }
-
-    if((a0 <= 270 && a1 >= 270) || (a0 > 270 && a1 >= 630)) {
-        y0 = -1;
-    } else if(ay0 >= 0 && ay1 >= 0) {
-        y0 = 0;
-    } else {
-        y0 = Math.min(ay0, ay1);
-    }
-
-    if(a1 >= 360) {
-        x1 = 1;
-    } else if(ax0 <= 0 && ax1 <= 0) {
-        x1 = 0;
-    } else {
-        x1 = Math.max(ax0, ax1);
-    }
-
-    return [x0, y0, x1, y1];
 }
 
 function snapToVertexAngle(a, vangles) {
