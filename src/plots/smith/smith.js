@@ -79,7 +79,7 @@ proto.plot = function(smithCalcData, fullLayout) {
     _this.updateLayers(fullLayout, smithLayout);
     _this.updateLayout(fullLayout, smithLayout);
     Plots.generalUpdatePerTraceModule(_this.gd, _this, smithCalcData, smithLayout);
-    _this.updateFx(fullLayout, smithLayout);
+    _this.updateFx();
 };
 
 proto.updateLayers = function(fullLayout, smithLayout) {
@@ -643,36 +643,18 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
     .call(Color.stroke, angularLayout.linecolor);
 };
 
-proto.updateFx = function(fullLayout, smithLayout) {
+proto.updateFx = function() {
     if(!this.gd._context.staticPlot) {
-        this.updateMainDrag(fullLayout);
+        this.updateMainDrag();
     }
 };
 
-proto.updateMainDrag = function(fullLayout) {
+proto.updateMainDrag = function() {
     var _this = this;
     var gd = _this.gd;
     var layers = _this.layers;
-    var zoomlayer = fullLayout._zoomlayer;
-    var MINZOOM = constants.MINZOOM;
-    var OFFEDGE = constants.OFFEDGE;
-    var radius = _this.radius;
-    var innerRadius = _this.innerRadius;
     var cx = _this.cx;
     var cy = _this.cy;
-    var cxx = _this.cxx;
-    var cyy = _this.cyy;
-    var sectorInRad = _this.sectorInRad;
-    var vangles = _this.vangles;
-    var radialAxis = _this.radialAxis;
-    var clampTiny = helpers.clampTiny;
-    var findXYatLength = helpers.findXYatLength;
-    var findEnclosingVertexAngles = helpers.findEnclosingVertexAngles;
-    var chw = constants.cornerHalfWidth;
-    var chl = constants.cornerLen / 2;
-
-    var scaleX;
-    var scaleY;
 
     var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
 
@@ -693,191 +675,6 @@ proto.updateMainDrag = function(fullLayout) {
         yaxes: [_this.yaxis]
     };
 
-    // mouse px position at drag start (0), move (1)
-    var x0, y0;
-    // radial distance from circle center at drag start (0), move (1)
-    var r0, r1;
-    // zoombox persistent quantities
-    var path0, dimmed, lum;
-    // zoombox, corners elements
-    var zb, corners;
-
-    function norm(x, y) {
-        return Math.sqrt(x * x + y * y);
-    }
-
-    function xy2r(x, y) {
-        return norm(x - cxx, y - cyy);
-    }
-
-    function xy2a(x, y) {
-        return Math.atan2(cyy - y, x - cxx);
-    }
-
-    function ra2xy(r, a) {
-        return [r * Math.cos(a), r * Math.sin(-a)];
-    }
-
-    function pathCorner(r, a) {
-        if(r === 0) return _this.pathSector(2 * chw);
-
-        var da = chl / r;
-        var am = a - da;
-        var ap = a + da;
-        var rb = Math.max(0, Math.min(r, radius));
-        var rm = rb - chw;
-        var rp = rb + chw;
-
-        return 'M' + ra2xy(rm, am) +
-            'A' + [rm, rm] + ' 0,0,0 ' + ra2xy(rm, ap) +
-            'L' + ra2xy(rp, ap) +
-            'A' + [rp, rp] + ' 0,0,1 ' + ra2xy(rp, am) +
-            'Z';
-    }
-
-    // (x,y) is the pt at middle of the va0 <-> va1 edge
-    //
-    // ... we could eventually add another mode for cursor
-    // angles 'close to' enough to a particular vertex.
-    function pathCornerForPolygons(r, va0, va1) {
-        if(r === 0) return _this.pathSector(2 * chw);
-
-        var xy0 = ra2xy(r, va0);
-        var xy1 = ra2xy(r, va1);
-        var x = clampTiny((xy0[0] + xy1[0]) / 2);
-        var y = clampTiny((xy0[1] + xy1[1]) / 2);
-        var innerPts, outerPts;
-
-        if(x && y) {
-            var m = y / x;
-            var mperp = -1 / m;
-            var midPts = findXYatLength(chw, m, x, y);
-            innerPts = findXYatLength(chl, mperp, midPts[0][0], midPts[0][1]);
-            outerPts = findXYatLength(chl, mperp, midPts[1][0], midPts[1][1]);
-        } else {
-            var dx, dy;
-            if(y) {
-                // horizontal handles
-                dx = chl;
-                dy = chw;
-            } else {
-                // vertical handles
-                dx = chw;
-                dy = chl;
-            }
-            innerPts = [[x - dx, y - dy], [x + dx, y - dy]];
-            outerPts = [[x - dx, y + dy], [x + dx, y + dy]];
-        }
-
-        return 'M' + innerPts.join('L') +
-            'L' + outerPts.reverse().join('L') + 'Z';
-    }
-
-    // N.B. this sets scoped 'r0' and 'r1'
-    // return true if 'valid' zoom distance, false otherwise
-    function clampAndSetR0R1(rr0, rr1) {
-        rr1 = Math.max(Math.min(rr1, radius), innerRadius);
-
-        // starting or ending drag near center (outer edge),
-        // clamps radial distance at origin (at r=radius)
-        if(rr0 < OFFEDGE) rr0 = 0;
-        else if((radius - rr0) < OFFEDGE) rr0 = radius;
-        else if(rr1 < OFFEDGE) rr1 = 0;
-        else if((radius - rr1) < OFFEDGE) rr1 = radius;
-
-        // make sure r0 < r1,
-        // to get correct fill pattern in path1 below
-        if(Math.abs(rr1 - rr0) > MINZOOM) {
-            if(rr0 < rr1) {
-                r0 = rr0;
-                r1 = rr1;
-            } else {
-                r0 = rr1;
-                r1 = rr0;
-            }
-            return true;
-        } else {
-            r0 = null;
-            r1 = null;
-            return false;
-        }
-    }
-
-    function applyZoomMove(path1, cpath) {
-        path1 = path1 || path0;
-        cpath = cpath || 'M0,0Z';
-
-        zb.attr('d', path1);
-        corners.attr('d', cpath);
-        dragBox.transitionZoombox(zb, corners, dimmed, lum);
-        dimmed = true;
-
-        var updateObj = {};
-        computeZoomUpdates(updateObj);
-        gd.emit('plotly_relayouting', updateObj);
-    }
-
-    function zoomMove(dx, dy) {
-        dx = dx * scaleX;
-        dy = dy * scaleY;
-
-        var x1 = x0 + dx;
-        var y1 = y0 + dy;
-
-        var rr0 = xy2r(x0, y0);
-        var rr1 = Math.min(xy2r(x1, y1), radius);
-        var a0 = xy2a(x0, y0);
-        var path1;
-        var cpath;
-
-        if(clampAndSetR0R1(rr0, rr1)) {
-            path1 = path0 + _this.pathSector(r1);
-            if(r0) path1 += _this.pathSector(r0);
-            // keep 'starting' angle
-            cpath = pathCorner(r0, a0) + pathCorner(r1, a0);
-        }
-        applyZoomMove(path1, cpath);
-    }
-
-    function findPolygonRadius(x, y, va0, va1) {
-        var xy = helpers.findIntersectionXY(va0, va1, va0, [x - cxx, cyy - y]);
-        return norm(xy[0], xy[1]);
-    }
-
-    function zoomMoveForPolygons(dx, dy) {
-        var x1 = x0 + dx;
-        var y1 = y0 + dy;
-        var a0 = xy2a(x0, y0);
-        var a1 = xy2a(x1, y1);
-        var vangles0 = findEnclosingVertexAngles(a0, vangles);
-        var vangles1 = findEnclosingVertexAngles(a1, vangles);
-        var rr0 = findPolygonRadius(x0, y0, vangles0[0], vangles0[1]);
-        var rr1 = Math.min(findPolygonRadius(x1, y1, vangles1[0], vangles1[1]), radius);
-        var path1;
-        var cpath;
-
-        if(clampAndSetR0R1(rr0, rr1)) {
-            path1 = path0 + _this.pathSector(r1);
-            if(r0) path1 += _this.pathSector(r0);
-            // keep 'starting' angle here too
-            cpath = [
-                pathCornerForPolygons(r0, vangles0[0], vangles0[1]),
-                pathCornerForPolygons(r1, vangles0[0], vangles0[1])
-            ].join(' ');
-        }
-        applyZoomMove(path1, cpath);
-    }
-
-    function computeZoomUpdates(update) {
-        var rl = radialAxis._rl;
-        var m = (rl[1] - rl[0]) / (1 - innerRadius / radius) / radius;
-        var newRng = [
-            rl[0] + (r0 - innerRadius) * m,
-            rl[0] + (r1 - innerRadius) * m
-        ];
-        update[_this.id + '.realaxis.range'] = newRng;
-    }
-
     mainDrag.onmousemove = function(evt) {
         Fx.hover(gd, evt, _this.id);
         gd._fullLayout._lasthover = mainDrag;
@@ -885,7 +682,6 @@ proto.updateMainDrag = function(fullLayout) {
     };
 
     mainDrag.onmouseout = function(evt) {
-        if(gd._dragging) return;
         dragElement.unhover(gd, evt);
     };
 
