@@ -19,10 +19,7 @@ var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select').prepSelect;
-var selectOnClick = require('../cartesian/select').selectOnClick;
 var clearSelect = require('../cartesian/select').clearSelect;
-var setCursor = require('../../lib/setcursor');
-var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var constants = require('./constants');
@@ -889,18 +886,6 @@ proto.updateMainDrag = function(fullLayout) {
         applyZoomMove(path1, cpath);
     }
 
-    function zoomDone() {
-        dragBox.removeZoombox(gd);
-
-        if(r0 === null || r1 === null) return;
-        var updateObj = {};
-        computeZoomUpdates(updateObj);
-
-        dragBox.showDoubleClickNotifier(gd);
-
-        Registry.call('_guiRelayout', gd, updateObj);
-    }
-
     function computeZoomUpdates(update) {
         var rl = radialAxis._rl;
         var m = (rl[1] - rl[0]) / (1 - innerRadius / radius) / radius;
@@ -909,31 +894,6 @@ proto.updateMainDrag = function(fullLayout) {
             rl[0] + (r1 - innerRadius) * m
         ];
         update[_this.id + '.realaxis.range'] = newRng;
-    }
-
-    function zoomClick(numClicks, evt) {
-        var clickMode = gd._fullLayout.clickmode;
-
-        dragBox.removeZoombox(gd);
-
-        // TODO double once vs twice logic (autorange vs fixed range)
-        if(numClicks === 2) {
-            var updateObj = {};
-            for(var k in _this.viewInitial) {
-                updateObj[_this.id + '.' + k] = _this.viewInitial[k];
-            }
-
-            gd.emit('plotly_doubleclick', null);
-            Registry.call('_guiRelayout', gd, updateObj);
-        }
-
-        if(clickMode.indexOf('select') > -1 && numClicks === 1) {
-            selectOnClick(evt, gd, [_this.xaxis], [_this.yaxis], _this.id, dragOpts);
-        }
-
-        if(clickMode.indexOf('event') > -1) {
-            Fx.click(gd, evt, _this.id);
-        }
     }
 
     dragOpts.prepFn = function(evt, startX, startY) {
@@ -957,16 +917,6 @@ proto.updateMainDrag = function(fullLayout) {
         }
 
         switch(dragModeNow) {
-            case 'zoom':
-                if(vangles) {
-                    dragOpts.moveFn = zoomMoveForPolygons;
-                } else {
-                    dragOpts.moveFn = zoomMove;
-                }
-                dragOpts.clickFn = zoomClick;
-                dragOpts.doneFn = zoomDone;
-                zoomPrep(evt, startX, startY);
-                break;
             case 'select':
             case 'lasso':
                 prepSelect(evt, startX, startY, dragOpts, dragModeNow);
