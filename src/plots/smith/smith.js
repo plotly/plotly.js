@@ -594,19 +594,7 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
 
     // angle of polygon vertices in geometric radians (null means circles)
     // TODO what to do when ax.period > ax._categories ??
-    var vangles;
-    if(smithLayout.gridshape === 'linear') {
-        vangles = vals.map(t2g);
-
-        // ax._vals should be always ordered, make them
-        // always turn counterclockwise for convenience here
-        if(Lib.angleDelta(vangles[0], vangles[1]) < 0) {
-            vangles = vangles.slice().reverse();
-        }
-    } else {
-        vangles = null;
-    }
-    _this.vangles = vangles;
+    _this.vangles = null;
 
     // Use tickval filter for category axes instead of tweaking
     // the range w.r.t sector, so that sectors that cross 360 can

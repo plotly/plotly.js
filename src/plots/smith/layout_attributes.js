@@ -149,24 +149,6 @@ module.exports = {
     realaxis: realAxisAttrs,
     imaginaryaxis: imaginaryAxisAttrs,
 
-    gridshape: {
-        valType: 'enumerated',
-        values: ['circular', 'linear'],
-        dflt: 'circular',
-        editType: 'plot',
-        description: [
-            'Determines if the radial axis grid lines and angular axis line are drawn',
-            'as *circular* sectors or as *linear* (polygon) sectors.',
-            'Has an effect only when the angular axis has `type` *category*.',
-            'Note that `realaxis.angle` is snapped to the angle of the closest',
-            'vertex when `gridshape` is *circular*',
-            '(so that radial axis scale is the same as the data scale).'
-        ].join(' ')
-    },
-
-    // TODO maybe?
-    // annotations:
-
     uirevision: {
         valType: 'any',
         editType: 'none',
