@@ -310,7 +310,7 @@ proto.mockCartesianAxis = function(fullLayout, smithLayout, opts) {
         var sectorBBox = _this.sectorBBox;
         var ind = bboxIndices[axId];
         var rl = _this.radialAxis._rl;
-        var drl = (rl[1] - rl[0]) / (1 - smithLayout.hole);
+        var drl = (rl[1] - rl[0]);
         ax.range = [sectorBBox[ind[0]] * drl, sectorBBox[ind[1]] * drl];
     };
 

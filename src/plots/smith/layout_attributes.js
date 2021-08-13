@@ -153,16 +153,6 @@ module.exports = {
             'with *0* corresponding to rightmost limit of the smith subplot.'
         ].join(' ')
     },
-    hole: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0,
-        editType: 'plot',
-        description: [
-            'Sets the fraction of the radius to cut out of the smith subplot.'
-        ].join(' ')
-    },
 
     bgcolor: {
         valType: 'color',
