@@ -122,15 +122,11 @@ function fromRadians(v, unit) {
 }
 
 function setConvertAngular(ax, smithLayout) {
-    var axType = ax.type;
+    var _d2c = ax.d2c;
+    var _c2d = ax.c2d;
 
-    if(axType === 'linear') {
-        var _d2c = ax.d2c;
-        var _c2d = ax.c2d;
-
-        ax.d2c = function(v, unit) { return toRadians(_d2c(v), unit); };
-        ax.c2d = function(v, unit) { return _c2d(fromRadians(v, unit)); };
-    }
+    ax.d2c = function (v, unit) { return toRadians(_d2c(v), unit); };
+    ax.c2d = function (v, unit) { return _c2d(fromRadians(v, unit)); };
 
     // override makeCalcdata to handle thetaunit and special theta0/dtheta logic
     ax.makeCalcdata = function(trace, coord) {
@@ -141,7 +137,7 @@ function setConvertAngular(ax, smithLayout) {
         var _d2c = function(v) { return ax.d2c(v, trace.thetaunit); };
 
         if(arrayIn) {
-            if(Lib.isTypedArray(arrayIn) && axType === 'linear') {
+            if(Lib.isTypedArray(arrayIn)) {
                 if(len === arrayIn.length) {
                     return arrayIn;
                 } else if(arrayIn.subarray) {
