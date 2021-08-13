@@ -531,7 +531,7 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
     var t2g = function(d) { return ax.t2g(d.x); };
 
     // run rad2deg on tick0 and ditck for thetaunit: 'radians' axes
-    if(ax.type === 'linear' && ax.thetaunit === 'radians') {
+    if(ax.thetaunit === 'radians') {
         ax.tick0 = rad2deg(ax.tick0);
         ax.dtick = rad2deg(ax.dtick);
     }
