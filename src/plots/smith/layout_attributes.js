@@ -40,7 +40,7 @@ var axisTickAttrs = overrideAll({
     layer: axesAttrs.layer
 }, 'plot', 'from-root');
 
-var radialAxisAttrs = {
+var realAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
     title: {
@@ -72,7 +72,7 @@ var radialAxisAttrs = {
 };
 
 extendFlat(
-    radialAxisAttrs,
+    realAxisAttrs,
 
     // N.B. realaxis grid lines are circular,
     // but realaxis lines are straight from circle center to outer bound
@@ -80,7 +80,7 @@ extendFlat(
     axisTickAttrs
 );
 
-var angularAxisAttrs = {
+var imaginaryAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
     direction: {
@@ -121,7 +121,7 @@ var angularAxisAttrs = {
 };
 
 extendFlat(
-    angularAxisAttrs,
+    imaginaryAxisAttrs,
 
     // N.B. angular grid lines are straight lines from circle center to outer bound
     // the angular line is circular bounding the smith plot area.
@@ -171,8 +171,8 @@ module.exports = {
         description: 'Set the background color of the subplot'
     },
 
-    realaxis: radialAxisAttrs,
-    imaginaryaxis: angularAxisAttrs,
+    realaxis: realAxisAttrs,
+    imaginaryaxis: imaginaryAxisAttrs,
 
     gridshape: {
         valType: 'enumerated',
