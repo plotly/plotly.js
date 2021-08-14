@@ -6,7 +6,7 @@ var subTypes = require('../scatter/subtypes');
 var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleLineShapeDefaults = require('../scatter/line_shape_defaults');
-// var handleTextDefaults = require('../scatter/text_defaults');
+var handleTextDefaults = require('../scatter/text_defaults');
 var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var PTS_LINESONLY = require('../scatter/constants').PTS_LINESONLY;
 
@@ -38,10 +38,10 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {gradient: true});
     }
 
-    // if(subTypes.hasText(traceOut)) {
-    //     coerce('texttemplate');
-    //     handleTextDefaults(traceIn, traceOut, layout, coerce);
-    // }
+    if(subTypes.hasText(traceOut)) {
+        coerce('texttemplate');
+        handleTextDefaults(traceIn, traceOut, layout, coerce);
+    }
 
     var dfltHoverOn = [];
 
