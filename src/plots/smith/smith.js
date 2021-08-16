@@ -584,20 +584,9 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
         _this.angularTickLayout = newTickLayout;
     }
 
-    var vals = Axes.calcTicks(ax);
-
     // angle of polygon vertices in geometric radians (null means circles)
     // TODO what to do when ax.period > ax._categories ??
     _this.vangles = null;
-
-    // Use tickval filter for category axes instead of tweaking
-    // the range w.r.t sector, so that sectors that cross 360 can
-    // show all their ticks.
-    if(ax.type === 'category') {
-        vals = vals.filter(function(d) {
-            return Lib.isAngleInsideSector(t2g(d), _this.sectorInRad);
-        });
-    }
 
     if(ax.visible) {
         Axes.drawGrid(gd, ax, {
