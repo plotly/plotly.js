@@ -669,11 +669,11 @@ proto.updateMainDrag = function() {
         yaxes: [_this.yaxis]
     };
 
-    dragOpts.prepFn = function (evt, startX, startY) {
+    dragOpts.prepFn = function(evt, startX, startY) {
         var dragModeNow = gd._fullLayout.dragmode;
         gd._fullLayout._calcInverseTransform(gd);
 
-        switch (dragModeNow) {
+        switch(dragModeNow) {
             case 'select':
             case 'lasso':
                 prepSelect(evt, startX, startY, dragOpts, dragModeNow);
