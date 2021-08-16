@@ -16,6 +16,7 @@ var dragBox = require('../cartesian/dragbox');
 var dragElement = require('../../components/dragelement');
 var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
+var prepSelect = require('../cartesian/select').prepSelect;
 
 var MID_SHIFT = require('../../constants/alignment').MID_SHIFT;
 var constants = require('./constants');
@@ -666,6 +667,18 @@ proto.updateMainDrag = function() {
         },
         xaxes: [_this.xaxis],
         yaxes: [_this.yaxis]
+    };
+
+    dragOpts.prepFn = function (evt, startX, startY) {
+        var dragModeNow = gd._fullLayout.dragmode;
+        gd._fullLayout._calcInverseTransform(gd);
+
+        switch (dragModeNow) {
+            case 'select':
+            case 'lasso':
+                prepSelect(evt, startX, startY, dragOpts, dragModeNow);
+                break;
+        }
     };
 
     mainDrag.onmousemove = function(evt) {
