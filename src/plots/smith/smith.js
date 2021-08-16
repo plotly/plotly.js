@@ -411,14 +411,16 @@ proto.updateRadialAxis = function(fullLayout, smithLayout) {
             crisp: false
         });
 
+        var font = ax.tickfont || {};
+
         Axes.drawLabels(gd, ax, {
             vals: realStops.map(function(d) {
                 return {
                     x: d,
                     text: d,
-                    font: ax.tickfont.family,
-                    fontColor: ax.tickfont.color,
-                    fontSize: ax.tickfont.size
+                    font: font.family,
+                    fontColor: font.color,
+                    fontSize: font.size
                 };
             }),
             layer: layers['radial-axis'],
@@ -606,12 +608,14 @@ proto.updateAngularAxis = function(fullLayout, smithLayout) {
                 var radius = _this.radius / v;
                 var theta = 2.0 * Math.atan2(radius, _this.radius);
 
+                var font = ax.tickfont || {};
+
                 return {
                     x: theta * 360.0 / (2 * Math.PI),
                     text: v === Infinity ? '∞' : ((v === 0.0 ? '0 + 0' : v) + 'j'),
-                    font: ax.tickfont.family,
-                    fontColor: ax.tickfont.color,
-                    fontSize: ax.tickfont.size
+                    font: font.family,
+                    fontColor: font.color,
+                    fontSize: font.size
                 };
             }),
             layer: layers['angular-axis'],
