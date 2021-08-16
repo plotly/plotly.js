@@ -4600,7 +4600,7 @@ describe('hovermode: (x|y)unified', function() {
             })
             .then(done, done.fail);
     });
-    
+
     it('should not display hover for display: none', function(done) {
         var x1 = [];
         var y1 = [];

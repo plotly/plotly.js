@@ -811,7 +811,7 @@ function hoverDataKey(d) {
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
 function createHoverText(allHoverData, opts, gd) {
-    var hoverData = allHoverData.filter(data => data.hoverinfo !== 'none')
+    var hoverData = allHoverData.filter(function(data) {return data.hoverinfo !== 'none';});
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -819,7 +819,6 @@ function createHoverText(allHoverData, opts, gd) {
     var container = opts.container;
     var outerContainer = opts.outerContainer;
     var commonLabelOpts = opts.commonLabelOpts || {};
-    console.log( container.selectAll('g.hovertext'))
     // Early exit if no labels are drawn
     if(hoverData.length === 0) return [[]];
 
@@ -828,7 +827,7 @@ function createHoverText(allHoverData, opts, gd) {
     // can override this.
     var fontFamily = opts.fontFamily || constants.HOVERFONT;
     var fontSize = opts.fontSize || constants.HOVERFONTSIZE;
-    
+
     var c0 = hoverData[0];
     var xa = c0.xa;
     var ya = c0.ya;
@@ -1055,7 +1054,7 @@ function createHoverText(allHoverData, opts, gd) {
         for(var j = 0; j < hoverData.length; j++) {
             var pt = hoverData[j];
             if(pt.hoverinfo === 'none') continue;
-            console.log(t0)
+
             var texts = getHoverLabelText(pt, true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
