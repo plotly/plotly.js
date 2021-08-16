@@ -1,9 +1,7 @@
 'use strict';
 
 var d3 = require('@plotly/d3');
-var tinycolor = require('tinycolor2');
 
-var Registry = require('../../registry');
 var Lib = require('../../lib');
 var strRotate = Lib.strRotate;
 var strTranslate = Lib.strTranslate;
@@ -404,7 +402,9 @@ proto.updateRadialAxis = function(fullLayout, smithLayout) {
 
         // circular grid lines
         Axes.drawGrid(gd, ax, {
-            vals: realStops.map(v => ({x: v})),
+            vals: realStops.map(function(v) {
+                return {x: v};
+            }),
             layer: layers['radial-grid'],
             path: gridPathFn,
             transFn: Lib.noop,

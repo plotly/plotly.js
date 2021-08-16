@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var ScatterSmith = require('@src/traces/scattersmith');
 var Lib = require('@src/lib');
-const { assertHoverLabelContent } = require('../assets/custom_assertions');
+var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -41,7 +41,7 @@ describe('Test scattersmith trace defaults:', function() {
     });
 });
 
-describe('Test scattersmith hover', function () {
+describe('Test scattersmith hover', function() {
     var gd;
 
     afterEach(destroyGraphDiv);
@@ -60,7 +60,7 @@ describe('Test scattersmith hover', function () {
 
         var pos = specs.pos || [200, 200];
 
-        return Plotly.newPlot(gd, fig).then(function () {
+        return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
             assertHoverLabelContent(specs);
         });
@@ -71,9 +71,9 @@ describe('Test scattersmith hover', function () {
         nums: '0.1 + 0.1j',
         pos: [80, 175],
         name: 'trace 0'
-    }].forEach(function (specs) {
-        it('should generate correct hover labels ' + specs.desc, function (done) {
+    }].forEach(function(specs) {
+        it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).then(done, done.fail);
         });
-    })
+    });
 });

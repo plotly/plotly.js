@@ -4,7 +4,6 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
-var baseAttrs = require('../../plots/attributes');
 var lineAttrs = scatterAttrs.line;
 
 module.exports = {

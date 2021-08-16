@@ -40,9 +40,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut._id = axOut._name = axName;
         axOut._attr = opts.id + '.' + axName;
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
-
-        var dataAttr = constants.axisName2dataArray[axName];
-        var axType = handleAxisTypeDefaults(axIn, axOut, coerceAxis, subplotData, dataAttr, opts);
+        axOut.type = 'linear';
 
         var visible = coerceAxis('visible');
         setConvert(axOut, contOut, layoutOut);
@@ -121,11 +119,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         axOut._input = axIn;
     }
-}
-
-function handleAxisTypeDefaults(axIn, axOut) {
-    axOut.type = 'linear';
-    return axOut.type;
 }
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {

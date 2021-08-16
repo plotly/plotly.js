@@ -121,12 +121,12 @@ function fromRadians(v, unit) {
     return unit === 'degrees' ? rad2deg(v) : v;
 }
 
-function setConvertAngular(ax, smithLayout) {
+function setConvertAngular(ax) {
     var _d2c = ax.d2c;
     var _c2d = ax.c2d;
 
-    ax.d2c = function (v, unit) { return toRadians(_d2c(v), unit); };
-    ax.c2d = function (v, unit) { return _c2d(fromRadians(v, unit)); };
+    ax.d2c = function(v, unit) { return toRadians(_d2c(v), unit); };
+    ax.c2d = function(v, unit) { return _c2d(fromRadians(v, unit)); };
 
     // override makeCalcdata to handle thetaunit and special theta0/dtheta logic
     ax.makeCalcdata = function(trace, coord) {

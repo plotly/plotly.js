@@ -24,7 +24,7 @@ describe('Test smith plot defaults:', function() {
         _supply({
             smith: {}
         });
-        
+
         var smith = layoutOut.smith;
 
         expect(smith.domain.x).toEqual([0, 1]);
