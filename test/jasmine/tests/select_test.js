@@ -2206,6 +2206,48 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
+        it('should work on scattersmith traces, hasCssTransform: ' + hasCssTransform, function(done) {
+            var assertPoints = makeAssertPoints(['re', 'im']);
+            var assertSelectedPoints = makeAssertSelectedPoints();
+
+            var fig = Lib.extendDeep({}, require('@mocks/zzz_smith_basic.json'));
+            fig.layout.width = 800;
+            fig.layout.dragmode = 'select';
+            addInvisible(fig);
+
+            Plotly.newPlot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
+                return _run(hasCssTransform,
+                    [[150, 150], [350, 250]],
+                    function() {
+                        assertPoints([[3, 3], [4, 4], [5, 5], [10, 10], [10, -10]]);
+                        assertSelectedPoints({0: [5, 6, 7, 8, 11]});
+                    },
+                    [200, 200],
+                    BOXEVENTS, 'scattersmith select'
+                );
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'lasso');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[150, 150], [350, 150], [350, 250], [150, 250], [150, 150]],
+                    function() {
+                        assertPoints([[3, 3], [4, 4], [5, 5], [10, 10], [10, -10]]);
+                        assertSelectedPoints({0: [5, 6, 7, 8, 11]});
+                    },
+                    [200, 200],
+                    LASSOEVENTS, 'scattersmith lasso'
+                );
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    [false, true].forEach(function(hasCssTransform) {
         it('should work on barpolar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['r', 'theta']);
             var assertSelectedPoints = makeAssertSelectedPoints();
