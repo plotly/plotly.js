@@ -810,7 +810,8 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(allHoverData, opts, gd) {
+    var hoverData = allHoverData.filter(data => data.hoverinfo !== 'none')
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -1051,7 +1052,7 @@ function createHoverText(hoverData, opts, gd) {
         for(var j = 0; j < hoverData.length; j++) {
             var pt = hoverData[j];
             if(pt.hoverinfo === 'none') continue;
-
+            console.log(t0)
             var texts = getHoverLabelText(pt, true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
