@@ -1652,7 +1652,7 @@ describe('Test shapes', function() {
     }
 });
 
-fdescribe('Numeric string categories', function() {
+describe('Numeric string categories', function() {
     'use strict';
 
     var gd; var dx = 100; var dy = 100;
