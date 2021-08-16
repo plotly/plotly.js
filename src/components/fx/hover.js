@@ -819,13 +819,15 @@ function createHoverText(allHoverData, opts, gd) {
     var container = opts.container;
     var outerContainer = opts.outerContainer;
     var commonLabelOpts = opts.commonLabelOpts || {};
+    // Early exit if no labels are drawn
+    if(hoverData.length === 0) return container.selectAll('g.hovertext');
 
     // opts.fontFamily/Size are used for the common label
     // and as defaults for each hover label, though the individual labels
     // can override this.
     var fontFamily = opts.fontFamily || constants.HOVERFONT;
     var fontSize = opts.fontSize || constants.HOVERFONTSIZE;
-
+    
     var c0 = hoverData[0];
     var xa = c0.xa;
     var ya = c0.ya;
