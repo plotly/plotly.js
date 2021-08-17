@@ -1033,7 +1033,12 @@ function createHoverText(hoverData, opts, gd) {
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: hoverlabel.font},
+                title: {
+                    text: t0,
+                    font: Lib.extendFlat({}, hoverlabel.font, {
+                        size: Math.round(hoverlabel.font.size * 1.2) // larger font size
+                    })
+                },
                 font: hoverlabel.font,
                 bgcolor: hoverlabel.bgcolor,
                 bordercolor: hoverlabel.bordercolor,
