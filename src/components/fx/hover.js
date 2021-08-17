@@ -1081,6 +1081,9 @@ function createHoverText(hoverData, opts, gd) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
+        mockLegend._groupTitleFont = Lib.extendFlat({}, hoverlabel.font, {
+            size: Math.round(hoverlabel.font.size * 1.1) // larger font size
+        });
         legendDraw(gd, mockLegend);
 
         // Position the hover

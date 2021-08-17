@@ -4,6 +4,7 @@ var Registry = require('../../registry');
 var helpers = require('./helpers');
 
 module.exports = function getLegendData(calcdata, opts) {
+    var inHover = opts._inHover;
     var grouped = helpers.isGrouped(opts);
     var reversed = helpers.isReversed(opts);
 
@@ -39,7 +40,7 @@ module.exports = function getLegendData(calcdata, opts) {
         var trace = cd0.trace;
         var lgroup = trace.legendgroup;
 
-        if(!opts._inHover && (!trace.visible || !trace.showlegend)) continue;
+        if(!inHover && (!trace.visible || !trace.showlegend)) continue;
 
         if(Registry.traceIs(trace, 'pie-like')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
@@ -126,6 +127,7 @@ module.exports = function getLegendData(calcdata, opts) {
             var gt = legendData[i][j].trace.legendgrouptitle;
             if(gt && gt.text) {
                 groupTitle = gt;
+                if(inHover) gt.font = opts._groupTitleFont;
                 break;
             }
         }
