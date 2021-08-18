@@ -1,0 +1,74 @@
+{
+  "data": [
+    {
+      "re": [0, 0.3, 1, 2, 3, 5, 10],
+      "im": [0, 0.3, 1, 2, 3, 5, 10],
+      "mode": "lines+text",
+      "name": "Curved",
+      "line": {
+        "color": "peru",
+        "shape": "spline"
+      },
+      "fill": "toself",
+      "text": "smith",
+      "type": "scattersmith"
+    },
+    {
+      "re": [0, 0.3, 1, 2, 3, 5, 10],
+      "im": [0, 0.3, 1, 2, 3, 5, 10],
+      "mode": "lines+text",
+      "name": "Curved",
+      "line": {
+        "color": "peru",
+        "shape": "spline"
+      },
+      "fill": "toself",
+      "text": "smith",
+      "type": "scattersmith",
+      "subplot": "smith2"
+    }
+  ],
+  "layout": {
+    "title": {"text": "Smith chart fill"},
+    "font": {
+      "family": "Arial, sans-serif",
+      "size": 12,
+      "color": "darkblue"
+    },
+    "width": 800,
+    "height": 800,
+    "margin": {"l": 40, "r": 40, "b": 30, "t": 60, "pad": 0},
+    "smith": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0.56, 1]
+      },
+      "bgcolor": "lightblue",
+      "realaxis": {
+        "tickangle": 45
+      },
+      "imaginaryaxis": {
+        "showgrid": true,
+        "tickwidth": 2,
+        "ticklen": 5
+      }
+    },
+    "smith2": {
+      "domain": {
+        "x": [0.56, 1],
+        "y": [0.56, 1]
+      },
+      "bgcolor": "lightblue",
+      "realaxis": {
+        "tickangle": 45
+      },
+      "imaginaryaxis": {
+        "showgrid": true,
+        "tickwidth": 2,
+        "ticklen": 5
+      }
+    },
+    "showlegend": false,
+    "paper_bgcolor": "rgb(255, 255, 255)"
+  }
+}
