@@ -74,6 +74,7 @@
       }
     },
     "showlegend": true,
+    "paper_bgcolor": "lightgray",
     "margin": {"t": 40, "b": 40, "r": 40, "l": 40},
     "width": 800,
     "height": 800
