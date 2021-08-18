@@ -3,12 +3,13 @@
     {
       "re": [0, 0.3, 1, 2, 3, 5, 10],
       "im": [0, 0.3, 1, 2, 3, 5, 10],
-      "mode": "lines+markers",
+      "mode": "markers+text",
       "name": "Curved",
       "line": {
         "color": "peru",
         "shape": "spline"
       },
+      "text": "smith",
       "type": "scattersmith"
     },
     {

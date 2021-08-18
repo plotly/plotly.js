@@ -27,7 +27,7 @@
       "type": "scattersmith",
       "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
       "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
-      "mode": "lines+markers",
+      "mode": "markers+text",
       "marker": {
         "symbol": "x",
         "color": "green"
@@ -35,6 +35,7 @@
       "line": {
         "color": "chartreuse"
       },
+      "texttemplate": "value: (%{re}, %{im})",
       "subplot": "smith4"
     }
   ],
