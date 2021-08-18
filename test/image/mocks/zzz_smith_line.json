@@ -45,7 +45,7 @@
     "height": 400,
     "margin": {"l": 40, "r": 40, "b": 30, "t": 60, "pad": 0},
     "smith": {
-      "bgcolor": "rgb(255, 255, 255)",
+      "bgcolor": "lightblue",
       "realaxis": {
         "tickangle": 45
       },
