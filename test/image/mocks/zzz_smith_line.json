@@ -39,7 +39,7 @@
     "font": {
       "family": "Arial, sans-serif",
       "size": 12,
-      "color": "#000"
+      "color": "darkblue"
     },
     "width": 500,
     "height": 400,
