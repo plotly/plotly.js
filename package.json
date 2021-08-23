@@ -173,7 +173,7 @@
     "karma-verbose-reporter": "0.0.6",
     "karma-viewport": "^1.0.8",
     "lodash": "^4.17.21",
-    "madge": "^4.0.2",
+    "madge": "^5.0.1",
     "mathjax": "2.7.5",
     "minify-stream": "^2.1.0",
     "npm-link-check": "^4.0.0",
