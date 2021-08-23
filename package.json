@@ -176,7 +176,6 @@
     "madge": "^4.0.2",
     "mathjax": "2.7.5",
     "minify-stream": "^2.1.0",
-    "mkdirp": "^1.0.4",
     "npm-link-check": "^4.0.0",
     "open": "^8.2.1",
     "pixelmatch": "^5.2.1",
