@@ -351,7 +351,7 @@ module.exports = function(canvasGL, d) {
             hiD: regl.prop('hiD'),
             palette: paletteTexture,
             contextColor: regl.prop('contextColor'),
-            mask: regl.prop('maskTexture'),
+            maskTexture: regl.prop('maskTexture'),
             drwLayer: regl.prop('drwLayer'),
             maskHeight: regl.prop('maskHeight')
         },
