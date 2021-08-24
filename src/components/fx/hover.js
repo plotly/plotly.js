@@ -1030,16 +1030,12 @@ function createHoverText(hoverData, opts, gd) {
 
         // mock legend
         var hoverlabel = fullLayout.hoverlabel;
+        var font = hoverlabel.font;
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {
-                    text: t0,
-                    font: Lib.extendFlat({}, hoverlabel.font, {
-                        size: Math.round(hoverlabel.font.size * 1.2) // larger font size
-                    })
-                },
-                font: hoverlabel.font,
+                title: {text: t0, font: font},
+                font: font,
                 bgcolor: hoverlabel.bgcolor,
                 bordercolor: hoverlabel.bordercolor,
                 borderwidth: 1,
@@ -1086,9 +1082,7 @@ function createHoverText(hoverData, opts, gd) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
-        mockLegend._groupTitleFont = Lib.extendFlat({}, hoverlabel.font, {
-            size: Math.round(hoverlabel.font.size * 1.1) // larger font size
-        });
+        mockLegend._groupTitleFont = font;
         legendDraw(gd, mockLegend);
 
         // Position the hover
