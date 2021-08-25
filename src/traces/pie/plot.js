@@ -392,7 +392,6 @@ function attachFxHandlers(sliceTop, gd, cd) {
         // in case we dragged over the pie from another subplot,
         // or if hover is turned off
         if(trace2.hovertemplate || (hoverinfo !== 'none' && hoverinfo !== 'skip' && hoverinfo)) {
-
             var separators = fullLayout2.separators;
             var text = [];
 

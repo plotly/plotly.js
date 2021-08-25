@@ -755,10 +755,10 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         var bbox = {};
         eventData.bbox = bbox;
 
-        if ('x0' in pt) bbox.x0 = hol + pt.x0 + pt.xa._offset;
-        if ('x1' in pt) bbox.x1 = hol + pt.x1 + pt.xa._offset;
-        if ('y0' in pt) bbox.y0 = hot + pt.y0 + pt.ya._offset;
-        if ('y1' in pt) bbox.y1 = hot + pt.y1 + pt.ya._offset;
+        if('x0' in pt) bbox.x0 = hol + pt.x0 + pt.xa._offset;
+        if('x1' in pt) bbox.x1 = hol + pt.x1 + pt.xa._offset;
+        if('y0' in pt) bbox.y0 = hot + pt.y0 + pt.ya._offset;
+        if('y1' in pt) bbox.y1 = hot + pt.y1 + pt.ya._offset;
 
         pt.eventData = [eventData];
         newhoverdata.push(eventData);
