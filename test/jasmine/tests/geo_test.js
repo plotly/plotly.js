@@ -882,7 +882,7 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData).sort().sort()).toEqual([
+                expect(Object.keys(ptData).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
                 ].sort());
