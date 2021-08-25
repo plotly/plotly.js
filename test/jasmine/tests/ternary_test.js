@@ -22,7 +22,7 @@ var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var SORTED_EVENT_KEYS = [
     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
     'xaxis', 'yaxis', 'a', 'b', 'c',
-    'bbox', 'x0', 'x1', 'y0', 'y1'
+    'bbox'
 ].sort();
 
 describe('ternary plots', function() {

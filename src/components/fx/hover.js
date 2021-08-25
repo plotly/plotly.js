@@ -752,12 +752,14 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             pt.hovertemplate = ht || pt.trace.hovertemplate || false;
         }
 
-        var bbox = {};
-        if('x0' in pt) bbox.x0 = pt.x0 + pt.xa._offset + gLeft;
-        if('x1' in pt) bbox.x1 = pt.x1 + pt.xa._offset + gLeft;
-        if('y0' in pt) bbox.y0 = pt.y0 + pt.ya._offset + gTop;
-        if('y1' in pt) bbox.y1 = pt.y1 + pt.ya._offset + gTop;
-        eventData.bbox = bbox;
+        if(pt.xa && pt.ya) {
+            eventData.bbox = {
+                x0: pt.x0 + pt.xa._offset + gLeft,
+                x1: pt.x1 + pt.xa._offset + gLeft,
+                y0: pt.y0 + pt.ya._offset + gTop,
+                y1: pt.y1 + pt.ya._offset + gTop
+            };
+        }
 
         pt.eventData = [eventData];
         newhoverdata.push(eventData);
