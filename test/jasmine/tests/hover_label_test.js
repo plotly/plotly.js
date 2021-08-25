@@ -4547,17 +4547,6 @@ describe('hovermode: (x|y)unified', function() {
         });
     }
 
-    function assertFont(fontFamily, fontSize, fontColor) {
-        var hover = getHoverLabel();
-        var text = hover.select('text.legendtext');
-        var node = text.node();
-
-        var textStyle = window.getComputedStyle(node);
-        expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
-        expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
-        expect(textStyle.fill).toBe(fontColor, 'wrong font color');
-    }
-
     it('set smart defaults for spikeline in x unified', function(done) {
         Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
             .then(function(gd) {
@@ -6011,6 +6000,17 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should use hoverlabel.font or legend.font or layout.font', function(done) {
+        function assertFont(fontFamily, fontSize, fontColor) {
+            var hover = getHoverLabel();
+            var text = hover.select('text.legendtext');
+            var node = text.node();
+
+            var textStyle = window.getComputedStyle(node);
+            expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
+            expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
+            expect(textStyle.fill).toBe(fontColor, 'wrong font color');
+        }
+
         var mockCopy = Lib.extendDeep({}, mock);
 
         // Set layout.font
