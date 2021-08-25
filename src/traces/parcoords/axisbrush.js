@@ -354,7 +354,7 @@ function attachDragBehavior(selection) {
 
 function startAsc(a, b) { return a[0] - b[0]; }
 
-function renderAxisBrush(axisBrush) {
+function renderAxisBrush(axisBrush, paperColor) {
     var background = axisBrush.selectAll('.background').data(repeat);
 
     background.enter()
@@ -378,7 +378,7 @@ function renderAxisBrush(axisBrush) {
         .classed('highlight-shadow', true)
         .attr('x', -c.bar.width / 2)
         .attr('stroke-width', c.bar.width + c.bar.strokeWidth)
-        .attr('stroke', c.bar.strokeColor)
+        .attr('stroke', paperColor)
         .attr('opacity', c.bar.strokeOpacity)
         .attr('stroke-linecap', 'butt');
 
@@ -402,7 +402,7 @@ function renderAxisBrush(axisBrush) {
         .call(styleHighlight);
 }
 
-function ensureAxisBrush(axisOverlays) {
+function ensureAxisBrush(axisOverlays, paperColor) {
     var axisBrush = axisOverlays.selectAll('.' + c.cn.axisBrush)
         .data(repeat, keyFun);
 
@@ -410,7 +410,7 @@ function ensureAxisBrush(axisOverlays) {
         .append('g')
         .classed(c.cn.axisBrush, true);
 
-    renderAxisBrush(axisBrush);
+    renderAxisBrush(axisBrush, paperColor);
 }
 
 function getBrushExtent(brush) {

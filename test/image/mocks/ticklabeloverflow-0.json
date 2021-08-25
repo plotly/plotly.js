@@ -1,0 +1,29 @@
+{
+    "data": [{
+        "x": [-100, 0, 100],
+        "y": [-100, 0, 100]
+    }],
+    "layout": {
+        "xaxis": {
+            "range": [-115, 105],
+            "tickformat": ".3f",
+            "ticklabeloverflow": "allow"
+        },
+        "yaxis": {
+            "range": [-115, 105],
+            "tickangle": 90,
+            "tickformat": ".3f",
+            "ticklabeloverflow": "allow"
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "width": 300,
+        "height": 300,
+        "margin": {
+            "t": 15,
+            "b": 15,
+            "l": 15,
+            "r": 15
+        }
+    }
+}

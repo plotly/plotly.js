@@ -1,5 +1,5 @@
 var Plotly = require('@lib/index');
-var Filter = require('@lib/filter');
+var Filter = require('@src/transforms/filter');
 
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');

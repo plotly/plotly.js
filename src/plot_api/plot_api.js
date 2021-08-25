@@ -144,8 +144,9 @@ function _doPlot(gd, data, layout, config) {
         }
     }
 
-    // clear gradient defs on each .plot call, because we know we'll loop through all traces
+    // clear gradient and pattern defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
+    Drawing.initPatterns(gd);
 
     // save initial show spikes once per graph
     if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
@@ -221,17 +222,20 @@ function _doPlot(gd, data, layout, config) {
                 });
         }
 
+        var plotGlPixelRatio = gd._context.plotGlPixelRatio;
         if(fullLayout._glcanvas) {
             fullLayout._glcanvas
-                .attr('width', fullLayout.width)
-                .attr('height', fullLayout.height);
+                .attr('width', fullLayout.width * plotGlPixelRatio)
+                .attr('height', fullLayout.height * plotGlPixelRatio)
+                .style('width', fullLayout.width + 'px')
+                .style('height', fullLayout.height + 'px');
 
             var regl = fullLayout._glcanvas.data()[0].regl;
             if(regl) {
                 // Unfortunately, this can happen when relayouting to large
                 // width/height on some browsers.
-                if(Math.floor(fullLayout.width) !== regl._gl.drawingBufferWidth ||
-                    Math.floor(fullLayout.height) !== regl._gl.drawingBufferHeight
+                if(Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
+                    Math.floor(fullLayout.height * plotGlPixelRatio) !== regl._gl.drawingBufferHeight
                  ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
                     if(drawFrameworkCalls) {
@@ -2373,7 +2377,7 @@ var traceUIControlPatterns = [
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
     {pattern: /^node\.(x|y|groups)/}, // for Sankey nodes
-    {pattern: /^level$/}, // for Sunburst & Treemap traces
+    {pattern: /^level$/}, // for Sunburst, Treemap and Icicle traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -3736,6 +3740,9 @@ function makePlotFramework(gd) {
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
+
+    // single treemap layer for the whole plot
+    fullLayout._iciclelayer = fullLayout._paper.append('g').classed('iciclelayer', true);
 
     // single treemap layer for the whole plot
     fullLayout._treemaplayer = fullLayout._paper.append('g').classed('treemaplayer', true);

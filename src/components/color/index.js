@@ -2,6 +2,7 @@
 
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
+var isTypedArray = require('../../lib/array').isTypedArray;
 
 var color = module.exports = {};
 
@@ -116,7 +117,7 @@ color.clean = function(container) {
             if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
                 for(j = 0; j < val.length; j++) color.clean(val[j]);
             }
-        } else if(val && typeof val === 'object') color.clean(val);
+        } else if(val && typeof val === 'object' && !isTypedArray(val)) color.clean(val);
     }
 };
 

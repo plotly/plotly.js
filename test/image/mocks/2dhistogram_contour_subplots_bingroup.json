@@ -8022,7 +8022,7 @@
       "name": "density",
       "ncontours": 20,
       "colorscale": "Hot",
-      "reversescl": true,
+      "reversescale": true,
       "showscale": false,
       "type": "histogram2dcontour",
       "xbingroup": "X",

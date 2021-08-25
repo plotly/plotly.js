@@ -11,10 +11,10 @@ uniform mat4 dim0A, dim1A, dim0B, dim1B, dim0C, dim1C, dim0D, dim1D,
              loA, hiA, loB, hiB, loC, hiC, loD, hiD;
 
 uniform vec2 resolution, viewBoxPos, viewBoxSize;
-uniform sampler2D mask, palette;
 uniform float maskHeight;
 uniform float drwLayer; // 0: context, 1: focus, 2: pick
 uniform vec4 contextColor;
+uniform sampler2D maskTexture, palette;
 
 bool isPick    = (drwLayer > 1.5);
 bool isContext = (drwLayer < 0.5);
@@ -76,7 +76,7 @@ bool outsideRasterMask(mat4 A, mat4 B, mat4 C, mat4 D) {
         for(int j = 0; j < 4; ++j) {
             for(int k = 0; k < 4; ++k) {
                 if(0 == iMod(
-                    int(255.0 * texture2D(mask,
+                    int(255.0 * texture2D(maskTexture,
                         vec2(
                             (float(i * 2 + j / 2) + 0.5) / 8.0,
                             (pnts[i][j][k] * (maskHeight - 1.0) + 1.0) / maskHeight

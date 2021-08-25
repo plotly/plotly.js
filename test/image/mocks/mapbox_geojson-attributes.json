@@ -24,10 +24,10 @@
                   "type": "Feature",
                   "geometry": {
                     "type": "LineString",
-                    "coordinates": [[-0.5, 52], [0.5, 50]]
+                    "coordinates": [[0.25, 52], [0.75, 50]]
                   },
                   "properties": {
-                    "title": {"text": "Line Text Example"}
+                    "title": "Line Text Example"
                   }
                 }
               ]
@@ -39,7 +39,7 @@
             "symbol": {
               "text": "{title}",
               "textfont": {
-                "size": 10,
+                "size": 20,
                 "color": "red"
               },
               "iconsize": 0,
@@ -52,19 +52,19 @@
                   "type": "Feature",
                   "geometry": {
                     "type": "LineString",
-                    "coordinates": [[-0.5, 52], [0.5, 50]]
+                    "coordinates": [[0.25, 52], [0.75, 50]]
                   },
                   "properties": {
-                    "title": {"text": "Line Text Example"}
+                    "title": "Line Text Example"
                   }
                 }
               ]
             }
           }
         ],
-        "zoom": 5,
+        "zoom": 6,
         "center": {
-          "lon": 0,
+          "lon": 0.5,
           "lat": 51
         }
       },

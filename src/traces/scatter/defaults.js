@@ -26,6 +26,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(!traceOut.visible) return;
 
     handlePeriodDefaults(traceIn, traceOut, layout, coerce);
+    coerce('xhoverformat');
+    coerce('yhoverformat');
 
     var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
 

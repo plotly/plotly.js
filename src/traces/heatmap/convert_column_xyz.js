@@ -8,8 +8,8 @@ module.exports = function convertColumnData(trace, ax1, ax2, var1Name, var2Name,
     var colLen = trace._length;
     var col1 = ax1.makeCalcdata(trace, var1Name);
     var col2 = ax2.makeCalcdata(trace, var2Name);
-    col1 = alignPeriod(trace, ax1, var1Name, col1);
-    col2 = alignPeriod(trace, ax2, var2Name, col2);
+    col1 = alignPeriod(trace, ax1, var1Name, col1).vals;
+    col2 = alignPeriod(trace, ax2, var2Name, col2).vals;
 
     var textCol = trace.text;
     var hasColumnText = (textCol !== undefined && Lib.isArray1D(textCol));

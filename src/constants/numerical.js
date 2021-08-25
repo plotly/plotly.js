@@ -15,7 +15,7 @@ module.exports = {
      * to avoid glitches: Make sure that even when you multiply it by the
      * number of pixels on a giant screen it still works
      */
-    FP_SAFE: Number.MAX_VALUE / 10000,
+    FP_SAFE: Number.MAX_VALUE * 1e-4,
 
     /*
      * conversion of date units to milliseconds

@@ -1,3 +1,11 @@
 'use strict';
 
-exports.manage = require('./manage');
+module.exports = {
+    moduleType: 'component',
+    name: 'modebar',
+
+    layoutAttributes: require('./attributes'),
+    supplyLayoutDefaults: require('./defaults'),
+
+    manage: require('./manage')
+};

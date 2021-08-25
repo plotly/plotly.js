@@ -461,7 +461,7 @@ function attachGripEvents(item, gd, sliderGroup) {
         return sliderGroup.data()[0];
     }
 
-    item.on('mousedown', function() {
+    function mouseDownHandler() {
         var sliderOpts = getSliderOpts();
         gd.emit('plotly_sliderstart', {slider: sliderOpts});
 
@@ -475,25 +475,36 @@ function attachGripEvents(item, gd, sliderGroup) {
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
         sliderOpts._dragging = true;
 
-        $gd.on('mousemove', function() {
+        function mouseMoveHandler() {
             var sliderOpts = getSliderOpts();
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
             handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, false);
-        });
+        }
 
-        $gd.on('mouseup', function() {
+        $gd.on('mousemove', mouseMoveHandler);
+        $gd.on('touchmove', mouseMoveHandler);
+
+        function mouseUpHandler() {
             var sliderOpts = getSliderOpts();
             sliderOpts._dragging = false;
             grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
+            $gd.on('touchend', null);
+            $gd.on('touchmove', null);
 
             gd.emit('plotly_sliderend', {
                 slider: sliderOpts,
                 step: sliderOpts.steps[sliderOpts.active]
             });
-        });
-    });
+        }
+
+        $gd.on('mouseup', mouseUpHandler);
+        $gd.on('touchend', mouseUpHandler);
+    }
+
+    item.on('mousedown', mouseDownHandler);
+    item.on('touchstart', mouseDownHandler);
 }
 
 function drawTicks(sliderGroup, sliderOpts) {

@@ -146,26 +146,26 @@ describe('end-to-end scattergl tests', function() {
             return Plotly.restyle(gd, 'visible', 'legendonly');
         })
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 216, 200)[0]).toBe(0);
             assertDrawCall('legendonly', 0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 216, 200)[0]).not.toBe(0);
             assertDrawCall('back to visible', 1);
 
             return Plotly.restyle(gd, 'visible', false);
         })
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 216, 200)[0]).toBe(0);
             assertDrawCall('visible false', 0);
 
             return Plotly.restyle(gd, 'visible', true);
         })
         .then(function() {
             assertDrawCall('back up', 1);
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 108, 100)[0]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 216, 200)[0]).not.toBe(0);
         })
         .then(done, done.fail);
     });
@@ -346,12 +346,12 @@ describe('end-to-end scattergl tests', function() {
         Plotly.newPlot(gd, mock.data, mock.layout)
         .then(delay(1000))
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).not.toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 200, 160)[0]).not.toBe(0);
 
             return Plotly.restyle(gd, {fill: 'none'});
         })
         .then(function() {
-            expect(readPixel(gd.querySelector('.gl-canvas-context'), 100, 80)[0]).toBe(0);
+            expect(readPixel(gd.querySelector('.gl-canvas-context'), 200, 160)[0]).toBe(0);
         })
         .then(done, done.fail);
     });

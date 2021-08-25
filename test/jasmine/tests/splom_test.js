@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 var Axes = require('@src/plots/cartesian/axes');
@@ -945,8 +945,8 @@ describe('Test splom interactions:', function() {
 
         function assertDims(msg, w, h) {
             var canvas = gd._fullLayout._glcanvas;
-            expect(canvas.node().width).toBe(w, msg + '| canvas width');
-            expect(canvas.node().height).toBe(h, msg + '| canvas height');
+            expect(canvas.node().width / 2).toBe(w, msg + '| canvas width');
+            expect(canvas.node().height / 2).toBe(h, msg + '| canvas height');
 
             var gl = canvas.data()[0].regl._gl;
             if(/Chrome\/78/.test(window.navigator.userAgent)) {
@@ -954,8 +954,8 @@ describe('Test splom interactions:', function() {
                 expect(gl.drawingBufferWidth).toBe(Math.min(w, 4096), msg + '| drawingBufferWidth');
                 expect(gl.drawingBufferHeight).toBe(Math.min(h, 4096), msg + '| drawingBufferHeight');
             } else {
-                expect(gl.drawingBufferWidth).toBe(w, msg + '| drawingBufferWidth');
-                expect(gl.drawingBufferHeight).toBe(h, msg + '| drawingBufferHeight');
+                expect(gl.drawingBufferWidth / 2).toBe(w, msg + '| drawingBufferWidth');
+                expect(gl.drawingBufferHeight / 2).toBe(h, msg + '| drawingBufferHeight');
             }
         }
 
@@ -1222,7 +1222,7 @@ describe('Test splom update switchboard:', function() {
 
             expect(toPlainArray(scene.matrixOptions.color))
                 .toBeCloseToArray([31, 119, 180, 255], 1, 'base color');
-            expect(scene.matrixOptions.size).toBe(3, 'base size');
+            expect(scene.matrixOptions.size).toBe(6, 'base size');
             expect(fullLayout.xaxis.range).toBeCloseToArray([0.851, 3.148], 1, 'base xrng');
 
             return Plotly.restyle(gd, 'marker.color', 'black');
@@ -1302,7 +1302,7 @@ describe('Test splom update switchboard:', function() {
                 ['draw', 1]
             ]);
 
-            expect(scene.matrixOptions.size).toBe(10, msg);
+            expect(scene.matrixOptions.size).toBe(20, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.753, 3.246], 1, 'xrng ' + msg);
 
@@ -1320,7 +1320,7 @@ describe('Test splom update switchboard:', function() {
                 ['draw', 1]
             ]);
 
-            expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
+            expect(scene.matrixOptions.sizes).toBeCloseToArray([4, 10, 20], 1, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
 
@@ -1398,16 +1398,16 @@ describe('Test splom hover:', function() {
 
     var specs = [{
         desc: 'basic',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: '7.7',
         name: 'Virginica',
         axis: '2.6',
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
     }, {
         desc: 'hovermode closest',
-        patch: function(fig) {
-            fig.layout.hovermode = 'closest';
-            return fig;
-        },
         nums: '(2.6, 7.7)',
         name: 'Virginica',
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
@@ -1415,6 +1415,7 @@ describe('Test splom hover:', function() {
         desc: 'skipping over visible false dims',
         patch: function(fig) {
             fig.data[0].dimensions[0].visible = false;
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: '7.7',
@@ -1428,6 +1429,7 @@ describe('Test splom hover:', function() {
             fig.layout.margin = {t: 0, l: 0, b: 0, r: 0};
             fig.layout.width = 400;
             fig.layout.height = 400;
+            fig.layout.hovermode = 'x';
             return fig;
         },
         pos: [20, 380],
@@ -1439,6 +1441,7 @@ describe('Test splom hover:', function() {
         mock: require('@mocks/splom_dates.json'),
         patch: function(fig) {
             fig.layout = {
+                hovermode: 'x',
                 margin: {t: 0, l: 0, b: 0, r: 0},
                 width: 400,
                 height: 400
@@ -1456,7 +1459,6 @@ describe('Test splom hover:', function() {
                 t.hovertext = 'LOOK';
                 t.text = 'NOP';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '(2.6, 7.7)\nLOOK',
@@ -1468,7 +1470,6 @@ describe('Test splom hover:', function() {
             fig.data.forEach(function(t) {
                 t.hovertemplate = '%{x}|%{y}<extra>pt %{pointNumber}</extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '2.6|7.7',
@@ -1585,7 +1586,7 @@ describe('Test splom select:', function() {
 
             var to = setTimeout(function() {
                 reject('fail: plotly_selected not emitter');
-            }, 200);
+            }, 300);
 
             gd.once('plotly_selected', function(d) {
                 clearTimeout(to);

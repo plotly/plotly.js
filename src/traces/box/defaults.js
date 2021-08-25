@@ -17,6 +17,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     if(traceOut.visible === false) return;
 
     handlePeriodDefaults(traceIn, traceOut, layout, coerce);
+    coerce('xhoverformat');
+    coerce('yhoverformat');
 
     var hasPreCompStats = traceOut._hasPreCompStats;
 

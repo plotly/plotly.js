@@ -322,10 +322,14 @@ proto.render = function() {
         if(trace.setContourLevels) trace.setContourLevels();
     }
 
-    function formatter(axisName, val) {
-        var axis = scene.fullSceneLayout[axisName];
+    function formatter(axLetter, val, hoverformat) {
+        var ax = scene.fullSceneLayout[axLetter + 'axis'];
 
-        return Axes.tickText(axis, axis.d2l(val), 'hover').text;
+        if(ax.type !== 'log') {
+            val = ax.d2l(val);
+        }
+
+        return Axes.hoverLabelText(ax, val, hoverformat);
     }
 
     var oldEventData;
@@ -337,9 +341,9 @@ proto.render = function() {
         var ptNumber = selection.index;
 
         var labels = {
-            xLabel: formatter('xaxis', selection.traceCoordinate[0]),
-            yLabel: formatter('yaxis', selection.traceCoordinate[1]),
-            zLabel: formatter('zaxis', selection.traceCoordinate[2])
+            xLabel: formatter('x', selection.traceCoordinate[0], trace.xhoverformat),
+            yLabel: formatter('y', selection.traceCoordinate[1], trace.yhoverformat),
+            zLabel: formatter('z', selection.traceCoordinate[2], trace.zhoverformat)
         };
 
         var hoverinfo = Fx.castHoverinfo(traceNow, scene.fullLayout, ptNumber);
@@ -358,17 +362,17 @@ proto.render = function() {
         var vectorTx = [];
 
         if(trace.type === 'cone' || trace.type === 'streamtube') {
-            labels.uLabel = formatter('xaxis', selection.traceCoordinate[3]);
+            labels.uLabel = formatter('x', selection.traceCoordinate[3], trace.uhoverformat);
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
                 vectorTx.push('u: ' + labels.uLabel);
             }
 
-            labels.vLabel = formatter('yaxis', selection.traceCoordinate[4]);
+            labels.vLabel = formatter('y', selection.traceCoordinate[4], trace.vhoverformat);
             if(isHoverinfoAll || hoverinfoParts.indexOf('v') !== -1) {
                 vectorTx.push('v: ' + labels.vLabel);
             }
 
-            labels.wLabel = formatter('zaxis', selection.traceCoordinate[5]);
+            labels.wLabel = formatter('z', selection.traceCoordinate[5], trace.whoverformat);
             if(isHoverinfoAll || hoverinfoParts.indexOf('w') !== -1) {
                 vectorTx.push('w: ' + labels.wLabel);
             }
@@ -388,7 +392,7 @@ proto.render = function() {
             }
             tx = vectorTx.join('<br>');
         } else if(trace.type === 'isosurface' || trace.type === 'volume') {
-            labels.valueLabel = Axes.tickText(scene._mockAxis, scene._mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
+            labels.valueLabel = Axes.hoverLabelText(scene._mockAxis, scene._mockAxis.d2l(selection.traceCoordinate[3]), trace.valuehoverformat);
             vectorTx.push('value: ' + labels.valueLabel);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
