@@ -110,14 +110,13 @@ module.exports = {
     },
     groupclick: {
         valType: 'enumerated',
-        values: ['toggleitem', 'togglegroup', false],
+        values: ['toggleitem', 'togglegroup'],
         dflt: 'togglegroup',
         editType: 'legend',
         description: [
             'Determines the behavior on legend group item click.',
             '*toggleitem* toggles the visibility of the individual item clicked on the graph.',
-            '*togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph.',
-            '*false* disables legend group click interactions.'
+            '*togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph.'
         ].join(' ')
     },
     x: {

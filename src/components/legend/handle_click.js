@@ -151,8 +151,6 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
 
             if(hasLegendgroup) {
-                if(groupClick === false) return;
-
                 if(toggleGroup) {
                     for(i = 0; i < fullData.length; i++) {
                         if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
@@ -201,7 +199,6 @@ module.exports = function handleClick(g, gd, numClicks) {
                         // N.B. consider traces that have a set legendgroup as toggleable
                         notInLegend = (fullData[i].showlegend !== true && !fullData[i].legendgroup);
                         isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
-                        if(isInGroup && groupClick === false) continue;
                         setVisibility(fullData[i], ((isInGroup && toggleGroup) || notInLegend) ? true : otherState);
                         break;
                 }
