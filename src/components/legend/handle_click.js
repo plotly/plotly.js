@@ -28,7 +28,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     else if(numClicks === 2) mode = itemDoubleClick;
     if(!mode) return;
 
-    var toggleGroup = groupClick === undefined || groupClick === 'togglegroup';
+    var toggleGroup = groupClick === 'togglegroup';
 
     var hiddenSlices = fullLayout.hiddenlabels ?
         fullLayout.hiddenlabels.slice() :
