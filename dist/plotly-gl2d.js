@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v2.3.0
+* plotly.js (gl2d) v2.3.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -61055,7 +61055,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 }
 
 function hoverDataKey(d) {
-    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa, d.ya || ''].join(',');
+    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa ? d.xa._id : '', d.ya ? d.ya._id : ''].join(',');
 }
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
@@ -62243,13 +62243,32 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
+    var cd0 = winningPoint.cd[0];
+
     if(ax.type === 'category') val = ax._categoriesMap[val];
     else if(ax.type === 'date') {
-        var period = winningPoint[axLetter + 'Period'];
-        val = ax.d2c(period !== undefined ? period : val);
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
+
+            var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
+            var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
+            var diff = end - start;
+
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
     }
 
-    var cd0 = winningPoint.cd[winningPoint.index];
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||
@@ -114372,9 +114391,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 hovertemplate: trace.hovertemplate
             });
 
-            if(trace.xperiodalignment === 'end') pointData.xPeriod = di.x;
-            if(trace.yperiodalignment === 'end') pointData.yPeriod = di.y;
-
             fillText(di, trace, pointData);
             Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
 
@@ -117403,9 +117419,6 @@ function calcHover(pointData, x, y, trace) {
         hovertemplate: di.ht
     });
 
-    if(trace.xperiodalignment === 'end') pointData2.xPeriod = di.x;
-    if(trace.yperiodalignment === 'end') pointData2.yPeriod = di.y;
-
     if(di.htx) pointData2.text = di.htx;
     else if(di.tx) pointData2.text = di.tx;
     else if(trace.text) pointData2.text = trace.text;
@@ -120150,7 +120163,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.3.0';
+exports.version = '2.3.1';
 
 },{}]},{},[8])(8)
 });

@@ -805,7 +805,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 }
 
 function hoverDataKey(d) {
-    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa, d.ya || ''].join(',');
+    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa ? d.xa._id : '', d.ya ? d.ya._id : ''].join(',');
 }
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
@@ -1029,13 +1029,15 @@ function createHoverText(hoverData, opts, gd) {
         if(hoverData.length === 0) return;
 
         // mock legend
+        var hoverlabel = fullLayout.hoverlabel;
+        var font = hoverlabel.font;
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: fullLayout.hoverlabel.font},
-                font: fullLayout.hoverlabel.font,
-                bgcolor: fullLayout.hoverlabel.bgcolor,
-                bordercolor: fullLayout.hoverlabel.bordercolor,
+                title: {text: t0, font: font},
+                font: font,
+                bgcolor: hoverlabel.bgcolor,
+                bordercolor: hoverlabel.bordercolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
@@ -1080,6 +1082,7 @@ function createHoverText(hoverData, opts, gd) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
+        mockLegend._groupTitleFont = font;
         legendDraw(gd, mockLegend);
 
         // Position the hover
@@ -1993,13 +1996,32 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
+    var cd0 = winningPoint.cd[0];
+
     if(ax.type === 'category') val = ax._categoriesMap[val];
     else if(ax.type === 'date') {
-        var period = winningPoint[axLetter + 'Period'];
-        val = ax.d2c(period !== undefined ? period : val);
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
+
+            var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
+            var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
+            var diff = end - start;
+
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
     }
 
-    var cd0 = winningPoint.cd[winningPoint.index];
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||

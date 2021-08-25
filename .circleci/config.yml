@@ -31,6 +31,35 @@ jobs:
           paths:
             - plotly.js
 
+  timezone-jasmine:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:12.22.1-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run hover_label test in UTC timezone
+          environment:
+            TZ: "UTC"
+          command: date && npm run test-jasmine hover_label
+      - run:
+          name: Run hover_label test in Europe/Berlin timezone
+          environment:
+            TZ: "Europe/Berlin"
+          command: date && npm run test-jasmine hover_label
+      - run:
+          name: Run hover_label test in Asia/Tokyo timezone
+          environment:
+            TZ: "Asia/Tokyo"
+          command: date && npm run test-jasmine hover_label
+      - run:
+          name: Run hover_label test in America/Toronto timezone
+          environment:
+            TZ: "America/Toronto"
+          command: date && npm run test-jasmine hover_label
+
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
@@ -215,6 +244,9 @@ jobs:
           path: dist
           destination: dist
       - run:
+          name: View dist/README.md diff between previous and next releases (including new bundle sizes)
+          command: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) dist/README.md || true
+      - run:
           name: Preview plot-schema diff between previous and next releases (only on master)
           command: |
             if [ $CIRCLE_BRANCH == "master" ]
@@ -247,6 +279,9 @@ jobs:
           name: Test plotly bundles againt unexpected characters
           command: npm run no-bad-char
       - run:
+          name: Display function constructors in plotly.js bundle
+          command: npm run log-new-func
+      - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func
       - run:
@@ -258,6 +293,9 @@ workflows:
   build-and-test:
     jobs:
       - install-and-cibuild
+      - timezone-jasmine:
+          requires:
+            - install-and-cibuild
       - bundle-jasmine:
           requires:
             - install-and-cibuild

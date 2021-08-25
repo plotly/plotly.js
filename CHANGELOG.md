@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.3.1] -- 2021-07-30
+
+### Fixed
+ - Fix period positioned hover to work in different time zones as well as on grouped bars [[#5864](https://github.com/plotly/plotly.js/pull/5864)]
+ - Use ids from axes when making hover data keys [[#5852](https://github.com/plotly/plotly.js/pull/5852)]
+ - Do not include regl based traces `parcoords`, `splom`, `scattergl` and `scatterpolargl` in the "strict" bundle so that it could be used with CSP without WebGL warning [[#5865](https://github.com/plotly/plotly.js/pull/5865)]
+
+
 ## [2.3.0] -- 2021-07-23
 
 ### Added
