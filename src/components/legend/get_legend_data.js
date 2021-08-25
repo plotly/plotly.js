@@ -152,7 +152,7 @@ module.exports = function getLegendData(calcdata, opts) {
                 trace: {
                     showlegend: firstItemTrace.showlegend,
                     legendgroup: firstItemTrace.legendgroup,
-                    visible: firstItemTrace.visible
+                    visible: opts.groupclick === 'toggleitem' ? true : firstItemTrace.visible
                 }
             });
         }
