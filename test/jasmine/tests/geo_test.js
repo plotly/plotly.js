@@ -882,10 +882,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort().sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
                 expect(cnt).toEqual(1);
             });
 
@@ -947,10 +947,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -979,10 +979,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1008,10 +1008,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1036,10 +1036,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1068,10 +1068,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1789,11 +1789,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
                 'location', 'text', 'marker.size'
-            ]);
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1847,11 +1847,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             // var pt = futureData.points[0],
             //     evt = futureData.event;
 
-            // expect(Object.keys(pt)).toEqual([
-            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            // expect(Object.keys(pt).sort()).toEqual([
+            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
             //     'lon', 'lat',
             //     'location', 'text', 'marker.size'
-            // ]);
+            // ].sort());
 
             // expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             // expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1893,11 +1893,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
                 'location', 'text', 'marker.size'
-            ]);
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1934,11 +1934,11 @@ describe('Test event property of interactions on a geo plot:', function() {
                 var pt = futureData.points[0];
                 var evt = futureData.event;
 
-                expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(pt).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat',
                     'location', 'text', 'marker.size'
-                ]);
+                ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');

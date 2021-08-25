@@ -763,7 +763,7 @@ describe('funnelarea hovering', function() {
 
             var fields = [
                 'curveNumber', 'pointNumber', 'pointNumbers',
-                'data', 'fullData',
+                'data', 'fullData', 'bbox',
                 'label', 'color', 'value',
                 'percent', 'text'
             ];

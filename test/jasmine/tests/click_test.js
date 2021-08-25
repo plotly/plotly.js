@@ -115,10 +115,11 @@ describe('Test click interactions:', function() {
             expect(contextPassthroughs).toBe(0);
 
             var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual([
+            expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                'bbox', 'x0', 'x1', 'y0', 'y1',
                 'x', 'y', 'xaxis', 'yaxis'
-            ]);
+            ].sort());
             expect(pt.curveNumber).toEqual(0);
             expect(pt.pointNumber).toEqual(11);
             expect(pt.x).toEqual(0.125);
@@ -148,10 +149,11 @@ describe('Test click interactions:', function() {
                 expect(contextPassthroughs).toBe(0);
 
                 var pt = futureData.points[0];
-                expect(Object.keys(pt)).toEqual([
+                expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                    'bbox', 'x0', 'x1', 'y0', 'y1',
                     'x', 'y', 'xaxis', 'yaxis'
-                ]);
+                ].sort());
                 expect(pt.curveNumber).toEqual(0);
                 expect(pt.pointNumber).toEqual(11);
                 expect(pt.x).toEqual(0.125);
@@ -219,10 +221,11 @@ describe('Test click interactions:', function() {
                 expect(contextPassthroughs).toBe(0, i);
 
                 var pt = futureData.points[0];
-                expect(Object.keys(pt)).toEqual([
+                expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                    'bbox', 'x0', 'x1', 'y0', 'y1',
                     'x', 'y', 'xaxis', 'yaxis'
-                ]);
+                ].sort());
                 expect(pt.curveNumber).toEqual(0);
                 expect(pt.pointNumber).toEqual(11);
                 expect(pt.x).toEqual(0.125);
@@ -308,10 +311,11 @@ describe('Test click interactions:', function() {
             expect(futureData.points.length).toEqual(1);
 
             var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual([
+            expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                'bbox', 'x0', 'x1', 'y0', 'y1',
                 'x', 'y', 'xaxis', 'yaxis'
-            ]);
+            ].sort());
             expect(pt.curveNumber).toEqual(0);
             expect(pt.pointNumber).toEqual(11);
             expect(pt.x).toEqual(0.125);
@@ -341,10 +345,11 @@ describe('Test click interactions:', function() {
             expect(futureData.points.length).toEqual(1);
 
             var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual([
+            expect(Object.keys(pt).sort()).toEqual([
                 'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                'bbox', 'x0', 'x1', 'y0', 'y1',
                 'x', 'y', 'xaxis', 'yaxis'
-            ]);
+            ].sort());
             expect(pt.curveNumber).toEqual(0);
             expect(pt.pointNumber).toEqual(11);
             expect(pt.x).toEqual(0.125);
@@ -378,10 +383,11 @@ describe('Test click interactions:', function() {
                 expect(futureData.points.length).toEqual(1);
 
                 var pt = futureData.points[0];
-                expect(Object.keys(pt)).toEqual([
+                expect(Object.keys(pt).sort()).toEqual([
                     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                    'bbox', 'x0', 'x1', 'y0', 'y1',
                     'x', 'y', 'xaxis', 'yaxis'
-                ]);
+                ].sort());
                 expect(pt.curveNumber).toEqual(0);
                 expect(pt.pointNumber).toEqual(11);
                 expect(pt.x).toEqual(0.125);
