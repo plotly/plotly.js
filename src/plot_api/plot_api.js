@@ -3772,6 +3772,8 @@ function makePlotFramework(gd) {
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
     fullLayout._hoverlayer = fullLayout._hoverpaper.append('g').classed('hoverlayer', true);
 
+    fullLayout._hoverpaper.append('svg').append('rect').classed('hover-bbox', true);
+
     // Make the modebar container
     fullLayout._modebardiv
         .classed('modebar-container', true)

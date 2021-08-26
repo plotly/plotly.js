@@ -769,6 +769,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 y0: y0 + gTop,
                 y1: y1 + gTop
             };
+
+            d3.select('.hover-bbox')
+                .attr('x', x0)
+                .attr('y', y0)
+                .attr('width', Math.max(4, x1 - x0))
+                .attr('height', Math.max(4, y1 - y0))
+                .attr('stroke', 'black')
+                .attr('fill', 'lightgray')
+                .attr('opacity', '0.5');
         }
 
         pt.eventData = [eventData];
