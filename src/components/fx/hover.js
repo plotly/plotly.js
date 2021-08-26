@@ -753,11 +753,21 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
 
         if(pt.xa && pt.ya) {
+            var _x0 = pt.x0 + pt.xa._offset;
+            var _x1 = pt.x1 + pt.xa._offset;
+            var _y0 = pt.y0 + pt.ya._offset;
+            var _y1 = pt.y1 + pt.ya._offset;
+
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
             eventData.bbox = {
-                x0: pt.x0 + pt.xa._offset + gLeft,
-                x1: pt.x1 + pt.xa._offset + gLeft,
-                y0: pt.y0 + pt.ya._offset + gTop,
-                y1: pt.y1 + pt.ya._offset + gTop
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
             };
         }
 
