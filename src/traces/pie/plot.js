@@ -410,6 +410,8 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 x0: hoverCenterX - rInscribed * cd0.r,
                 x1: hoverCenterX + rInscribed * cd0.r,
                 y: hoverCenterY,
+                _y0: hoverCenterY - rInscribed * cd0.r,
+                _y1: hoverCenterY + rInscribed * cd0.r,
                 text: text.join('<br>'),
                 name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
