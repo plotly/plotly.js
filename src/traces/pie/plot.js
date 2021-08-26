@@ -404,6 +404,7 @@ function attachFxHandlers(sliceTop, gd, cd) {
             var hoverLabel = trace2.hoverlabel;
             var hoverFont = hoverLabel.font;
 
+            var bbox = [];
             Fx.loneHover({
                 trace: trace,
                 x0: hoverCenterX - rInscribed * cd0.r,
@@ -425,8 +426,10 @@ function attachFxHandlers(sliceTop, gd, cd) {
             }, {
                 container: fullLayout2._hoverlayer.node(),
                 outerContainer: fullLayout2._paper.node(),
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+            pt.bbox = bbox[0];
 
             trace._hasHoverLabel = true;
         }

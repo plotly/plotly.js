@@ -1103,8 +1103,15 @@ describe('pie hovering', function() {
                 'curveNumber', 'pointNumber', 'pointNumbers',
                 'data', 'fullData',
                 'label', 'color', 'value',
-                'i', 'v', 'percent', 'text'
+                'i', 'v', 'percent', 'text',
+                'bbox'
             ];
+
+            expect(typeof hoverData.points[0].bbox).toEqual('object');
+            expect(typeof hoverData.points[0].bbox.x0).toEqual('number');
+            expect(typeof hoverData.points[0].bbox.x1).toEqual('number');
+            expect(typeof hoverData.points[0].bbox.y0).toEqual('number');
+            expect(typeof hoverData.points[0].bbox.y1).toEqual('number');
 
             expect(Object.keys(hoverData.points[0]).sort()).toEqual(fields.sort());
             expect(hoverData.points[0].pointNumber).toEqual(3);
