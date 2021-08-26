@@ -171,6 +171,10 @@ exports.loneHover = function loneHover(hoverItems, opts) {
                 y0: y0 + gTop,
                 y1: y1 + gTop
             };
+
+            if(opts.inOut_bbox) {
+                opts.inOut_bbox.push(eventData.bbox);
+            }
         } else {
             eventData = false;
         }
