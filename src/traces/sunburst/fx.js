@@ -132,6 +132,10 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             var hoverItems = {
                 trace: traceNow,
                 y: hoverCenterY,
+                _x0: pt._x0,
+                _x1: pt._x1,
+                _y0: pt._y0,
+                _y1: pt._y1,
                 text: thisText.join('<br>'),
                 name: (hovertemplate || hasFlag('name')) ? traceNow.name : undefined,
                 color: _cast('hoverlabel.bgcolor') || cdi.color,

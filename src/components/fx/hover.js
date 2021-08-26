@@ -131,21 +131,10 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     var gLeft = getLeftOffset(gd);
 
     var pointsData = hoverItems.map(function(hoverItem) {
-        var _x0 = 0;
-        if(hoverItem.x0 !== undefined) _x0 = hoverItem.x0;
-        else if(hoverItem.x !== undefined) _x0 = hoverItem.x;
-
-        var _x1 = 0;
-        if(hoverItem.x1 !== undefined) _x1 = hoverItem.x1;
-        else if(hoverItem.x !== undefined) _x1 = hoverItem.x;
-
-        var _y0 = 0;
-        if(hoverItem.y0 !== undefined) _y0 = hoverItem.y0;
-        else if(hoverItem.y !== undefined) _y0 = hoverItem.y;
-
-        var _y1 = 0;
-        if(hoverItem.y1 !== undefined) _y1 = hoverItem.y1;
-        else if(hoverItem.y !== undefined) _y1 = hoverItem.y;
+        var _x0 = hoverItem._x0 || hoverItem.x0 || hoverItem.x || 0;
+        var _x1 = hoverItem._x1 || hoverItem.x1 || hoverItem.x || 0;
+        var _y0 = hoverItem._y0 || hoverItem.y0 || hoverItem.y || 0;
+        var _y1 = hoverItem._y1 || hoverItem.y1 || hoverItem.y || 0;
 
         var eventData = hoverItem.eventData;
         if(eventData) {
@@ -181,10 +170,10 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 
         return {
             color: hoverItem.color || Color.defaultLine,
-            x0: _x0,
-            x1: _x1,
-            y0: _y0,
-            y1: _y1,
+            x0: hoverItem.x0 || hoverItem.x || 0,
+            x1: hoverItem.x1 || hoverItem.x || 0,
+            y0: hoverItem.y0 || hoverItem.y || 0,
+            y1: hoverItem.y1 || hoverItem.y || 0,
             xLabel: hoverItem.xLabel,
             yLabel: hoverItem.yLabel,
             zLabel: hoverItem.zLabel,
