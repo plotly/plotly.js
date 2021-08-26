@@ -12,6 +12,7 @@ module.exports = function handleClick(g, gd, numClicks) {
 
     var itemClick = fullLayout.legend.itemclick;
     var itemDoubleClick = fullLayout.legend.itemdoubleclick;
+    var groupClick = fullLayout.legend.groupclick;
 
     if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
@@ -26,6 +27,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     if(numClicks === 1) mode = itemClick;
     else if(numClicks === 2) mode = itemDoubleClick;
     if(!mode) return;
+
+    var toggleGroup = groupClick === 'togglegroup';
 
     var hiddenSlices = fullLayout.hiddenlabels ?
         fullLayout.hiddenlabels.slice() :
@@ -148,10 +151,14 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
 
             if(hasLegendgroup) {
-                for(i = 0; i < fullData.length; i++) {
-                    if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-                        setVisibility(fullData[i], nextVisibility);
+                if(toggleGroup) {
+                    for(i = 0; i < fullData.length; i++) {
+                        if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
+                            setVisibility(fullData[i], nextVisibility);
+                        }
                     }
+                } else {
+                    setVisibility(fullTrace, nextVisibility);
                 }
             } else {
                 setVisibility(fullTrace, nextVisibility);
@@ -192,7 +199,7 @@ module.exports = function handleClick(g, gd, numClicks) {
                         // N.B. consider traces that have a set legendgroup as toggleable
                         notInLegend = (fullData[i].showlegend !== true && !fullData[i].legendgroup);
                         isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
-                        setVisibility(fullData[i], (isInGroup || notInLegend) ? true : otherState);
+                        setVisibility(fullData[i], ((isInGroup && toggleGroup) || notInLegend) ? true : otherState);
                         break;
                 }
             }
@@ -219,7 +226,7 @@ module.exports = function handleClick(g, gd, numClicks) {
         for(i = 0; i < keys.length; i++) {
             key = keys[i];
             for(j = 0; j < attrIndices.length; j++) {
-                // Use hasOwnPropety to protect against falsey values:
+                // Use hasOwnProperty to protect against falsy values:
                 if(!attrUpdate[key].hasOwnProperty(j)) {
                     attrUpdate[key][j] = undefined;
                 }
