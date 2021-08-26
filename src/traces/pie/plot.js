@@ -344,9 +344,10 @@ function plotTextLines(slices, trace) {
 
 function attachFxHandlers(sliceTop, gd, cd) {
     var cd0 = cd[0];
-    var trace = cd0.trace;
     var cx = cd0.cx;
     var cy = cd0.cy;
+    var trace = cd0.trace;
+    var isFunnelArea = trace.type === 'funnelarea';
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
@@ -410,8 +411,10 @@ function attachFxHandlers(sliceTop, gd, cd) {
                 x0: hoverCenterX - rInscribed * cd0.r,
                 x1: hoverCenterX + rInscribed * cd0.r,
                 y: hoverCenterY,
-                _y0: hoverCenterY - rInscribed * cd0.r,
-                _y1: hoverCenterY + rInscribed * cd0.r,
+                _x0: isFunnelArea ? cx + pt.TL[0] : hoverCenterX - rInscribed * cd0.r,
+                _x1: isFunnelArea ? cx + pt.TR[0] : hoverCenterX + rInscribed * cd0.r,
+                _y0: isFunnelArea ? cy + pt.TL[1] : hoverCenterY - rInscribed * cd0.r,
+                _y1: isFunnelArea ? cy + pt.BL[1] : hoverCenterY + rInscribed * cd0.r,
                 text: text.join('<br>'),
                 name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
