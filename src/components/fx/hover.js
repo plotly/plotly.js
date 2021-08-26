@@ -126,13 +126,70 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         hoverItems = [hoverItems];
     }
 
+    var gd = opts.gd;
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     var pointsData = hoverItems.map(function(hoverItem) {
+        var _x0 = 0;
+        if(hoverItem.x0 !== undefined) _x0 = hoverItem.x0;
+        else if(hoverItem.x !== undefined) _x0 = hoverItem.x;
+
+        var _x1 = 0;
+        if(hoverItem.x1 !== undefined) _x1 = hoverItem.x1;
+        else if(hoverItem.x !== undefined) _x1 = hoverItem.x;
+
+        var _y0 = 0;
+        if(hoverItem.y0 !== undefined) _y0 = hoverItem.y0;
+        else if(hoverItem.y !== undefined) _y0 = hoverItem.y;
+
+        var _y1 = 0;
+        if(hoverItem.y1 !== undefined) _y1 = hoverItem.y1;
+        else if(hoverItem.y !== undefined) _y1 = hoverItem.y;
+
+        var eventData = hoverItem.eventData;
+        if(eventData) {
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            var trace = hoverItem.trace;
+            if(Registry.traceIs(trace, 'gl3d')) {
+                var container = gd._fullLayout[trace.scene]._scene.container;
+                var dx = container.offsetLeft;
+                var dy = container.offsetTop;
+                x0 += dx;
+                x1 += dx;
+                y0 += dy;
+                y1 += dy;
+            } // TODO: handle heatmapgl
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
+
+            d3.select('.hover-bbox')
+                .attr('x', x0)
+                .attr('y', y0)
+                .attr('width', Math.max(4, x1 - x0))
+                .attr('height', Math.max(4, y1 - y0))
+                .attr('stroke', 'black')
+                .attr('fill', 'lightgray')
+                .attr('opacity', '0.5');
+        } else {
+            eventData = false;
+        }
+
         return {
             color: hoverItem.color || Color.defaultLine,
-            x0: hoverItem.x0 || hoverItem.x || 0,
-            x1: hoverItem.x1 || hoverItem.x || 0,
-            y0: hoverItem.y0 || hoverItem.y || 0,
-            y1: hoverItem.y1 || hoverItem.y || 0,
+            x0: _x0,
+            x1: _x1,
+            y0: _y0,
+            y1: _y1,
             xLabel: hoverItem.xLabel,
             yLabel: hoverItem.yLabel,
             zLabel: hoverItem.zLabel,
@@ -158,8 +215,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             index: 0,
 
             hovertemplate: hoverItem.hovertemplate || false,
-            eventData: hoverItem.eventData || false,
             hovertemplateLabels: hoverItem.hovertemplateLabels || false,
+
+            eventData: eventData
         };
     });
 
@@ -174,7 +232,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         outerContainer: outerContainer3
     };
 
-    var hoverLabel = createHoverText(pointsData, fullOpts, opts.gd);
+    var hoverLabel = createHoverText(pointsData, fullOpts, gd);
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -199,8 +257,8 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    var scaleX = opts.gd._fullLayout._invScaleX;
-    var scaleY = opts.gd._fullLayout._invScaleY;
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
     alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
@@ -732,11 +790,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var oldhoverdata = gd._hoverdata;
     var newhoverdata = [];
 
-    // Top/left hover offsets relative to graph div. As long as hover content is
-    // a sibling of the graph div, it will be positioned correctly relative to
-    // the offset parent, whatever that may be.
-    var gTop = gd.offsetTop + gd.clientTop;
-    var gLeft = gd.offsetLeft + gd.clientLeft;
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
 
     // pull out just the data that's useful to
     // other people and send it to the event
@@ -2067,3 +2122,9 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 
     return val;
 }
+
+// Top/left hover offsets relative to graph div. As long as hover content is
+// a sibling of the graph div, it will be positioned correctly relative to
+// the offset parent, whatever that may be.
+function getTopOffset(gd) { return gd.offsetTop + gd.clientTop; }
+function getLeftOffset(gd) { return gd.offsetLeft + gd.clientLeft; }
