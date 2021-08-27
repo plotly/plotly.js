@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.4.1] -- 2021-08-27
+
+### Fixed
+ - Fix double click legends when `groupclick` is set to "toggleitem" [[#5909](https://github.com/plotly/plotly.js/pull/5909)]
+
+
 ## [2.4.0] -- 2021-08-27
 
 ### Added
