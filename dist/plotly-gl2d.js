@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v2.4.0
+* plotly.js (gl2d) v2.4.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -64813,6 +64813,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 
     function setVisibility(fullTrace, visibility) {
+        if(legendItem.groupTitle && !toggleGroup) return;
+
         var fullInput = fullTrace._fullInput;
         if(Registry.hasTransform(fullInput, 'groupby')) {
             var kcont = carrs[fullInput.index];
@@ -64947,7 +64949,7 @@ module.exports = function handleClick(g, gd, numClicks) {
                         // N.B. consider traces that have a set legendgroup as toggleable
                         notInLegend = (fullData[i].showlegend !== true && !fullData[i].legendgroup);
                         isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
-                        setVisibility(fullData[i], ((isInGroup && toggleGroup) || notInLegend) ? true : otherState);
+                        setVisibility(fullData[i], (isInGroup || notInLegend) ? true : otherState);
                         break;
                 }
             }
@@ -120265,7 +120267,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.4.0';
+exports.version = '2.4.1';
 
 },{}]},{},[8])(8)
 });
