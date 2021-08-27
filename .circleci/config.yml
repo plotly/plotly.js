@@ -244,6 +244,9 @@ jobs:
           path: dist
           destination: dist
       - run:
+          name: View dist/README.md diff between previous and next releases (including new bundle sizes)
+          command: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) dist/README.md || true
+      - run:
           name: Preview plot-schema diff between previous and next releases (only on master)
           command: |
             if [ $CIRCLE_BRANCH == "master" ]
@@ -275,6 +278,9 @@ jobs:
       - run:
           name: Test plotly bundles againt unexpected characters
           command: npm run no-bad-char
+      - run:
+          name: Display function constructors in plotly.js bundle
+          command: npm run log-new-func
       - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func

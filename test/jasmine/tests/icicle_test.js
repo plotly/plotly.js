@@ -526,6 +526,12 @@ describe('Test icicle hover:', function() {
                     expect(ptData[k]).toBe(exp.ptData[k], 'pt event data key ' + k);
                 }
 
+                expect(typeof ptData.bbox).toEqual('object');
+                expect(typeof ptData.bbox.x0).toEqual('number');
+                expect(typeof ptData.bbox.x1).toEqual('number');
+                expect(typeof ptData.bbox.y0).toEqual('number');
+                expect(typeof ptData.bbox.y1).toEqual('number');
+
                 if(exp.style) {
                     var gd3 = d3Select(gd);
                     assertHoverLabelStyle(gd3.select('.hovertext'), exp.style);
