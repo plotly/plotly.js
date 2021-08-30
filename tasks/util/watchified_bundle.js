@@ -17,8 +17,8 @@ var common = require('./common');
  * @param {function} onFirstBundleCallback executed when first bundle is completed
  *
  */
-module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
-    var b = browserify(constants.pathToPlotlyIndex, {
+module.exports = function makeWatchifiedBundle(strict, onFirstBundleCallback) {
+    var b = browserify(strict ? constants.pathToPlotlyStrict : constants.pathToPlotlyIndex, {
         debug: true,
         standalone: 'Plotly',
         ignoreTransform: './tasks/compress_attributes.js',

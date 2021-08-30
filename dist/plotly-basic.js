@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.3.0
+* plotly.js (basic) v2.4.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -27129,7 +27129,48 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         hoverItems = [hoverItems];
     }
 
+    var gd = opts.gd;
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     var pointsData = hoverItems.map(function(hoverItem) {
+        var _x0 = hoverItem._x0 || hoverItem.x0 || hoverItem.x || 0;
+        var _x1 = hoverItem._x1 || hoverItem.x1 || hoverItem.x || 0;
+        var _y0 = hoverItem._y0 || hoverItem.y0 || hoverItem.y || 0;
+        var _y1 = hoverItem._y1 || hoverItem.y1 || hoverItem.y || 0;
+
+        var eventData = hoverItem.eventData;
+        if(eventData) {
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            var trace = hoverItem.trace;
+            if(Registry.traceIs(trace, 'gl3d')) {
+                var container = gd._fullLayout[trace.scene]._scene.container;
+                var dx = container.offsetLeft;
+                var dy = container.offsetTop;
+                x0 += dx;
+                x1 += dx;
+                y0 += dy;
+                y1 += dy;
+            } // TODO: handle heatmapgl
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
+
+            if(opts.inOut_bbox) {
+                opts.inOut_bbox.push(eventData.bbox);
+            }
+        } else {
+            eventData = false;
+        }
+
         return {
             color: hoverItem.color || Color.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
@@ -27161,8 +27202,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             index: 0,
 
             hovertemplate: hoverItem.hovertemplate || false,
-            eventData: hoverItem.eventData || false,
             hovertemplateLabels: hoverItem.hovertemplateLabels || false,
+
+            eventData: eventData
         };
     });
 
@@ -27177,7 +27219,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         outerContainer: outerContainer3
     };
 
-    var hoverLabel = createHoverText(pointsData, fullOpts, opts.gd);
+    var hoverLabel = createHoverText(pointsData, fullOpts, gd);
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -27202,8 +27244,8 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    var scaleX = opts.gd._fullLayout._invScaleX;
-    var scaleY = opts.gd._fullLayout._invScaleY;
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
     alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
@@ -27735,6 +27777,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var oldhoverdata = gd._hoverdata;
     var newhoverdata = [];
 
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     // pull out just the data that's useful to
     // other people and send it to the event
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
@@ -27747,6 +27792,25 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 ht = pt.cd[pt.index].ht;
             }
             pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
+
+        if(pt.xa && pt.ya) {
+            var _x0 = pt.x0 + pt.xa._offset;
+            var _x1 = pt.x1 + pt.xa._offset;
+            var _y0 = pt.y0 + pt.ya._offset;
+            var _y1 = pt.y1 + pt.ya._offset;
+
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
         }
 
         pt.eventData = [eventData];
@@ -27808,7 +27872,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 }
 
 function hoverDataKey(d) {
-    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa, d.ya || ''].join(',');
+    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa ? d.xa._id : '', d.ya ? d.ya._id : ''].join(',');
 }
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
@@ -28032,13 +28096,15 @@ function createHoverText(hoverData, opts, gd) {
         if(hoverData.length === 0) return;
 
         // mock legend
+        var hoverlabel = fullLayout.hoverlabel;
+        var font = hoverlabel.font;
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: fullLayout.hoverlabel.font},
-                font: fullLayout.hoverlabel.font,
-                bgcolor: fullLayout.hoverlabel.bgcolor,
-                bordercolor: fullLayout.hoverlabel.bordercolor,
+                title: {text: t0, font: font},
+                font: font,
+                bgcolor: hoverlabel.bgcolor,
+                bordercolor: hoverlabel.bordercolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
@@ -28083,6 +28149,7 @@ function createHoverText(hoverData, opts, gd) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
+        mockLegend._groupTitleFont = font;
         legendDraw(gd, mockLegend);
 
         // Position the hover
@@ -28996,13 +29063,32 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     var ax = winningPoint[axLetter + 'a'];
     var val = winningPoint[axLetter + 'Val'];
 
+    var cd0 = winningPoint.cd[0];
+
     if(ax.type === 'category') val = ax._categoriesMap[val];
     else if(ax.type === 'date') {
-        var period = winningPoint[axLetter + 'Period'];
-        val = ax.d2c(period !== undefined ? period : val);
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
+
+            var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
+            var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
+            var diff = end - start;
+
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
     }
 
-    var cd0 = winningPoint.cd[winningPoint.index];
     if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
         if(
             fullLayout.boxmode === 'group' ||
@@ -29014,6 +29100,12 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 
     return val;
 }
+
+// Top/left hover offsets relative to graph div. As long as hover content is
+// a sibling of the graph div, it will be positioned correctly relative to
+// the offset parent, whatever that may be.
+function getTopOffset(gd) { return gd.offsetTop + gd.clientTop; }
+function getLeftOffset(gd) { return gd.offsetLeft + gd.clientLeft; }
 
 },{"../../lib":232,"../../lib/events":225,"../../lib/override_cursor":243,"../../lib/svg_text_utils":255,"../../plots/cartesian/axes":279,"../../registry":316,"../color":102,"../dragelement":121,"../drawing":124,"../legend/defaults":154,"../legend/draw":155,"./constants":136,"./helpers":138,"@plotly/d3":11,"fast-isnumeric":17,"tinycolor2":67}],140:[function(_dereq_,module,exports){
 'use strict';
@@ -30180,7 +30272,6 @@ module.exports = {
         dflt: 30,
         editType: 'legend',
     },
-
     itemclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
@@ -30193,7 +30284,12 @@ module.exports = {
         dflt: 'toggleothers',
         editType: 'legend',
     },
-
+    groupclick: {
+        valType: 'enumerated',
+        values: ['toggleitem', 'togglegroup'],
+        dflt: 'togglegroup',
+        editType: 'legend',
+    },
     x: {
         valType: 'number',
         min: -2,
@@ -30243,7 +30339,6 @@ module.exports = {
         },
         editType: 'legend',
     },
-
     editType: 'legend'
 };
 
@@ -30376,6 +30471,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     coerce('itemclick');
     coerce('itemdoubleclick');
+    coerce('groupclick');
 
     coerce('x', defaultX);
     coerce('xanchor');
@@ -31227,6 +31323,7 @@ var Registry = _dereq_('../../registry');
 var helpers = _dereq_('./helpers');
 
 module.exports = function getLegendData(calcdata, opts) {
+    var inHover = opts._inHover;
     var grouped = helpers.isGrouped(opts);
     var reversed = helpers.isReversed(opts);
 
@@ -31262,7 +31359,7 @@ module.exports = function getLegendData(calcdata, opts) {
         var trace = cd0.trace;
         var lgroup = trace.legendgroup;
 
-        if(!opts._inHover && (!trace.visible || !trace.showlegend)) continue;
+        if(!inHover && (!trace.visible || !trace.showlegend)) continue;
 
         if(Registry.traceIs(trace, 'pie-like')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
@@ -31349,6 +31446,7 @@ module.exports = function getLegendData(calcdata, opts) {
             var gt = legendData[i][j].trace.legendgrouptitle;
             if(gt && gt.text) {
                 groupTitle = gt;
+                if(inHover) gt.font = opts._groupTitleFont;
                 break;
             }
         }
@@ -31373,7 +31471,7 @@ module.exports = function getLegendData(calcdata, opts) {
                 trace: {
                     showlegend: firstItemTrace.showlegend,
                     legendgroup: firstItemTrace.legendgroup,
-                    visible: firstItemTrace.visible
+                    visible: opts.groupclick === 'toggleitem' ? true : firstItemTrace.visible
                 }
             });
         }
@@ -31409,6 +31507,7 @@ module.exports = function handleClick(g, gd, numClicks) {
 
     var itemClick = fullLayout.legend.itemclick;
     var itemDoubleClick = fullLayout.legend.itemdoubleclick;
+    var groupClick = fullLayout.legend.groupclick;
 
     if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
@@ -31423,6 +31522,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     if(numClicks === 1) mode = itemClick;
     else if(numClicks === 2) mode = itemDoubleClick;
     if(!mode) return;
+
+    var toggleGroup = groupClick === 'togglegroup';
 
     var hiddenSlices = fullLayout.hiddenlabels ?
         fullLayout.hiddenlabels.slice() :
@@ -31459,6 +31560,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 
     function setVisibility(fullTrace, visibility) {
+        if(legendItem.groupTitle && !toggleGroup) return;
+
         var fullInput = fullTrace._fullInput;
         if(Registry.hasTransform(fullInput, 'groupby')) {
             var kcont = carrs[fullInput.index];
@@ -31545,10 +31648,14 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
 
             if(hasLegendgroup) {
-                for(i = 0; i < fullData.length; i++) {
-                    if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-                        setVisibility(fullData[i], nextVisibility);
+                if(toggleGroup) {
+                    for(i = 0; i < fullData.length; i++) {
+                        if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
+                            setVisibility(fullData[i], nextVisibility);
+                        }
                     }
+                } else {
+                    setVisibility(fullTrace, nextVisibility);
                 }
             } else {
                 setVisibility(fullTrace, nextVisibility);
@@ -31616,7 +31723,7 @@ module.exports = function handleClick(g, gd, numClicks) {
         for(i = 0; i < keys.length; i++) {
             key = keys[i];
             for(j = 0; j < attrIndices.length; j++) {
-                // Use hasOwnPropety to protect against falsey values:
+                // Use hasOwnProperty to protect against falsy values:
                 if(!attrUpdate[key].hasOwnProperty(j)) {
                     attrUpdate[key][j] = undefined;
                 }
@@ -38538,7 +38645,7 @@ function attachGripEvents(item, gd, sliderGroup) {
         return sliderGroup.data()[0];
     }
 
-    item.on('mousedown', function() {
+    function mouseDownHandler() {
         var sliderOpts = getSliderOpts();
         gd.emit('plotly_sliderstart', {slider: sliderOpts});
 
@@ -38552,25 +38659,36 @@ function attachGripEvents(item, gd, sliderGroup) {
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
         sliderOpts._dragging = true;
 
-        $gd.on('mousemove', function() {
+        function mouseMoveHandler() {
             var sliderOpts = getSliderOpts();
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
             handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, false);
-        });
+        }
 
-        $gd.on('mouseup', function() {
+        $gd.on('mousemove', mouseMoveHandler);
+        $gd.on('touchmove', mouseMoveHandler);
+
+        function mouseUpHandler() {
             var sliderOpts = getSliderOpts();
             sliderOpts._dragging = false;
             grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
+            $gd.on('touchend', null);
+            $gd.on('touchmove', null);
 
             gd.emit('plotly_sliderend', {
                 slider: sliderOpts,
                 step: sliderOpts.steps[sliderOpts.active]
             });
-        });
-    });
+        }
+
+        $gd.on('mouseup', mouseUpHandler);
+        $gd.on('touchend', mouseUpHandler);
+    }
+
+    item.on('mousedown', mouseDownHandler);
+    item.on('touchstart', mouseDownHandler);
 }
 
 function drawTicks(sliderGroup, sliderOpts) {
@@ -43605,8 +43723,7 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
         ret = fni(arg);
 
         if(ret && ret.then) {
-            return ret.then(continueAsync)
-                .then(undefined, lib.promiseError);
+            return ret.then(continueAsync);
         }
     }
 
@@ -73497,7 +73614,7 @@ var calcSelection = _dereq_('../scatter/calc_selection');
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, origPos, pObj, hasPeriod;
+    var size, pos, origPos, pObj, hasPeriod, pLetter;
 
     var sizeOpts = {
         msUTC: !!(trace.base || trace.base === 0)
@@ -73508,11 +73625,13 @@ module.exports = function calc(gd, trace) {
         origPos = ya.makeCalcdata(trace, 'y');
         pObj = alignPeriod(trace, ya, 'y', origPos);
         hasPeriod = !!trace.yperiodalignment;
+        pLetter = 'y';
     } else {
         size = ya.makeCalcdata(trace, 'y', sizeOpts);
         origPos = xa.makeCalcdata(trace, 'x');
         pObj = alignPeriod(trace, xa, 'x', origPos);
         hasPeriod = !!trace.xperiodalignment;
+        pLetter = 'x';
     }
     pos = pObj.vals;
 
@@ -73526,8 +73645,8 @@ module.exports = function calc(gd, trace) {
 
         if(hasPeriod) {
             cd[i].orig_p = origPos[i]; // used by hover
-            cd[i].pEnd = pObj.ends[i];
-            cd[i].pStart = pObj.starts[i];
+            cd[i][pLetter + 'End'] = pObj.ends[i];
+            cd[i][pLetter + 'Start'] = pObj.starts[i];
         }
 
         if(trace.ids) {
@@ -74009,20 +74128,12 @@ function setBarCenterAndWidth(pa, sieve) {
         var barwidth = t.barwidth;
         var barwidthIsArray = Array.isArray(barwidth);
 
-        var trace = calcTrace[0].trace;
-        var isPeriod = !!trace[pLetter + 'periodalignment'];
-
         for(var j = 0; j < calcTrace.length; j++) {
             var calcBar = calcTrace[j];
 
             // store the actual bar width and position, for use by hover
             var width = calcBar.w = barwidthIsArray ? barwidth[j] : barwidth;
             calcBar[pLetter] = calcBar.p + (poffsetIsArray ? poffset[j] : poffset) + width / 2;
-
-            if(isPeriod) {
-                calcBar.wPeriod =
-                    calcBar.pEnd - calcBar.pStart;
-            }
         }
     }
 }
@@ -74678,18 +74789,26 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     }
 
     var period = trace[posLetter + 'period'];
+    var isClosestOrPeriod = isClosest || period;
 
     function thisBarMinPos(di) { return thisBarExtPos(di, -1); }
     function thisBarMaxPos(di) { return thisBarExtPos(di, 1); }
 
     function thisBarExtPos(di, sgn) {
-        var w = (period) ? di.wPeriod : di.w;
+        var w = di.w;
 
         return di[posLetter] + sgn * w / 2;
     }
 
-    var minPos = isClosest || period ?
-        thisBarMinPos :
+    function periodLength(di) {
+        return di[posLetter + 'End'] - di[posLetter + 'Start'];
+    }
+
+    var minPos = isClosest ?
+        thisBarMinPos : period ?
+        function(di) {
+            return di.p - periodLength(di) / 2;
+        } :
         function(di) {
             /*
              * In compare mode, accept a bar if you're on it *or* its group.
@@ -74706,8 +74825,11 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
             return Math.min(thisBarMinPos(di), di.p - t.bardelta / 2);
         };
 
-    var maxPos = isClosest || period ?
-        thisBarMaxPos :
+    var maxPos = isClosest ?
+        thisBarMaxPos : period ?
+        function(di) {
+            return di.p + periodLength(di) / 2;
+        } :
         function(di) {
             return Math.max(thisBarMaxPos(di), di.p + t.bardelta / 2);
         };
@@ -74782,7 +74904,7 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     // if we get here and we're not in 'closest' mode, push min/max pos back
     // onto the group - even though that means occasionally the mouse will be
     // over the hover label.
-    if(!isClosest) {
+    if(!isClosestOrPeriod) {
         minPos = function(di) {
             return Math.min(thisBarMinPos(di), di.p - t.bargroupwidth / 2);
         };
@@ -74805,9 +74927,6 @@ function hoverOnBars(pointData, xval, yval, hovermode, opts) {
 
     var hasPeriod = di.orig_p !== undefined;
     pointData[posLetter + 'LabelVal'] = hasPeriod ? di.orig_p : di.p;
-    if(hasPeriod) {
-        pointData[posLetter + 'Period'] = di.p;
-    }
 
     pointData.labelLabel = hoverLabelText(pa, pointData[posLetter + 'LabelVal'], trace[posLetter + 'hoverformat']);
     pointData.valueLabel = hoverLabelText(sa, pointData[sizeLetter + 'LabelVal'], trace[sizeLetter + 'hoverformat']);
@@ -76727,6 +76846,7 @@ module.exports = function eventData(pt, trace) {
         value: pt.v,
         percent: pt.percent,
         text: pt.text,
+        bbox: pt.bbox,
 
         // pt.v (and pt.i below) for backward compatibility
         v: pt.v
@@ -77196,9 +77316,10 @@ function plotTextLines(slices, trace) {
 
 function attachFxHandlers(sliceTop, gd, cd) {
     var cd0 = cd[0];
-    var trace = cd0.trace;
     var cx = cd0.cx;
     var cy = cd0.cy;
+    var trace = cd0.trace;
+    var isFunnelArea = trace.type === 'funnelarea';
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
@@ -77256,11 +77377,16 @@ function attachFxHandlers(sliceTop, gd, cd) {
             var hoverLabel = trace2.hoverlabel;
             var hoverFont = hoverLabel.font;
 
+            var bbox = [];
             Fx.loneHover({
                 trace: trace,
                 x0: hoverCenterX - rInscribed * cd0.r,
                 x1: hoverCenterX + rInscribed * cd0.r,
                 y: hoverCenterY,
+                _x0: isFunnelArea ? cx + pt.TL[0] : hoverCenterX - rInscribed * cd0.r,
+                _x1: isFunnelArea ? cx + pt.TR[0] : hoverCenterX + rInscribed * cd0.r,
+                _y0: isFunnelArea ? cy + pt.TL[1] : hoverCenterY - rInscribed * cd0.r,
+                _y1: isFunnelArea ? cy + pt.BL[1] : hoverCenterY + rInscribed * cd0.r,
                 text: text.join('<br>'),
                 name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
@@ -77277,8 +77403,10 @@ function attachFxHandlers(sliceTop, gd, cd) {
             }, {
                 container: fullLayout2._hoverlayer.node(),
                 outerContainer: fullLayout2._paper.node(),
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+            pt.bbox = bbox[0];
 
             trace._hasHoverLabel = true;
         }
@@ -79307,9 +79435,6 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 spikeDistance: dxy(di),
                 hovertemplate: trace.hovertemplate
             });
-
-            if(trace.xperiodalignment === 'end') pointData.xPeriod = di.x;
-            if(trace.yperiodalignment === 'end') pointData.yPeriod = di.y;
 
             fillText(di, trace, pointData);
             Registry.getComponentMethod('errorbars', 'hoverInfo')(di, trace, pointData);
@@ -82079,7 +82204,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.3.0';
+exports.version = '2.4.1';
 
 },{}]},{},[8])(8)
 });

@@ -4,13 +4,15 @@ var http = require('http');
 var ecstatic = require('ecstatic');
 var open = require('open');
 var browserify = require('browserify');
+var minimist = require('minimist');
 
 var constants = require('../../tasks/util/constants');
 var makeWatchifiedBundle = require('../../tasks/util/watchified_bundle');
 var shortcutPaths = require('../../tasks/util/shortcut_paths');
 
-var PORT = process.argv[2] || 3000;
-
+var args = minimist(process.argv.slice(2), {});
+var PORT = args.port || 3000;
+var strict = args.strict;
 
 // Create server
 var server = http.createServer(ecstatic({
@@ -21,9 +23,9 @@ var server = http.createServer(ecstatic({
 }));
 
 // Make watchified bundle for plotly.js
-var bundlePlotly = makeWatchifiedBundle(function() {
+var bundlePlotly = makeWatchifiedBundle(strict, function() {
     // open up browser window on first bundle callback
-    open('http://localhost:' + PORT + '/devtools/test_dashboard/index.html');
+    open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (strict ? '-strict' : '') + '.html');
 });
 
 // Bundle devtools code

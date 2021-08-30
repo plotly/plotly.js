@@ -124,6 +124,12 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
     updateSlices.each(function(pt) {
         var isHeader = helpers.isHeader(pt, trace);
 
+        // for bbox
+        pt._x0 = viewX(pt.x0);
+        pt._x1 = viewX(pt.x1);
+        pt._y0 = viewY(pt.y0);
+        pt._y1 = viewY(pt.y1);
+
         pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
         pt._hoverY = hasBottom ?
                 viewY(pt.y1 - trace.marker.pad.b / 2) :

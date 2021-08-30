@@ -58,7 +58,8 @@ describe('Test gl3d trace click/hover:', function() {
     function assertEventData(x, y, z, curveNumber, pointNumber, extra) {
         expect(Object.keys(ptData)).toEqual(jasmine.arrayContaining([
             'x', 'y', 'z',
-            'data', 'fullData', 'curveNumber', 'pointNumber'
+            'data', 'fullData', 'curveNumber', 'pointNumber',
+            'bbox'
         ]), 'correct hover data fields');
 
         expect(ptData.x).toEqual(x, 'x val');
@@ -66,6 +67,12 @@ describe('Test gl3d trace click/hover:', function() {
         expect(ptData.z).toEqual(z, 'z val');
         expect(ptData.curveNumber).toEqual(curveNumber, 'curveNumber');
         expect(ptData.pointNumber).toEqual(pointNumber, 'pointNumber');
+
+        expect(typeof ptData.bbox).toEqual('object');
+        expect(typeof ptData.bbox.x0).toEqual('number');
+        expect(typeof ptData.bbox.x1).toEqual('number');
+        expect(typeof ptData.bbox.y0).toEqual('number');
+        expect(typeof ptData.bbox.y1).toEqual('number');
 
         Object.keys(extra || {}).forEach(function(k) {
             expect(ptData[k]).toEqual(extra[k], k + ' val');
