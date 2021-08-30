@@ -1199,44 +1199,36 @@ function createHoverText(hoverData, opts, gd) {
         var lx, ly; // top and left positions of the hover box
 
         // horizontal alignment to end up on screen
-        if(outerWidth > 0) {
-            if(lxRight + tWidth < outerWidth && lxRight >= 0) {
-                lx = lxRight;
-            } else if(lxLeft + tWidth < outerWidth && lxLeft >= 0) {
-                lx = lxLeft;
-            } else if(outerWidth > 0 && xOffset + tWidth < outerWidth) {
-                lx = xOffset; // subplot left corner
-            } else {
-                // closest left or right side of the paper
-                if(lxRight - avgX < avgX - lxLeft + tWidth) {
-                    lx = outerWidth - tWidth;
-                } else {
-                    lx = 0;
-                }
-            }
-        } else {
+        if(lxRight + tWidth < outerWidth && lxRight >= 0) {
+            lx = lxRight;
+        } else if(lxLeft + tWidth < outerWidth && lxLeft >= 0) {
             lx = lxLeft;
+        } else if(xOffset + tWidth < outerWidth) {
+            lx = xOffset; // subplot left corner
+        } else {
+            // closest left or right side of the paper
+            if(lxRight - avgX < avgX - lxLeft + tWidth) {
+                lx = outerWidth - tWidth;
+            } else {
+                lx = 0;
+            }
         }
         lx += HOVERTEXTPAD;
 
         // vertical alignement to end up on screen
-        if(outerHeight > 0) {
-            if(lyBottom + tHeight < outerHeight && lyBottom >= 0) {
-                ly = lyBottom;
-            } else if(lyTop + tHeight < outerHeight && lyTop >= 0) {
-                ly = lyTop;
-            } else if(yOffset + tHeight < outerHeight) {
-                ly = yOffset; // subplot top corner
-            } else {
-                // closest top or bottom side of the paper
-                if(lyBottom - avgY < avgY - lyTop + tHeight) {
-                    ly = outerHeight - tHeight;
-                } else {
-                    ly = 0;
-                }
-            }
-        } else { // N.B. this case happens on documentation website (outerHeight: 0)
+        if(lyBottom + tHeight < outerHeight && lyBottom >= 0) {
+            ly = lyBottom;
+        } else if(lyTop + tHeight < outerHeight && lyTop >= 0) {
             ly = lyTop;
+        } else if(yOffset + tHeight < outerHeight) {
+            ly = yOffset; // subplot top corner
+        } else {
+            // closest top or bottom side of the paper
+            if(lyBottom - avgY < avgY - lyTop + tHeight) {
+                ly = outerHeight - tHeight;
+            } else {
+                ly = 0;
+            }
         }
         ly += HOVERTEXTPAD;
 
