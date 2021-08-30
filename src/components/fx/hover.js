@@ -831,7 +831,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
+        outerContainer: fullLayout._paper,
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
     };
@@ -896,8 +896,8 @@ function createHoverText(hoverData, opts, gd) {
     var t0 = c0[axLetter + 'Label'];
     var outerContainerBB = outerContainer.node().getBoundingClientRect();
     var outerTop = outerContainerBB.top;
-    var outerWidth = outerContainerBB.width || fullLayout.width;
-    var outerHeight = outerContainerBB.height || fullLayout.height;
+    var outerWidth = outerContainerBB.width;
+    var outerHeight = outerContainerBB.height;
 
     // show the common label, if any, on the axis
     // never show a common label in array mode,
