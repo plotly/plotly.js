@@ -1326,21 +1326,25 @@ function createHoverText(hoverData, opts) {
             stroke: contrastColor
         });
 
-        var tbb = getBoundingClientRect(gd, tx.node());
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
         var hty = d.ya._offset + (d.y0 + d.y1) / 2;
         var dx = Math.abs(d.x1 - d.x0);
         var dy = Math.abs(d.y1 - d.y0);
-        var txTotalWidth = tbb.width + HOVERARROWSIZE + HOVERTEXTPAD + tx2width;
-        var anchorStartOK, anchorEndOK;
 
-        d.ty0 = outerTop - tbb.top;
-        d.bx = tbb.width + 2 * HOVERTEXTPAD;
-        d.by = Math.max(tbb.height + 2 * HOVERTEXTPAD, tx2height);
+        var tbb = getBoundingClientRect(gd, tx.node());
+        var tbbWidth = tbb.width / fullLayout._invScaleX;
+        var tbbHeight = tbb.height / fullLayout._invScaleY;
+
+        d.ty0 = (outerTop - tbb.top) / fullLayout._invScaleY;
+        d.bx = tbbWidth + 2 * HOVERTEXTPAD;
+        d.by = Math.max(tbbHeight + 2 * HOVERTEXTPAD, tx2height);
         d.anchor = 'start';
-        d.txwidth = tbb.width;
+        d.txwidth = tbbWidth;
         d.tx2width = tx2width;
         d.offset = 0;
+
+        var txTotalWidth = (tbbWidth + HOVERARROWSIZE + HOVERTEXTPAD + tx2width) * fullLayout._invScaleX;
+        var anchorStartOK, anchorEndOK;
 
         if(rotateLabels) {
             d.pos = htx;
