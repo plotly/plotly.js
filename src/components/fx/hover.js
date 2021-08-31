@@ -205,15 +205,16 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         };
     });
 
-    var fullOpts = {
+    var rotateLabels = false;
+
+    var hoverLabel = createHoverText(pointsData, {
+        gd: gd,
         hovermode: 'closest',
-        rotateLabels: false,
+        rotateLabels: rotateLabels,
         bgColor: opts.bgColor || Color.background,
         container: d3.select(opts.container),
         outerContainer: opts.outerContainer || opts.container
-    };
-
-    var hoverLabel = createHoverText(pointsData, fullOpts, gd);
+    });
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -240,7 +241,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 
     var scaleX = gd._fullLayout._invScaleX;
     var scaleY = gd._fullLayout._invScaleY;
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
+    alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -822,7 +823,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         fullLayout.paper_bgcolor
     );
 
-    var labelOpts = {
+    var hoverLabels = createHoverText(hoverData, {
+        gd: gd,
         hovermode: hovermode,
         rotateLabels: rotateLabels,
         bgColor: bgColor,
@@ -830,9 +832,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         outerContainer: fullLayout._paper.node(),
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
-    };
-
-    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
+    });
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
@@ -870,7 +870,8 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(hoverData, opts) {
+    var gd = opts.gd;
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
