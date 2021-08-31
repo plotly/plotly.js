@@ -205,15 +205,12 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         };
     });
 
-    var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer || opts.container;
-
     var fullOpts = {
         hovermode: 'closest',
         rotateLabels: false,
         bgColor: opts.bgColor || Color.background,
-        container: container3,
-        outerContainer: outerContainer3
+        container: d3.select(opts.container),
+        outerContainer: opts.outerContainer || opts.container
     };
 
     var hoverLabel = createHoverText(pointsData, fullOpts, gd);
