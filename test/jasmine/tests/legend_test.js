@@ -1782,6 +1782,49 @@ describe('legend interaction', function() {
             });
         });
 
+        describe('legendgroup visibility case of groupclick: "toggleitem"', function() {
+            beforeEach(function(done) {
+                Plotly.newPlot(gd, [{
+                    x: [1, 2],
+                    y: [3, 4],
+                    visible: false
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [0, 1, 2, 3],
+                    legendgroup: 'foo'
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [1, 3, 2, 4],
+                }, {
+                    x: [1, 2, 3, 4],
+                    y: [1, 3, 2, 4],
+                    legendgroup: 'foo'
+                }], {
+                    legend: {
+                        groupclick: 'toggleitem'
+                    }
+                }).then(done);
+            });
+
+            it('toggles visibilities', function(done) {
+                Promise.resolve()
+                    .then(assertVisible([false, true, true, true]))
+                    .then(click(0))
+                    .then(assertVisible([false, 'legendonly', true, true]))
+                    .then(click(0))
+                    .then(assertVisible([false, true, true, true]))
+                    .then(click(1))
+                    .then(assertVisible([false, true, true, 'legendonly']))
+                    .then(click(1))
+                    .then(assertVisible([false, true, true, true]))
+                    .then(click(2))
+                    .then(assertVisible([false, true, 'legendonly', true]))
+                    .then(click(2))
+                    .then(assertVisible([false, true, true, true]))
+                    .then(done, done.fail);
+            });
+        });
+
         describe('legend visibility toggles with groupby', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [{

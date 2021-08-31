@@ -126,7 +126,48 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         hoverItems = [hoverItems];
     }
 
+    var gd = opts.gd;
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     var pointsData = hoverItems.map(function(hoverItem) {
+        var _x0 = hoverItem._x0 || hoverItem.x0 || hoverItem.x || 0;
+        var _x1 = hoverItem._x1 || hoverItem.x1 || hoverItem.x || 0;
+        var _y0 = hoverItem._y0 || hoverItem.y0 || hoverItem.y || 0;
+        var _y1 = hoverItem._y1 || hoverItem.y1 || hoverItem.y || 0;
+
+        var eventData = hoverItem.eventData;
+        if(eventData) {
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            var trace = hoverItem.trace;
+            if(Registry.traceIs(trace, 'gl3d')) {
+                var container = gd._fullLayout[trace.scene]._scene.container;
+                var dx = container.offsetLeft;
+                var dy = container.offsetTop;
+                x0 += dx;
+                x1 += dx;
+                y0 += dy;
+                y1 += dy;
+            } // TODO: handle heatmapgl
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
+
+            if(opts.inOut_bbox) {
+                opts.inOut_bbox.push(eventData.bbox);
+            }
+        } else {
+            eventData = false;
+        }
+
         return {
             color: hoverItem.color || Color.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
@@ -158,23 +199,22 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             index: 0,
 
             hovertemplate: hoverItem.hovertemplate || false,
-            eventData: hoverItem.eventData || false,
             hovertemplateLabels: hoverItem.hovertemplateLabels || false,
+
+            eventData: eventData
         };
     });
 
-    var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer ? d3.select(opts.outerContainer) : container3;
+    var rotateLabels = false;
 
-    var fullOpts = {
+    var hoverLabel = createHoverText(pointsData, {
+        gd: gd,
         hovermode: 'closest',
-        rotateLabels: false,
+        rotateLabels: rotateLabels,
         bgColor: opts.bgColor || Color.background,
-        container: container3,
-        outerContainer: outerContainer3
-    };
-
-    var hoverLabel = createHoverText(pointsData, fullOpts, opts.gd);
+        container: d3.select(opts.container),
+        outerContainer: opts.outerContainer || opts.container
+    });
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -199,9 +239,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    var scaleX = opts.gd._fullLayout._invScaleX;
-    var scaleY = opts.gd._fullLayout._invScaleY;
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
+    alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -615,7 +655,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var spikelineOpts = {
         fullLayout: fullLayout,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
         event: evt
     };
     var oldspikepoints = gd._spikepoints;
@@ -732,6 +771,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var oldhoverdata = gd._hoverdata;
     var newhoverdata = [];
 
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     // pull out just the data that's useful to
     // other people and send it to the event
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
@@ -744,6 +786,25 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 ht = pt.cd[pt.index].ht;
             }
             pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
+
+        if(pt.xa && pt.ya) {
+            var _x0 = pt.x0 + pt.xa._offset;
+            var _x1 = pt.x1 + pt.xa._offset;
+            var _y0 = pt.y0 + pt.ya._offset;
+            var _y1 = pt.y1 + pt.ya._offset;
+
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
         }
 
         pt.eventData = [eventData];
@@ -762,17 +823,16 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         fullLayout.paper_bgcolor
     );
 
-    var labelOpts = {
+    var hoverLabels = createHoverText(hoverData, {
+        gd: gd,
         hovermode: hovermode,
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
+        outerContainer: fullLayout._paper.node(),
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
-    };
-
-    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
+    });
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
@@ -810,7 +870,8 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(hoverData, opts) {
+    var gd = opts.gd;
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -830,7 +891,7 @@ function createHoverText(hoverData, opts, gd) {
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
     var t0 = c0[axLetter + 'Label'];
-    var outerContainerBB = outerContainer.node().getBoundingClientRect();
+    var outerContainerBB = outerContainer.getBoundingClientRect();
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
     var outerHeight = outerContainerBB.height;
@@ -1029,13 +1090,15 @@ function createHoverText(hoverData, opts, gd) {
         if(hoverData.length === 0) return;
 
         // mock legend
+        var hoverlabel = fullLayout.hoverlabel;
+        var font = hoverlabel.font;
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: fullLayout.hoverlabel.font},
-                font: fullLayout.hoverlabel.font,
-                bgcolor: fullLayout.hoverlabel.bgcolor,
-                bordercolor: fullLayout.hoverlabel.bordercolor,
+                title: {text: t0, font: font},
+                font: font,
+                bgcolor: hoverlabel.bgcolor,
+                bordercolor: hoverlabel.bordercolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
@@ -1080,6 +1143,7 @@ function createHoverText(hoverData, opts, gd) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
+        mockLegend._groupTitleFont = font;
         legendDraw(gd, mockLegend);
 
         // Position the hover
@@ -2030,3 +2094,9 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 
     return val;
 }
+
+// Top/left hover offsets relative to graph div. As long as hover content is
+// a sibling of the graph div, it will be positioned correctly relative to
+// the offset parent, whatever that may be.
+function getTopOffset(gd) { return gd.offsetTop + gd.clientTop; }
+function getLeftOffset(gd) { return gd.offsetLeft + gd.clientLeft; }

@@ -19,6 +19,12 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
+var SORTED_EVENT_KEYS = [
+    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+    'xaxis', 'yaxis', 'a', 'b', 'c',
+    'bbox'
+].sort();
+
 describe('ternary plots', function() {
     'use strict';
 
@@ -195,19 +201,13 @@ describe('ternary plots', function() {
 
             mouseEvent('mousemove', pointPos[0], pointPos[1]);
             expect(hoverData).not.toBe(undefined, 'firing on data points');
-            expect(Object.keys(hoverData)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'xaxis', 'yaxis', 'a', 'b', 'c'
-            ], 'returning the correct event data keys');
+            expect(Object.keys(hoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
             expect(hoverData.curveNumber).toEqual(0, 'returning the correct curve number');
             expect(hoverData.pointNumber).toEqual(0, 'returning the correct point number');
 
             mouseEvent('mouseout', pointPos[0], pointPos[1]);
             expect(unhoverData).not.toBe(undefined, 'firing on data points');
-            expect(Object.keys(unhoverData)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'xaxis', 'yaxis', 'a', 'b', 'c'
-            ], 'returning the correct event data keys');
+            expect(Object.keys(unhoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
             expect(unhoverData.curveNumber).toEqual(0, 'returning the correct curve number');
             expect(unhoverData.pointNumber).toEqual(0, 'returning the correct point number');
 
@@ -227,10 +227,7 @@ describe('ternary plots', function() {
 
             click(pointPos[0], pointPos[1]);
             expect(ptData).not.toBe(undefined, 'firing on data points');
-            expect(Object.keys(ptData)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'xaxis', 'yaxis', 'a', 'b', 'c'
-            ], 'returning the correct event data keys');
+            expect(Object.keys(ptData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
             expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
             expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
         });
@@ -678,19 +675,13 @@ describe('ternary plots when css transform is present', function() {
 
         mouseEvent('mousemove', pointPos[0], pointPos[1]);
         expect(hoverData).not.toBe(undefined, 'firing on data points');
-        expect(Object.keys(hoverData)).toEqual([
-            'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-            'xaxis', 'yaxis', 'a', 'b', 'c'
-        ], 'returning the correct event data keys');
+        expect(Object.keys(hoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
         expect(hoverData.curveNumber).toEqual(0, 'returning the correct curve number');
         expect(hoverData.pointNumber).toEqual(0, 'returning the correct point number');
 
         mouseEvent('mouseout', pointPos[0], pointPos[1]);
         expect(unhoverData).not.toBe(undefined, 'firing on data points');
-        expect(Object.keys(unhoverData)).toEqual([
-            'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-            'xaxis', 'yaxis', 'a', 'b', 'c'
-        ], 'returning the correct event data keys');
+        expect(Object.keys(unhoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
         expect(unhoverData.curveNumber).toEqual(0, 'returning the correct curve number');
         expect(unhoverData.pointNumber).toEqual(0, 'returning the correct point number');
 
@@ -710,10 +701,7 @@ describe('ternary plots when css transform is present', function() {
 
         click(pointPos[0], pointPos[1]);
         expect(ptData).not.toBe(undefined, 'firing on data points');
-        expect(Object.keys(ptData)).toEqual([
-            'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-            'xaxis', 'yaxis', 'a', 'b', 'c'
-        ], 'returning the correct event data keys');
+        expect(Object.keys(ptData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
         expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
         expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
     });
@@ -843,10 +831,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'xaxis', 'yaxis', 'a', 'b', 'c'
-            ]);
+            expect(Object.keys(pt).sort()).toEqual(SORTED_EVENT_KEYS);
 
             expect(pt.curveNumber).toBe(0, 'points[0].curveNumber');
             expect(typeof pt.data).toBe(typeof {}, 'points[0].data');
@@ -912,10 +897,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
                 var pt = futureData.points[0];
                 var evt = futureData.event;
 
-                expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                    'xaxis', 'yaxis', 'a', 'b', 'c'
-                ]);
+                expect(Object.keys(pt).sort()).toEqual(SORTED_EVENT_KEYS);
 
                 expect(pt.curveNumber).toBe(0, 'points[0].curveNumber: ' + i);
                 expect(typeof pt.data).toBe(typeof {}, 'points[0].data: ' + i);
@@ -964,10 +946,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
             var yaxes0 = futureData.yaxes[0];
             var yvals0 = futureData.yvals[0];
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'xaxis', 'yaxis', 'a', 'b', 'c'
-            ]);
+            expect(Object.keys(pt).sort()).toEqual(SORTED_EVENT_KEYS);
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1012,10 +991,7 @@ describe('Test event property of interactions on a ternary plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
-                'xaxis', 'yaxis', 'a', 'b', 'c'
-            ]);
+            expect(Object.keys(pt).sort()).toEqual(SORTED_EVENT_KEYS);
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');

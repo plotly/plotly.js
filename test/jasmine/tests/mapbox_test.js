@@ -19,6 +19,12 @@ var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 
+var SORTED_EVENT_KEYS = [
+    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+    'lon', 'lat',
+    'bbox'
+].sort();
+
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
 var MOUSE_DELAY = 100;
@@ -1243,9 +1249,7 @@ describe('mapbox plots', function() {
         .then(function() {
             return _mouseEvent('mousemove', pointPos, function() {
                 expect(hoverData).not.toBe(undefined, 'firing on data points');
-                expect(Object.keys(hoverData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-                ], 'returning the correct event data keys');
+                expect(Object.keys(hoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
                 expect(hoverData.curveNumber).toEqual(0, 'returning the correct curve number');
                 expect(hoverData.pointNumber).toEqual(0, 'returning the correct point number');
             });
@@ -1253,9 +1257,7 @@ describe('mapbox plots', function() {
         .then(function() {
             return _mouseEvent('mousemove', blankPos, function() {
                 expect(unhoverData).not.toBe(undefined, 'firing on data points');
-                expect(Object.keys(unhoverData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-                ], 'returning the correct event data keys');
+                expect(Object.keys(unhoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
                 expect(unhoverData.curveNumber).toEqual(0, 'returning the correct curve number');
                 expect(unhoverData.pointNumber).toEqual(0, 'returning the correct point number');
             });
@@ -1400,9 +1402,7 @@ describe('mapbox plots', function() {
         .then(function() { return click(pointPos[0], pointPos[1]); })
         .then(function() {
             expect(ptData).not.toBe(undefined, 'firing on data points');
-            expect(Object.keys(ptData)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-            ], 'returning the correct event data keys');
+            expect(Object.keys(ptData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
             expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
             expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
         })
