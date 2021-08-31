@@ -830,7 +830,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paper,
+        outerContainer: fullLayout._paper.node(),
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
     };
@@ -893,7 +893,7 @@ function createHoverText(hoverData, opts, gd) {
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
     var t0 = c0[axLetter + 'Label'];
-    var outerContainerBB = outerContainer.node().getBoundingClientRect();
+    var outerContainerBB = outerContainer.getBoundingClientRect();
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
     var outerHeight = outerContainerBB.height;
