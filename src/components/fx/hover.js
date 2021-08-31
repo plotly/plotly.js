@@ -206,7 +206,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     });
 
     var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer || container3;
+    var outerContainer3 = opts.outerContainer || container3.node();
 
     var fullOpts = {
         hovermode: 'closest',
