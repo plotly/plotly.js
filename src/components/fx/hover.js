@@ -891,7 +891,7 @@ function createHoverText(hoverData, opts) {
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
     var t0 = c0[axLetter + 'Label'];
-    var outerContainerBB = outerContainer.getBoundingClientRect();
+    var outerContainerBB = getBoundingClientRect(gd, outerContainer);
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
     var outerHeight = outerContainerBB.height;
@@ -966,7 +966,7 @@ function createHoverText(hoverData, opts) {
 
         label.attr('transform', '');
 
-        var tbb = ltext.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, ltext.node());
         var lx, ly;
 
         if(hovermode === 'x') {
@@ -1059,7 +1059,7 @@ function createHoverText(hoverData, opts) {
                         var dummy = Drawing.tester.append('text')
                             .text(s.text())
                             .call(Drawing.font, commonLabelFont);
-                        var dummyBB = dummy.node().getBoundingClientRect();
+                        var dummyBB = getBoundingClientRect(gd, dummy.node());
                         if(Math.round(dummyBB.width) < Math.round(tbb.width)) {
                             s.attr('x', ltx - dummyBB.width);
                         }
@@ -1148,7 +1148,7 @@ function createHoverText(hoverData, opts) {
 
         // Position the hover
         var legendContainer = container.select('g.legend');
-        var tbb = legendContainer.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, legendContainer.node());
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
         var winningPoint = hoverData[0];
@@ -1313,7 +1313,7 @@ function createHoverText(hoverData, opts) {
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
 
-            var t2bb = tx2.node().getBoundingClientRect();
+            var t2bb = getBoundingClientRect(gd, tx2.node());
             tx2width = t2bb.width + 2 * HOVERTEXTPAD;
             tx2height = t2bb.height + 2 * HOVERTEXTPAD;
         } else {
@@ -1326,7 +1326,7 @@ function createHoverText(hoverData, opts) {
             stroke: contrastColor
         });
 
-        var tbb = tx.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, tx.node());
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
         var hty = d.ya._offset + (d.y0 + d.y1) / 2;
         var dx = Math.abs(d.x1 - d.x0);
@@ -2100,3 +2100,33 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 // the offset parent, whatever that may be.
 function getTopOffset(gd) { return gd.offsetTop + gd.clientTop; }
 function getLeftOffset(gd) { return gd.offsetLeft + gd.clientLeft; }
+
+function getBoundingClientRect(gd, node) {
+    var fullLayout = gd._fullLayout;
+
+    var rect = node.getBoundingClientRect();
+
+    var x0 = rect.x;
+    var y0 = rect.y;
+    var x1 = x0 + rect.width;
+    var y1 = y0 + rect.height;
+
+    var A = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
+    var B = Lib.apply3DTransform(fullLayout._invTransform)(x1, y1);
+
+    var Ax = A[0];
+    var Ay = A[1];
+    var Bx = B[0];
+    var By = B[1];
+
+    return {
+        x: Ax,
+        y: Ay,
+        width: Bx - Ax,
+        height: By - Ay,
+        top: Math.min(Ay, By),
+        left: Math.min(Ax, Bx),
+        right: Math.max(Ax, Bx),
+        bottom: Math.max(Ay, By),
+    };
+}
