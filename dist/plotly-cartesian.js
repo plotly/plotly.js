@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.4.0
+* plotly.js (cartesian) v2.4.2
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -36367,18 +36367,16 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         };
     });
 
-    var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer ? d3.select(opts.outerContainer) : container3;
+    var rotateLabels = false;
 
-    var fullOpts = {
+    var hoverLabel = createHoverText(pointsData, {
+        gd: gd,
         hovermode: 'closest',
-        rotateLabels: false,
+        rotateLabels: rotateLabels,
         bgColor: opts.bgColor || Color.background,
-        container: container3,
-        outerContainer: outerContainer3
-    };
-
-    var hoverLabel = createHoverText(pointsData, fullOpts, gd);
+        container: d3.select(opts.container),
+        outerContainer: opts.outerContainer || opts.container
+    });
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -36405,7 +36403,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 
     var scaleX = gd._fullLayout._invScaleX;
     var scaleY = gd._fullLayout._invScaleY;
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
+    alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -36819,7 +36817,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var spikelineOpts = {
         fullLayout: fullLayout,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
         event: evt
     };
     var oldspikepoints = gd._spikepoints;
@@ -36988,17 +36985,16 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         fullLayout.paper_bgcolor
     );
 
-    var labelOpts = {
+    var hoverLabels = createHoverText(hoverData, {
+        gd: gd,
         hovermode: hovermode,
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
+        outerContainer: fullLayout._paper.node(),
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
-    };
-
-    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
+    });
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
@@ -37036,7 +37032,8 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(hoverData, opts) {
+    var gd = opts.gd;
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -37056,7 +37053,7 @@ function createHoverText(hoverData, opts, gd) {
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
     var t0 = c0[axLetter + 'Label'];
-    var outerContainerBB = outerContainer.node().getBoundingClientRect();
+    var outerContainerBB = outerContainer.getBoundingClientRect();
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
     var outerHeight = outerContainerBB.height;
@@ -40719,6 +40716,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 
     function setVisibility(fullTrace, visibility) {
+        if(legendItem.groupTitle && !toggleGroup) return;
+
         var fullInput = fullTrace._fullInput;
         if(Registry.hasTransform(fullInput, 'groupby')) {
             var kcont = carrs[fullInput.index];
@@ -40853,7 +40852,7 @@ module.exports = function handleClick(g, gd, numClicks) {
                         // N.B. consider traces that have a set legendgroup as toggleable
                         notInLegend = (fullData[i].showlegend !== true && !fullData[i].legendgroup);
                         isInGroup = isClicked || (hasLegendgroup && fullData[i].legendgroup === legendgroup);
-                        setVisibility(fullData[i], ((isInGroup && toggleGroup) || notInLegend) ? true : otherState);
+                        setVisibility(fullData[i], (isInGroup || notInLegend) ? true : otherState);
                         break;
                 }
             }
@@ -102063,7 +102062,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.4.0';
+exports.version = '2.4.2';
 
 },{}]},{},[15])(15)
 });
