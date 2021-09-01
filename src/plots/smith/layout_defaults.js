@@ -117,6 +117,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             coerceAxis('layer');
         }
 
+        coerceAxis('hoverformat');
+
         axOut._input = axIn;
     }
 }
