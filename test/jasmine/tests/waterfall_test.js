@@ -770,7 +770,7 @@ describe('A waterfall plot', function() {
           .then(done, done.fail);
     });
 
-    it('should be able to restyle', function(done) {
+    it('@noCI should be able to restyle', function(done) {
         var mock = {
             data: [
                 {

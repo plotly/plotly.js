@@ -10,7 +10,7 @@ version: 2.0
 jobs:
   install-and-cibuild:
     docker:
-      - image: circleci/node:12.22.1
+      - image: circleci/node:12.22.5
     working_directory: ~/plotly.js
     steps:
       - checkout
@@ -34,7 +34,7 @@ jobs:
   timezone-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.22.1-browsers
+      - image: circleci/node:12.22.5-browsers
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -63,7 +63,7 @@ jobs:
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.22.1-browsers
+      - image: circleci/node:12.22.5-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -79,7 +79,7 @@ jobs:
   webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.22.1-browsers
+      - image: circleci/node:12.22.5-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -95,7 +95,7 @@ jobs:
   flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.22.1-browsers
+      - image: circleci/node:12.22.5-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -110,7 +110,7 @@ jobs:
   bundle-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.22.1-browsers
+      - image: circleci/node:12.22.5-browsers
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
@@ -143,7 +143,7 @@ jobs:
 
   test-baselines:
     docker:
-      - image: circleci/node:12.22.1
+      - image: circleci/node:12.22.5
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -178,7 +178,7 @@ jobs:
 
   test-exports:
     docker:
-      - image: circleci/node:12.22.1
+      - image: circleci/node:12.22.5
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -192,7 +192,7 @@ jobs:
 
   mock-validation:
     docker:
-      - image: circleci/node:12.22.1
+      - image: circleci/node:12.22.5
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -206,7 +206,7 @@ jobs:
 
   source-syntax:
     docker:
-      - image: circleci/node:12.22.1
+      - image: circleci/node:12.22.5
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -217,7 +217,7 @@ jobs:
 
   publish-dist:
     docker:
-      - image: circleci/node:12.22.1
+      - image: circleci/node:12.22.5
     working_directory: ~/plotly.js
     steps:
       - checkout
