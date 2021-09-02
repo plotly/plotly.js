@@ -1,0 +1,1 @@
+ - Use node.js v14 in tests and publishing [[#5919](https://github.com/plotly/plotly.js/pull/5919)]
