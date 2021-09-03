@@ -1449,7 +1449,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             });
         });
 
-        it('panning a matching overlaying axis', function(done) {
+        it('@noCI panning a matching overlaying axis', function(done) {
             /*
              * y |                     | y2  y3 |
              *   |                     |        |
