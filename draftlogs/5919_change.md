@@ -1,1 +1,0 @@
- - Use `node.js v16` and `npm v7` in development and upgrade version of `package-lock.json` [[#5922](https://github.com/plotly/plotly.js/pull/5922), [#5919](https://github.com/plotly/plotly.js/pull/5919)]

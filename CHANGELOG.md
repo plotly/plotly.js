@@ -9,6 +9,19 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.5.0] -- 2021-09-03
+
+### Added
+ - Include `surface`, `isosurface`, `volume`, `streamtube`, `cone`, `mesh3d`, `scatter3d`, `pointcloud`
+   and `heatmapgl` in the "strict" bundle by avoid function generation for these traces at runtime [[#5888](https://github.com/plotly/plotly.js/pull/5888)]
+
+### Changed
+ - Use `node.js v16` and `npm v7` in development and upgrade the version of `package-lock.json` [[#5922](https://github.com/plotly/plotly.js/pull/5922), [#5919](https://github.com/plotly/plotly.js/pull/5919)]
+
+### Fixed
+ - Adjust position of hover in respect to CSS transform [[#5916](https://github.com/plotly/plotly.js/pull/5916)]
+
+
 ## [2.4.2] -- 2021-08-31
 
 ### Fixed
