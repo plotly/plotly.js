@@ -1,72 +1,72 @@
 {
-"data":[{
-                "x": ["3", "1", "5", "2", "4", "6"],
-                "y": ["6","7","8","2","3","4"]
-            }],
-"layout":{
-                "xaxis": {
-                    "type": "category",
-                    "categoryarray": ["1", "2", "3", "4", "5", "6"]
-                },
-                "yaxis": {
-                    "type": "category"
-                },
-                "shapes": [
-                    {
-                        "type": "rect",
-                        "x0": "2",
-                        "x1": "4",
-                        "y0": 3.5,
-                        "y1": 4.5, 
-                        "line": {"color": "blue"}
-                    },
-                    {
-                        "type": "rect",
-                        "x0": 0.5,
-                        "x1": 1.5,
-                        "y0": "3",
-                        "y1": "4",
-                        "line": {"color": "red"}
-                    },
-                    {
-                        "type": "rect",
-                        "x0": 2,
-                        "x1": 4,
-                        "y0": "0",
-                        "y1": "4",
-                        "line": {"color": "green"}
-                    },
-                    {
-                        "type": "rect",
-                        "x0": "4",
-                        "x1": "7",
-                        "y0": 3,
-                        "y1": 4,
-                        "line": {"color": "yellow"}
-                    },
-                    {
-                            "type": "path",
-                            "path": "M0,5.5L3,4.5L1,3Z",
-                            "line": {"color": "orange"}
-                    },
-                    {
-                            "type": "line",
-                            "x0": 0.5,
-                            "x1": 0.5,
-                            "y0": 0,
-                            "y1": 1,
-                            "xref": "x domain",
-                            "yref": "y domain"
-                    },
-                    {
-                            "type": "line",
-                            "y0": 0.5,
-                            "y1": 0.5,
-                            "x0": 0,
-                            "x1": 1,
-                            "xref": "x domain",
-                            "yref": "y domain"
-                    }
-                ]
+    "data":[{
+        "x": ["3", "1", "5", "2", "4", "6"],
+        "y": ["6","7","8","2","3","4"]
+    }],
+        "layout":{
+            "xaxis": {
+                "type": "category",
+                "categoryarray": ["1", "2", "3", "4", "5", "6"]
+            },
+            "yaxis": {
+                "type": "category"
+            },
+            "shapes": [
+            {
+                "type": "rect",
+                "x0": "2",
+                "x1": "4",
+                "y0": 3.5,
+                "y1": 4.5, 
+                "line": {"color": "blue"}
+            },
+            {
+                "type": "rect",
+                "x0": 0.5,
+                "x1": 1.5,
+                "y0": "3",
+                "y1": "4",
+                "line": {"color": "red"}
+            },
+            {
+                "type": "rect",
+                "x0": 2,
+                "x1": 4,
+                "y0": "0",
+                "y1": "4",
+                "line": {"color": "green"}
+            },
+            {
+                "type": "rect",
+                "x0": "4",
+                "x1": "7",
+                "y0": 3,
+                "y1": 4,
+                "line": {"color": "yellow"}
+            },
+            {
+                "type": "path",
+                "path": "M0,5.5L3,4.5L1,3Z",
+                "line": {"color": "orange"}
+            },
+            {
+                "type": "line",
+                "x0": 0.5,
+                "x1": 0.5,
+                "y0": 0,
+                "y1": 1,
+                "xref": "x domain",
+                "yref": "y domain"
+            },
+            {
+                "type": "line",
+                "y0": 0.5,
+                "y1": 0.5,
+                "x0": 0,
+                "x1": 1,
+                "xref": "x domain",
+                "yref": "y domain"
             }
+            ]
+        }
 }
