@@ -39,7 +39,6 @@ module.exports = {
     },
     dragmode: {
         valType: 'enumerated',
-        role: 'info',
         values: [
             'zoom',
             'pan',
@@ -65,7 +64,6 @@ module.exports = {
     },
     hovermode: {
         valType: 'enumerated',
-        role: 'info',
         values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
         dflt: 'closest',
         editType: 'modebar',
@@ -87,7 +85,6 @@ module.exports = {
         valType: 'integer',
         min: -1,
         dflt: 20,
-        role: 'info',
         editType: 'none',
         description: [
             'Sets the default distance (in pixels) to look for data',
@@ -114,7 +111,6 @@ module.exports = {
     hoverlabel: {
         bgcolor: {
             valType: 'color',
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the background color of all hover labels on graph'
@@ -122,7 +118,6 @@ module.exports = {
         },
         bordercolor: {
             valType: 'color',
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the border color of all hover labels on graph.'
@@ -133,7 +128,6 @@ module.exports = {
             valType: 'enumerated',
             values: ['left', 'right', 'auto'],
             dflt: 'auto',
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the horizontal alignment of the text content within hover label box.',
@@ -144,7 +138,6 @@ module.exports = {
             valType: 'integer',
             min: -1,
             dflt: 15,
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the default length (in number of characters) of the trace name in',
@@ -159,7 +152,6 @@ module.exports = {
     },
     selectdirection: {
         valType: 'enumerated',
-        role: 'info',
         values: ['h', 'v', 'd', 'any'],
         dflt: 'any',
         description: [
