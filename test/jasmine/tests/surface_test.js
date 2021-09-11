@@ -10,7 +10,7 @@ describe('Test surface', function() {
 
     describe('supplyDefaults', function() {
         var defaultColor = '#444';
-        var layout = {_dfltTitle: {colorbar: 'cb'}};
+        var layout = {_dfltTitle: {colorbar: 'cb'}, font: {color: '#444'}};
 
         var traceIn, traceOut;
 

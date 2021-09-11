@@ -33,38 +33,27 @@ retry () {
     fi
 }
 
-# set timezone to Alaska time (arbitrary timezone to test date logic)
-set_tz () {
-    sudo cp /usr/share/zoneinfo/America/Anchorage /etc/localtime
-    export TZ='America/Anchorage'
-}
-
 case $1 in
 
     no-gl-jasmine)
-        set_tz
-
         SUITE=$(circleci tests glob "$ROOT/test/jasmine/tests/*" | circleci tests split)
-        npm run test-jasmine -- $SUITE --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
+        MAX_AUTO_RETRY=2
+        retry npm run test-jasmine -- $SUITE --skip-tags=gl,noCI,flaky || EXIT_STATE=$?
 
         exit $EXIT_STATE
         ;;
 
     webgl-jasmine)
-        set_tz
-
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=5 --tag=gl | circleci tests split))
         for s in ${SHARDS[@]}; do
-            MAX_AUTO_RETRY=1
+            MAX_AUTO_RETRY=2
             retry npm run test-jasmine -- "$s" --tags=gl --skip-tags=noCI --doNotFailOnEmptyTestSuite
         done
 
         exit $EXIT_STATE
         ;;
 
-    no-gl-flaky-jasmine)
-        set_tz
-
+    flaky-no-gl-jasmine)
         SHARDS=($(node $ROOT/tasks/shard_jasmine_tests.js --limit=1 --tag=flaky | circleci tests split))
 
         for s in ${SHARDS[@]}; do
@@ -75,22 +64,19 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    stable-image)
-        SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | circleci tests split)
-        npm run test-image -- $SUITE --filter --skip-flaky || EXIT_STATE=$?
-        exit $EXIT_STATE
-        ;;
-
-    flaky-image)
-        MAX_AUTO_RETRY=5
-        retry npm run test-image -- --just-flaky
-        npm run test-export     || EXIT_STATE=$?
-        exit $EXIT_STATE
-        ;;
-
-    jasmine-bundle)
-        set_tz
+    bundle-jasmine)
         npm run test-bundle || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
+    make-baselines)
+        SUITE=$(find $ROOT/test/image/mocks/ -type f -printf "%f\n" | sed 's/\.json$//1' | circleci tests split)
+        python3 test/image/make_baseline.py $SUITE || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
+    test-image)
+        node test/image/compare_pixels_test.js || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 

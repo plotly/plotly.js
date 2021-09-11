@@ -796,7 +796,6 @@ describe('end-to-end scatter tests', function() {
                 var hasFills = name.indexOf('fill') !== -1;
                 var hasLines = name.indexOf('lines') !== -1;
                 var hasMarkers = name.indexOf('markers') !== -1;
-                var hasText = name.indexOf('text') !== -1;
                 var tracei, prefix;
 
             // construct the expected ordering based on case name
@@ -814,7 +813,6 @@ describe('end-to-end scatter tests', function() {
                     }
                     if(hasLines) selectorArray.push(prefix + '.js-line');
                     if(hasMarkers) selectorArray.push(prefix + '.point');
-                    if(hasText) selectorArray.push(prefix + '.textpoint');
                 }
 
             // ordering in the legend
@@ -823,7 +821,6 @@ describe('end-to-end scatter tests', function() {
                     if(hasFills) selectorArray.push(prefix + '.js-fill');
                     if(hasLines) selectorArray.push(prefix + '.js-line');
                     if(hasMarkers) selectorArray.push(prefix + '.scatterpts');
-                    if(hasText) selectorArray.push(prefix + '.pointtext');
                 }
 
                 var msg = i ? ('from ' + cases[indices[i - 1]].name + ' to ') : 'from default to ';
@@ -1239,6 +1236,22 @@ describe('Text templates on scatter traces:', function() {
     }], '.textpoint', [
       ['%{y}', ['1', '5', '3', '2']],
       [['%{y}', '%{x}-%{y}'], ['1', '1-5', '', '']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scatter',
+            mode: 'text',
+            x: [1, 2, 3],
+            y: [3, 2, 1],
+            texttemplate: '%{x}-%{y}'
+        }],
+        layout: {
+            xaxis: {type: 'log'},
+            yaxis: {type: 'log'},
+        }
+    }, '.textpoint', [
+      ['%{x}-%{y}', ['1-3', '2-2', '3-1']]
     ]);
 
     checkTextTemplate({
@@ -1967,6 +1980,7 @@ describe('Test scatter *clipnaxis*:', function() {
 describe('event data', function() {
     var mock = require('@mocks/scatter-colorscale-colorbar');
     var mockCopy = Lib.extendDeep({}, mock);
+    mockCopy.layout.hovermode = 'x';
 
     var marker = mockCopy.data[0].marker;
     marker.opacity = [];

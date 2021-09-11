@@ -1,14 +1,31 @@
+var fs = require('fs');
 var path = require('path');
 var pkg = require('../../package.json');
 
 var pathToRoot = path.join(__dirname, '../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToLib = path.join(pathToRoot, 'lib/');
-var pathToImageTest = path.join(pathToRoot, 'test/image');
+var pathToTest = path.join(pathToRoot, 'test/');
+var pathToImageTest = path.join(pathToTest, 'image/');
 var pathToStrictD3Module = path.join(pathToRoot, 'test/strict-d3.js');
-var pathToVendor = path.join(pathToRoot, 'vendor/');
+var pathToDraftlogs = path.join(pathToRoot, 'draftlogs/');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
+
+function startsWithLowerCase(v) {
+    return v.charAt(0) !== v.charAt(0).toUpperCase();
+}
+
+var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
+var pathToPlotlyStrict = path.join(pathToLib, 'index-strict.js');
+var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
+var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
+    .filter(startsWithLowerCase);
+var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
+    .filter(function(v) {
+        return startsWithLowerCase(v) && v !== 'helpers.js';
+    })
+    .map(function(e) { return e.replace('.js', ''); });
 
 var pathToTopojsonSrc;
 try {
@@ -29,26 +46,147 @@ var partialBundleNames = [
     'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox', 'finance', 'strict'
 ];
 
-var partialBundlePaths = partialBundleNames.map(function(name) {
+var partialBundleTraces = {
+    basic: [
+        'bar',
+        'pie',
+        'scatter'
+    ],
+    cartesian: [
+        'bar',
+        'box',
+        'contour',
+        'heatmap',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'image',
+        'pie',
+        'scatter',
+        'scatterternary',
+        'violin'
+    ],
+    finance: [
+        'bar',
+        'candlestick',
+        'funnel',
+        'funnelarea',
+        'histogram',
+        'indicator',
+        'ohlc',
+        'pie',
+        'scatter',
+        'waterfall'
+    ],
+    geo: [
+        'choropleth',
+        'scatter',
+        'scattergeo'
+    ],
+    gl2d: [
+        'heatmapgl',
+        'parcoords',
+        'pointcloud',
+        'scatter',
+        'scattergl',
+        'splom'
+    ],
+    gl3d: [
+        'cone',
+        'isosurface',
+        'mesh3d',
+        'scatter',
+        'scatter3d',
+        'streamtube',
+        'surface',
+        'volume'
+    ],
+    mapbox: [
+        'choroplethmapbox',
+        'densitymapbox',
+        'scatter',
+        'scattermapbox'
+    ],
+    strict: [
+        'bar',
+        'barpolar',
+        'box',
+        'candlestick',
+        'carpet',
+        'choropleth',
+        'choroplethmapbox',
+        'cone',
+        'contour',
+        'contourcarpet',
+        'densitymapbox',
+        'funnel',
+        'funnelarea',
+        'heatmap',
+        'heatmapgl',
+        'histogram',
+        'histogram2d',
+        'histogram2dcontour',
+        'icicle',
+        'image',
+        'indicator',
+        'isosurface',
+        'mesh3d',
+        'ohlc',
+        'parcats',
+        'pie',
+        'pointcloud',
+        'sankey',
+        'scatter',
+        'scatter',
+        'scatter3d',
+        'scattercarpet',
+        'scattergeo',
+        'scattermapbox',
+        'scatterpolar',
+        'scatterternary',
+        'streamtube',
+        'sunburst',
+        'surface',
+        'table',
+        'treemap',
+        'violin',
+        'volume',
+        'waterfall'
+    ]
+};
+
+function makePartialBundleOpts(name) {
     return {
         name: name,
+        traceList: partialBundleTraces[name],
+        transformList: allTransforms,
+        calendars: true,
         index: path.join(pathToLib, 'index-' + name + '.js'),
         dist: path.join(pathToDist, 'plotly-' + name + '.js'),
         distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
     };
-});
+}
 
 var year = (new Date()).getFullYear();
 
 module.exports = {
+    makePartialBundleOpts: makePartialBundleOpts,
+
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
-    pathToVendor: pathToVendor,
     pathToDist: pathToDist,
+    pathToDraftlogs: pathToDraftlogs,
+    pathToChangelog: path.join(pathToRoot, 'CHANGELOG.md'),
 
-    pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
+    partialBundleTraces: partialBundleTraces,
+
+    allTransforms: allTransforms,
+    allTraces: allTraces,
+    mainIndex: mainIndex,
+    pathToPlotlyIndex: pathToPlotlyIndex,
+    pathToPlotlyStrict: pathToPlotlyStrict,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyVersion: path.join(pathToSrc, 'version.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
@@ -57,11 +195,11 @@ module.exports = {
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
-    pathToSchema: path.join(pathToDist, 'plot-schema.json'),
+    pathToSchemaDiff: path.join(pathToTest, 'plot-schema.json'),
+    pathToSchemaDist: path.join(pathToDist, 'plot-schema.json'),
     pathToTranslationKeys: path.join(pathToDist, 'translation-keys.txt'),
 
     partialBundleNames: partialBundleNames,
-    partialBundlePaths: partialBundlePaths,
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
@@ -72,7 +210,6 @@ module.exports = {
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
-    pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
 
     pathToImageTest: pathToImageTest,
     pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),
@@ -96,17 +233,6 @@ module.exports = {
     testContainerPort: '9010',
     testContainerUrl: 'http://localhost:9010/',
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
-
-    uglifyOptions: {
-        ecma: 5,
-        mangle: true,
-        output: {
-            beautify: false,
-            ascii_only: true
-        },
-
-        sourceMap: false
-    },
 
     licenseDist: [
         '/**',

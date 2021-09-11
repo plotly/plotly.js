@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Axes = require('@src/plots/cartesian/axes');
@@ -731,7 +731,7 @@ describe('scattermapbox hover', function() {
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
             1122.33, 1124.33, 105.41, 107.41
         ]);
-        expect(out.extraText).toEqual('(300°, 10°)<br>D');
+        expect(out.extraText).toEqual('(10°, 300°)<br>D');
         expect(out.color).toEqual('#1f77b4');
     });
 
@@ -952,9 +952,9 @@ describe('Test plotly events on a scattermapbox plot:', function() {
 
             var pt = futureData.points[0];
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-            ]);
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -999,9 +999,9 @@ describe('Test plotly events on a scattermapbox plot:', function() {
             // var pt = futureData.points[0],
             //     evt = futureData.event;
 
-            // expect(Object.keys(pt)).toEqual([
-            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-            // ]);
+            // expect(Object.keys(pt).sort()).toEqual([
+            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+            // ].sort());
 
             // expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             // expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1033,9 +1033,9 @@ describe('Test plotly events on a scattermapbox plot:', function() {
 
             var pt = futureData.points[0];
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-            ]);
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1061,9 +1061,9 @@ describe('Test plotly events on a scattermapbox plot:', function() {
             move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
                 var pt = futureData.points[0];
 
-                expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-                ]);
+                expect(Object.keys(pt).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1133,9 +1133,9 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
 
             var pt = futureData.points[0];
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-            ]);
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1163,9 +1163,9 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
 
             var pt = futureData.points[0];
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-            ]);
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1191,9 +1191,9 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
             move(pointPos[0], pointPos[1], nearPos[0], nearPos[1], HOVERMINTIME + 10).then(function() {
                 var pt = futureData.points[0];
 
-                expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-                ]);
+                expect(Object.keys(pt).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat', 'bbox'
+                ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');

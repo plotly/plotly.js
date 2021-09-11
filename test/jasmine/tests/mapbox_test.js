@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Fx = require('@src/components/fx');
 
@@ -18,6 +18,12 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelStyle = customAssertions.assertHoverLabelStyle;
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+
+var SORTED_EVENT_KEYS = [
+    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+    'lon', 'lat',
+    'bbox'
+].sort();
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
@@ -1243,9 +1249,7 @@ describe('mapbox plots', function() {
         .then(function() {
             return _mouseEvent('mousemove', pointPos, function() {
                 expect(hoverData).not.toBe(undefined, 'firing on data points');
-                expect(Object.keys(hoverData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-                ], 'returning the correct event data keys');
+                expect(Object.keys(hoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
                 expect(hoverData.curveNumber).toEqual(0, 'returning the correct curve number');
                 expect(hoverData.pointNumber).toEqual(0, 'returning the correct point number');
             });
@@ -1253,9 +1257,7 @@ describe('mapbox plots', function() {
         .then(function() {
             return _mouseEvent('mousemove', blankPos, function() {
                 expect(unhoverData).not.toBe(undefined, 'firing on data points');
-                expect(Object.keys(unhoverData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-                ], 'returning the correct event data keys');
+                expect(Object.keys(unhoverData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
                 expect(unhoverData.curveNumber).toEqual(0, 'returning the correct curve number');
                 expect(unhoverData.pointNumber).toEqual(0, 'returning the correct point number');
             });
@@ -1400,9 +1402,7 @@ describe('mapbox plots', function() {
         .then(function() { return click(pointPos[0], pointPos[1]); })
         .then(function() {
             expect(ptData).not.toBe(undefined, 'firing on data points');
-            expect(Object.keys(ptData)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'lon', 'lat'
-            ], 'returning the correct event data keys');
+            expect(Object.keys(ptData).sort()).toEqual(SORTED_EVENT_KEYS, 'returning the correct event data keys');
             expect(ptData.curveNumber).toEqual(0, 'returning the correct curve number');
             expect(ptData.pointNumber).toEqual(0, 'returning the correct point number');
         })
@@ -1471,12 +1471,73 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     describe('attributions', function() {
+        function assertLinks(s, exp) {
+            var elements = s[0][0].getElementsByTagName('a');
+            expect(elements.length).toEqual(exp.length);
+            for(var i = 0; i < elements.length; i++) {
+                var e = elements[i];
+                expect(e.href).toEqual(exp[i]);
+                expect(e.target).toEqual('_blank');
+            }
+        }
+
+        it('@gl should be displayed for style "Carto"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'carto-darkmatter'}})
+            .then(function() {
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('© Carto © OpenStreetMap contributors');
+                assertLinks(s, [
+                    'https://carto.com/',
+                    'https://www.openstreetmap.org/copyright'
+                ]);
+            })
+            .then(done, done.fail);
+        });
+
+        ['stamen-terrain', 'stamen-toner'].forEach(function(style) {
+            it('@gl should be displayed for style "' + style + '"', function(done) {
+                Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: style}})
+                .then(function() {
+                    var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                    expect(s.size()).toBe(1);
+                    expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under ODbL');
+                    assertLinks(s, [
+                        'https://stamen.com/',
+                        'https://creativecommons.org/licenses/by/3.0',
+                        'https://openstreetmap.org/',
+                        'https://www.openstreetmap.org/copyright'
+                    ]);
+                })
+                .then(done, done.fail);
+            });
+        });
+
+        it('@gl should be displayed for style "stamen-watercolor"', function(done) {
+            Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-watercolor'}})
+            .then(function() {
+                var s = d3SelectAll('.mapboxgl-ctrl-attrib');
+                expect(s.size()).toBe(1);
+                expect(s.text()).toEqual('Map tiles by Stamen Design under CC BY 3.0 | Data by OpenStreetMap contributors under CC BY SA');
+                assertLinks(s, [
+                    'https://stamen.com/',
+                    'https://creativecommons.org/licenses/by/3.0',
+                    'https://openstreetmap.org/',
+                    'https://creativecommons.org/licenses/by-sa/3.0'
+                ]);
+            })
+            .then(done, done.fail);
+        });
+
         it('@gl should be displayed for style "open-street-map"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'open-street-map'}})
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
-                expect(s.text()).toEqual('© OpenStreetMap');
+                expect(s.text()).toEqual('© OpenStreetMap contributors');
+                assertLinks(s, [
+                    'https://www.openstreetmap.org/copyright'
+                ]);
             })
             .then(done, done.fail);
         });
@@ -1487,6 +1548,11 @@ describe('mapbox plots', function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');
                 expect(s.size()).toBe(1);
                 expect(s.text()).toEqual('© Mapbox © OpenStreetMap Improve this map');
+                assertLinks(s, [
+                    'https://www.mapbox.com/about/maps/',
+                    'http://www.openstreetmap.org/about/',
+                    'https://www.mapbox.com/map-feedback/' // Improve this map
+                ]);
             })
             .then(done, done.fail);
         });

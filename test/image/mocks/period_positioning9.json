@@ -1,0 +1,33 @@
+{
+    "data": [
+        {
+            "xperiod": "M6",
+            "name": "Half year",
+            "type": "bar",
+            "y": [1, 2, 3, 4, 5, 6],
+            "x": ["2001-01", "2001-07", "2002-01", "2002-07", "2003-01", "2003-07"],
+            "texttemplate": "%{x}",
+            "textangle": 0
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "half-year periods and tickformat"
+        },
+        "width": 400,
+        "height": 300,
+        "margin": {
+            "t": 50,
+            "b": 50,
+            "l": 25,
+            "r": 25
+        },
+
+        "xaxis": {
+            "dtick": "M6",
+            "tickformat": "%Y H%h",
+            "ticklabelmode": "period",
+            "tickcolor": "black"
+        }
+    }
+}

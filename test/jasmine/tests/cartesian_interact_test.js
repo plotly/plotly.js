@@ -1449,7 +1449,7 @@ describe('axis zoom/pan and main plot zoom', function() {
             });
         });
 
-        it('panning a matching overlaying axis', function(done) {
+        it('@noCI panning a matching overlaying axis', function(done) {
             /*
              * y |                     | y2  y3 |
              *   |                     |        |
@@ -2300,6 +2300,7 @@ describe('Event data:', function() {
                 }
             }
         }], {
+            hovermode: 'x',
             width: 500,
             height: 500
         })
@@ -2421,6 +2422,12 @@ describe('Cartesian plots with css transforms', function() {
         }
     };
 
+    var bbox = {
+        one: { x0: 20, x1: 180, y0: 273.33, y1: 273.33 },
+        two: { x0: 220, x1: 380, y0: 146.67, y1: 146.67 },
+        three: { x0: 420, x1: 580, y0: 20, y1: 20 }
+    };
+
     [{
         transform: 'scaleX(0.5)',
         hovered: 1,
@@ -2435,12 +2442,14 @@ describe('Cartesian plots with css transforms', function() {
         selected: {numPoints: 3, selectedLabels: ['one', 'two', 'three']}
     }].forEach(function(t) {
         var transform = t.transform;
-
         it('hover behaves correctly after css transform: ' + transform, function(done) {
+            var _bboxRecordings = {};
+
             function _hoverAndAssertEventOccurred(point, label) {
                 return _hover(point)
                 .then(function() {
                     expect(eventRecordings[label]).toBe(t.hovered);
+                    expect(_bboxRecordings[label]).toEqual(bbox[label]);
                 })
                 .then(function() {
                     _unhover(point);
@@ -2453,6 +2462,7 @@ describe('Cartesian plots with css transforms', function() {
 
                 gd.on('plotly_hover', function(d) {
                     eventRecordings[d.points[0].x] = 1;
+                    _bboxRecordings[d.points[0].x] = d.points[0].bbox;
                 });
             })
             .then(function() {_hoverAndAssertEventOccurred(points[0], xLabels[0]);})

@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.0.0-rc.0
+* plotly.js (gl3d) v2.5.0
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -9,8 +9,8 @@
 
 var Lib = _dereq_('../src/lib');
 var rules = {
-    "X,X div": "direction:ltr;font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
-    "X input,X button": "font-family:'Open Sans', verdana, arial, sans-serif;",
+    "X,X div": "direction:ltr;font-family:\"Open Sans\",verdana,arial,sans-serif;margin:0;padding:0;",
+    "X input,X button": "font-family:\"Open Sans\",verdana,arial,sans-serif;",
     "X input:focus,X button:focus": "outline:none;",
     "X a": "text-decoration:none;",
     "X a:hover": "text-decoration:none;",
@@ -39,8 +39,8 @@ var rules = {
     "X .cursor-ne-resize": "cursor:ne-resize;",
     "X .cursor-grab": "cursor:-webkit-grab;cursor:grab;",
     "X .modebar": "position:absolute;top:2px;right:2px;",
-    "X .ease-bg": "-webkit-transition:background-color 0.3s ease 0s;-moz-transition:background-color 0.3s ease 0s;-ms-transition:background-color 0.3s ease 0s;-o-transition:background-color 0.3s ease 0s;transition:background-color 0.3s ease 0s;",
-    "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity 0.3s ease 0s;-moz-transition:opacity 0.3s ease 0s;-ms-transition:opacity 0.3s ease 0s;-o-transition:opacity 0.3s ease 0s;transition:opacity 0.3s ease 0s;",
+    "X .ease-bg": "-webkit-transition:background-color .3s ease 0s;-moz-transition:background-color .3s ease 0s;-ms-transition:background-color .3s ease 0s;-o-transition:background-color .3s ease 0s;transition:background-color .3s ease 0s;",
+    "X .modebar--hover>:not(.watermark)": "opacity:0;-webkit-transition:opacity .3s ease 0s;-moz-transition:opacity .3s ease 0s;-ms-transition:opacity .3s ease 0s;-o-transition:opacity .3s ease 0s;transition:opacity .3s ease 0s;",
     "X:hover .modebar--hover .modebar-group": "opacity:1;",
     "X .modebar-group": "float:left;display:inline-block;box-sizing:border-box;padding-left:8px;position:relative;vertical-align:middle;white-space:nowrap;",
     "X .modebar-btn": "position:relative;font-size:16px;padding:3px 4px;height:22px;cursor:pointer;line-height:normal;box-sizing:border-box;",
@@ -51,17 +51,17 @@ var rules = {
     "X .modebar.vertical .modebar-group .modebar-btn": "display:block;text-align:center;",
     "X [data-title]:before,X [data-title]:after": "position:absolute;-webkit-transform:translate3d(0, 0, 0);-moz-transform:translate3d(0, 0, 0);-ms-transform:translate3d(0, 0, 0);-o-transform:translate3d(0, 0, 0);transform:translate3d(0, 0, 0);display:none;opacity:0;z-index:1001;pointer-events:none;top:110%;right:50%;",
     "X [data-title]:hover:before,X [data-title]:hover:after": "display:block;opacity:1;",
-    "X [data-title]:before": "content:'';position:absolute;background:transparent;border:6px solid transparent;z-index:1002;margin-top:-12px;border-bottom-color:#69738a;margin-right:-6px;",
-    "X [data-title]:after": "content:attr(data-title);background:#69738a;color:white;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
+    "X [data-title]:before": "content:\"\";position:absolute;background:transparent;border:6px solid transparent;z-index:1002;margin-top:-12px;border-bottom-color:#69738a;margin-right:-6px;",
+    "X [data-title]:after": "content:attr(data-title);background:#69738a;color:#fff;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
     "X .vertical [data-title]:before,X .vertical [data-title]:after": "top:0%;right:200%;",
     "X .vertical [data-title]:before": "border:6px solid transparent;border-left-color:#69738a;margin-top:8px;margin-right:-30px;",
     "X .select-outline": "fill:none;stroke-width:1;shape-rendering:crispEdges;",
-    "X .select-outline-1": "stroke:white;",
-    "X .select-outline-2": "stroke:black;stroke-dasharray:2px 2px;",
-    Y: "font-family:'Open Sans', verdana, arial, sans-serif;position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;",
+    "X .select-outline-1": "stroke:#fff;",
+    "X .select-outline-2": "stroke:#000;stroke-dasharray:2px 2px;",
+    Y: "font-family:\"Open Sans\",verdana,arial,sans-serif;position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;",
     "Y p": "margin:0;",
-    "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,0.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
-    "Y .notifier-close": "color:#fff;opacity:0.8;float:right;padding:0 5px;background:none;border:none;font-size:20px;font-weight:bold;line-height:20px;",
+    "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
+    "Y .notifier-close": "color:#fff;opacity:.8;float:right;padding:0 5px;background:none;border:none;font-size:20px;font-weight:bold;line-height:20px;",
     "Y .notifier-close:hover": "color:#444;text-decoration:none;cursor:pointer;"
 };
 
@@ -72,118 +72,99 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":549}],2:[function(_dereq_,module,exports){
+},{"../src/lib":534}],2:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/aggregate');
 
-},{"../src/transforms/aggregate":722}],3:[function(_dereq_,module,exports){
+},{"../src/transforms/aggregate":709}],3:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/components/calendars');
 
-},{"../src/components/calendars":416}],4:[function(_dereq_,module,exports){
+},{"../src/components/calendars":399}],4:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/cone');
 
-},{"../src/traces/cone":658}],5:[function(_dereq_,module,exports){
+},{"../src/traces/cone":645}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/core');
 
-},{"../src/core":529}],6:[function(_dereq_,module,exports){
+},{"../src/core":515}],6:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/filter');
 
-},{"../src/transforms/filter":723}],7:[function(_dereq_,module,exports){
+},{"../src/transforms/filter":710}],7:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/groupby');
 
-},{"../src/transforms/groupby":724}],8:[function(_dereq_,module,exports){
+},{"../src/transforms/groupby":711}],8:[function(_dereq_,module,exports){
 'use strict';
 
 var Plotly = _dereq_('./core');
 
 Plotly.register([
+    // traces
     _dereq_('./scatter3d'),
     _dereq_('./surface'),
-    _dereq_('./mesh3d'),
     _dereq_('./isosurface'),
     _dereq_('./volume'),
+    _dereq_('./mesh3d'),
     _dereq_('./cone'),
-    _dereq_('./streamtube')
+    _dereq_('./streamtube'),
+
+    // transforms
+    _dereq_('./aggregate'),
+    _dereq_('./filter'),
+    _dereq_('./groupby'),
+    _dereq_('./sort'),
+
+    // components
+    _dereq_('./calendars'),
 ]);
 
-module.exports = _dereq_('./register_extra')(Plotly);
+module.exports = Plotly;
 
-},{"./cone":4,"./core":5,"./isosurface":9,"./mesh3d":10,"./register_extra":11,"./scatter3d":12,"./streamtube":14,"./surface":15,"./volume":16}],9:[function(_dereq_,module,exports){
+},{"./aggregate":2,"./calendars":3,"./cone":4,"./core":5,"./filter":6,"./groupby":7,"./isosurface":9,"./mesh3d":10,"./scatter3d":11,"./sort":12,"./streamtube":13,"./surface":14,"./volume":15}],9:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/isosurface');
 
-},{"../src/traces/isosurface":665}],10:[function(_dereq_,module,exports){
+},{"../src/traces/isosurface":652}],10:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/mesh3d');
 
-},{"../src/traces/mesh3d":670}],11:[function(_dereq_,module,exports){
-'use strict';
-
-module.exports = function registerExtra(Plotly) {
-    // transforms
-    //
-    // Please note that all *transform* methods are executed before
-    // all *calcTransform* methods - which could possibly lead to
-    // unexpected results when applying multiple transforms of different types
-    // to a given trace.
-    //
-    // For more info, see:
-    // https://github.com/plotly/plotly.js/pull/978#pullrequestreview-2403353
-    //
-    Plotly.register([
-        _dereq_('./aggregate'),
-        _dereq_('./filter'),
-        _dereq_('./groupby'),
-        _dereq_('./sort')
-    ]);
-
-    // components
-    Plotly.register([
-        _dereq_('./calendars')
-    ]);
-
-    return Plotly;
-};
-
-},{"./aggregate":2,"./calendars":3,"./filter":6,"./groupby":7,"./sort":13}],12:[function(_dereq_,module,exports){
+},{"../src/traces/mesh3d":657}],11:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/scatter3d');
 
-},{"../src/traces/scatter3d":707}],13:[function(_dereq_,module,exports){
+},{"../src/traces/scatter3d":694}],12:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/sort');
 
-},{"../src/transforms/sort":726}],14:[function(_dereq_,module,exports){
+},{"../src/transforms/sort":713}],13:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/streamtube');
 
-},{"../src/traces/streamtube":712}],15:[function(_dereq_,module,exports){
+},{"../src/traces/streamtube":699}],14:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/surface');
 
-},{"../src/traces/surface":717}],16:[function(_dereq_,module,exports){
+},{"../src/traces/surface":704}],15:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/volume');
 
-},{"../src/traces/volume":721}],17:[function(_dereq_,module,exports){
+},{"../src/traces/volume":708}],16:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createViewController
@@ -213,27 +194,60 @@ function ViewController(controllers, mode) {
 
 var proto = ViewController.prototype
 
-var COMMON_METHODS = [
-  ['flush', 1],
-  ['idle', 1],
-  ['lookAt', 4],
-  ['rotate', 4],
-  ['pan', 4],
-  ['translate', 4],
-  ['setMatrix', 2],
-  ['setDistanceLimits', 2],
-  ['setDistance', 2]
-]
-
-COMMON_METHODS.forEach(function(method) {
-  var name = method[0]
-  var argNames = []
-  for(var i=0; i<method[1]; ++i) {
-    argNames.push('a'+i)
+proto.flush = function(a0) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].flush(a0)
   }
-  var code = 'var cc=this._controllerList;for(var i=0;i<cc.length;++i){cc[i].'+method[0]+'('+argNames.join()+')}'
-  proto[name] = Function.apply(null, argNames.concat(code))
-})
+}
+proto.idle = function(a0) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].idle(a0)
+  }
+}
+proto.lookAt = function(a0, a1, a2, a3) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].lookAt(a0, a1, a2, a3)
+  }
+}
+proto.rotate = function(a0, a1, a2, a3) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].rotate(a0, a1, a2, a3)
+  }
+}
+proto.pan = function(a0, a1, a2, a3) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].pan(a0, a1, a2, a3)
+  }
+}
+proto.translate = function(a0, a1, a2, a3) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].translate(a0, a1, a2, a3)
+  }
+}
+proto.setMatrix = function(a0, a1) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].setMatrix(a0, a1)
+  }
+}
+proto.setDistanceLimits = function(a0, a1) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].setDistanceLimits(a0, a1)
+  }
+}
+proto.setDistance = function(a0, a1) {
+  var cc = this._controllerList
+  for (var i = 0; i < cc.length; ++i) {
+    cc[i].setDistance(a0, a1)
+  }
+}
 
 proto.recalcMatrix = function(t) {
   this._active.recalcMatrix(t)
@@ -264,7 +278,7 @@ proto.setMode = function(mode) {
 
   prev.recalcMatrix(lastT)
   next.setMatrix(lastT, prev.computedMatrix)
-  
+
   this._active = next
   this._mode   = mode
 
@@ -306,15 +320,15 @@ function createViewController(options) {
     matrix: matrix
   }, mode)
 }
-},{"matrix-camera-controller":289,"orbit-camera-controller":310,"turntable-camera-controller":369}],18:[function(_dereq_,module,exports){
+},{"matrix-camera-controller":278,"orbit-camera-controller":298,"turntable-camera-controller":352}],17:[function(_dereq_,module,exports){
 !function() {
   var d3 = {
-    version: "3.5.18"
+    version: "3.8.0"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
   };
-  var d3_document = this.document;
+  var d3_document = self.document;
   function d3_documentElement(node) {
     return node && (node.ownerDocument || node.document || node).documentElement;
   }
@@ -2242,7 +2256,7 @@ function createViewController(options) {
   }
   function d3_xhr(url, mimeType, response, callback) {
     var xhr = {}, dispatch = d3.dispatch("beforesend", "progress", "load", "error"), headers = {}, request = new XMLHttpRequest(), responseType = null;
-    if (this.XDomainRequest && !("withCredentials" in request) && /^(http(s)?:)?\/\//.test(url)) request = new XDomainRequest();
+    if (self.XDomainRequest && !("withCredentials" in request) && /^(http(s)?:)?\/\//.test(url)) request = new XDomainRequest();
     "onload" in request ? request.onload = request.onerror = respond : request.onreadystatechange = function() {
       request.readyState > 3 && respond();
     };
@@ -2495,2619 +2509,9 @@ function createViewController(options) {
     d3_timer_queueTail = t0;
     return time;
   }
-  function d3_format_precision(x, p) {
-    return p - (x ? Math.ceil(Math.log(x) / Math.LN10) : 1);
-  }
   d3.round = function(x, n) {
     return n ? Math.round(x * (n = Math.pow(10, n))) / n : Math.round(x);
   };
-  var d3_formatPrefixes = [ "y", "z", "a", "f", "p", "n", "µ", "m", "", "k", "M", "G", "T", "P", "E", "Z", "Y" ].map(d3_formatPrefix);
-  d3.formatPrefix = function(value, precision) {
-    var i = 0;
-    if (value = +value) {
-      if (value < 0) value *= -1;
-      if (precision) value = d3.round(value, d3_format_precision(value, precision));
-      i = 1 + Math.floor(1e-12 + Math.log(value) / Math.LN10);
-      i = Math.max(-24, Math.min(24, Math.floor((i - 1) / 3) * 3));
-    }
-    return d3_formatPrefixes[8 + i / 3];
-  };
-  function d3_formatPrefix(d, i) {
-    var k = Math.pow(10, abs(8 - i) * 3);
-    return {
-      scale: i > 8 ? function(d) {
-        return d / k;
-      } : function(d) {
-        return d * k;
-      },
-      symbol: d
-    };
-  }
-  function d3_locale_numberFormat(locale) {
-    var locale_decimal = locale.decimal, locale_thousands = locale.thousands, locale_grouping = locale.grouping, locale_currency = locale.currency, formatGroup = locale_grouping && locale_thousands ? function(value, width) {
-      var i = value.length, t = [], j = 0, g = locale_grouping[0], length = 0;
-      while (i > 0 && g > 0) {
-        if (length + g + 1 > width) g = Math.max(1, width - length);
-        t.push(value.substring(i -= g, i + g));
-        if ((length += g + 1) > width) break;
-        g = locale_grouping[j = (j + 1) % locale_grouping.length];
-      }
-      return t.reverse().join(locale_thousands);
-    } : d3_identity;
-    return function(specifier) {
-      var match = d3_format_re.exec(specifier), fill = match[1] || " ", align = match[2] || ">", sign = match[3] || "-", symbol = match[4] || "", zfill = match[5], width = +match[6], comma = match[7], precision = match[8], type = match[9], scale = 1, prefix = "", suffix = "", integer = false, exponent = true;
-      if (precision) precision = +precision.substring(1);
-      if (zfill || fill === "0" && align === "=") {
-        zfill = fill = "0";
-        align = "=";
-      }
-      switch (type) {
-       case "n":
-        comma = true;
-        type = "g";
-        break;
-
-       case "%":
-        scale = 100;
-        suffix = "%";
-        type = "f";
-        break;
-
-       case "p":
-        scale = 100;
-        suffix = "%";
-        type = "r";
-        break;
-
-       case "b":
-       case "o":
-       case "x":
-       case "X":
-        if (symbol === "#") prefix = "0" + type.toLowerCase();
-
-       case "c":
-        exponent = false;
-
-       case "d":
-        integer = true;
-        precision = 0;
-        break;
-
-       case "s":
-        scale = -1;
-        type = "r";
-        break;
-      }
-      if (symbol === "$") prefix = locale_currency[0], suffix = locale_currency[1];
-      if (type == "r" && !precision) type = "g";
-      if (precision != null) {
-        if (type == "g") precision = Math.max(1, Math.min(21, precision)); else if (type == "e" || type == "f") precision = Math.max(0, Math.min(20, precision));
-      }
-      type = d3_format_types.get(type) || d3_format_typeDefault;
-      var zcomma = zfill && comma;
-      return function(value) {
-        var fullSuffix = suffix;
-        if (integer && value % 1) return "";
-        var negative = value < 0 || value === 0 && 1 / value < 0 ? (value = -value, "-") : sign === "-" ? "" : sign;
-        if (scale < 0) {
-          var unit = d3.formatPrefix(value, precision);
-          value = unit.scale(value);
-          fullSuffix = unit.symbol + suffix;
-        } else {
-          value *= scale;
-        }
-        value = type(value, precision);
-        var i = value.lastIndexOf("."), before, after;
-        if (i < 0) {
-          var j = exponent ? value.lastIndexOf("e") : -1;
-          if (j < 0) before = value, after = ""; else before = value.substring(0, j), after = value.substring(j);
-        } else {
-          before = value.substring(0, i);
-          after = locale_decimal + value.substring(i + 1);
-        }
-        if (!zfill && comma) before = formatGroup(before, Infinity);
-        var length = prefix.length + before.length + after.length + (zcomma ? 0 : negative.length), padding = length < width ? new Array(length = width - length + 1).join(fill) : "";
-        if (zcomma) before = formatGroup(padding + before, padding.length ? width - after.length : Infinity);
-        negative += prefix;
-        value = before + after;
-        return (align === "<" ? negative + value + padding : align === ">" ? padding + negative + value : align === "^" ? padding.substring(0, length >>= 1) + negative + value + padding.substring(length) : negative + (zcomma ? value : padding + value)) + fullSuffix;
-      };
-    };
-  }
-  var d3_format_re = /(?:([^{])?([<>=^]))?([+\- ])?([$#])?(0)?(\d+)?(,)?(\.-?\d+)?([a-z%])?/i;
-  var d3_format_types = d3.map({
-    b: function(x) {
-      return x.toString(2);
-    },
-    c: function(x) {
-      return String.fromCharCode(x);
-    },
-    o: function(x) {
-      return x.toString(8);
-    },
-    x: function(x) {
-      return x.toString(16);
-    },
-    X: function(x) {
-      return x.toString(16).toUpperCase();
-    },
-    g: function(x, p) {
-      return x.toPrecision(p);
-    },
-    e: function(x, p) {
-      return x.toExponential(p);
-    },
-    f: function(x, p) {
-      return x.toFixed(p);
-    },
-    r: function(x, p) {
-      return (x = d3.round(x, d3_format_precision(x, p))).toFixed(Math.max(0, Math.min(20, d3_format_precision(x * (1 + 1e-15), p))));
-    }
-  });
-  function d3_format_typeDefault(x) {
-    return x + "";
-  }
-  var d3_time = d3.time = {}, d3_date = Date;
-  function d3_date_utc() {
-    this._ = new Date(arguments.length > 1 ? Date.UTC.apply(this, arguments) : arguments[0]);
-  }
-  d3_date_utc.prototype = {
-    getDate: function() {
-      return this._.getUTCDate();
-    },
-    getDay: function() {
-      return this._.getUTCDay();
-    },
-    getFullYear: function() {
-      return this._.getUTCFullYear();
-    },
-    getHours: function() {
-      return this._.getUTCHours();
-    },
-    getMilliseconds: function() {
-      return this._.getUTCMilliseconds();
-    },
-    getMinutes: function() {
-      return this._.getUTCMinutes();
-    },
-    getMonth: function() {
-      return this._.getUTCMonth();
-    },
-    getSeconds: function() {
-      return this._.getUTCSeconds();
-    },
-    getTime: function() {
-      return this._.getTime();
-    },
-    getTimezoneOffset: function() {
-      return 0;
-    },
-    valueOf: function() {
-      return this._.valueOf();
-    },
-    setDate: function() {
-      d3_time_prototype.setUTCDate.apply(this._, arguments);
-    },
-    setDay: function() {
-      d3_time_prototype.setUTCDay.apply(this._, arguments);
-    },
-    setFullYear: function() {
-      d3_time_prototype.setUTCFullYear.apply(this._, arguments);
-    },
-    setHours: function() {
-      d3_time_prototype.setUTCHours.apply(this._, arguments);
-    },
-    setMilliseconds: function() {
-      d3_time_prototype.setUTCMilliseconds.apply(this._, arguments);
-    },
-    setMinutes: function() {
-      d3_time_prototype.setUTCMinutes.apply(this._, arguments);
-    },
-    setMonth: function() {
-      d3_time_prototype.setUTCMonth.apply(this._, arguments);
-    },
-    setSeconds: function() {
-      d3_time_prototype.setUTCSeconds.apply(this._, arguments);
-    },
-    setTime: function() {
-      d3_time_prototype.setTime.apply(this._, arguments);
-    }
-  };
-  var d3_time_prototype = Date.prototype;
-  function d3_time_interval(local, step, number) {
-    function round(date) {
-      var d0 = local(date), d1 = offset(d0, 1);
-      return date - d0 < d1 - date ? d0 : d1;
-    }
-    function ceil(date) {
-      step(date = local(new d3_date(date - 1)), 1);
-      return date;
-    }
-    function offset(date, k) {
-      step(date = new d3_date(+date), k);
-      return date;
-    }
-    function range(t0, t1, dt) {
-      var time = ceil(t0), times = [];
-      if (dt > 1) {
-        while (time < t1) {
-          if (!(number(time) % dt)) times.push(new Date(+time));
-          step(time, 1);
-        }
-      } else {
-        while (time < t1) times.push(new Date(+time)), step(time, 1);
-      }
-      return times;
-    }
-    function range_utc(t0, t1, dt) {
-      try {
-        d3_date = d3_date_utc;
-        var utc = new d3_date_utc();
-        utc._ = t0;
-        return range(utc, t1, dt);
-      } finally {
-        d3_date = Date;
-      }
-    }
-    local.floor = local;
-    local.round = round;
-    local.ceil = ceil;
-    local.offset = offset;
-    local.range = range;
-    var utc = local.utc = d3_time_interval_utc(local);
-    utc.floor = utc;
-    utc.round = d3_time_interval_utc(round);
-    utc.ceil = d3_time_interval_utc(ceil);
-    utc.offset = d3_time_interval_utc(offset);
-    utc.range = range_utc;
-    return local;
-  }
-  function d3_time_interval_utc(method) {
-    return function(date, k) {
-      try {
-        d3_date = d3_date_utc;
-        var utc = new d3_date_utc();
-        utc._ = date;
-        return method(utc, k)._;
-      } finally {
-        d3_date = Date;
-      }
-    };
-  }
-  d3_time.year = d3_time_interval(function(date) {
-    date = d3_time.day(date);
-    date.setMonth(0, 1);
-    return date;
-  }, function(date, offset) {
-    date.setFullYear(date.getFullYear() + offset);
-  }, function(date) {
-    return date.getFullYear();
-  });
-  d3_time.years = d3_time.year.range;
-  d3_time.years.utc = d3_time.year.utc.range;
-  d3_time.day = d3_time_interval(function(date) {
-    var day = new d3_date(2e3, 0);
-    day.setFullYear(date.getFullYear(), date.getMonth(), date.getDate());
-    return day;
-  }, function(date, offset) {
-    date.setDate(date.getDate() + offset);
-  }, function(date) {
-    return date.getDate() - 1;
-  });
-  d3_time.days = d3_time.day.range;
-  d3_time.days.utc = d3_time.day.utc.range;
-  d3_time.dayOfYear = function(date) {
-    var year = d3_time.year(date);
-    return Math.floor((date - year - (date.getTimezoneOffset() - year.getTimezoneOffset()) * 6e4) / 864e5);
-  };
-  [ "sunday", "monday", "tuesday", "wednesday", "thursday", "friday", "saturday" ].forEach(function(day, i) {
-    i = 7 - i;
-    var interval = d3_time[day] = d3_time_interval(function(date) {
-      (date = d3_time.day(date)).setDate(date.getDate() - (date.getDay() + i) % 7);
-      return date;
-    }, function(date, offset) {
-      date.setDate(date.getDate() + Math.floor(offset) * 7);
-    }, function(date) {
-      var day = d3_time.year(date).getDay();
-      return Math.floor((d3_time.dayOfYear(date) + (day + i) % 7) / 7) - (day !== i);
-    });
-    d3_time[day + "s"] = interval.range;
-    d3_time[day + "s"].utc = interval.utc.range;
-    d3_time[day + "OfYear"] = function(date) {
-      var day = d3_time.year(date).getDay();
-      return Math.floor((d3_time.dayOfYear(date) + (day + i) % 7) / 7);
-    };
-  });
-  d3_time.week = d3_time.sunday;
-  d3_time.weeks = d3_time.sunday.range;
-  d3_time.weeks.utc = d3_time.sunday.utc.range;
-  d3_time.weekOfYear = d3_time.sundayOfYear;
-  function d3_locale_timeFormat(locale) {
-    var locale_dateTime = locale.dateTime, locale_date = locale.date, locale_time = locale.time, locale_periods = locale.periods, locale_days = locale.days, locale_shortDays = locale.shortDays, locale_months = locale.months, locale_shortMonths = locale.shortMonths;
-    function d3_time_format(template) {
-      var n = template.length;
-      function format(date) {
-        var string = [], i = -1, j = 0, c, p, f;
-        while (++i < n) {
-          if (template.charCodeAt(i) === 37) {
-            string.push(template.slice(j, i));
-            if ((p = d3_time_formatPads[c = template.charAt(++i)]) != null) c = template.charAt(++i);
-            if (f = d3_time_formats[c]) c = f(date, p == null ? c === "e" ? " " : "0" : p);
-            string.push(c);
-            j = i + 1;
-          }
-        }
-        string.push(template.slice(j, i));
-        return string.join("");
-      }
-      format.parse = function(string) {
-        var d = {
-          y: 1900,
-          m: 0,
-          d: 1,
-          H: 0,
-          M: 0,
-          S: 0,
-          L: 0,
-          Z: null
-        }, i = d3_time_parse(d, template, string, 0);
-        if (i != string.length) return null;
-        if ("p" in d) d.H = d.H % 12 + d.p * 12;
-        var localZ = d.Z != null && d3_date !== d3_date_utc, date = new (localZ ? d3_date_utc : d3_date)();
-        if ("j" in d) date.setFullYear(d.y, 0, d.j); else if ("W" in d || "U" in d) {
-          if (!("w" in d)) d.w = "W" in d ? 1 : 0;
-          date.setFullYear(d.y, 0, 1);
-          date.setFullYear(d.y, 0, "W" in d ? (d.w + 6) % 7 + d.W * 7 - (date.getDay() + 5) % 7 : d.w + d.U * 7 - (date.getDay() + 6) % 7);
-        } else date.setFullYear(d.y, d.m, d.d);
-        date.setHours(d.H + (d.Z / 100 | 0), d.M + d.Z % 100, d.S, d.L);
-        return localZ ? date._ : date;
-      };
-      format.toString = function() {
-        return template;
-      };
-      return format;
-    }
-    function d3_time_parse(date, template, string, j) {
-      var c, p, t, i = 0, n = template.length, m = string.length;
-      while (i < n) {
-        if (j >= m) return -1;
-        c = template.charCodeAt(i++);
-        if (c === 37) {
-          t = template.charAt(i++);
-          p = d3_time_parsers[t in d3_time_formatPads ? template.charAt(i++) : t];
-          if (!p || (j = p(date, string, j)) < 0) return -1;
-        } else if (c != string.charCodeAt(j++)) {
-          return -1;
-        }
-      }
-      return j;
-    }
-    d3_time_format.utc = function(template) {
-      var local = d3_time_format(template);
-      function format(date) {
-        try {
-          d3_date = d3_date_utc;
-          var utc = new d3_date();
-          utc._ = date;
-          return local(utc);
-        } finally {
-          d3_date = Date;
-        }
-      }
-      format.parse = function(string) {
-        try {
-          d3_date = d3_date_utc;
-          var date = local.parse(string);
-          return date && date._;
-        } finally {
-          d3_date = Date;
-        }
-      };
-      format.toString = local.toString;
-      return format;
-    };
-    d3_time_format.multi = d3_time_format.utc.multi = d3_time_formatMulti;
-    var d3_time_periodLookup = d3.map(), d3_time_dayRe = d3_time_formatRe(locale_days), d3_time_dayLookup = d3_time_formatLookup(locale_days), d3_time_dayAbbrevRe = d3_time_formatRe(locale_shortDays), d3_time_dayAbbrevLookup = d3_time_formatLookup(locale_shortDays), d3_time_monthRe = d3_time_formatRe(locale_months), d3_time_monthLookup = d3_time_formatLookup(locale_months), d3_time_monthAbbrevRe = d3_time_formatRe(locale_shortMonths), d3_time_monthAbbrevLookup = d3_time_formatLookup(locale_shortMonths);
-    locale_periods.forEach(function(p, i) {
-      d3_time_periodLookup.set(p.toLowerCase(), i);
-    });
-    var d3_time_formats = {
-      a: function(d) {
-        return locale_shortDays[d.getDay()];
-      },
-      A: function(d) {
-        return locale_days[d.getDay()];
-      },
-      b: function(d) {
-        return locale_shortMonths[d.getMonth()];
-      },
-      B: function(d) {
-        return locale_months[d.getMonth()];
-      },
-      c: d3_time_format(locale_dateTime),
-      d: function(d, p) {
-        return d3_time_formatPad(d.getDate(), p, 2);
-      },
-      e: function(d, p) {
-        return d3_time_formatPad(d.getDate(), p, 2);
-      },
-      H: function(d, p) {
-        return d3_time_formatPad(d.getHours(), p, 2);
-      },
-      I: function(d, p) {
-        return d3_time_formatPad(d.getHours() % 12 || 12, p, 2);
-      },
-      j: function(d, p) {
-        return d3_time_formatPad(1 + d3_time.dayOfYear(d), p, 3);
-      },
-      L: function(d, p) {
-        return d3_time_formatPad(d.getMilliseconds(), p, 3);
-      },
-      m: function(d, p) {
-        return d3_time_formatPad(d.getMonth() + 1, p, 2);
-      },
-      M: function(d, p) {
-        return d3_time_formatPad(d.getMinutes(), p, 2);
-      },
-      p: function(d) {
-        return locale_periods[+(d.getHours() >= 12)];
-      },
-      S: function(d, p) {
-        return d3_time_formatPad(d.getSeconds(), p, 2);
-      },
-      U: function(d, p) {
-        return d3_time_formatPad(d3_time.sundayOfYear(d), p, 2);
-      },
-      w: function(d) {
-        return d.getDay();
-      },
-      W: function(d, p) {
-        return d3_time_formatPad(d3_time.mondayOfYear(d), p, 2);
-      },
-      x: d3_time_format(locale_date),
-      X: d3_time_format(locale_time),
-      y: function(d, p) {
-        return d3_time_formatPad(d.getFullYear() % 100, p, 2);
-      },
-      Y: function(d, p) {
-        return d3_time_formatPad(d.getFullYear() % 1e4, p, 4);
-      },
-      Z: d3_time_zone,
-      "%": function() {
-        return "%";
-      }
-    };
-    var d3_time_parsers = {
-      a: d3_time_parseWeekdayAbbrev,
-      A: d3_time_parseWeekday,
-      b: d3_time_parseMonthAbbrev,
-      B: d3_time_parseMonth,
-      c: d3_time_parseLocaleFull,
-      d: d3_time_parseDay,
-      e: d3_time_parseDay,
-      H: d3_time_parseHour24,
-      I: d3_time_parseHour24,
-      j: d3_time_parseDayOfYear,
-      L: d3_time_parseMilliseconds,
-      m: d3_time_parseMonthNumber,
-      M: d3_time_parseMinutes,
-      p: d3_time_parseAmPm,
-      S: d3_time_parseSeconds,
-      U: d3_time_parseWeekNumberSunday,
-      w: d3_time_parseWeekdayNumber,
-      W: d3_time_parseWeekNumberMonday,
-      x: d3_time_parseLocaleDate,
-      X: d3_time_parseLocaleTime,
-      y: d3_time_parseYear,
-      Y: d3_time_parseFullYear,
-      Z: d3_time_parseZone,
-      "%": d3_time_parseLiteralPercent
-    };
-    function d3_time_parseWeekdayAbbrev(date, string, i) {
-      d3_time_dayAbbrevRe.lastIndex = 0;
-      var n = d3_time_dayAbbrevRe.exec(string.slice(i));
-      return n ? (date.w = d3_time_dayAbbrevLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseWeekday(date, string, i) {
-      d3_time_dayRe.lastIndex = 0;
-      var n = d3_time_dayRe.exec(string.slice(i));
-      return n ? (date.w = d3_time_dayLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseMonthAbbrev(date, string, i) {
-      d3_time_monthAbbrevRe.lastIndex = 0;
-      var n = d3_time_monthAbbrevRe.exec(string.slice(i));
-      return n ? (date.m = d3_time_monthAbbrevLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseMonth(date, string, i) {
-      d3_time_monthRe.lastIndex = 0;
-      var n = d3_time_monthRe.exec(string.slice(i));
-      return n ? (date.m = d3_time_monthLookup.get(n[0].toLowerCase()), i + n[0].length) : -1;
-    }
-    function d3_time_parseLocaleFull(date, string, i) {
-      return d3_time_parse(date, d3_time_formats.c.toString(), string, i);
-    }
-    function d3_time_parseLocaleDate(date, string, i) {
-      return d3_time_parse(date, d3_time_formats.x.toString(), string, i);
-    }
-    function d3_time_parseLocaleTime(date, string, i) {
-      return d3_time_parse(date, d3_time_formats.X.toString(), string, i);
-    }
-    function d3_time_parseAmPm(date, string, i) {
-      var n = d3_time_periodLookup.get(string.slice(i, i += 2).toLowerCase());
-      return n == null ? -1 : (date.p = n, i);
-    }
-    return d3_time_format;
-  }
-  var d3_time_formatPads = {
-    "-": "",
-    _: " ",
-    "0": "0"
-  }, d3_time_numberRe = /^\s*\d+/, d3_time_percentRe = /^%/;
-  function d3_time_formatPad(value, fill, width) {
-    var sign = value < 0 ? "-" : "", string = (sign ? -value : value) + "", length = string.length;
-    return sign + (length < width ? new Array(width - length + 1).join(fill) + string : string);
-  }
-  function d3_time_formatRe(names) {
-    return new RegExp("^(?:" + names.map(d3.requote).join("|") + ")", "i");
-  }
-  function d3_time_formatLookup(names) {
-    var map = new d3_Map(), i = -1, n = names.length;
-    while (++i < n) map.set(names[i].toLowerCase(), i);
-    return map;
-  }
-  function d3_time_parseWeekdayNumber(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 1));
-    return n ? (date.w = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseWeekNumberSunday(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i));
-    return n ? (date.U = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseWeekNumberMonday(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i));
-    return n ? (date.W = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseFullYear(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 4));
-    return n ? (date.y = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseYear(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.y = d3_time_expandYear(+n[0]), i + n[0].length) : -1;
-  }
-  function d3_time_parseZone(date, string, i) {
-    return /^[+-]\d{4}$/.test(string = string.slice(i, i + 5)) ? (date.Z = -string, 
-    i + 5) : -1;
-  }
-  function d3_time_expandYear(d) {
-    return d + (d > 68 ? 1900 : 2e3);
-  }
-  function d3_time_parseMonthNumber(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.m = n[0] - 1, i + n[0].length) : -1;
-  }
-  function d3_time_parseDay(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.d = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseDayOfYear(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 3));
-    return n ? (date.j = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseHour24(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.H = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseMinutes(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.M = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseSeconds(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 2));
-    return n ? (date.S = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_parseMilliseconds(date, string, i) {
-    d3_time_numberRe.lastIndex = 0;
-    var n = d3_time_numberRe.exec(string.slice(i, i + 3));
-    return n ? (date.L = +n[0], i + n[0].length) : -1;
-  }
-  function d3_time_zone(d) {
-    var z = d.getTimezoneOffset(), zs = z > 0 ? "-" : "+", zh = abs(z) / 60 | 0, zm = abs(z) % 60;
-    return zs + d3_time_formatPad(zh, "0", 2) + d3_time_formatPad(zm, "0", 2);
-  }
-  function d3_time_parseLiteralPercent(date, string, i) {
-    d3_time_percentRe.lastIndex = 0;
-    var n = d3_time_percentRe.exec(string.slice(i, i + 1));
-    return n ? i + n[0].length : -1;
-  }
-  function d3_time_formatMulti(formats) {
-    var n = formats.length, i = -1;
-    while (++i < n) formats[i][0] = this(formats[i][0]);
-    return function(date) {
-      var i = 0, f = formats[i];
-      while (!f[1](date)) f = formats[++i];
-      return f[0](date);
-    };
-  }
-  d3.locale = function(locale) {
-    return {
-      numberFormat: d3_locale_numberFormat(locale),
-      timeFormat: d3_locale_timeFormat(locale)
-    };
-  };
-  var d3_locale_enUS = d3.locale({
-    decimal: ".",
-    thousands: ",",
-    grouping: [ 3 ],
-    currency: [ "$", "" ],
-    dateTime: "%a %b %e %X %Y",
-    date: "%m/%d/%Y",
-    time: "%H:%M:%S",
-    periods: [ "AM", "PM" ],
-    days: [ "Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday" ],
-    shortDays: [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ],
-    months: [ "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December" ],
-    shortMonths: [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ]
-  });
-  d3.format = d3_locale_enUS.numberFormat;
-  d3.geo = {};
-  function d3_adder() {}
-  d3_adder.prototype = {
-    s: 0,
-    t: 0,
-    add: function(y) {
-      d3_adderSum(y, this.t, d3_adderTemp);
-      d3_adderSum(d3_adderTemp.s, this.s, this);
-      if (this.s) this.t += d3_adderTemp.t; else this.s = d3_adderTemp.t;
-    },
-    reset: function() {
-      this.s = this.t = 0;
-    },
-    valueOf: function() {
-      return this.s;
-    }
-  };
-  var d3_adderTemp = new d3_adder();
-  function d3_adderSum(a, b, o) {
-    var x = o.s = a + b, bv = x - a, av = x - bv;
-    o.t = a - av + (b - bv);
-  }
-  d3.geo.stream = function(object, listener) {
-    if (object && d3_geo_streamObjectType.hasOwnProperty(object.type)) {
-      d3_geo_streamObjectType[object.type](object, listener);
-    } else {
-      d3_geo_streamGeometry(object, listener);
-    }
-  };
-  function d3_geo_streamGeometry(geometry, listener) {
-    if (geometry && d3_geo_streamGeometryType.hasOwnProperty(geometry.type)) {
-      d3_geo_streamGeometryType[geometry.type](geometry, listener);
-    }
-  }
-  var d3_geo_streamObjectType = {
-    Feature: function(feature, listener) {
-      d3_geo_streamGeometry(feature.geometry, listener);
-    },
-    FeatureCollection: function(object, listener) {
-      var features = object.features, i = -1, n = features.length;
-      while (++i < n) d3_geo_streamGeometry(features[i].geometry, listener);
-    }
-  };
-  var d3_geo_streamGeometryType = {
-    Sphere: function(object, listener) {
-      listener.sphere();
-    },
-    Point: function(object, listener) {
-      object = object.coordinates;
-      listener.point(object[0], object[1], object[2]);
-    },
-    MultiPoint: function(object, listener) {
-      var coordinates = object.coordinates, i = -1, n = coordinates.length;
-      while (++i < n) object = coordinates[i], listener.point(object[0], object[1], object[2]);
-    },
-    LineString: function(object, listener) {
-      d3_geo_streamLine(object.coordinates, listener, 0);
-    },
-    MultiLineString: function(object, listener) {
-      var coordinates = object.coordinates, i = -1, n = coordinates.length;
-      while (++i < n) d3_geo_streamLine(coordinates[i], listener, 0);
-    },
-    Polygon: function(object, listener) {
-      d3_geo_streamPolygon(object.coordinates, listener);
-    },
-    MultiPolygon: function(object, listener) {
-      var coordinates = object.coordinates, i = -1, n = coordinates.length;
-      while (++i < n) d3_geo_streamPolygon(coordinates[i], listener);
-    },
-    GeometryCollection: function(object, listener) {
-      var geometries = object.geometries, i = -1, n = geometries.length;
-      while (++i < n) d3_geo_streamGeometry(geometries[i], listener);
-    }
-  };
-  function d3_geo_streamLine(coordinates, listener, closed) {
-    var i = -1, n = coordinates.length - closed, coordinate;
-    listener.lineStart();
-    while (++i < n) coordinate = coordinates[i], listener.point(coordinate[0], coordinate[1], coordinate[2]);
-    listener.lineEnd();
-  }
-  function d3_geo_streamPolygon(coordinates, listener) {
-    var i = -1, n = coordinates.length;
-    listener.polygonStart();
-    while (++i < n) d3_geo_streamLine(coordinates[i], listener, 1);
-    listener.polygonEnd();
-  }
-  d3.geo.area = function(object) {
-    d3_geo_areaSum = 0;
-    d3.geo.stream(object, d3_geo_area);
-    return d3_geo_areaSum;
-  };
-  var d3_geo_areaSum, d3_geo_areaRingSum = new d3_adder();
-  var d3_geo_area = {
-    sphere: function() {
-      d3_geo_areaSum += 4 * π;
-    },
-    point: d3_noop,
-    lineStart: d3_noop,
-    lineEnd: d3_noop,
-    polygonStart: function() {
-      d3_geo_areaRingSum.reset();
-      d3_geo_area.lineStart = d3_geo_areaRingStart;
-    },
-    polygonEnd: function() {
-      var area = 2 * d3_geo_areaRingSum;
-      d3_geo_areaSum += area < 0 ? 4 * π + area : area;
-      d3_geo_area.lineStart = d3_geo_area.lineEnd = d3_geo_area.point = d3_noop;
-    }
-  };
-  function d3_geo_areaRingStart() {
-    var λ00, φ00, λ0, cosφ0, sinφ0;
-    d3_geo_area.point = function(λ, φ) {
-      d3_geo_area.point = nextPoint;
-      λ0 = (λ00 = λ) * d3_radians, cosφ0 = Math.cos(φ = (φ00 = φ) * d3_radians / 2 + π / 4), 
-      sinφ0 = Math.sin(φ);
-    };
-    function nextPoint(λ, φ) {
-      λ *= d3_radians;
-      φ = φ * d3_radians / 2 + π / 4;
-      var dλ = λ - λ0, sdλ = dλ >= 0 ? 1 : -1, adλ = sdλ * dλ, cosφ = Math.cos(φ), sinφ = Math.sin(φ), k = sinφ0 * sinφ, u = cosφ0 * cosφ + k * Math.cos(adλ), v = k * sdλ * Math.sin(adλ);
-      d3_geo_areaRingSum.add(Math.atan2(v, u));
-      λ0 = λ, cosφ0 = cosφ, sinφ0 = sinφ;
-    }
-    d3_geo_area.lineEnd = function() {
-      nextPoint(λ00, φ00);
-    };
-  }
-  function d3_geo_cartesian(spherical) {
-    var λ = spherical[0], φ = spherical[1], cosφ = Math.cos(φ);
-    return [ cosφ * Math.cos(λ), cosφ * Math.sin(λ), Math.sin(φ) ];
-  }
-  function d3_geo_cartesianDot(a, b) {
-    return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
-  }
-  function d3_geo_cartesianCross(a, b) {
-    return [ a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0] ];
-  }
-  function d3_geo_cartesianAdd(a, b) {
-    a[0] += b[0];
-    a[1] += b[1];
-    a[2] += b[2];
-  }
-  function d3_geo_cartesianScale(vector, k) {
-    return [ vector[0] * k, vector[1] * k, vector[2] * k ];
-  }
-  function d3_geo_cartesianNormalize(d) {
-    var l = Math.sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
-    d[0] /= l;
-    d[1] /= l;
-    d[2] /= l;
-  }
-  function d3_geo_spherical(cartesian) {
-    return [ Math.atan2(cartesian[1], cartesian[0]), d3_asin(cartesian[2]) ];
-  }
-  function d3_geo_sphericalEqual(a, b) {
-    return abs(a[0] - b[0]) < ε && abs(a[1] - b[1]) < ε;
-  }
-  d3.geo.bounds = function() {
-    var λ0, φ0, λ1, φ1, λ_, λ__, φ__, p0, dλSum, ranges, range;
-    var bound = {
-      point: point,
-      lineStart: lineStart,
-      lineEnd: lineEnd,
-      polygonStart: function() {
-        bound.point = ringPoint;
-        bound.lineStart = ringStart;
-        bound.lineEnd = ringEnd;
-        dλSum = 0;
-        d3_geo_area.polygonStart();
-      },
-      polygonEnd: function() {
-        d3_geo_area.polygonEnd();
-        bound.point = point;
-        bound.lineStart = lineStart;
-        bound.lineEnd = lineEnd;
-        if (d3_geo_areaRingSum < 0) λ0 = -(λ1 = 180), φ0 = -(φ1 = 90); else if (dλSum > ε) φ1 = 90; else if (dλSum < -ε) φ0 = -90;
-        range[0] = λ0, range[1] = λ1;
-      }
-    };
-    function point(λ, φ) {
-      ranges.push(range = [ λ0 = λ, λ1 = λ ]);
-      if (φ < φ0) φ0 = φ;
-      if (φ > φ1) φ1 = φ;
-    }
-    function linePoint(λ, φ) {
-      var p = d3_geo_cartesian([ λ * d3_radians, φ * d3_radians ]);
-      if (p0) {
-        var normal = d3_geo_cartesianCross(p0, p), equatorial = [ normal[1], -normal[0], 0 ], inflection = d3_geo_cartesianCross(equatorial, normal);
-        d3_geo_cartesianNormalize(inflection);
-        inflection = d3_geo_spherical(inflection);
-        var dλ = λ - λ_, s = dλ > 0 ? 1 : -1, λi = inflection[0] * d3_degrees * s, antimeridian = abs(dλ) > 180;
-        if (antimeridian ^ (s * λ_ < λi && λi < s * λ)) {
-          var φi = inflection[1] * d3_degrees;
-          if (φi > φ1) φ1 = φi;
-        } else if (λi = (λi + 360) % 360 - 180, antimeridian ^ (s * λ_ < λi && λi < s * λ)) {
-          var φi = -inflection[1] * d3_degrees;
-          if (φi < φ0) φ0 = φi;
-        } else {
-          if (φ < φ0) φ0 = φ;
-          if (φ > φ1) φ1 = φ;
-        }
-        if (antimeridian) {
-          if (λ < λ_) {
-            if (angle(λ0, λ) > angle(λ0, λ1)) λ1 = λ;
-          } else {
-            if (angle(λ, λ1) > angle(λ0, λ1)) λ0 = λ;
-          }
-        } else {
-          if (λ1 >= λ0) {
-            if (λ < λ0) λ0 = λ;
-            if (λ > λ1) λ1 = λ;
-          } else {
-            if (λ > λ_) {
-              if (angle(λ0, λ) > angle(λ0, λ1)) λ1 = λ;
-            } else {
-              if (angle(λ, λ1) > angle(λ0, λ1)) λ0 = λ;
-            }
-          }
-        }
-      } else {
-        point(λ, φ);
-      }
-      p0 = p, λ_ = λ;
-    }
-    function lineStart() {
-      bound.point = linePoint;
-    }
-    function lineEnd() {
-      range[0] = λ0, range[1] = λ1;
-      bound.point = point;
-      p0 = null;
-    }
-    function ringPoint(λ, φ) {
-      if (p0) {
-        var dλ = λ - λ_;
-        dλSum += abs(dλ) > 180 ? dλ + (dλ > 0 ? 360 : -360) : dλ;
-      } else λ__ = λ, φ__ = φ;
-      d3_geo_area.point(λ, φ);
-      linePoint(λ, φ);
-    }
-    function ringStart() {
-      d3_geo_area.lineStart();
-    }
-    function ringEnd() {
-      ringPoint(λ__, φ__);
-      d3_geo_area.lineEnd();
-      if (abs(dλSum) > ε) λ0 = -(λ1 = 180);
-      range[0] = λ0, range[1] = λ1;
-      p0 = null;
-    }
-    function angle(λ0, λ1) {
-      return (λ1 -= λ0) < 0 ? λ1 + 360 : λ1;
-    }
-    function compareRanges(a, b) {
-      return a[0] - b[0];
-    }
-    function withinRange(x, range) {
-      return range[0] <= range[1] ? range[0] <= x && x <= range[1] : x < range[0] || range[1] < x;
-    }
-    return function(feature) {
-      φ1 = λ1 = -(λ0 = φ0 = Infinity);
-      ranges = [];
-      d3.geo.stream(feature, bound);
-      var n = ranges.length;
-      if (n) {
-        ranges.sort(compareRanges);
-        for (var i = 1, a = ranges[0], b, merged = [ a ]; i < n; ++i) {
-          b = ranges[i];
-          if (withinRange(b[0], a) || withinRange(b[1], a)) {
-            if (angle(a[0], b[1]) > angle(a[0], a[1])) a[1] = b[1];
-            if (angle(b[0], a[1]) > angle(a[0], a[1])) a[0] = b[0];
-          } else {
-            merged.push(a = b);
-          }
-        }
-        var best = -Infinity, dλ;
-        for (var n = merged.length - 1, i = 0, a = merged[n], b; i <= n; a = b, ++i) {
-          b = merged[i];
-          if ((dλ = angle(a[1], b[0])) > best) best = dλ, λ0 = b[0], λ1 = a[1];
-        }
-      }
-      ranges = range = null;
-      return λ0 === Infinity || φ0 === Infinity ? [ [ NaN, NaN ], [ NaN, NaN ] ] : [ [ λ0, φ0 ], [ λ1, φ1 ] ];
-    };
-  }();
-  d3.geo.centroid = function(object) {
-    d3_geo_centroidW0 = d3_geo_centroidW1 = d3_geo_centroidX0 = d3_geo_centroidY0 = d3_geo_centroidZ0 = d3_geo_centroidX1 = d3_geo_centroidY1 = d3_geo_centroidZ1 = d3_geo_centroidX2 = d3_geo_centroidY2 = d3_geo_centroidZ2 = 0;
-    d3.geo.stream(object, d3_geo_centroid);
-    var x = d3_geo_centroidX2, y = d3_geo_centroidY2, z = d3_geo_centroidZ2, m = x * x + y * y + z * z;
-    if (m < ε2) {
-      x = d3_geo_centroidX1, y = d3_geo_centroidY1, z = d3_geo_centroidZ1;
-      if (d3_geo_centroidW1 < ε) x = d3_geo_centroidX0, y = d3_geo_centroidY0, z = d3_geo_centroidZ0;
-      m = x * x + y * y + z * z;
-      if (m < ε2) return [ NaN, NaN ];
-    }
-    return [ Math.atan2(y, x) * d3_degrees, d3_asin(z / Math.sqrt(m)) * d3_degrees ];
-  };
-  var d3_geo_centroidW0, d3_geo_centroidW1, d3_geo_centroidX0, d3_geo_centroidY0, d3_geo_centroidZ0, d3_geo_centroidX1, d3_geo_centroidY1, d3_geo_centroidZ1, d3_geo_centroidX2, d3_geo_centroidY2, d3_geo_centroidZ2;
-  var d3_geo_centroid = {
-    sphere: d3_noop,
-    point: d3_geo_centroidPoint,
-    lineStart: d3_geo_centroidLineStart,
-    lineEnd: d3_geo_centroidLineEnd,
-    polygonStart: function() {
-      d3_geo_centroid.lineStart = d3_geo_centroidRingStart;
-    },
-    polygonEnd: function() {
-      d3_geo_centroid.lineStart = d3_geo_centroidLineStart;
-    }
-  };
-  function d3_geo_centroidPoint(λ, φ) {
-    λ *= d3_radians;
-    var cosφ = Math.cos(φ *= d3_radians);
-    d3_geo_centroidPointXYZ(cosφ * Math.cos(λ), cosφ * Math.sin(λ), Math.sin(φ));
-  }
-  function d3_geo_centroidPointXYZ(x, y, z) {
-    ++d3_geo_centroidW0;
-    d3_geo_centroidX0 += (x - d3_geo_centroidX0) / d3_geo_centroidW0;
-    d3_geo_centroidY0 += (y - d3_geo_centroidY0) / d3_geo_centroidW0;
-    d3_geo_centroidZ0 += (z - d3_geo_centroidZ0) / d3_geo_centroidW0;
-  }
-  function d3_geo_centroidLineStart() {
-    var x0, y0, z0;
-    d3_geo_centroid.point = function(λ, φ) {
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians);
-      x0 = cosφ * Math.cos(λ);
-      y0 = cosφ * Math.sin(λ);
-      z0 = Math.sin(φ);
-      d3_geo_centroid.point = nextPoint;
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    };
-    function nextPoint(λ, φ) {
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians), x = cosφ * Math.cos(λ), y = cosφ * Math.sin(λ), z = Math.sin(φ), w = Math.atan2(Math.sqrt((w = y0 * z - z0 * y) * w + (w = z0 * x - x0 * z) * w + (w = x0 * y - y0 * x) * w), x0 * x + y0 * y + z0 * z);
-      d3_geo_centroidW1 += w;
-      d3_geo_centroidX1 += w * (x0 + (x0 = x));
-      d3_geo_centroidY1 += w * (y0 + (y0 = y));
-      d3_geo_centroidZ1 += w * (z0 + (z0 = z));
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    }
-  }
-  function d3_geo_centroidLineEnd() {
-    d3_geo_centroid.point = d3_geo_centroidPoint;
-  }
-  function d3_geo_centroidRingStart() {
-    var λ00, φ00, x0, y0, z0;
-    d3_geo_centroid.point = function(λ, φ) {
-      λ00 = λ, φ00 = φ;
-      d3_geo_centroid.point = nextPoint;
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians);
-      x0 = cosφ * Math.cos(λ);
-      y0 = cosφ * Math.sin(λ);
-      z0 = Math.sin(φ);
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    };
-    d3_geo_centroid.lineEnd = function() {
-      nextPoint(λ00, φ00);
-      d3_geo_centroid.lineEnd = d3_geo_centroidLineEnd;
-      d3_geo_centroid.point = d3_geo_centroidPoint;
-    };
-    function nextPoint(λ, φ) {
-      λ *= d3_radians;
-      var cosφ = Math.cos(φ *= d3_radians), x = cosφ * Math.cos(λ), y = cosφ * Math.sin(λ), z = Math.sin(φ), cx = y0 * z - z0 * y, cy = z0 * x - x0 * z, cz = x0 * y - y0 * x, m = Math.sqrt(cx * cx + cy * cy + cz * cz), u = x0 * x + y0 * y + z0 * z, v = m && -d3_acos(u) / m, w = Math.atan2(m, u);
-      d3_geo_centroidX2 += v * cx;
-      d3_geo_centroidY2 += v * cy;
-      d3_geo_centroidZ2 += v * cz;
-      d3_geo_centroidW1 += w;
-      d3_geo_centroidX1 += w * (x0 + (x0 = x));
-      d3_geo_centroidY1 += w * (y0 + (y0 = y));
-      d3_geo_centroidZ1 += w * (z0 + (z0 = z));
-      d3_geo_centroidPointXYZ(x0, y0, z0);
-    }
-  }
-  function d3_geo_compose(a, b) {
-    function compose(x, y) {
-      return x = a(x, y), b(x[0], x[1]);
-    }
-    if (a.invert && b.invert) compose.invert = function(x, y) {
-      return x = b.invert(x, y), x && a.invert(x[0], x[1]);
-    };
-    return compose;
-  }
-  function d3_true() {
-    return true;
-  }
-  function d3_geo_clipPolygon(segments, compare, clipStartInside, interpolate, listener) {
-    var subject = [], clip = [];
-    segments.forEach(function(segment) {
-      if ((n = segment.length - 1) <= 0) return;
-      var n, p0 = segment[0], p1 = segment[n];
-      if (d3_geo_sphericalEqual(p0, p1)) {
-        listener.lineStart();
-        for (var i = 0; i < n; ++i) listener.point((p0 = segment[i])[0], p0[1]);
-        listener.lineEnd();
-        return;
-      }
-      var a = new d3_geo_clipPolygonIntersection(p0, segment, null, true), b = new d3_geo_clipPolygonIntersection(p0, null, a, false);
-      a.o = b;
-      subject.push(a);
-      clip.push(b);
-      a = new d3_geo_clipPolygonIntersection(p1, segment, null, false);
-      b = new d3_geo_clipPolygonIntersection(p1, null, a, true);
-      a.o = b;
-      subject.push(a);
-      clip.push(b);
-    });
-    clip.sort(compare);
-    d3_geo_clipPolygonLinkCircular(subject);
-    d3_geo_clipPolygonLinkCircular(clip);
-    if (!subject.length) return;
-    for (var i = 0, entry = clipStartInside, n = clip.length; i < n; ++i) {
-      clip[i].e = entry = !entry;
-    }
-    var start = subject[0], points, point;
-    while (1) {
-      var current = start, isSubject = true;
-      while (current.v) if ((current = current.n) === start) return;
-      points = current.z;
-      listener.lineStart();
-      do {
-        current.v = current.o.v = true;
-        if (current.e) {
-          if (isSubject) {
-            for (var i = 0, n = points.length; i < n; ++i) listener.point((point = points[i])[0], point[1]);
-          } else {
-            interpolate(current.x, current.n.x, 1, listener);
-          }
-          current = current.n;
-        } else {
-          if (isSubject) {
-            points = current.p.z;
-            for (var i = points.length - 1; i >= 0; --i) listener.point((point = points[i])[0], point[1]);
-          } else {
-            interpolate(current.x, current.p.x, -1, listener);
-          }
-          current = current.p;
-        }
-        current = current.o;
-        points = current.z;
-        isSubject = !isSubject;
-      } while (!current.v);
-      listener.lineEnd();
-    }
-  }
-  function d3_geo_clipPolygonLinkCircular(array) {
-    if (!(n = array.length)) return;
-    var n, i = 0, a = array[0], b;
-    while (++i < n) {
-      a.n = b = array[i];
-      b.p = a;
-      a = b;
-    }
-    a.n = b = array[0];
-    b.p = a;
-  }
-  function d3_geo_clipPolygonIntersection(point, points, other, entry) {
-    this.x = point;
-    this.z = points;
-    this.o = other;
-    this.e = entry;
-    this.v = false;
-    this.n = this.p = null;
-  }
-  function d3_geo_clip(pointVisible, clipLine, interpolate, clipStart) {
-    return function(rotate, listener) {
-      var line = clipLine(listener), rotatedClipStart = rotate.invert(clipStart[0], clipStart[1]);
-      var clip = {
-        point: point,
-        lineStart: lineStart,
-        lineEnd: lineEnd,
-        polygonStart: function() {
-          clip.point = pointRing;
-          clip.lineStart = ringStart;
-          clip.lineEnd = ringEnd;
-          segments = [];
-          polygon = [];
-        },
-        polygonEnd: function() {
-          clip.point = point;
-          clip.lineStart = lineStart;
-          clip.lineEnd = lineEnd;
-          segments = d3.merge(segments);
-          var clipStartInside = d3_geo_pointInPolygon(rotatedClipStart, polygon);
-          if (segments.length) {
-            if (!polygonStarted) listener.polygonStart(), polygonStarted = true;
-            d3_geo_clipPolygon(segments, d3_geo_clipSort, clipStartInside, interpolate, listener);
-          } else if (clipStartInside) {
-            if (!polygonStarted) listener.polygonStart(), polygonStarted = true;
-            listener.lineStart();
-            interpolate(null, null, 1, listener);
-            listener.lineEnd();
-          }
-          if (polygonStarted) listener.polygonEnd(), polygonStarted = false;
-          segments = polygon = null;
-        },
-        sphere: function() {
-          listener.polygonStart();
-          listener.lineStart();
-          interpolate(null, null, 1, listener);
-          listener.lineEnd();
-          listener.polygonEnd();
-        }
-      };
-      function point(λ, φ) {
-        var point = rotate(λ, φ);
-        if (pointVisible(λ = point[0], φ = point[1])) listener.point(λ, φ);
-      }
-      function pointLine(λ, φ) {
-        var point = rotate(λ, φ);
-        line.point(point[0], point[1]);
-      }
-      function lineStart() {
-        clip.point = pointLine;
-        line.lineStart();
-      }
-      function lineEnd() {
-        clip.point = point;
-        line.lineEnd();
-      }
-      var segments;
-      var buffer = d3_geo_clipBufferListener(), ringListener = clipLine(buffer), polygonStarted = false, polygon, ring;
-      function pointRing(λ, φ) {
-        ring.push([ λ, φ ]);
-        var point = rotate(λ, φ);
-        ringListener.point(point[0], point[1]);
-      }
-      function ringStart() {
-        ringListener.lineStart();
-        ring = [];
-      }
-      function ringEnd() {
-        pointRing(ring[0][0], ring[0][1]);
-        ringListener.lineEnd();
-        var clean = ringListener.clean(), ringSegments = buffer.buffer(), segment, n = ringSegments.length;
-        ring.pop();
-        polygon.push(ring);
-        ring = null;
-        if (!n) return;
-        if (clean & 1) {
-          segment = ringSegments[0];
-          var n = segment.length - 1, i = -1, point;
-          if (n > 0) {
-            if (!polygonStarted) listener.polygonStart(), polygonStarted = true;
-            listener.lineStart();
-            while (++i < n) listener.point((point = segment[i])[0], point[1]);
-            listener.lineEnd();
-          }
-          return;
-        }
-        if (n > 1 && clean & 2) ringSegments.push(ringSegments.pop().concat(ringSegments.shift()));
-        segments.push(ringSegments.filter(d3_geo_clipSegmentLength1));
-      }
-      return clip;
-    };
-  }
-  function d3_geo_clipSegmentLength1(segment) {
-    return segment.length > 1;
-  }
-  function d3_geo_clipBufferListener() {
-    var lines = [], line;
-    return {
-      lineStart: function() {
-        lines.push(line = []);
-      },
-      point: function(λ, φ) {
-        line.push([ λ, φ ]);
-      },
-      lineEnd: d3_noop,
-      buffer: function() {
-        var buffer = lines;
-        lines = [];
-        line = null;
-        return buffer;
-      },
-      rejoin: function() {
-        if (lines.length > 1) lines.push(lines.pop().concat(lines.shift()));
-      }
-    };
-  }
-  function d3_geo_clipSort(a, b) {
-    return ((a = a.x)[0] < 0 ? a[1] - halfπ - ε : halfπ - a[1]) - ((b = b.x)[0] < 0 ? b[1] - halfπ - ε : halfπ - b[1]);
-  }
-  var d3_geo_clipAntimeridian = d3_geo_clip(d3_true, d3_geo_clipAntimeridianLine, d3_geo_clipAntimeridianInterpolate, [ -π, -π / 2 ]);
-  function d3_geo_clipAntimeridianLine(listener) {
-    var λ0 = NaN, φ0 = NaN, sλ0 = NaN, clean;
-    return {
-      lineStart: function() {
-        listener.lineStart();
-        clean = 1;
-      },
-      point: function(λ1, φ1) {
-        var sλ1 = λ1 > 0 ? π : -π, dλ = abs(λ1 - λ0);
-        if (abs(dλ - π) < ε) {
-          listener.point(λ0, φ0 = (φ0 + φ1) / 2 > 0 ? halfπ : -halfπ);
-          listener.point(sλ0, φ0);
-          listener.lineEnd();
-          listener.lineStart();
-          listener.point(sλ1, φ0);
-          listener.point(λ1, φ0);
-          clean = 0;
-        } else if (sλ0 !== sλ1 && dλ >= π) {
-          if (abs(λ0 - sλ0) < ε) λ0 -= sλ0 * ε;
-          if (abs(λ1 - sλ1) < ε) λ1 -= sλ1 * ε;
-          φ0 = d3_geo_clipAntimeridianIntersect(λ0, φ0, λ1, φ1);
-          listener.point(sλ0, φ0);
-          listener.lineEnd();
-          listener.lineStart();
-          listener.point(sλ1, φ0);
-          clean = 0;
-        }
-        listener.point(λ0 = λ1, φ0 = φ1);
-        sλ0 = sλ1;
-      },
-      lineEnd: function() {
-        listener.lineEnd();
-        λ0 = φ0 = NaN;
-      },
-      clean: function() {
-        return 2 - clean;
-      }
-    };
-  }
-  function d3_geo_clipAntimeridianIntersect(λ0, φ0, λ1, φ1) {
-    var cosφ0, cosφ1, sinλ0_λ1 = Math.sin(λ0 - λ1);
-    return abs(sinλ0_λ1) > ε ? Math.atan((Math.sin(φ0) * (cosφ1 = Math.cos(φ1)) * Math.sin(λ1) - Math.sin(φ1) * (cosφ0 = Math.cos(φ0)) * Math.sin(λ0)) / (cosφ0 * cosφ1 * sinλ0_λ1)) : (φ0 + φ1) / 2;
-  }
-  function d3_geo_clipAntimeridianInterpolate(from, to, direction, listener) {
-    var φ;
-    if (from == null) {
-      φ = direction * halfπ;
-      listener.point(-π, φ);
-      listener.point(0, φ);
-      listener.point(π, φ);
-      listener.point(π, 0);
-      listener.point(π, -φ);
-      listener.point(0, -φ);
-      listener.point(-π, -φ);
-      listener.point(-π, 0);
-      listener.point(-π, φ);
-    } else if (abs(from[0] - to[0]) > ε) {
-      var s = from[0] < to[0] ? π : -π;
-      φ = direction * s / 2;
-      listener.point(-s, φ);
-      listener.point(0, φ);
-      listener.point(s, φ);
-    } else {
-      listener.point(to[0], to[1]);
-    }
-  }
-  function d3_geo_pointInPolygon(point, polygon) {
-    var meridian = point[0], parallel = point[1], meridianNormal = [ Math.sin(meridian), -Math.cos(meridian), 0 ], polarAngle = 0, winding = 0;
-    d3_geo_areaRingSum.reset();
-    for (var i = 0, n = polygon.length; i < n; ++i) {
-      var ring = polygon[i], m = ring.length;
-      if (!m) continue;
-      var point0 = ring[0], λ0 = point0[0], φ0 = point0[1] / 2 + π / 4, sinφ0 = Math.sin(φ0), cosφ0 = Math.cos(φ0), j = 1;
-      while (true) {
-        if (j === m) j = 0;
-        point = ring[j];
-        var λ = point[0], φ = point[1] / 2 + π / 4, sinφ = Math.sin(φ), cosφ = Math.cos(φ), dλ = λ - λ0, sdλ = dλ >= 0 ? 1 : -1, adλ = sdλ * dλ, antimeridian = adλ > π, k = sinφ0 * sinφ;
-        d3_geo_areaRingSum.add(Math.atan2(k * sdλ * Math.sin(adλ), cosφ0 * cosφ + k * Math.cos(adλ)));
-        polarAngle += antimeridian ? dλ + sdλ * τ : dλ;
-        if (antimeridian ^ λ0 >= meridian ^ λ >= meridian) {
-          var arc = d3_geo_cartesianCross(d3_geo_cartesian(point0), d3_geo_cartesian(point));
-          d3_geo_cartesianNormalize(arc);
-          var intersection = d3_geo_cartesianCross(meridianNormal, arc);
-          d3_geo_cartesianNormalize(intersection);
-          var φarc = (antimeridian ^ dλ >= 0 ? -1 : 1) * d3_asin(intersection[2]);
-          if (parallel > φarc || parallel === φarc && (arc[0] || arc[1])) {
-            winding += antimeridian ^ dλ >= 0 ? 1 : -1;
-          }
-        }
-        if (!j++) break;
-        λ0 = λ, sinφ0 = sinφ, cosφ0 = cosφ, point0 = point;
-      }
-    }
-    return (polarAngle < -ε || polarAngle < ε && d3_geo_areaRingSum < -ε) ^ winding & 1;
-  }
-  function d3_geo_clipCircle(radius) {
-    var cr = Math.cos(radius), smallRadius = cr > 0, notHemisphere = abs(cr) > ε, interpolate = d3_geo_circleInterpolate(radius, 6 * d3_radians);
-    return d3_geo_clip(visible, clipLine, interpolate, smallRadius ? [ 0, -radius ] : [ -π, radius - π ]);
-    function visible(λ, φ) {
-      return Math.cos(λ) * Math.cos(φ) > cr;
-    }
-    function clipLine(listener) {
-      var point0, c0, v0, v00, clean;
-      return {
-        lineStart: function() {
-          v00 = v0 = false;
-          clean = 1;
-        },
-        point: function(λ, φ) {
-          var point1 = [ λ, φ ], point2, v = visible(λ, φ), c = smallRadius ? v ? 0 : code(λ, φ) : v ? code(λ + (λ < 0 ? π : -π), φ) : 0;
-          if (!point0 && (v00 = v0 = v)) listener.lineStart();
-          if (v !== v0) {
-            point2 = intersect(point0, point1);
-            if (d3_geo_sphericalEqual(point0, point2) || d3_geo_sphericalEqual(point1, point2)) {
-              point1[0] += ε;
-              point1[1] += ε;
-              v = visible(point1[0], point1[1]);
-            }
-          }
-          if (v !== v0) {
-            clean = 0;
-            if (v) {
-              listener.lineStart();
-              point2 = intersect(point1, point0);
-              listener.point(point2[0], point2[1]);
-            } else {
-              point2 = intersect(point0, point1);
-              listener.point(point2[0], point2[1]);
-              listener.lineEnd();
-            }
-            point0 = point2;
-          } else if (notHemisphere && point0 && smallRadius ^ v) {
-            var t;
-            if (!(c & c0) && (t = intersect(point1, point0, true))) {
-              clean = 0;
-              if (smallRadius) {
-                listener.lineStart();
-                listener.point(t[0][0], t[0][1]);
-                listener.point(t[1][0], t[1][1]);
-                listener.lineEnd();
-              } else {
-                listener.point(t[1][0], t[1][1]);
-                listener.lineEnd();
-                listener.lineStart();
-                listener.point(t[0][0], t[0][1]);
-              }
-            }
-          }
-          if (v && (!point0 || !d3_geo_sphericalEqual(point0, point1))) {
-            listener.point(point1[0], point1[1]);
-          }
-          point0 = point1, v0 = v, c0 = c;
-        },
-        lineEnd: function() {
-          if (v0) listener.lineEnd();
-          point0 = null;
-        },
-        clean: function() {
-          return clean | (v00 && v0) << 1;
-        }
-      };
-    }
-    function intersect(a, b, two) {
-      var pa = d3_geo_cartesian(a), pb = d3_geo_cartesian(b);
-      var n1 = [ 1, 0, 0 ], n2 = d3_geo_cartesianCross(pa, pb), n2n2 = d3_geo_cartesianDot(n2, n2), n1n2 = n2[0], determinant = n2n2 - n1n2 * n1n2;
-      if (!determinant) return !two && a;
-      var c1 = cr * n2n2 / determinant, c2 = -cr * n1n2 / determinant, n1xn2 = d3_geo_cartesianCross(n1, n2), A = d3_geo_cartesianScale(n1, c1), B = d3_geo_cartesianScale(n2, c2);
-      d3_geo_cartesianAdd(A, B);
-      var u = n1xn2, w = d3_geo_cartesianDot(A, u), uu = d3_geo_cartesianDot(u, u), t2 = w * w - uu * (d3_geo_cartesianDot(A, A) - 1);
-      if (t2 < 0) return;
-      var t = Math.sqrt(t2), q = d3_geo_cartesianScale(u, (-w - t) / uu);
-      d3_geo_cartesianAdd(q, A);
-      q = d3_geo_spherical(q);
-      if (!two) return q;
-      var λ0 = a[0], λ1 = b[0], φ0 = a[1], φ1 = b[1], z;
-      if (λ1 < λ0) z = λ0, λ0 = λ1, λ1 = z;
-      var δλ = λ1 - λ0, polar = abs(δλ - π) < ε, meridian = polar || δλ < ε;
-      if (!polar && φ1 < φ0) z = φ0, φ0 = φ1, φ1 = z;
-      if (meridian ? polar ? φ0 + φ1 > 0 ^ q[1] < (abs(q[0] - λ0) < ε ? φ0 : φ1) : φ0 <= q[1] && q[1] <= φ1 : δλ > π ^ (λ0 <= q[0] && q[0] <= λ1)) {
-        var q1 = d3_geo_cartesianScale(u, (-w + t) / uu);
-        d3_geo_cartesianAdd(q1, A);
-        return [ q, d3_geo_spherical(q1) ];
-      }
-    }
-    function code(λ, φ) {
-      var r = smallRadius ? radius : π - radius, code = 0;
-      if (λ < -r) code |= 1; else if (λ > r) code |= 2;
-      if (φ < -r) code |= 4; else if (φ > r) code |= 8;
-      return code;
-    }
-  }
-  function d3_geom_clipLine(x0, y0, x1, y1) {
-    return function(line) {
-      var a = line.a, b = line.b, ax = a.x, ay = a.y, bx = b.x, by = b.y, t0 = 0, t1 = 1, dx = bx - ax, dy = by - ay, r;
-      r = x0 - ax;
-      if (!dx && r > 0) return;
-      r /= dx;
-      if (dx < 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      } else if (dx > 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      }
-      r = x1 - ax;
-      if (!dx && r < 0) return;
-      r /= dx;
-      if (dx < 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      } else if (dx > 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      }
-      r = y0 - ay;
-      if (!dy && r > 0) return;
-      r /= dy;
-      if (dy < 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      } else if (dy > 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      }
-      r = y1 - ay;
-      if (!dy && r < 0) return;
-      r /= dy;
-      if (dy < 0) {
-        if (r > t1) return;
-        if (r > t0) t0 = r;
-      } else if (dy > 0) {
-        if (r < t0) return;
-        if (r < t1) t1 = r;
-      }
-      if (t0 > 0) line.a = {
-        x: ax + t0 * dx,
-        y: ay + t0 * dy
-      };
-      if (t1 < 1) line.b = {
-        x: ax + t1 * dx,
-        y: ay + t1 * dy
-      };
-      return line;
-    };
-  }
-  var d3_geo_clipExtentMAX = 1e9;
-  d3.geo.clipExtent = function() {
-    var x0, y0, x1, y1, stream, clip, clipExtent = {
-      stream: function(output) {
-        if (stream) stream.valid = false;
-        stream = clip(output);
-        stream.valid = true;
-        return stream;
-      },
-      extent: function(_) {
-        if (!arguments.length) return [ [ x0, y0 ], [ x1, y1 ] ];
-        clip = d3_geo_clipExtent(x0 = +_[0][0], y0 = +_[0][1], x1 = +_[1][0], y1 = +_[1][1]);
-        if (stream) stream.valid = false, stream = null;
-        return clipExtent;
-      }
-    };
-    return clipExtent.extent([ [ 0, 0 ], [ 960, 500 ] ]);
-  };
-  function d3_geo_clipExtent(x0, y0, x1, y1) {
-    return function(listener) {
-      var listener_ = listener, bufferListener = d3_geo_clipBufferListener(), clipLine = d3_geom_clipLine(x0, y0, x1, y1), segments, polygon, ring;
-      var clip = {
-        point: point,
-        lineStart: lineStart,
-        lineEnd: lineEnd,
-        polygonStart: function() {
-          listener = bufferListener;
-          segments = [];
-          polygon = [];
-          clean = true;
-        },
-        polygonEnd: function() {
-          listener = listener_;
-          segments = d3.merge(segments);
-          var clipStartInside = insidePolygon([ x0, y1 ]), inside = clean && clipStartInside, visible = segments.length;
-          if (inside || visible) {
-            listener.polygonStart();
-            if (inside) {
-              listener.lineStart();
-              interpolate(null, null, 1, listener);
-              listener.lineEnd();
-            }
-            if (visible) {
-              d3_geo_clipPolygon(segments, compare, clipStartInside, interpolate, listener);
-            }
-            listener.polygonEnd();
-          }
-          segments = polygon = ring = null;
-        }
-      };
-      function insidePolygon(p) {
-        var wn = 0, n = polygon.length, y = p[1];
-        for (var i = 0; i < n; ++i) {
-          for (var j = 1, v = polygon[i], m = v.length, a = v[0], b; j < m; ++j) {
-            b = v[j];
-            if (a[1] <= y) {
-              if (b[1] > y && d3_cross2d(a, b, p) > 0) ++wn;
-            } else {
-              if (b[1] <= y && d3_cross2d(a, b, p) < 0) --wn;
-            }
-            a = b;
-          }
-        }
-        return wn !== 0;
-      }
-      function interpolate(from, to, direction, listener) {
-        var a = 0, a1 = 0;
-        if (from == null || (a = corner(from, direction)) !== (a1 = corner(to, direction)) || comparePoints(from, to) < 0 ^ direction > 0) {
-          do {
-            listener.point(a === 0 || a === 3 ? x0 : x1, a > 1 ? y1 : y0);
-          } while ((a = (a + direction + 4) % 4) !== a1);
-        } else {
-          listener.point(to[0], to[1]);
-        }
-      }
-      function pointVisible(x, y) {
-        return x0 <= x && x <= x1 && y0 <= y && y <= y1;
-      }
-      function point(x, y) {
-        if (pointVisible(x, y)) listener.point(x, y);
-      }
-      var x__, y__, v__, x_, y_, v_, first, clean;
-      function lineStart() {
-        clip.point = linePoint;
-        if (polygon) polygon.push(ring = []);
-        first = true;
-        v_ = false;
-        x_ = y_ = NaN;
-      }
-      function lineEnd() {
-        if (segments) {
-          linePoint(x__, y__);
-          if (v__ && v_) bufferListener.rejoin();
-          segments.push(bufferListener.buffer());
-        }
-        clip.point = point;
-        if (v_) listener.lineEnd();
-      }
-      function linePoint(x, y) {
-        x = Math.max(-d3_geo_clipExtentMAX, Math.min(d3_geo_clipExtentMAX, x));
-        y = Math.max(-d3_geo_clipExtentMAX, Math.min(d3_geo_clipExtentMAX, y));
-        var v = pointVisible(x, y);
-        if (polygon) ring.push([ x, y ]);
-        if (first) {
-          x__ = x, y__ = y, v__ = v;
-          first = false;
-          if (v) {
-            listener.lineStart();
-            listener.point(x, y);
-          }
-        } else {
-          if (v && v_) listener.point(x, y); else {
-            var l = {
-              a: {
-                x: x_,
-                y: y_
-              },
-              b: {
-                x: x,
-                y: y
-              }
-            };
-            if (clipLine(l)) {
-              if (!v_) {
-                listener.lineStart();
-                listener.point(l.a.x, l.a.y);
-              }
-              listener.point(l.b.x, l.b.y);
-              if (!v) listener.lineEnd();
-              clean = false;
-            } else if (v) {
-              listener.lineStart();
-              listener.point(x, y);
-              clean = false;
-            }
-          }
-        }
-        x_ = x, y_ = y, v_ = v;
-      }
-      return clip;
-    };
-    function corner(p, direction) {
-      return abs(p[0] - x0) < ε ? direction > 0 ? 0 : 3 : abs(p[0] - x1) < ε ? direction > 0 ? 2 : 1 : abs(p[1] - y0) < ε ? direction > 0 ? 1 : 0 : direction > 0 ? 3 : 2;
-    }
-    function compare(a, b) {
-      return comparePoints(a.x, b.x);
-    }
-    function comparePoints(a, b) {
-      var ca = corner(a, 1), cb = corner(b, 1);
-      return ca !== cb ? ca - cb : ca === 0 ? b[1] - a[1] : ca === 1 ? a[0] - b[0] : ca === 2 ? a[1] - b[1] : b[0] - a[0];
-    }
-  }
-  function d3_geo_conic(projectAt) {
-    var φ0 = 0, φ1 = π / 3, m = d3_geo_projectionMutator(projectAt), p = m(φ0, φ1);
-    p.parallels = function(_) {
-      if (!arguments.length) return [ φ0 / π * 180, φ1 / π * 180 ];
-      return m(φ0 = _[0] * π / 180, φ1 = _[1] * π / 180);
-    };
-    return p;
-  }
-  function d3_geo_conicEqualArea(φ0, φ1) {
-    var sinφ0 = Math.sin(φ0), n = (sinφ0 + Math.sin(φ1)) / 2, C = 1 + sinφ0 * (2 * n - sinφ0), ρ0 = Math.sqrt(C) / n;
-    function forward(λ, φ) {
-      var ρ = Math.sqrt(C - 2 * n * Math.sin(φ)) / n;
-      return [ ρ * Math.sin(λ *= n), ρ0 - ρ * Math.cos(λ) ];
-    }
-    forward.invert = function(x, y) {
-      var ρ0_y = ρ0 - y;
-      return [ Math.atan2(x, ρ0_y) / n, d3_asin((C - (x * x + ρ0_y * ρ0_y) * n * n) / (2 * n)) ];
-    };
-    return forward;
-  }
-  (d3.geo.conicEqualArea = function() {
-    return d3_geo_conic(d3_geo_conicEqualArea);
-  }).raw = d3_geo_conicEqualArea;
-  d3.geo.albers = function() {
-    return d3.geo.conicEqualArea().rotate([ 96, 0 ]).center([ -.6, 38.7 ]).parallels([ 29.5, 45.5 ]).scale(1070);
-  };
-  d3.geo.albersUsa = function() {
-    var lower48 = d3.geo.albers();
-    var alaska = d3.geo.conicEqualArea().rotate([ 154, 0 ]).center([ -2, 58.5 ]).parallels([ 55, 65 ]);
-    var hawaii = d3.geo.conicEqualArea().rotate([ 157, 0 ]).center([ -3, 19.9 ]).parallels([ 8, 18 ]);
-    var point, pointStream = {
-      point: function(x, y) {
-        point = [ x, y ];
-      }
-    }, lower48Point, alaskaPoint, hawaiiPoint;
-    function albersUsa(coordinates) {
-      var x = coordinates[0], y = coordinates[1];
-      point = null;
-      (lower48Point(x, y), point) || (alaskaPoint(x, y), point) || hawaiiPoint(x, y);
-      return point;
-    }
-    albersUsa.invert = function(coordinates) {
-      var k = lower48.scale(), t = lower48.translate(), x = (coordinates[0] - t[0]) / k, y = (coordinates[1] - t[1]) / k;
-      return (y >= .12 && y < .234 && x >= -.425 && x < -.214 ? alaska : y >= .166 && y < .234 && x >= -.214 && x < -.115 ? hawaii : lower48).invert(coordinates);
-    };
-    albersUsa.stream = function(stream) {
-      var lower48Stream = lower48.stream(stream), alaskaStream = alaska.stream(stream), hawaiiStream = hawaii.stream(stream);
-      return {
-        point: function(x, y) {
-          lower48Stream.point(x, y);
-          alaskaStream.point(x, y);
-          hawaiiStream.point(x, y);
-        },
-        sphere: function() {
-          lower48Stream.sphere();
-          alaskaStream.sphere();
-          hawaiiStream.sphere();
-        },
-        lineStart: function() {
-          lower48Stream.lineStart();
-          alaskaStream.lineStart();
-          hawaiiStream.lineStart();
-        },
-        lineEnd: function() {
-          lower48Stream.lineEnd();
-          alaskaStream.lineEnd();
-          hawaiiStream.lineEnd();
-        },
-        polygonStart: function() {
-          lower48Stream.polygonStart();
-          alaskaStream.polygonStart();
-          hawaiiStream.polygonStart();
-        },
-        polygonEnd: function() {
-          lower48Stream.polygonEnd();
-          alaskaStream.polygonEnd();
-          hawaiiStream.polygonEnd();
-        }
-      };
-    };
-    albersUsa.precision = function(_) {
-      if (!arguments.length) return lower48.precision();
-      lower48.precision(_);
-      alaska.precision(_);
-      hawaii.precision(_);
-      return albersUsa;
-    };
-    albersUsa.scale = function(_) {
-      if (!arguments.length) return lower48.scale();
-      lower48.scale(_);
-      alaska.scale(_ * .35);
-      hawaii.scale(_);
-      return albersUsa.translate(lower48.translate());
-    };
-    albersUsa.translate = function(_) {
-      if (!arguments.length) return lower48.translate();
-      var k = lower48.scale(), x = +_[0], y = +_[1];
-      lower48Point = lower48.translate(_).clipExtent([ [ x - .455 * k, y - .238 * k ], [ x + .455 * k, y + .238 * k ] ]).stream(pointStream).point;
-      alaskaPoint = alaska.translate([ x - .307 * k, y + .201 * k ]).clipExtent([ [ x - .425 * k + ε, y + .12 * k + ε ], [ x - .214 * k - ε, y + .234 * k - ε ] ]).stream(pointStream).point;
-      hawaiiPoint = hawaii.translate([ x - .205 * k, y + .212 * k ]).clipExtent([ [ x - .214 * k + ε, y + .166 * k + ε ], [ x - .115 * k - ε, y + .234 * k - ε ] ]).stream(pointStream).point;
-      return albersUsa;
-    };
-    return albersUsa.scale(1070);
-  };
-  var d3_geo_pathAreaSum, d3_geo_pathAreaPolygon, d3_geo_pathArea = {
-    point: d3_noop,
-    lineStart: d3_noop,
-    lineEnd: d3_noop,
-    polygonStart: function() {
-      d3_geo_pathAreaPolygon = 0;
-      d3_geo_pathArea.lineStart = d3_geo_pathAreaRingStart;
-    },
-    polygonEnd: function() {
-      d3_geo_pathArea.lineStart = d3_geo_pathArea.lineEnd = d3_geo_pathArea.point = d3_noop;
-      d3_geo_pathAreaSum += abs(d3_geo_pathAreaPolygon / 2);
-    }
-  };
-  function d3_geo_pathAreaRingStart() {
-    var x00, y00, x0, y0;
-    d3_geo_pathArea.point = function(x, y) {
-      d3_geo_pathArea.point = nextPoint;
-      x00 = x0 = x, y00 = y0 = y;
-    };
-    function nextPoint(x, y) {
-      d3_geo_pathAreaPolygon += y0 * x - x0 * y;
-      x0 = x, y0 = y;
-    }
-    d3_geo_pathArea.lineEnd = function() {
-      nextPoint(x00, y00);
-    };
-  }
-  var d3_geo_pathBoundsX0, d3_geo_pathBoundsY0, d3_geo_pathBoundsX1, d3_geo_pathBoundsY1;
-  var d3_geo_pathBounds = {
-    point: d3_geo_pathBoundsPoint,
-    lineStart: d3_noop,
-    lineEnd: d3_noop,
-    polygonStart: d3_noop,
-    polygonEnd: d3_noop
-  };
-  function d3_geo_pathBoundsPoint(x, y) {
-    if (x < d3_geo_pathBoundsX0) d3_geo_pathBoundsX0 = x;
-    if (x > d3_geo_pathBoundsX1) d3_geo_pathBoundsX1 = x;
-    if (y < d3_geo_pathBoundsY0) d3_geo_pathBoundsY0 = y;
-    if (y > d3_geo_pathBoundsY1) d3_geo_pathBoundsY1 = y;
-  }
-  function d3_geo_pathBuffer() {
-    var pointCircle = d3_geo_pathBufferCircle(4.5), buffer = [];
-    var stream = {
-      point: point,
-      lineStart: function() {
-        stream.point = pointLineStart;
-      },
-      lineEnd: lineEnd,
-      polygonStart: function() {
-        stream.lineEnd = lineEndPolygon;
-      },
-      polygonEnd: function() {
-        stream.lineEnd = lineEnd;
-        stream.point = point;
-      },
-      pointRadius: function(_) {
-        pointCircle = d3_geo_pathBufferCircle(_);
-        return stream;
-      },
-      result: function() {
-        if (buffer.length) {
-          var result = buffer.join("");
-          buffer = [];
-          return result;
-        }
-      }
-    };
-    function point(x, y) {
-      buffer.push("M", x, ",", y, pointCircle);
-    }
-    function pointLineStart(x, y) {
-      buffer.push("M", x, ",", y);
-      stream.point = pointLine;
-    }
-    function pointLine(x, y) {
-      buffer.push("L", x, ",", y);
-    }
-    function lineEnd() {
-      stream.point = point;
-    }
-    function lineEndPolygon() {
-      buffer.push("Z");
-    }
-    return stream;
-  }
-  function d3_geo_pathBufferCircle(radius) {
-    return "m0," + radius + "a" + radius + "," + radius + " 0 1,1 0," + -2 * radius + "a" + radius + "," + radius + " 0 1,1 0," + 2 * radius + "z";
-  }
-  var d3_geo_pathCentroid = {
-    point: d3_geo_pathCentroidPoint,
-    lineStart: d3_geo_pathCentroidLineStart,
-    lineEnd: d3_geo_pathCentroidLineEnd,
-    polygonStart: function() {
-      d3_geo_pathCentroid.lineStart = d3_geo_pathCentroidRingStart;
-    },
-    polygonEnd: function() {
-      d3_geo_pathCentroid.point = d3_geo_pathCentroidPoint;
-      d3_geo_pathCentroid.lineStart = d3_geo_pathCentroidLineStart;
-      d3_geo_pathCentroid.lineEnd = d3_geo_pathCentroidLineEnd;
-    }
-  };
-  function d3_geo_pathCentroidPoint(x, y) {
-    d3_geo_centroidX0 += x;
-    d3_geo_centroidY0 += y;
-    ++d3_geo_centroidZ0;
-  }
-  function d3_geo_pathCentroidLineStart() {
-    var x0, y0;
-    d3_geo_pathCentroid.point = function(x, y) {
-      d3_geo_pathCentroid.point = nextPoint;
-      d3_geo_pathCentroidPoint(x0 = x, y0 = y);
-    };
-    function nextPoint(x, y) {
-      var dx = x - x0, dy = y - y0, z = Math.sqrt(dx * dx + dy * dy);
-      d3_geo_centroidX1 += z * (x0 + x) / 2;
-      d3_geo_centroidY1 += z * (y0 + y) / 2;
-      d3_geo_centroidZ1 += z;
-      d3_geo_pathCentroidPoint(x0 = x, y0 = y);
-    }
-  }
-  function d3_geo_pathCentroidLineEnd() {
-    d3_geo_pathCentroid.point = d3_geo_pathCentroidPoint;
-  }
-  function d3_geo_pathCentroidRingStart() {
-    var x00, y00, x0, y0;
-    d3_geo_pathCentroid.point = function(x, y) {
-      d3_geo_pathCentroid.point = nextPoint;
-      d3_geo_pathCentroidPoint(x00 = x0 = x, y00 = y0 = y);
-    };
-    function nextPoint(x, y) {
-      var dx = x - x0, dy = y - y0, z = Math.sqrt(dx * dx + dy * dy);
-      d3_geo_centroidX1 += z * (x0 + x) / 2;
-      d3_geo_centroidY1 += z * (y0 + y) / 2;
-      d3_geo_centroidZ1 += z;
-      z = y0 * x - x0 * y;
-      d3_geo_centroidX2 += z * (x0 + x);
-      d3_geo_centroidY2 += z * (y0 + y);
-      d3_geo_centroidZ2 += z * 3;
-      d3_geo_pathCentroidPoint(x0 = x, y0 = y);
-    }
-    d3_geo_pathCentroid.lineEnd = function() {
-      nextPoint(x00, y00);
-    };
-  }
-  function d3_geo_pathContext(context) {
-    var pointRadius = 4.5;
-    var stream = {
-      point: point,
-      lineStart: function() {
-        stream.point = pointLineStart;
-      },
-      lineEnd: lineEnd,
-      polygonStart: function() {
-        stream.lineEnd = lineEndPolygon;
-      },
-      polygonEnd: function() {
-        stream.lineEnd = lineEnd;
-        stream.point = point;
-      },
-      pointRadius: function(_) {
-        pointRadius = _;
-        return stream;
-      },
-      result: d3_noop
-    };
-    function point(x, y) {
-      context.moveTo(x + pointRadius, y);
-      context.arc(x, y, pointRadius, 0, τ);
-    }
-    function pointLineStart(x, y) {
-      context.moveTo(x, y);
-      stream.point = pointLine;
-    }
-    function pointLine(x, y) {
-      context.lineTo(x, y);
-    }
-    function lineEnd() {
-      stream.point = point;
-    }
-    function lineEndPolygon() {
-      context.closePath();
-    }
-    return stream;
-  }
-  function d3_geo_resample(project) {
-    var δ2 = .5, cosMinDistance = Math.cos(30 * d3_radians), maxDepth = 16;
-    function resample(stream) {
-      return (maxDepth ? resampleRecursive : resampleNone)(stream);
-    }
-    function resampleNone(stream) {
-      return d3_geo_transformPoint(stream, function(x, y) {
-        x = project(x, y);
-        stream.point(x[0], x[1]);
-      });
-    }
-    function resampleRecursive(stream) {
-      var λ00, φ00, x00, y00, a00, b00, c00, λ0, x0, y0, a0, b0, c0;
-      var resample = {
-        point: point,
-        lineStart: lineStart,
-        lineEnd: lineEnd,
-        polygonStart: function() {
-          stream.polygonStart();
-          resample.lineStart = ringStart;
-        },
-        polygonEnd: function() {
-          stream.polygonEnd();
-          resample.lineStart = lineStart;
-        }
-      };
-      function point(x, y) {
-        x = project(x, y);
-        stream.point(x[0], x[1]);
-      }
-      function lineStart() {
-        x0 = NaN;
-        resample.point = linePoint;
-        stream.lineStart();
-      }
-      function linePoint(λ, φ) {
-        var c = d3_geo_cartesian([ λ, φ ]), p = project(λ, φ);
-        resampleLineTo(x0, y0, λ0, a0, b0, c0, x0 = p[0], y0 = p[1], λ0 = λ, a0 = c[0], b0 = c[1], c0 = c[2], maxDepth, stream);
-        stream.point(x0, y0);
-      }
-      function lineEnd() {
-        resample.point = point;
-        stream.lineEnd();
-      }
-      function ringStart() {
-        lineStart();
-        resample.point = ringPoint;
-        resample.lineEnd = ringEnd;
-      }
-      function ringPoint(λ, φ) {
-        linePoint(λ00 = λ, φ00 = φ), x00 = x0, y00 = y0, a00 = a0, b00 = b0, c00 = c0;
-        resample.point = linePoint;
-      }
-      function ringEnd() {
-        resampleLineTo(x0, y0, λ0, a0, b0, c0, x00, y00, λ00, a00, b00, c00, maxDepth, stream);
-        resample.lineEnd = lineEnd;
-        lineEnd();
-      }
-      return resample;
-    }
-    function resampleLineTo(x0, y0, λ0, a0, b0, c0, x1, y1, λ1, a1, b1, c1, depth, stream) {
-      var dx = x1 - x0, dy = y1 - y0, d2 = dx * dx + dy * dy;
-      if (d2 > 4 * δ2 && depth--) {
-        var a = a0 + a1, b = b0 + b1, c = c0 + c1, m = Math.sqrt(a * a + b * b + c * c), φ2 = Math.asin(c /= m), λ2 = abs(abs(c) - 1) < ε || abs(λ0 - λ1) < ε ? (λ0 + λ1) / 2 : Math.atan2(b, a), p = project(λ2, φ2), x2 = p[0], y2 = p[1], dx2 = x2 - x0, dy2 = y2 - y0, dz = dy * dx2 - dx * dy2;
-        if (dz * dz / d2 > δ2 || abs((dx * dx2 + dy * dy2) / d2 - .5) > .3 || a0 * a1 + b0 * b1 + c0 * c1 < cosMinDistance) {
-          resampleLineTo(x0, y0, λ0, a0, b0, c0, x2, y2, λ2, a /= m, b /= m, c, depth, stream);
-          stream.point(x2, y2);
-          resampleLineTo(x2, y2, λ2, a, b, c, x1, y1, λ1, a1, b1, c1, depth, stream);
-        }
-      }
-    }
-    resample.precision = function(_) {
-      if (!arguments.length) return Math.sqrt(δ2);
-      maxDepth = (δ2 = _ * _) > 0 && 16;
-      return resample;
-    };
-    return resample;
-  }
-  d3.geo.path = function() {
-    var pointRadius = 4.5, projection, context, projectStream, contextStream, cacheStream;
-    function path(object) {
-      if (object) {
-        if (typeof pointRadius === "function") contextStream.pointRadius(+pointRadius.apply(this, arguments));
-        if (!cacheStream || !cacheStream.valid) cacheStream = projectStream(contextStream);
-        d3.geo.stream(object, cacheStream);
-      }
-      return contextStream.result();
-    }
-    path.area = function(object) {
-      d3_geo_pathAreaSum = 0;
-      d3.geo.stream(object, projectStream(d3_geo_pathArea));
-      return d3_geo_pathAreaSum;
-    };
-    path.centroid = function(object) {
-      d3_geo_centroidX0 = d3_geo_centroidY0 = d3_geo_centroidZ0 = d3_geo_centroidX1 = d3_geo_centroidY1 = d3_geo_centroidZ1 = d3_geo_centroidX2 = d3_geo_centroidY2 = d3_geo_centroidZ2 = 0;
-      d3.geo.stream(object, projectStream(d3_geo_pathCentroid));
-      return d3_geo_centroidZ2 ? [ d3_geo_centroidX2 / d3_geo_centroidZ2, d3_geo_centroidY2 / d3_geo_centroidZ2 ] : d3_geo_centroidZ1 ? [ d3_geo_centroidX1 / d3_geo_centroidZ1, d3_geo_centroidY1 / d3_geo_centroidZ1 ] : d3_geo_centroidZ0 ? [ d3_geo_centroidX0 / d3_geo_centroidZ0, d3_geo_centroidY0 / d3_geo_centroidZ0 ] : [ NaN, NaN ];
-    };
-    path.bounds = function(object) {
-      d3_geo_pathBoundsX1 = d3_geo_pathBoundsY1 = -(d3_geo_pathBoundsX0 = d3_geo_pathBoundsY0 = Infinity);
-      d3.geo.stream(object, projectStream(d3_geo_pathBounds));
-      return [ [ d3_geo_pathBoundsX0, d3_geo_pathBoundsY0 ], [ d3_geo_pathBoundsX1, d3_geo_pathBoundsY1 ] ];
-    };
-    path.projection = function(_) {
-      if (!arguments.length) return projection;
-      projectStream = (projection = _) ? _.stream || d3_geo_pathProjectStream(_) : d3_identity;
-      return reset();
-    };
-    path.context = function(_) {
-      if (!arguments.length) return context;
-      contextStream = (context = _) == null ? new d3_geo_pathBuffer() : new d3_geo_pathContext(_);
-      if (typeof pointRadius !== "function") contextStream.pointRadius(pointRadius);
-      return reset();
-    };
-    path.pointRadius = function(_) {
-      if (!arguments.length) return pointRadius;
-      pointRadius = typeof _ === "function" ? _ : (contextStream.pointRadius(+_), +_);
-      return path;
-    };
-    function reset() {
-      cacheStream = null;
-      return path;
-    }
-    return path.projection(d3.geo.albersUsa()).context(null);
-  };
-  function d3_geo_pathProjectStream(project) {
-    var resample = d3_geo_resample(function(x, y) {
-      return project([ x * d3_degrees, y * d3_degrees ]);
-    });
-    return function(stream) {
-      return d3_geo_projectionRadians(resample(stream));
-    };
-  }
-  d3.geo.transform = function(methods) {
-    return {
-      stream: function(stream) {
-        var transform = new d3_geo_transform(stream);
-        for (var k in methods) transform[k] = methods[k];
-        return transform;
-      }
-    };
-  };
-  function d3_geo_transform(stream) {
-    this.stream = stream;
-  }
-  d3_geo_transform.prototype = {
-    point: function(x, y) {
-      this.stream.point(x, y);
-    },
-    sphere: function() {
-      this.stream.sphere();
-    },
-    lineStart: function() {
-      this.stream.lineStart();
-    },
-    lineEnd: function() {
-      this.stream.lineEnd();
-    },
-    polygonStart: function() {
-      this.stream.polygonStart();
-    },
-    polygonEnd: function() {
-      this.stream.polygonEnd();
-    }
-  };
-  function d3_geo_transformPoint(stream, point) {
-    return {
-      point: point,
-      sphere: function() {
-        stream.sphere();
-      },
-      lineStart: function() {
-        stream.lineStart();
-      },
-      lineEnd: function() {
-        stream.lineEnd();
-      },
-      polygonStart: function() {
-        stream.polygonStart();
-      },
-      polygonEnd: function() {
-        stream.polygonEnd();
-      }
-    };
-  }
-  d3.geo.projection = d3_geo_projection;
-  d3.geo.projectionMutator = d3_geo_projectionMutator;
-  function d3_geo_projection(project) {
-    return d3_geo_projectionMutator(function() {
-      return project;
-    })();
-  }
-  function d3_geo_projectionMutator(projectAt) {
-    var project, rotate, projectRotate, projectResample = d3_geo_resample(function(x, y) {
-      x = project(x, y);
-      return [ x[0] * k + δx, δy - x[1] * k ];
-    }), k = 150, x = 480, y = 250, λ = 0, φ = 0, δλ = 0, δφ = 0, δγ = 0, δx, δy, preclip = d3_geo_clipAntimeridian, postclip = d3_identity, clipAngle = null, clipExtent = null, stream;
-    function projection(point) {
-      point = projectRotate(point[0] * d3_radians, point[1] * d3_radians);
-      return [ point[0] * k + δx, δy - point[1] * k ];
-    }
-    function invert(point) {
-      point = projectRotate.invert((point[0] - δx) / k, (δy - point[1]) / k);
-      return point && [ point[0] * d3_degrees, point[1] * d3_degrees ];
-    }
-    projection.stream = function(output) {
-      if (stream) stream.valid = false;
-      stream = d3_geo_projectionRadians(preclip(rotate, projectResample(postclip(output))));
-      stream.valid = true;
-      return stream;
-    };
-    projection.clipAngle = function(_) {
-      if (!arguments.length) return clipAngle;
-      preclip = _ == null ? (clipAngle = _, d3_geo_clipAntimeridian) : d3_geo_clipCircle((clipAngle = +_) * d3_radians);
-      return invalidate();
-    };
-    projection.clipExtent = function(_) {
-      if (!arguments.length) return clipExtent;
-      clipExtent = _;
-      postclip = _ ? d3_geo_clipExtent(_[0][0], _[0][1], _[1][0], _[1][1]) : d3_identity;
-      return invalidate();
-    };
-    projection.scale = function(_) {
-      if (!arguments.length) return k;
-      k = +_;
-      return reset();
-    };
-    projection.translate = function(_) {
-      if (!arguments.length) return [ x, y ];
-      x = +_[0];
-      y = +_[1];
-      return reset();
-    };
-    projection.center = function(_) {
-      if (!arguments.length) return [ λ * d3_degrees, φ * d3_degrees ];
-      λ = _[0] % 360 * d3_radians;
-      φ = _[1] % 360 * d3_radians;
-      return reset();
-    };
-    projection.rotate = function(_) {
-      if (!arguments.length) return [ δλ * d3_degrees, δφ * d3_degrees, δγ * d3_degrees ];
-      δλ = _[0] % 360 * d3_radians;
-      δφ = _[1] % 360 * d3_radians;
-      δγ = _.length > 2 ? _[2] % 360 * d3_radians : 0;
-      return reset();
-    };
-    d3.rebind(projection, projectResample, "precision");
-    function reset() {
-      projectRotate = d3_geo_compose(rotate = d3_geo_rotation(δλ, δφ, δγ), project);
-      var center = project(λ, φ);
-      δx = x - center[0] * k;
-      δy = y + center[1] * k;
-      return invalidate();
-    }
-    function invalidate() {
-      if (stream) stream.valid = false, stream = null;
-      return projection;
-    }
-    return function() {
-      project = projectAt.apply(this, arguments);
-      projection.invert = project.invert && invert;
-      return reset();
-    };
-  }
-  function d3_geo_projectionRadians(stream) {
-    return d3_geo_transformPoint(stream, function(x, y) {
-      stream.point(x * d3_radians, y * d3_radians);
-    });
-  }
-  function d3_geo_equirectangular(λ, φ) {
-    return [ λ, φ ];
-  }
-  (d3.geo.equirectangular = function() {
-    return d3_geo_projection(d3_geo_equirectangular);
-  }).raw = d3_geo_equirectangular.invert = d3_geo_equirectangular;
-  d3.geo.rotation = function(rotate) {
-    rotate = d3_geo_rotation(rotate[0] % 360 * d3_radians, rotate[1] * d3_radians, rotate.length > 2 ? rotate[2] * d3_radians : 0);
-    function forward(coordinates) {
-      coordinates = rotate(coordinates[0] * d3_radians, coordinates[1] * d3_radians);
-      return coordinates[0] *= d3_degrees, coordinates[1] *= d3_degrees, coordinates;
-    }
-    forward.invert = function(coordinates) {
-      coordinates = rotate.invert(coordinates[0] * d3_radians, coordinates[1] * d3_radians);
-      return coordinates[0] *= d3_degrees, coordinates[1] *= d3_degrees, coordinates;
-    };
-    return forward;
-  };
-  function d3_geo_identityRotation(λ, φ) {
-    return [ λ > π ? λ - τ : λ < -π ? λ + τ : λ, φ ];
-  }
-  d3_geo_identityRotation.invert = d3_geo_equirectangular;
-  function d3_geo_rotation(δλ, δφ, δγ) {
-    return δλ ? δφ || δγ ? d3_geo_compose(d3_geo_rotationλ(δλ), d3_geo_rotationφγ(δφ, δγ)) : d3_geo_rotationλ(δλ) : δφ || δγ ? d3_geo_rotationφγ(δφ, δγ) : d3_geo_identityRotation;
-  }
-  function d3_geo_forwardRotationλ(δλ) {
-    return function(λ, φ) {
-      return λ += δλ, [ λ > π ? λ - τ : λ < -π ? λ + τ : λ, φ ];
-    };
-  }
-  function d3_geo_rotationλ(δλ) {
-    var rotation = d3_geo_forwardRotationλ(δλ);
-    rotation.invert = d3_geo_forwardRotationλ(-δλ);
-    return rotation;
-  }
-  function d3_geo_rotationφγ(δφ, δγ) {
-    var cosδφ = Math.cos(δφ), sinδφ = Math.sin(δφ), cosδγ = Math.cos(δγ), sinδγ = Math.sin(δγ);
-    function rotation(λ, φ) {
-      var cosφ = Math.cos(φ), x = Math.cos(λ) * cosφ, y = Math.sin(λ) * cosφ, z = Math.sin(φ), k = z * cosδφ + x * sinδφ;
-      return [ Math.atan2(y * cosδγ - k * sinδγ, x * cosδφ - z * sinδφ), d3_asin(k * cosδγ + y * sinδγ) ];
-    }
-    rotation.invert = function(λ, φ) {
-      var cosφ = Math.cos(φ), x = Math.cos(λ) * cosφ, y = Math.sin(λ) * cosφ, z = Math.sin(φ), k = z * cosδγ - y * sinδγ;
-      return [ Math.atan2(y * cosδγ + z * sinδγ, x * cosδφ + k * sinδφ), d3_asin(k * cosδφ - x * sinδφ) ];
-    };
-    return rotation;
-  }
-  d3.geo.circle = function() {
-    var origin = [ 0, 0 ], angle, precision = 6, interpolate;
-    function circle() {
-      var center = typeof origin === "function" ? origin.apply(this, arguments) : origin, rotate = d3_geo_rotation(-center[0] * d3_radians, -center[1] * d3_radians, 0).invert, ring = [];
-      interpolate(null, null, 1, {
-        point: function(x, y) {
-          ring.push(x = rotate(x, y));
-          x[0] *= d3_degrees, x[1] *= d3_degrees;
-        }
-      });
-      return {
-        type: "Polygon",
-        coordinates: [ ring ]
-      };
-    }
-    circle.origin = function(x) {
-      if (!arguments.length) return origin;
-      origin = x;
-      return circle;
-    };
-    circle.angle = function(x) {
-      if (!arguments.length) return angle;
-      interpolate = d3_geo_circleInterpolate((angle = +x) * d3_radians, precision * d3_radians);
-      return circle;
-    };
-    circle.precision = function(_) {
-      if (!arguments.length) return precision;
-      interpolate = d3_geo_circleInterpolate(angle * d3_radians, (precision = +_) * d3_radians);
-      return circle;
-    };
-    return circle.angle(90);
-  };
-  function d3_geo_circleInterpolate(radius, precision) {
-    var cr = Math.cos(radius), sr = Math.sin(radius);
-    return function(from, to, direction, listener) {
-      var step = direction * precision;
-      if (from != null) {
-        from = d3_geo_circleAngle(cr, from);
-        to = d3_geo_circleAngle(cr, to);
-        if (direction > 0 ? from < to : from > to) from += direction * τ;
-      } else {
-        from = radius + direction * τ;
-        to = radius - .5 * step;
-      }
-      for (var point, t = from; direction > 0 ? t > to : t < to; t -= step) {
-        listener.point((point = d3_geo_spherical([ cr, -sr * Math.cos(t), -sr * Math.sin(t) ]))[0], point[1]);
-      }
-    };
-  }
-  function d3_geo_circleAngle(cr, point) {
-    var a = d3_geo_cartesian(point);
-    a[0] -= cr;
-    d3_geo_cartesianNormalize(a);
-    var angle = d3_acos(-a[1]);
-    return ((-a[2] < 0 ? -angle : angle) + 2 * Math.PI - ε) % (2 * Math.PI);
-  }
-  d3.geo.distance = function(a, b) {
-    var Δλ = (b[0] - a[0]) * d3_radians, φ0 = a[1] * d3_radians, φ1 = b[1] * d3_radians, sinΔλ = Math.sin(Δλ), cosΔλ = Math.cos(Δλ), sinφ0 = Math.sin(φ0), cosφ0 = Math.cos(φ0), sinφ1 = Math.sin(φ1), cosφ1 = Math.cos(φ1), t;
-    return Math.atan2(Math.sqrt((t = cosφ1 * sinΔλ) * t + (t = cosφ0 * sinφ1 - sinφ0 * cosφ1 * cosΔλ) * t), sinφ0 * sinφ1 + cosφ0 * cosφ1 * cosΔλ);
-  };
-  d3.geo.graticule = function() {
-    var x1, x0, X1, X0, y1, y0, Y1, Y0, dx = 10, dy = dx, DX = 90, DY = 360, x, y, X, Y, precision = 2.5;
-    function graticule() {
-      return {
-        type: "MultiLineString",
-        coordinates: lines()
-      };
-    }
-    function lines() {
-      return d3.range(Math.ceil(X0 / DX) * DX, X1, DX).map(X).concat(d3.range(Math.ceil(Y0 / DY) * DY, Y1, DY).map(Y)).concat(d3.range(Math.ceil(x0 / dx) * dx, x1, dx).filter(function(x) {
-        return abs(x % DX) > ε;
-      }).map(x)).concat(d3.range(Math.ceil(y0 / dy) * dy, y1, dy).filter(function(y) {
-        return abs(y % DY) > ε;
-      }).map(y));
-    }
-    graticule.lines = function() {
-      return lines().map(function(coordinates) {
-        return {
-          type: "LineString",
-          coordinates: coordinates
-        };
-      });
-    };
-    graticule.outline = function() {
-      return {
-        type: "Polygon",
-        coordinates: [ X(X0).concat(Y(Y1).slice(1), X(X1).reverse().slice(1), Y(Y0).reverse().slice(1)) ]
-      };
-    };
-    graticule.extent = function(_) {
-      if (!arguments.length) return graticule.minorExtent();
-      return graticule.majorExtent(_).minorExtent(_);
-    };
-    graticule.majorExtent = function(_) {
-      if (!arguments.length) return [ [ X0, Y0 ], [ X1, Y1 ] ];
-      X0 = +_[0][0], X1 = +_[1][0];
-      Y0 = +_[0][1], Y1 = +_[1][1];
-      if (X0 > X1) _ = X0, X0 = X1, X1 = _;
-      if (Y0 > Y1) _ = Y0, Y0 = Y1, Y1 = _;
-      return graticule.precision(precision);
-    };
-    graticule.minorExtent = function(_) {
-      if (!arguments.length) return [ [ x0, y0 ], [ x1, y1 ] ];
-      x0 = +_[0][0], x1 = +_[1][0];
-      y0 = +_[0][1], y1 = +_[1][1];
-      if (x0 > x1) _ = x0, x0 = x1, x1 = _;
-      if (y0 > y1) _ = y0, y0 = y1, y1 = _;
-      return graticule.precision(precision);
-    };
-    graticule.step = function(_) {
-      if (!arguments.length) return graticule.minorStep();
-      return graticule.majorStep(_).minorStep(_);
-    };
-    graticule.majorStep = function(_) {
-      if (!arguments.length) return [ DX, DY ];
-      DX = +_[0], DY = +_[1];
-      return graticule;
-    };
-    graticule.minorStep = function(_) {
-      if (!arguments.length) return [ dx, dy ];
-      dx = +_[0], dy = +_[1];
-      return graticule;
-    };
-    graticule.precision = function(_) {
-      if (!arguments.length) return precision;
-      precision = +_;
-      x = d3_geo_graticuleX(y0, y1, 90);
-      y = d3_geo_graticuleY(x0, x1, precision);
-      X = d3_geo_graticuleX(Y0, Y1, 90);
-      Y = d3_geo_graticuleY(X0, X1, precision);
-      return graticule;
-    };
-    return graticule.majorExtent([ [ -180, -90 + ε ], [ 180, 90 - ε ] ]).minorExtent([ [ -180, -80 - ε ], [ 180, 80 + ε ] ]);
-  };
-  function d3_geo_graticuleX(y0, y1, dy) {
-    var y = d3.range(y0, y1 - ε, dy).concat(y1);
-    return function(x) {
-      return y.map(function(y) {
-        return [ x, y ];
-      });
-    };
-  }
-  function d3_geo_graticuleY(x0, x1, dx) {
-    var x = d3.range(x0, x1 - ε, dx).concat(x1);
-    return function(y) {
-      return x.map(function(x) {
-        return [ x, y ];
-      });
-    };
-  }
-  function d3_source(d) {
-    return d.source;
-  }
-  function d3_target(d) {
-    return d.target;
-  }
-  d3.geo.greatArc = function() {
-    var source = d3_source, source_, target = d3_target, target_;
-    function greatArc() {
-      return {
-        type: "LineString",
-        coordinates: [ source_ || source.apply(this, arguments), target_ || target.apply(this, arguments) ]
-      };
-    }
-    greatArc.distance = function() {
-      return d3.geo.distance(source_ || source.apply(this, arguments), target_ || target.apply(this, arguments));
-    };
-    greatArc.source = function(_) {
-      if (!arguments.length) return source;
-      source = _, source_ = typeof _ === "function" ? null : _;
-      return greatArc;
-    };
-    greatArc.target = function(_) {
-      if (!arguments.length) return target;
-      target = _, target_ = typeof _ === "function" ? null : _;
-      return greatArc;
-    };
-    greatArc.precision = function() {
-      return arguments.length ? greatArc : 0;
-    };
-    return greatArc;
-  };
-  d3.geo.interpolate = function(source, target) {
-    return d3_geo_interpolate(source[0] * d3_radians, source[1] * d3_radians, target[0] * d3_radians, target[1] * d3_radians);
-  };
-  function d3_geo_interpolate(x0, y0, x1, y1) {
-    var cy0 = Math.cos(y0), sy0 = Math.sin(y0), cy1 = Math.cos(y1), sy1 = Math.sin(y1), kx0 = cy0 * Math.cos(x0), ky0 = cy0 * Math.sin(x0), kx1 = cy1 * Math.cos(x1), ky1 = cy1 * Math.sin(x1), d = 2 * Math.asin(Math.sqrt(d3_haversin(y1 - y0) + cy0 * cy1 * d3_haversin(x1 - x0))), k = 1 / Math.sin(d);
-    var interpolate = d ? function(t) {
-      var B = Math.sin(t *= d) * k, A = Math.sin(d - t) * k, x = A * kx0 + B * kx1, y = A * ky0 + B * ky1, z = A * sy0 + B * sy1;
-      return [ Math.atan2(y, x) * d3_degrees, Math.atan2(z, Math.sqrt(x * x + y * y)) * d3_degrees ];
-    } : function() {
-      return [ x0 * d3_degrees, y0 * d3_degrees ];
-    };
-    interpolate.distance = d;
-    return interpolate;
-  }
-  d3.geo.length = function(object) {
-    d3_geo_lengthSum = 0;
-    d3.geo.stream(object, d3_geo_length);
-    return d3_geo_lengthSum;
-  };
-  var d3_geo_lengthSum;
-  var d3_geo_length = {
-    sphere: d3_noop,
-    point: d3_noop,
-    lineStart: d3_geo_lengthLineStart,
-    lineEnd: d3_noop,
-    polygonStart: d3_noop,
-    polygonEnd: d3_noop
-  };
-  function d3_geo_lengthLineStart() {
-    var λ0, sinφ0, cosφ0;
-    d3_geo_length.point = function(λ, φ) {
-      λ0 = λ * d3_radians, sinφ0 = Math.sin(φ *= d3_radians), cosφ0 = Math.cos(φ);
-      d3_geo_length.point = nextPoint;
-    };
-    d3_geo_length.lineEnd = function() {
-      d3_geo_length.point = d3_geo_length.lineEnd = d3_noop;
-    };
-    function nextPoint(λ, φ) {
-      var sinφ = Math.sin(φ *= d3_radians), cosφ = Math.cos(φ), t = abs((λ *= d3_radians) - λ0), cosΔλ = Math.cos(t);
-      d3_geo_lengthSum += Math.atan2(Math.sqrt((t = cosφ * Math.sin(t)) * t + (t = cosφ0 * sinφ - sinφ0 * cosφ * cosΔλ) * t), sinφ0 * sinφ + cosφ0 * cosφ * cosΔλ);
-      λ0 = λ, sinφ0 = sinφ, cosφ0 = cosφ;
-    }
-  }
-  function d3_geo_azimuthal(scale, angle) {
-    function azimuthal(λ, φ) {
-      var cosλ = Math.cos(λ), cosφ = Math.cos(φ), k = scale(cosλ * cosφ);
-      return [ k * cosφ * Math.sin(λ), k * Math.sin(φ) ];
-    }
-    azimuthal.invert = function(x, y) {
-      var ρ = Math.sqrt(x * x + y * y), c = angle(ρ), sinc = Math.sin(c), cosc = Math.cos(c);
-      return [ Math.atan2(x * sinc, ρ * cosc), Math.asin(ρ && y * sinc / ρ) ];
-    };
-    return azimuthal;
-  }
-  var d3_geo_azimuthalEqualArea = d3_geo_azimuthal(function(cosλcosφ) {
-    return Math.sqrt(2 / (1 + cosλcosφ));
-  }, function(ρ) {
-    return 2 * Math.asin(ρ / 2);
-  });
-  (d3.geo.azimuthalEqualArea = function() {
-    return d3_geo_projection(d3_geo_azimuthalEqualArea);
-  }).raw = d3_geo_azimuthalEqualArea;
-  var d3_geo_azimuthalEquidistant = d3_geo_azimuthal(function(cosλcosφ) {
-    var c = Math.acos(cosλcosφ);
-    return c && c / Math.sin(c);
-  }, d3_identity);
-  (d3.geo.azimuthalEquidistant = function() {
-    return d3_geo_projection(d3_geo_azimuthalEquidistant);
-  }).raw = d3_geo_azimuthalEquidistant;
-  function d3_geo_conicConformal(φ0, φ1) {
-    var cosφ0 = Math.cos(φ0), t = function(φ) {
-      return Math.tan(π / 4 + φ / 2);
-    }, n = φ0 === φ1 ? Math.sin(φ0) : Math.log(cosφ0 / Math.cos(φ1)) / Math.log(t(φ1) / t(φ0)), F = cosφ0 * Math.pow(t(φ0), n) / n;
-    if (!n) return d3_geo_mercator;
-    function forward(λ, φ) {
-      if (F > 0) {
-        if (φ < -halfπ + ε) φ = -halfπ + ε;
-      } else {
-        if (φ > halfπ - ε) φ = halfπ - ε;
-      }
-      var ρ = F / Math.pow(t(φ), n);
-      return [ ρ * Math.sin(n * λ), F - ρ * Math.cos(n * λ) ];
-    }
-    forward.invert = function(x, y) {
-      var ρ0_y = F - y, ρ = d3_sgn(n) * Math.sqrt(x * x + ρ0_y * ρ0_y);
-      return [ Math.atan2(x, ρ0_y) / n, 2 * Math.atan(Math.pow(F / ρ, 1 / n)) - halfπ ];
-    };
-    return forward;
-  }
-  (d3.geo.conicConformal = function() {
-    return d3_geo_conic(d3_geo_conicConformal);
-  }).raw = d3_geo_conicConformal;
-  function d3_geo_conicEquidistant(φ0, φ1) {
-    var cosφ0 = Math.cos(φ0), n = φ0 === φ1 ? Math.sin(φ0) : (cosφ0 - Math.cos(φ1)) / (φ1 - φ0), G = cosφ0 / n + φ0;
-    if (abs(n) < ε) return d3_geo_equirectangular;
-    function forward(λ, φ) {
-      var ρ = G - φ;
-      return [ ρ * Math.sin(n * λ), G - ρ * Math.cos(n * λ) ];
-    }
-    forward.invert = function(x, y) {
-      var ρ0_y = G - y;
-      return [ Math.atan2(x, ρ0_y) / n, G - d3_sgn(n) * Math.sqrt(x * x + ρ0_y * ρ0_y) ];
-    };
-    return forward;
-  }
-  (d3.geo.conicEquidistant = function() {
-    return d3_geo_conic(d3_geo_conicEquidistant);
-  }).raw = d3_geo_conicEquidistant;
-  var d3_geo_gnomonic = d3_geo_azimuthal(function(cosλcosφ) {
-    return 1 / cosλcosφ;
-  }, Math.atan);
-  (d3.geo.gnomonic = function() {
-    return d3_geo_projection(d3_geo_gnomonic);
-  }).raw = d3_geo_gnomonic;
-  function d3_geo_mercator(λ, φ) {
-    return [ λ, Math.log(Math.tan(π / 4 + φ / 2)) ];
-  }
-  d3_geo_mercator.invert = function(x, y) {
-    return [ x, 2 * Math.atan(Math.exp(y)) - halfπ ];
-  };
-  function d3_geo_mercatorProjection(project) {
-    var m = d3_geo_projection(project), scale = m.scale, translate = m.translate, clipExtent = m.clipExtent, clipAuto;
-    m.scale = function() {
-      var v = scale.apply(m, arguments);
-      return v === m ? clipAuto ? m.clipExtent(null) : m : v;
-    };
-    m.translate = function() {
-      var v = translate.apply(m, arguments);
-      return v === m ? clipAuto ? m.clipExtent(null) : m : v;
-    };
-    m.clipExtent = function(_) {
-      var v = clipExtent.apply(m, arguments);
-      if (v === m) {
-        if (clipAuto = _ == null) {
-          var k = π * scale(), t = translate();
-          clipExtent([ [ t[0] - k, t[1] - k ], [ t[0] + k, t[1] + k ] ]);
-        }
-      } else if (clipAuto) {
-        v = null;
-      }
-      return v;
-    };
-    return m.clipExtent(null);
-  }
-  (d3.geo.mercator = function() {
-    return d3_geo_mercatorProjection(d3_geo_mercator);
-  }).raw = d3_geo_mercator;
-  var d3_geo_orthographic = d3_geo_azimuthal(function() {
-    return 1;
-  }, Math.asin);
-  (d3.geo.orthographic = function() {
-    return d3_geo_projection(d3_geo_orthographic);
-  }).raw = d3_geo_orthographic;
-  var d3_geo_stereographic = d3_geo_azimuthal(function(cosλcosφ) {
-    return 1 / (1 + cosλcosφ);
-  }, function(ρ) {
-    return 2 * Math.atan(ρ);
-  });
-  (d3.geo.stereographic = function() {
-    return d3_geo_projection(d3_geo_stereographic);
-  }).raw = d3_geo_stereographic;
-  function d3_geo_transverseMercator(λ, φ) {
-    return [ Math.log(Math.tan(π / 4 + φ / 2)), -λ ];
-  }
-  d3_geo_transverseMercator.invert = function(x, y) {
-    return [ -y, 2 * Math.atan(Math.exp(x)) - halfπ ];
-  };
-  (d3.geo.transverseMercator = function() {
-    var projection = d3_geo_mercatorProjection(d3_geo_transverseMercator), center = projection.center, rotate = projection.rotate;
-    projection.center = function(_) {
-      return _ ? center([ -_[1], _[0] ]) : (_ = center(), [ _[1], -_[0] ]);
-    };
-    projection.rotate = function(_) {
-      return _ ? rotate([ _[0], _[1], _.length > 2 ? _[2] + 90 : 90 ]) : (_ = rotate(), 
-      [ _[0], _[1], _[2] - 90 ]);
-    };
-    return rotate([ 0, 0, 90 ]);
-  }).raw = d3_geo_transverseMercator;
   d3.geom = {};
   function d3_geom_pointX(d) {
     return d[0];
@@ -5429,6 +2833,60 @@ function createViewController(options) {
       d3_geom_voronoiRedBlackNode(circle);
       arc.circle = null;
     }
+  }
+  function d3_geom_clipLine(x0, y0, x1, y1) {
+    return function(line) {
+      var a = line.a, b = line.b, ax = a.x, ay = a.y, bx = b.x, by = b.y, t0 = 0, t1 = 1, dx = bx - ax, dy = by - ay, r;
+      r = x0 - ax;
+      if (!dx && r > 0) return;
+      r /= dx;
+      if (dx < 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      } else if (dx > 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      }
+      r = x1 - ax;
+      if (!dx && r < 0) return;
+      r /= dx;
+      if (dx < 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      } else if (dx > 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      }
+      r = y0 - ay;
+      if (!dy && r > 0) return;
+      r /= dy;
+      if (dy < 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      } else if (dy > 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      }
+      r = y1 - ay;
+      if (!dy && r < 0) return;
+      r /= dy;
+      if (dy < 0) {
+        if (r > t1) return;
+        if (r > t0) t0 = r;
+      } else if (dy > 0) {
+        if (r < t0) return;
+        if (r < t1) t1 = r;
+      }
+      if (t0 > 0) line.a = {
+        x: ax + t0 * dx,
+        y: ay + t0 * dy
+      };
+      if (t1 < 1) line.b = {
+        x: ax + t1 * dx,
+        y: ay + t1 * dy
+      };
+      return line;
+    };
   }
   function d3_geom_voronoiClipEdges(extent) {
     var edges = d3_geom_voronoiEdges, clip = d3_geom_clipLine(extent[0][0], extent[0][1], extent[1][0], extent[1][1]), i = edges.length, e;
@@ -7896,27 +5354,6 @@ function createViewController(options) {
   function d3_scale_linearTicks(domain, m) {
     return d3.range.apply(d3, d3_scale_linearTickRange(domain, m));
   }
-  function d3_scale_linearTickFormat(domain, m, format) {
-    var range = d3_scale_linearTickRange(domain, m);
-    if (format) {
-      var match = d3_format_re.exec(format);
-      match.shift();
-      if (match[8] === "s") {
-        var prefix = d3.formatPrefix(Math.max(abs(range[0]), abs(range[1])));
-        if (!match[7]) match[7] = "." + d3_scale_linearPrecision(prefix.scale(range[2]));
-        match[8] = "f";
-        format = d3.format(match.join(""));
-        return function(d) {
-          return format(prefix.scale(d)) + prefix.symbol;
-        };
-      }
-      if (!match[7]) match[7] = "." + d3_scale_linearFormatPrecision(match[8], range);
-      format = match.join("");
-    } else {
-      format = ",." + d3_scale_linearPrecision(range[2]) + "f";
-    }
-    return d3.format(format);
-  }
   var d3_scale_linearFormatSignificant = {
     s: 1,
     g: 1,
@@ -7981,22 +5418,12 @@ function createViewController(options) {
       }
       return ticks;
     };
-    scale.tickFormat = function(n, format) {
-      if (!arguments.length) return d3_scale_logFormat;
-      if (arguments.length < 2) format = d3_scale_logFormat; else if (typeof format !== "function") format = d3.format(format);
-      var k = Math.max(1, base * n / scale.ticks().length);
-      return function(d) {
-        var i = d / pow(Math.round(log(d)));
-        if (i * base < base - .5) i *= base;
-        return i <= k ? format(d) : "";
-      };
-    };
     scale.copy = function() {
       return d3_scale_log(linear.copy(), base, positive, domain);
     };
     return d3_scale_linearRebind(scale, linear);
   }
-  var d3_scale_logFormat = d3.format(".0e"), d3_scale_logNiceNegative = {
+  var d3_scale_logNiceNegative = {
     floor: function(x) {
       return -Math.ceil(-x);
     },
@@ -8432,6 +5859,9 @@ function createViewController(options) {
     if (dx0 * dx0 + dy0 * dy0 > dx1 * dx1 + dy1 * dy1) cx0 = cx1, cy0 = cy1;
     return [ [ cx0 - ox, cy0 - oy ], [ cx0 * r1 / r, cy0 * r1 / r ] ];
   }
+  function d3_true() {
+    return true;
+  }
   function d3_svg_line(projection) {
     var x = d3_geom_pointX, y = d3_geom_pointY, defined = d3_true, interpolate = d3_svg_lineLinear, interpolateKey = interpolate.key, tension = .7;
     function line(data) {
@@ -8786,6 +6216,12 @@ function createViewController(options) {
     area.endAngle = area.y1, delete area.y1;
     return area;
   };
+  function d3_source(d) {
+    return d.source;
+  }
+  function d3_target(d) {
+    return d.target;
+  }
   d3.svg.chord = function() {
     var source = d3_source, target = d3_target, radius = d3_svg_chordRadius, startAngle = d3_svg_arcStartAngle, endAngle = d3_svg_arcEndAngle;
     function chord(d, i) {
@@ -9690,160 +7126,6 @@ function createViewController(options) {
     sw: "nesw-resize"
   };
   var d3_svg_brushResizes = [ [ "n", "e", "s", "w", "nw", "ne", "se", "sw" ], [ "e", "w" ], [ "n", "s" ], [] ];
-  var d3_time_format = d3_time.format = d3_locale_enUS.timeFormat;
-  var d3_time_formatUtc = d3_time_format.utc;
-  var d3_time_formatIso = d3_time_formatUtc("%Y-%m-%dT%H:%M:%S.%LZ");
-  d3_time_format.iso = Date.prototype.toISOString && +new Date("2000-01-01T00:00:00.000Z") ? d3_time_formatIsoNative : d3_time_formatIso;
-  function d3_time_formatIsoNative(date) {
-    return date.toISOString();
-  }
-  d3_time_formatIsoNative.parse = function(string) {
-    var date = new Date(string);
-    return isNaN(date) ? null : date;
-  };
-  d3_time_formatIsoNative.toString = d3_time_formatIso.toString;
-  d3_time.second = d3_time_interval(function(date) {
-    return new d3_date(Math.floor(date / 1e3) * 1e3);
-  }, function(date, offset) {
-    date.setTime(date.getTime() + Math.floor(offset) * 1e3);
-  }, function(date) {
-    return date.getSeconds();
-  });
-  d3_time.seconds = d3_time.second.range;
-  d3_time.seconds.utc = d3_time.second.utc.range;
-  d3_time.minute = d3_time_interval(function(date) {
-    return new d3_date(Math.floor(date / 6e4) * 6e4);
-  }, function(date, offset) {
-    date.setTime(date.getTime() + Math.floor(offset) * 6e4);
-  }, function(date) {
-    return date.getMinutes();
-  });
-  d3_time.minutes = d3_time.minute.range;
-  d3_time.minutes.utc = d3_time.minute.utc.range;
-  d3_time.hour = d3_time_interval(function(date) {
-    var timezone = date.getTimezoneOffset() / 60;
-    return new d3_date((Math.floor(date / 36e5 - timezone) + timezone) * 36e5);
-  }, function(date, offset) {
-    date.setTime(date.getTime() + Math.floor(offset) * 36e5);
-  }, function(date) {
-    return date.getHours();
-  });
-  d3_time.hours = d3_time.hour.range;
-  d3_time.hours.utc = d3_time.hour.utc.range;
-  d3_time.month = d3_time_interval(function(date) {
-    date = d3_time.day(date);
-    date.setDate(1);
-    return date;
-  }, function(date, offset) {
-    date.setMonth(date.getMonth() + offset);
-  }, function(date) {
-    return date.getMonth();
-  });
-  d3_time.months = d3_time.month.range;
-  d3_time.months.utc = d3_time.month.utc.range;
-  function d3_time_scale(linear, methods, format) {
-    function scale(x) {
-      return linear(x);
-    }
-    scale.invert = function(x) {
-      return d3_time_scaleDate(linear.invert(x));
-    };
-    scale.domain = function(x) {
-      if (!arguments.length) return linear.domain().map(d3_time_scaleDate);
-      linear.domain(x);
-      return scale;
-    };
-    function tickMethod(extent, count) {
-      var span = extent[1] - extent[0], target = span / count, i = d3.bisect(d3_time_scaleSteps, target);
-      return i == d3_time_scaleSteps.length ? [ methods.year, d3_scale_linearTickRange(extent.map(function(d) {
-        return d / 31536e6;
-      }), count)[2] ] : !i ? [ d3_time_scaleMilliseconds, d3_scale_linearTickRange(extent, count)[2] ] : methods[target / d3_time_scaleSteps[i - 1] < d3_time_scaleSteps[i] / target ? i - 1 : i];
-    }
-    scale.nice = function(interval, skip) {
-      var domain = scale.domain(), extent = d3_scaleExtent(domain), method = interval == null ? tickMethod(extent, 10) : typeof interval === "number" && tickMethod(extent, interval);
-      if (method) interval = method[0], skip = method[1];
-      function skipped(date) {
-        return !isNaN(date) && !interval.range(date, d3_time_scaleDate(+date + 1), skip).length;
-      }
-      return scale.domain(d3_scale_nice(domain, skip > 1 ? {
-        floor: function(date) {
-          while (skipped(date = interval.floor(date))) date = d3_time_scaleDate(date - 1);
-          return date;
-        },
-        ceil: function(date) {
-          while (skipped(date = interval.ceil(date))) date = d3_time_scaleDate(+date + 1);
-          return date;
-        }
-      } : interval));
-    };
-    scale.ticks = function(interval, skip) {
-      var extent = d3_scaleExtent(scale.domain()), method = interval == null ? tickMethod(extent, 10) : typeof interval === "number" ? tickMethod(extent, interval) : !interval.range && [ {
-        range: interval
-      }, skip ];
-      if (method) interval = method[0], skip = method[1];
-      return interval.range(extent[0], d3_time_scaleDate(+extent[1] + 1), skip < 1 ? 1 : skip);
-    };
-    scale.tickFormat = function() {
-      return format;
-    };
-    scale.copy = function() {
-      return d3_time_scale(linear.copy(), methods, format);
-    };
-    return d3_scale_linearRebind(scale, linear);
-  }
-  function d3_time_scaleDate(t) {
-    return new Date(t);
-  }
-  var d3_time_scaleSteps = [ 1e3, 5e3, 15e3, 3e4, 6e4, 3e5, 9e5, 18e5, 36e5, 108e5, 216e5, 432e5, 864e5, 1728e5, 6048e5, 2592e6, 7776e6, 31536e6 ];
-  var d3_time_scaleLocalMethods = [ [ d3_time.second, 1 ], [ d3_time.second, 5 ], [ d3_time.second, 15 ], [ d3_time.second, 30 ], [ d3_time.minute, 1 ], [ d3_time.minute, 5 ], [ d3_time.minute, 15 ], [ d3_time.minute, 30 ], [ d3_time.hour, 1 ], [ d3_time.hour, 3 ], [ d3_time.hour, 6 ], [ d3_time.hour, 12 ], [ d3_time.day, 1 ], [ d3_time.day, 2 ], [ d3_time.week, 1 ], [ d3_time.month, 1 ], [ d3_time.month, 3 ], [ d3_time.year, 1 ] ];
-  var d3_time_scaleLocalFormat = d3_time_format.multi([ [ ".%L", function(d) {
-    return d.getMilliseconds();
-  } ], [ ":%S", function(d) {
-    return d.getSeconds();
-  } ], [ "%I:%M", function(d) {
-    return d.getMinutes();
-  } ], [ "%I %p", function(d) {
-    return d.getHours();
-  } ], [ "%a %d", function(d) {
-    return d.getDay() && d.getDate() != 1;
-  } ], [ "%b %d", function(d) {
-    return d.getDate() != 1;
-  } ], [ "%B", function(d) {
-    return d.getMonth();
-  } ], [ "%Y", d3_true ] ]);
-  var d3_time_scaleMilliseconds = {
-    range: function(start, stop, step) {
-      return d3.range(Math.ceil(start / step) * step, +stop, step).map(d3_time_scaleDate);
-    },
-    floor: d3_identity,
-    ceil: d3_identity
-  };
-  d3_time_scaleLocalMethods.year = d3_time.year;
-  d3_time.scale = function() {
-    return d3_time_scale(d3.scale.linear(), d3_time_scaleLocalMethods, d3_time_scaleLocalFormat);
-  };
-  var d3_time_scaleUtcMethods = d3_time_scaleLocalMethods.map(function(m) {
-    return [ m[0].utc, m[1] ];
-  });
-  var d3_time_scaleUtcFormat = d3_time_formatUtc.multi([ [ ".%L", function(d) {
-    return d.getUTCMilliseconds();
-  } ], [ ":%S", function(d) {
-    return d.getUTCSeconds();
-  } ], [ "%I:%M", function(d) {
-    return d.getUTCMinutes();
-  } ], [ "%I %p", function(d) {
-    return d.getUTCHours();
-  } ], [ "%a %d", function(d) {
-    return d.getUTCDay() && d.getUTCDate() != 1;
-  } ], [ "%b %d", function(d) {
-    return d.getUTCDate() != 1;
-  } ], [ "%B", function(d) {
-    return d.getUTCMonth();
-  } ], [ "%Y", d3_true ] ]);
-  d3_time_scaleUtcMethods.year = d3_time.year.utc;
-  d3_time.scale.utc = function() {
-    return d3_time_scale(d3.scale.linear(), d3_time_scaleUtcMethods, d3_time_scaleUtcFormat);
-  };
   d3.text = d3_xhrType(function(request) {
     return request.responseText;
   });
@@ -9865,8 +7147,8 @@ function createViewController(options) {
     return request.responseXML;
   });
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
-}();
-},{}],19:[function(_dereq_,module,exports){
+}.apply(self);
+},{}],18:[function(_dereq_,module,exports){
 'use strict'
 
 var weakMap      = typeof WeakMap === 'undefined' ? _dereq_('weak-map') : WeakMap
@@ -9897,7 +7179,7 @@ function createABigTriangle(gl) {
 
 module.exports = createABigTriangle
 
-},{"gl-buffer":111,"gl-vao":188,"weak-map":377}],20:[function(_dereq_,module,exports){
+},{"gl-buffer":106,"gl-vao":181,"weak-map":360}],19:[function(_dereq_,module,exports){
 var padLeft = _dereq_('pad-left')
 
 module.exports = addLineNumbers
@@ -9915,7 +7197,7 @@ function addLineNumbers (string, start, delim) {
   }).join('\n')
 }
 
-},{"pad-left":311}],21:[function(_dereq_,module,exports){
+},{"pad-left":299}],20:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = affineHull
@@ -9967,7 +7249,7 @@ function affineHull(points) {
   }
   return index
 }
-},{"robust-orientation":344}],22:[function(_dereq_,module,exports){
+},{"robust-orientation":329}],21:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = alphaComplex
@@ -9984,7 +7266,7 @@ function alphaComplex(alpha, points) {
     return circumradius(simplex) * alpha < 1
   })
 }
-},{"circumradius":64,"delaunay-triangulate":90}],23:[function(_dereq_,module,exports){
+},{"circumradius":63,"delaunay-triangulate":88}],22:[function(_dereq_,module,exports){
 module.exports = alphaShape
 
 var ac = _dereq_('alpha-complex')
@@ -9993,12 +7275,12 @@ var bnd = _dereq_('simplicial-complex-boundary')
 function alphaShape(alpha, points) {
   return bnd(ac(alpha, points))
 }
-},{"alpha-complex":22,"simplicial-complex-boundary":351}],24:[function(_dereq_,module,exports){
+},{"alpha-complex":21,"simplicial-complex-boundary":336}],23:[function(_dereq_,module,exports){
 module.exports = function _atob(str) {
   return atob(str)
 }
 
-},{}],25:[function(_dereq_,module,exports){
+},{}],24:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = barycentric
@@ -10046,7 +7328,7 @@ function barycentric(simplex, point) {
   }
   return y
 }
-},{"robust-linear-solve":343}],26:[function(_dereq_,module,exports){
+},{"robust-linear-solve":328}],25:[function(_dereq_,module,exports){
 'use strict'
 
 exports.byteLength = byteLength
@@ -10200,7 +7482,7 @@ function fromByteArray (uint8) {
   return parts.join('')
 }
 
-},{}],27:[function(_dereq_,module,exports){
+},{}],26:[function(_dereq_,module,exports){
 'use strict'
 
 var rationalize = _dereq_('./lib/rationalize')
@@ -10213,7 +7495,7 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":37}],28:[function(_dereq_,module,exports){
+},{"./lib/rationalize":36}],27:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = cmp
@@ -10222,7 +7504,7 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],29:[function(_dereq_,module,exports){
+},{}],28:[function(_dereq_,module,exports){
 'use strict'
 
 var rationalize = _dereq_('./lib/rationalize')
@@ -10233,7 +7515,7 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":37}],30:[function(_dereq_,module,exports){
+},{"./lib/rationalize":36}],29:[function(_dereq_,module,exports){
 'use strict'
 
 var isRat = _dereq_('./is-rat')
@@ -10295,7 +7577,7 @@ function makeRational(numer, denom) {
   return rationalize(a, b)
 }
 
-},{"./div":29,"./is-rat":31,"./lib/is-bn":35,"./lib/num-to-bn":36,"./lib/rationalize":37,"./lib/str-to-bn":38}],31:[function(_dereq_,module,exports){
+},{"./div":28,"./is-rat":30,"./lib/is-bn":34,"./lib/num-to-bn":35,"./lib/rationalize":36,"./lib/str-to-bn":37}],30:[function(_dereq_,module,exports){
 'use strict'
 
 var isBN = _dereq_('./lib/is-bn')
@@ -10306,7 +7588,7 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":35}],32:[function(_dereq_,module,exports){
+},{"./lib/is-bn":34}],31:[function(_dereq_,module,exports){
 'use strict'
 
 var BN = _dereq_('bn.js')
@@ -10317,7 +7599,7 @@ function sign (x) {
   return x.cmp(new BN(0))
 }
 
-},{"bn.js":45}],33:[function(_dereq_,module,exports){
+},{"bn.js":44}],32:[function(_dereq_,module,exports){
 'use strict'
 
 var sign = _dereq_('./bn-sign')
@@ -10342,7 +7624,7 @@ function bn2num(b) {
   return sign(b) * out
 }
 
-},{"./bn-sign":32}],34:[function(_dereq_,module,exports){
+},{"./bn-sign":31}],33:[function(_dereq_,module,exports){
 'use strict'
 
 var db = _dereq_('double-bits')
@@ -10363,7 +7645,7 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":44,"double-bits":91}],35:[function(_dereq_,module,exports){
+},{"bit-twiddle":43,"double-bits":89}],34:[function(_dereq_,module,exports){
 'use strict'
 
 var BN = _dereq_('bn.js')
@@ -10376,7 +7658,7 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":45}],36:[function(_dereq_,module,exports){
+},{"bn.js":44}],35:[function(_dereq_,module,exports){
 'use strict'
 
 var BN = _dereq_('bn.js')
@@ -10393,7 +7675,7 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":45,"double-bits":91}],37:[function(_dereq_,module,exports){
+},{"bn.js":44,"double-bits":89}],36:[function(_dereq_,module,exports){
 'use strict'
 
 var num2bn = _dereq_('./num-to-bn')
@@ -10421,7 +7703,7 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":32,"./num-to-bn":36}],38:[function(_dereq_,module,exports){
+},{"./bn-sign":31,"./num-to-bn":35}],37:[function(_dereq_,module,exports){
 'use strict'
 
 var BN = _dereq_('bn.js')
@@ -10432,7 +7714,7 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":45}],39:[function(_dereq_,module,exports){
+},{"bn.js":44}],38:[function(_dereq_,module,exports){
 'use strict'
 
 var rationalize = _dereq_('./lib/rationalize')
@@ -10443,7 +7725,7 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":37}],40:[function(_dereq_,module,exports){
+},{"./lib/rationalize":36}],39:[function(_dereq_,module,exports){
 'use strict'
 
 var bnsign = _dereq_('./lib/bn-sign')
@@ -10454,7 +7736,7 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":32}],41:[function(_dereq_,module,exports){
+},{"./lib/bn-sign":31}],40:[function(_dereq_,module,exports){
 'use strict'
 
 var rationalize = _dereq_('./lib/rationalize')
@@ -10465,7 +7747,7 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":37}],42:[function(_dereq_,module,exports){
+},{"./lib/rationalize":36}],41:[function(_dereq_,module,exports){
 'use strict'
 
 var bn2num = _dereq_('./lib/bn-to-num')
@@ -10503,7 +7785,7 @@ function roundRat (f) {
   }
 }
 
-},{"./lib/bn-to-num":33,"./lib/ctz":34}],43:[function(_dereq_,module,exports){
+},{"./lib/bn-to-num":32,"./lib/ctz":33}],42:[function(_dereq_,module,exports){
 "use strict"
 
 // (a, y, c, l, h) = (array, y[, cmp, lo, hi])
@@ -10573,7 +7855,7 @@ module.exports = {
   eq: function(a, y, c, l, h) { return norm(a, y, c, l, h, eq)}
 }
 
-},{}],44:[function(_dereq_,module,exports){
+},{}],43:[function(_dereq_,module,exports){
 /**
  * Bit twiddling hacks for JavaScript.
  *
@@ -10779,7 +8061,7 @@ exports.nextCombination = function(v) {
 }
 
 
-},{}],45:[function(_dereq_,module,exports){
+},{}],44:[function(_dereq_,module,exports){
 (function (module, exports) {
   'use strict';
 
@@ -14208,7 +11490,7 @@ exports.nextCombination = function(v) {
   };
 })(typeof module === 'undefined' || module, this);
 
-},{"buffer":54}],46:[function(_dereq_,module,exports){
+},{"buffer":53}],45:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = boundary
@@ -14244,7 +11526,7 @@ function boundary (cells) {
   return result
 }
 
-},{}],47:[function(_dereq_,module,exports){
+},{}],46:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = boxIntersectWrapper
@@ -14307,7 +11589,7 @@ function boxIntersect(red, blue, visit, full) {
       //Special case: 1d complete
       sweep.init(n)
       retval = sweep.sweepComplete(
-        d, visit, 
+        d, visit,
         0, n, redList, redIds,
         0, n, redList, redIds)
     } else {
@@ -14323,7 +11605,7 @@ function boxIntersect(red, blue, visit, full) {
         if(d === 1) {
           //Special case: 1d bipartite
           retval = sweep.sweepBipartite(
-            d, visit, 
+            d, visit,
             0, n, redList,  redIds,
             0, m, blueList, blueIds)
         } else {
@@ -14367,7 +11649,6 @@ function intersectBipartiteArray(x, y) {
 
 //User-friendly wrapper, handle full input and no-visitor cases
 function boxIntersectWrapper(arg0, arg1, arg2) {
-  var result
   switch(arguments.length) {
     case 1:
       return intersectFullArray(arg0)
@@ -14383,152 +11664,147 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":49,"./lib/sweep":53,"typedarray-pool":372}],48:[function(_dereq_,module,exports){
+},{"./lib/intersect":48,"./lib/sweep":52,"typedarray-pool":355}],47:[function(_dereq_,module,exports){
 'use strict'
 
-var DIMENSION   = 'd'
-var AXIS        = 'ax'
-var VISIT       = 'vv'
-var FLIP        = 'fp'
-
-var ELEM_SIZE   = 'es'
-
-var RED_START   = 'rs'
-var RED_END     = 're'
-var RED_BOXES   = 'rb'
-var RED_INDEX   = 'ri'
-var RED_PTR     = 'rp'
-
-var BLUE_START  = 'bs'
-var BLUE_END    = 'be'
-var BLUE_BOXES  = 'bb'
-var BLUE_INDEX  = 'bi'
-var BLUE_PTR    = 'bp'
-
-var RETVAL      = 'rv'
-
-var INNER_LABEL = 'Q'
-
-var ARGS = [
-  DIMENSION,
-  AXIS,
-  VISIT,
-  RED_START,
-  RED_END,
-  RED_BOXES,
-  RED_INDEX,
-  BLUE_START,
-  BLUE_END,
-  BLUE_BOXES,
-  BLUE_INDEX
-]
-
-function generateBruteForce(redMajor, flip, full) {
-  var funcName = 'bruteForce' + 
-    (redMajor ? 'Red' : 'Blue') + 
-    (flip ? 'Flip' : '') +
-    (full ? 'Full' : '')
-
-  var code = ['function ', funcName, '(', ARGS.join(), '){',
-    'var ', ELEM_SIZE, '=2*', DIMENSION, ';']
-
-  var redLoop = 
-    'for(var i=' + RED_START + ',' + RED_PTR + '=' + ELEM_SIZE + '*' + RED_START + ';' +
-        'i<' + RED_END +';' +
-        '++i,' + RED_PTR + '+=' + ELEM_SIZE + '){' +
-        'var x0=' + RED_BOXES + '[' + AXIS + '+' + RED_PTR + '],' +
-            'x1=' + RED_BOXES + '[' + AXIS + '+' + RED_PTR + '+' + DIMENSION + '],' +
-            'xi=' + RED_INDEX + '[i];'
-
-  var blueLoop = 
-    'for(var j=' + BLUE_START + ',' + BLUE_PTR + '=' + ELEM_SIZE + '*' + BLUE_START + ';' +
-        'j<' + BLUE_END + ';' +
-        '++j,' + BLUE_PTR + '+=' + ELEM_SIZE + '){' +
-        'var y0=' + BLUE_BOXES + '[' + AXIS + '+' + BLUE_PTR + '],' +
-            (full ? 'y1=' + BLUE_BOXES + '[' + AXIS + '+' + BLUE_PTR + '+' + DIMENSION + '],' : '') +
-            'yi=' + BLUE_INDEX + '[j];'
-
-  if(redMajor) {
-    code.push(redLoop, INNER_LABEL, ':', blueLoop)
-  } else {
-    code.push(blueLoop, INNER_LABEL, ':', redLoop)
+function full() {
+  function bruteForceRedFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
+    var es = 2 * d
+    for (var i = rs, rp = es * rs; i < re; ++i, rp += es) {
+      var x0 = rb[ax + rp], x1 = rb[ax + rp + d], xi = ri[i]
+      Q: for (var j = bs, bp = es * bs; j < be; ++j, bp += es) {
+        var y0 = bb[ax + bp], y1 = bb[ax + bp + d], yi = bi[j]
+        if (y1 < x0 || x1 < y0) continue
+        for (var k = ax + 1; k < d; ++k) {
+          var r0 = rb[k + rp], r1 = rb[k + d + rp], b0 = bb[k + bp], b1 = bb[k + d + bp]
+          if (r1 < b0 || b1 < r0) continue Q
+        }
+        var rv = vv(xi, yi)
+        if (rv !== void 0) return rv
+      }
+    }
   }
-
-  if(full) {
-    code.push('if(y1<x0||x1<y0)continue;')
-  } else if(flip) {
-    code.push('if(y0<=x0||x1<y0)continue;')
-  } else {
-    code.push('if(y0<x0||x1<y0)continue;')
+  function bruteForceBlueFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
+    var es = 2 * d
+    for (var j = bs, bp = es * bs; j < be; ++j, bp += es) {
+      var y0 = bb[ax + bp], y1 = bb[ax + bp + d], yi = bi[j]
+      Q: for (var i = rs, rp = es * rs; i < re; ++i, rp += es) {
+        var x0 = rb[ax + rp], x1 = rb[ax + rp + d], xi = ri[i]
+        if (y1 < x0 || x1 < y0) continue
+        for (var k = ax + 1; k < d; ++k) {
+          var r0 = rb[k + rp], r1 = rb[k + d + rp], b0 = bb[k + bp], b1 = bb[k + d + bp]
+          if (r1 < b0 || b1 < r0) continue Q
+        }
+        var rv = vv(xi, yi)
+        if (rv !== void 0) return rv
+      }
+    }
   }
-
-  code.push('for(var k='+AXIS+'+1;k<'+DIMENSION+';++k){'+
-    'var r0='+RED_BOXES+'[k+'+RED_PTR+'],'+
-        'r1='+RED_BOXES+'[k+'+DIMENSION+'+'+RED_PTR+'],'+
-        'b0='+BLUE_BOXES+'[k+'+BLUE_PTR+'],'+
-        'b1='+BLUE_BOXES+'[k+'+DIMENSION+'+'+BLUE_PTR+'];'+
-      'if(r1<b0||b1<r0)continue ' + INNER_LABEL + ';}' +
-      'var ' + RETVAL + '=' + VISIT + '(')
-
-  if(flip) {
-    code.push('yi,xi')
-  } else {
-    code.push('xi,yi')
+  function bruteForceFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
+    if (re - rs > be - bs) {
+      return bruteForceRedFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi)
+    }
+    else {
+      return bruteForceBlueFull(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi)
+    }
   }
-
-  code.push(');if(' + RETVAL + '!==void 0)return ' + RETVAL + ';}}}')
-
-  return {
-    name: funcName, 
-    code: code.join('')
-  }
+  return bruteForceFull
 }
 
-function bruteForcePlanner(full) {
-  var funcName = 'bruteForce' + (full ? 'Full' : 'Partial')
-  var prefix = []
-  var fargs = ARGS.slice()
-  if(!full) {
-    fargs.splice(3, 0, FLIP)
+function partial() {
+  function bruteForceRedFlip(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
+    var es = 2 * d
+    for (var i = rs, rp = es * rs; i < re; ++i, rp += es) {
+      var x0 = rb[ax + rp], x1 = rb[ax + rp + d], xi = ri[i]
+      Q: for (var j = bs, bp = es * bs; j < be; ++j, bp += es) {
+        var y0 = bb[ax + bp], yi = bi[j]
+        if (y0 <= x0 || x1 < y0) continue
+        for (var k = ax + 1; k < d; ++k) {
+          var r0 = rb[k + rp], r1 = rb[k + d + rp], b0 = bb[k + bp], b1 = bb[k + d + bp]
+          if (r1 < b0 || b1 < r0) continue Q
+        }
+        var rv = vv(yi, xi)
+        if (rv !== void 0) return rv
+      }
+    }
   }
-
-  var code = ['function ' + funcName + '(' + fargs.join() + '){']
-
-  function invoke(redMajor, flip) {
-    var res = generateBruteForce(redMajor, flip, full)
-    prefix.push(res.code)
-    code.push('return ' + res.name + '(' + ARGS.join() + ');')
+  function bruteForceRed(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
+    var es = 2 * d
+    for (var i = rs, rp = es * rs; i < re; ++i, rp += es) {
+      var x0 = rb[ax + rp], x1 = rb[ax + rp + d], xi = ri[i]
+      Q: for (var j = bs, bp = es * bs; j < be; ++j, bp += es) {
+        var y0 = bb[ax + bp], yi = bi[j]
+        if (y0 < x0 || x1 < y0) continue
+        for (var k = ax + 1; k < d; ++k) {
+          var r0 = rb[k + rp], r1 = rb[k + d + rp], b0 = bb[k + bp], b1 = bb[k + d + bp]
+          if (r1 < b0 || b1 < r0) continue Q
+        }
+        var rv = vv(xi, yi)
+        if (rv !== void 0) return rv
+      }
+    }
   }
-
-  code.push('if(' + RED_END + '-' + RED_START + '>' +
-                    BLUE_END + '-' + BLUE_START + '){')
-
-  if(full) {
-    invoke(true, false)
-    code.push('}else{')
-    invoke(false, false)
-  } else {
-    code.push('if(' + FLIP + '){')
-    invoke(true, true)
-    code.push('}else{')
-    invoke(true, false)
-    code.push('}}else{if(' + FLIP + '){')
-    invoke(false, true)
-    code.push('}else{')
-    invoke(false, false)
-    code.push('}')
+  function bruteForceBlueFlip(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
+    var es = 2 * d
+    for (var j = bs, bp = es * bs; j < be; ++j, bp += es) {
+      var y0 = bb[ax + bp], yi = bi[j]
+      Q: for (var i = rs, rp = es * rs; i < re; ++i, rp += es) {
+        var x0 = rb[ax + rp], x1 = rb[ax + rp + d], xi = ri[i]
+        if (y0 <= x0 || x1 < y0) continue
+        for (var k = ax + 1; k < d; ++k) {
+          var r0 = rb[k + rp], r1 = rb[k + d + rp], b0 = bb[k + bp], b1 = bb[k + d + bp]
+          if (r1 < b0 || b1 < r0) continue Q
+        }
+        var rv = vv(yi, xi)
+        if (rv !== void 0) return rv
+      }
+    }
   }
-  code.push('}}return ' + funcName)
-
-  var codeStr = prefix.join('') + code.join('')
-  var proc = new Function(codeStr)
-  return proc()
+  function bruteForceBlue(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi) {
+    var es = 2 * d
+    for (var j = bs, bp = es * bs; j < be; ++j, bp += es) {
+      var y0 = bb[ax + bp], yi = bi[j]
+      Q: for (var i = rs, rp = es * rs; i < re; ++i, rp += es) {
+        var x0 = rb[ax + rp], x1 = rb[ax + rp + d], xi = ri[i]
+        if (y0 < x0 || x1 < y0) continue
+        for (var k = ax + 1; k < d; ++k) {
+          var r0 = rb[k + rp], r1 = rb[k + d + rp], b0 = bb[k + bp], b1 = bb[k + d + bp]
+          if (r1 < b0 || b1 < r0) continue Q
+        }
+        var rv = vv(xi, yi)
+        if (rv !== void 0) return rv
+      }
+    }
+  }
+  function bruteForcePartial(d, ax, vv, fp, rs, re, rb, ri, bs, be, bb, bi) {
+    if (re - rs > be - bs) {
+      if (fp) {
+        return bruteForceRedFlip(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi)
+      }
+      else {
+        return bruteForceRed(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi)
+      }
+    }
+    else {
+      if (fp) {
+        return bruteForceBlueFlip(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi)
+      }
+      else {
+        return bruteForceBlue(d, ax, vv, rs, re, rb, ri, bs, be, bb, bi)
+      }
+    }
+  }
+  return bruteForcePartial
 }
 
+function bruteForcePlanner(isFull) {
+  return isFull ? full() : partial()
+
+}
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],49:[function(_dereq_,module,exports){
+},{}],48:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = boxIntersectIter
@@ -14545,32 +11821,26 @@ var genPartition = _dereq_('./partition')
 //Twiddle parameters
 var BRUTE_FORCE_CUTOFF    = 128       //Cut off for brute force search
 var SCAN_CUTOFF           = (1<<22)   //Cut off for two way scan
-var SCAN_COMPLETE_CUTOFF  = (1<<22)  
+var SCAN_COMPLETE_CUTOFF  = (1<<22)
 
 //Partition functions
 var partitionInteriorContainsInterval = genPartition(
-  '!(lo>=p0)&&!(p1>=hi)', 
-  ['p0', 'p1'])
+  '!(lo>=p0)&&!(p1>=hi)')
 
 var partitionStartEqual = genPartition(
-  'lo===p0',
-  ['p0'])
+  'lo===p0')
 
 var partitionStartLessThan = genPartition(
-  'lo<p0',
-  ['p0'])
+  'lo<p0')
 
 var partitionEndLessThanEqual = genPartition(
-  'hi<=p0',
-  ['p0'])
+  'hi<=p0')
 
 var partitionContainsPoint = genPartition(
-  'lo<=p0&&p0<=hi',
-  ['p0'])
+  'lo<=p0&&p0<=hi')
 
 var partitionContainsPointProper = genPartition(
-  'lo<p0&&p0<=hi',
-  ['p0'])
+  'lo<p0&&p0<=hi')
 
 //Frame size for iterative loop
 var IFRAME_SIZE = 6
@@ -14598,10 +11868,10 @@ function iterInit(d, count) {
 
 //Append item to queue
 function iterPush(ptr,
-  axis, 
-  redStart, redEnd, 
-  blueStart, blueEnd, 
-  state, 
+  axis,
+  redStart, redEnd,
+  blueStart, blueEnd,
+  state,
   lo, hi) {
 
   var iptr = IFRAME_SIZE * ptr
@@ -14713,14 +11983,14 @@ function boxIntersectIter(
       0,
       0, xSize,
       0, ySize,
-      initFull ? 16 : 0, 
+      initFull ? 16 : 0,
       -Infinity, Infinity)
   if(!initFull) {
     iterPush(top++,
       0,
       0, ySize,
       0, xSize,
-      1, 
+      1,
       -Infinity, Infinity)
   }
 
@@ -14773,14 +12043,14 @@ function boxIntersectIter(
         continue
       }
     }
-    
+
     var redCount  = redEnd  - redStart
     var blueCount = blueEnd - blueStart
 
     if(full) {
       if(d * redCount * (redCount + blueCount) < SCAN_COMPLETE_CUTOFF) {
         retval = sweep.scanComplete(
-          d, axis, visit, 
+          d, axis, visit,
           redStart, redEnd, red, redIndex,
           blueStart, blueEnd, blue, blueIndex)
         if(retval !== void 0) {
@@ -14802,7 +12072,7 @@ function boxIntersectIter(
       } else if(d * redCount * blueCount < SCAN_CUTOFF) {
         //If input medium sized, then use sweep and prune
         retval = sweep.scanBipartite(
-          d, axis, visit, flip, 
+          d, axis, visit, flip,
           redStart, redEnd, red, redIndex,
           blueStart, blueEnd, blue, blueIndex)
         if(retval !== void 0) {
@@ -14811,10 +12081,10 @@ function boxIntersectIter(
         continue
       }
     }
-    
+
     //First, find all red intervals whose interior contains (lo,hi)
     var red0 = partitionInteriorContainsInterval(
-      d, axis, 
+      d, axis,
       redStart, redEnd, red, redIndex,
       lo, hi)
 
@@ -14871,7 +12141,7 @@ function boxIntersectIter(
       //  Points > mid point
       //
       var blue0 = findMedian(
-        d, axis, 
+        d, axis,
         blueStart, blueEnd, blue, blueIndex)
       var mid = blue[elemSize * blue0 + axis]
       var blue1 = partitionStartEqual(
@@ -15023,14 +12293,14 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":48,"./median":50,"./partition":51,"./sweep":53,"bit-twiddle":44,"typedarray-pool":372}],50:[function(_dereq_,module,exports){
+},{"./brute":47,"./median":49,"./partition":50,"./sweep":52,"bit-twiddle":43,"typedarray-pool":355}],49:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = findMedian
 
 var genPartition = _dereq_('./partition')
 
-var partitionStartLessThan = genPartition('lo<p0', ['p0'])
+var partitionStartLessThan = genPartition('lo<p0')
 
 var PARTITION_THRESHOLD = 8   //Cut off for using insertion sort in findMedian
 
@@ -15040,8 +12310,8 @@ function insertionSort(d, axis, start, end, boxes, ids) {
   var boxPtr = elemSize * (start+1) + axis
   for(var i=start+1; i<end; ++i, boxPtr+=elemSize) {
     var x = boxes[boxPtr]
-    for(var j=i, ptr=elemSize*(i-1); 
-        j>start && boxes[ptr+axis] > x; 
+    for(var j=i, ptr=elemSize*(i-1);
+        j>start && boxes[ptr+axis] > x;
         --j, ptr-=elemSize) {
       //Swap
       var aPtr = ptr
@@ -15071,14 +12341,14 @@ function findMedian(d, axis, start, end, boxes, ids) {
   var elemSize = 2*d
   var pivot    = mid
   var value    = boxes[elemSize*mid+axis]
-  
+
   while(lo < hi) {
     if(hi - lo < PARTITION_THRESHOLD) {
       insertionSort(d, axis, lo, hi, boxes, ids)
       value = boxes[elemSize*mid+axis]
       break
     }
-    
+
     //Select pivot using median-of-3
     var count  = hi - lo
     var pivot0 = (Math.random()*count+lo)|0
@@ -15125,7 +12395,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
 
     //Partition using pivot
     pivot = partitionStartLessThan(
-      d, axis, 
+      d, axis,
       lo, hi-1, boxes, ids,
       value)
 
@@ -15144,7 +12414,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
     //Swap pivot to last pivot
     if(mid < pivot) {
       hi = pivot-1
-      while(lo < hi && 
+      while(lo < hi &&
         boxes[elemSize*(hi-1)+axis] === value) {
         hi -= 1
       }
@@ -15162,32 +12432,125 @@ function findMedian(d, axis, start, end, boxes, ids) {
 
   //Make sure pivot is at start
   return partitionStartLessThan(
-    d, axis, 
+    d, axis,
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":51}],51:[function(_dereq_,module,exports){
+},{"./partition":50}],50:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = genPartition
 
-var code = 'for(var j=2*a,k=j*c,l=k,m=c,n=b,o=a+b,p=c;d>p;++p,k+=j){var _;if($)if(m===p)m+=1,l+=j;else{for(var s=0;j>s;++s){var t=e[k+s];e[k+s]=e[l],e[l++]=t}var u=f[p];f[p]=f[m],f[m++]=u}}return m'
-
-function genPartition(predicate, args) {
-  var fargs ='abcdef'.split('').concat(args)
-  var reads = []
-  if(predicate.indexOf('lo') >= 0) {
-    reads.push('lo=e[k+n]')
-  }
-  if(predicate.indexOf('hi') >= 0) {
-    reads.push('hi=e[k+o]')
-  }
-  fargs.push(
-    code.replace('_', reads.join())
-        .replace('$', predicate))
-  return Function.apply(void 0, fargs)
+var P2F = {
+  'lo===p0': lo_equal_p0,
+  'lo<p0': lo_lessThan_p0,
+  'lo<=p0': lo_lessOrEqual_p0,
+  'hi<=p0': hi_lessOrEqual_p0,
+  'lo<p0&&p0<=hi': lo_lessThan_p0_and_p0_lessOrEqual_hi,
+  'lo<=p0&&p0<=hi': lo_lassOrEqual_p0_and_p0_lessOrEqual_hi,
+  '!(lo>=p0)&&!(p1>=hi)': lo_lessThan_p0_and_p1_lessThan_hi
 }
-},{}],52:[function(_dereq_,module,exports){
+
+function genPartition(predicate) {
+  return P2F[predicate]
+}
+
+// lo===p0
+function lo_equal_p0(a, b, c, d, e, f, p0) {
+  for (var j = 2 * a, k = j * c, l = k, m = c, n = b, o = a + b, p = c; d > p; ++p, k += j) {
+    var lo = e[k + n];
+    if (lo === p0) if (m === p) m += 1, l += j; else {
+      for (var s = 0; j > s; ++s) {
+        var t = e[k + s]; e[k + s] = e[l], e[l++] = t
+      } var u = f[p]; f[p] = f[m], f[m++] = u
+    }
+  }
+  return m
+}
+
+// lo<p0
+function lo_lessThan_p0(a, b, c, d, e, f, p0) {
+  for (var j = 2 * a, k = j * c, l = k, m = c, n = b, o = a + b, p = c; d > p; ++p, k += j) {
+    var lo = e[k + n];
+    if (lo < p0) if (m === p) m += 1, l += j; else {
+      for (var s = 0; j > s; ++s) {
+        var t = e[k + s]; e[k + s] = e[l], e[l++] = t
+      } var u = f[p]; f[p] = f[m], f[m++] = u
+    }
+  }
+  return m
+}
+
+// lo<=p0
+function lo_lessOrEqual_p0(a, b, c, d, e, f, p0) {
+  for (var j = 2 * a, k = j * c, l = k, m = c, n = b, o = a + b, p = c; d > p; ++p, k += j) {
+    var hi = e[k + o];
+    if (hi <= p0) if (m === p) m += 1, l += j; else {
+      for (var s = 0; j > s; ++s) {
+        var t = e[k + s]; e[k + s] = e[l], e[l++] = t
+      }
+      var u = f[p]; f[p] = f[m], f[m++] = u
+    }
+  } return m
+}
+
+// hi<=p0
+function hi_lessOrEqual_p0(a, b, c, d, e, f, p0) {
+  for (var j = 2 * a, k = j * c, l = k, m = c, n = b, o = a + b, p = c; d > p; ++p, k += j) {
+    var hi = e[k + o];
+    if (hi <= p0) if (m === p) m += 1, l += j; else {
+      for (var s = 0; j > s; ++s) {
+        var t = e[k + s]; e[k + s] = e[l], e[l++] = t
+      }
+      var u = f[p]; f[p] = f[m], f[m++] = u
+    }
+  }
+  return m
+}
+
+// lo<=p0&&p0<=hi
+function lo_lassOrEqual_p0_and_p0_lessOrEqual_hi(a, b, c, d, e, f, p0) {
+  for (var j = 2 * a, k = j * c, l = k, m = c, n = b, o = a + b, p = c; d > p; ++p, k += j) {
+    var lo = e[k + n], hi = e[k + o];
+    if (lo <= p0 && p0 <= hi) if (m === p) m += 1, l += j; else {
+      for (var s = 0; j > s; ++s) {
+        var t = e[k + s]; e[k + s] = e[l], e[l++] = t
+      }
+      var u = f[p]; f[p] = f[m], f[m++] = u
+    }
+  }
+  return m
+}
+
+// lo<p0&&p0<=hi
+function lo_lessThan_p0_and_p0_lessOrEqual_hi(a, b, c, d, e, f, p0) {
+  for (var j = 2 * a, k = j * c, l = k, m = c, n = b, o = a + b, p = c; d > p; ++p, k += j) {
+    var lo = e[k + n], hi = e[k + o];
+    if (lo < p0 && p0 <= hi) if (m === p) m += 1, l += j; else {
+      for (var s = 0; j > s; ++s) {
+        var t = e[k + s]; e[k + s] = e[l], e[l++] = t
+      }
+      var u = f[p]; f[p] = f[m], f[m++] = u
+    }
+  }
+  return m
+}
+
+// !(lo>=p0)&&!(p1>=hi)
+function lo_lessThan_p0_and_p1_lessThan_hi(a, b, c, d, e, f, p0, p1) {
+  for (var j = 2 * a, k = j * c, l = k, m = c, n = b, o = a + b, p = c; d > p; ++p, k += j) {
+    var lo = e[k + n], hi = e[k + o];
+    if (!(lo >= p0) && !(p1 >= hi)) if (m === p) m += 1, l += j; else {
+      for (var s = 0; j > s; ++s) {
+        var t = e[k + s]; e[k + s] = e[l], e[l++] = t
+      }
+      var u = f[p]; f[p] = f[m], f[m++] = u
+    }
+  }
+  return m
+}
+
+},{}],51:[function(_dereq_,module,exports){
 'use strict';
 
 //This code is extracted from ndarray-sort
@@ -15424,7 +12787,7 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],53:[function(_dereq_,module,exports){
+},{}],52:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = {
@@ -15859,9 +13222,9 @@ red_loop:
     }
   }
 }
-},{"./sort":52,"bit-twiddle":44,"typedarray-pool":372}],54:[function(_dereq_,module,exports){
+},{"./sort":51,"bit-twiddle":43,"typedarray-pool":355}],53:[function(_dereq_,module,exports){
 
-},{}],55:[function(_dereq_,module,exports){
+},{}],54:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -16339,7 +13702,7 @@ function once(emitter, name) {
   });
 }
 
-},{}],56:[function(_dereq_,module,exports){
+},{}],55:[function(_dereq_,module,exports){
 (function (Buffer){(function (){
 /*!
  * The buffer module from node.js, for the browser.
@@ -18120,7 +15483,7 @@ function numberIsNaN (obj) {
 }
 
 }).call(this)}).call(this,_dereq_("buffer").Buffer)
-},{"base64-js":26,"buffer":56,"ieee754":272}],57:[function(_dereq_,module,exports){
+},{"base64-js":25,"buffer":55,"ieee754":265}],56:[function(_dereq_,module,exports){
 'use strict'
 
 var monotoneTriangulate = _dereq_('./lib/monotone')
@@ -18204,7 +15567,7 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":58,"./lib/filter":59,"./lib/monotone":60,"./lib/triangulation":61}],58:[function(_dereq_,module,exports){
+},{"./lib/delaunay":57,"./lib/filter":58,"./lib/monotone":59,"./lib/triangulation":60}],57:[function(_dereq_,module,exports){
 'use strict'
 
 var inCircle = _dereq_('robust-in-sphere')[4]
@@ -18321,7 +15684,7 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":43,"robust-in-sphere":342}],59:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42,"robust-in-sphere":327}],58:[function(_dereq_,module,exports){
 'use strict'
 
 var bsearch = _dereq_('binary-search-bounds')
@@ -18503,7 +15866,7 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":43}],60:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42}],59:[function(_dereq_,module,exports){
 'use strict'
 
 var bsearch = _dereq_('binary-search-bounds')
@@ -18692,7 +16055,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":43,"robust-orientation":344}],61:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42,"robust-orientation":329}],60:[function(_dereq_,module,exports){
 'use strict'
 
 var bsearch = _dereq_('binary-search-bounds')
@@ -18798,7 +16161,7 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":43}],62:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42}],61:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = orientation
@@ -18817,7 +16180,7 @@ function orientation(s) {
   return p
 }
 
-},{}],63:[function(_dereq_,module,exports){
+},{}],62:[function(_dereq_,module,exports){
 "use strict"
 
 var dup = _dereq_("dup")
@@ -18886,7 +16249,7 @@ function circumcenter(points) {
 
 circumcenter.barycenetric = barycentricCircumcenter
 module.exports = circumcenter
-},{"dup":93,"robust-linear-solve":343}],64:[function(_dereq_,module,exports){
+},{"dup":91,"robust-linear-solve":328}],63:[function(_dereq_,module,exports){
 module.exports = circumradius
 
 var circumcenter = _dereq_('circumcenter')
@@ -18902,7 +16265,7 @@ function circumradius(points) {
   }
   return Math.sqrt(avgDist / points.length)
 }
-},{"circumcenter":63}],65:[function(_dereq_,module,exports){
+},{"circumcenter":62}],64:[function(_dereq_,module,exports){
 module.exports = clamp
 
 function clamp(value, min, max) {
@@ -18911,7 +16274,7 @@ function clamp(value, min, max) {
     : (value < max ? max : value > min ? min : value)
 }
 
-},{}],66:[function(_dereq_,module,exports){
+},{}],65:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = cleanPSLG
@@ -19294,7 +16657,7 @@ function cleanPSLG (points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":67,"big-rat":30,"big-rat/cmp":28,"big-rat/to-float":42,"box-intersect":47,"nextafter":306,"rat-vec":333,"robust-segment-intersect":347,"union-find":373}],67:[function(_dereq_,module,exports){
+},{"./lib/rat-seg-intersect":66,"big-rat":29,"big-rat/cmp":27,"big-rat/to-float":41,"box-intersect":46,"nextafter":294,"rat-vec":318,"robust-segment-intersect":332,"union-find":356}],66:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = solveIntersection
@@ -19338,7 +16701,7 @@ function solveIntersection (a, b, c, d) {
   return r
 }
 
-},{"big-rat/div":29,"big-rat/mul":39,"big-rat/sign":40,"big-rat/sub":41,"rat-vec/add":332,"rat-vec/muls":334,"rat-vec/sub":335}],68:[function(_dereq_,module,exports){
+},{"big-rat/div":28,"big-rat/mul":38,"big-rat/sign":39,"big-rat/sub":40,"rat-vec/add":317,"rat-vec/muls":319,"rat-vec/sub":320}],67:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = {
@@ -19492,7 +16855,7 @@ module.exports = {
 	"yellowgreen": [154, 205, 50]
 };
 
-},{}],69:[function(_dereq_,module,exports){
+},{}],68:[function(_dereq_,module,exports){
 /** @module  color-normalize */
 
 'use strict'
@@ -19565,7 +16928,7 @@ function isInt(color) {
 	return false
 }
 
-},{"clamp":65,"color-rgba":71,"dtype":92}],70:[function(_dereq_,module,exports){
+},{"clamp":64,"color-rgba":70,"dtype":90}],69:[function(_dereq_,module,exports){
 (function (global){(function (){
 /**
  * @module color-parse
@@ -19744,7 +17107,7 @@ function parse (cstr) {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"color-name":68,"defined":89,"is-plain-obj":281}],71:[function(_dereq_,module,exports){
+},{"color-name":67,"defined":87,"is-plain-obj":271}],70:[function(_dereq_,module,exports){
 /** @module  color-rgba */
 
 'use strict'
@@ -19775,7 +17138,7 @@ module.exports = function rgba (color) {
 	return values
 }
 
-},{"clamp":65,"color-parse":70,"color-space/hsl":72}],72:[function(_dereq_,module,exports){
+},{"clamp":64,"color-parse":69,"color-space/hsl":71}],71:[function(_dereq_,module,exports){
 /**
  * @module color-space/hsl
  */
@@ -19884,7 +17247,7 @@ rgb.hsl = function(rgb) {
 	return [h, s * 100, l * 100];
 };
 
-},{"./rgb":73}],73:[function(_dereq_,module,exports){
+},{"./rgb":72}],72:[function(_dereq_,module,exports){
 /**
  * RGB space.
  *
@@ -19900,7 +17263,7 @@ module.exports = {
 	alias: ['RGB']
 };
 
-},{}],74:[function(_dereq_,module,exports){
+},{}],73:[function(_dereq_,module,exports){
 module.exports={
 	"jet":[{"index":0,"rgb":[0,0,131]},{"index":0.125,"rgb":[0,60,170]},{"index":0.375,"rgb":[5,255,255]},{"index":0.625,"rgb":[255,255,0]},{"index":0.875,"rgb":[250,0,0]},{"index":1,"rgb":[128,0,0]}],
 
@@ -19991,7 +17354,7 @@ module.exports={
 	"cubehelix": [{"index":0,"rgb":[0,0,0]},{"index":0.07,"rgb":[22,5,59]},{"index":0.13,"rgb":[60,4,105]},{"index":0.2,"rgb":[109,1,135]},{"index":0.27,"rgb":[161,0,147]},{"index":0.33,"rgb":[210,2,142]},{"index":0.4,"rgb":[251,11,123]},{"index":0.47,"rgb":[255,29,97]},{"index":0.53,"rgb":[255,54,69]},{"index":0.6,"rgb":[255,85,46]},{"index":0.67,"rgb":[255,120,34]},{"index":0.73,"rgb":[255,157,37]},{"index":0.8,"rgb":[241,191,57]},{"index":0.87,"rgb":[224,220,93]},{"index":0.93,"rgb":[218,241,142]},{"index":1,"rgb":[227,253,198]}]
 };
 
-},{}],75:[function(_dereq_,module,exports){
+},{}],74:[function(_dereq_,module,exports){
 /*
  * Ben Postlethwaite
  * January 2013
@@ -20136,7 +17499,7 @@ function rgbaStr (rgba) {
     return 'rgba(' + rgba.join(',') + ')';
 }
 
-},{"./colorScale":74,"lerp":283}],76:[function(_dereq_,module,exports){
+},{"./colorScale":73,"lerp":273}],75:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = compareAngle
@@ -20222,7 +17585,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":344,"robust-product":345,"robust-sum":349,"signum":350,"two-sum":371}],77:[function(_dereq_,module,exports){
+},{"robust-orientation":329,"robust-product":330,"robust-sum":334,"signum":335,"two-sum":354}],76:[function(_dereq_,module,exports){
 module.exports = compareCells
 
 var min = Math.min
@@ -20278,7 +17641,7 @@ function compareCells(a, b) {
   }
 }
 
-},{}],78:[function(_dereq_,module,exports){
+},{}],77:[function(_dereq_,module,exports){
 'use strict'
 
 var compareCells = _dereq_('compare-cell')
@@ -20290,7 +17653,7 @@ function compareOrientedCells(a, b) {
   return compareCells(a, b) || parity(a) - parity(b)
 }
 
-},{"cell-orientation":62,"compare-cell":77}],79:[function(_dereq_,module,exports){
+},{"cell-orientation":61,"compare-cell":76}],78:[function(_dereq_,module,exports){
 "use strict"
 
 var convexHull1d = _dereq_('./lib/ch1d')
@@ -20316,7 +17679,7 @@ function convexHull(points) {
   }
   return convexHullnd(points, d)
 }
-},{"./lib/ch1d":80,"./lib/ch2d":81,"./lib/chnd":82}],80:[function(_dereq_,module,exports){
+},{"./lib/ch1d":79,"./lib/ch2d":80,"./lib/chnd":81}],79:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = convexHull1d
@@ -20340,7 +17703,7 @@ function convexHull1d(points) {
     return [[lo]]
   }
 }
-},{}],81:[function(_dereq_,module,exports){
+},{}],80:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = convexHull2D
@@ -20363,7 +17726,7 @@ function convexHull2D(points) {
   return edges
 }
 
-},{"monotone-convex-hull-2d":291}],82:[function(_dereq_,module,exports){
+},{"monotone-convex-hull-2d":279}],81:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = convexHullnD
@@ -20424,7 +17787,7 @@ function convexHullnD(points, d) {
     return invPermute(nhull, ah)
   }
 }
-},{"affine-hull":21,"incremental-convex-hull":273}],83:[function(_dereq_,module,exports){
+},{"affine-hull":20,"incremental-convex-hull":266}],82:[function(_dereq_,module,exports){
 "use strict"
 
 function dcubicHermite(p0, v0, p1, v1, t, f) {
@@ -20464,566 +17827,354 @@ function cubicHermite(p0, v0, p1, v1, t, f) {
 
 module.exports = cubicHermite
 module.exports.derivative = dcubicHermite
-},{}],84:[function(_dereq_,module,exports){
-"use strict"
+},{}],83:[function(_dereq_,module,exports){
+// https://d3js.org/d3-format/ v1.4.5 Copyright 2020 Mike Bostock
+(function (global, factory) {
+typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+typeof define === 'function' && define.amd ? define(['exports'], factory) :
+(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.d3 = global.d3 || {}));
+}(this, (function (exports) { 'use strict';
 
-var createThunk = _dereq_("./lib/thunk.js")
-
-function Procedure() {
-  this.argTypes = []
-  this.shimArgs = []
-  this.arrayArgs = []
-  this.arrayBlockIndices = []
-  this.scalarArgs = []
-  this.offsetArgs = []
-  this.offsetArgIndex = []
-  this.indexArgs = []
-  this.shapeArgs = []
-  this.funcName = ""
-  this.pre = null
-  this.body = null
-  this.post = null
-  this.debug = false
+function formatDecimal(x) {
+  return Math.abs(x = Math.round(x)) >= 1e21
+      ? x.toLocaleString("en").replace(/,/g, "")
+      : x.toString(10);
 }
 
-function compileCwise(user_args) {
-  //Create procedure
-  var proc = new Procedure()
-  
-  //Parse blocks
-  proc.pre    = user_args.pre
-  proc.body   = user_args.body
-  proc.post   = user_args.post
+// Computes the decimal coefficient and exponent of the specified number x with
+// significant digits p, where x is positive and p is in [1, 21] or undefined.
+// For example, formatDecimalParts(1.23) returns ["123", 0].
+function formatDecimalParts(x, p) {
+  if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
+  var i, coefficient = x.slice(0, i);
 
-  //Parse arguments
-  var proc_args = user_args.args.slice(0)
-  proc.argTypes = proc_args
-  for(var i=0; i<proc_args.length; ++i) {
-    var arg_type = proc_args[i]
-    if(arg_type === "array" || (typeof arg_type === "object" && arg_type.blockIndices)) {
-      proc.argTypes[i] = "array"
-      proc.arrayArgs.push(i)
-      proc.arrayBlockIndices.push(arg_type.blockIndices ? arg_type.blockIndices : 0)
-      proc.shimArgs.push("array" + i)
-      if(i < proc.pre.args.length && proc.pre.args[i].count>0) {
-        throw new Error("cwise: pre() block may not reference array args")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].count>0) {
-        throw new Error("cwise: post() block may not reference array args")
-      }
-    } else if(arg_type === "scalar") {
-      proc.scalarArgs.push(i)
-      proc.shimArgs.push("scalar" + i)
-    } else if(arg_type === "index") {
-      proc.indexArgs.push(i)
-      if(i < proc.pre.args.length && proc.pre.args[i].count > 0) {
-        throw new Error("cwise: pre() block may not reference array index")
-      }
-      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
-        throw new Error("cwise: body() block may not write to array index")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].count > 0) {
-        throw new Error("cwise: post() block may not reference array index")
-      }
-    } else if(arg_type === "shape") {
-      proc.shapeArgs.push(i)
-      if(i < proc.pre.args.length && proc.pre.args[i].lvalue) {
-        throw new Error("cwise: pre() block may not write to array shape")
-      }
-      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
-        throw new Error("cwise: body() block may not write to array shape")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].lvalue) {
-        throw new Error("cwise: post() block may not write to array shape")
-      }
-    } else if(typeof arg_type === "object" && arg_type.offset) {
-      proc.argTypes[i] = "offset"
-      proc.offsetArgs.push({ array: arg_type.array, offset:arg_type.offset })
-      proc.offsetArgIndex.push(i)
-    } else {
-      throw new Error("cwise: Unknown argument type " + proc_args[i])
-    }
-  }
-  
-  //Make sure at least one array argument was specified
-  if(proc.arrayArgs.length <= 0) {
-    throw new Error("cwise: No array arguments specified")
-  }
-  
-  //Make sure arguments are correct
-  if(proc.pre.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in pre() block")
-  }
-  if(proc.body.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in body() block")
-  }
-  if(proc.post.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in post() block")
-  }
-
-  //Check debug flag
-  proc.debug = !!user_args.printCode || !!user_args.debug
-  
-  //Retrieve name
-  proc.funcName = user_args.funcName || "cwise"
-  
-  //Read in block size
-  proc.blockSize = user_args.blockSize || 64
-
-  return createThunk(proc)
+  // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
+  // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
+  return [
+    coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient,
+    +x.slice(i + 1)
+  ];
 }
 
-module.exports = compileCwise
-
-},{"./lib/thunk.js":86}],85:[function(_dereq_,module,exports){
-"use strict"
-
-var uniq = _dereq_("uniq")
-
-// This function generates very simple loops analogous to how you typically traverse arrays (the outermost loop corresponds to the slowest changing index, the innermost loop to the fastest changing index)
-// TODO: If two arrays have the same strides (and offsets) there is potential for decreasing the number of "pointers" and related variables. The drawback is that the type signature would become more specific and that there would thus be less potential for caching, but it might still be worth it, especially when dealing with large numbers of arguments.
-function innerFill(order, proc, body) {
-  var dimension = order.length
-    , nargs = proc.arrayArgs.length
-    , has_index = proc.indexArgs.length>0
-    , code = []
-    , vars = []
-    , idx=0, pidx=0, i, j
-  for(i=0; i<dimension; ++i) { // Iteration variables
-    vars.push(["i",i,"=0"].join(""))
-  }
-  //Compute scan deltas
-  for(j=0; j<nargs; ++j) {
-    for(i=0; i<dimension; ++i) {
-      pidx = idx
-      idx = order[i]
-      if(i === 0) { // The innermost/fastest dimension's delta is simply its stride
-        vars.push(["d",j,"s",i,"=t",j,"p",idx].join(""))
-      } else { // For other dimensions the delta is basically the stride minus something which essentially "rewinds" the previous (more inner) dimension
-        vars.push(["d",j,"s",i,"=(t",j,"p",idx,"-s",pidx,"*t",j,"p",pidx,")"].join(""))
-      }
-    }
-  }
-  if (vars.length > 0) {
-    code.push("var " + vars.join(","))
-  }  
-  //Scan loop
-  for(i=dimension-1; i>=0; --i) { // Start at largest stride and work your way inwards
-    idx = order[i]
-    code.push(["for(i",i,"=0;i",i,"<s",idx,";++i",i,"){"].join(""))
-  }
-  //Push body of inner loop
-  code.push(body)
-  //Advance scan pointers
-  for(i=0; i<dimension; ++i) {
-    pidx = idx
-    idx = order[i]
-    for(j=0; j<nargs; ++j) {
-      code.push(["p",j,"+=d",j,"s",i].join(""))
-    }
-    if(has_index) {
-      if(i > 0) {
-        code.push(["index[",pidx,"]-=s",pidx].join(""))
-      }
-      code.push(["++index[",idx,"]"].join(""))
-    }
-    code.push("}")
-  }
-  return code.join("\n")
+function exponent(x) {
+  return x = formatDecimalParts(Math.abs(x)), x ? x[1] : NaN;
 }
 
-// Generate "outer" loops that loop over blocks of data, applying "inner" loops to the blocks by manipulating the local variables in such a way that the inner loop only "sees" the current block.
-// TODO: If this is used, then the previous declaration (done by generateCwiseOp) of s* is essentially unnecessary.
-//       I believe the s* are not used elsewhere (in particular, I don't think they're used in the pre/post parts and "shape" is defined independently), so it would be possible to make defining the s* dependent on what loop method is being used.
-function outerFill(matched, order, proc, body) {
-  var dimension = order.length
-    , nargs = proc.arrayArgs.length
-    , blockSize = proc.blockSize
-    , has_index = proc.indexArgs.length > 0
-    , code = []
-  for(var i=0; i<nargs; ++i) {
-    code.push(["var offset",i,"=p",i].join(""))
-  }
-  //Generate loops for unmatched dimensions
-  // The order in which these dimensions are traversed is fairly arbitrary (from small stride to large stride, for the first argument)
-  // TODO: It would be nice if the order in which these loops are placed would also be somehow "optimal" (at the very least we should check that it really doesn't hurt us if they're not).
-  for(var i=matched; i<dimension; ++i) {
-    code.push(["for(var j"+i+"=SS[", order[i], "]|0;j", i, ">0;){"].join("")) // Iterate back to front
-    code.push(["if(j",i,"<",blockSize,"){"].join("")) // Either decrease j by blockSize (s = blockSize), or set it to zero (after setting s = j).
-    code.push(["s",order[i],"=j",i].join(""))
-    code.push(["j",i,"=0"].join(""))
-    code.push(["}else{s",order[i],"=",blockSize].join(""))
-    code.push(["j",i,"-=",blockSize,"}"].join(""))
-    if(has_index) {
-      code.push(["index[",order[i],"]=j",i].join(""))
+function formatGroup(grouping, thousands) {
+  return function(value, width) {
+    var i = value.length,
+        t = [],
+        j = 0,
+        g = grouping[0],
+        length = 0;
+
+    while (i > 0 && g > 0) {
+      if (length + g + 1 > width) g = Math.max(1, width - length);
+      t.push(value.substring(i -= g, i + g));
+      if ((length += g + 1) > width) break;
+      g = grouping[j = (j + 1) % grouping.length];
     }
-  }
-  for(var i=0; i<nargs; ++i) {
-    var indexStr = ["offset"+i]
-    for(var j=matched; j<dimension; ++j) {
-      indexStr.push(["j",j,"*t",i,"p",order[j]].join(""))
-    }
-    code.push(["p",i,"=(",indexStr.join("+"),")"].join(""))
-  }
-  code.push(innerFill(order, proc, body))
-  for(var i=matched; i<dimension; ++i) {
-    code.push("}")
-  }
-  return code.join("\n")
+
+    return t.reverse().join(thousands);
+  };
 }
 
-//Count the number of compatible inner orders
-// This is the length of the longest common prefix of the arrays in orders.
-// Each array in orders lists the dimensions of the correspond ndarray in order of increasing stride.
-// This is thus the maximum number of dimensions that can be efficiently traversed by simple nested loops for all arrays.
-function countMatches(orders) {
-  var matched = 0, dimension = orders[0].length
-  while(matched < dimension) {
-    for(var j=1; j<orders.length; ++j) {
-      if(orders[j][matched] !== orders[0][matched]) {
-        return matched
-      }
-    }
-    ++matched
-  }
-  return matched
+function formatNumerals(numerals) {
+  return function(value) {
+    return value.replace(/[0-9]/g, function(i) {
+      return numerals[+i];
+    });
+  };
 }
 
-//Processes a block according to the given data types
-// Replaces variable names by different ones, either "local" ones (that are then ferried in and out of the given array) or ones matching the arguments that the function performing the ultimate loop will accept.
-function processBlock(block, proc, dtypes) {
-  var code = block.body
-  var pre = []
-  var post = []
-  for(var i=0; i<block.args.length; ++i) {
-    var carg = block.args[i]
-    if(carg.count <= 0) {
-      continue
+// [[fill]align][sign][symbol][0][width][,][.precision][~][type]
+var re = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
+
+function formatSpecifier(specifier) {
+  if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
+  var match;
+  return new FormatSpecifier({
+    fill: match[1],
+    align: match[2],
+    sign: match[3],
+    symbol: match[4],
+    zero: match[5],
+    width: match[6],
+    comma: match[7],
+    precision: match[8] && match[8].slice(1),
+    trim: match[9],
+    type: match[10]
+  });
+}
+
+formatSpecifier.prototype = FormatSpecifier.prototype; // instanceof
+
+function FormatSpecifier(specifier) {
+  this.fill = specifier.fill === undefined ? " " : specifier.fill + "";
+  this.align = specifier.align === undefined ? ">" : specifier.align + "";
+  this.sign = specifier.sign === undefined ? "-" : specifier.sign + "";
+  this.symbol = specifier.symbol === undefined ? "" : specifier.symbol + "";
+  this.zero = !!specifier.zero;
+  this.width = specifier.width === undefined ? undefined : +specifier.width;
+  this.comma = !!specifier.comma;
+  this.precision = specifier.precision === undefined ? undefined : +specifier.precision;
+  this.trim = !!specifier.trim;
+  this.type = specifier.type === undefined ? "" : specifier.type + "";
+}
+
+FormatSpecifier.prototype.toString = function() {
+  return this.fill
+      + this.align
+      + this.sign
+      + this.symbol
+      + (this.zero ? "0" : "")
+      + (this.width === undefined ? "" : Math.max(1, this.width | 0))
+      + (this.comma ? "," : "")
+      + (this.precision === undefined ? "" : "." + Math.max(0, this.precision | 0))
+      + (this.trim ? "~" : "")
+      + this.type;
+};
+
+// Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
+function formatTrim(s) {
+  out: for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
+    switch (s[i]) {
+      case ".": i0 = i1 = i; break;
+      case "0": if (i0 === 0) i0 = i; i1 = i; break;
+      default: if (!+s[i]) break out; if (i0 > 0) i0 = 0; break;
     }
-    var re = new RegExp(carg.name, "g")
-    var ptrStr = ""
-    var arrNum = proc.arrayArgs.indexOf(i)
-    switch(proc.argTypes[i]) {
-      case "offset":
-        var offArgIndex = proc.offsetArgIndex.indexOf(i)
-        var offArg = proc.offsetArgs[offArgIndex]
-        arrNum = offArg.array
-        ptrStr = "+q" + offArgIndex // Adds offset to the "pointer" in the array
-      case "array":
-        ptrStr = "p" + arrNum + ptrStr
-        var localStr = "l" + i
-        var arrStr = "a" + arrNum
-        if (proc.arrayBlockIndices[arrNum] === 0) { // Argument to body is just a single value from this array
-          if(carg.count === 1) { // Argument/array used only once(?)
-            if(dtypes[arrNum] === "generic") {
-              if(carg.lvalue) {
-                pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // Is this necessary if the argument is ONLY used as an lvalue? (keep in mind that we can have a += something, so we would actually need to check carg.rvalue)
-                code = code.replace(re, localStr)
-                post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-              } else {
-                code = code.replace(re, [arrStr, ".get(", ptrStr, ")"].join(""))
-              }
-            } else {
-              code = code.replace(re, [arrStr, "[", ptrStr, "]"].join(""))
+  }
+  return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
+}
+
+var prefixExponent;
+
+function formatPrefixAuto(x, p) {
+  var d = formatDecimalParts(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1],
+      i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
+      n = coefficient.length;
+  return i === n ? coefficient
+      : i > n ? coefficient + new Array(i - n + 1).join("0")
+      : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
+      : "0." + new Array(1 - i).join("0") + formatDecimalParts(x, Math.max(0, p + i - 1))[0]; // less than 1y!
+}
+
+function formatRounded(x, p) {
+  var d = formatDecimalParts(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1];
+  return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
+      : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
+      : coefficient + new Array(exponent - coefficient.length + 2).join("0");
+}
+
+var formatTypes = {
+  "%": function(x, p) { return (x * 100).toFixed(p); },
+  "b": function(x) { return Math.round(x).toString(2); },
+  "c": function(x) { return x + ""; },
+  "d": formatDecimal,
+  "e": function(x, p) { return x.toExponential(p); },
+  "f": function(x, p) { return x.toFixed(p); },
+  "g": function(x, p) { return x.toPrecision(p); },
+  "o": function(x) { return Math.round(x).toString(8); },
+  "p": function(x, p) { return formatRounded(x * 100, p); },
+  "r": formatRounded,
+  "s": formatPrefixAuto,
+  "X": function(x) { return Math.round(x).toString(16).toUpperCase(); },
+  "x": function(x) { return Math.round(x).toString(16); }
+};
+
+function identity(x) {
+  return x;
+}
+
+var map = Array.prototype.map,
+    prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
+
+function formatLocale(locale) {
+  var group = locale.grouping === undefined || locale.thousands === undefined ? identity : formatGroup(map.call(locale.grouping, Number), locale.thousands + ""),
+      currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
+      currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
+      decimal = locale.decimal === undefined ? "." : locale.decimal + "",
+      numerals = locale.numerals === undefined ? identity : formatNumerals(map.call(locale.numerals, String)),
+      percent = locale.percent === undefined ? "%" : locale.percent + "",
+      minus = locale.minus === undefined ? "-" : locale.minus + "",
+      nan = locale.nan === undefined ? "NaN" : locale.nan + "";
+
+  function newFormat(specifier) {
+    specifier = formatSpecifier(specifier);
+
+    var fill = specifier.fill,
+        align = specifier.align,
+        sign = specifier.sign,
+        symbol = specifier.symbol,
+        zero = specifier.zero,
+        width = specifier.width,
+        comma = specifier.comma,
+        precision = specifier.precision,
+        trim = specifier.trim,
+        type = specifier.type;
+
+    // The "n" type is an alias for ",g".
+    if (type === "n") comma = true, type = "g";
+
+    // The "" type, and any invalid type, is an alias for ".12~g".
+    else if (!formatTypes[type]) precision === undefined && (precision = 12), trim = true, type = "g";
+
+    // If zero fill is specified, padding goes after sign and before digits.
+    if (zero || (fill === "0" && align === "=")) zero = true, fill = "0", align = "=";
+
+    // Compute the prefix and suffix.
+    // For SI-prefix, the suffix is lazily computed.
+    var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
+        suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
+
+    // What format function should we use?
+    // Is this an integer type?
+    // Can this type generate exponential notation?
+    var formatType = formatTypes[type],
+        maybeSuffix = /[defgprs%]/.test(type);
+
+    // Set the default precision if not specified,
+    // or clamp the specified precision to the supported range.
+    // For significant precision, it must be in [1, 21].
+    // For fixed precision, it must be in [0, 20].
+    precision = precision === undefined ? 6
+        : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision))
+        : Math.max(0, Math.min(20, precision));
+
+    function format(value) {
+      var valuePrefix = prefix,
+          valueSuffix = suffix,
+          i, n, c;
+
+      if (type === "c") {
+        valueSuffix = formatType(value) + valueSuffix;
+        value = "";
+      } else {
+        value = +value;
+
+        // Determine the sign. -0 is not less than 0, but 1 / -0 is!
+        var valueNegative = value < 0 || 1 / value < 0;
+
+        // Perform the initial formatting.
+        value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
+
+        // Trim insignificant zeros.
+        if (trim) value = formatTrim(value);
+
+        // If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
+        if (valueNegative && +value === 0 && sign !== "+") valueNegative = false;
+
+        // Compute the prefix and suffix.
+        valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
+        valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
+
+        // Break the formatted value into the integer “value” part that can be
+        // grouped, and fractional or exponential “suffix” part that is not.
+        if (maybeSuffix) {
+          i = -1, n = value.length;
+          while (++i < n) {
+            if (c = value.charCodeAt(i), 48 > c || c > 57) {
+              valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
+              value = value.slice(0, i);
+              break;
             }
-          } else if(dtypes[arrNum] === "generic") {
-            pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // TODO: Could we optimize by checking for carg.rvalue?
-            code = code.replace(re, localStr)
-            if(carg.lvalue) {
-              post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-            }
-          } else {
-            pre.push(["var ", localStr, "=", arrStr, "[", ptrStr, "]"].join("")) // TODO: Could we optimize by checking for carg.rvalue?
-            code = code.replace(re, localStr)
-            if(carg.lvalue) {
-              post.push([arrStr, "[", ptrStr, "]=", localStr].join(""))
-            }
-          }
-        } else { // Argument to body is a "block"
-          var reStrArr = [carg.name], ptrStrArr = [ptrStr]
-          for(var j=0; j<Math.abs(proc.arrayBlockIndices[arrNum]); j++) {
-            reStrArr.push("\\s*\\[([^\\]]+)\\]")
-            ptrStrArr.push("$" + (j+1) + "*t" + arrNum + "b" + j) // Matched index times stride
-          }
-          re = new RegExp(reStrArr.join(""), "g")
-          ptrStr = ptrStrArr.join("+")
-          if(dtypes[arrNum] === "generic") {
-            /*if(carg.lvalue) {
-              pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // Is this necessary if the argument is ONLY used as an lvalue? (keep in mind that we can have a += something, so we would actually need to check carg.rvalue)
-              code = code.replace(re, localStr)
-              post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-            } else {
-              code = code.replace(re, [arrStr, ".get(", ptrStr, ")"].join(""))
-            }*/
-            throw new Error("cwise: Generic arrays not supported in combination with blocks!")
-          } else {
-            // This does not produce any local variables, even if variables are used multiple times. It would be possible to do so, but it would complicate things quite a bit.
-            code = code.replace(re, [arrStr, "[", ptrStr, "]"].join(""))
           }
         }
-      break
-      case "scalar":
-        code = code.replace(re, "Y" + proc.scalarArgs.indexOf(i))
-      break
-      case "index":
-        code = code.replace(re, "index")
-      break
-      case "shape":
-        code = code.replace(re, "shape")
-      break
-    }
-  }
-  return [pre.join("\n"), code, post.join("\n")].join("\n").trim()
-}
-
-function typeSummary(dtypes) {
-  var summary = new Array(dtypes.length)
-  var allEqual = true
-  for(var i=0; i<dtypes.length; ++i) {
-    var t = dtypes[i]
-    var digits = t.match(/\d+/)
-    if(!digits) {
-      digits = ""
-    } else {
-      digits = digits[0]
-    }
-    if(t.charAt(0) === 0) {
-      summary[i] = "u" + t.charAt(1) + digits
-    } else {
-      summary[i] = t.charAt(0) + digits
-    }
-    if(i > 0) {
-      allEqual = allEqual && summary[i] === summary[i-1]
-    }
-  }
-  if(allEqual) {
-    return summary[0]
-  }
-  return summary.join("")
-}
-
-//Generates a cwise operator
-function generateCWiseOp(proc, typesig) {
-
-  //Compute dimension
-  // Arrays get put first in typesig, and there are two entries per array (dtype and order), so this gets the number of dimensions in the first array arg.
-  var dimension = (typesig[1].length - Math.abs(proc.arrayBlockIndices[0]))|0
-  var orders = new Array(proc.arrayArgs.length)
-  var dtypes = new Array(proc.arrayArgs.length)
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    dtypes[i] = typesig[2*i]
-    orders[i] = typesig[2*i+1]
-  }
-  
-  //Determine where block and loop indices start and end
-  var blockBegin = [], blockEnd = [] // These indices are exposed as blocks
-  var loopBegin = [], loopEnd = [] // These indices are iterated over
-  var loopOrders = [] // orders restricted to the loop indices
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    if (proc.arrayBlockIndices[i]<0) {
-      loopBegin.push(0)
-      loopEnd.push(dimension)
-      blockBegin.push(dimension)
-      blockEnd.push(dimension+proc.arrayBlockIndices[i])
-    } else {
-      loopBegin.push(proc.arrayBlockIndices[i]) // Non-negative
-      loopEnd.push(proc.arrayBlockIndices[i]+dimension)
-      blockBegin.push(0)
-      blockEnd.push(proc.arrayBlockIndices[i])
-    }
-    var newOrder = []
-    for(var j=0; j<orders[i].length; j++) {
-      if (loopBegin[i]<=orders[i][j] && orders[i][j]<loopEnd[i]) {
-        newOrder.push(orders[i][j]-loopBegin[i]) // If this is a loop index, put it in newOrder, subtracting loopBegin, to make sure that all loopOrders are using a common set of indices.
       }
-    }
-    loopOrders.push(newOrder)
-  }
 
-  //First create arguments for procedure
-  var arglist = ["SS"] // SS is the overall shape over which we iterate
-  var code = ["'use strict'"]
-  var vars = []
-  
-  for(var j=0; j<dimension; ++j) {
-    vars.push(["s", j, "=SS[", j, "]"].join("")) // The limits for each dimension.
-  }
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    arglist.push("a"+i) // Actual data array
-    arglist.push("t"+i) // Strides
-    arglist.push("p"+i) // Offset in the array at which the data starts (also used for iterating over the data)
-    
-    for(var j=0; j<dimension; ++j) { // Unpack the strides into vars for looping
-      vars.push(["t",i,"p",j,"=t",i,"[",loopBegin[i]+j,"]"].join(""))
-    }
-    
-    for(var j=0; j<Math.abs(proc.arrayBlockIndices[i]); ++j) { // Unpack the strides into vars for block iteration
-      vars.push(["t",i,"b",j,"=t",i,"[",blockBegin[i]+j,"]"].join(""))
-    }
-  }
-  for(var i=0; i<proc.scalarArgs.length; ++i) {
-    arglist.push("Y" + i)
-  }
-  if(proc.shapeArgs.length > 0) {
-    vars.push("shape=SS.slice(0)") // Makes the shape over which we iterate available to the user defined functions (so you can use width/height for example)
-  }
-  if(proc.indexArgs.length > 0) {
-    // Prepare an array to keep track of the (logical) indices, initialized to dimension zeroes.
-    var zeros = new Array(dimension)
-    for(var i=0; i<dimension; ++i) {
-      zeros[i] = "0"
-    }
-    vars.push(["index=[", zeros.join(","), "]"].join(""))
-  }
-  for(var i=0; i<proc.offsetArgs.length; ++i) { // Offset arguments used for stencil operations
-    var off_arg = proc.offsetArgs[i]
-    var init_string = []
-    for(var j=0; j<off_arg.offset.length; ++j) {
-      if(off_arg.offset[j] === 0) {
-        continue
-      } else if(off_arg.offset[j] === 1) {
-        init_string.push(["t", off_arg.array, "p", j].join(""))      
-      } else {
-        init_string.push([off_arg.offset[j], "*t", off_arg.array, "p", j].join(""))
+      // If the fill character is not "0", grouping is applied before padding.
+      if (comma && !zero) value = group(value, Infinity);
+
+      // Compute the padding.
+      var length = valuePrefix.length + value.length + valueSuffix.length,
+          padding = length < width ? new Array(width - length + 1).join(fill) : "";
+
+      // If the fill character is "0", grouping is applied after padding.
+      if (comma && zero) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
+
+      // Reconstruct the final output based on the desired alignment.
+      switch (align) {
+        case "<": value = valuePrefix + value + valueSuffix + padding; break;
+        case "=": value = valuePrefix + padding + value + valueSuffix; break;
+        case "^": value = padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length); break;
+        default: value = padding + valuePrefix + value + valueSuffix; break;
       }
+
+      return numerals(value);
     }
-    if(init_string.length === 0) {
-      vars.push("q" + i + "=0")
-    } else {
-      vars.push(["q", i, "=", init_string.join("+")].join(""))
-    }
+
+    format.toString = function() {
+      return specifier + "";
+    };
+
+    return format;
   }
 
-  //Prepare this variables
-  var thisVars = uniq([].concat(proc.pre.thisVars)
-                      .concat(proc.body.thisVars)
-                      .concat(proc.post.thisVars))
-  vars = vars.concat(thisVars)
-  if (vars.length > 0) {
-    code.push("var " + vars.join(","))
-  }
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    code.push("p"+i+"|=0")
-  }
-  
-  //Inline prelude
-  if(proc.pre.body.length > 3) {
-    code.push(processBlock(proc.pre, proc, dtypes))
+  function formatPrefix(specifier, value) {
+    var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)),
+        e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
+        k = Math.pow(10, -e),
+        prefix = prefixes[8 + e / 3];
+    return function(value) {
+      return f(k * value) + prefix;
+    };
   }
 
-  //Process body
-  var body = processBlock(proc.body, proc, dtypes)
-  var matched = countMatches(loopOrders)
-  if(matched < dimension) {
-    code.push(outerFill(matched, loopOrders[0], proc, body)) // TODO: Rather than passing loopOrders[0], it might be interesting to look at passing an order that represents the majority of the arguments for example.
-  } else {
-    code.push(innerFill(loopOrders[0], proc, body))
-  }
-
-  //Inline epilog
-  if(proc.post.body.length > 3) {
-    code.push(processBlock(proc.post, proc, dtypes))
-  }
-  
-  if(proc.debug) {
-    console.log("-----Generated cwise routine for ", typesig, ":\n" + code.join("\n") + "\n----------")
-  }
-  
-  var loopName = [(proc.funcName||"unnamed"), "_cwise_loop_", orders[0].join("s"),"m",matched,typeSummary(dtypes)].join("")
-  var f = new Function(["function ",loopName,"(", arglist.join(","),"){", code.join("\n"),"} return ", loopName].join(""))
-  return f()
-}
-module.exports = generateCWiseOp
-
-},{"uniq":374}],86:[function(_dereq_,module,exports){
-"use strict"
-
-// The function below is called when constructing a cwise function object, and does the following:
-// A function object is constructed which accepts as argument a compilation function and returns another function.
-// It is this other function that is eventually returned by createThunk, and this function is the one that actually
-// checks whether a certain pattern of arguments has already been used before and compiles new loops as needed.
-// The compilation passed to the first function object is used for compiling new functions.
-// Once this function object is created, it is called with compile as argument, where the first argument of compile
-// is bound to "proc" (essentially containing a preprocessed version of the user arguments to cwise).
-// So createThunk roughly works like this:
-// function createThunk(proc) {
-//   var thunk = function(compileBound) {
-//     var CACHED = {}
-//     return function(arrays and scalars) {
-//       if (dtype and order of arrays in CACHED) {
-//         var func = CACHED[dtype and order of arrays]
-//       } else {
-//         var func = CACHED[dtype and order of arrays] = compileBound(dtype and order of arrays)
-//       }
-//       return func(arrays and scalars)
-//     }
-//   }
-//   return thunk(compile.bind1(proc))
-// }
-
-var compile = _dereq_("./compile.js")
-
-function createThunk(proc) {
-  var code = ["'use strict'", "var CACHED={}"]
-  var vars = []
-  var thunkName = proc.funcName + "_cwise_thunk"
-  
-  //Build thunk
-  code.push(["return function ", thunkName, "(", proc.shimArgs.join(","), "){"].join(""))
-  var typesig = []
-  var string_typesig = []
-  var proc_args = [["array",proc.arrayArgs[0],".shape.slice(", // Slice shape so that we only retain the shape over which we iterate (which gets passed to the cwise operator as SS).
-                    Math.max(0,proc.arrayBlockIndices[0]),proc.arrayBlockIndices[0]<0?(","+proc.arrayBlockIndices[0]+")"):")"].join("")]
-  var shapeLengthConditions = [], shapeConditions = []
-  // Process array arguments
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    var j = proc.arrayArgs[i]
-    vars.push(["t", j, "=array", j, ".dtype,",
-               "r", j, "=array", j, ".order"].join(""))
-    typesig.push("t" + j)
-    typesig.push("r" + j)
-    string_typesig.push("t"+j)
-    string_typesig.push("r"+j+".join()")
-    proc_args.push("array" + j + ".data")
-    proc_args.push("array" + j + ".stride")
-    proc_args.push("array" + j + ".offset|0")
-    if (i>0) { // Gather conditions to check for shape equality (ignoring block indices)
-      shapeLengthConditions.push("array" + proc.arrayArgs[0] + ".shape.length===array" + j + ".shape.length+" + (Math.abs(proc.arrayBlockIndices[0])-Math.abs(proc.arrayBlockIndices[i])))
-      shapeConditions.push("array" + proc.arrayArgs[0] + ".shape[shapeIndex+" + Math.max(0,proc.arrayBlockIndices[0]) + "]===array" + j + ".shape[shapeIndex+" + Math.max(0,proc.arrayBlockIndices[i]) + "]")
-    }
-  }
-  // Check for shape equality
-  if (proc.arrayArgs.length > 1) {
-    code.push("if (!(" + shapeLengthConditions.join(" && ") + ")) throw new Error('cwise: Arrays do not all have the same dimensionality!')")
-    code.push("for(var shapeIndex=array" + proc.arrayArgs[0] + ".shape.length-" + Math.abs(proc.arrayBlockIndices[0]) + "; shapeIndex-->0;) {")
-    code.push("if (!(" + shapeConditions.join(" && ") + ")) throw new Error('cwise: Arrays do not all have the same shape!')")
-    code.push("}")
-  }
-  // Process scalar arguments
-  for(var i=0; i<proc.scalarArgs.length; ++i) {
-    proc_args.push("scalar" + proc.scalarArgs[i])
-  }
-  // Check for cached function (and if not present, generate it)
-  vars.push(["type=[", string_typesig.join(","), "].join()"].join(""))
-  vars.push("proc=CACHED[type]")
-  code.push("var " + vars.join(","))
-  
-  code.push(["if(!proc){",
-             "CACHED[type]=proc=compile([", typesig.join(","), "])}",
-             "return proc(", proc_args.join(","), ")}"].join(""))
-
-  if(proc.debug) {
-    console.log("-----Generated thunk:\n" + code.join("\n") + "\n----------")
-  }
-  
-  //Compile thunk
-  var thunk = new Function("compile", code.join("\n"))
-  return thunk(compile.bind(undefined, proc))
+  return {
+    format: newFormat,
+    formatPrefix: formatPrefix
+  };
 }
 
-module.exports = createThunk
+var locale;
 
-},{"./compile.js":85}],87:[function(_dereq_,module,exports){
+defaultLocale({
+  decimal: ".",
+  thousands: ",",
+  grouping: [3],
+  currency: ["$", ""],
+  minus: "-"
+});
+
+function defaultLocale(definition) {
+  locale = formatLocale(definition);
+  exports.format = locale.format;
+  exports.formatPrefix = locale.formatPrefix;
+  return locale;
+}
+
+function precisionFixed(step) {
+  return Math.max(0, -exponent(Math.abs(step)));
+}
+
+function precisionPrefix(step, value) {
+  return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3 - exponent(Math.abs(step)));
+}
+
+function precisionRound(step, max) {
+  step = Math.abs(step), max = Math.abs(max) - step;
+  return Math.max(0, exponent(max) - exponent(step)) + 1;
+}
+
+exports.FormatSpecifier = FormatSpecifier;
+exports.formatDefaultLocale = defaultLocale;
+exports.formatLocale = formatLocale;
+exports.formatSpecifier = formatSpecifier;
+exports.precisionFixed = precisionFixed;
+exports.precisionPrefix = precisionPrefix;
+exports.precisionRound = precisionRound;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+},{}],84:[function(_dereq_,module,exports){
 // https://d3js.org/d3-time-format/ v2.2.3 Copyright 2019 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, _dereq_('d3-time')) :
@@ -21732,7 +18883,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 
-},{"d3-time":88}],88:[function(_dereq_,module,exports){
+},{"d3-time":85}],85:[function(_dereq_,module,exports){
 // https://d3js.org/d3-time/ v1.1.0 Copyright 2019 Mike Bostock
 (function (global, factory) {
 typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
@@ -22107,14 +19258,16 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
 
-},{}],89:[function(_dereq_,module,exports){
+},{}],86:[function(_dereq_,module,exports){
+arguments[4][85][0].apply(exports,arguments)
+},{"dup":85}],87:[function(_dereq_,module,exports){
 module.exports = function () {
     for (var i = 0; i < arguments.length; i++) {
         if (arguments[i] !== undefined) return arguments[i];
     }
 };
 
-},{}],90:[function(_dereq_,module,exports){
+},{}],88:[function(_dereq_,module,exports){
 "use strict"
 
 var ch = _dereq_("incremental-convex-hull")
@@ -22274,7 +19427,7 @@ function triangulate(points, includePointAtInfinity) {
 
   return hull
 }
-},{"incremental-convex-hull":273,"uniq":374}],91:[function(_dereq_,module,exports){
+},{"incremental-convex-hull":266,"uniq":357}],89:[function(_dereq_,module,exports){
 (function (Buffer){(function (){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -22378,7 +19531,7 @@ module.exports.denormalized = function(n) {
   return !(hi & 0x7ff00000)
 }
 }).call(this)}).call(this,_dereq_("buffer").Buffer)
-},{"buffer":56}],92:[function(_dereq_,module,exports){
+},{"buffer":55}],90:[function(_dereq_,module,exports){
 module.exports = function(dtype) {
   switch (dtype) {
     case 'int8':
@@ -22404,7 +19557,7 @@ module.exports = function(dtype) {
   }
 }
 
-},{}],93:[function(_dereq_,module,exports){
+},{}],91:[function(_dereq_,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -22454,7 +19607,7 @@ function dupe(count, value) {
 }
 
 module.exports = dupe
-},{}],94:[function(_dereq_,module,exports){
+},{}],92:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
@@ -22488,7 +19641,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":374}],95:[function(_dereq_,module,exports){
+},{"uniq":357}],93:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = extractPlanes
@@ -22505,7 +19658,7 @@ function extractPlanes(M, zNear, zFar) {
     [ zf*M[12] - M[8], zf*M[13] - M[9], zf*M[14] - M[10], zf*M[15] - M[11] ]
   ]
 }
-},{}],96:[function(_dereq_,module,exports){
+},{}],94:[function(_dereq_,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -22531,7 +19684,7 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{"is-string-blank":282}],97:[function(_dereq_,module,exports){
+},{"is-string-blank":272}],95:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createFilteredVector
@@ -22824,69 +19977,7 @@ function createFilteredVector(initState, initVelocity, initTime) {
   }
 }
 
-},{"binary-search-bounds":98,"cubic-hermite":83}],98:[function(_dereq_,module,exports){
-"use strict"
-
-function compileSearch(funcName, predicate, reversed, extraArgs, useNdarray, earlyOut) {
-  var code = [
-    "function ", funcName, "(a,l,h,", extraArgs.join(","),  "){",
-earlyOut ? "" : "var i=", (reversed ? "l-1" : "h+1"),
-";while(l<=h){\
-var m=(l+h)>>>1,x=a", useNdarray ? ".get(m)" : "[m]"]
-  if(earlyOut) {
-    if(predicate.indexOf("c") < 0) {
-      code.push(";if(x===y){return m}else if(x<=y){")
-    } else {
-      code.push(";var p=c(x,y);if(p===0){return m}else if(p<=0){")
-    }
-  } else {
-    code.push(";if(", predicate, "){i=m;")
-  }
-  if(reversed) {
-    code.push("l=m+1}else{h=m-1}")
-  } else {
-    code.push("h=m-1}else{l=m+1}")
-  }
-  code.push("}")
-  if(earlyOut) {
-    code.push("return -1};")
-  } else {
-    code.push("return i};")
-  }
-  return code.join("")
-}
-
-function compileBoundsSearch(predicate, reversed, suffix, earlyOut) {
-  var result = new Function([
-  compileSearch("A", "x" + predicate + "y", reversed, ["y"], false, earlyOut),
-  compileSearch("B", "x" + predicate + "y", reversed, ["y"], true, earlyOut),
-  compileSearch("P", "c(x,y)" + predicate + "0", reversed, ["y", "c"], false, earlyOut),
-  compileSearch("Q", "c(x,y)" + predicate + "0", reversed, ["y", "c"], true, earlyOut),
-"function dispatchBsearch", suffix, "(a,y,c,l,h){\
-if(a.shape){\
-if(typeof(c)==='function'){\
-return Q(a,(l===undefined)?0:l|0,(h===undefined)?a.shape[0]-1:h|0,y,c)\
-}else{\
-return B(a,(c===undefined)?0:c|0,(l===undefined)?a.shape[0]-1:l|0,y)\
-}}else{\
-if(typeof(c)==='function'){\
-return P(a,(l===undefined)?0:l|0,(h===undefined)?a.length-1:h|0,y,c)\
-}else{\
-return A(a,(c===undefined)?0:c|0,(l===undefined)?a.length-1:l|0,y)\
-}}}\
-return dispatchBsearch", suffix].join(""))
-  return result()
-}
-
-module.exports = {
-  ge: compileBoundsSearch(">=", false, "GE"),
-  gt: compileBoundsSearch(">", false, "GT"),
-  lt: compileBoundsSearch("<", true, "LT"),
-  le: compileBoundsSearch("<=", true, "LE"),
-  eq: compileBoundsSearch("-", true, "EQ", true)
-}
-
-},{}],99:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42,"cubic-hermite":82}],96:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -23883,76 +20974,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],100:[function(_dereq_,module,exports){
-// transliterated from the python snippet here:
-// http://en.wikipedia.org/wiki/Lanczos_approximation
-
-var g = 7;
-var p = [
-    0.99999999999980993,
-    676.5203681218851,
-    -1259.1392167224028,
-    771.32342877765313,
-    -176.61502916214059,
-    12.507343278686905,
-    -0.13857109526572012,
-    9.9843695780195716e-6,
-    1.5056327351493116e-7
-];
-
-var g_ln = 607/128;
-var p_ln = [
-    0.99999999999999709182,
-    57.156235665862923517,
-    -59.597960355475491248,
-    14.136097974741747174,
-    -0.49191381609762019978,
-    0.33994649984811888699e-4,
-    0.46523628927048575665e-4,
-    -0.98374475304879564677e-4,
-    0.15808870322491248884e-3,
-    -0.21026444172410488319e-3,
-    0.21743961811521264320e-3,
-    -0.16431810653676389022e-3,
-    0.84418223983852743293e-4,
-    -0.26190838401581408670e-4,
-    0.36899182659531622704e-5
-];
-
-// Spouge approximation (suitable for large arguments)
-function lngamma(z) {
-
-    if(z < 0) return Number('0/0');
-    var x = p_ln[0];
-    for(var i = p_ln.length - 1; i > 0; --i) x += p_ln[i] / (z + i);
-    var t = z + g_ln + 0.5;
-    return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x)-Math.log(z);
-}
-
-module.exports = function gamma (z) {
-    if (z < 0.5) {
-        return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
-    }
-    else if(z > 100) return Math.exp(lngamma(z));
-    else {
-        z -= 1;
-        var x = p[0];
-        for (var i = 1; i < g + 2; i++) {
-            x += p[i] / (z + i);
-        }
-        var t = z + g + 0.5;
-
-        return Math.sqrt(2 * Math.PI)
-            * Math.pow(t, z + 0.5)
-            * Math.exp(-t)
-            * x
-        ;
-    }
-};
-
-module.exports.log = lngamma;
-
-},{}],101:[function(_dereq_,module,exports){
+},{}],97:[function(_dereq_,module,exports){
 module.exports = getCanvasContext
 function getCanvasContext (type, opts) {
   if (typeof type !== 'string') {
@@ -23992,7 +21014,7 @@ function getCanvasContext (type, opts) {
   return (gl || null) // ensure null on fail
 }
 
-},{}],102:[function(_dereq_,module,exports){
+},{}],98:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createAxes
@@ -24600,7 +21622,7 @@ function createAxes(gl, options) {
   return axes
 }
 
-},{"./lib/background.js":103,"./lib/cube.js":104,"./lib/lines.js":105,"./lib/text.js":107,"./lib/ticks.js":108}],103:[function(_dereq_,module,exports){
+},{"./lib/background.js":99,"./lib/cube.js":100,"./lib/lines.js":101,"./lib/text.js":103,"./lib/ticks.js":104}],99:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createBackgroundCube
@@ -24713,7 +21735,7 @@ function createBackgroundCube(gl) {
   return new BackgroundCube(gl, buffer, vao, shader)
 }
 
-},{"./shaders":106,"gl-buffer":111,"gl-vao":188}],104:[function(_dereq_,module,exports){
+},{"./shaders":102,"gl-buffer":106,"gl-vao":181}],100:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = getCubeEdges
@@ -24955,7 +21977,7 @@ function getCubeEdges(model, view, projection, bounds, ortho) {
   //Return result
   return CUBE_RESULT
 }
-},{"bit-twiddle":44,"gl-mat4/multiply":143,"robust-orientation":344,"split-polygon":362}],105:[function(_dereq_,module,exports){
+},{"bit-twiddle":43,"gl-mat4/multiply":138,"robust-orientation":329,"split-polygon":346}],101:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports    = createLines
@@ -25165,7 +22187,7 @@ function createLines(gl, bounds, ticks) {
   return new Lines(gl, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset)
 }
 
-},{"./shaders":106,"gl-buffer":111,"gl-vao":188}],106:[function(_dereq_,module,exports){
+},{"./shaders":102,"gl-buffer":106,"gl-vao":181}],102:[function(_dereq_,module,exports){
 'use strict'
 
 var glslify = _dereq_('glslify')
@@ -25196,7 +22218,7 @@ exports.bg = function(gl) {
   ])
 }
 
-},{"gl-shader":169,"glslify":109}],107:[function(_dereq_,module,exports){
+},{"gl-shader":163,"glslify":262}],103:[function(_dereq_,module,exports){
 (function (process){(function (){
 "use strict"
 
@@ -25418,7 +22440,7 @@ function createTextSprites(
 }
 
 }).call(this)}).call(this,_dereq_('_process'))
-},{"./shaders":106,"_process":330,"gl-buffer":111,"gl-vao":188,"vectorize-text":375}],108:[function(_dereq_,module,exports){
+},{"./shaders":102,"_process":315,"gl-buffer":106,"gl-vao":181,"vectorize-text":358}],104:[function(_dereq_,module,exports){
 'use strict'
 
 exports.create   = defaultTicks
@@ -25499,19 +22521,7 @@ function ticksEqual(ticksA, ticksB) {
   }
   return true
 }
-},{}],109:[function(_dereq_,module,exports){
-module.exports = function(strings) {
-  if (typeof strings === 'string') strings = [strings]
-  var exprs = [].slice.call(arguments,1)
-  var parts = []
-  for (var i = 0; i < strings.length-1; i++) {
-    parts.push(strings[i], exprs[i] || '')
-  }
-  parts.push(strings[i])
-  return parts.join('')
-}
-
-},{}],110:[function(_dereq_,module,exports){
+},{}],105:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = axesProperties
@@ -25655,7 +22665,7 @@ i_loop:
   return ranges
 }
 
-},{"./lib/cube.js":104,"extract-frustum-planes":95,"gl-mat4/multiply":143,"gl-mat4/transpose":154,"gl-vec4/transformMat4":259,"split-polygon":362}],111:[function(_dereq_,module,exports){
+},{"./lib/cube.js":100,"extract-frustum-planes":93,"gl-mat4/multiply":138,"gl-mat4/transpose":149,"gl-vec4/transformMat4":252,"split-polygon":346}],106:[function(_dereq_,module,exports){
 "use strict"
 
 var pool = _dereq_("typedarray-pool")
@@ -25809,7 +22819,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":305,"ndarray-ops":300,"typedarray-pool":372}],112:[function(_dereq_,module,exports){
+},{"ndarray":293,"ndarray-ops":288,"typedarray-pool":355}],107:[function(_dereq_,module,exports){
 "use strict";
 
 var vec3 = _dereq_('gl-vec3');
@@ -25947,7 +22957,7 @@ module.exports.createConeMesh = function(gl, params) {
 	});
 }
 
-},{"./create_mesh":113,"./lib/shaders":114,"gl-vec3":207}],113:[function(_dereq_,module,exports){
+},{"./create_mesh":108,"./lib/shaders":109,"gl-vec3":200}],108:[function(_dereq_,module,exports){
 'use strict'
 
 var createShader  = _dereq_('gl-shader')
@@ -26522,7 +23532,7 @@ function createVectorMesh(gl, params, opts) {
 
 module.exports = createVectorMesh
 
-},{"colormap":75,"gl-buffer":111,"gl-mat4/invert":141,"gl-mat4/multiply":143,"gl-shader":169,"gl-texture2d":184,"gl-vao":188,"ndarray":305}],114:[function(_dereq_,module,exports){
+},{"colormap":74,"gl-buffer":106,"gl-mat4/invert":136,"gl-mat4/multiply":138,"gl-shader":163,"gl-texture2d":177,"gl-vao":181,"ndarray":293}],109:[function(_dereq_,module,exports){
 var glslify       = _dereq_('glslify')
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the cone vertex and normal at the given index.\n//\n// The returned vertex is for a cone with its top at origin and height of 1.0,\n// pointing in the direction of the vector attribute.\n//\n// Each cone is made up of a top vertex, a center base vertex and base perimeter vertices.\n// These vertices are used to make up the triangles of the cone by the following:\n//   segment + 0 top vertex\n//   segment + 1 perimeter vertex a+1\n//   segment + 2 perimeter vertex a\n//   segment + 3 center base vertex\n//   segment + 4 perimeter vertex a\n//   segment + 5 perimeter vertex a+1\n// Where segment is the number of the radial segment * 6 and a is the angle at that radial segment.\n// To go from index to segment, floor(index / 6)\n// To go from segment to angle, 2*pi * (segment/segmentCount)\n// To go from index to segment index, index - (segment*6)\n//\nvec3 getConePosition(vec3 d, float rawIndex, float coneOffset, out vec3 normal) {\n\n  const float segmentCount = 8.0;\n\n  float index = rawIndex - floor(rawIndex /\n    (segmentCount * 6.0)) *\n    (segmentCount * 6.0);\n\n  float segment = floor(0.001 + index/6.0);\n  float segmentIndex = index - (segment*6.0);\n\n  normal = -normalize(d);\n\n  if (segmentIndex > 2.99 && segmentIndex < 3.01) {\n    return mix(vec3(0.0), -d, coneOffset);\n  }\n\n  float nextAngle = (\n    (segmentIndex > 0.99 &&  segmentIndex < 1.01) ||\n    (segmentIndex > 4.99 &&  segmentIndex < 5.01)\n  ) ? 1.0 : 0.0;\n  float angle = 2.0 * 3.14159 * ((segment + nextAngle) / segmentCount);\n\n  vec3 v1 = mix(d, vec3(0.0), coneOffset);\n  vec3 v2 = v1 - d;\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d)*0.25;\n  vec3 y = v * sin(angle) * length(d)*0.25;\n  vec3 v3 = v2 + x + y;\n  if (segmentIndex < 3.0) {\n    vec3 tx = u * sin(angle);\n    vec3 ty = v * -cos(angle);\n    vec3 tangent = tx + ty;\n    normal = normalize(cross(v3 - v1, tangent));\n  }\n\n  if (segmentIndex == 0.0) {\n    return mix(d, vec3(0.0), coneOffset);\n  }\n  return v3;\n}\n\nattribute vec3 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, coneScale, coneOffset;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getConePosition(mat3(model) * ((vectorScale * coneScale) * vector), position.w, coneOffset, normal);\n  vec4 conePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * conePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(conePosition, 1.0);\n  vec4 t_position  = view * conePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = conePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
@@ -26550,7 +23560,7 @@ exports.pickShader = {
   ]
 }
 
-},{"glslify":269}],115:[function(_dereq_,module,exports){
+},{"glslify":262}],110:[function(_dereq_,module,exports){
 module.exports = {
   0: 'NONE',
   1: 'ONE',
@@ -26850,14 +23860,14 @@ module.exports = {
   37444: 'BROWSER_DEFAULT_WEBGL'
 }
 
-},{}],116:[function(_dereq_,module,exports){
+},{}],111:[function(_dereq_,module,exports){
 var gl10 = _dereq_('./1.0/numbers')
 
 module.exports = function lookupConstant (number) {
   return gl10[number]
 }
 
-},{"./1.0/numbers":115}],117:[function(_dereq_,module,exports){
+},{"./1.0/numbers":110}],112:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createErrorBars
@@ -27108,9 +24118,19 @@ function createErrorBars(options) {
   return result
 }
 
-},{"./shaders/index":119,"gl-buffer":111,"gl-vao":188}],118:[function(_dereq_,module,exports){
-arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],119:[function(_dereq_,module,exports){
+},{"./shaders/index":114,"gl-buffer":106,"gl-vao":181}],113:[function(_dereq_,module,exports){
+module.exports = function(strings) {
+  if (typeof strings === 'string') strings = [strings]
+  var exprs = [].slice.call(arguments,1)
+  var parts = []
+  for (var i = 0; i < strings.length-1; i++) {
+    parts.push(strings[i], exprs[i] || '')
+  }
+  parts.push(strings[i])
+  return parts.join('')
+}
+
+},{}],114:[function(_dereq_,module,exports){
 'use strict'
 
 var glslify = _dereq_('glslify')
@@ -27127,7 +24147,7 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":169,"glslify":118}],120:[function(_dereq_,module,exports){
+},{"gl-shader":163,"glslify":113}],115:[function(_dereq_,module,exports){
 'use strict'
 
 var createTexture = _dereq_('gl-texture2d')
@@ -27594,7 +24614,7 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":184}],121:[function(_dereq_,module,exports){
+},{"gl-texture2d":177}],116:[function(_dereq_,module,exports){
 
 var sprintf = _dereq_('sprintf-js').sprintf;
 var glConstants = _dereq_('gl-constants/lookup');
@@ -27649,7 +24669,7 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":20,"gl-constants/lookup":116,"glsl-shader-name":261,"sprintf-js":363}],122:[function(_dereq_,module,exports){
+},{"add-line-numbers":19,"gl-constants/lookup":111,"glsl-shader-name":254,"sprintf-js":347}],117:[function(_dereq_,module,exports){
 var glslify       = _dereq_('glslify')
 var createShader  = _dereq_('gl-shader')
 
@@ -27673,7 +24693,7 @@ exports.createPickShader = function(gl) {
   return createShader(gl, vertSrc, pickFrag, null, ATTRIBUTES)
 }
 
-},{"gl-shader":169,"glslify":124}],123:[function(_dereq_,module,exports){
+},{"gl-shader":163,"glslify":119}],118:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createLinePlot
@@ -28074,9 +25094,9 @@ function createLinePlot (options) {
   return linePlot
 }
 
-},{"./lib/shaders":122,"binary-search-bounds":43,"gl-buffer":111,"gl-texture2d":184,"gl-vao":188,"ndarray":305}],124:[function(_dereq_,module,exports){
-arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],125:[function(_dereq_,module,exports){
+},{"./lib/shaders":117,"binary-search-bounds":42,"gl-buffer":106,"gl-texture2d":177,"gl-vao":181,"ndarray":293}],119:[function(_dereq_,module,exports){
+arguments[4][113][0].apply(exports,arguments)
+},{"dup":113}],120:[function(_dereq_,module,exports){
 module.exports = adjoint;
 
 /**
@@ -28110,7 +25130,7 @@ function adjoint(out, a) {
     out[15] =  (a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11));
     return out;
 };
-},{}],126:[function(_dereq_,module,exports){
+},{}],121:[function(_dereq_,module,exports){
 module.exports = clone;
 
 /**
@@ -28139,7 +25159,7 @@ function clone(a) {
     out[15] = a[15];
     return out;
 };
-},{}],127:[function(_dereq_,module,exports){
+},{}],122:[function(_dereq_,module,exports){
 module.exports = copy;
 
 /**
@@ -28168,7 +25188,7 @@ function copy(out, a) {
     out[15] = a[15];
     return out;
 };
-},{}],128:[function(_dereq_,module,exports){
+},{}],123:[function(_dereq_,module,exports){
 module.exports = create;
 
 /**
@@ -28196,7 +25216,7 @@ function create() {
     out[15] = 1;
     return out;
 };
-},{}],129:[function(_dereq_,module,exports){
+},{}],124:[function(_dereq_,module,exports){
 module.exports = determinant;
 
 /**
@@ -28227,7 +25247,7 @@ function determinant(a) {
     // Calculate the determinant
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 };
-},{}],130:[function(_dereq_,module,exports){
+},{}],125:[function(_dereq_,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -28275,7 +25295,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],131:[function(_dereq_,module,exports){
+},{}],126:[function(_dereq_,module,exports){
 module.exports = fromRotation
 
 /**
@@ -28330,7 +25350,7 @@ function fromRotation(out, rad, axis) {
   return out
 }
 
-},{}],132:[function(_dereq_,module,exports){
+},{}],127:[function(_dereq_,module,exports){
 module.exports = fromRotationTranslation;
 
 /**
@@ -28384,7 +25404,7 @@ function fromRotationTranslation(out, q, v) {
     
     return out;
 };
-},{}],133:[function(_dereq_,module,exports){
+},{}],128:[function(_dereq_,module,exports){
 module.exports = fromScaling
 
 /**
@@ -28418,7 +25438,7 @@ function fromScaling(out, v) {
   return out
 }
 
-},{}],134:[function(_dereq_,module,exports){
+},{}],129:[function(_dereq_,module,exports){
 module.exports = fromTranslation
 
 /**
@@ -28452,7 +25472,7 @@ function fromTranslation(out, v) {
   return out
 }
 
-},{}],135:[function(_dereq_,module,exports){
+},{}],130:[function(_dereq_,module,exports){
 module.exports = fromXRotation
 
 /**
@@ -28489,7 +25509,7 @@ function fromXRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],136:[function(_dereq_,module,exports){
+},{}],131:[function(_dereq_,module,exports){
 module.exports = fromYRotation
 
 /**
@@ -28526,7 +25546,7 @@ function fromYRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],137:[function(_dereq_,module,exports){
+},{}],132:[function(_dereq_,module,exports){
 module.exports = fromZRotation
 
 /**
@@ -28563,7 +25583,7 @@ function fromZRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],138:[function(_dereq_,module,exports){
+},{}],133:[function(_dereq_,module,exports){
 module.exports = frustum;
 
 /**
@@ -28600,7 +25620,7 @@ function frustum(out, left, right, bottom, top, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],139:[function(_dereq_,module,exports){
+},{}],134:[function(_dereq_,module,exports){
 module.exports = identity;
 
 /**
@@ -28628,7 +25648,7 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],140:[function(_dereq_,module,exports){
+},{}],135:[function(_dereq_,module,exports){
 module.exports = {
   create: _dereq_('./create')
   , clone: _dereq_('./clone')
@@ -28661,7 +25681,7 @@ module.exports = {
   , str: _dereq_('./str')
 }
 
-},{"./adjoint":125,"./clone":126,"./copy":127,"./create":128,"./determinant":129,"./fromQuat":130,"./fromRotation":131,"./fromRotationTranslation":132,"./fromScaling":133,"./fromTranslation":134,"./fromXRotation":135,"./fromYRotation":136,"./fromZRotation":137,"./frustum":138,"./identity":139,"./invert":141,"./lookAt":142,"./multiply":143,"./ortho":144,"./perspective":145,"./perspectiveFromFieldOfView":146,"./rotate":147,"./rotateX":148,"./rotateY":149,"./rotateZ":150,"./scale":151,"./str":152,"./translate":153,"./transpose":154}],141:[function(_dereq_,module,exports){
+},{"./adjoint":120,"./clone":121,"./copy":122,"./create":123,"./determinant":124,"./fromQuat":125,"./fromRotation":126,"./fromRotationTranslation":127,"./fromScaling":128,"./fromTranslation":129,"./fromXRotation":130,"./fromYRotation":131,"./fromZRotation":132,"./frustum":133,"./identity":134,"./invert":136,"./lookAt":137,"./multiply":138,"./ortho":139,"./perspective":140,"./perspectiveFromFieldOfView":141,"./rotate":142,"./rotateX":143,"./rotateY":144,"./rotateZ":145,"./scale":146,"./str":147,"./translate":148,"./transpose":149}],136:[function(_dereq_,module,exports){
 module.exports = invert;
 
 /**
@@ -28717,7 +25737,7 @@ function invert(out, a) {
 
     return out;
 };
-},{}],142:[function(_dereq_,module,exports){
+},{}],137:[function(_dereq_,module,exports){
 var identity = _dereq_('./identity');
 
 module.exports = lookAt;
@@ -28808,7 +25828,7 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":139}],143:[function(_dereq_,module,exports){
+},{"./identity":134}],138:[function(_dereq_,module,exports){
 module.exports = multiply;
 
 /**
@@ -28851,7 +25871,7 @@ function multiply(out, a, b) {
     out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
     return out;
 };
-},{}],144:[function(_dereq_,module,exports){
+},{}],139:[function(_dereq_,module,exports){
 module.exports = ortho;
 
 /**
@@ -28888,7 +25908,7 @@ function ortho(out, left, right, bottom, top, near, far) {
     out[15] = 1;
     return out;
 };
-},{}],145:[function(_dereq_,module,exports){
+},{}],140:[function(_dereq_,module,exports){
 module.exports = perspective;
 
 /**
@@ -28922,7 +25942,7 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],146:[function(_dereq_,module,exports){
+},{}],141:[function(_dereq_,module,exports){
 module.exports = perspectiveFromFieldOfView;
 
 /**
@@ -28964,7 +25984,7 @@ function perspectiveFromFieldOfView(out, fov, near, far) {
 }
 
 
-},{}],147:[function(_dereq_,module,exports){
+},{}],142:[function(_dereq_,module,exports){
 module.exports = rotate;
 
 /**
@@ -29029,7 +26049,7 @@ function rotate(out, a, rad, axis) {
     }
     return out;
 };
-},{}],148:[function(_dereq_,module,exports){
+},{}],143:[function(_dereq_,module,exports){
 module.exports = rotateX;
 
 /**
@@ -29074,7 +26094,7 @@ function rotateX(out, a, rad) {
     out[11] = a23 * c - a13 * s;
     return out;
 };
-},{}],149:[function(_dereq_,module,exports){
+},{}],144:[function(_dereq_,module,exports){
 module.exports = rotateY;
 
 /**
@@ -29119,7 +26139,7 @@ function rotateY(out, a, rad) {
     out[11] = a03 * s + a23 * c;
     return out;
 };
-},{}],150:[function(_dereq_,module,exports){
+},{}],145:[function(_dereq_,module,exports){
 module.exports = rotateZ;
 
 /**
@@ -29164,7 +26184,7 @@ function rotateZ(out, a, rad) {
     out[7] = a13 * c - a03 * s;
     return out;
 };
-},{}],151:[function(_dereq_,module,exports){
+},{}],146:[function(_dereq_,module,exports){
 module.exports = scale;
 
 /**
@@ -29196,7 +26216,7 @@ function scale(out, a, v) {
     out[15] = a[15];
     return out;
 };
-},{}],152:[function(_dereq_,module,exports){
+},{}],147:[function(_dereq_,module,exports){
 module.exports = str;
 
 /**
@@ -29211,7 +26231,7 @@ function str(a) {
                     a[8] + ', ' + a[9] + ', ' + a[10] + ', ' + a[11] + ', ' + 
                     a[12] + ', ' + a[13] + ', ' + a[14] + ', ' + a[15] + ')';
 };
-},{}],153:[function(_dereq_,module,exports){
+},{}],148:[function(_dereq_,module,exports){
 module.exports = translate;
 
 /**
@@ -29250,7 +26270,7 @@ function translate(out, a, v) {
 
     return out;
 };
-},{}],154:[function(_dereq_,module,exports){
+},{}],149:[function(_dereq_,module,exports){
 module.exports = transpose;
 
 /**
@@ -29300,7 +26320,7 @@ function transpose(out, a) {
     
     return out;
 };
-},{}],155:[function(_dereq_,module,exports){
+},{}],150:[function(_dereq_,module,exports){
 'use strict'
 
 var barycentric            = _dereq_('barycentric')
@@ -29398,7 +26418,7 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
   }
   return [closestIndex, interpolate(simplex, weights), weights]
 }
-},{"barycentric":25,"polytope-closest-point/lib/closest_point_2d.js":329}],156:[function(_dereq_,module,exports){
+},{"barycentric":24,"polytope-closest-point/lib/closest_point_2d.js":314}],151:[function(_dereq_,module,exports){
 var glslify       = _dereq_('glslify')
 
 var triVertSrc = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection\n           , inverseModel;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvec4 project(vec3 p) {\n  return projection * view * model * vec4(p, 1.0);\n}\n\nvoid main() {\n  gl_Position      = project(position);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * vec4(position , 1.0);\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal  = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  f_color          = color;\n  f_data           = position;\n  f_uv             = uv;\n}\n"])
@@ -29467,7 +26487,7 @@ exports.contourShader = {
   ]
 }
 
-},{"glslify":269}],157:[function(_dereq_,module,exports){
+},{"glslify":262}],152:[function(_dereq_,module,exports){
 'use strict'
 
 var DEFAULT_VERTEX_NORMALS_EPSILON = 1e-6; // may be too large if triangles are very small
@@ -30578,7 +27598,7 @@ function createSimplicialMesh(gl, params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":155,"./lib/shaders":156,"colormap":75,"gl-buffer":111,"gl-mat4/invert":141,"gl-mat4/multiply":143,"gl-shader":169,"gl-texture2d":184,"gl-vao":188,"ndarray":305,"normals":307,"simplicial-complex-contour":352,"typedarray-pool":372}],158:[function(_dereq_,module,exports){
+},{"./lib/closest-point":150,"./lib/shaders":151,"colormap":74,"gl-buffer":106,"gl-mat4/invert":136,"gl-mat4/multiply":138,"gl-shader":163,"gl-texture2d":177,"gl-vao":181,"ndarray":293,"normals":295,"simplicial-complex-contour":337,"typedarray-pool":355}],153:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createCamera
@@ -30859,7 +27879,7 @@ function createCamera(element, options) {
   return camera
 }
 
-},{"3d-view":17,"has-passive-events":271,"mouse-change":292,"mouse-event-offset":293,"mouse-wheel":295,"right-now":338}],159:[function(_dereq_,module,exports){
+},{"3d-view":16,"has-passive-events":264,"mouse-change":280,"mouse-event-offset":281,"mouse-wheel":283,"right-now":323}],154:[function(_dereq_,module,exports){
 var glslify      = _dereq_('glslify')
 var createShader = _dereq_('gl-shader')
 
@@ -30870,9 +27890,7 @@ module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [ { name: 'position', type: 'vec2'}])
 }
 
-},{"gl-shader":169,"glslify":160}],160:[function(_dereq_,module,exports){
-arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],161:[function(_dereq_,module,exports){
+},{"gl-shader":163,"glslify":262}],155:[function(_dereq_,module,exports){
 'use strict'
 
 var createCamera = _dereq_('./camera.js')
@@ -31727,7 +28745,7 @@ function calcCameraParams(scene, isOrtho) {
   }
 }
 
-},{"./camera.js":158,"./lib/shader":159,"a-big-triangle":19,"gl-axes3d":102,"gl-axes3d/properties":110,"gl-fbo":120,"gl-mat4/ortho":144,"gl-mat4/perspective":145,"gl-select-static":168,"gl-spikes3d":178,"is-mobile":280,"mouse-change":292}],162:[function(_dereq_,module,exports){
+},{"./camera.js":153,"./lib/shader":154,"a-big-triangle":18,"gl-axes3d":98,"gl-axes3d/properties":105,"gl-fbo":115,"gl-mat4/ortho":139,"gl-mat4/perspective":140,"gl-select-static":162,"gl-spikes3d":171,"is-mobile":270,"mouse-change":280}],156:[function(_dereq_,module,exports){
 module.exports = slerp
 
 /**
@@ -31780,14 +28798,14 @@ function slerp (out, a, b, t) {
   return out
 }
 
-},{}],163:[function(_dereq_,module,exports){
+},{}],157:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function(a){
   return (!a && a !== 0) ? '' : a.toString();
 }
 
-},{}],164:[function(_dereq_,module,exports){
+},{}],158:[function(_dereq_,module,exports){
 "use strict"
 
 var vectorizeText = _dereq_("vectorize-text")
@@ -31856,7 +28874,7 @@ function getGlyph(symbol, font, pixelRatio) {
   //Save cached symbol
   return fontCache[symbol] = [triSymbol, lineSymbol, bounds]
 }
-},{"vectorize-text":375}],165:[function(_dereq_,module,exports){
+},{"vectorize-text":358}],159:[function(_dereq_,module,exports){
 var createShaderWrapper = _dereq_('gl-shader')
 var glslify = _dereq_('glslify')
 
@@ -31933,9 +28951,9 @@ exports.createPickProject = function(gl) {
   return createShader(gl, pickProject)
 }
 
-},{"gl-shader":169,"glslify":166}],166:[function(_dereq_,module,exports){
-arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],167:[function(_dereq_,module,exports){
+},{"gl-shader":163,"glslify":160}],160:[function(_dereq_,module,exports){
+arguments[4][113][0].apply(exports,arguments)
+},{"dup":113}],161:[function(_dereq_,module,exports){
 'use strict'
 
 var isAllBlank      = _dereq_('is-string-blank')
@@ -32807,7 +29825,7 @@ function createPointCloud(options) {
   return pointCloud
 }
 
-},{"./lib/get-simple-string":163,"./lib/glyphs":164,"./lib/shaders":165,"gl-buffer":111,"gl-mat4/multiply":143,"gl-vao":188,"is-string-blank":282,"typedarray-pool":372}],168:[function(_dereq_,module,exports){
+},{"./lib/get-simple-string":157,"./lib/glyphs":158,"./lib/shaders":159,"gl-buffer":106,"gl-mat4/multiply":138,"gl-vao":181,"is-string-blank":272,"typedarray-pool":355}],162:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
@@ -32992,7 +30010,7 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":44,"gl-fbo":120,"ndarray":305,"typedarray-pool":372}],169:[function(_dereq_,module,exports){
+},{"bit-twiddle":43,"gl-fbo":115,"ndarray":293,"typedarray-pool":355}],163:[function(_dereq_,module,exports){
 'use strict'
 
 var createUniformWrapper   = _dereq_('./lib/create-uniforms')
@@ -33258,7 +30276,7 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":170,"./lib/create-attributes":171,"./lib/create-uniforms":172,"./lib/reflect":173,"./lib/runtime-reflect":174,"./lib/shader-cache":175}],170:[function(_dereq_,module,exports){
+},{"./lib/GLError":164,"./lib/create-attributes":165,"./lib/create-uniforms":166,"./lib/reflect":167,"./lib/runtime-reflect":168,"./lib/shader-cache":169}],164:[function(_dereq_,module,exports){
 function GLError (rawError, shortMessage, longMessage) {
     this.shortMessage = shortMessage || ''
     this.longMessage = longMessage || ''
@@ -33273,7 +30291,7 @@ GLError.prototype.name = 'GLError'
 GLError.prototype.constructor = GLError
 module.exports = GLError
 
-},{}],171:[function(_dereq_,module,exports){
+},{}],165:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createAttributeWrapper
@@ -33334,6 +30352,40 @@ Object.defineProperty(proto, 'location', {
   }
 })
 
+var allFns = [
+  function (gl, v, x0) {
+    if (x0.length === undefined) {
+      return gl.vertexAttrib1f(v, x0)
+    } else {
+      return gl.vertexAttrib1fv(v, x0)
+    }
+  },
+
+  function (gl, v, x0, x1) {
+    if (x0.length === undefined) {
+      return gl.vertexAttrib2f(v, x0, x1)
+    } else {
+      return gl.vertexAttrib2fv(v, x0)
+    }
+  },
+
+  function (gl, v, x0, x1, x2) {
+    if (x0.length === undefined) {
+      return gl.vertexAttrib3f(v, x0, x1, x2)
+    } else {
+      return gl.vertexAttrib3fv(v, x0)
+    }
+  },
+
+  function (gl, v, x0, x1, x2, x3) {
+    if (x0.length === undefined) {
+      return gl.vertexAttrib4f(v, x0, x1, x2, x3)
+    } else {
+      return gl.vertexAttrib4fv(v, x0)
+    }
+  }
+]
+
 //Adds a vector attribute to obj
 function addVectorAttribute(
     gl
@@ -33344,21 +30396,7 @@ function addVectorAttribute(
   , obj
   , name) {
 
-  //Construct constant function
-  var constFuncArgs = [ 'gl', 'v' ]
-  var varNames = []
-  for(var i=0; i<dimension; ++i) {
-    constFuncArgs.push('x'+i)
-    varNames.push('x'+i)
-  }
-  constFuncArgs.push(
-    'if(x0.length===void 0){return gl.vertexAttrib' +
-    dimension + 'f(v,' +
-    varNames.join() +
-    ')}else{return gl.vertexAttrib' +
-    dimension +
-    'fv(v,x0)}')
-  var constFunc = Function.apply(null, constFuncArgs)
+  var constFunc = allFns[dimension]
 
   //Create attribute wrapper
   var attr = new ShaderAttribute(
@@ -33538,7 +30576,7 @@ function createAttributeWrapper(
   return obj
 }
 
-},{"./GLError":170}],172:[function(_dereq_,module,exports){
+},{"./GLError":164}],166:[function(_dereq_,module,exports){
 'use strict'
 
 var coallesceUniforms = _dereq_('./reflect')
@@ -33548,8 +30586,9 @@ module.exports = createUniformWrapper
 
 //Binds a function and returns a value
 function identity(x) {
-  var c = new Function('y', 'return function(){return y}')
-  return c(x)
+  return function() {
+    return x
+  }
 }
 
 function makeVector(length, fill) {
@@ -33563,50 +30602,83 @@ function makeVector(length, fill) {
 //Create shims for uniforms
 function createUniformWrapper(gl, wrapper, uniforms, locations) {
 
-  function makeGetter(index) {
-    var proc = new Function(
-        'gl'
-      , 'wrapper'
-      , 'locations'
-      , 'return function(){return gl.getUniform(wrapper.program,locations[' + index + '])}')
-    return proc(gl, wrapper, locations)
+  function makeGetter(idx) {
+    return function(gl, wrapper, locations) {
+      return gl.getUniform(wrapper.program, locations[idx])
+    }
   }
 
-  function makePropSetter(path, index, type) {
-    switch(type) {
-      case 'bool':
-      case 'int':
-      case 'sampler2D':
-      case 'samplerCube':
-        return 'gl.uniform1i(locations[' + index + '],obj' + path + ')'
-      case 'float':
-        return 'gl.uniform1f(locations[' + index + '],obj' + path + ')'
-      default:
-        var vidx = type.indexOf('vec')
-        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type')
+  function makeSetter(type) {
+    return function updateProperty(obj){
+      var indices = enumerateIndices('', type)
+      for(var i=0; i<indices.length; ++i) {
+        var item = indices[i]
+        var path = item[0]
+        var idx  = item[1]
+        if(locations[idx]) {
+          var objPath =  obj
+          if(typeof path === 'string' && (
+            path.indexOf('.') === 0 ||
+            path.indexOf('[') === 0
+          )) {
+            var key = path
+            if(path.indexOf('.') === 0) {
+              key = path.slice(1)
+            }
+
+            if(key.indexOf(']') === key.length - 1) {
+              var j = key.indexOf('[')
+              var k1 = key.slice(0, j)
+              var k2 = key.slice(j + 1, key.length - 1)
+              objPath = k1? obj[k1][k2] : obj[k2]
+            } else {
+              objPath = obj[key]
+            }
           }
-          switch(type.charAt(0)) {
-            case 'b':
-            case 'i':
-              return 'gl.uniform' + d + 'iv(locations[' + index + '],obj' + path + ')'
-            case 'v':
-              return 'gl.uniform' + d + 'fv(locations[' + index + '],obj' + path + ')'
+
+          var t = uniforms[idx].type
+          var d
+          switch(t) {
+            case 'bool':
+            case 'int':
+            case 'sampler2D':
+            case 'samplerCube':
+              gl.uniform1i(locations[idx], objPath)
+              break
+            case 'float':
+              gl.uniform1f(locations[idx], objPath)
+              break
             default:
-              throw new GLError('', 'Unrecognized data type for vector ' + name + ': ' + type)
+              var vidx = t.indexOf('vec')
+              if(0 <= vidx && vidx <= 1 && t.length === 4 + vidx) {
+                d = t.charCodeAt(t.length-1) - 48
+                if(d < 2 || d > 4) {
+                  throw new GLError('', 'Invalid data type')
+                }
+                switch(t.charAt(0)) {
+                  case 'b':
+                  case 'i':
+                    gl['uniform' + d + 'iv'](locations[idx], objPath)
+                    break
+                  case 'v':
+                    gl['uniform' + d + 'fv'](locations[idx], objPath)
+                    break
+                  default:
+                    throw new GLError('', 'Unrecognized data type for vector ' + name + ': ' + t)
+                }
+              } else if(t.indexOf('mat') === 0 && t.length === 4) {
+                d = t.charCodeAt(t.length-1) - 48
+                if(d < 2 || d > 4) {
+                  throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + t)
+                }
+                gl['uniformMatrix' + d + 'fv'](locations[idx], false, objPath)
+                break
+              } else {
+                throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + t)
+              }
           }
-        } else if(type.indexOf('mat') === 0 && type.length === 4) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
-          }
-          return 'gl.uniformMatrix' + d + 'fv(locations[' + index + '],false,obj' + path + ')'
-        } else {
-          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
         }
-      break
+      }
     }
   }
 
@@ -33632,21 +30704,6 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
     return indices
   }
 
-  function makeSetter(type) {
-    var code = [ 'return function updateProperty(obj){' ]
-    var indices = enumerateIndices('', type)
-    for(var i=0; i<indices.length; ++i) {
-      var item = indices[i]
-      var path = item[0]
-      var idx  = item[1]
-      if(locations[idx]) {
-        code.push(makePropSetter(path, idx, uniforms[idx].type))
-      }
-    }
-    code.push('return obj}')
-    var proc = new Function('gl', 'locations', code.join('\n'))
-    return proc(gl, locations)
-  }
 
   function defaultValue(type) {
     switch(type) {
@@ -33678,7 +30735,6 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
         } else {
           throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
         }
-      break
     }
   }
 
@@ -33731,7 +30787,7 @@ function createUniformWrapper(gl, wrapper, uniforms, locations) {
   }
 }
 
-},{"./GLError":170,"./reflect":173}],173:[function(_dereq_,module,exports){
+},{"./GLError":164,"./reflect":167}],167:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = makeReflectTypes
@@ -33789,7 +30845,7 @@ function makeReflectTypes(uniforms, useIndex) {
   }
   return obj
 }
-},{}],174:[function(_dereq_,module,exports){
+},{}],168:[function(_dereq_,module,exports){
 'use strict'
 
 exports.uniforms    = runtimeUniforms
@@ -33869,7 +30925,7 @@ function runtimeAttributes(gl, program) {
   return result
 }
 
-},{}],175:[function(_dereq_,module,exports){
+},{}],169:[function(_dereq_,module,exports){
 'use strict'
 
 exports.shader   = getShaderReference
@@ -34007,9 +31063,7 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":170,"gl-format-compiler-error":121,"weakmap-shim":380}],176:[function(_dereq_,module,exports){
-arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],177:[function(_dereq_,module,exports){
+},{"./GLError":164,"gl-format-compiler-error":116,"weakmap-shim":363}],170:[function(_dereq_,module,exports){
 'use strict'
 
 var glslify      = _dereq_('glslify')
@@ -34026,7 +31080,7 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":169,"glslify":176}],178:[function(_dereq_,module,exports){
+},{"gl-shader":163,"glslify":262}],171:[function(_dereq_,module,exports){
 'use strict'
 
 var createBuffer = _dereq_('gl-buffer')
@@ -34222,7 +31276,7 @@ function createSpikes(gl, options) {
   return spikes
 }
 
-},{"./shaders/index":177,"gl-buffer":111,"gl-vao":188}],179:[function(_dereq_,module,exports){
+},{"./shaders/index":170,"gl-buffer":106,"gl-vao":181}],172:[function(_dereq_,module,exports){
 var glslify       = _dereq_('glslify')
 
 var triVertSrc = glslify(["precision highp float;\n\nprecision highp float;\n#define GLSLIFY 1\n\nvec3 getOrthogonalVector(vec3 v) {\n  // Return up-vector for only-z vector.\n  // Return ax + by + cz = 0, a point that lies on the plane that has v as a normal and that isn't (0,0,0).\n  // From the above if-statement we have ||a|| > 0  U  ||b|| > 0.\n  // Assign z = 0, x = -b, y = a:\n  // a*-b + b*a + c*0 = -ba + ba + 0 = 0\n  if (v.x*v.x > v.z*v.z || v.y*v.y > v.z*v.z) {\n    return normalize(vec3(-v.y, v.x, 0.0));\n  } else {\n    return normalize(vec3(0.0, v.z, -v.y));\n  }\n}\n\n// Calculate the tube vertex and normal at the given index.\n//\n// The returned vertex is for a tube ring with its center at origin, radius of length(d), pointing in the direction of d.\n//\n// Each tube segment is made up of a ring of vertices.\n// These vertices are used to make up the triangles of the tube by connecting them together in the vertex array.\n// The indexes of tube segments run from 0 to 8.\n//\nvec3 getTubePosition(vec3 d, float index, out vec3 normal) {\n  float segmentCount = 8.0;\n\n  float angle = 2.0 * 3.14159 * (index / segmentCount);\n\n  vec3 u = getOrthogonalVector(d);\n  vec3 v = normalize(cross(u, d));\n\n  vec3 x = u * cos(angle) * length(d);\n  vec3 y = v * sin(angle) * length(d);\n  vec3 v3 = x + y;\n\n  normal = normalize(v3);\n\n  return v3;\n}\n\nattribute vec4 vector;\nattribute vec4 color, position;\nattribute vec2 uv;\n\nuniform float vectorScale, tubeScale;\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 eyePosition, lightPosition;\n\nvarying vec3 f_normal, f_lightDirection, f_eyeDirection, f_data, f_position;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  // Scale the vector magnitude to stay constant with\n  // model & view changes.\n  vec3 normal;\n  vec3 XYZ = getTubePosition(mat3(model) * (tubeScale * vector.w * normalize(vector.xyz)), position.w, normal);\n  vec4 tubePosition = model * vec4(position.xyz, 1.0) + vec4(XYZ, 0.0);\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * tubePosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  f_lightDirection = lightPosition - cameraCoordinate.xyz;\n  f_eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  f_normal = normalize((vec4(normal, 0.0) * inverseModel).xyz);\n\n  // vec4 m_position  = model * vec4(tubePosition, 1.0);\n  vec4 t_position  = view * tubePosition;\n  gl_Position      = projection * t_position;\n\n  f_color          = color;\n  f_data           = tubePosition.xyz;\n  f_position       = position.xyz;\n  f_uv             = uv;\n}\n"])
@@ -34250,9 +31304,9 @@ exports.pickShader = {
   ]
 }
 
-},{"glslify":180}],180:[function(_dereq_,module,exports){
-arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],181:[function(_dereq_,module,exports){
+},{"glslify":173}],173:[function(_dereq_,module,exports){
+arguments[4][113][0].apply(exports,arguments)
+},{"dup":113}],174:[function(_dereq_,module,exports){
 "use strict";
 
 var vec3 = _dereq_('gl-vec3');
@@ -34812,7 +31866,7 @@ module.exports.createTubeMesh = function(gl, params) {
 	});
 }
 
-},{"./lib/shaders":179,"gl-cone3d":112,"gl-vec3":207,"gl-vec4":243}],182:[function(_dereq_,module,exports){
+},{"./lib/shaders":172,"gl-cone3d":107,"gl-vec3":200,"gl-vec4":236}],175:[function(_dereq_,module,exports){
 var createShader = _dereq_('gl-shader')
 var glslify = _dereq_('glslify')
 
@@ -34862,7 +31916,7 @@ exports.createPickContourShader = function (gl) {
   return shader
 }
 
-},{"gl-shader":169,"glslify":269}],183:[function(_dereq_,module,exports){
+},{"gl-shader":163,"glslify":262}],176:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createSurfacePlot
@@ -36244,7 +33298,7 @@ function createSurfacePlot (params) {
   return surface
 }
 
-},{"./lib/shaders":182,"binary-search-bounds":43,"bit-twiddle":44,"colormap":75,"gl-buffer":111,"gl-mat4/invert":141,"gl-mat4/multiply":143,"gl-texture2d":184,"gl-vao":188,"ndarray":305,"ndarray-gradient":298,"ndarray-ops":300,"ndarray-pack":301,"surface-nets":364,"typedarray-pool":372}],184:[function(_dereq_,module,exports){
+},{"./lib/shaders":175,"binary-search-bounds":42,"bit-twiddle":43,"colormap":74,"gl-buffer":106,"gl-mat4/invert":136,"gl-mat4/multiply":138,"gl-texture2d":177,"gl-vao":181,"ndarray":293,"ndarray-gradient":286,"ndarray-ops":288,"ndarray-pack":289,"surface-nets":348,"typedarray-pool":355}],177:[function(_dereq_,module,exports){
 'use strict'
 
 var ndarray = _dereq_('ndarray')
@@ -36807,7 +33861,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":305,"ndarray-ops":300,"typedarray-pool":372}],185:[function(_dereq_,module,exports){
+},{"ndarray":293,"ndarray-ops":288,"typedarray-pool":355}],178:[function(_dereq_,module,exports){
 "use strict"
 
 function doBind(gl, elements, attributes) {
@@ -36862,7 +33916,7 @@ function doBind(gl, elements, attributes) {
 }
 
 module.exports = doBind
-},{}],186:[function(_dereq_,module,exports){
+},{}],179:[function(_dereq_,module,exports){
 "use strict"
 
 var bindAttribs = _dereq_("./do-bind.js")
@@ -36902,7 +33956,7 @@ function createVAOEmulated(gl) {
 }
 
 module.exports = createVAOEmulated
-},{"./do-bind.js":185}],187:[function(_dereq_,module,exports){
+},{"./do-bind.js":178}],180:[function(_dereq_,module,exports){
 "use strict"
 
 var bindAttribs = _dereq_("./do-bind.js")
@@ -36990,7 +34044,7 @@ function createVAONative(gl, ext) {
 }
 
 module.exports = createVAONative
-},{"./do-bind.js":185}],188:[function(_dereq_,module,exports){
+},{"./do-bind.js":178}],181:[function(_dereq_,module,exports){
 "use strict"
 
 var createVAONative = _dereq_("./lib/vao-native.js")
@@ -37019,7 +34073,7 @@ function createVAO(gl, attributes, elements, elementsType) {
 
 module.exports = createVAO
 
-},{"./lib/vao-emulated.js":186,"./lib/vao-native.js":187}],189:[function(_dereq_,module,exports){
+},{"./lib/vao-emulated.js":179,"./lib/vao-native.js":180}],182:[function(_dereq_,module,exports){
 module.exports = add;
 
 /**
@@ -37036,7 +34090,7 @@ function add(out, a, b) {
     out[2] = a[2] + b[2]
     return out
 }
-},{}],190:[function(_dereq_,module,exports){
+},{}],183:[function(_dereq_,module,exports){
 module.exports = angle
 
 var fromValues = _dereq_('./fromValues')
@@ -37065,7 +34119,7 @@ function angle(a, b) {
     }     
 }
 
-},{"./dot":200,"./fromValues":206,"./normalize":217}],191:[function(_dereq_,module,exports){
+},{"./dot":193,"./fromValues":199,"./normalize":210}],184:[function(_dereq_,module,exports){
 module.exports = ceil
 
 /**
@@ -37082,7 +34136,7 @@ function ceil(out, a) {
   return out
 }
 
-},{}],192:[function(_dereq_,module,exports){
+},{}],185:[function(_dereq_,module,exports){
 module.exports = clone;
 
 /**
@@ -37098,7 +34152,7 @@ function clone(a) {
     out[2] = a[2]
     return out
 }
-},{}],193:[function(_dereq_,module,exports){
+},{}],186:[function(_dereq_,module,exports){
 module.exports = copy;
 
 /**
@@ -37114,7 +34168,7 @@ function copy(out, a) {
     out[2] = a[2]
     return out
 }
-},{}],194:[function(_dereq_,module,exports){
+},{}],187:[function(_dereq_,module,exports){
 module.exports = create;
 
 /**
@@ -37129,7 +34183,7 @@ function create() {
     out[2] = 0
     return out
 }
-},{}],195:[function(_dereq_,module,exports){
+},{}],188:[function(_dereq_,module,exports){
 module.exports = cross;
 
 /**
@@ -37149,10 +34203,10 @@ function cross(out, a, b) {
     out[2] = ax * by - ay * bx
     return out
 }
-},{}],196:[function(_dereq_,module,exports){
+},{}],189:[function(_dereq_,module,exports){
 module.exports = _dereq_('./distance')
 
-},{"./distance":197}],197:[function(_dereq_,module,exports){
+},{"./distance":190}],190:[function(_dereq_,module,exports){
 module.exports = distance;
 
 /**
@@ -37168,10 +34222,10 @@ function distance(a, b) {
         z = b[2] - a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],198:[function(_dereq_,module,exports){
+},{}],191:[function(_dereq_,module,exports){
 module.exports = _dereq_('./divide')
 
-},{"./divide":199}],199:[function(_dereq_,module,exports){
+},{"./divide":192}],192:[function(_dereq_,module,exports){
 module.exports = divide;
 
 /**
@@ -37188,7 +34242,7 @@ function divide(out, a, b) {
     out[2] = a[2] / b[2]
     return out
 }
-},{}],200:[function(_dereq_,module,exports){
+},{}],193:[function(_dereq_,module,exports){
 module.exports = dot;
 
 /**
@@ -37201,10 +34255,10 @@ module.exports = dot;
 function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
-},{}],201:[function(_dereq_,module,exports){
+},{}],194:[function(_dereq_,module,exports){
 module.exports = 0.000001
 
-},{}],202:[function(_dereq_,module,exports){
+},{}],195:[function(_dereq_,module,exports){
 module.exports = equals
 
 var EPSILON = _dereq_('./epsilon')
@@ -37228,7 +34282,7 @@ function equals(a, b) {
           Math.abs(a2 - b2) <= EPSILON * Math.max(1.0, Math.abs(a2), Math.abs(b2)))
 }
 
-},{"./epsilon":201}],203:[function(_dereq_,module,exports){
+},{"./epsilon":194}],196:[function(_dereq_,module,exports){
 module.exports = exactEquals
 
 /**
@@ -37242,7 +34296,7 @@ function exactEquals(a, b) {
   return a[0] === b[0] && a[1] === b[1] && a[2] === b[2]
 }
 
-},{}],204:[function(_dereq_,module,exports){
+},{}],197:[function(_dereq_,module,exports){
 module.exports = floor
 
 /**
@@ -37259,7 +34313,7 @@ function floor(out, a) {
   return out
 }
 
-},{}],205:[function(_dereq_,module,exports){
+},{}],198:[function(_dereq_,module,exports){
 module.exports = forEach;
 
 var vec = _dereq_('./create')()
@@ -37304,7 +34358,7 @@ function forEach(a, stride, offset, count, fn, arg) {
         
         return a
 }
-},{"./create":194}],206:[function(_dereq_,module,exports){
+},{"./create":187}],199:[function(_dereq_,module,exports){
 module.exports = fromValues;
 
 /**
@@ -37322,7 +34376,7 @@ function fromValues(x, y, z) {
     out[2] = z
     return out
 }
-},{}],207:[function(_dereq_,module,exports){
+},{}],200:[function(_dereq_,module,exports){
 module.exports = {
   EPSILON: _dereq_('./epsilon')
   , create: _dereq_('./create')
@@ -37371,7 +34425,7 @@ module.exports = {
   , forEach: _dereq_('./forEach')
 }
 
-},{"./add":189,"./angle":190,"./ceil":191,"./clone":192,"./copy":193,"./create":194,"./cross":195,"./dist":196,"./distance":197,"./div":198,"./divide":199,"./dot":200,"./epsilon":201,"./equals":202,"./exactEquals":203,"./floor":204,"./forEach":205,"./fromValues":206,"./inverse":208,"./len":209,"./length":210,"./lerp":211,"./max":212,"./min":213,"./mul":214,"./multiply":215,"./negate":216,"./normalize":217,"./random":218,"./rotateX":219,"./rotateY":220,"./rotateZ":221,"./round":222,"./scale":223,"./scaleAndAdd":224,"./set":225,"./sqrDist":226,"./sqrLen":227,"./squaredDistance":228,"./squaredLength":229,"./sub":230,"./subtract":231,"./transformMat3":232,"./transformMat4":233,"./transformQuat":234}],208:[function(_dereq_,module,exports){
+},{"./add":182,"./angle":183,"./ceil":184,"./clone":185,"./copy":186,"./create":187,"./cross":188,"./dist":189,"./distance":190,"./div":191,"./divide":192,"./dot":193,"./epsilon":194,"./equals":195,"./exactEquals":196,"./floor":197,"./forEach":198,"./fromValues":199,"./inverse":201,"./len":202,"./length":203,"./lerp":204,"./max":205,"./min":206,"./mul":207,"./multiply":208,"./negate":209,"./normalize":210,"./random":211,"./rotateX":212,"./rotateY":213,"./rotateZ":214,"./round":215,"./scale":216,"./scaleAndAdd":217,"./set":218,"./sqrDist":219,"./sqrLen":220,"./squaredDistance":221,"./squaredLength":222,"./sub":223,"./subtract":224,"./transformMat3":225,"./transformMat4":226,"./transformQuat":227}],201:[function(_dereq_,module,exports){
 module.exports = inverse;
 
 /**
@@ -37387,10 +34441,10 @@ function inverse(out, a) {
   out[2] = 1.0 / a[2]
   return out
 }
-},{}],209:[function(_dereq_,module,exports){
+},{}],202:[function(_dereq_,module,exports){
 module.exports = _dereq_('./length')
 
-},{"./length":210}],210:[function(_dereq_,module,exports){
+},{"./length":203}],203:[function(_dereq_,module,exports){
 module.exports = length;
 
 /**
@@ -37405,7 +34459,7 @@ function length(a) {
         z = a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],211:[function(_dereq_,module,exports){
+},{}],204:[function(_dereq_,module,exports){
 module.exports = lerp;
 
 /**
@@ -37426,7 +34480,7 @@ function lerp(out, a, b, t) {
     out[2] = az + t * (b[2] - az)
     return out
 }
-},{}],212:[function(_dereq_,module,exports){
+},{}],205:[function(_dereq_,module,exports){
 module.exports = max;
 
 /**
@@ -37443,7 +34497,7 @@ function max(out, a, b) {
     out[2] = Math.max(a[2], b[2])
     return out
 }
-},{}],213:[function(_dereq_,module,exports){
+},{}],206:[function(_dereq_,module,exports){
 module.exports = min;
 
 /**
@@ -37460,10 +34514,10 @@ function min(out, a, b) {
     out[2] = Math.min(a[2], b[2])
     return out
 }
-},{}],214:[function(_dereq_,module,exports){
+},{}],207:[function(_dereq_,module,exports){
 module.exports = _dereq_('./multiply')
 
-},{"./multiply":215}],215:[function(_dereq_,module,exports){
+},{"./multiply":208}],208:[function(_dereq_,module,exports){
 module.exports = multiply;
 
 /**
@@ -37480,7 +34534,7 @@ function multiply(out, a, b) {
     out[2] = a[2] * b[2]
     return out
 }
-},{}],216:[function(_dereq_,module,exports){
+},{}],209:[function(_dereq_,module,exports){
 module.exports = negate;
 
 /**
@@ -37496,7 +34550,7 @@ function negate(out, a) {
     out[2] = -a[2]
     return out
 }
-},{}],217:[function(_dereq_,module,exports){
+},{}],210:[function(_dereq_,module,exports){
 module.exports = normalize;
 
 /**
@@ -37520,7 +34574,7 @@ function normalize(out, a) {
     }
     return out
 }
-},{}],218:[function(_dereq_,module,exports){
+},{}],211:[function(_dereq_,module,exports){
 module.exports = random;
 
 /**
@@ -37542,7 +34596,7 @@ function random(out, scale) {
     out[2] = z * scale
     return out
 }
-},{}],219:[function(_dereq_,module,exports){
+},{}],212:[function(_dereq_,module,exports){
 module.exports = rotateX;
 
 /**
@@ -37572,7 +34626,7 @@ function rotateX(out, a, b, c){
     return out
 }
 
-},{}],220:[function(_dereq_,module,exports){
+},{}],213:[function(_dereq_,module,exports){
 module.exports = rotateY;
 
 /**
@@ -37602,7 +34656,7 @@ function rotateY(out, a, b, c){
     return out
 }
 
-},{}],221:[function(_dereq_,module,exports){
+},{}],214:[function(_dereq_,module,exports){
 module.exports = rotateZ;
 
 /**
@@ -37632,7 +34686,7 @@ function rotateZ(out, a, b, c){
     return out
 }
 
-},{}],222:[function(_dereq_,module,exports){
+},{}],215:[function(_dereq_,module,exports){
 module.exports = round
 
 /**
@@ -37649,7 +34703,7 @@ function round(out, a) {
   return out
 }
 
-},{}],223:[function(_dereq_,module,exports){
+},{}],216:[function(_dereq_,module,exports){
 module.exports = scale;
 
 /**
@@ -37666,7 +34720,7 @@ function scale(out, a, b) {
     out[2] = a[2] * b
     return out
 }
-},{}],224:[function(_dereq_,module,exports){
+},{}],217:[function(_dereq_,module,exports){
 module.exports = scaleAndAdd;
 
 /**
@@ -37684,7 +34738,7 @@ function scaleAndAdd(out, a, b, scale) {
     out[2] = a[2] + (b[2] * scale)
     return out
 }
-},{}],225:[function(_dereq_,module,exports){
+},{}],218:[function(_dereq_,module,exports){
 module.exports = set;
 
 /**
@@ -37702,13 +34756,13 @@ function set(out, x, y, z) {
     out[2] = z
     return out
 }
-},{}],226:[function(_dereq_,module,exports){
+},{}],219:[function(_dereq_,module,exports){
 module.exports = _dereq_('./squaredDistance')
 
-},{"./squaredDistance":228}],227:[function(_dereq_,module,exports){
+},{"./squaredDistance":221}],220:[function(_dereq_,module,exports){
 module.exports = _dereq_('./squaredLength')
 
-},{"./squaredLength":229}],228:[function(_dereq_,module,exports){
+},{"./squaredLength":222}],221:[function(_dereq_,module,exports){
 module.exports = squaredDistance;
 
 /**
@@ -37724,7 +34778,7 @@ function squaredDistance(a, b) {
         z = b[2] - a[2]
     return x*x + y*y + z*z
 }
-},{}],229:[function(_dereq_,module,exports){
+},{}],222:[function(_dereq_,module,exports){
 module.exports = squaredLength;
 
 /**
@@ -37739,10 +34793,10 @@ function squaredLength(a) {
         z = a[2]
     return x*x + y*y + z*z
 }
-},{}],230:[function(_dereq_,module,exports){
+},{}],223:[function(_dereq_,module,exports){
 module.exports = _dereq_('./subtract')
 
-},{"./subtract":231}],231:[function(_dereq_,module,exports){
+},{"./subtract":224}],224:[function(_dereq_,module,exports){
 module.exports = subtract;
 
 /**
@@ -37759,7 +34813,7 @@ function subtract(out, a, b) {
     out[2] = a[2] - b[2]
     return out
 }
-},{}],232:[function(_dereq_,module,exports){
+},{}],225:[function(_dereq_,module,exports){
 module.exports = transformMat3;
 
 /**
@@ -37777,7 +34831,7 @@ function transformMat3(out, a, m) {
     out[2] = x * m[2] + y * m[5] + z * m[8]
     return out
 }
-},{}],233:[function(_dereq_,module,exports){
+},{}],226:[function(_dereq_,module,exports){
 module.exports = transformMat4;
 
 /**
@@ -37798,7 +34852,7 @@ function transformMat4(out, a, m) {
     out[2] = (m[2] * x + m[6] * y + m[10] * z + m[14]) / w
     return out
 }
-},{}],234:[function(_dereq_,module,exports){
+},{}],227:[function(_dereq_,module,exports){
 module.exports = transformQuat;
 
 /**
@@ -37827,7 +34881,7 @@ function transformQuat(out, a, q) {
     out[2] = iz * qw + iw * -qz + ix * -qy - iy * -qx
     return out
 }
-},{}],235:[function(_dereq_,module,exports){
+},{}],228:[function(_dereq_,module,exports){
 module.exports = add
 
 /**
@@ -37846,7 +34900,7 @@ function add (out, a, b) {
   return out
 }
 
-},{}],236:[function(_dereq_,module,exports){
+},{}],229:[function(_dereq_,module,exports){
 module.exports = clone
 
 /**
@@ -37864,7 +34918,7 @@ function clone (a) {
   return out
 }
 
-},{}],237:[function(_dereq_,module,exports){
+},{}],230:[function(_dereq_,module,exports){
 module.exports = copy
 
 /**
@@ -37882,7 +34936,7 @@ function copy (out, a) {
   return out
 }
 
-},{}],238:[function(_dereq_,module,exports){
+},{}],231:[function(_dereq_,module,exports){
 module.exports = create
 
 /**
@@ -37899,7 +34953,7 @@ function create () {
   return out
 }
 
-},{}],239:[function(_dereq_,module,exports){
+},{}],232:[function(_dereq_,module,exports){
 module.exports = distance
 
 /**
@@ -37917,7 +34971,7 @@ function distance (a, b) {
   return Math.sqrt(x * x + y * y + z * z + w * w)
 }
 
-},{}],240:[function(_dereq_,module,exports){
+},{}],233:[function(_dereq_,module,exports){
 module.exports = divide
 
 /**
@@ -37936,7 +34990,7 @@ function divide (out, a, b) {
   return out
 }
 
-},{}],241:[function(_dereq_,module,exports){
+},{}],234:[function(_dereq_,module,exports){
 module.exports = dot
 
 /**
@@ -37950,7 +35004,7 @@ function dot (a, b) {
   return a[0] * b[0] + a[1] * b[1] + a[2] * b[2] + a[3] * b[3]
 }
 
-},{}],242:[function(_dereq_,module,exports){
+},{}],235:[function(_dereq_,module,exports){
 module.exports = fromValues
 
 /**
@@ -37971,7 +35025,7 @@ function fromValues (x, y, z, w) {
   return out
 }
 
-},{}],243:[function(_dereq_,module,exports){
+},{}],236:[function(_dereq_,module,exports){
 module.exports = {
   create: _dereq_('./create'),
   clone: _dereq_('./clone'),
@@ -38000,7 +35054,7 @@ module.exports = {
   transformQuat: _dereq_('./transformQuat')
 }
 
-},{"./add":235,"./clone":236,"./copy":237,"./create":238,"./distance":239,"./divide":240,"./dot":241,"./fromValues":242,"./inverse":244,"./length":245,"./lerp":246,"./max":247,"./min":248,"./multiply":249,"./negate":250,"./normalize":251,"./random":252,"./scale":253,"./scaleAndAdd":254,"./set":255,"./squaredDistance":256,"./squaredLength":257,"./subtract":258,"./transformMat4":259,"./transformQuat":260}],244:[function(_dereq_,module,exports){
+},{"./add":228,"./clone":229,"./copy":230,"./create":231,"./distance":232,"./divide":233,"./dot":234,"./fromValues":235,"./inverse":237,"./length":238,"./lerp":239,"./max":240,"./min":241,"./multiply":242,"./negate":243,"./normalize":244,"./random":245,"./scale":246,"./scaleAndAdd":247,"./set":248,"./squaredDistance":249,"./squaredLength":250,"./subtract":251,"./transformMat4":252,"./transformQuat":253}],237:[function(_dereq_,module,exports){
 module.exports = inverse
 
 /**
@@ -38018,7 +35072,7 @@ function inverse (out, a) {
   return out
 }
 
-},{}],245:[function(_dereq_,module,exports){
+},{}],238:[function(_dereq_,module,exports){
 module.exports = length
 
 /**
@@ -38035,7 +35089,7 @@ function length (a) {
   return Math.sqrt(x * x + y * y + z * z + w * w)
 }
 
-},{}],246:[function(_dereq_,module,exports){
+},{}],239:[function(_dereq_,module,exports){
 module.exports = lerp
 
 /**
@@ -38059,7 +35113,7 @@ function lerp (out, a, b, t) {
   return out
 }
 
-},{}],247:[function(_dereq_,module,exports){
+},{}],240:[function(_dereq_,module,exports){
 module.exports = max
 
 /**
@@ -38078,7 +35132,7 @@ function max (out, a, b) {
   return out
 }
 
-},{}],248:[function(_dereq_,module,exports){
+},{}],241:[function(_dereq_,module,exports){
 module.exports = min
 
 /**
@@ -38097,7 +35151,7 @@ function min (out, a, b) {
   return out
 }
 
-},{}],249:[function(_dereq_,module,exports){
+},{}],242:[function(_dereq_,module,exports){
 module.exports = multiply
 
 /**
@@ -38116,7 +35170,7 @@ function multiply (out, a, b) {
   return out
 }
 
-},{}],250:[function(_dereq_,module,exports){
+},{}],243:[function(_dereq_,module,exports){
 module.exports = negate
 
 /**
@@ -38134,7 +35188,7 @@ function negate (out, a) {
   return out
 }
 
-},{}],251:[function(_dereq_,module,exports){
+},{}],244:[function(_dereq_,module,exports){
 module.exports = normalize
 
 /**
@@ -38160,7 +35214,7 @@ function normalize (out, a) {
   return out
 }
 
-},{}],252:[function(_dereq_,module,exports){
+},{}],245:[function(_dereq_,module,exports){
 var vecNormalize = _dereq_('./normalize')
 var vecScale = _dereq_('./scale')
 
@@ -38186,7 +35240,7 @@ function random (out, scale) {
   return out
 }
 
-},{"./normalize":251,"./scale":253}],253:[function(_dereq_,module,exports){
+},{"./normalize":244,"./scale":246}],246:[function(_dereq_,module,exports){
 module.exports = scale
 
 /**
@@ -38205,7 +35259,7 @@ function scale (out, a, b) {
   return out
 }
 
-},{}],254:[function(_dereq_,module,exports){
+},{}],247:[function(_dereq_,module,exports){
 module.exports = scaleAndAdd
 
 /**
@@ -38225,7 +35279,7 @@ function scaleAndAdd (out, a, b, scale) {
   return out
 }
 
-},{}],255:[function(_dereq_,module,exports){
+},{}],248:[function(_dereq_,module,exports){
 module.exports = set
 
 /**
@@ -38246,7 +35300,7 @@ function set (out, x, y, z, w) {
   return out
 }
 
-},{}],256:[function(_dereq_,module,exports){
+},{}],249:[function(_dereq_,module,exports){
 module.exports = squaredDistance
 
 /**
@@ -38264,7 +35318,7 @@ function squaredDistance (a, b) {
   return x * x + y * y + z * z + w * w
 }
 
-},{}],257:[function(_dereq_,module,exports){
+},{}],250:[function(_dereq_,module,exports){
 module.exports = squaredLength
 
 /**
@@ -38281,7 +35335,7 @@ function squaredLength (a) {
   return x * x + y * y + z * z + w * w
 }
 
-},{}],258:[function(_dereq_,module,exports){
+},{}],251:[function(_dereq_,module,exports){
 module.exports = subtract
 
 /**
@@ -38300,7 +35354,7 @@ function subtract (out, a, b) {
   return out
 }
 
-},{}],259:[function(_dereq_,module,exports){
+},{}],252:[function(_dereq_,module,exports){
 module.exports = transformMat4
 
 /**
@@ -38320,7 +35374,7 @@ function transformMat4 (out, a, m) {
   return out
 }
 
-},{}],260:[function(_dereq_,module,exports){
+},{}],253:[function(_dereq_,module,exports){
 module.exports = transformQuat
 
 /**
@@ -38349,7 +35403,7 @@ function transformQuat (out, a, q) {
   return out
 }
 
-},{}],261:[function(_dereq_,module,exports){
+},{}],254:[function(_dereq_,module,exports){
 var tokenize = _dereq_('glsl-tokenizer')
 var atob     = _dereq_('atob-lite')
 
@@ -38374,7 +35428,7 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":24,"glsl-tokenizer":268}],262:[function(_dereq_,module,exports){
+},{"atob-lite":23,"glsl-tokenizer":261}],255:[function(_dereq_,module,exports){
 module.exports = tokenize
 
 var literals100 = _dereq_('./lib/literals')
@@ -38751,7 +35805,7 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":264,"./lib/builtins-300es":263,"./lib/literals":266,"./lib/literals-300es":265,"./lib/operators":267}],263:[function(_dereq_,module,exports){
+},{"./lib/builtins":257,"./lib/builtins-300es":256,"./lib/literals":259,"./lib/literals-300es":258,"./lib/operators":260}],256:[function(_dereq_,module,exports){
 // 300es builtins/reserved words that were previously valid in v100
 var v100 = _dereq_('./builtins')
 
@@ -38822,7 +35876,7 @@ module.exports = v100.concat([
   , 'textureProjGradOffset'
 ])
 
-},{"./builtins":264}],264:[function(_dereq_,module,exports){
+},{"./builtins":257}],257:[function(_dereq_,module,exports){
 module.exports = [
   // Keep this list sorted
   'abs'
@@ -38974,7 +36028,7 @@ module.exports = [
   , 'textureCubeGradEXT'
 ]
 
-},{}],265:[function(_dereq_,module,exports){
+},{}],258:[function(_dereq_,module,exports){
 var v100 = _dereq_('./literals')
 
 module.exports = v100.slice().concat([
@@ -39063,7 +36117,7 @@ module.exports = v100.slice().concat([
   , 'usampler2DMSArray'
 ])
 
-},{"./literals":266}],266:[function(_dereq_,module,exports){
+},{"./literals":259}],259:[function(_dereq_,module,exports){
 module.exports = [
   // current
     'precision'
@@ -39159,7 +36213,7 @@ module.exports = [
   , 'using'
 ]
 
-},{}],267:[function(_dereq_,module,exports){
+},{}],260:[function(_dereq_,module,exports){
 module.exports = [
     '<<='
   , '>>='
@@ -39208,7 +36262,7 @@ module.exports = [
   , '}'
 ]
 
-},{}],268:[function(_dereq_,module,exports){
+},{}],261:[function(_dereq_,module,exports){
 var tokenize = _dereq_('./index')
 
 module.exports = tokenizeString
@@ -39223,9 +36277,9 @@ function tokenizeString(str, opt) {
   return tokens
 }
 
-},{"./index":262}],269:[function(_dereq_,module,exports){
-arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],270:[function(_dereq_,module,exports){
+},{"./index":255}],262:[function(_dereq_,module,exports){
+arguments[4][113][0].apply(exports,arguments)
+},{"dup":113}],263:[function(_dereq_,module,exports){
 (function (global){(function (){
 'use strict'
 
@@ -39242,7 +36296,7 @@ else {
 module.exports = hasHover
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"is-browser":278}],271:[function(_dereq_,module,exports){
+},{"is-browser":268}],264:[function(_dereq_,module,exports){
 'use strict'
 
 var isBrowser = _dereq_('is-browser')
@@ -39268,7 +36322,7 @@ function detect() {
 
 module.exports = isBrowser && detect()
 
-},{"is-browser":278}],272:[function(_dereq_,module,exports){
+},{"is-browser":268}],265:[function(_dereq_,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = (nBytes * 8) - mLen - 1
@@ -39354,7 +36408,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],273:[function(_dereq_,module,exports){
+},{}],266:[function(_dereq_,module,exports){
 "use strict"
 
 //High level idea:
@@ -39365,10 +36419,6 @@ module.exports = incrementalConvexHull
 
 var orient = _dereq_("robust-orientation")
 var compareCell = _dereq_("simplicial-complex").compareCells
-
-function compareInt(a, b) {
-  return a - b
-}
 
 function Simplex(vertices, adjacent, boundary) {
   this.vertices = vertices
@@ -39396,21 +36446,19 @@ function compareGlue(a, b) {
   return compareCell(a.vertices, b.vertices)
 }
 
-function bakeOrient(d) {
-  var code = ["function orient(){var tuple=this.tuple;return test("]
-  for(var i=0; i<=d; ++i) {
-    if(i > 0) {
-      code.push(",")
-    }
-    code.push("tuple[", i, "]")
+function wrapper(test) {
+  return function() {
+    var tuple = this.tuple
+    return test.apply(this, tuple)
   }
-  code.push(")}return orient")
-  var proc = new Function("test", code.join(""))
+}
+
+function bakeOrient(d) {
   var test = orient[d+1]
   if(!test) {
     test = orient
   }
-  return proc(test)
+  return wrapper(test)
 }
 
 var BAKED = []
@@ -39449,7 +36497,6 @@ proto.handleBoundaryDegeneracy = function(cell, point) {
   cell.lastVisited = -n
   while(toVisit.length > 0) {
     cell = toVisit.pop()
-    var cellVerts = cell.vertices
     var cellAdj = cell.adjacent
     for(var i=0; i<=d; ++i) {
       var neighbor = cellAdj[i]
@@ -39572,7 +36619,7 @@ proto.addPeaks = function(point, cell) {
       var nv = neighbor.vertices
 
       //Test if neighbor is a peak
-      if(neighbor.lastVisited !== -n) {      
+      if(neighbor.lastVisited !== -n) {
         //Compute orientation of p relative to each boundary peak
         var indexOfNeg1 = 0
         for(var j=0; j<=d; ++j) {
@@ -39797,11 +36844,11 @@ function incrementalConvexHull(points, randomSearch) {
   for(var i=d+1; i<n; ++i) {
     triangles.insert(points[i], useRandom)
   }
-  
+
   //Extract boundary cells
   return triangles.boundary()
 }
-},{"robust-orientation":344,"simplicial-complex":354}],274:[function(_dereq_,module,exports){
+},{"robust-orientation":329,"simplicial-complex":339}],267:[function(_dereq_,module,exports){
 "use strict"
 
 var bounds = _dereq_("binary-search-bounds")
@@ -40168,35 +37215,9 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":275}],275:[function(_dereq_,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"dup":98}],276:[function(_dereq_,module,exports){
-"use strict"
-
-function invertPermutation(pi, result) {
-  result = result || new Array(pi.length)
-  for(var i=0; i<pi.length; ++i) {
-    result[pi[i]] = i
-  }
-  return result
-}
-
-module.exports = invertPermutation
-},{}],277:[function(_dereq_,module,exports){
-"use strict"
-
-function iota(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = i
-  }
-  return result
-}
-
-module.exports = iota
-},{}],278:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42}],268:[function(_dereq_,module,exports){
 module.exports = true;
-},{}],279:[function(_dereq_,module,exports){
+},{}],269:[function(_dereq_,module,exports){
 /*!
  * Determine if an object is a Buffer
  *
@@ -40219,7 +37240,7 @@ function isSlowBuffer (obj) {
   return typeof obj.readFloatLE === 'function' && typeof obj.slice === 'function' && isBuffer(obj.slice(0, 0))
 }
 
-},{}],280:[function(_dereq_,module,exports){
+},{}],270:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = isMobile
@@ -40256,7 +37277,7 @@ function isMobile (opts) {
   return result
 }
 
-},{}],281:[function(_dereq_,module,exports){
+},{}],271:[function(_dereq_,module,exports){
 'use strict';
 var toString = Object.prototype.toString;
 
@@ -40265,7 +37286,7 @@ module.exports = function (x) {
 	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
 };
 
-},{}],282:[function(_dereq_,module,exports){
+},{}],272:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -40302,78 +37323,12 @@ module.exports = function(str){
     return true;
 }
 
-},{}],283:[function(_dereq_,module,exports){
+},{}],273:[function(_dereq_,module,exports){
 function lerp(v0, v1, t) {
     return v0*(1-t)+v1*t
 }
 module.exports = lerp
-},{}],284:[function(_dereq_,module,exports){
-'use strict'
-
-module.exports = createTable
-
-var chull = _dereq_('convex-hull')
-
-function constructVertex(d, a, b) {
-  var x = new Array(d)
-  for(var i=0; i<d; ++i) {
-    x[i] = 0.0
-    if(i === a) {
-      x[i] += 0.5
-    }
-    if(i === b) {
-      x[i] += 0.5
-    }
-  }
-  return x
-}
-
-function constructCell(dimension, mask) {
-  if(mask === 0 || mask === (1<<(dimension+1))-1) {
-    return []
-  }
-  var points = []
-  var index  = []
-  for(var i=0; i<=dimension; ++i) {
-    if(mask & (1<<i)) {
-      points.push(constructVertex(dimension, i-1, i-1))
-      index.push(null)
-      for(var j=0; j<=dimension; ++j) {
-        if(~mask & (1<<j)) {
-          points.push(constructVertex(dimension, i-1, j-1))
-          index.push([i,j])
-        }
-      }
-    }
-  }
-  
-  //Preprocess points so first d+1 points are linearly independent
-  var hull = chull(points)
-  var faces = []
-i_loop:
-  for(var i=0; i<hull.length; ++i) {
-    var face = hull[i]
-    var nface = []
-    for(var j=0; j<face.length; ++j) {
-      if(!index[face[j]]) {
-        continue i_loop
-      }
-      nface.push(index[face[j]].slice())
-    }
-    faces.push(nface)
-  }
-  return faces
-}
-
-function createTable(dimension) {
-  var numCells = 1<<(dimension+1)
-  var result = new Array(numCells)
-  for(var i=0; i<numCells; ++i) {
-    result[i] = constructCell(dimension, i)
-  }
-  return result
-}
-},{"convex-hull":79}],285:[function(_dereq_,module,exports){
+},{}],274:[function(_dereq_,module,exports){
 /*jshint unused:true*/
 /*
 Input:  matrix      ; a 4x4 matrix
@@ -40553,7 +37508,7 @@ function combine(out, a, b, scale1, scale2) {
     out[1] = a[1] * scale1 + b[1] * scale2
     out[2] = a[2] * scale1 + b[2] * scale2
 }
-},{"./normalize":286,"gl-mat4/clone":126,"gl-mat4/create":128,"gl-mat4/determinant":129,"gl-mat4/invert":141,"gl-mat4/transpose":154,"gl-vec3/cross":195,"gl-vec3/dot":200,"gl-vec3/length":210,"gl-vec3/normalize":217}],286:[function(_dereq_,module,exports){
+},{"./normalize":275,"gl-mat4/clone":121,"gl-mat4/create":123,"gl-mat4/determinant":124,"gl-mat4/invert":136,"gl-mat4/transpose":149,"gl-vec3/cross":188,"gl-vec3/dot":193,"gl-vec3/length":203,"gl-vec3/normalize":210}],275:[function(_dereq_,module,exports){
 module.exports = function normalize(out, mat) {
     var m44 = mat[15]
     // Cannot normalize.
@@ -40564,7 +37519,7 @@ module.exports = function normalize(out, mat) {
         out[i] = mat[i] * scale
     return true
 }
-},{}],287:[function(_dereq_,module,exports){
+},{}],276:[function(_dereq_,module,exports){
 var lerp = _dereq_('gl-vec3/lerp')
 
 var recompose = _dereq_('mat4-recompose')
@@ -40617,7 +37572,7 @@ function vec3(n) {
 function vec4() {
     return [0,0,0,1]
 }
-},{"gl-mat4/determinant":129,"gl-vec3/lerp":211,"mat4-decompose":285,"mat4-recompose":288,"quat-slerp":331}],288:[function(_dereq_,module,exports){
+},{"gl-mat4/determinant":124,"gl-vec3/lerp":204,"mat4-decompose":274,"mat4-recompose":277,"quat-slerp":316}],277:[function(_dereq_,module,exports){
 /*
 Input:  translation ; a 3 component vector
         scale       ; a 3 component vector
@@ -40678,7 +37633,7 @@ module.exports = function recomposeMat4(matrix, translation, scale, skew, perspe
     mat4.scale(matrix, matrix, scale)
     return matrix
 }
-},{"gl-mat4/create":128,"gl-mat4/fromRotationTranslation":132,"gl-mat4/identity":139,"gl-mat4/multiply":143,"gl-mat4/scale":151,"gl-mat4/translate":153}],289:[function(_dereq_,module,exports){
+},{"gl-mat4/create":123,"gl-mat4/fromRotationTranslation":127,"gl-mat4/identity":134,"gl-mat4/multiply":138,"gl-mat4/scale":146,"gl-mat4/translate":148}],278:[function(_dereq_,module,exports){
 'use strict'
 
 var bsearch   = _dereq_('binary-search-bounds')
@@ -40878,9 +37833,7 @@ function createMatrixCameraController(options) {
   return new MatrixCameraController(matrix)
 }
 
-},{"binary-search-bounds":290,"gl-mat4/invert":141,"gl-mat4/lookAt":142,"gl-mat4/rotateX":148,"gl-mat4/rotateY":149,"gl-mat4/rotateZ":150,"gl-mat4/scale":151,"gl-mat4/translate":153,"gl-vec3/normalize":217,"mat4-interpolate":287}],290:[function(_dereq_,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"dup":98}],291:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42,"gl-mat4/invert":136,"gl-mat4/lookAt":137,"gl-mat4/rotateX":143,"gl-mat4/rotateY":144,"gl-mat4/rotateZ":145,"gl-mat4/scale":146,"gl-mat4/translate":148,"gl-vec3/normalize":210,"mat4-interpolate":276}],279:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = monotoneConvexHull2D
@@ -40962,7 +37915,7 @@ function monotoneConvexHull2D(points) {
   //Return result
   return result
 }
-},{"robust-orientation":344}],292:[function(_dereq_,module,exports){
+},{"robust-orientation":329}],280:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -41169,7 +38122,7 @@ function mouseListen (element, callback) {
   return result
 }
 
-},{"mouse-event":294}],293:[function(_dereq_,module,exports){
+},{"mouse-event":282}],281:[function(_dereq_,module,exports){
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -41196,7 +38149,7 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],294:[function(_dereq_,module,exports){
+},{}],282:[function(_dereq_,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -41258,7 +38211,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],295:[function(_dereq_,module,exports){
+},{}],283:[function(_dereq_,module,exports){
 'use strict'
 
 var toPX = _dereq_('to-px')
@@ -41300,7 +38253,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":367}],296:[function(_dereq_,module,exports){
+},{"to-px":351}],284:[function(_dereq_,module,exports){
 (function (global,setImmediate){(function (){
 /*! Native Promise Only
     v0.8.1 (c) Kyle Simpson
@@ -41677,374 +38630,340 @@ function mouseWheelListen(element, callback, noScroll) {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("timers").setImmediate)
-},{"timers":365}],297:[function(_dereq_,module,exports){
+},{"timers":349}],285:[function(_dereq_,module,exports){
 "use strict"
 
 var pool = _dereq_("typedarray-pool")
 
 module.exports = createSurfaceExtractor
 
-//Helper macros
-function array(i) {
-  return "a" + i
-}
-function data(i) {
-  return "d" + i
-}
-function cube(i,bitmask) {
-  return "c" + i + "_" + bitmask
-}
-function shape(i) {
-  return "s" + i
-}
-function stride(i,j) {
-  return "t" + i + "_" + j
-}
-function offset(i) {
-  return "o" + i
-}
-function scalar(i) {
-  return "x" + i
-}
-function pointer(i) {
-  return "p" + i
-}
-function delta(i,bitmask) {
-  return "d" + i + "_" + bitmask
-}
-function index(i) {
-  return "i" + i
-}
-function step(i,j) {
-  return "u" + i + "_" + j
-}
-function pcube(bitmask) {
-  return "b" + bitmask
-}
-function qcube(bitmask) {
-  return "y" + bitmask
-}
-function pdelta(bitmask) {
-  return "e" + bitmask
-}
-function vert(i) {
-  return "v" + i
-}
-var VERTEX_IDS = "V"
-var PHASES = "P"
-var VERTEX_COUNT = "N"
-var POOL_SIZE = "Q"
-var POINTER = "X"
-var TEMPORARY = "T"
-
-function permBitmask(dimension, mask, order) {
-  var r = 0
-  for(var i=0; i<dimension; ++i) {
-    if(mask & (1<<i)) {
-      r |= (1<<order[i])
+var allFns = {
+  "false,0,1": function surfaceProcedure(vertex, face, phase, mallocUint32, freeUint32) {
+    return function extractContour0_1(a0, x0, x1, x2) {
+      var s0 = a0.shape[0] | 0,
+        s1 = a0.shape[1] | 0,
+        d0 = a0.data,
+        o0 = a0.offset | 0,
+        t0_0 = a0.stride[0] | 0,
+        t0_1 = a0.stride[1] | 0,
+        p0 = o0,
+        c0_0,
+        d0_1 = -t0_0 | 0,
+        c0_1 = 0,
+        d0_2 = -t0_1 | 0,
+        c0_2 = 0,
+        d0_3 = (-t0_0 - t0_1) | 0,
+        c0_3 = 0,
+        u0_0 = t0_0 | 0,
+        u0_1 = (t0_1 - t0_0 * s0) | 0,
+        i0 = 0,
+        i1 = 0,
+        N = 0,
+        Q = (2 * s0) | 0,
+        P = mallocUint32(Q),
+        V = mallocUint32(Q),
+        X = 0,
+        b0 = 0,
+        e1 = -1 | 0,
+        y1 = -1 | 0,
+        b1 = 0,
+        e2 = -s0 | 0,
+        y2 = s0 | 0,
+        b2 = 0,
+        e3 = (-s0 - 1) | 0,
+        y3 = (s0 - 1) | 0,
+        b3 = 0,
+        v0 = 0,
+        T = 0
+      for (i0 = 0; i0 < s0; ++i0) {
+        P[X++] = phase(d0[p0], x0, x1, x2)
+        p0 += u0_0
+      }
+      p0 += u0_1
+      if (s1 > 0) {
+        i1 = 1
+        P[X++] = phase(d0[p0], x0, x1, x2)
+        p0 += u0_0
+        if (s0 > 0) {
+          i0 = 1
+          c0_0 = d0[p0]
+          b0 = P[X] = phase(c0_0, x0, x1, x2)
+          b1 = P[X + e1]
+          b2 = P[X + e2]
+          b3 = P[X + e3]
+          if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+            c0_1 = d0[p0 + d0_1]
+            c0_2 = d0[p0 + d0_2]
+            c0_3 = d0[p0 + d0_3]
+            vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+            v0 = V[X] = N++
+          }
+          X += 1
+          p0 += u0_0
+          for (i0 = 2; i0 < s0; ++i0) {
+            c0_0 = d0[p0]
+            b0 = P[X] = phase(c0_0, x0, x1, x2)
+            b1 = P[X + e1]
+            b2 = P[X + e2]
+            b3 = P[X + e3]
+            if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+              c0_1 = d0[p0 + d0_1]
+              c0_2 = d0[p0 + d0_2]
+              c0_3 = d0[p0 + d0_3]
+              vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+              v0 = V[X] = N++
+              if (b3 !== b1) {
+                face(V[X + e1], v0, c0_3, c0_1, b3, b1, x0, x1, x2)
+              }
+            }
+            X += 1
+            p0 += u0_0
+          }
+        }
+        p0 += u0_1
+        X = 0
+        T = e1
+        e1 = y1
+        y1 = T
+        T = e2
+        e2 = y2
+        y2 = T
+        T = e3
+        e3 = y3
+        y3 = T
+        for (i1 = 2; i1 < s1; ++i1) {
+          P[X++] = phase(d0[p0], x0, x1, x2)
+          p0 += u0_0
+          if (s0 > 0) {
+            i0 = 1
+            c0_0 = d0[p0]
+            b0 = P[X] = phase(c0_0, x0, x1, x2)
+            b1 = P[X + e1]
+            b2 = P[X + e2]
+            b3 = P[X + e3]
+            if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+              c0_1 = d0[p0 + d0_1]
+              c0_2 = d0[p0 + d0_2]
+              c0_3 = d0[p0 + d0_3]
+              vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+              v0 = V[X] = N++
+              if (b3 !== b2) {
+                face(V[X + e2], v0, c0_2, c0_3, b2, b3, x0, x1, x2)
+              }
+            }
+            X += 1
+            p0 += u0_0
+            for (i0 = 2; i0 < s0; ++i0) {
+              c0_0 = d0[p0]
+              b0 = P[X] = phase(c0_0, x0, x1, x2)
+              b1 = P[X + e1]
+              b2 = P[X + e2]
+              b3 = P[X + e3]
+              if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+                c0_1 = d0[p0 + d0_1]
+                c0_2 = d0[p0 + d0_2]
+                c0_3 = d0[p0 + d0_3]
+                vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+                v0 = V[X] = N++
+                if (b3 !== b2) {
+                  face(V[X + e2], v0, c0_2, c0_3, b2, b3, x0, x1, x2)
+                }
+                if (b3 !== b1) {
+                  face(V[X + e1], v0, c0_3, c0_1, b3, b1, x0, x1, x2)
+                }
+              }
+              X += 1
+              p0 += u0_0
+            }
+          }
+          if (i1 & 1) {
+            X = 0
+          }
+          T = e1
+          e1 = y1
+          y1 = T
+          T = e2
+          e2 = y2
+          y2 = T
+          T = e3
+          e3 = y3
+          y3 = T
+          p0 += u0_1
+        }
+      }
+      freeUint32(V)
+      freeUint32(P)
     }
-  }
-  return r
+  },
+  "false,1,0": function anonymous(vertex, face, phase, mallocUint32, freeUint32) {
+    return function extractContour1_0(a0, x0, x1, x2) {
+      var s0 = a0.shape[0] | 0,
+        s1 = a0.shape[1] | 0,
+        d0 = a0.data,
+        o0 = a0.offset | 0,
+        t0_0 = a0.stride[0] | 0,
+        t0_1 = a0.stride[1] | 0,
+        p0 = o0,
+        c0_0,
+        d0_1 = -t0_0 | 0,
+        c0_1 = 0,
+        d0_2 = -t0_1 | 0,
+        c0_2 = 0,
+        d0_3 = (-t0_0 - t0_1) | 0,
+        c0_3 = 0,
+        u0_1 = t0_1 | 0,
+        u0_0 = (t0_0 - t0_1 * s1) | 0,
+        i0 = 0,
+        i1 = 0,
+        N = 0,
+        Q = (2 * s1) | 0,
+        P = mallocUint32(Q),
+        V = mallocUint32(Q),
+        X = 0,
+        b0 = 0,
+        e2 = -1 | 0,
+        y2 = -1 | 0,
+        b2 = 0,
+        e1 = -s1 | 0,
+        y1 = s1 | 0,
+        b1 = 0,
+        e3 = (-s1 - 1) | 0,
+        y3 = (s1 - 1) | 0,
+        b3 = 0,
+        v0 = 0,
+        T = 0
+      for (i1 = 0; i1 < s1; ++i1) {
+        P[X++] = phase(d0[p0], x0, x1, x2)
+        p0 += u0_1
+      }
+      p0 += u0_0
+      if (s0 > 0) {
+        i0 = 1
+        P[X++] = phase(d0[p0], x0, x1, x2)
+        p0 += u0_1
+        if (s1 > 0) {
+          i1 = 1
+          c0_0 = d0[p0]
+          b0 = P[X] = phase(c0_0, x0, x1, x2)
+          b1 = P[X + e1]
+          b2 = P[X + e2]
+          b3 = P[X + e3]
+          if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+            c0_1 = d0[p0 + d0_1]
+            c0_2 = d0[p0 + d0_2]
+            c0_3 = d0[p0 + d0_3]
+            vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+            v0 = V[X] = N++
+          }
+          X += 1
+          p0 += u0_1
+          for (i1 = 2; i1 < s1; ++i1) {
+            c0_0 = d0[p0]
+            b0 = P[X] = phase(c0_0, x0, x1, x2)
+            b1 = P[X + e1]
+            b2 = P[X + e2]
+            b3 = P[X + e3]
+            if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+              c0_1 = d0[p0 + d0_1]
+              c0_2 = d0[p0 + d0_2]
+              c0_3 = d0[p0 + d0_3]
+              vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+              v0 = V[X] = N++
+              if (b3 !== b2) {
+                face(V[X + e2], v0, c0_2, c0_3, b2, b3, x0, x1, x2)
+              }
+            }
+            X += 1
+            p0 += u0_1
+          }
+        }
+        p0 += u0_0
+        X = 0
+        T = e1
+        e1 = y1
+        y1 = T
+        T = e2
+        e2 = y2
+        y2 = T
+        T = e3
+        e3 = y3
+        y3 = T
+        for (i0 = 2; i0 < s0; ++i0) {
+          P[X++] = phase(d0[p0], x0, x1, x2)
+          p0 += u0_1
+          if (s1 > 0) {
+            i1 = 1
+            c0_0 = d0[p0]
+            b0 = P[X] = phase(c0_0, x0, x1, x2)
+            b1 = P[X + e1]
+            b2 = P[X + e2]
+            b3 = P[X + e3]
+            if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+              c0_1 = d0[p0 + d0_1]
+              c0_2 = d0[p0 + d0_2]
+              c0_3 = d0[p0 + d0_3]
+              vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+              v0 = V[X] = N++
+              if (b3 !== b1) {
+                face(V[X + e1], v0, c0_3, c0_1, b3, b1, x0, x1, x2)
+              }
+            }
+            X += 1
+            p0 += u0_1
+            for (i1 = 2; i1 < s1; ++i1) {
+              c0_0 = d0[p0]
+              b0 = P[X] = phase(c0_0, x0, x1, x2)
+              b1 = P[X + e1]
+              b2 = P[X + e2]
+              b3 = P[X + e3]
+              if (b0 !== b1 || b0 !== b2 || b0 !== b3) {
+                c0_1 = d0[p0 + d0_1]
+                c0_2 = d0[p0 + d0_2]
+                c0_3 = d0[p0 + d0_3]
+                vertex(i0, i1, c0_0, c0_1, c0_2, c0_3, b0, b1, b2, b3, x0, x1, x2)
+                v0 = V[X] = N++
+                if (b3 !== b2) {
+                  face(V[X + e2], v0, c0_2, c0_3, b2, b3, x0, x1, x2)
+                }
+                if (b3 !== b1) {
+                  face(V[X + e1], v0, c0_3, c0_1, b3, b1, x0, x1, x2)
+                }
+              }
+              X += 1
+              p0 += u0_1
+            }
+          }
+          if (i0 & 1) {
+            X = 0
+          }
+          T = e1
+          e1 = y1
+          y1 = T
+          T = e2
+          e2 = y2
+          y2 = T
+          T = e3
+          e3 = y3
+          y3 = T
+          p0 += u0_0
+        }
+      }
+      freeUint32(V)
+      freeUint32(P)
+    }
+  },
 }
 
 //Generates the surface procedure
 function compileSurfaceProcedure(vertexFunc, faceFunc, phaseFunc, scalarArgs, order, typesig) {
-  var arrayArgs = typesig.length
-  var dimension = order.length
+  var key = [typesig, order].join(',')
+  var proc = allFns[key]
 
-  if(dimension < 2) {
-    throw new Error("ndarray-extract-contour: Dimension must be at least 2")
-  }
-
-  var funcName = "extractContour" + order.join("_")
-  var code = []
-  var vars = []
-  var args = []
-
-  //Assemble arguments
-  for(var i=0; i<arrayArgs; ++i) {
-    args.push(array(i))  
-  }
-  for(var i=0; i<scalarArgs; ++i) {
-    args.push(scalar(i))
-  }
-
-  //Shape
-  for(var i=0; i<dimension; ++i) {
-    vars.push(shape(i) + "=" + array(0) + ".shape[" + i + "]|0")
-  }
-  //Data, stride, offset pointers
-  for(var i=0; i<arrayArgs; ++i) {
-    vars.push(data(i) + "=" + array(i) + ".data",
-              offset(i) + "=" + array(i) + ".offset|0")
-    for(var j=0; j<dimension; ++j) {
-      vars.push(stride(i,j) + "=" + array(i) + ".stride[" + j + "]|0")
-    }
-  }
-  //Pointer, delta and cube variables
-  for(var i=0; i<arrayArgs; ++i) {
-    vars.push(pointer(i) + "=" + offset(i))
-    vars.push(cube(i,0))
-    for(var j=1; j<(1<<dimension); ++j) {
-      var ptrStr = []
-      for(var k=0; k<dimension; ++k) {
-        if(j & (1<<k)) {
-          ptrStr.push("-" + stride(i,k))
-        }
-      }
-      vars.push(delta(i,j) + "=(" + ptrStr.join("") + ")|0")
-      vars.push(cube(i,j) + "=0")
-    }
-  }
-  //Create step variables
-  for(var i=0; i<arrayArgs; ++i) {
-    for(var j=0; j<dimension; ++j) {
-      var stepVal = [ stride(i,order[j]) ]
-      if(j > 0) {
-        stepVal.push(stride(i, order[j-1]) + "*" + shape(order[j-1]) )
-      }
-      vars.push(step(i,order[j]) + "=(" + stepVal.join("-") + ")|0")
-    }
-  }
-  //Create index variables
-  for(var i=0; i<dimension; ++i) {
-    vars.push(index(i) + "=0")
-  }
-  //Vertex count
-  vars.push(VERTEX_COUNT + "=0")
-  //Compute pool size, initialize pool step
-  var sizeVariable = ["2"]
-  for(var i=dimension-2; i>=0; --i) {
-    sizeVariable.push(shape(order[i]))
-  }
-  //Previous phases and vertex_ids
-  vars.push(POOL_SIZE + "=(" + sizeVariable.join("*") + ")|0",
-            PHASES + "=mallocUint32(" + POOL_SIZE + ")",
-            VERTEX_IDS + "=mallocUint32(" + POOL_SIZE + ")",
-            POINTER + "=0")
-  //Create cube variables for phases
-  vars.push(pcube(0) + "=0")
-  for(var j=1; j<(1<<dimension); ++j) {
-    var cubeDelta = []
-    var cubeStep = [ ]
-    for(var k=0; k<dimension; ++k) {
-      if(j & (1<<k)) {
-        if(cubeStep.length === 0) {
-          cubeDelta.push("1")
-        } else {
-          cubeDelta.unshift(cubeStep.join("*"))
-        }
-      }
-      cubeStep.push(shape(order[k]))
-    }
-    var signFlag = ""
-    if(cubeDelta[0].indexOf(shape(order[dimension-2])) < 0) {
-      signFlag = "-"
-    }
-    var jperm = permBitmask(dimension, j, order)
-    vars.push(pdelta(jperm) + "=(-" + cubeDelta.join("-") + ")|0",
-              qcube(jperm) + "=(" + signFlag + cubeDelta.join("-") + ")|0",
-              pcube(jperm) + "=0")
-  }
-  vars.push(vert(0) + "=0", TEMPORARY + "=0")
-
-  function forLoopBegin(i, start) {
-    code.push("for(", index(order[i]), "=", start, ";",
-      index(order[i]), "<", shape(order[i]), ";",
-      "++", index(order[i]), "){")
-  }
-
-  function forLoopEnd(i) {
-    for(var j=0; j<arrayArgs; ++j) {
-      code.push(pointer(j), "+=", step(j,order[i]), ";")
-    }
-    code.push("}")
-  }
-
-  function fillEmptySlice(k) {
-    for(var i=k-1; i>=0; --i) {
-      forLoopBegin(i, 0) 
-    }
-    var phaseFuncArgs = []
-    for(var i=0; i<arrayArgs; ++i) {
-      if(typesig[i]) {
-        phaseFuncArgs.push(data(i) + ".get(" + pointer(i) + ")")
-      } else {
-        phaseFuncArgs.push(data(i) + "[" + pointer(i) + "]")
-      }
-    }
-    for(var i=0; i<scalarArgs; ++i) {
-      phaseFuncArgs.push(scalar(i))
-    }
-    code.push(PHASES, "[", POINTER, "++]=phase(", phaseFuncArgs.join(), ");")
-    for(var i=0; i<k; ++i) {
-      forLoopEnd(i)
-    }
-    for(var j=0; j<arrayArgs; ++j) {
-      code.push(pointer(j), "+=", step(j,order[k]), ";")
-    }
-  }
-
-  function processGridCell(mask) {
-    //Read in local data
-    for(var i=0; i<arrayArgs; ++i) {
-      if(typesig[i]) {
-        code.push(cube(i,0), "=", data(i), ".get(", pointer(i), ");")
-      } else {
-        code.push(cube(i,0), "=", data(i), "[", pointer(i), "];")
-      }
-    }
-
-    //Read in phase
-    var phaseFuncArgs = []
-    for(var i=0; i<arrayArgs; ++i) {
-      phaseFuncArgs.push(cube(i,0))
-    }
-    for(var i=0; i<scalarArgs; ++i) {
-      phaseFuncArgs.push(scalar(i))
-    }
-    
-    code.push(pcube(0), "=", PHASES, "[", POINTER, "]=phase(", phaseFuncArgs.join(), ");")
-    
-    //Read in other cube data
-    for(var j=1; j<(1<<dimension); ++j) {
-      code.push(pcube(j), "=", PHASES, "[", POINTER, "+", pdelta(j), "];")
-    }
-
-    //Check for boundary crossing
-    var vertexPredicate = []
-    for(var j=1; j<(1<<dimension); ++j) {
-      vertexPredicate.push("(" + pcube(0) + "!==" + pcube(j) + ")")
-    }
-    code.push("if(", vertexPredicate.join("||"), "){")
-
-    //Read in boundary data
-    var vertexArgs = []
-    for(var i=0; i<dimension; ++i) {
-      vertexArgs.push(index(i))
-    }
-    for(var i=0; i<arrayArgs; ++i) {
-      vertexArgs.push(cube(i,0))
-      for(var j=1; j<(1<<dimension); ++j) {
-        if(typesig[i]) {
-          code.push(cube(i,j), "=", data(i), ".get(", pointer(i), "+", delta(i,j), ");")
-        } else {
-          code.push(cube(i,j), "=", data(i), "[", pointer(i), "+", delta(i,j), "];")
-        }
-        vertexArgs.push(cube(i,j))
-      }
-    }
-    for(var i=0; i<(1<<dimension); ++i) {
-      vertexArgs.push(pcube(i))
-    }
-    for(var i=0; i<scalarArgs; ++i) {
-      vertexArgs.push(scalar(i))
-    }
-
-    //Generate vertex
-    code.push("vertex(", vertexArgs.join(), ");",
-      vert(0), "=", VERTEX_IDS, "[", POINTER, "]=", VERTEX_COUNT, "++;")
-
-    //Check for face crossings
-    var base = (1<<dimension)-1
-    var corner = pcube(base)
-    for(var j=0; j<dimension; ++j) {
-      if((mask & ~(1<<j))===0) {
-        //Check face
-        var subset = base^(1<<j)
-        var edge = pcube(subset)
-        var faceArgs = [ ]
-        for(var k=subset; k>0; k=(k-1)&subset) {
-          faceArgs.push(VERTEX_IDS + "[" + POINTER + "+" + pdelta(k) + "]")
-        }
-        faceArgs.push(vert(0))
-        for(var k=0; k<arrayArgs; ++k) {
-          if(j&1) {
-            faceArgs.push(cube(k,base), cube(k,subset))
-          } else {
-            faceArgs.push(cube(k,subset), cube(k,base))
-          }
-        }
-        if(j&1) {
-          faceArgs.push(corner, edge)
-        } else {
-          faceArgs.push(edge, corner)
-        }
-        for(var k=0; k<scalarArgs; ++k) {
-          faceArgs.push(scalar(k))
-        }
-        code.push("if(", corner, "!==", edge, "){",
-          "face(", faceArgs.join(), ")}")
-      }
-    }
-    
-    //Increment pointer, close off if statement
-    code.push("}",
-      POINTER, "+=1;")
-  }
-
-  function flip() {
-    for(var j=1; j<(1<<dimension); ++j) {
-      code.push(TEMPORARY, "=", pdelta(j), ";",
-                pdelta(j), "=", qcube(j), ";",
-                qcube(j), "=", TEMPORARY, ";")
-    }
-  }
-
-  function createLoop(i, mask) {
-    if(i < 0) {
-      processGridCell(mask)
-      return
-    }
-    fillEmptySlice(i)
-    code.push("if(", shape(order[i]), ">0){",
-      index(order[i]), "=1;")
-    createLoop(i-1, mask|(1<<order[i]))
-
-    for(var j=0; j<arrayArgs; ++j) {
-      code.push(pointer(j), "+=", step(j,order[i]), ";")
-    }
-    if(i === dimension-1) {
-      code.push(POINTER, "=0;")
-      flip()
-    }
-    forLoopBegin(i, 2)
-    createLoop(i-1, mask)
-    if(i === dimension-1) {
-      code.push("if(", index(order[dimension-1]), "&1){",
-        POINTER, "=0;}")
-      flip()
-    }
-    forLoopEnd(i)
-    code.push("}")
-  }
-
-  createLoop(dimension-1, 0)
-
-  //Release scratch memory
-  code.push("freeUint32(", VERTEX_IDS, ");freeUint32(", PHASES, ");")
-
-  //Compile and link procedure
-  var procedureCode = [
-    "'use strict';",
-    "function ", funcName, "(", args.join(), "){",
-      "var ", vars.join(), ";",
-      code.join(""),
-    "}",
-    "return ", funcName ].join("")
-
-  var proc = new Function(
-    "vertex", 
-    "face", 
-    "phase", 
-    "mallocUint32", 
-    "freeUint32",
-    procedureCode)
   return proc(
-    vertexFunc, 
-    faceFunc, 
-    phaseFunc, 
-    pool.mallocUint32, 
+    vertexFunc,
+    faceFunc,
+    phaseFunc,
+    pool.mallocUint32,
     pool.freeUint32)
 }
 
@@ -42093,13 +39012,103 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":372}],298:[function(_dereq_,module,exports){
+},{"typedarray-pool":355}],286:[function(_dereq_,module,exports){
 'use strict'
 
-module.exports      = gradient
+var dup = _dereq_('dup')
 
-var dup             = _dereq_('dup')
-var cwiseCompiler   = _dereq_('cwise-compiler')
+var CACHED_CWiseOp = {
+  zero: function(SS, a0, t0, p0) {
+      var s0 = SS[0], t0p0 = t0[0]
+      p0 |= 0
+      var i0 = 0, d0s0 = t0p0
+      for (i0 = 0; i0 < s0; ++i0) {
+        a0[p0] = 0
+        p0 += d0s0
+      }
+    },
+
+    fdTemplate1: function(SS, a0, t0, p0, a1, t1, p1) {
+    var s0 = SS[0], t0p0 = t0[0], t1p0 = t1[0], q0 = -1 * t0p0, q1 = t0p0
+    p0 |= 0
+    p1 |= 0
+    var i0 = 0, d0s0 = t0p0, d1s0 = t1p0
+    for (i0 = 0; i0 < s0; ++i0) {
+      a1[p1] = 0.5 * (a0[p0 + q0] - a0[p0 + q1])
+      p0 += d0s0
+      p1 += d1s0
+    }
+  },
+
+  fdTemplate2: function(SS, a0, t0, p0, a1, t1, p1, a2, t2, p2) {
+    var s0 = SS[0], s1 = SS[1], t0p0 = t0[0], t0p1 = t0[1], t1p0 = t1[0], t1p1 = t1[1], t2p0 = t2[0], t2p1 = t2[1], q0 = -1 * t0p0, q1 = t0p0, q2 = -1 * t0p1, q3 = t0p1
+    p0 |= 0
+    p1 |= 0
+    p2 |= 0
+    var i0 = 0, i1 = 0, d0s0 = t0p1, d0s1 = (t0p0 - s1 * t0p1), d1s0 = t1p1, d1s1 = (t1p0 - s1 * t1p1), d2s0 = t2p1, d2s1 = (t2p0 - s1 * t2p1)
+    for (i1 = 0; i1 < s0; ++i1) {
+      for (i0 = 0; i0 < s1; ++i0) {
+        a1[p1] = 0.5 * (a0[p0 + q0] - a0[p0 + q1]); a2[p2] = 0.5 * (a0[p0 + q2] - a0[p0 + q3])
+        p0 += d0s0
+        p1 += d1s0
+        p2 += d2s0
+      }
+      p0 += d0s1
+      p1 += d1s1
+      p2 += d2s1
+    }
+  }
+}
+
+var CACHED_thunk = {
+  cdiff: function(compile) {
+    var CACHED = {}
+    return function cdiff_cwise_thunk(array0, array1, array2) {
+      var t0 = array0.dtype, r0 = array0.order, t1 = array1.dtype, r1 = array1.order, t2 = array2.dtype, r2 = array2.order, type = [t0, r0.join(), t1, r1.join(), t2, r2.join()].join(), proc = CACHED[type]
+      if (!proc) { CACHED[type] = proc = compile([t0, r0, t1, r1, t2, r2]) } return proc(array0.shape.slice(0), array0.data, array0.stride, array0.offset | 0, array1.data, array1.stride, array1.offset | 0, array2.data, array2.stride, array2.offset | 0)
+    }
+  },
+
+  zero: function(compile) {
+    var CACHED = {}
+    return function zero_cwise_thunk(array0) {
+      var t0 = array0.dtype, r0 = array0.order, type = [t0, r0.join()].join(), proc = CACHED[type]
+      if (!proc) { CACHED[type] = proc = compile([t0, r0]) } return proc(array0.shape.slice(0), array0.data, array0.stride, array0.offset | 0)
+    }
+  },
+
+  fdTemplate1: function(compile) {
+    var CACHED = {}
+    return function fdTemplate1_cwise_thunk(array0, array1) {
+      var t0 = array0.dtype, r0 = array0.order, t1 = array1.dtype, r1 = array1.order, type = [t0, r0.join(), t1, r1.join()].join(), proc = CACHED[type]
+      if (!proc) { CACHED[type] = proc = compile([t0, r0, t1, r1]) } return proc(array0.shape.slice(0), array0.data, array0.stride, array0.offset | 0, array1.data, array1.stride, array1.offset | 0)
+    }
+  },
+
+  fdTemplate2: function(compile) {
+    var CACHED = {}
+    return function fdTemplate2_cwise_thunk(array0, array1, array4) {
+      var t0 = array0.dtype, r0 = array0.order, t1 = array1.dtype, r1 = array1.order, t4 = array4.dtype, r4 = array4.order, type = [t0, r0.join(), t1, r1.join(), t4, r4.join()].join(), proc = CACHED[type]
+      if (!proc) { CACHED[type] = proc = compile([t0, r0, t1, r1, t4, r4]) } return proc(array0.shape.slice(0), array0.data, array0.stride, array0.offset | 0, array1.data, array1.stride, array1.offset | 0, array4.data, array4.stride, array4.offset | 0)
+    }
+  },
+}
+
+function createThunk(proc) {
+  var thunk = CACHED_thunk[proc.funcName]
+  return thunk(compile.bind(undefined, proc))
+}
+
+function compile(proc) {
+  return CACHED_CWiseOp[proc.funcName]
+}
+
+function cwiseCompiler(user_args) {
+  return createThunk({
+    funcName: user_args.funcName
+  })
+}
+
 
 var TEMPLATE_CACHE  = {}
 var GRADIENT_CACHE  = {}
@@ -42112,48 +39121,10 @@ var EmptyProc = {
 }
 
 var centralDiff = cwiseCompiler({
-  args: [ 'array', 'array', 'array' ],
-  pre: EmptyProc,
-  post: EmptyProc,
-  body: {
-    args: [ {
-      name: 'out', 
-      lvalue: true,
-      rvalue: false,
-      count: 1
-    }, {
-      name: 'left', 
-      lvalue: false,
-      rvalue: true,
-      count: 1
-    }, {
-      name: 'right', 
-      lvalue: false,
-      rvalue: true,
-      count: 1
-    }],
-    body: "out=0.5*(left-right)",
-    thisVars: [],
-    localVars: []
-  },
   funcName: 'cdiff'
 })
 
 var zeroOut = cwiseCompiler({
-  args: [ 'array' ],
-  pre: EmptyProc,
-  post: EmptyProc,
-  body: {
-    args: [ {
-      name: 'out', 
-      lvalue: true,
-      rvalue: false,
-      count: 1
-    }],
-    body: "out=0",
-    thisVars: [],
-    localVars: []
-  },
   funcName: 'zero'
 })
 
@@ -42161,48 +39132,114 @@ function generateTemplate(d) {
   if(d in TEMPLATE_CACHE) {
     return TEMPLATE_CACHE[d]
   }
-  var code = []
-  for(var i=0; i<d; ++i) {
-    code.push('out', i, 's=0.5*(inp', i, 'l-inp', i, 'r);')
-  }
-  var args = [ 'array' ]
-  var names = ['junk']
-  for(var i=0; i<d; ++i) {
-    args.push('array')
-    names.push('out' + i + 's')
-    var o = dup(d)
-    o[i] = -1
-    args.push({
-      array: 0,
-      offset: o.slice()
-    })
-    o[i] = 1
-    args.push({
-      array: 0,
-      offset: o.slice()
-    })
-    names.push('inp' + i + 'l', 'inp' + i + 'r')
-  }
   return TEMPLATE_CACHE[d] = cwiseCompiler({
-    args: args,
-    pre:  EmptyProc,
-    post: EmptyProc,
-    body: {
-      body: code.join(''),
-      args: names.map(function(n) {
-        return {
-          name: n,
-          lvalue: n.indexOf('out') === 0,
-          rvalue: n.indexOf('inp') === 0,
-          count: (n!=='junk')|0
-        }
-      }),
-      thisVars: [],
-      localVars: []
-    },
     funcName: 'fdTemplate' + d
   })
 }
+
+function CACHED_link(diff, zero, grad1, grad2) {
+  return function(dst, src) {
+    var s = src.shape.slice()
+    if (1 && s[0] > 2 && s[1] > 2) {
+      grad2(
+        src
+          .pick(-1, -1)
+          .lo(1, 1)
+          .hi(s[0] - 2, s[1] - 2),
+        dst
+          .pick(-1, -1, 0)
+          .lo(1, 1)
+          .hi(s[0] - 2, s[1] - 2),
+        dst
+          .pick(-1, -1, 1)
+          .lo(1, 1)
+          .hi(s[0] - 2, s[1] - 2)
+      )
+    }
+    if (1 && s[1] > 2) {
+      grad1(
+        src
+          .pick(0, -1)
+          .lo(1)
+          .hi(s[1] - 2),
+        dst
+          .pick(0, -1, 1)
+          .lo(1)
+          .hi(s[1] - 2)
+      )
+      zero(
+        dst
+          .pick(0, -1, 0)
+          .lo(1)
+          .hi(s[1] - 2)
+      )
+    }
+    if (1 && s[1] > 2) {
+      grad1(
+        src
+          .pick(s[0] - 1, -1)
+          .lo(1)
+          .hi(s[1] - 2),
+        dst
+          .pick(s[0] - 1, -1, 1)
+          .lo(1)
+          .hi(s[1] - 2)
+      )
+      zero(
+        dst
+          .pick(s[0] - 1, -1, 0)
+          .lo(1)
+          .hi(s[1] - 2)
+      )
+    }
+    if (1 && s[0] > 2) {
+      grad1(
+        src
+          .pick(-1, 0)
+          .lo(1)
+          .hi(s[0] - 2),
+        dst
+          .pick(-1, 0, 0)
+          .lo(1)
+          .hi(s[0] - 2)
+      )
+      zero(
+        dst
+          .pick(-1, 0, 1)
+          .lo(1)
+          .hi(s[0] - 2)
+      )
+    }
+    if (1 && s[0] > 2) {
+      grad1(
+        src
+          .pick(-1, s[1] - 1)
+          .lo(1)
+          .hi(s[0] - 2),
+        dst
+          .pick(-1, s[1] - 1, 0)
+          .lo(1)
+          .hi(s[0] - 2)
+      )
+      zero(
+        dst
+          .pick(-1, s[1] - 1, 1)
+          .lo(1)
+          .hi(s[0] - 2)
+      )
+    }
+    dst.set(0, 0, 0, 0)
+    dst.set(0, 0, 1, 0)
+    dst.set(s[0] - 1, 0, 0, 0)
+    dst.set(s[0] - 1, 0, 1, 0)
+    dst.set(0, s[1] - 1, 0, 0)
+    dst.set(0, s[1] - 1, 1, 0)
+    dst.set(s[0] - 1, s[1] - 1, 0, 0)
+    dst.set(s[0] - 1, s[1] - 1, 1, 0)
+    return dst
+  }
+}
+
 
 function generateGradient(boundaryConditions) {
   var token = boundaryConditions.join()
@@ -42212,186 +39249,39 @@ function generateGradient(boundaryConditions) {
   }
 
   var d = boundaryConditions.length
-  var code = ['function gradient(dst,src){var s=src.shape.slice();' ]
-  
-  function handleBoundary(facet) {
-    var cod = d - facet.length
 
-    var loStr = []
-    var hiStr = []
-    var pickStr = []
-    for(var i=0; i<d; ++i) {
-      if(facet.indexOf(i+1) >= 0) {
-        pickStr.push('0')
-      } else if(facet.indexOf(-(i+1)) >= 0) {
-        pickStr.push('s['+i+']-1')
-      } else {
-        pickStr.push('-1')
-        loStr.push('1')
-        hiStr.push('s['+i+']-2')
-      }
-    }
-    var boundStr = '.lo(' + loStr.join() + ').hi(' + hiStr.join() + ')'
-    if(loStr.length === 0) {
-      boundStr = ''
-    }
-        
-    if(cod > 0) {
-      code.push('if(1') 
-      for(var i=0; i<d; ++i) {
-        if(facet.indexOf(i+1) >= 0 || facet.indexOf(-(i+1)) >= 0) {
-          continue
-        }
-        code.push('&&s[', i, ']>2')
-      }
-      code.push('){grad', cod, '(src.pick(', pickStr.join(), ')', boundStr)
-      for(var i=0; i<d; ++i) {
-        if(facet.indexOf(i+1) >= 0 || facet.indexOf(-(i+1)) >= 0) {
-          continue
-        }
-        code.push(',dst.pick(', pickStr.join(), ',', i, ')', boundStr)
-      }
-      code.push(');')
-    }
-
-    for(var i=0; i<facet.length; ++i) {
-      var bnd = Math.abs(facet[i])-1
-      var outStr = 'dst.pick(' + pickStr.join() + ',' + bnd + ')' + boundStr
-      switch(boundaryConditions[bnd]) {
-
-        case 'clamp':
-          var cPickStr = pickStr.slice()
-          var dPickStr = pickStr.slice()
-          if(facet[i] < 0) {
-            cPickStr[bnd] = 's[' + bnd + ']-2'
-          } else {
-            dPickStr[bnd] = '1'
-          }
-          if(cod === 0) {
-            code.push('if(s[', bnd, ']>1){dst.set(',
-              pickStr.join(), ',', bnd, ',0.5*(src.get(',
-                cPickStr.join(), ')-src.get(',
-                dPickStr.join(), ')))}else{dst.set(',
-              pickStr.join(), ',', bnd, ',0)};')
-          } else {
-            code.push('if(s[', bnd, ']>1){diff(', outStr, 
-                ',src.pick(', cPickStr.join(), ')', boundStr, 
-                ',src.pick(', dPickStr.join(), ')', boundStr, 
-                ');}else{zero(', outStr, ');};')
-          }
-        break
-
-        case 'mirror':
-          if(cod === 0) {
-            code.push('dst.set(', pickStr.join(), ',', bnd, ',0);')
-          } else {
-            code.push('zero(', outStr, ');')
-          }
-        break
-
-        case 'wrap':
-          var aPickStr = pickStr.slice()
-          var bPickStr = pickStr.slice()
-          if(facet[i] < 0) {
-            aPickStr[bnd] = 's[' + bnd + ']-2'
-            bPickStr[bnd] = '0'
-            
-          } else {
-            aPickStr[bnd] = 's[' + bnd + ']-1'
-            bPickStr[bnd] = '1'
-          }
-          if(cod === 0) {
-            code.push('if(s[', bnd, ']>2){dst.set(',
-              pickStr.join(), ',', bnd, ',0.5*(src.get(',
-                aPickStr.join(), ')-src.get(',
-                bPickStr.join(), ')))}else{dst.set(',
-              pickStr.join(), ',', bnd, ',0)};')
-          } else {
-            code.push('if(s[', bnd, ']>2){diff(', outStr, 
-                ',src.pick(', aPickStr.join(), ')', boundStr, 
-                ',src.pick(', bPickStr.join(), ')', boundStr, 
-                ');}else{zero(', outStr, ');};')
-          }
-        break
-
-        default:
-          throw new Error('ndarray-gradient: Invalid boundary condition')
-      }
-    }
-
-    if(cod > 0) {
-      code.push('};')
-    }
-  }
-
-  //Enumerate ridges, facets, etc. of hypercube
-  for(var i=0; i<(1<<d); ++i) {
-    var faces = []
-    for(var j=0; j<d; ++j) {
-      if(i & (1<<j)) {
-        faces.push(j+1)
-      }
-    }
-    for(var k=0; k<(1<<faces.length); ++k) {
-      var sfaces = faces.slice()
-      for(var j=0; j<faces.length; ++j) {
-        if(k & (1<<j)) {
-          sfaces[j] = -sfaces[j]
-        }
-      }
-      handleBoundary(sfaces)
-    }
-  }
-
-  code.push('return dst;};return gradient')
-
-  //Compile and link routine, save cached procedure
-  var linkNames = [ 'diff', 'zero' ]
   var linkArgs  = [ centralDiff, zeroOut ]
   for(var i=1; i<=d; ++i) {
-    linkNames.push('grad' + i)
     linkArgs.push(generateTemplate(i))
   }
-  linkNames.push(code.join(''))
 
-  var link = Function.apply(void 0, linkNames)
+  var link = CACHED_link
+
   var proc = link.apply(void 0, linkArgs)
-  TEMPLATE_CACHE[token] = proc
+
+  GRADIENT_CACHE[token] = proc
   return proc
 }
 
-function gradient(out, inp, bc) {
-  if(Array.isArray(bc)) {
-    if(bc.length !== inp.dimension) {
-      throw new Error('ndarray-gradient: invalid boundary conditions')
-    }
-  } else if(typeof bc === 'string') {
-    bc = dup(inp.dimension, bc)
-  } else {
-    bc = dup(inp.dimension, 'clamp')
-  }
-  if(out.dimension !== inp.dimension + 1) {
-    throw new Error('ndarray-gradient: output dimension must be +1 input dimension')
-  }
-  if(out.shape[inp.dimension] !== inp.dimension) {
-    throw new Error('ndarray-gradient: output shape must match input shape')
-  }
-  for(var i=0; i<inp.dimension; ++i) {
-    if(out.shape[i] !== inp.shape[i]) {
-      throw new Error('ndarray-gradient: shape mismatch')
+module.exports = function gradient(out, inp, bc) {
+  if(!Array.isArray(bc)) {
+    if(typeof bc === 'string') {
+      bc = dup(inp.dimension, bc)
+    } else {
+      bc = dup(inp.dimension, 'clamp')
     }
   }
   if(inp.size === 0) {
     return out
   }
-  if(inp.dimension <= 0) {
+  if(inp.dimension === 0) {
     out.set(0)
     return out
   }
   var cached = generateGradient(bc)
   return cached(out, inp)
 }
-},{"cwise-compiler":84,"dup":93}],299:[function(_dereq_,module,exports){
+},{"dup":91}],287:[function(_dereq_,module,exports){
 "use strict"
 
 function interp1d(arr, x) {
@@ -42502,470 +39392,399 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],300:[function(_dereq_,module,exports){
+},{}],288:[function(_dereq_,module,exports){
 "use strict"
 
-var compile = _dereq_("cwise-compiler")
-
-var EmptyProc = {
-  body: "",
-  args: [],
-  thisVars: [],
-  localVars: []
-}
-
-function fixup(x) {
-  if(!x) {
-    return EmptyProc
-  }
-  for(var i=0; i<x.args.length; ++i) {
-    var a = x.args[i]
-    if(i === 0) {
-      x.args[i] = {name: a, lvalue:true, rvalue: !!x.rvalue, count:x.count||1 }
-    } else {
-      x.args[i] = {name: a, lvalue:false, rvalue:true, count: 1}
+var CACHED_CWiseOp = {
+  'float64,2,1,0': function () {
+    return function divseq_cwise_loop_2s1s0m3f64(SS, a0, t0, p0, Y0) {
+      var s0 = SS[0], s1 = SS[1], s2 = SS[2], t0p0 = t0[0], t0p1 = t0[1], t0p2 = t0[2]
+      p0 |= 0
+      var i0 = 0, i1 = 0, i2 = 0, d0s0 = t0p2, d0s1 = (t0p1 - s2 * t0p2), d0s2 = (t0p0 - s1 * t0p1)
+      for (i2 = 0; i2 < s0; ++i2) {
+        for (i1 = 0; i1 < s1; ++i1) {
+          for (i0 = 0; i0 < s2; ++i0) {
+            a0[p0] /= Y0
+            p0 += d0s0
+          }
+          p0 += d0s1
+        }
+        p0 += d0s2
+      }
     }
-  }
-  if(!x.thisVars) {
-    x.thisVars = []
-  }
-  if(!x.localVars) {
-    x.localVars = []
-  }
-  return x
+  },
+  'uint8,2,0,1,float64,2,1,0': function () {
+    return function muls_cwise_loop_2s0s1m1u8f64(SS, a0, t0, p0, a1, t1, p1, Y0) {
+      var s0 = SS[0], s1 = SS[1], s2 = SS[2], t0p0 = t0[0], t0p1 = t0[1], t0p2 = t0[2], t1p0 = t1[0], t1p1 = t1[1], t1p2 = t1[2]
+      p0 |= 0
+      p1 |= 0
+      var offset0 = p0
+      var offset1 = p1
+      for (var j1 = SS[0] | 0; j1 > 0;) {
+        if (j1 < 64) {
+          s0 = j1
+          j1 = 0
+        } else {
+          s0 = 64
+          j1 -= 64
+        }
+        for (var j2 = SS[1] | 0; j2 > 0;) {
+          if (j2 < 64) {
+            s1 = j2
+            j2 = 0
+          } else {
+            s1 = 64
+            j2 -= 64
+          }
+          p0 = (offset0 + j1 * t0p0 + j2 * t0p1)
+          p1 = (offset1 + j1 * t1p0 + j2 * t1p1)
+          var i0 = 0, i1 = 0, i2 = 0, d0s0 = t0p2, d0s1 = (t0p0 - s2 * t0p2), d0s2 = (t0p1 - s0 * t0p0), d1s0 = t1p2, d1s1 = (t1p0 - s2 * t1p2), d1s2 = (t1p1 - s0 * t1p0)
+          for (i2 = 0; i2 < s1; ++i2) {
+            for (i1 = 0; i1 < s0; ++i1) {
+              for (i0 = 0; i0 < s2; ++i0) {
+                a0[p0] = a1[p1] * Y0
+                p0 += d0s0
+                p1 += d1s0
+              }
+              p0 += d0s1
+              p1 += d1s1
+            }
+            p0 += d0s2
+            p1 += d1s2
+          }
+        }
+      }
+    }
+  },
+  'float32,1,0,float32,1,0': function () {
+    return function assign_cwise_loop_1s0m2f32(SS, a0, t0, p0, a1, t1, p1) {
+      var s0 = SS[0], s1 = SS[1], t0p0 = t0[0], t0p1 = t0[1], t1p0 = t1[0], t1p1 = t1[1]
+      p0 |= 0
+      p1 |= 0
+      var i0 = 0, i1 = 0, d0s0 = t0p1, d0s1 = (t0p0 - s1 * t0p1), d1s0 = t1p1, d1s1 = (t1p0 - s1 * t1p1)
+      for (i1 = 0; i1 < s0; ++i1) {
+        for (i0 = 0; i0 < s1; ++i0) {
+          a0[p0] = a1[p1]
+          p0 += d0s0
+          p1 += d1s0
+        }
+        p0 += d0s1
+        p1 += d1s1
+      }
+    }
+  },
+  'float32,1,0,float32,0,1': function () {
+    return function assign_cwise_loop_1s0m0f32(SS, a0, t0, p0, a1, t1, p1) {
+      var s0 = SS[0], s1 = SS[1], t0p0 = t0[0], t0p1 = t0[1], t1p0 = t1[0], t1p1 = t1[1]
+      p0 |= 0
+      p1 |= 0
+      var offset0 = p0
+      var offset1 = p1
+      for (var j0 = SS[1] | 0; j0 > 0;) {
+        if (j0 < 64) {
+          s1 = j0
+          j0 = 0
+        } else {
+          s1 = 64
+          j0 -= 64
+        }
+        for (var j1 = SS[0] | 0; j1 > 0;) {
+          if (j1 < 64) {
+            s0 = j1
+            j1 = 0
+          } else {
+            s0 = 64
+            j1 -= 64
+          }
+          p0 = (offset0 + j0 * t0p1 + j1 * t0p0)
+          p1 = (offset1 + j0 * t1p1 + j1 * t1p0)
+          var i0 = 0, i1 = 0, d0s0 = t0p1, d0s1 = (t0p0 - s1 * t0p1), d1s0 = t1p1, d1s1 = (t1p0 - s1 * t1p1)
+          for (i1 = 0; i1 < s0; ++i1) {
+            for (i0 = 0; i0 < s1; ++i0) {
+              a0[p0] = a1[p1]
+              p0 += d0s0
+              p1 += d1s0
+            }
+            p0 += d0s1
+            p1 += d1s1
+          }
+        }
+      }
+    }
+  },
+  'uint8,2,0,1,uint8,1,2,0': function () {
+    return function assign_cwise_loop_2s0s1m0u8(SS, a0, t0, p0, a1, t1, p1) {
+      var s0 = SS[0], s1 = SS[1], s2 = SS[2], t0p0 = t0[0], t0p1 = t0[1], t0p2 = t0[2], t1p0 = t1[0], t1p1 = t1[1], t1p2 = t1[2]
+      p0 |= 0
+      p1 |= 0
+      var offset0 = p0
+      var offset1 = p1
+      for (var j0 = SS[2] | 0; j0 > 0;) {
+        if (j0 < 64) {
+          s2 = j0
+          j0 = 0
+        } else {
+          s2 = 64
+          j0 -= 64
+        }
+        for (var j1 = SS[0] | 0; j1 > 0;) {
+          if (j1 < 64) {
+            s0 = j1
+            j1 = 0
+          } else {
+            s0 = 64
+            j1 -= 64
+          }
+          for (var j2 = SS[1] | 0; j2 > 0;) {
+            if (j2 < 64) {
+              s1 = j2
+              j2 = 0
+            } else {
+              s1 = 64
+              j2 -= 64
+            }
+            p0 = (offset0 + j0 * t0p2 + j1 * t0p0 + j2 * t0p1)
+            p1 = (offset1 + j0 * t1p2 + j1 * t1p0 + j2 * t1p1)
+            var i0 = 0, i1 = 0, i2 = 0, d0s0 = t0p2, d0s1 = (t0p0 - s2 * t0p2), d0s2 = (t0p1 - s0 * t0p0), d1s0 = t1p2, d1s1 = (t1p0 - s2 * t1p2), d1s2 = (t1p1 - s0 * t1p0)
+            for (i2 = 0; i2 < s1; ++i2) {
+              for (i1 = 0; i1 < s0; ++i1) {
+                for (i0 = 0; i0 < s2; ++i0) {
+                  a0[p0] = a1[p1]
+                  p0 += d0s0
+                  p1 += d1s0
+                }
+                p0 += d0s1
+                p1 += d1s1
+              }
+              p0 += d0s2
+              p1 += d1s2
+            }
+          }
+        }
+      }
+    }
+  },
+  'uint8,2,0,1,array,2,0,1': function () {
+    return function assign_cwise_loop_2s0s1m3u8a(SS, a0, t0, p0, a1, t1, p1) {
+      var s0 = SS[0], s1 = SS[1], s2 = SS[2], t0p0 = t0[0], t0p1 = t0[1], t0p2 = t0[2], t1p0 = t1[0], t1p1 = t1[1], t1p2 = t1[2]
+      p0 |= 0
+      p1 |= 0
+      var i0 = 0, i1 = 0, i2 = 0, d0s0 = t0p2, d0s1 = (t0p0 - s2 * t0p2), d0s2 = (t0p1 - s0 * t0p0), d1s0 = t1p2, d1s1 = (t1p0 - s2 * t1p2), d1s2 = (t1p1 - s0 * t1p0)
+      for (i2 = 0; i2 < s1; ++i2) {
+        for (i1 = 0; i1 < s0; ++i1) {
+          for (i0 = 0; i0 < s2; ++i0) {
+            a0[p0] = a1[p1]
+            p0 += d0s0
+            p1 += d1s0
+          }
+          p0 += d0s1
+          p1 += d1s1
+        }
+        p0 += d0s2
+        p1 += d1s2
+      }
+    }
+  },
 }
 
-function pcompile(user_args) {
-  return compile({
-    args:     user_args.args,
-    pre:      fixup(user_args.pre),
-    body:     fixup(user_args.body),
-    post:     fixup(user_args.proc),
+//Generates a cwise operator
+function generateCWiseOp(proc, typesig) {
+  var key = typesig.join(',')
+  var f = CACHED_CWiseOp[key]
+  return f()
+}
+
+var compile = generateCWiseOp
+
+var CACHED_thunk = {
+  mul: function (compile) {
+    var CACHED = {}
+    return function mul_cwise_thunk(array0, array1, array2) {
+      var t0 = array0.dtype,
+        r0 = array0.order,
+        t1 = array1.dtype,
+        r1 = array1.order,
+        t2 = array2.dtype,
+        r2 = array2.order,
+        type = [t0, r0.join(), t1, r1.join(), t2, r2.join()].join(),
+        proc = CACHED[type]
+      if (!proc) {
+        CACHED[type] = proc = compile([t0, r0, t1, r1, t2, r2])
+      }
+      return proc(
+        array0.shape.slice(0),
+        array0.data,
+        array0.stride,
+        array0.offset | 0,
+        array1.data,
+        array1.stride,
+        array1.offset | 0,
+        array2.data,
+        array2.stride,
+        array2.offset | 0
+      )
+    }
+  },
+  muls: function (compile) {
+    var CACHED = {}
+    return function muls_cwise_thunk(array0, array1, scalar2) {
+      var t0 = array0.dtype,
+        r0 = array0.order,
+        t1 = array1.dtype,
+        r1 = array1.order,
+        type = [t0, r0.join(), t1, r1.join()].join(),
+        proc = CACHED[type]
+      if (!proc) {
+        CACHED[type] = proc = compile([t0, r0, t1, r1])
+      }
+      return proc(
+        array0.shape.slice(0),
+        array0.data,
+        array0.stride,
+        array0.offset | 0,
+        array1.data,
+        array1.stride,
+        array1.offset | 0,
+        scalar2
+      )
+    }
+  },
+  mulseq: function (compile) {
+    var CACHED = {}
+    return function mulseq_cwise_thunk(array0, scalar1) {
+      var t0 = array0.dtype,
+        r0 = array0.order,
+        type = [t0, r0.join()].join(),
+        proc = CACHED[type]
+      if (!proc) {
+        CACHED[type] = proc = compile([t0, r0])
+      }
+      return proc(array0.shape.slice(0), array0.data, array0.stride, array0.offset | 0, scalar1)
+    }
+  },
+  div: function (compile) {
+    var CACHED = {}
+    return function div_cwise_thunk(array0, array1, array2) {
+      var t0 = array0.dtype,
+        r0 = array0.order,
+        t1 = array1.dtype,
+        r1 = array1.order,
+        t2 = array2.dtype,
+        r2 = array2.order,
+        type = [t0, r0.join(), t1, r1.join(), t2, r2.join()].join(),
+        proc = CACHED[type]
+      if (!proc) {
+        CACHED[type] = proc = compile([t0, r0, t1, r1, t2, r2])
+      }
+      return proc(
+        array0.shape.slice(0),
+        array0.data,
+        array0.stride,
+        array0.offset | 0,
+        array1.data,
+        array1.stride,
+        array1.offset | 0,
+        array2.data,
+        array2.stride,
+        array2.offset | 0
+      )
+    }
+  },
+  divs: function (compile) {
+    var CACHED = {}
+    return function divs_cwise_thunk(array0, array1, scalar2) {
+      var t0 = array0.dtype,
+        r0 = array0.order,
+        t1 = array1.dtype,
+        r1 = array1.order,
+        type = [t0, r0.join(), t1, r1.join()].join(),
+        proc = CACHED[type]
+      if (!proc) {
+        CACHED[type] = proc = compile([t0, r0, t1, r1])
+      }
+      return proc(
+        array0.shape.slice(0),
+        array0.data,
+        array0.stride,
+        array0.offset | 0,
+        array1.data,
+        array1.stride,
+        array1.offset | 0,
+        scalar2
+      )
+    }
+  },
+  divseq: function (compile) {
+    var CACHED = {}
+    return function divseq_cwise_thunk(array0, scalar1) {
+      var t0 = array0.dtype,
+        r0 = array0.order,
+        type = [t0, r0.join()].join(),
+        proc = CACHED[type]
+      if (!proc) {
+        CACHED[type] = proc = compile([t0, r0])
+      }
+      return proc(array0.shape.slice(0), array0.data, array0.stride, array0.offset | 0, scalar1)
+    }
+  },
+  assign: function (compile) {
+    var CACHED = {}
+    return function assign_cwise_thunk(array0, array1) {
+      var t0 = array0.dtype,
+        r0 = array0.order,
+        t1 = array1.dtype,
+        r1 = array1.order,
+        type = [t0, r0.join(), t1, r1.join()].join(),
+        proc = CACHED[type]
+      if (!proc) {
+        CACHED[type] = proc = compile([t0, r0, t1, r1])
+      }
+      return proc(
+        array0.shape.slice(0),
+        array0.data,
+        array0.stride,
+        array0.offset | 0,
+        array1.data,
+        array1.stride,
+        array1.offset | 0
+      )
+    }
+  },
+}
+
+function createThunk(proc) {
+  var thunk = CACHED_thunk[proc.funcName]
+  return thunk(compile.bind(undefined, proc))
+}
+
+function makeOp(user_args) {
+  return createThunk({
     funcName: user_args.funcName
   })
 }
 
-function makeOp(user_args) {
-  var args = []
-  for(var i=0; i<user_args.args.length; ++i) {
-    args.push("a"+i)
-  }
-  var wrapper = new Function("P", [
-    "return function ", user_args.funcName, "_ndarrayops(", args.join(","), ") {P(", args.join(","), ");return a0}"
-  ].join(""))
-  return wrapper(pcompile(user_args))
-}
-
 var assign_ops = {
-  add:  "+",
-  sub:  "-",
   mul:  "*",
   div:  "/",
-  mod:  "%",
-  band: "&",
-  bor:  "|",
-  bxor: "^",
-  lshift: "<<",
-  rshift: ">>",
-  rrshift: ">>>"
 }
 ;(function(){
   for(var id in assign_ops) {
-    var op = assign_ops[id]
     exports[id] = makeOp({
-      args: ["array","array","array"],
-      body: {args:["a","b","c"],
-             body: "a=b"+op+"c"},
       funcName: id
     })
-    exports[id+"eq"] = makeOp({
-      args: ["array","array"],
-      body: {args:["a","b"],
-             body:"a"+op+"=b"},
-      rvalue: true,
-      funcName: id+"eq"
-    })
     exports[id+"s"] = makeOp({
-      args: ["array", "array", "scalar"],
-      body: {args:["a","b","s"],
-             body:"a=b"+op+"s"},
       funcName: id+"s"
     })
     exports[id+"seq"] = makeOp({
-      args: ["array","scalar"],
-      body: {args:["a","s"],
-             body:"a"+op+"=s"},
-      rvalue: true,
       funcName: id+"seq"
     })
   }
 })();
-
-var unary_ops = {
-  not: "!",
-  bnot: "~",
-  neg: "-",
-  recip: "1.0/"
-}
-;(function(){
-  for(var id in unary_ops) {
-    var op = unary_ops[id]
-    exports[id] = makeOp({
-      args: ["array", "array"],
-      body: {args:["a","b"],
-             body:"a="+op+"b"},
-      funcName: id
-    })
-    exports[id+"eq"] = makeOp({
-      args: ["array"],
-      body: {args:["a"],
-             body:"a="+op+"a"},
-      rvalue: true,
-      count: 2,
-      funcName: id+"eq"
-    })
-  }
-})();
-
-var binary_ops = {
-  and: "&&",
-  or: "||",
-  eq: "===",
-  neq: "!==",
-  lt: "<",
-  gt: ">",
-  leq: "<=",
-  geq: ">="
-}
-;(function() {
-  for(var id in binary_ops) {
-    var op = binary_ops[id]
-    exports[id] = makeOp({
-      args: ["array","array","array"],
-      body: {args:["a", "b", "c"],
-             body:"a=b"+op+"c"},
-      funcName: id
-    })
-    exports[id+"s"] = makeOp({
-      args: ["array","array","scalar"],
-      body: {args:["a", "b", "s"],
-             body:"a=b"+op+"s"},
-      funcName: id+"s"
-    })
-    exports[id+"eq"] = makeOp({
-      args: ["array", "array"],
-      body: {args:["a", "b"],
-             body:"a=a"+op+"b"},
-      rvalue:true,
-      count:2,
-      funcName: id+"eq"
-    })
-    exports[id+"seq"] = makeOp({
-      args: ["array", "scalar"],
-      body: {args:["a","s"],
-             body:"a=a"+op+"s"},
-      rvalue:true,
-      count:2,
-      funcName: id+"seq"
-    })
-  }
-})();
-
-var math_unary = [
-  "abs",
-  "acos",
-  "asin",
-  "atan",
-  "ceil",
-  "cos",
-  "exp",
-  "floor",
-  "log",
-  "round",
-  "sin",
-  "sqrt",
-  "tan"
-]
-;(function() {
-  for(var i=0; i<math_unary.length; ++i) {
-    var f = math_unary[i]
-    exports[f] = makeOp({
-                    args: ["array", "array"],
-                    pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                    body: {args:["a","b"], body:"a=this_f(b)", thisVars:["this_f"]},
-                    funcName: f
-                  })
-    exports[f+"eq"] = makeOp({
-                      args: ["array"],
-                      pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                      body: {args: ["a"], body:"a=this_f(a)", thisVars:["this_f"]},
-                      rvalue: true,
-                      count: 2,
-                      funcName: f+"eq"
-                    })
-  }
-})();
-
-var math_comm = [
-  "max",
-  "min",
-  "atan2",
-  "pow"
-]
-;(function(){
-  for(var i=0; i<math_comm.length; ++i) {
-    var f= math_comm[i]
-    exports[f] = makeOp({
-                  args:["array", "array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(b,c)", thisVars:["this_f"]},
-                  funcName: f
-                })
-    exports[f+"s"] = makeOp({
-                  args:["array", "array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(b,c)", thisVars:["this_f"]},
-                  funcName: f+"s"
-                  })
-    exports[f+"eq"] = makeOp({ args:["array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(a,b)", thisVars:["this_f"]},
-                  rvalue: true,
-                  count: 2,
-                  funcName: f+"eq"
-                  })
-    exports[f+"seq"] = makeOp({ args:["array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(a,b)", thisVars:["this_f"]},
-                  rvalue:true,
-                  count:2,
-                  funcName: f+"seq"
-                  })
-  }
-})();
-
-var math_noncomm = [
-  "atan2",
-  "pow"
-]
-;(function(){
-  for(var i=0; i<math_noncomm.length; ++i) {
-    var f= math_noncomm[i]
-    exports[f+"op"] = makeOp({
-                  args:["array", "array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(c,b)", thisVars:["this_f"]},
-                  funcName: f+"op"
-                })
-    exports[f+"ops"] = makeOp({
-                  args:["array", "array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(c,b)", thisVars:["this_f"]},
-                  funcName: f+"ops"
-                  })
-    exports[f+"opeq"] = makeOp({ args:["array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(b,a)", thisVars:["this_f"]},
-                  rvalue: true,
-                  count: 2,
-                  funcName: f+"opeq"
-                  })
-    exports[f+"opseq"] = makeOp({ args:["array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(b,a)", thisVars:["this_f"]},
-                  rvalue:true,
-                  count:2,
-                  funcName: f+"opseq"
-                  })
-  }
-})();
-
-exports.any = compile({
-  args:["array"],
-  pre: EmptyProc,
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "if(a){return true}", localVars: [], thisVars: []},
-  post: {args:[], localVars:[], thisVars:[], body:"return false"},
-  funcName: "any"
-})
-
-exports.all = compile({
-  args:["array"],
-  pre: EmptyProc,
-  body: {args:[{name:"x", lvalue:false, rvalue:true, count:1}], body: "if(!x){return false}", localVars: [], thisVars: []},
-  post: {args:[], localVars:[], thisVars:[], body:"return true"},
-  funcName: "all"
-})
-
-exports.sum = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "this_s+=a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "sum"
-})
-
-exports.prod = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=1"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "this_s*=a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "prod"
-})
-
-exports.norm2squared = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:2}], body: "this_s+=a*a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "norm2squared"
-})
-  
-exports.norm2 = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:2}], body: "this_s+=a*a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return Math.sqrt(this_s)"},
-  funcName: "norm2"
-})
-  
-
-exports.norminf = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:4}], body:"if(-a>this_s){this_s=-a}else if(a>this_s){this_s=a}", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "norminf"
-})
-
-exports.norm1 = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:3}], body: "this_s+=a<0?-a:a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "norm1"
-})
-
-exports.sup = compile({
-  args: [ "array" ],
-  pre:
-   { body: "this_h=-Infinity",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  body:
-   { body: "if(_inline_1_arg0_>this_h)this_h=_inline_1_arg0_",
-     args: [{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":2} ],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  post:
-   { body: "return this_h",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] }
- })
-
-exports.inf = compile({
-  args: [ "array" ],
-  pre:
-   { body: "this_h=Infinity",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  body:
-   { body: "if(_inline_1_arg0_<this_h)this_h=_inline_1_arg0_",
-     args: [{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":2} ],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  post:
-   { body: "return this_h",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] }
- })
-
-exports.argmin = compile({
-  args:["index","array","shape"],
-  pre:{
-    body:"{this_v=Infinity;this_i=_inline_0_arg2_.slice(0)}",
-    args:[
-      {name:"_inline_0_arg0_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg1_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg2_",lvalue:false,rvalue:true,count:1}
-      ],
-    thisVars:["this_i","this_v"],
-    localVars:[]},
-  body:{
-    body:"{if(_inline_1_arg1_<this_v){this_v=_inline_1_arg1_;for(var _inline_1_k=0;_inline_1_k<_inline_1_arg0_.length;++_inline_1_k){this_i[_inline_1_k]=_inline_1_arg0_[_inline_1_k]}}}",
-    args:[
-      {name:"_inline_1_arg0_",lvalue:false,rvalue:true,count:2},
-      {name:"_inline_1_arg1_",lvalue:false,rvalue:true,count:2}],
-    thisVars:["this_i","this_v"],
-    localVars:["_inline_1_k"]},
-  post:{
-    body:"{return this_i}",
-    args:[],
-    thisVars:["this_i"],
-    localVars:[]}
-})
-
-exports.argmax = compile({
-  args:["index","array","shape"],
-  pre:{
-    body:"{this_v=-Infinity;this_i=_inline_0_arg2_.slice(0)}",
-    args:[
-      {name:"_inline_0_arg0_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg1_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg2_",lvalue:false,rvalue:true,count:1}
-      ],
-    thisVars:["this_i","this_v"],
-    localVars:[]},
-  body:{
-    body:"{if(_inline_1_arg1_>this_v){this_v=_inline_1_arg1_;for(var _inline_1_k=0;_inline_1_k<_inline_1_arg0_.length;++_inline_1_k){this_i[_inline_1_k]=_inline_1_arg0_[_inline_1_k]}}}",
-    args:[
-      {name:"_inline_1_arg0_",lvalue:false,rvalue:true,count:2},
-      {name:"_inline_1_arg1_",lvalue:false,rvalue:true,count:2}],
-    thisVars:["this_i","this_v"],
-    localVars:["_inline_1_k"]},
-  post:{
-    body:"{return this_i}",
-    args:[],
-    thisVars:["this_i"],
-    localVars:[]}
-})  
-
-exports.random = makeOp({
-  args: ["array"],
-  pre: {args:[], body:"this_f=Math.random", thisVars:["this_f"]},
-  body: {args: ["a"], body:"a=this_f()", thisVars:["this_f"]},
-  funcName: "random"
-})
 
 exports.assign = makeOp({
-  args:["array", "array"],
-  body: {args:["a", "b"], body:"a=b"},
   funcName: "assign" })
 
-exports.assigns = makeOp({
-  args:["array", "scalar"],
-  body: {args:["a", "b"], body:"a=b"},
-  funcName: "assigns" })
-
-
-exports.equals = compile({
-  args:["array", "array"],
-  pre: EmptyProc,
-  body: {args:[{name:"x", lvalue:false, rvalue:true, count:1},
-               {name:"y", lvalue:false, rvalue:true, count:1}], 
-        body: "if(x!==y){return false}", 
-        localVars: [], 
-        thisVars: []},
-  post: {args:[], localVars:[], thisVars:[], body:"return true"},
-  funcName: "equals"
-})
-
-
-
-},{"cwise-compiler":84}],301:[function(_dereq_,module,exports){
+},{}],289:[function(_dereq_,module,exports){
 "use strict"
 
 var ndarray = _dereq_("ndarray")
@@ -42988,739 +39807,849 @@ module.exports = function convert(arr, result) {
   return result
 }
 
-},{"./doConvert.js":302,"ndarray":305}],302:[function(_dereq_,module,exports){
-module.exports=_dereq_('cwise-compiler')({"args":["array","scalar","index"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{\nvar _inline_1_v=_inline_1_arg1_,_inline_1_i\nfor(_inline_1_i=0;_inline_1_i<_inline_1_arg2_.length-1;++_inline_1_i) {\n_inline_1_v=_inline_1_v[_inline_1_arg2_[_inline_1_i]]\n}\n_inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]\n}","args":[{"name":"_inline_1_arg0_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":4}],"thisVars":[],"localVars":["_inline_1_i","_inline_1_v"]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"funcName":"convert","blockSize":64})
+},{"./doConvert.js":290,"ndarray":293}],290:[function(_dereq_,module,exports){
+"use strict"
 
-},{"cwise-compiler":84}],303:[function(_dereq_,module,exports){
+function CwiseOp() {
+  return function (SS, a0, t0, p0, Y0) {
+    var s0 = SS[0],
+      s1 = SS[1],
+      s2 = SS[2],
+      t0p0 = t0[0],
+      t0p1 = t0[1],
+      t0p2 = t0[2],
+      index = [0, 0, 0];
+    p0 |= 0;
+    var i0 = 0,
+      i1 = 0,
+      i2 = 0,
+      d0s0 = t0p2,
+      d0s1 = t0p1 - s2 * t0p2,
+      d0s2 = t0p0 - s1 * t0p1;
+    for (i2 = 0; i2 < s0; ++i2) {
+      for (i1 = 0; i1 < s1; ++i1) {
+        for (i0 = 0; i0 < s2; ++i0) {
+          {
+            var _inline_1_v = Y0,
+              _inline_1_i;
+            for (
+              _inline_1_i = 0;
+              _inline_1_i < index.length - 1;
+              ++_inline_1_i
+            ) {
+              _inline_1_v = _inline_1_v[index[_inline_1_i]];
+            }
+            a0[p0] = _inline_1_v[index[index.length - 1]];
+          }
+          p0 += d0s0;
+          ++index[2];
+        }
+        p0 += d0s1;
+        index[2] -= s2;
+        ++index[1];
+      }
+      p0 += d0s2;
+      index[1] -= s1;
+      ++index[0];
+    }
+  };
+}
+
+//Generates a cwise operator
+function generateCWiseOp() {
+  return CwiseOp()
+}
+
+var compile = generateCWiseOp
+
+function thunk(compile) {
+  var CACHED = {};
+  return function convert_cwise_thunk(array0, scalar1) {
+    var t0 = array0.dtype,
+      r0 = array0.order,
+      type = [t0, r0.join()].join(),
+      proc = CACHED[type];
+    if (!proc) {
+      CACHED[type] = proc = compile([t0, r0]);
+    }
+    return proc(
+      array0.shape.slice(0),
+      array0.data,
+      array0.stride,
+      array0.offset | 0,
+      scalar1
+    );
+  };
+}
+
+function createThunk(proc) {
+  return thunk(compile.bind(undefined, proc))
+}
+
+function compileCwise(user_args) {
+  return createThunk({
+    funcName: user_args.funcName
+  })
+}
+
+module.exports = compileCwise({
+  funcName: "convert"
+});
+
+},{}],291:[function(_dereq_,module,exports){
 "use strict"
 
 var pool = _dereq_("typedarray-pool")
 
-var INSERTION_SORT_THRESHOLD = 32
-
 function getMallocFree(dtype) {
   switch(dtype) {
-    case "uint8":
-      return [pool.mallocUint8, pool.freeUint8]
-    case "uint16":
-      return [pool.mallocUint16, pool.freeUint16]
     case "uint32":
       return [pool.mallocUint32, pool.freeUint32]
-    case "int8":
-      return [pool.mallocInt8, pool.freeInt8]
-    case "int16":
-      return [pool.mallocInt16, pool.freeInt16]
-    case "int32":
-      return [pool.mallocInt32, pool.freeInt32]
-    case "float32":
-      return [pool.mallocFloat, pool.freeFloat]
-    case "float64":
-      return [pool.mallocDouble, pool.freeDouble]
     default:
       return null
   }
 }
 
-function shapeArgs(dimension) {
-  var args = []
-  for(var i=0; i<dimension; ++i) {
-    args.push("s"+i)
-  }
-  for(var i=0; i<dimension; ++i) {
-    args.push("n"+i)
-  }
-  for(var i=1; i<dimension; ++i) {
-    args.push("d"+i)
-  }
-  for(var i=1; i<dimension; ++i) {
-    args.push("e"+i)
-  }
-  for(var i=1; i<dimension; ++i) {
-    args.push("f"+i)
-  }
-  return args
+var CACHED_insertionSort = {
+  "uint32,1,0": function (malloc, free) {
+    return function ndarrayInsertionSort1d0uint32(left, right, data, offset, s0, s1, n0, n1, d1, e1, f1) {
+      var i,
+        j,
+        cptr,
+        ptr = left * s0 + offset,
+        i1,
+        scratch = malloc(n1),
+        dptr,
+        sptr,
+        a,
+        b
+      for (i = left + 1; i <= right; ++i) {
+        j = i
+        ptr += s0
+        cptr = ptr
+        dptr = 0
+        sptr = ptr
+        for (i1 = 0; i1 < n1; ++i1) {
+          scratch[dptr++] = data[sptr]
+          sptr += d1
+        }
+        __g: while (j-- > left) {
+          dptr = 0
+          sptr = cptr - s0
+          __l: for (i1 = 0; i1 < n1; ++i1) {
+            a = data[sptr]
+            b = scratch[dptr]
+            if (a < b) {
+              break __g
+            }
+            if (a > b) {
+              break __l
+            }
+            sptr += e1
+            dptr += f1
+          }
+          dptr = cptr
+          sptr = cptr - s0
+          for (i1 = 0; i1 < n1; ++i1) {
+            data[dptr] = data[sptr]
+            dptr += d1
+            sptr += d1
+          }
+          cptr -= s0
+        }
+        dptr = cptr
+        sptr = 0
+        for (i1 = 0; i1 < n1; ++i1) {
+          data[dptr] = scratch[sptr++]
+          dptr += d1
+        }
+      }
+      free(scratch)
+    }
+  },
 }
 
 function createInsertionSort(order, dtype) {
-
-  var code = ["'use strict'"]
-  var funcName = ["ndarrayInsertionSort", order.join("d"), dtype].join("")
-  var funcArgs = ["left", "right", "data", "offset" ].concat(shapeArgs(order.length))
   var allocator = getMallocFree(dtype)
-  
-  var vars = [ "i,j,cptr,ptr=left*s0+offset" ]
-  
-  if(order.length > 1) {
-    var scratch_shape = []
-    for(var i=1; i<order.length; ++i) {
-      vars.push("i"+i)
-      scratch_shape.push("n"+i)
-    }
-    if(allocator) {
-      vars.push("scratch=malloc(" + scratch_shape.join("*") + ")")
-    } else {
-      vars.push("scratch=new Array("+scratch_shape.join("*") + ")")
-    }
-    vars.push("dptr","sptr","a","b")
-  } else {
-    vars.push("scratch")
-  }
-  
-  function dataRead(ptr) {
-    if(dtype === "generic") {
-      return ["data.get(", ptr, ")"].join("")
-    }
-    return ["data[",ptr,"]"].join("")
-  }
-  
-  function dataWrite(ptr, v) {
-    if(dtype === "generic") {
-      return ["data.set(", ptr, ",", v, ")"].join("")
-    }
-    return ["data[",ptr,"]=",v].join("")
-  }
-  
-  //Create function header
-  code.push(
-    ["function ", funcName, "(", funcArgs.join(","), "){var ", vars.join(",")].join(""),
-      "for(i=left+1;i<=right;++i){",
-        "j=i;ptr+=s0",
-        "cptr=ptr")
-  
-  
-  if(order.length > 1) {
-  
-    //Copy data into scratch
-    code.push("dptr=0;sptr=ptr")
-    for(var i=order.length-1; i>=0; --i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      code.push(["for(i",j,"=0;i",j,"<n",j,";++i",j,"){"].join(""))
-    }
-    code.push("scratch[dptr++]=",dataRead("sptr"))
-    for(var i=0; i<order.length; ++i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      code.push("sptr+=d"+j,"}")
-    }
+  var key = [dtype, order].join(',')
+  var result = CACHED_insertionSort[key]
 
-    
-    //Compare items in outer loop
-    code.push("__g:while(j-->left){",
-              "dptr=0",
-              "sptr=cptr-s0")
-    for(var i=1; i<order.length; ++i) {
-      if(i === 1) {
-        code.push("__l:")
-      }
-      code.push(["for(i",i,"=0;i",i,"<n",i,";++i",i,"){"].join(""))
-    }
-    code.push(["a=", dataRead("sptr"),"\nb=scratch[dptr]\nif(a<b){break __g}\nif(a>b){break __l}"].join(""))
-    for(var i=order.length-1; i>=1; --i) {
-      code.push(
-        "sptr+=e"+i,
-        "dptr+=f"+i,
-        "}")
-    }
-    
-    //Copy data back
-    code.push("dptr=cptr;sptr=cptr-s0")
-    for(var i=order.length-1; i>=0; --i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      code.push(["for(i",j,"=0;i",j,"<n",j,";++i",j,"){"].join(""))
-    }
-    code.push(dataWrite("dptr", dataRead("sptr")))
-    for(var i=0; i<order.length; ++i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      code.push(["dptr+=d",j,";sptr+=d",j].join(""),"}")
-    }
-    
-    //Close while loop
-    code.push("cptr-=s0\n}")
-
-    //Copy scratch into cptr
-    code.push("dptr=cptr;sptr=0")
-    for(var i=order.length-1; i>=0; --i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      code.push(["for(i",j,"=0;i",j,"<n",j,";++i",j,"){"].join(""))
-    }
-    code.push(dataWrite("dptr", "scratch[sptr++]"))
-    for(var i=0; i<order.length; ++i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      code.push("dptr+=d"+j,"}")
-    }
-  } else {
-    code.push("scratch=" + dataRead("ptr"),
-              "while((j-->left)&&("+dataRead("cptr-s0")+">scratch)){",
-                dataWrite("cptr", dataRead("cptr-s0")),
-                "cptr-=s0",
-              "}",
-              dataWrite("cptr", "scratch"))
-  }
-  
-  //Close outer loop body
-  code.push("}")
-  if(order.length > 1 && allocator) {
-    code.push("free(scratch)")
-  }
-  code.push("} return " + funcName)
-  
-  //Compile and link function
   if(allocator) {
-    var result = new Function("malloc", "free", code.join("\n"))
     return result(allocator[0], allocator[1])
   } else {
-    var result = new Function(code.join("\n"))
     return result()
   }
 }
 
+var CACHED_quickSort = {
+  "uint32,1,0": function (insertionSort, malloc, free) {
+    return function ndarrayQuickSort1d0uint32(left, right, data, offset, s0, s1, n0, n1, d1, e1, f1) {
+      var sixth = ((right - left + 1) / 6) | 0,
+        index1 = left + sixth,
+        index5 = right - sixth,
+        index3 = (left + right) >> 1,
+        index2 = index3 - sixth,
+        index4 = index3 + sixth,
+        el1 = index1,
+        el2 = index2,
+        el3 = index3,
+        el4 = index4,
+        el5 = index5,
+        less = left + 1,
+        great = right - 1,
+        pivots_are_equal = true,
+        tmp,
+        tmp0,
+        x,
+        y,
+        z,
+        k,
+        ptr0,
+        ptr1,
+        ptr2,
+        comp_pivot1 = 0,
+        comp_pivot2 = 0,
+        comp = 0,
+        i1,
+        b_ptr0,
+        b_ptr1,
+        b_ptr2,
+        b_ptr3,
+        b_ptr4,
+        b_ptr5,
+        b_ptr6,
+        b_ptr7,
+        ptr3,
+        ptr4,
+        ptr5,
+        ptr6,
+        ptr7,
+        pivot_ptr,
+        ptr_shift,
+        elementSize = n1,
+        pivot1 = malloc(elementSize),
+        pivot2 = malloc(elementSize)
+      b_ptr0 = s0 * el1
+      b_ptr1 = s0 * el2
+      ptr_shift = offset
+      __l1: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el1
+          el1 = el2
+          el2 = tmp0
+          break __l1
+        }
+        if (comp < 0) {
+          break __l1
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el4
+      b_ptr1 = s0 * el5
+      ptr_shift = offset
+      __l2: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el4
+          el4 = el5
+          el5 = tmp0
+          break __l2
+        }
+        if (comp < 0) {
+          break __l2
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el1
+      b_ptr1 = s0 * el3
+      ptr_shift = offset
+      __l3: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el1
+          el1 = el3
+          el3 = tmp0
+          break __l3
+        }
+        if (comp < 0) {
+          break __l3
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el2
+      b_ptr1 = s0 * el3
+      ptr_shift = offset
+      __l4: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el2
+          el2 = el3
+          el3 = tmp0
+          break __l4
+        }
+        if (comp < 0) {
+          break __l4
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el1
+      b_ptr1 = s0 * el4
+      ptr_shift = offset
+      __l5: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el1
+          el1 = el4
+          el4 = tmp0
+          break __l5
+        }
+        if (comp < 0) {
+          break __l5
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el3
+      b_ptr1 = s0 * el4
+      ptr_shift = offset
+      __l6: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el3
+          el3 = el4
+          el4 = tmp0
+          break __l6
+        }
+        if (comp < 0) {
+          break __l6
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el2
+      b_ptr1 = s0 * el5
+      ptr_shift = offset
+      __l7: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el2
+          el2 = el5
+          el5 = tmp0
+          break __l7
+        }
+        if (comp < 0) {
+          break __l7
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el2
+      b_ptr1 = s0 * el3
+      ptr_shift = offset
+      __l8: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el2
+          el2 = el3
+          el3 = tmp0
+          break __l8
+        }
+        if (comp < 0) {
+          break __l8
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el4
+      b_ptr1 = s0 * el5
+      ptr_shift = offset
+      __l9: for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        comp = data[ptr0] - data[ptr1]
+        if (comp > 0) {
+          tmp0 = el4
+          el4 = el5
+          el5 = tmp0
+          break __l9
+        }
+        if (comp < 0) {
+          break __l9
+        }
+        ptr_shift += e1
+      }
+      b_ptr0 = s0 * el1
+      b_ptr1 = s0 * el2
+      b_ptr2 = s0 * el3
+      b_ptr3 = s0 * el4
+      b_ptr4 = s0 * el5
+      b_ptr5 = s0 * index1
+      b_ptr6 = s0 * index3
+      b_ptr7 = s0 * index5
+      pivot_ptr = 0
+      ptr_shift = offset
+      for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        ptr2 = b_ptr2 + ptr_shift
+        ptr3 = b_ptr3 + ptr_shift
+        ptr4 = b_ptr4 + ptr_shift
+        ptr5 = b_ptr5 + ptr_shift
+        ptr6 = b_ptr6 + ptr_shift
+        ptr7 = b_ptr7 + ptr_shift
+        pivot1[pivot_ptr] = data[ptr1]
+        pivot2[pivot_ptr] = data[ptr3]
+        pivots_are_equal = pivots_are_equal && pivot1[pivot_ptr] === pivot2[pivot_ptr]
+        x = data[ptr0]
+        y = data[ptr2]
+        z = data[ptr4]
+        data[ptr5] = x
+        data[ptr6] = y
+        data[ptr7] = z
+        ++pivot_ptr
+        ptr_shift += d1
+      }
+      b_ptr0 = s0 * index2
+      b_ptr1 = s0 * left
+      ptr_shift = offset
+      for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        data[ptr0] = data[ptr1]
+        ptr_shift += d1
+      }
+      b_ptr0 = s0 * index4
+      b_ptr1 = s0 * right
+      ptr_shift = offset
+      for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        data[ptr0] = data[ptr1]
+        ptr_shift += d1
+      }
+      if (pivots_are_equal) {
+        for (k = less; k <= great; ++k) {
+          ptr0 = offset + k * s0
+          pivot_ptr = 0
+          __l10: for (i1 = 0; i1 < n1; ++i1) {
+            comp = data[ptr0] - pivot1[pivot_ptr]
+            if (comp !== 0) {
+              break __l10
+            }
+            pivot_ptr += f1
+            ptr0 += e1
+          }
+          if (comp === 0) {
+            continue
+          }
+          if (comp < 0) {
+            if (k !== less) {
+              b_ptr0 = s0 * k
+              b_ptr1 = s0 * less
+              ptr_shift = offset
+              for (i1 = 0; i1 < n1; ++i1) {
+                ptr0 = b_ptr0 + ptr_shift
+                ptr1 = b_ptr1 + ptr_shift
+                tmp = data[ptr0]
+                data[ptr0] = data[ptr1]
+                data[ptr1] = tmp
+                ptr_shift += d1
+              }
+            }
+            ++less
+          } else {
+            while (true) {
+              ptr0 = offset + great * s0
+              pivot_ptr = 0
+              __l11: for (i1 = 0; i1 < n1; ++i1) {
+                comp = data[ptr0] - pivot1[pivot_ptr]
+                if (comp !== 0) {
+                  break __l11
+                }
+                pivot_ptr += f1
+                ptr0 += e1
+              }
+              if (comp > 0) {
+                great--
+              } else if (comp < 0) {
+                b_ptr0 = s0 * k
+                b_ptr1 = s0 * less
+                b_ptr2 = s0 * great
+                ptr_shift = offset
+                for (i1 = 0; i1 < n1; ++i1) {
+                  ptr0 = b_ptr0 + ptr_shift
+                  ptr1 = b_ptr1 + ptr_shift
+                  ptr2 = b_ptr2 + ptr_shift
+                  tmp = data[ptr0]
+                  data[ptr0] = data[ptr1]
+                  data[ptr1] = data[ptr2]
+                  data[ptr2] = tmp
+                  ptr_shift += d1
+                }
+                ++less
+                --great
+                break
+              } else {
+                b_ptr0 = s0 * k
+                b_ptr1 = s0 * great
+                ptr_shift = offset
+                for (i1 = 0; i1 < n1; ++i1) {
+                  ptr0 = b_ptr0 + ptr_shift
+                  ptr1 = b_ptr1 + ptr_shift
+                  tmp = data[ptr0]
+                  data[ptr0] = data[ptr1]
+                  data[ptr1] = tmp
+                  ptr_shift += d1
+                }
+                --great
+                break
+              }
+            }
+          }
+        }
+      } else {
+        for (k = less; k <= great; ++k) {
+          ptr0 = offset + k * s0
+          pivot_ptr = 0
+          __l12: for (i1 = 0; i1 < n1; ++i1) {
+            comp_pivot1 = data[ptr0] - pivot1[pivot_ptr]
+            if (comp_pivot1 !== 0) {
+              break __l12
+            }
+            pivot_ptr += f1
+            ptr0 += e1
+          }
+          if (comp_pivot1 < 0) {
+            if (k !== less) {
+              b_ptr0 = s0 * k
+              b_ptr1 = s0 * less
+              ptr_shift = offset
+              for (i1 = 0; i1 < n1; ++i1) {
+                ptr0 = b_ptr0 + ptr_shift
+                ptr1 = b_ptr1 + ptr_shift
+                tmp = data[ptr0]
+                data[ptr0] = data[ptr1]
+                data[ptr1] = tmp
+                ptr_shift += d1
+              }
+            }
+            ++less
+          } else {
+            ptr0 = offset + k * s0
+            pivot_ptr = 0
+            __l13: for (i1 = 0; i1 < n1; ++i1) {
+              comp_pivot2 = data[ptr0] - pivot2[pivot_ptr]
+              if (comp_pivot2 !== 0) {
+                break __l13
+              }
+              pivot_ptr += f1
+              ptr0 += e1
+            }
+            if (comp_pivot2 > 0) {
+              while (true) {
+                ptr0 = offset + great * s0
+                pivot_ptr = 0
+                __l14: for (i1 = 0; i1 < n1; ++i1) {
+                  comp = data[ptr0] - pivot2[pivot_ptr]
+                  if (comp !== 0) {
+                    break __l14
+                  }
+                  pivot_ptr += f1
+                  ptr0 += e1
+                }
+                if (comp > 0) {
+                  if (--great < k) {
+                    break
+                  }
+                  continue
+                } else {
+                  ptr0 = offset + great * s0
+                  pivot_ptr = 0
+                  __l15: for (i1 = 0; i1 < n1; ++i1) {
+                    comp = data[ptr0] - pivot1[pivot_ptr]
+                    if (comp !== 0) {
+                      break __l15
+                    }
+                    pivot_ptr += f1
+                    ptr0 += e1
+                  }
+                  if (comp < 0) {
+                    b_ptr0 = s0 * k
+                    b_ptr1 = s0 * less
+                    b_ptr2 = s0 * great
+                    ptr_shift = offset
+                    for (i1 = 0; i1 < n1; ++i1) {
+                      ptr0 = b_ptr0 + ptr_shift
+                      ptr1 = b_ptr1 + ptr_shift
+                      ptr2 = b_ptr2 + ptr_shift
+                      tmp = data[ptr0]
+                      data[ptr0] = data[ptr1]
+                      data[ptr1] = data[ptr2]
+                      data[ptr2] = tmp
+                      ptr_shift += d1
+                    }
+                    ++less
+                    --great
+                  } else {
+                    b_ptr0 = s0 * k
+                    b_ptr1 = s0 * great
+                    ptr_shift = offset
+                    for (i1 = 0; i1 < n1; ++i1) {
+                      ptr0 = b_ptr0 + ptr_shift
+                      ptr1 = b_ptr1 + ptr_shift
+                      tmp = data[ptr0]
+                      data[ptr0] = data[ptr1]
+                      data[ptr1] = tmp
+                      ptr_shift += d1
+                    }
+                    --great
+                  }
+                  break
+                }
+              }
+            }
+          }
+        }
+      }
+      b_ptr0 = s0 * left
+      b_ptr1 = s0 * (less - 1)
+      pivot_ptr = 0
+      ptr_shift = offset
+      for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        data[ptr0] = data[ptr1]
+        data[ptr1] = pivot1[pivot_ptr]
+        ++pivot_ptr
+        ptr_shift += d1
+      }
+      b_ptr0 = s0 * right
+      b_ptr1 = s0 * (great + 1)
+      pivot_ptr = 0
+      ptr_shift = offset
+      for (i1 = 0; i1 < n1; ++i1) {
+        ptr0 = b_ptr0 + ptr_shift
+        ptr1 = b_ptr1 + ptr_shift
+        data[ptr0] = data[ptr1]
+        data[ptr1] = pivot2[pivot_ptr]
+        ++pivot_ptr
+        ptr_shift += d1
+      }
+      if (less - 2 - left <= 32) {
+        insertionSort(left, less - 2, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      } else {
+        ndarrayQuickSort1d0uint32(left, less - 2, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      }
+      if (right - (great + 2) <= 32) {
+        insertionSort(great + 2, right, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      } else {
+        ndarrayQuickSort1d0uint32(great + 2, right, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      }
+      if (pivots_are_equal) {
+        free(pivot1)
+        free(pivot2)
+        return
+      }
+      if (less < index1 && great > index5) {
+        __l16: while (true) {
+          ptr0 = offset + less * s0
+          pivot_ptr = 0
+          ptr_shift = offset
+          for (i1 = 0; i1 < n1; ++i1) {
+            if (data[ptr0] !== pivot1[pivot_ptr]) {
+              break __l16
+            }
+            ++pivot_ptr
+            ptr0 += d1
+          }
+          ++less
+        }
+        __l17: while (true) {
+          ptr0 = offset + great * s0
+          pivot_ptr = 0
+          ptr_shift = offset
+          for (i1 = 0; i1 < n1; ++i1) {
+            if (data[ptr0] !== pivot2[pivot_ptr]) {
+              break __l17
+            }
+            ++pivot_ptr
+            ptr0 += d1
+          }
+          --great
+        }
+        for (k = less; k <= great; ++k) {
+          ptr0 = offset + k * s0
+          pivot_ptr = 0
+          __l18: for (i1 = 0; i1 < n1; ++i1) {
+            comp_pivot1 = data[ptr0] - pivot1[pivot_ptr]
+            if (comp_pivot1 !== 0) {
+              break __l18
+            }
+            pivot_ptr += f1
+            ptr0 += e1
+          }
+          if (comp_pivot1 === 0) {
+            if (k !== less) {
+              b_ptr0 = s0 * k
+              b_ptr1 = s0 * less
+              ptr_shift = offset
+              for (i1 = 0; i1 < n1; ++i1) {
+                ptr0 = b_ptr0 + ptr_shift
+                ptr1 = b_ptr1 + ptr_shift
+                tmp = data[ptr0]
+                data[ptr0] = data[ptr1]
+                data[ptr1] = tmp
+                ptr_shift += d1
+              }
+            }
+            ++less
+          } else {
+            ptr0 = offset + k * s0
+            pivot_ptr = 0
+            __l19: for (i1 = 0; i1 < n1; ++i1) {
+              comp_pivot2 = data[ptr0] - pivot2[pivot_ptr]
+              if (comp_pivot2 !== 0) {
+                break __l19
+              }
+              pivot_ptr += f1
+              ptr0 += e1
+            }
+            if (comp_pivot2 === 0) {
+              while (true) {
+                ptr0 = offset + great * s0
+                pivot_ptr = 0
+                __l20: for (i1 = 0; i1 < n1; ++i1) {
+                  comp = data[ptr0] - pivot2[pivot_ptr]
+                  if (comp !== 0) {
+                    break __l20
+                  }
+                  pivot_ptr += f1
+                  ptr0 += e1
+                }
+                if (comp === 0) {
+                  if (--great < k) {
+                    break
+                  }
+                  continue
+                } else {
+                  ptr0 = offset + great * s0
+                  pivot_ptr = 0
+                  __l21: for (i1 = 0; i1 < n1; ++i1) {
+                    comp = data[ptr0] - pivot1[pivot_ptr]
+                    if (comp !== 0) {
+                      break __l21
+                    }
+                    pivot_ptr += f1
+                    ptr0 += e1
+                  }
+                  if (comp < 0) {
+                    b_ptr0 = s0 * k
+                    b_ptr1 = s0 * less
+                    b_ptr2 = s0 * great
+                    ptr_shift = offset
+                    for (i1 = 0; i1 < n1; ++i1) {
+                      ptr0 = b_ptr0 + ptr_shift
+                      ptr1 = b_ptr1 + ptr_shift
+                      ptr2 = b_ptr2 + ptr_shift
+                      tmp = data[ptr0]
+                      data[ptr0] = data[ptr1]
+                      data[ptr1] = data[ptr2]
+                      data[ptr2] = tmp
+                      ptr_shift += d1
+                    }
+                    ++less
+                    --great
+                  } else {
+                    b_ptr0 = s0 * k
+                    b_ptr1 = s0 * great
+                    ptr_shift = offset
+                    for (i1 = 0; i1 < n1; ++i1) {
+                      ptr0 = b_ptr0 + ptr_shift
+                      ptr1 = b_ptr1 + ptr_shift
+                      tmp = data[ptr0]
+                      data[ptr0] = data[ptr1]
+                      data[ptr1] = tmp
+                      ptr_shift += d1
+                    }
+                    --great
+                  }
+                  break
+                }
+              }
+            }
+          }
+        }
+      }
+      free(pivot1)
+      free(pivot2)
+      if (great - less <= 32) {
+        insertionSort(less, great, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      } else {
+        ndarrayQuickSort1d0uint32(less, great, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      }
+    }
+  },
+}
+
 function createQuickSort(order, dtype, insertionSort) {
-  var code = [ "'use strict'" ]
-  var funcName = ["ndarrayQuickSort", order.join("d"), dtype].join("")
-  var funcArgs = ["left", "right", "data", "offset" ].concat(shapeArgs(order.length))
   var allocator = getMallocFree(dtype)
-  var labelCounter=0
-  
-  code.push(["function ", funcName, "(", funcArgs.join(","), "){"].join(""))
-  
-  var vars = [
-    "sixth=((right-left+1)/6)|0",
-    "index1=left+sixth",
-    "index5=right-sixth",
-    "index3=(left+right)>>1",
-    "index2=index3-sixth",
-    "index4=index3+sixth",
-    "el1=index1",
-    "el2=index2",
-    "el3=index3",
-    "el4=index4",
-    "el5=index5",
-    "less=left+1",
-    "great=right-1",
-    "pivots_are_equal=true",
-    "tmp",
-    "tmp0",
-    "x",
-    "y",
-    "z",
-    "k",
-    "ptr0",
-    "ptr1",
-    "ptr2",
-    "comp_pivot1=0",
-    "comp_pivot2=0",
-    "comp=0"
-  ]
-  
-  if(order.length > 1) {
-    var ele_size = []
-    for(var i=1; i<order.length; ++i) {
-      ele_size.push("n"+i)
-      vars.push("i"+i)
-    }
-    for(var i=0; i<8; ++i) {
-      vars.push("b_ptr"+i)
-    }
-    vars.push(
-      "ptr3",
-      "ptr4",
-      "ptr5",
-      "ptr6",
-      "ptr7",
-      "pivot_ptr",
-      "ptr_shift",
-      "elementSize="+ele_size.join("*"))
-    if(allocator) {
-      vars.push("pivot1=malloc(elementSize)",
-                "pivot2=malloc(elementSize)")
-    } else {
-      vars.push("pivot1=new Array(elementSize),pivot2=new Array(elementSize)")
-    }
-  } else {
-    vars.push("pivot1", "pivot2")
-  }
-  
-  //Initialize local variables
-  code.push("var " + vars.join(","))
-  
-  function toPointer(v) {
-    return ["(offset+",v,"*s0)"].join("")
-  }
-  
-  function dataRead(ptr) {
-    if(dtype === "generic") {
-      return ["data.get(", ptr, ")"].join("")
-    }
-    return ["data[",ptr,"]"].join("")
-  }
-  
-  function dataWrite(ptr, v) {
-    if(dtype === "generic") {
-      return ["data.set(", ptr, ",", v, ")"].join("")
-    }
-    return ["data[",ptr,"]=",v].join("")
-  }
-  
-  function cacheLoop(ptrs, usePivot, body) {
-    if(ptrs.length === 1) {
-      code.push("ptr0="+toPointer(ptrs[0]))
-    } else {
-      for(var i=0; i<ptrs.length; ++i) {
-        code.push(["b_ptr",i,"=s0*",ptrs[i]].join(""))
-      }
-    }
-    if(usePivot) {
-      code.push("pivot_ptr=0")
-    }
-    code.push("ptr_shift=offset")
-    for(var i=order.length-1; i>=0; --i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      code.push(["for(i",j,"=0;i",j,"<n",j,";++i",j,"){"].join(""))
-    }
-    if(ptrs.length > 1) {
-      for(var i=0; i<ptrs.length; ++i) {
-        code.push(["ptr",i,"=b_ptr",i,"+ptr_shift"].join(""))
-      }
-    }
-    code.push(body)
-    if(usePivot) {
-      code.push("++pivot_ptr")
-    }
-    for(var i=0; i<order.length; ++i) {
-      var j = order[i]
-      if(j === 0) {
-        continue
-      }
-      if(ptrs.length>1) {
-        code.push("ptr_shift+=d"+j)
-      } else {
-        code.push("ptr0+=d"+j)
-      }
-      code.push("}")
-    }
-  }
-  
-  function lexicoLoop(label, ptrs, usePivot, body) {
-    if(ptrs.length === 1) {
-      code.push("ptr0="+toPointer(ptrs[0]))
-    } else {
-      for(var i=0; i<ptrs.length; ++i) {
-        code.push(["b_ptr",i,"=s0*",ptrs[i]].join(""))
-      }
-      code.push("ptr_shift=offset")
-    }
-    if(usePivot) {
-      code.push("pivot_ptr=0")
-    }
-    if(label) {
-      code.push(label+":")
-    }
-    for(var i=1; i<order.length; ++i) {
-      code.push(["for(i",i,"=0;i",i,"<n",i,";++i",i,"){"].join(""))
-    }
-    if(ptrs.length > 1) {
-      for(var i=0; i<ptrs.length; ++i) {
-        code.push(["ptr",i,"=b_ptr",i,"+ptr_shift"].join(""))
-      }
-    }
-    code.push(body)
-    for(var i=order.length-1; i>=1; --i) {
-      if(usePivot) {
-        code.push("pivot_ptr+=f"+i)
-      }
-      if(ptrs.length > 1) {
-        code.push("ptr_shift+=e"+i)
-      } else {
-        code.push("ptr0+=e"+i)
-      }
-      code.push("}")
-    }
-  }
-  
-  function cleanUp() {
-    if(order.length > 1 && allocator) {
-      code.push("free(pivot1)", "free(pivot2)")
-    }
-  }
-  
-  function compareSwap(a_id, b_id) {
-    var a = "el"+a_id
-    var b = "el"+b_id
-    if(order.length > 1) {
-      var lbl = "__l" + (++labelCounter)
-      lexicoLoop(lbl, [a, b], false, [
-        "comp=",dataRead("ptr0"),"-",dataRead("ptr1"),"\n",
-        "if(comp>0){tmp0=", a, ";",a,"=",b,";", b,"=tmp0;break ", lbl,"}\n",
-        "if(comp<0){break ", lbl, "}"
-      ].join(""))
-    } else {
-      code.push(["if(", dataRead(toPointer(a)), ">", dataRead(toPointer(b)), "){tmp0=", a, ";",a,"=",b,";", b,"=tmp0}"].join(""))
-    }
-  }
-  
-  compareSwap(1, 2)
-  compareSwap(4, 5)
-  compareSwap(1, 3)
-  compareSwap(2, 3)
-  compareSwap(1, 4)
-  compareSwap(3, 4)
-  compareSwap(2, 5)
-  compareSwap(2, 3)
-  compareSwap(4, 5)
-  
-  if(order.length > 1) {
-    cacheLoop(["el1", "el2", "el3", "el4", "el5", "index1", "index3", "index5"], true, [
-      "pivot1[pivot_ptr]=",dataRead("ptr1"),"\n",
-      "pivot2[pivot_ptr]=",dataRead("ptr3"),"\n",
-      "pivots_are_equal=pivots_are_equal&&(pivot1[pivot_ptr]===pivot2[pivot_ptr])\n",
-      "x=",dataRead("ptr0"),"\n",
-      "y=",dataRead("ptr2"),"\n",
-      "z=",dataRead("ptr4"),"\n",
-      dataWrite("ptr5", "x"),"\n",
-      dataWrite("ptr6", "y"),"\n",
-      dataWrite("ptr7", "z")
-    ].join(""))
-  } else {
-    code.push([
-      "pivot1=", dataRead(toPointer("el2")), "\n",
-      "pivot2=", dataRead(toPointer("el4")), "\n",
-      "pivots_are_equal=pivot1===pivot2\n",
-      "x=", dataRead(toPointer("el1")), "\n",
-      "y=", dataRead(toPointer("el3")), "\n",
-      "z=", dataRead(toPointer("el5")), "\n",
-      dataWrite(toPointer("index1"), "x"), "\n",
-      dataWrite(toPointer("index3"), "y"), "\n",
-      dataWrite(toPointer("index5"), "z")
-    ].join(""))
-  }
-  
+  var key = [dtype, order].join(',')
+  var result = CACHED_quickSort[key]
 
-  function moveElement(dst, src) {
-    if(order.length > 1) {
-      cacheLoop([dst, src], false,
-        dataWrite("ptr0", dataRead("ptr1"))
-      )
-    } else {
-      code.push(dataWrite(toPointer(dst), dataRead(toPointer(src))))
-    }
-  }
-  
-  moveElement("index2", "left")
-  moveElement("index4", "right")
-  
-  function comparePivot(result, ptr, n) {
-    if(order.length > 1) {
-      var lbl = "__l" + (++labelCounter)
-      lexicoLoop(lbl, [ptr], true, [
-        result,"=",dataRead("ptr0"),"-pivot",n,"[pivot_ptr]\n",
-        "if(",result,"!==0){break ", lbl, "}"
-      ].join(""))
-    } else {
-      code.push([result,"=", dataRead(toPointer(ptr)), "-pivot", n].join(""))
-    }
-  }
-  
-  function swapElements(a, b) {
-    if(order.length > 1) {
-      cacheLoop([a,b],false,[
-        "tmp=",dataRead("ptr0"),"\n",
-        dataWrite("ptr0", dataRead("ptr1")),"\n",
-        dataWrite("ptr1", "tmp")
-      ].join(""))
-    } else {
-      code.push([
-        "ptr0=",toPointer(a),"\n",
-        "ptr1=",toPointer(b),"\n",
-        "tmp=",dataRead("ptr0"),"\n",
-        dataWrite("ptr0", dataRead("ptr1")),"\n",
-        dataWrite("ptr1", "tmp")
-      ].join(""))
-    }
-  }
-  
-  function tripleSwap(k, less, great) {
-    if(order.length > 1) {
-      cacheLoop([k,less,great], false, [
-        "tmp=",dataRead("ptr0"),"\n",
-        dataWrite("ptr0", dataRead("ptr1")),"\n",
-        dataWrite("ptr1", dataRead("ptr2")),"\n",
-        dataWrite("ptr2", "tmp")
-      ].join(""))
-      code.push("++"+less, "--"+great)
-    } else {
-      code.push([
-        "ptr0=",toPointer(k),"\n",
-        "ptr1=",toPointer(less),"\n",
-        "ptr2=",toPointer(great),"\n",
-        "++",less,"\n",
-        "--",great,"\n",
-        "tmp=", dataRead("ptr0"), "\n",
-        dataWrite("ptr0", dataRead("ptr1")), "\n",
-        dataWrite("ptr1", dataRead("ptr2")), "\n",
-        dataWrite("ptr2", "tmp")
-      ].join(""))
-    }
-  }
-  
-  function swapAndDecrement(k, great) {
-    swapElements(k, great)
-    code.push("--"+great)
-  }
-    
-  code.push("if(pivots_are_equal){")
-    //Pivots are equal case
-    code.push("for(k=less;k<=great;++k){")
-      comparePivot("comp", "k", 1)
-      code.push("if(comp===0){continue}")
-      code.push("if(comp<0){")
-        code.push("if(k!==less){")
-          swapElements("k", "less")
-        code.push("}")
-        code.push("++less")
-      code.push("}else{")
-        code.push("while(true){")
-          comparePivot("comp", "great", 1)
-          code.push("if(comp>0){")
-            code.push("great--")
-          code.push("}else if(comp<0){")
-            tripleSwap("k", "less", "great")
-            code.push("break")
-          code.push("}else{")
-            swapAndDecrement("k", "great")
-            code.push("break")
-          code.push("}")
-        code.push("}")
-      code.push("}")
-    code.push("}")
-  code.push("}else{")
-    //Pivots not equal case
-    code.push("for(k=less;k<=great;++k){")
-      comparePivot("comp_pivot1", "k", 1)
-      code.push("if(comp_pivot1<0){")
-        code.push("if(k!==less){")
-          swapElements("k", "less")
-        code.push("}")
-        code.push("++less")
-      code.push("}else{")
-        comparePivot("comp_pivot2", "k", 2)
-        code.push("if(comp_pivot2>0){")
-          code.push("while(true){")
-            comparePivot("comp", "great", 2)
-            code.push("if(comp>0){")
-              code.push("if(--great<k){break}")
-              code.push("continue")
-            code.push("}else{")
-              comparePivot("comp", "great", 1)
-              code.push("if(comp<0){")
-                tripleSwap("k", "less", "great")
-              code.push("}else{")
-                swapAndDecrement("k", "great")
-              code.push("}")
-              code.push("break")
-            code.push("}")
-          code.push("}")
-        code.push("}")
-      code.push("}")
-    code.push("}")
-  code.push("}")
-  
-  //Move pivots to correct place
-  function storePivot(mem_dest, pivot_dest, pivot) {
-    if(order.length>1) {
-      cacheLoop([mem_dest, pivot_dest], true, [
-        dataWrite("ptr0", dataRead("ptr1")), "\n",
-        dataWrite("ptr1", ["pivot",pivot,"[pivot_ptr]"].join(""))
-      ].join(""))
-    } else {
-      code.push(
-          dataWrite(toPointer(mem_dest), dataRead(toPointer(pivot_dest))),
-          dataWrite(toPointer(pivot_dest), "pivot"+pivot))
-    }
-  }
-  
-  storePivot("left", "(less-1)", 1)
-  storePivot("right", "(great+1)", 2)
-
-  //Recursive sort call
-  function doSort(left, right) {
-    code.push([
-      "if((",right,"-",left,")<=",INSERTION_SORT_THRESHOLD,"){\n",
-        "insertionSort(", left, ",", right, ",data,offset,", shapeArgs(order.length).join(","), ")\n",
-      "}else{\n",
-        funcName, "(", left, ",", right, ",data,offset,", shapeArgs(order.length).join(","), ")\n",
-      "}"
-    ].join(""))
-  }
-  doSort("left", "(less-2)")
-  doSort("(great+2)", "right")
-  
-  //If pivots are equal, then early out
-  code.push("if(pivots_are_equal){")
-    cleanUp()
-    code.push("return")
-  code.push("}")
-  
-  function walkPointer(ptr, pivot, body) {
-    if(order.length > 1) {
-      code.push(["__l",++labelCounter,":while(true){"].join(""))
-      cacheLoop([ptr], true, [
-        "if(", dataRead("ptr0"), "!==pivot", pivot, "[pivot_ptr]){break __l", labelCounter, "}"
-      ].join(""))
-      code.push(body, "}")
-    } else {
-      code.push(["while(", dataRead(toPointer(ptr)), "===pivot", pivot, "){", body, "}"].join(""))
-    }
-  }
-  
-  //Check bounds
-  code.push("if(less<index1&&great>index5){")
-  
-    walkPointer("less", 1, "++less")
-    walkPointer("great", 2, "--great")
-  
-    code.push("for(k=less;k<=great;++k){")
-      comparePivot("comp_pivot1", "k", 1)
-      code.push("if(comp_pivot1===0){")
-        code.push("if(k!==less){")
-          swapElements("k", "less")
-        code.push("}")
-        code.push("++less")
-      code.push("}else{")
-        comparePivot("comp_pivot2", "k", 2)
-        code.push("if(comp_pivot2===0){")
-          code.push("while(true){")
-            comparePivot("comp", "great", 2)
-            code.push("if(comp===0){")
-              code.push("if(--great<k){break}")
-              code.push("continue")
-            code.push("}else{")
-              comparePivot("comp", "great", 1)
-              code.push("if(comp<0){")
-                tripleSwap("k", "less", "great")
-              code.push("}else{")
-                swapAndDecrement("k", "great")
-              code.push("}")
-              code.push("break")
-            code.push("}")
-          code.push("}")
-        code.push("}")
-      code.push("}")
-    code.push("}")
-  code.push("}")
-  
-  //Clean up and do a final sorting pass
-  cleanUp()
-  doSort("less", "great")
- 
-  //Close off main loop
-  code.push("}return " + funcName)
-  
-  //Compile and link
   if(order.length > 1 && allocator) {
-    var compiled = new Function("insertionSort", "malloc", "free", code.join("\n"))
-    return compiled(insertionSort, allocator[0], allocator[1])
+    return result(insertionSort, allocator[0], allocator[1])
+  } else {
+    return result(insertionSort)
   }
-  var compiled = new Function("insertionSort", code.join("\n"))
-  return compiled(insertionSort)
+}
+
+var CACHED_sort = {
+  "uint32,1,0": function (insertionSort, quickSort) {
+    return function (array) {
+      var data = array.data,
+        offset = array.offset | 0,
+        shape = array.shape,
+        stride = array.stride,
+        s0 = stride[0] | 0,
+        n0 = shape[0] | 0,
+        s1 = stride[1] | 0,
+        n1 = shape[1] | 0,
+        d1 = s1,
+        e1 = s1,
+        f1 = 1
+      if (n0 <= 32) {
+        insertionSort(0, n0 - 1, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      } else {
+        quickSort(0, n0 - 1, data, offset, s0, s1, n0, n1, d1, e1, f1)
+      }
+    }
+  },
 }
 
 function compileSort(order, dtype) {
-  var code = ["'use strict'"]
-  var funcName = ["ndarraySortWrapper", order.join("d"), dtype].join("")
-  var funcArgs = [ "array" ]
-  
-  code.push(["function ", funcName, "(", funcArgs.join(","), "){"].join(""))
-  
-  //Unpack local variables from array
-  var vars = ["data=array.data,offset=array.offset|0,shape=array.shape,stride=array.stride"]
-  for(var i=0; i<order.length; ++i) {
-    vars.push(["s",i,"=stride[",i,"]|0,n",i,"=shape[",i,"]|0"].join(""))
-  }
-  
-  var scratch_stride = new Array(order.length)
-  var nprod = []
-  for(var i=0; i<order.length; ++i) {
-    var k = order[i]
-    if(k === 0) {
-      continue
-    }
-    if(nprod.length === 0) {
-      scratch_stride[k] = "1"
-    } else {
-      scratch_stride[k] = nprod.join("*")
-    }
-    nprod.push("n"+k)
-  }
-  
-  var p = -1, q = -1
-  for(var i=0; i<order.length; ++i) {
-    var j = order[i]
-    if(j !== 0) {
-      if(p > 0) {
-        vars.push(["d",j,"=s",j,"-d",p,"*n",p].join(""))
-      } else {
-        vars.push(["d",j,"=s",j].join(""))
-      }
-      p = j
-    }
-    var k = order.length-1-i
-    if(k !== 0) {
-      if(q > 0) {
-        vars.push(["e",k,"=s",k,"-e",q,"*n",q,
-                  ",f",k,"=",scratch_stride[k],"-f",q,"*n",q].join(""))
-      } else {
-        vars.push(["e",k,"=s",k,",f",k,"=",scratch_stride[k]].join(""))
-      }
-      q = k
-    }
-  }
-  
-  //Declare local variables
-  code.push("var " + vars.join(","))
-  
-  //Create arguments for subroutine
-  var sortArgs = ["0", "n0-1", "data", "offset"].concat(shapeArgs(order.length))
-  
-  //Call main sorting routine
-  code.push([
-    "if(n0<=",INSERTION_SORT_THRESHOLD,"){",
-      "insertionSort(", sortArgs.join(","), ")}else{",
-      "quickSort(", sortArgs.join(","),
-    ")}"
-  ].join(""))
-  
-  //Return
-  code.push("}return " + funcName)
-  
-  //Link everything together
-  var result = new Function("insertionSort", "quickSort", code.join("\n"))
+  var key = [dtype, order].join(',')
+  var result = CACHED_sort[key]
+
   var insertionSort = createInsertionSort(order, dtype)
   var quickSort = createQuickSort(order, dtype, insertionSort)
   return result(insertionSort, quickSort)
 }
 
 module.exports = compileSort
-},{"typedarray-pool":372}],304:[function(_dereq_,module,exports){
+},{"typedarray-pool":355}],292:[function(_dereq_,module,exports){
 "use strict"
 
 var compile = _dereq_("./lib/compile_sort.js")
@@ -43740,8 +40669,7 @@ function sort(array) {
 }
 
 module.exports = sort
-},{"./lib/compile_sort.js":303}],305:[function(_dereq_,module,exports){
-var iota = _dereq_("iota-array")
+},{"./lib/compile_sort.js":291}],293:[function(_dereq_,module,exports){
 var isBuffer = _dereq_("is-buffer")
 
 var hasTypedArrays  = ((typeof Float64Array) !== "undefined")
@@ -43765,234 +40693,883 @@ function order() {
   return result
 }
 
-function compileConstructor(dtype, dimension) {
-  var className = ["View", dimension, "d", dtype].join("")
-  if(dimension < 0) {
-    className = "View_Nil" + dtype
-  }
-  var useGetters = (dtype === "generic")
-
-  if(dimension === -1) {
-    //Special case for trivial arrays
-    var code =
-      "function "+className+"(a){this.data=a;};\
-var proto="+className+".prototype;\
-proto.dtype='"+dtype+"';\
-proto.index=function(){return -1};\
-proto.size=0;\
-proto.dimension=-1;\
-proto.shape=proto.stride=proto.order=[];\
-proto.lo=proto.hi=proto.transpose=proto.step=\
-function(){return new "+className+"(this.data);};\
-proto.get=proto.set=function(){};\
-proto.pick=function(){return null};\
-return function construct_"+className+"(a){return new "+className+"(a);}"
-    var procedure = new Function(code)
-    return procedure()
-  } else if(dimension === 0) {
-    //Special case for 0d arrays
-    var code =
-      "function "+className+"(a,d) {\
-this.data = a;\
-this.offset = d\
-};\
-var proto="+className+".prototype;\
-proto.dtype='"+dtype+"';\
-proto.index=function(){return this.offset};\
-proto.dimension=0;\
-proto.size=1;\
-proto.shape=\
-proto.stride=\
-proto.order=[];\
-proto.lo=\
-proto.hi=\
-proto.transpose=\
-proto.step=function "+className+"_copy() {\
-return new "+className+"(this.data,this.offset)\
-};\
-proto.pick=function "+className+"_pick(){\
-return TrivialArray(this.data);\
-};\
-proto.valueOf=proto.get=function "+className+"_get(){\
-return "+(useGetters ? "this.data.get(this.offset)" : "this.data[this.offset]")+
-"};\
-proto.set=function "+className+"_set(v){\
-return "+(useGetters ? "this.data.set(this.offset,v)" : "this.data[this.offset]=v")+"\
-};\
-return function construct_"+className+"(a,b,c,d){return new "+className+"(a,d)}"
-    var procedure = new Function("TrivialArray", code)
-    return procedure(CACHED_CONSTRUCTORS[dtype][0])
-  }
-
-  var code = ["'use strict'"]
-
-  //Create constructor for view
-  var indices = iota(dimension)
-  var args = indices.map(function(i) { return "i"+i })
-  var index_str = "this.offset+" + indices.map(function(i) {
-        return "this.stride[" + i + "]*i" + i
-      }).join("+")
-  var shapeArg = indices.map(function(i) {
-      return "b"+i
-    }).join(",")
-  var strideArg = indices.map(function(i) {
-      return "c"+i
-    }).join(",")
-  code.push(
-    "function "+className+"(a," + shapeArg + "," + strideArg + ",d){this.data=a",
-      "this.shape=[" + shapeArg + "]",
-      "this.stride=[" + strideArg + "]",
-      "this.offset=d|0}",
-    "var proto="+className+".prototype",
-    "proto.dtype='"+dtype+"'",
-    "proto.dimension="+dimension)
-
-  //view.size:
-  code.push("Object.defineProperty(proto,'size',{get:function "+className+"_size(){\
-return "+indices.map(function(i) { return "this.shape["+i+"]" }).join("*"),
-"}})")
-
-  //view.order:
-  if(dimension === 1) {
-    code.push("proto.order=[0]")
-  } else {
-    code.push("Object.defineProperty(proto,'order',{get:")
-    if(dimension < 4) {
-      code.push("function "+className+"_order(){")
-      if(dimension === 2) {
-        code.push("return (Math.abs(this.stride[0])>Math.abs(this.stride[1]))?[1,0]:[0,1]}})")
-      } else if(dimension === 3) {
-        code.push(
-"var s0=Math.abs(this.stride[0]),s1=Math.abs(this.stride[1]),s2=Math.abs(this.stride[2]);\
-if(s0>s1){\
-if(s1>s2){\
-return [2,1,0];\
-}else if(s0>s2){\
-return [1,2,0];\
-}else{\
-return [1,0,2];\
-}\
-}else if(s0>s2){\
-return [2,0,1];\
-}else if(s2>s1){\
-return [0,1,2];\
-}else{\
-return [0,2,1];\
-}}})")
-      }
-    } else {
-      code.push("ORDER})")
+var allFns = {
+  // Special case for trivial arrays
+  T: function (dtype) {
+    function View(a) {
+      this.data = a
     }
+    var proto = View.prototype
+    proto.dtype = dtype
+    proto.index = function () {
+      return -1
+    }
+    proto.size = 0
+    proto.dimension = -1
+    proto.shape = proto.stride = proto.order = []
+    proto.lo =
+      proto.hi =
+      proto.transpose =
+      proto.step =
+        function () {
+          return new View(this.data)
+        }
+    proto.get = proto.set = function () {}
+    proto.pick = function () {
+      return null
+    }
+    return function construct(a) {
+      return new View(a)
+    }
+  },
+
+  // Special case for 0d arrays
+  0: function (dtype, TrivialArray) {
+    function View(a, d) {
+      this.data = a
+      this.offset = d
+    }
+    var proto = View.prototype
+    proto.dtype = dtype
+    proto.index = function () {
+      return this.offset
+    }
+    proto.dimension = 0
+    proto.size = 1
+    proto.shape = proto.stride = proto.order = []
+    proto.lo =
+      proto.hi =
+      proto.transpose =
+      proto.step =
+        function copy() {
+          return new View(this.data, this.offset)
+        }
+    proto.pick = function pick() {
+      return TrivialArray(this.data)
+    }
+    proto.valueOf = proto.get = function get() {
+      return dtype === "generic" ? this.data.get(this.offset) : this.data[this.offset]
+    }
+    proto.set = function set(v) {
+      return dtype === "generic" ? this.data.set(this.offset, v) : (this.data[this.offset] = v)
+    }
+    return function construct(a, b, c, d) {
+      return new View(a, d)
+    }
+  },
+
+  1: function (dtype, CTOR_LIST, ORDER) {
+    function View(a, b0, c0, d) {
+      this.data = a
+      this.shape = [b0]
+      this.stride = [c0]
+      this.offset = d | 0
+    }
+    var proto = View.prototype
+    proto.dtype = dtype
+    proto.dimension = 1
+    Object.defineProperty(proto, "size", {
+      get: function size() {
+        return this.shape[0]
+      },
+    })
+    proto.order = [0]
+    proto.set = function set(i0, v) {
+      return dtype === "generic"
+        ? this.data.set(this.offset + this.stride[0] * i0, v)
+        : (this.data[this.offset + this.stride[0] * i0] = v)
+    }
+    proto.get = function get(i0) {
+      return dtype === "generic"
+        ? this.data.get(this.offset + this.stride[0] * i0)
+        : this.data[this.offset + this.stride[0] * i0]
+    }
+    proto.index = function index(i0) {
+      return this.offset + this.stride[0] * i0
+    }
+    proto.hi = function hi(i0) {
+      return new View(this.data, typeof i0 !== "number" || i0 < 0 ? this.shape[0] : i0 | 0, this.stride[0], this.offset)
+    }
+    proto.lo = function lo(i0) {
+      var b = this.offset,
+        d = 0,
+        a0 = this.shape[0],
+        c0 = this.stride[0]
+      if (typeof i0 === "number" && i0 >= 0) {
+        d = i0 | 0
+        b += c0 * d
+        a0 -= d
+      }
+      return new View(this.data, a0, c0, b)
+    }
+    proto.step = function step(i0) {
+      var a0 = this.shape[0],
+        b0 = this.stride[0],
+        c = this.offset,
+        d = 0,
+        ceil = Math.ceil
+      if (typeof i0 === "number") {
+        d = i0 | 0
+        if (d < 0) {
+          c += b0 * (a0 - 1)
+          a0 = ceil(-a0 / d)
+        } else {
+          a0 = ceil(a0 / d)
+        }
+        b0 *= d
+      }
+      return new View(this.data, a0, b0, c)
+    }
+    proto.transpose = function transpose(i0) {
+      i0 = i0 === undefined ? 0 : i0 | 0
+      var a = this.shape,
+        b = this.stride
+      return new View(this.data, a[i0], b[i0], this.offset)
+    }
+    proto.pick = function pick(i0) {
+      var a = [],
+        b = [],
+        c = this.offset
+      if (typeof i0 === "number" && i0 >= 0) {
+        c = (c + this.stride[0] * i0) | 0
+      } else {
+        a.push(this.shape[0])
+        b.push(this.stride[0])
+      }
+      var ctor = CTOR_LIST[a.length + 1]
+      return ctor(this.data, a, b, c)
+    }
+    return function construct(data, shape, stride, offset) {
+      return new View(data, shape[0], stride[0], offset)
+    }
+  },
+  2: function (dtype, CTOR_LIST, ORDER) {
+    function View(a, b0, b1, c0, c1, d) {
+      this.data = a
+      this.shape = [b0, b1]
+      this.stride = [c0, c1]
+      this.offset = d | 0
+    }
+    var proto = View.prototype
+    proto.dtype = dtype
+    proto.dimension = 2
+    Object.defineProperty(proto, "size", {
+      get: function size() {
+        return this.shape[0] * this.shape[1]
+      },
+    })
+    Object.defineProperty(proto, "order", {
+      get: function order() {
+        return Math.abs(this.stride[0]) > Math.abs(this.stride[1]) ? [1, 0] : [0, 1]
+      },
+    })
+    proto.set = function set(i0, i1, v) {
+      return dtype === "generic"
+        ? this.data.set(this.offset + this.stride[0] * i0 + this.stride[1] * i1, v)
+        : (this.data[this.offset + this.stride[0] * i0 + this.stride[1] * i1] = v)
+    }
+    proto.get = function get(i0, i1) {
+      return dtype === "generic"
+        ? this.data.get(this.offset + this.stride[0] * i0 + this.stride[1] * i1)
+        : this.data[this.offset + this.stride[0] * i0 + this.stride[1] * i1]
+    }
+    proto.index = function index(i0, i1) {
+      return this.offset + this.stride[0] * i0 + this.stride[1] * i1
+    }
+    proto.hi = function hi(i0, i1) {
+      return new View(
+        this.data,
+        typeof i0 !== "number" || i0 < 0 ? this.shape[0] : i0 | 0,
+        typeof i1 !== "number" || i1 < 0 ? this.shape[1] : i1 | 0,
+        this.stride[0],
+        this.stride[1],
+        this.offset
+      )
+    }
+    proto.lo = function lo(i0, i1) {
+      var b = this.offset,
+        d = 0,
+        a0 = this.shape[0],
+        a1 = this.shape[1],
+        c0 = this.stride[0],
+        c1 = this.stride[1]
+      if (typeof i0 === "number" && i0 >= 0) {
+        d = i0 | 0
+        b += c0 * d
+        a0 -= d
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        d = i1 | 0
+        b += c1 * d
+        a1 -= d
+      }
+      return new View(this.data, a0, a1, c0, c1, b)
+    }
+    proto.step = function step(i0, i1) {
+      var a0 = this.shape[0],
+        a1 = this.shape[1],
+        b0 = this.stride[0],
+        b1 = this.stride[1],
+        c = this.offset,
+        d = 0,
+        ceil = Math.ceil
+      if (typeof i0 === "number") {
+        d = i0 | 0
+        if (d < 0) {
+          c += b0 * (a0 - 1)
+          a0 = ceil(-a0 / d)
+        } else {
+          a0 = ceil(a0 / d)
+        }
+        b0 *= d
+      }
+      if (typeof i1 === "number") {
+        d = i1 | 0
+        if (d < 0) {
+          c += b1 * (a1 - 1)
+          a1 = ceil(-a1 / d)
+        } else {
+          a1 = ceil(a1 / d)
+        }
+        b1 *= d
+      }
+      return new View(this.data, a0, a1, b0, b1, c)
+    }
+    proto.transpose = function transpose(i0, i1) {
+      i0 = i0 === undefined ? 0 : i0 | 0
+      i1 = i1 === undefined ? 1 : i1 | 0
+      var a = this.shape,
+        b = this.stride
+      return new View(this.data, a[i0], a[i1], b[i0], b[i1], this.offset)
+    }
+    proto.pick = function pick(i0, i1) {
+      var a = [],
+        b = [],
+        c = this.offset
+      if (typeof i0 === "number" && i0 >= 0) {
+        c = (c + this.stride[0] * i0) | 0
+      } else {
+        a.push(this.shape[0])
+        b.push(this.stride[0])
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        c = (c + this.stride[1] * i1) | 0
+      } else {
+        a.push(this.shape[1])
+        b.push(this.stride[1])
+      }
+      var ctor = CTOR_LIST[a.length + 1]
+      return ctor(this.data, a, b, c)
+    }
+    return function construct(data, shape, stride, offset) {
+      return new View(data, shape[0], shape[1], stride[0], stride[1], offset)
+    }
+  },
+  3: function (dtype, CTOR_LIST, ORDER) {
+    function View(a, b0, b1, b2, c0, c1, c2, d) {
+      this.data = a
+      this.shape = [b0, b1, b2]
+      this.stride = [c0, c1, c2]
+      this.offset = d | 0
+    }
+    var proto = View.prototype
+    proto.dtype = dtype
+    proto.dimension = 3
+    Object.defineProperty(proto, "size", {
+      get: function size() {
+        return this.shape[0] * this.shape[1] * this.shape[2]
+      },
+    })
+    Object.defineProperty(proto, "order", {
+      get: function order() {
+        var s0 = Math.abs(this.stride[0]),
+          s1 = Math.abs(this.stride[1]),
+          s2 = Math.abs(this.stride[2])
+        if (s0 > s1) {
+          if (s1 > s2) {
+            return [2, 1, 0]
+          } else if (s0 > s2) {
+            return [1, 2, 0]
+          } else {
+            return [1, 0, 2]
+          }
+        } else if (s0 > s2) {
+          return [2, 0, 1]
+        } else if (s2 > s1) {
+          return [0, 1, 2]
+        } else {
+          return [0, 2, 1]
+        }
+      },
+    })
+    proto.set = function set(i0, i1, i2, v) {
+      return dtype === "generic"
+        ? this.data.set(this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2, v)
+        : (this.data[this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2] = v)
+    }
+    proto.get = function get(i0, i1, i2) {
+      return dtype === "generic"
+        ? this.data.get(this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2)
+        : this.data[this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2]
+    }
+    proto.index = function index(i0, i1, i2) {
+      return this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2
+    }
+    proto.hi = function hi(i0, i1, i2) {
+      return new View(
+        this.data,
+        typeof i0 !== "number" || i0 < 0 ? this.shape[0] : i0 | 0,
+        typeof i1 !== "number" || i1 < 0 ? this.shape[1] : i1 | 0,
+        typeof i2 !== "number" || i2 < 0 ? this.shape[2] : i2 | 0,
+        this.stride[0],
+        this.stride[1],
+        this.stride[2],
+        this.offset
+      )
+    }
+    proto.lo = function lo(i0, i1, i2) {
+      var b = this.offset,
+        d = 0,
+        a0 = this.shape[0],
+        a1 = this.shape[1],
+        a2 = this.shape[2],
+        c0 = this.stride[0],
+        c1 = this.stride[1],
+        c2 = this.stride[2]
+      if (typeof i0 === "number" && i0 >= 0) {
+        d = i0 | 0
+        b += c0 * d
+        a0 -= d
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        d = i1 | 0
+        b += c1 * d
+        a1 -= d
+      }
+      if (typeof i2 === "number" && i2 >= 0) {
+        d = i2 | 0
+        b += c2 * d
+        a2 -= d
+      }
+      return new View(this.data, a0, a1, a2, c0, c1, c2, b)
+    }
+    proto.step = function step(i0, i1, i2) {
+      var a0 = this.shape[0],
+        a1 = this.shape[1],
+        a2 = this.shape[2],
+        b0 = this.stride[0],
+        b1 = this.stride[1],
+        b2 = this.stride[2],
+        c = this.offset,
+        d = 0,
+        ceil = Math.ceil
+      if (typeof i0 === "number") {
+        d = i0 | 0
+        if (d < 0) {
+          c += b0 * (a0 - 1)
+          a0 = ceil(-a0 / d)
+        } else {
+          a0 = ceil(a0 / d)
+        }
+        b0 *= d
+      }
+      if (typeof i1 === "number") {
+        d = i1 | 0
+        if (d < 0) {
+          c += b1 * (a1 - 1)
+          a1 = ceil(-a1 / d)
+        } else {
+          a1 = ceil(a1 / d)
+        }
+        b1 *= d
+      }
+      if (typeof i2 === "number") {
+        d = i2 | 0
+        if (d < 0) {
+          c += b2 * (a2 - 1)
+          a2 = ceil(-a2 / d)
+        } else {
+          a2 = ceil(a2 / d)
+        }
+        b2 *= d
+      }
+      return new View(this.data, a0, a1, a2, b0, b1, b2, c)
+    }
+    proto.transpose = function transpose(i0, i1, i2) {
+      i0 = i0 === undefined ? 0 : i0 | 0
+      i1 = i1 === undefined ? 1 : i1 | 0
+      i2 = i2 === undefined ? 2 : i2 | 0
+      var a = this.shape,
+        b = this.stride
+      return new View(this.data, a[i0], a[i1], a[i2], b[i0], b[i1], b[i2], this.offset)
+    }
+    proto.pick = function pick(i0, i1, i2) {
+      var a = [],
+        b = [],
+        c = this.offset
+      if (typeof i0 === "number" && i0 >= 0) {
+        c = (c + this.stride[0] * i0) | 0
+      } else {
+        a.push(this.shape[0])
+        b.push(this.stride[0])
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        c = (c + this.stride[1] * i1) | 0
+      } else {
+        a.push(this.shape[1])
+        b.push(this.stride[1])
+      }
+      if (typeof i2 === "number" && i2 >= 0) {
+        c = (c + this.stride[2] * i2) | 0
+      } else {
+        a.push(this.shape[2])
+        b.push(this.stride[2])
+      }
+      var ctor = CTOR_LIST[a.length + 1]
+      return ctor(this.data, a, b, c)
+    }
+    return function construct(data, shape, stride, offset) {
+      return new View(data, shape[0], shape[1], shape[2], stride[0], stride[1], stride[2], offset)
+    }
+  },
+  4: function (dtype, CTOR_LIST, ORDER) {
+    function View(a, b0, b1, b2, b3, c0, c1, c2, c3, d) {
+      this.data = a
+      this.shape = [b0, b1, b2, b3]
+      this.stride = [c0, c1, c2, c3]
+      this.offset = d | 0
+    }
+    var proto = View.prototype
+    proto.dtype = dtype
+    proto.dimension = 4
+    Object.defineProperty(proto, "size", {
+      get: function size() {
+        return this.shape[0] * this.shape[1] * this.shape[2] * this.shape[3]
+      },
+    })
+    Object.defineProperty(proto, "order", { get: ORDER })
+    proto.set = function set(i0, i1, i2, i3, v) {
+      return dtype === "generic"
+        ? this.data.set(this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2 + this.stride[3] * i3, v)
+        : (this.data[this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2 + this.stride[3] * i3] = v)
+    }
+    proto.get = function get(i0, i1, i2, i3) {
+      return dtype === "generic"
+        ? this.data.get(this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2 + this.stride[3] * i3)
+        : this.data[this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2 + this.stride[3] * i3]
+    }
+    proto.index = function index(i0, i1, i2, i3) {
+      return this.offset + this.stride[0] * i0 + this.stride[1] * i1 + this.stride[2] * i2 + this.stride[3] * i3
+    }
+    proto.hi = function hi(i0, i1, i2, i3) {
+      return new View(
+        this.data,
+        typeof i0 !== "number" || i0 < 0 ? this.shape[0] : i0 | 0,
+        typeof i1 !== "number" || i1 < 0 ? this.shape[1] : i1 | 0,
+        typeof i2 !== "number" || i2 < 0 ? this.shape[2] : i2 | 0,
+        typeof i3 !== "number" || i3 < 0 ? this.shape[3] : i3 | 0,
+        this.stride[0],
+        this.stride[1],
+        this.stride[2],
+        this.stride[3],
+        this.offset
+      )
+    }
+    proto.lo = function lo(i0, i1, i2, i3) {
+      var b = this.offset,
+        d = 0,
+        a0 = this.shape[0],
+        a1 = this.shape[1],
+        a2 = this.shape[2],
+        a3 = this.shape[3],
+        c0 = this.stride[0],
+        c1 = this.stride[1],
+        c2 = this.stride[2],
+        c3 = this.stride[3]
+      if (typeof i0 === "number" && i0 >= 0) {
+        d = i0 | 0
+        b += c0 * d
+        a0 -= d
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        d = i1 | 0
+        b += c1 * d
+        a1 -= d
+      }
+      if (typeof i2 === "number" && i2 >= 0) {
+        d = i2 | 0
+        b += c2 * d
+        a2 -= d
+      }
+      if (typeof i3 === "number" && i3 >= 0) {
+        d = i3 | 0
+        b += c3 * d
+        a3 -= d
+      }
+      return new View(this.data, a0, a1, a2, a3, c0, c1, c2, c3, b)
+    }
+    proto.step = function step(i0, i1, i2, i3) {
+      var a0 = this.shape[0],
+        a1 = this.shape[1],
+        a2 = this.shape[2],
+        a3 = this.shape[3],
+        b0 = this.stride[0],
+        b1 = this.stride[1],
+        b2 = this.stride[2],
+        b3 = this.stride[3],
+        c = this.offset,
+        d = 0,
+        ceil = Math.ceil
+      if (typeof i0 === "number") {
+        d = i0 | 0
+        if (d < 0) {
+          c += b0 * (a0 - 1)
+          a0 = ceil(-a0 / d)
+        } else {
+          a0 = ceil(a0 / d)
+        }
+        b0 *= d
+      }
+      if (typeof i1 === "number") {
+        d = i1 | 0
+        if (d < 0) {
+          c += b1 * (a1 - 1)
+          a1 = ceil(-a1 / d)
+        } else {
+          a1 = ceil(a1 / d)
+        }
+        b1 *= d
+      }
+      if (typeof i2 === "number") {
+        d = i2 | 0
+        if (d < 0) {
+          c += b2 * (a2 - 1)
+          a2 = ceil(-a2 / d)
+        } else {
+          a2 = ceil(a2 / d)
+        }
+        b2 *= d
+      }
+      if (typeof i3 === "number") {
+        d = i3 | 0
+        if (d < 0) {
+          c += b3 * (a3 - 1)
+          a3 = ceil(-a3 / d)
+        } else {
+          a3 = ceil(a3 / d)
+        }
+        b3 *= d
+      }
+      return new View(this.data, a0, a1, a2, a3, b0, b1, b2, b3, c)
+    }
+    proto.transpose = function transpose(i0, i1, i2, i3) {
+      i0 = i0 === undefined ? 0 : i0 | 0
+      i1 = i1 === undefined ? 1 : i1 | 0
+      i2 = i2 === undefined ? 2 : i2 | 0
+      i3 = i3 === undefined ? 3 : i3 | 0
+      var a = this.shape,
+        b = this.stride
+      return new View(this.data, a[i0], a[i1], a[i2], a[i3], b[i0], b[i1], b[i2], b[i3], this.offset)
+    }
+    proto.pick = function pick(i0, i1, i2, i3) {
+      var a = [],
+        b = [],
+        c = this.offset
+      if (typeof i0 === "number" && i0 >= 0) {
+        c = (c + this.stride[0] * i0) | 0
+      } else {
+        a.push(this.shape[0])
+        b.push(this.stride[0])
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        c = (c + this.stride[1] * i1) | 0
+      } else {
+        a.push(this.shape[1])
+        b.push(this.stride[1])
+      }
+      if (typeof i2 === "number" && i2 >= 0) {
+        c = (c + this.stride[2] * i2) | 0
+      } else {
+        a.push(this.shape[2])
+        b.push(this.stride[2])
+      }
+      if (typeof i3 === "number" && i3 >= 0) {
+        c = (c + this.stride[3] * i3) | 0
+      } else {
+        a.push(this.shape[3])
+        b.push(this.stride[3])
+      }
+      var ctor = CTOR_LIST[a.length + 1]
+      return ctor(this.data, a, b, c)
+    }
+    return function construct(data, shape, stride, offset) {
+      return new View(data, shape[0], shape[1], shape[2], shape[3], stride[0], stride[1], stride[2], stride[3], offset)
+    }
+  },
+  5: function anonymous(dtype, CTOR_LIST, ORDER) {
+    function View(a, b0, b1, b2, b3, b4, c0, c1, c2, c3, c4, d) {
+      this.data = a
+      this.shape = [b0, b1, b2, b3, b4]
+      this.stride = [c0, c1, c2, c3, c4]
+      this.offset = d | 0
+    }
+    var proto = View.prototype
+    proto.dtype = dtype
+    proto.dimension = 5
+    Object.defineProperty(proto, "size", {
+      get: function size() {
+        return this.shape[0] * this.shape[1] * this.shape[2] * this.shape[3] * this.shape[4]
+      },
+    })
+    Object.defineProperty(proto, "order", { get: ORDER })
+    proto.set = function set(i0, i1, i2, i3, i4, v) {
+      return dtype === "generic"
+        ? this.data.set(
+            this.offset +
+              this.stride[0] * i0 +
+              this.stride[1] * i1 +
+              this.stride[2] * i2 +
+              this.stride[3] * i3 +
+              this.stride[4] * i4,
+            v
+          )
+        : (this.data[
+            this.offset +
+              this.stride[0] * i0 +
+              this.stride[1] * i1 +
+              this.stride[2] * i2 +
+              this.stride[3] * i3 +
+              this.stride[4] * i4
+          ] = v)
+    }
+    proto.get = function get(i0, i1, i2, i3, i4) {
+      return dtype === "generic"
+        ? this.data.get(
+            this.offset +
+              this.stride[0] * i0 +
+              this.stride[1] * i1 +
+              this.stride[2] * i2 +
+              this.stride[3] * i3 +
+              this.stride[4] * i4
+          )
+        : this.data[
+            this.offset +
+              this.stride[0] * i0 +
+              this.stride[1] * i1 +
+              this.stride[2] * i2 +
+              this.stride[3] * i3 +
+              this.stride[4] * i4
+          ]
+    }
+    proto.index = function index(i0, i1, i2, i3, i4) {
+      return (
+        this.offset +
+        this.stride[0] * i0 +
+        this.stride[1] * i1 +
+        this.stride[2] * i2 +
+        this.stride[3] * i3 +
+        this.stride[4] * i4
+      )
+    }
+    proto.hi = function hi(i0, i1, i2, i3, i4) {
+      return new View(
+        this.data,
+        typeof i0 !== "number" || i0 < 0 ? this.shape[0] : i0 | 0,
+        typeof i1 !== "number" || i1 < 0 ? this.shape[1] : i1 | 0,
+        typeof i2 !== "number" || i2 < 0 ? this.shape[2] : i2 | 0,
+        typeof i3 !== "number" || i3 < 0 ? this.shape[3] : i3 | 0,
+        typeof i4 !== "number" || i4 < 0 ? this.shape[4] : i4 | 0,
+        this.stride[0],
+        this.stride[1],
+        this.stride[2],
+        this.stride[3],
+        this.stride[4],
+        this.offset
+      )
+    }
+    proto.lo = function lo(i0, i1, i2, i3, i4) {
+      var b = this.offset,
+        d = 0,
+        a0 = this.shape[0],
+        a1 = this.shape[1],
+        a2 = this.shape[2],
+        a3 = this.shape[3],
+        a4 = this.shape[4],
+        c0 = this.stride[0],
+        c1 = this.stride[1],
+        c2 = this.stride[2],
+        c3 = this.stride[3],
+        c4 = this.stride[4]
+      if (typeof i0 === "number" && i0 >= 0) {
+        d = i0 | 0
+        b += c0 * d
+        a0 -= d
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        d = i1 | 0
+        b += c1 * d
+        a1 -= d
+      }
+      if (typeof i2 === "number" && i2 >= 0) {
+        d = i2 | 0
+        b += c2 * d
+        a2 -= d
+      }
+      if (typeof i3 === "number" && i3 >= 0) {
+        d = i3 | 0
+        b += c3 * d
+        a3 -= d
+      }
+      if (typeof i4 === "number" && i4 >= 0) {
+        d = i4 | 0
+        b += c4 * d
+        a4 -= d
+      }
+      return new View(this.data, a0, a1, a2, a3, a4, c0, c1, c2, c3, c4, b)
+    }
+    proto.step = function step(i0, i1, i2, i3, i4) {
+      var a0 = this.shape[0],
+        a1 = this.shape[1],
+        a2 = this.shape[2],
+        a3 = this.shape[3],
+        a4 = this.shape[4],
+        b0 = this.stride[0],
+        b1 = this.stride[1],
+        b2 = this.stride[2],
+        b3 = this.stride[3],
+        b4 = this.stride[4],
+        c = this.offset,
+        d = 0,
+        ceil = Math.ceil
+      if (typeof i0 === "number") {
+        d = i0 | 0
+        if (d < 0) {
+          c += b0 * (a0 - 1)
+          a0 = ceil(-a0 / d)
+        } else {
+          a0 = ceil(a0 / d)
+        }
+        b0 *= d
+      }
+      if (typeof i1 === "number") {
+        d = i1 | 0
+        if (d < 0) {
+          c += b1 * (a1 - 1)
+          a1 = ceil(-a1 / d)
+        } else {
+          a1 = ceil(a1 / d)
+        }
+        b1 *= d
+      }
+      if (typeof i2 === "number") {
+        d = i2 | 0
+        if (d < 0) {
+          c += b2 * (a2 - 1)
+          a2 = ceil(-a2 / d)
+        } else {
+          a2 = ceil(a2 / d)
+        }
+        b2 *= d
+      }
+      if (typeof i3 === "number") {
+        d = i3 | 0
+        if (d < 0) {
+          c += b3 * (a3 - 1)
+          a3 = ceil(-a3 / d)
+        } else {
+          a3 = ceil(a3 / d)
+        }
+        b3 *= d
+      }
+      if (typeof i4 === "number") {
+        d = i4 | 0
+        if (d < 0) {
+          c += b4 * (a4 - 1)
+          a4 = ceil(-a4 / d)
+        } else {
+          a4 = ceil(a4 / d)
+        }
+        b4 *= d
+      }
+      return new View(this.data, a0, a1, a2, a3, a4, b0, b1, b2, b3, b4, c)
+    }
+    proto.transpose = function transpose(i0, i1, i2, i3, i4) {
+      i0 = i0 === undefined ? 0 : i0 | 0
+      i1 = i1 === undefined ? 1 : i1 | 0
+      i2 = i2 === undefined ? 2 : i2 | 0
+      i3 = i3 === undefined ? 3 : i3 | 0
+      i4 = i4 === undefined ? 4 : i4 | 0
+      var a = this.shape,
+        b = this.stride
+      return new View(this.data, a[i0], a[i1], a[i2], a[i3], a[i4], b[i0], b[i1], b[i2], b[i3], b[i4], this.offset)
+    }
+    proto.pick = function pick(i0, i1, i2, i3, i4) {
+      var a = [],
+        b = [],
+        c = this.offset
+      if (typeof i0 === "number" && i0 >= 0) {
+        c = (c + this.stride[0] * i0) | 0
+      } else {
+        a.push(this.shape[0])
+        b.push(this.stride[0])
+      }
+      if (typeof i1 === "number" && i1 >= 0) {
+        c = (c + this.stride[1] * i1) | 0
+      } else {
+        a.push(this.shape[1])
+        b.push(this.stride[1])
+      }
+      if (typeof i2 === "number" && i2 >= 0) {
+        c = (c + this.stride[2] * i2) | 0
+      } else {
+        a.push(this.shape[2])
+        b.push(this.stride[2])
+      }
+      if (typeof i3 === "number" && i3 >= 0) {
+        c = (c + this.stride[3] * i3) | 0
+      } else {
+        a.push(this.shape[3])
+        b.push(this.stride[3])
+      }
+      if (typeof i4 === "number" && i4 >= 0) {
+        c = (c + this.stride[4] * i4) | 0
+      } else {
+        a.push(this.shape[4])
+        b.push(this.stride[4])
+      }
+      var ctor = CTOR_LIST[a.length + 1]
+      return ctor(this.data, a, b, c)
+    }
+    return function construct(data, shape, stride, offset) {
+      return new View(
+        data,
+        shape[0],
+        shape[1],
+        shape[2],
+        shape[3],
+        shape[4],
+        stride[0],
+        stride[1],
+        stride[2],
+        stride[3],
+        stride[4],
+        offset
+      )
+    }
+  },
+}
+
+
+function compileConstructor(inType, inDimension) {
+  var dKey = inDimension === -1 ? 'T' : String(inDimension)
+
+  var procedure = allFns[dKey]
+  if(inDimension === -1) {
+    return procedure(inType)
+  } else if(inDimension === 0) {
+    return procedure(inType, CACHED_CONSTRUCTORS[inType][0])
   }
-
-  //view.set(i0, ..., v):
-  code.push(
-"proto.set=function "+className+"_set("+args.join(",")+",v){")
-  if(useGetters) {
-    code.push("return this.data.set("+index_str+",v)}")
-  } else {
-    code.push("return this.data["+index_str+"]=v}")
-  }
-
-  //view.get(i0, ...):
-  code.push("proto.get=function "+className+"_get("+args.join(",")+"){")
-  if(useGetters) {
-    code.push("return this.data.get("+index_str+")}")
-  } else {
-    code.push("return this.data["+index_str+"]}")
-  }
-
-  //view.index:
-  code.push(
-    "proto.index=function "+className+"_index(", args.join(), "){return "+index_str+"}")
-
-  //view.hi():
-  code.push("proto.hi=function "+className+"_hi("+args.join(",")+"){return new "+className+"(this.data,"+
-    indices.map(function(i) {
-      return ["(typeof i",i,"!=='number'||i",i,"<0)?this.shape[", i, "]:i", i,"|0"].join("")
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "this.stride["+i + "]"
-    }).join(",")+",this.offset)}")
-
-  //view.lo():
-  var a_vars = indices.map(function(i) { return "a"+i+"=this.shape["+i+"]" })
-  var c_vars = indices.map(function(i) { return "c"+i+"=this.stride["+i+"]" })
-  code.push("proto.lo=function "+className+"_lo("+args.join(",")+"){var b=this.offset,d=0,"+a_vars.join(",")+","+c_vars.join(","))
-  for(var i=0; i<dimension; ++i) {
-    code.push(
-"if(typeof i"+i+"==='number'&&i"+i+">=0){\
-d=i"+i+"|0;\
-b+=c"+i+"*d;\
-a"+i+"-=d}")
-  }
-  code.push("return new "+className+"(this.data,"+
-    indices.map(function(i) {
-      return "a"+i
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "c"+i
-    }).join(",")+",b)}")
-
-  //view.step():
-  code.push("proto.step=function "+className+"_step("+args.join(",")+"){var "+
-    indices.map(function(i) {
-      return "a"+i+"=this.shape["+i+"]"
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "b"+i+"=this.stride["+i+"]"
-    }).join(",")+",c=this.offset,d=0,ceil=Math.ceil")
-  for(var i=0; i<dimension; ++i) {
-    code.push(
-"if(typeof i"+i+"==='number'){\
-d=i"+i+"|0;\
-if(d<0){\
-c+=b"+i+"*(a"+i+"-1);\
-a"+i+"=ceil(-a"+i+"/d)\
-}else{\
-a"+i+"=ceil(a"+i+"/d)\
-}\
-b"+i+"*=d\
-}")
-  }
-  code.push("return new "+className+"(this.data,"+
-    indices.map(function(i) {
-      return "a" + i
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "b" + i
-    }).join(",")+",c)}")
-
-  //view.transpose():
-  var tShape = new Array(dimension)
-  var tStride = new Array(dimension)
-  for(var i=0; i<dimension; ++i) {
-    tShape[i] = "a[i"+i+"]"
-    tStride[i] = "b[i"+i+"]"
-  }
-  code.push("proto.transpose=function "+className+"_transpose("+args+"){"+
-    args.map(function(n,idx) { return n + "=(" + n + "===undefined?" + idx + ":" + n + "|0)"}).join(";"),
-    "var a=this.shape,b=this.stride;return new "+className+"(this.data,"+tShape.join(",")+","+tStride.join(",")+",this.offset)}")
-
-  //view.pick():
-  code.push("proto.pick=function "+className+"_pick("+args+"){var a=[],b=[],c=this.offset")
-  for(var i=0; i<dimension; ++i) {
-    code.push("if(typeof i"+i+"==='number'&&i"+i+">=0){c=(c+this.stride["+i+"]*i"+i+")|0}else{a.push(this.shape["+i+"]);b.push(this.stride["+i+"])}")
-  }
-  code.push("var ctor=CTOR_LIST[a.length+1];return ctor(this.data,a,b,c)}")
-
-  //Add return statement
-  code.push("return function construct_"+className+"(data,shape,stride,offset){return new "+className+"(data,"+
-    indices.map(function(i) {
-      return "shape["+i+"]"
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "stride["+i+"]"
-    }).join(",")+",offset)}")
-
-  //Compile procedure
-  var procedure = new Function("CTOR_LIST", "ORDER", code.join("\n"))
-  return procedure(CACHED_CONSTRUCTORS[dtype], order)
+  return procedure(inType, CACHED_CONSTRUCTORS[inType], order)
 }
 
 function arrayDType(data) {
@@ -44011,14 +41588,14 @@ function arrayDType(data) {
         return "int16"
       case "[object Int32Array]":
         return "int32"
+      case "[object Uint8ClampedArray]":
+        return "uint8_clamped"
       case "[object Uint8Array]":
         return "uint8"
       case "[object Uint16Array]":
         return "uint16"
       case "[object Uint32Array]":
         return "uint32"
-      case "[object Uint8ClampedArray]":
-        return "uint8_clamped"
       case "[object BigInt64Array]":
         return "bigint64"
       case "[object BigUint64Array]":
@@ -44032,20 +41609,22 @@ function arrayDType(data) {
 }
 
 var CACHED_CONSTRUCTORS = {
+  "generic":[],
+  "buffer":[],
+  "array":[],
+
+  // typed arrays
   "float32":[],
   "float64":[],
   "int8":[],
   "int16":[],
   "int32":[],
+  "uint8_clamped":[],
   "uint8":[],
   "uint16":[],
   "uint32":[],
-  "array":[],
-  "uint8_clamped":[],
   "bigint64": [],
-  "biguint64": [],
-  "buffer":[],
-  "generic":[]
+  "biguint64": []
 }
 
 ;(function() {
@@ -44080,10 +41659,10 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
       }
     }
   }
-  var dtype = arrayDType(data)
-  var ctor_list = CACHED_CONSTRUCTORS[dtype]
+  var inType = arrayDType(data)
+  var ctor_list = CACHED_CONSTRUCTORS[inType]
   while(ctor_list.length <= d+1) {
-    ctor_list.push(compileConstructor(dtype, ctor_list.length-1))
+    ctor_list.push(compileConstructor(inType, ctor_list.length-1))
   }
   var ctor = ctor_list[d+1]
   return ctor(data, shape, stride, offset)
@@ -44091,7 +41670,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":277,"is-buffer":279}],306:[function(_dereq_,module,exports){
+},{"is-buffer":269}],294:[function(_dereq_,module,exports){
 "use strict"
 
 var doubleBits = _dereq_("double-bits")
@@ -44134,7 +41713,7 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":91}],307:[function(_dereq_,module,exports){
+},{"double-bits":89}],295:[function(_dereq_,module,exports){
 var DEFAULT_NORMALS_EPSILON = 1e-6;
 var DEFAULT_FACE_EPSILON = 1e-6;
 
@@ -44259,7 +41838,7 @@ exports.faceNormals = function(faces, positions, specifiedEpsilon) {
 
 
 
-},{}],308:[function(_dereq_,module,exports){
+},{}],296:[function(_dereq_,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -44351,7 +41930,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],309:[function(_dereq_,module,exports){
+},{}],297:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = quatFromFrame
@@ -44393,7 +41972,7 @@ function quatFromFrame(
   }
   return out
 }
-},{}],310:[function(_dereq_,module,exports){
+},{}],298:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createOrbitController
@@ -44787,7 +42366,7 @@ function createOrbitController(options) {
 
   return result
 }
-},{"./lib/quatFromFrame":309,"filtered-vector":97,"gl-mat4/fromQuat":130,"gl-mat4/invert":141,"gl-mat4/lookAt":142}],311:[function(_dereq_,module,exports){
+},{"./lib/quatFromFrame":297,"filtered-vector":95,"gl-mat4/fromQuat":125,"gl-mat4/invert":136,"gl-mat4/lookAt":137}],299:[function(_dereq_,module,exports){
 /*!
  * pad-left <https://github.com/jonschlinkert/pad-left>
  *
@@ -44803,7 +42382,7 @@ module.exports = function padLeft(str, num, ch) {
   ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
   return repeat(ch, num) + str;
 };
-},{"repeat-string":337}],312:[function(_dereq_,module,exports){
+},{"repeat-string":322}],300:[function(_dereq_,module,exports){
 
 module.exports = parse
 
@@ -44862,7 +42441,7 @@ function parseValues(args) {
 	return numbers ? numbers.map(Number) : []
 }
 
-},{}],313:[function(_dereq_,module,exports){
+},{}],301:[function(_dereq_,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -44873,146 +42452,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],314:[function(_dereq_,module,exports){
-"use strict"
-
-module.exports = permutationSign
-
-var BRUTE_FORCE_CUTOFF = 32
-
-var pool = _dereq_("typedarray-pool")
-
-function permutationSign(p) {
-  var n = p.length
-  if(n < BRUTE_FORCE_CUTOFF) {
-    //Use quadratic algorithm for small n
-    var sgn = 1
-    for(var i=0; i<n; ++i) {
-      for(var j=0; j<i; ++j) {
-        if(p[i] < p[j]) {
-          sgn = -sgn
-        } else if(p[i] === p[j]) {
-          return 0
-        }
-      }
-    }
-    return sgn
-  } else {
-    //Otherwise use linear time algorithm
-    var visited = pool.mallocUint8(n)
-    for(var i=0; i<n; ++i) {
-      visited[i] = 0
-    }
-    var sgn = 1
-    for(var i=0; i<n; ++i) {
-      if(!visited[i]) {
-        var count = 1
-        visited[i] = 1
-        for(var j=p[i]; j!==i; j=p[j]) {
-          if(visited[j]) {
-            pool.freeUint8(visited)
-            return 0
-          }
-          count += 1
-          visited[j] = 1
-        }
-        if(!(count & 1)) {
-          sgn = -sgn
-        }
-      }
-    }
-    pool.freeUint8(visited)
-    return sgn
-  }
-}
-},{"typedarray-pool":372}],315:[function(_dereq_,module,exports){
-"use strict"
-
-var pool = _dereq_("typedarray-pool")
-var inverse = _dereq_("invert-permutation")
-
-function rank(permutation) {
-  var n = permutation.length
-  switch(n) {
-    case 0:
-    case 1:
-      return 0
-    case 2:
-      return permutation[1]
-    default:
-      break
-  }
-  var p = pool.mallocUint32(n)
-  var pinv = pool.mallocUint32(n)
-  var r = 0, s, t, i
-  inverse(permutation, pinv)
-  for(i=0; i<n; ++i) {
-    p[i] = permutation[i]
-  }
-  for(i=n-1; i>0; --i) {
-    t = pinv[i]
-    s = p[i]
-    p[i] = p[t]
-    p[t] = s
-    pinv[i] = pinv[s]
-    pinv[s] = t
-    r = (r + s) * i
-  }
-  pool.freeUint32(pinv)
-  pool.freeUint32(p)
-  return r
-}
-
-function unrank(n, r, p) {
-  switch(n) {
-    case 0:
-      if(p) { return p }
-      return []
-    case 1:
-      if(p) {
-        p[0] = 0
-        return p
-      } else {
-        return [0]
-      }
-    case 2:
-      if(p) {
-        if(r) {
-          p[0] = 0
-          p[1] = 1
-        } else {
-          p[0] = 1
-          p[1] = 0
-        }
-        return p
-      } else {
-        return r ? [0,1] : [1,0]
-      }
-    default:
-      break
-  }
-  p = p || new Array(n)
-  var s, t, i, nf=1
-  p[0] = 0
-  for(i=1; i<n; ++i) {
-    p[i] = i
-    nf = (nf*i)|0
-  }
-  for(i=n-1; i>0; --i) {
-    s = (r / nf)|0
-    r = (r - s * nf)|0
-    nf = (nf / i)|0
-    t = p[i]|0
-    p[i] = p[s]|0
-    p[s] = t|0
-  }
-  return p
-}
-
-exports.rank = rank
-exports.unrank = unrank
-
-},{"invert-permutation":276,"typedarray-pool":372}],316:[function(_dereq_,module,exports){
+},{}],302:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -45143,7 +42583,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":76}],317:[function(_dereq_,module,exports){
+},{"compare-angle":75}],303:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -45199,7 +42639,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":94}],318:[function(_dereq_,module,exports){
+},{"edges-to-adjacency-list":92}],304:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -45404,9 +42844,7 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":317,"edges-to-adjacency-list":94,"planar-dual":316,"point-in-big-polygon":320,"robust-sum":349,"two-product":370,"uniq":374}],319:[function(_dereq_,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"dup":98}],320:[function(_dereq_,module,exports){
+},{"./lib/trim-leaves":303,"edges-to-adjacency-list":92,"planar-dual":302,"point-in-big-polygon":305,"robust-sum":334,"two-product":353,"uniq":357}],305:[function(_dereq_,module,exports){
 module.exports = preprocessPolygon
 
 var orient = _dereq_('robust-orientation')[3]
@@ -45558,7 +42996,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":319,"interval-tree-1d":274,"robust-orientation":344,"slab-decomposition":361}],321:[function(_dereq_,module,exports){
+},{"binary-search-bounds":42,"interval-tree-1d":267,"robust-orientation":329,"slab-decomposition":345}],306:[function(_dereq_,module,exports){
 /*
  * @copyright 2016 Sean Connelly (@voidqk), http://syntheti.cc
  * @license MIT
@@ -45686,7 +43124,7 @@ if (typeof window === 'object')
 
 module.exports = PolyBool;
 
-},{"./lib/build-log":322,"./lib/epsilon":323,"./lib/geojson":324,"./lib/intersecter":325,"./lib/segment-chainer":327,"./lib/segment-selector":328}],322:[function(_dereq_,module,exports){
+},{"./lib/build-log":307,"./lib/epsilon":308,"./lib/geojson":309,"./lib/intersecter":310,"./lib/segment-chainer":312,"./lib/segment-selector":313}],307:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -45801,7 +43239,7 @@ function BuildLog(){
 
 module.exports = BuildLog;
 
-},{}],323:[function(_dereq_,module,exports){
+},{}],308:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -45973,7 +43411,7 @@ function Epsilon(eps){
 
 module.exports = Epsilon;
 
-},{}],324:[function(_dereq_,module,exports){
+},{}],309:[function(_dereq_,module,exports){
 // (c) Copyright 2017, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -46163,7 +43601,7 @@ var GeoJSON = {
 
 module.exports = GeoJSON;
 
-},{}],325:[function(_dereq_,module,exports){
+},{}],310:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -46670,7 +44108,7 @@ function Intersecter(selfIntersection, eps, buildLog){
 
 module.exports = Intersecter;
 
-},{"./linked-list":326}],326:[function(_dereq_,module,exports){
+},{"./linked-list":311}],311:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -46753,7 +44191,7 @@ var LinkedList = {
 
 module.exports = LinkedList;
 
-},{}],327:[function(_dereq_,module,exports){
+},{}],312:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -47007,7 +44445,7 @@ function SegmentChainer(segments, eps, buildLog){
 
 module.exports = SegmentChainer;
 
-},{}],328:[function(_dereq_,module,exports){
+},{}],313:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -47175,7 +44613,7 @@ var SegmentSelector = {
 
 module.exports = SegmentSelector;
 
-},{}],329:[function(_dereq_,module,exports){
+},{}],314:[function(_dereq_,module,exports){
 //Optimized version for triangle closest point
 // Based on Eberly's WildMagick codes
 // http://www.geometrictools.com/LibMathematics/Distance/Distance.html
@@ -47373,7 +44811,7 @@ function closestPoint2d(V0, V1, V2, point, result) {
 
 module.exports = closestPoint2d;
 
-},{}],330:[function(_dereq_,module,exports){
+},{}],315:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -47559,9 +44997,9 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],331:[function(_dereq_,module,exports){
+},{}],316:[function(_dereq_,module,exports){
 module.exports = _dereq_('gl-quat/slerp')
-},{"gl-quat/slerp":162}],332:[function(_dereq_,module,exports){
+},{"gl-quat/slerp":156}],317:[function(_dereq_,module,exports){
 'use strict'
 
 var bnadd = _dereq_('big-rat/add')
@@ -47577,7 +45015,7 @@ function add (a, b) {
   return r
 }
 
-},{"big-rat/add":27}],333:[function(_dereq_,module,exports){
+},{"big-rat/add":26}],318:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = float2rat
@@ -47592,7 +45030,7 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":30}],334:[function(_dereq_,module,exports){
+},{"big-rat":29}],319:[function(_dereq_,module,exports){
 'use strict'
 
 var rat = _dereq_('big-rat')
@@ -47610,7 +45048,7 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":30,"big-rat/mul":39}],335:[function(_dereq_,module,exports){
+},{"big-rat":29,"big-rat/mul":38}],320:[function(_dereq_,module,exports){
 'use strict'
 
 var bnsub = _dereq_('big-rat/sub')
@@ -47626,7 +45064,7 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":41}],336:[function(_dereq_,module,exports){
+},{"big-rat/sub":40}],321:[function(_dereq_,module,exports){
 'use strict'
 
 var compareCell = _dereq_('compare-cell')
@@ -47659,7 +45097,7 @@ function reduceCellComplex(cells) {
   return cells
 }
 
-},{"cell-orientation":62,"compare-cell":77,"compare-oriented-cell":78}],337:[function(_dereq_,module,exports){
+},{"cell-orientation":61,"compare-cell":76,"compare-oriented-cell":77}],322:[function(_dereq_,module,exports){
 /*!
  * repeat-string <https://github.com/jonschlinkert/repeat-string>
  *
@@ -47731,7 +45169,7 @@ function repeat(str, num) {
   return res;
 }
 
-},{}],338:[function(_dereq_,module,exports){
+},{}],323:[function(_dereq_,module,exports){
 (function (global){(function (){
 module.exports =
   global.performance &&
@@ -47742,7 +45180,7 @@ module.exports =
   }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],339:[function(_dereq_,module,exports){
+},{}],324:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = compressExpansion
@@ -47777,7 +45215,7 @@ function compressExpansion(e) {
   e.length = top
   return e
 }
-},{}],340:[function(_dereq_,module,exports){
+},{}],325:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -47787,67 +45225,37 @@ var compress = _dereq_("robust-compress")
 
 var NUM_EXPANDED = 6
 
-function cofactor(m, c) {
-  var result = new Array(m.length-1)
-  for(var i=1; i<m.length; ++i) {
-    var r = result[i-1] = new Array(m.length-1)
-    for(var j=0,k=0; j<m.length; ++j) {
-      if(j === c) {
-        continue
-      }
-      r[k++] = m[i][j]
-    }
-  }
-  return result
-}
-
-function matrix(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = new Array(n)
-    for(var j=0; j<n; ++j) {
-      result[i][j] = ["m[", i, "][", j, "]"].join("")
-    }
-  }
-  return result
-}
-
-function sign(n) {
-  if(n & 1) {
-    return "-"
-  }
-  return ""
-}
-
-function generateSum(expr) {
-  if(expr.length === 1) {
-    return expr[0]
-  } else if(expr.length === 2) {
-    return ["sum(", expr[0], ",", expr[1], ")"].join("")
-  } else {
-    var m = expr.length>>1
-    return ["sum(", generateSum(expr.slice(0, m)), ",", generateSum(expr.slice(m)), ")"].join("")
+function determinant_2(sum, scale, prod, compress) {
+  return function robustDeterminant2(m) {
+    return compress(sum(prod(m[0][0], m[1][1]), prod(-m[0][1], m[1][0])))
   }
 }
 
-function determinant(m) {
-  if(m.length === 2) {
-    return ["sum(prod(", m[0][0], ",", m[1][1], "),prod(-", m[0][1], ",", m[1][0], "))"].join("")
-  } else {
-    var expr = []
-    for(var i=0; i<m.length; ++i) {
-      expr.push(["scale(", determinant(cofactor(m, i)), ",", sign(i), m[0][i], ")"].join(""))
-    }
-    return generateSum(expr)
+function determinant_3(sum, scale, prod, compress) {
+  return function robustDeterminant3(m) {
+    return compress(sum(scale(sum(prod(m[1][1], m[2][2]), prod(-m[1][2], m[2][1])), m[0][0]), sum(scale(sum(prod(m[1][0], m[2][2]), prod(-m[1][2], m[2][0])), -m[0][1]), scale(sum(prod(m[1][0], m[2][1]), prod(-m[1][1], m[2][0])), m[0][2]))))
+  }
+}
+
+function determinant_4(sum, scale, prod, compress) {
+  return function robustDeterminant4(m) {
+    return compress(sum(sum(scale(sum(scale(sum(prod(m[2][2], m[3][3]), prod(-m[2][3], m[3][2])), m[1][1]), sum(scale(sum(prod(m[2][1], m[3][3]), prod(-m[2][3], m[3][1])), -m[1][2]), scale(sum(prod(m[2][1], m[3][2]), prod(-m[2][2], m[3][1])), m[1][3]))), m[0][0]), scale(sum(scale(sum(prod(m[2][2], m[3][3]), prod(-m[2][3], m[3][2])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][3]), prod(-m[2][3], m[3][0])), -m[1][2]), scale(sum(prod(m[2][0], m[3][2]), prod(-m[2][2], m[3][0])), m[1][3]))), -m[0][1])), sum(scale(sum(scale(sum(prod(m[2][1], m[3][3]), prod(-m[2][3], m[3][1])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][3]), prod(-m[2][3], m[3][0])), -m[1][1]), scale(sum(prod(m[2][0], m[3][1]), prod(-m[2][1], m[3][0])), m[1][3]))), m[0][2]), scale(sum(scale(sum(prod(m[2][1], m[3][2]), prod(-m[2][2], m[3][1])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][2]), prod(-m[2][2], m[3][0])), -m[1][1]), scale(sum(prod(m[2][0], m[3][1]), prod(-m[2][1], m[3][0])), m[1][2]))), -m[0][3]))))
+  }
+}
+
+function determinant_5(sum, scale, prod, compress) {
+  return function robustDeterminant5(m) {
+    return compress(sum(sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][2]), sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), -m[2][3]), scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][4]))), m[1][1]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][3]), scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][4]))), -m[1][2])), sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][3]))), -m[1][4]))), m[0][0]), scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][2]), sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), -m[2][3]), scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][3]), scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), m[2][4]))), -m[1][2])), sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][3]))), -m[1][4]))), -m[0][1])), sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][3]), scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][3]), scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), m[2][4]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][3]))), -m[1][4]))), m[0][2]), sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][4]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][4]))), m[1][2]), scale(sum(scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][2]))), -m[1][4]))), -m[0][3]), scale(sum(sum(scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][3]))), m[1][0]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][3]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][3]))), m[1][2]), scale(sum(scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][2]))), -m[1][3]))), m[0][4])))))
   }
 }
 
 function compileDeterminant(n) {
-  var proc = new Function("sum", "scale", "prod", "compress", [
-    "function robustDeterminant",n, "(m){return compress(", 
-      determinant(matrix(n)),
-    ")};return robustDeterminant", n].join(""))
-  return proc(robustSum, robustScale, twoProduct, compress)
+  var fn =
+    n === 2 ? determinant_2 :
+    n === 3 ? determinant_3 :
+    n === 4 ? determinant_4 :
+    n === 5 ? determinant_5 : undefined
+  return fn(robustSum, robustScale, twoProduct, compress)
 }
 
 var CACHE = [
@@ -47855,25 +45263,33 @@ var CACHE = [
   function robustDeterminant1(m) { return [m[0][0]] }
 ]
 
+function proc(det0, det1, det2, det3, det4, det5, CACHE, gen) {
+  return function robustDeterminant(m) {
+    switch (m.length) {
+      case 0:
+        return det0(m)
+      case 1:
+        return det1(m)
+      case 2:
+        return det2(m)
+      case 3:
+        return det3(m)
+      case 4:
+        return det4(m)
+      case 5:
+        return det5(m)
+    }
+    var det = CACHE[m.length]
+    if (!det) det = CACHE[m.length] = gen(m.length)
+    return det(m)
+  }
+}
+
 function generateDispatch() {
   while(CACHE.length < NUM_EXPANDED) {
     CACHE.push(compileDeterminant(CACHE.length))
   }
-  var procArgs = []
-  var code = ["function robustDeterminant(m){switch(m.length){"]
-  for(var i=0; i<NUM_EXPANDED; ++i) {
-    procArgs.push("det" + i)
-    code.push("case ", i, ":return det", i, "(m);")
-  }
-  code.push("}\
-var det=CACHE[m.length];\
-if(!det)\
-det=CACHE[m.length]=gen(m.length);\
-return det(m);\
-}\
-return robustDeterminant")
-  procArgs.push("CACHE", "gen", code.join(""))
-  var proc = Function.apply(undefined, procArgs)
+
   module.exports = proc.apply(undefined, CACHE.concat([CACHE, compileDeterminant]))
   for(var i=0; i<CACHE.length; ++i) {
     module.exports[i] = CACHE[i]
@@ -47881,7 +45297,7 @@ return robustDeterminant")
 }
 
 generateDispatch()
-},{"robust-compress":339,"robust-scale":346,"robust-sum":349,"two-product":370}],341:[function(_dereq_,module,exports){
+},{"robust-compress":324,"robust-scale":331,"robust-sum":334,"two-product":353}],326:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -47896,7 +45312,7 @@ function robustDotProduct(a, b) {
   }
   return r
 }
-},{"robust-sum":349,"two-product":370}],342:[function(_dereq_,module,exports){
+},{"robust-sum":334,"two-product":353}],327:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -47906,121 +45322,146 @@ var robustScale = _dereq_("robust-scale")
 
 var NUM_EXPAND = 6
 
-function cofactor(m, c) {
-  var result = new Array(m.length-1)
-  for(var i=1; i<m.length; ++i) {
-    var r = result[i-1] = new Array(m.length-1)
-    for(var j=0,k=0; j<m.length; ++j) {
-      if(j === c) {
-        continue
-      }
-      r[k++] = m[i][j]
-    }
-  }
-  return result
-}
-
-function matrix(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = new Array(n)
-    for(var j=0; j<n; ++j) {
-      result[i][j] = ["m", j, "[", (n-i-2), "]"].join("")
-    }
-  }
-  return result
-}
-
-function generateSum(expr) {
-  if(expr.length === 1) {
-    return expr[0]
-  } else if(expr.length === 2) {
-    return ["sum(", expr[0], ",", expr[1], ")"].join("")
-  } else {
-    var m = expr.length>>1
-    return ["sum(", generateSum(expr.slice(0, m)), ",", generateSum(expr.slice(m)), ")"].join("")
-  }
-}
-
-function makeProduct(a, b) {
-  if(a.charAt(0) === "m") {
-    if(b.charAt(0) === "w") {
-      var toks = a.split("[")
-      return ["w", b.substr(1), "m", toks[0].substr(1)].join("")
-    } else {
-      return ["prod(", a, ",", b, ")"].join("")
-    }
-  } else {
-    return makeProduct(b, a)
-  }
-}
-
-function sign(s) {
-  if(s & 1 !== 0) {
-    return "-"
-  }
-  return ""
-}
-
-function determinant(m) {
-  if(m.length === 2) {
-    return [["diff(", makeProduct(m[0][0], m[1][1]), ",", makeProduct(m[1][0], m[0][1]), ")"].join("")]
-  } else {
-    var expr = []
-    for(var i=0; i<m.length; ++i) {
-      expr.push(["scale(", generateSum(determinant(cofactor(m, i))), ",", sign(i), m[0][i], ")"].join(""))
-    }
-    return expr
-  }
-}
-
-function makeSquare(d, n) {
-  var terms = []
-  for(var i=0; i<n-2; ++i) {
-    terms.push(["prod(m", d, "[", i, "],m", d, "[", i, "])"].join(""))
-  }
-  return generateSum(terms)
-}
-
 function orientation(n) {
-  var pos = []
-  var neg = []
-  var m = matrix(n)
-  for(var i=0; i<n; ++i) {
-    m[0][i] = "1"
-    m[n-1][i] = "w"+i
-  } 
-  for(var i=0; i<n; ++i) {
-    if((i&1)===0) {
-      pos.push.apply(pos,determinant(cofactor(m, i)))
-    } else {
-      neg.push.apply(neg,determinant(cofactor(m, i)))
-    }
-  }
-  var posExpr = generateSum(pos)
-  var negExpr = generateSum(neg)
-  var funcName = "exactInSphere" + n
-  var funcArgs = []
-  for(var i=0; i<n; ++i) {
-    funcArgs.push("m" + i)
-  }
-  var code = ["function ", funcName, "(", funcArgs.join(), "){"]
-  for(var i=0; i<n; ++i) {
-    code.push("var w",i,"=",makeSquare(i,n),";")
-    for(var j=0; j<n; ++j) {
-      if(j !== i) {
-        code.push("var w",i,"m",j,"=scale(w",i,",m",j,"[0]);")
-      }
-    }
-  }
-  code.push("var p=", posExpr, ",n=", negExpr, ",d=diff(p,n);return d[d.length-1];}return ", funcName)
-  var proc = new Function("sum", "diff", "prod", "scale", code.join(""))
-  return proc(robustSum, robustDiff, twoProduct, robustScale)
+  var fn =
+    n === 3 ? inSphere3 :
+    n === 4 ? inSphere4 :
+    n === 5 ? inSphere5 : inSphere6;
+
+  return fn(robustSum, robustDiff, twoProduct, robustScale)
 }
 
 function inSphere0() { return 0 }
 function inSphere1() { return 0 }
 function inSphere2() { return 0 }
+
+function inSphere3(sum, diff, prod, scale) {
+  function exactInSphere3(m0, m1, m2) {
+    var w0 = prod(m0[0], m0[0])
+    var w0m1 = scale(w0, m1[0])
+    var w0m2 = scale(w0, m2[0])
+    var w1 = prod(m1[0], m1[0])
+    var w1m0 = scale(w1, m0[0])
+    var w1m2 = scale(w1, m2[0])
+    var w2 = prod(m2[0], m2[0])
+    var w2m0 = scale(w2, m0[0])
+    var w2m1 = scale(w2, m1[0])
+    var p = sum(diff(w2m1, w1m2), diff(w1m0, w0m1))
+    var n = diff(w2m0, w0m2)
+    var d = diff(p, n)
+    return d[d.length - 1]
+  }
+  return exactInSphere3
+}
+
+function inSphere4(sum, diff, prod, scale) {
+  function exactInSphere4(m0, m1, m2, m3) {
+    var w0 = sum(prod(m0[0], m0[0]), prod(m0[1], m0[1]))
+    var w0m1 = scale(w0, m1[0])
+    var w0m2 = scale(w0, m2[0])
+    var w0m3 = scale(w0, m3[0])
+    var w1 = sum(prod(m1[0], m1[0]), prod(m1[1], m1[1]))
+    var w1m0 = scale(w1, m0[0])
+    var w1m2 = scale(w1, m2[0])
+    var w1m3 = scale(w1, m3[0])
+    var w2 = sum(prod(m2[0], m2[0]), prod(m2[1], m2[1]))
+    var w2m0 = scale(w2, m0[0])
+    var w2m1 = scale(w2, m1[0])
+    var w2m3 = scale(w2, m3[0])
+    var w3 = sum(prod(m3[0], m3[0]), prod(m3[1], m3[1]))
+    var w3m0 = scale(w3, m0[0])
+    var w3m1 = scale(w3, m1[0])
+    var w3m2 = scale(w3, m2[0])
+    var p = sum(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))))
+    var n = sum(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))))
+    var d = diff(p, n)
+    return d[d.length - 1]
+  }
+  return exactInSphere4
+}
+
+
+function inSphere5(sum, diff, prod, scale) {
+  function exactInSphere5(m0, m1, m2, m3, m4) {
+    var w0 = sum(prod(m0[0], m0[0]), sum(prod(m0[1], m0[1]), prod(m0[2], m0[2])))
+    var w0m1 = scale(w0, m1[0])
+    var w0m2 = scale(w0, m2[0])
+    var w0m3 = scale(w0, m3[0])
+    var w0m4 = scale(w0, m4[0])
+    var w1 = sum(prod(m1[0], m1[0]), sum(prod(m1[1], m1[1]), prod(m1[2], m1[2])))
+    var w1m0 = scale(w1, m0[0])
+    var w1m2 = scale(w1, m2[0])
+    var w1m3 = scale(w1, m3[0])
+    var w1m4 = scale(w1, m4[0])
+    var w2 = sum(prod(m2[0], m2[0]), sum(prod(m2[1], m2[1]), prod(m2[2], m2[2])))
+    var w2m0 = scale(w2, m0[0])
+    var w2m1 = scale(w2, m1[0])
+    var w2m3 = scale(w2, m3[0])
+    var w2m4 = scale(w2, m4[0])
+    var w3 = sum(prod(m3[0], m3[0]), sum(prod(m3[1], m3[1]), prod(m3[2], m3[2])))
+    var w3m0 = scale(w3, m0[0])
+    var w3m1 = scale(w3, m1[0])
+    var w3m2 = scale(w3, m2[0])
+    var w3m4 = scale(w3, m4[0])
+    var w4 = sum(prod(m4[0], m4[0]), sum(prod(m4[1], m4[1]), prod(m4[2], m4[2])))
+    var w4m0 = scale(w4, m0[0])
+    var w4m1 = scale(w4, m1[0])
+    var w4m2 = scale(w4, m2[0])
+    var w4m3 = scale(w4, m3[0])
+    var p = sum(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), m1[2]), sum(scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), -m2[2]), scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), m3[2]))), sum(scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), -m4[2]), sum(scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), m0[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m1[2])))), sum(sum(scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), m3[2]), sum(scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), -m4[2]), scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), m0[2]))), sum(scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m1[2]), sum(scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m3[2])))))
+    var n = sum(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), m0[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m2[2])), sum(scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m4[2]))), sum(sum(scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), m0[2]), scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), -m1[2])), sum(scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m4[2]))))
+    var d = diff(p, n)
+    return d[d.length - 1]
+  }
+
+    return exactInSphere5
+}
+
+function inSphere6(sum, diff, prod, scale) {
+  function exactInSphere6(m0, m1, m2, m3, m4, m5) {
+    var w0 = sum(sum(prod(m0[0], m0[0]), prod(m0[1], m0[1])), sum(prod(m0[2], m0[2]), prod(m0[3], m0[3])))
+    var w0m1 = scale(w0, m1[0])
+    var w0m2 = scale(w0, m2[0])
+    var w0m3 = scale(w0, m3[0])
+    var w0m4 = scale(w0, m4[0])
+    var w0m5 = scale(w0, m5[0])
+    var w1 = sum(sum(prod(m1[0], m1[0]), prod(m1[1], m1[1])), sum(prod(m1[2], m1[2]), prod(m1[3], m1[3])))
+    var w1m0 = scale(w1, m0[0])
+    var w1m2 = scale(w1, m2[0])
+    var w1m3 = scale(w1, m3[0])
+    var w1m4 = scale(w1, m4[0])
+    var w1m5 = scale(w1, m5[0])
+    var w2 = sum(sum(prod(m2[0], m2[0]), prod(m2[1], m2[1])), sum(prod(m2[2], m2[2]), prod(m2[3], m2[3])))
+    var w2m0 = scale(w2, m0[0])
+    var w2m1 = scale(w2, m1[0])
+    var w2m3 = scale(w2, m3[0])
+    var w2m4 = scale(w2, m4[0])
+    var w2m5 = scale(w2, m5[0])
+    var w3 = sum(sum(prod(m3[0], m3[0]), prod(m3[1], m3[1])), sum(prod(m3[2], m3[2]), prod(m3[3], m3[3])))
+    var w3m0 = scale(w3, m0[0])
+    var w3m1 = scale(w3, m1[0])
+    var w3m2 = scale(w3, m2[0])
+    var w3m4 = scale(w3, m4[0])
+    var w3m5 = scale(w3, m5[0])
+    var w4 = sum(sum(prod(m4[0], m4[0]), prod(m4[1], m4[1])), sum(prod(m4[2], m4[2]), prod(m4[3], m4[3])))
+    var w4m0 = scale(w4, m0[0])
+    var w4m1 = scale(w4, m1[0])
+    var w4m2 = scale(w4, m2[0])
+    var w4m3 = scale(w4, m3[0])
+    var w4m5 = scale(w4, m5[0])
+    var w5 = sum(sum(prod(m5[0], m5[0]), prod(m5[1], m5[1])), sum(prod(m5[2], m5[2]), prod(m5[3], m5[3])))
+    var w5m0 = scale(w5, m0[0])
+    var w5m1 = scale(w5, m1[0])
+    var w5m2 = scale(w5, m2[0])
+    var w5m3 = scale(w5, m3[0])
+    var w5m4 = scale(w5, m4[0])
+    var p = sum(sum(sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m3[1]), sum(scale(diff(w5m3, w3m5), -m4[1]), scale(diff(w4m3, w3m4), m5[1]))), m2[2]), scale(sum(scale(diff(w5m4, w4m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m4[1]), scale(diff(w4m2, w2m4), m5[1]))), -m3[2])), sum(scale(sum(scale(diff(w5m3, w3m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m3[1]), scale(diff(w3m2, w2m3), m5[1]))), m4[2]), scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), -m5[2]))), m1[3]), sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m3[1]), sum(scale(diff(w5m3, w3m5), -m4[1]), scale(diff(w4m3, w3m4), m5[1]))), m1[2]), scale(sum(scale(diff(w5m4, w4m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m4[1]), scale(diff(w4m1, w1m4), m5[1]))), -m3[2])), sum(scale(sum(scale(diff(w5m3, w3m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m3[1]), scale(diff(w3m1, w1m3), m5[1]))), m4[2]), scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), -m5[2]))), -m2[3]), scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m4[1]), scale(diff(w4m2, w2m4), m5[1]))), m1[2]), scale(sum(scale(diff(w5m4, w4m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m4[1]), scale(diff(w4m1, w1m4), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m2[1]), scale(diff(w2m1, w1m2), m5[1]))), m4[2]), scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), -m5[2]))), m3[3]))), sum(sum(scale(sum(sum(scale(sum(scale(diff(w5m3, w3m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m3[1]), scale(diff(w3m2, w2m3), m5[1]))), m1[2]), scale(sum(scale(diff(w5m3, w3m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m3[1]), scale(diff(w3m1, w1m3), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m2[1]), scale(diff(w2m1, w1m2), m5[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), -m5[2]))), -m4[3]), scale(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), m1[2]), scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), -m2[2])), sum(scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), -m4[2]))), m5[3])), sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m3[1]), sum(scale(diff(w5m3, w3m5), -m4[1]), scale(diff(w4m3, w3m4), m5[1]))), m1[2]), scale(sum(scale(diff(w5m4, w4m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m4[1]), scale(diff(w4m1, w1m4), m5[1]))), -m3[2])), sum(scale(sum(scale(diff(w5m3, w3m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m3[1]), scale(diff(w3m1, w1m3), m5[1]))), m4[2]), scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), -m5[2]))), m0[3]), scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m3[1]), sum(scale(diff(w5m3, w3m5), -m4[1]), scale(diff(w4m3, w3m4), m5[1]))), m0[2]), scale(sum(scale(diff(w5m4, w4m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m4[1]), scale(diff(w4m0, w0m4), m5[1]))), -m3[2])), sum(scale(sum(scale(diff(w5m3, w3m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m3[1]), scale(diff(w3m0, w0m3), m5[1]))), m4[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m5[2]))), -m1[3])))), sum(sum(sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m4[1]), scale(diff(w4m1, w1m4), m5[1]))), m0[2]), scale(sum(scale(diff(w5m4, w4m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m4[1]), scale(diff(w4m0, w0m4), m5[1]))), -m1[2])), sum(scale(sum(scale(diff(w5m1, w1m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m1[1]), scale(diff(w1m0, w0m1), m5[1]))), m4[2]), scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), -m5[2]))), m3[3]), scale(sum(sum(scale(sum(scale(diff(w5m3, w3m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m3[1]), scale(diff(w3m1, w1m3), m5[1]))), m0[2]), scale(sum(scale(diff(w5m3, w3m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m3[1]), scale(diff(w3m0, w0m3), m5[1]))), -m1[2])), sum(scale(sum(scale(diff(w5m1, w1m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m1[1]), scale(diff(w1m0, w0m1), m5[1]))), m3[2]), scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), -m5[2]))), -m4[3])), sum(scale(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), m0[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m1[2])), sum(scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), m3[2]), scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), -m4[2]))), m5[3]), scale(sum(sum(scale(sum(scale(diff(w5m3, w3m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m3[1]), scale(diff(w3m2, w2m3), m5[1]))), m1[2]), scale(sum(scale(diff(w5m3, w3m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m3[1]), scale(diff(w3m1, w1m3), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m2[1]), scale(diff(w2m1, w1m2), m5[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), -m5[2]))), m0[3]))), sum(sum(scale(sum(sum(scale(sum(scale(diff(w5m3, w3m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m3[1]), scale(diff(w3m2, w2m3), m5[1]))), m0[2]), scale(sum(scale(diff(w5m3, w3m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m3[1]), scale(diff(w3m0, w0m3), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m2[1]), scale(diff(w2m0, w0m2), m5[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m5[2]))), -m1[3]), scale(sum(sum(scale(sum(scale(diff(w5m3, w3m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m3[1]), scale(diff(w3m1, w1m3), m5[1]))), m0[2]), scale(sum(scale(diff(w5m3, w3m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m3[1]), scale(diff(w3m0, w0m3), m5[1]))), -m1[2])), sum(scale(sum(scale(diff(w5m1, w1m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m1[1]), scale(diff(w1m0, w0m1), m5[1]))), m3[2]), scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), -m5[2]))), m2[3])), sum(scale(sum(sum(scale(sum(scale(diff(w5m2, w2m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m2[1]), scale(diff(w2m1, w1m2), m5[1]))), m0[2]), scale(sum(scale(diff(w5m2, w2m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m2[1]), scale(diff(w2m0, w0m2), m5[1]))), -m1[2])), sum(scale(sum(scale(diff(w5m1, w1m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m1[1]), scale(diff(w1m0, w0m1), m5[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m5[2]))), -m3[3]), scale(sum(sum(scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), m0[2]), scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m1[2])), sum(scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m3[2]))), m5[3])))))
+    var n = sum(sum(sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m3[1]), sum(scale(diff(w5m3, w3m5), -m4[1]), scale(diff(w4m3, w3m4), m5[1]))), m2[2]), scale(sum(scale(diff(w5m4, w4m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m4[1]), scale(diff(w4m2, w2m4), m5[1]))), -m3[2])), sum(scale(sum(scale(diff(w5m3, w3m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m3[1]), scale(diff(w3m2, w2m3), m5[1]))), m4[2]), scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), -m5[2]))), m0[3]), sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m3[1]), sum(scale(diff(w5m3, w3m5), -m4[1]), scale(diff(w4m3, w3m4), m5[1]))), m0[2]), scale(sum(scale(diff(w5m4, w4m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m4[1]), scale(diff(w4m0, w0m4), m5[1]))), -m3[2])), sum(scale(sum(scale(diff(w5m3, w3m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m3[1]), scale(diff(w3m0, w0m3), m5[1]))), m4[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m5[2]))), -m2[3]), scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m4[1]), scale(diff(w4m2, w2m4), m5[1]))), m0[2]), scale(sum(scale(diff(w5m4, w4m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m4[1]), scale(diff(w4m0, w0m4), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m2[1]), scale(diff(w2m0, w0m2), m5[1]))), m4[2]), scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), -m5[2]))), m3[3]))), sum(sum(scale(sum(sum(scale(sum(scale(diff(w5m3, w3m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m3[1]), scale(diff(w3m2, w2m3), m5[1]))), m0[2]), scale(sum(scale(diff(w5m3, w3m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m3[1]), scale(diff(w3m0, w0m3), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m2[1]), scale(diff(w2m0, w0m2), m5[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m5[2]))), -m4[3]), scale(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), m0[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m2[2])), sum(scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m4[2]))), m5[3])), sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m4[1]), scale(diff(w4m2, w2m4), m5[1]))), m1[2]), scale(sum(scale(diff(w5m4, w4m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m4[1]), scale(diff(w4m1, w1m4), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m2[1]), scale(diff(w2m1, w1m2), m5[1]))), m4[2]), scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), -m5[2]))), m0[3]), scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m2[1]), sum(scale(diff(w5m2, w2m5), -m4[1]), scale(diff(w4m2, w2m4), m5[1]))), m0[2]), scale(sum(scale(diff(w5m4, w4m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m4[1]), scale(diff(w4m0, w0m4), m5[1]))), -m2[2])), sum(scale(sum(scale(diff(w5m2, w2m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m2[1]), scale(diff(w2m0, w0m2), m5[1]))), m4[2]), scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), -m5[2]))), -m1[3])))), sum(sum(sum(scale(sum(sum(scale(sum(scale(diff(w5m4, w4m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m4[1]), scale(diff(w4m1, w1m4), m5[1]))), m0[2]), scale(sum(scale(diff(w5m4, w4m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m4[1]), scale(diff(w4m0, w0m4), m5[1]))), -m1[2])), sum(scale(sum(scale(diff(w5m1, w1m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m1[1]), scale(diff(w1m0, w0m1), m5[1]))), m4[2]), scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), -m5[2]))), m2[3]), scale(sum(sum(scale(sum(scale(diff(w5m2, w2m5), m1[1]), sum(scale(diff(w5m1, w1m5), -m2[1]), scale(diff(w2m1, w1m2), m5[1]))), m0[2]), scale(sum(scale(diff(w5m2, w2m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m2[1]), scale(diff(w2m0, w0m2), m5[1]))), -m1[2])), sum(scale(sum(scale(diff(w5m1, w1m5), m0[1]), sum(scale(diff(w5m0, w0m5), -m1[1]), scale(diff(w1m0, w0m1), m5[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m5[2]))), -m4[3])), sum(scale(sum(sum(scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), m0[2]), scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), -m1[2])), sum(scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m4[2]))), m5[3]), scale(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), m1[2]), scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), -m2[2])), sum(scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), -m4[2]))), m0[3]))), sum(sum(scale(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m2[1]), sum(scale(diff(w4m2, w2m4), -m3[1]), scale(diff(w3m2, w2m3), m4[1]))), m0[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m2[2])), sum(scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), m3[2]), scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m4[2]))), -m1[3]), scale(sum(sum(scale(sum(scale(diff(w4m3, w3m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m3[1]), scale(diff(w3m1, w1m3), m4[1]))), m0[2]), scale(sum(scale(diff(w4m3, w3m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m3[1]), scale(diff(w3m0, w0m3), m4[1]))), -m1[2])), sum(scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), m3[2]), scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), -m4[2]))), m2[3])), sum(scale(sum(sum(scale(sum(scale(diff(w4m2, w2m4), m1[1]), sum(scale(diff(w4m1, w1m4), -m2[1]), scale(diff(w2m1, w1m2), m4[1]))), m0[2]), scale(sum(scale(diff(w4m2, w2m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m2[1]), scale(diff(w2m0, w0m2), m4[1]))), -m1[2])), sum(scale(sum(scale(diff(w4m1, w1m4), m0[1]), sum(scale(diff(w4m0, w0m4), -m1[1]), scale(diff(w1m0, w0m1), m4[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m4[2]))), -m3[3]), scale(sum(sum(scale(sum(scale(diff(w3m2, w2m3), m1[1]), sum(scale(diff(w3m1, w1m3), -m2[1]), scale(diff(w2m1, w1m2), m3[1]))), m0[2]), scale(sum(scale(diff(w3m2, w2m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m2[1]), scale(diff(w2m0, w0m2), m3[1]))), -m1[2])), sum(scale(sum(scale(diff(w3m1, w1m3), m0[1]), sum(scale(diff(w3m0, w0m3), -m1[1]), scale(diff(w1m0, w0m1), m3[1]))), m2[2]), scale(sum(scale(diff(w2m1, w1m2), m0[1]), sum(scale(diff(w2m0, w0m2), -m1[1]), scale(diff(w1m0, w0m1), m2[1]))), -m3[2]))), m4[3])))))
+    var d = diff(p, n)
+    return d[d.length - 1]
+  }
+  return exactInSphere6
+}
 
 var CACHED = [
   inSphere0,
@@ -48036,26 +45477,37 @@ function slowInSphere(args) {
   return proc.apply(undefined, args)
 }
 
+function proc(slow, o0, o1, o2, o3, o4, o5, o6) {
+  function testInSphere(a0, a1, a2, a3, a4, a5) {
+    switch (arguments.length) {
+      case 0:
+      case 1:
+        return 0;
+      case 2:
+        return o2(a0, a1)
+      case 3:
+        return o3(a0, a1, a2)
+      case 4:
+        return o4(a0, a1, a2, a3)
+      case 5:
+        return o5(a0, a1, a2, a3, a4)
+      case 6:
+        return o6(a0, a1, a2, a3, a4, a5)
+    }
+
+    var s = new Array(arguments.length)
+    for (var i = 0; i < arguments.length; ++i) {
+      s[i] = arguments[i]
+    }
+    return slow(s)
+  }
+  return testInSphere
+}
+
 function generateInSphereTest() {
   while(CACHED.length <= NUM_EXPAND) {
     CACHED.push(orientation(CACHED.length))
   }
-  var args = []
-  var procArgs = ["slow"]
-  for(var i=0; i<=NUM_EXPAND; ++i) {
-    args.push("a" + i)
-    procArgs.push("o" + i)
-  }
-  var code = [
-    "function testInSphere(", args.join(), "){switch(arguments.length){case 0:case 1:return 0;"
-  ]
-  for(var i=2; i<=NUM_EXPAND; ++i) {
-    code.push("case ", i, ":return o", i, "(", args.slice(0, i).join(), ");")
-  }
-  code.push("}var s=new Array(arguments.length);for(var i=0;i<arguments.length;++i){s[i]=arguments[i]};return slow(s);}return testInSphere")
-  procArgs.push(code.join(""))
-
-  var proc = Function.apply(undefined, procArgs)
 
   module.exports = proc.apply(undefined, [slowInSphere].concat(CACHED))
   for(var i=0; i<=NUM_EXPAND; ++i) {
@@ -48064,7 +45516,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":346,"robust-subtract":348,"robust-sum":349,"two-product":370}],343:[function(_dereq_,module,exports){
+},{"robust-scale":331,"robust-subtract":333,"robust-sum":334,"two-product":353}],328:[function(_dereq_,module,exports){
 "use strict"
 
 var determinant = _dereq_("robust-determinant")
@@ -48072,43 +45524,54 @@ var determinant = _dereq_("robust-determinant")
 var NUM_EXPAND = 6
 
 function generateSolver(n) {
-  var funcName = "robustLinearSolve" + n + "d"
-  var code = ["function ", funcName, "(A,b){return ["]
-  for(var i=0; i<n; ++i) {
-    code.push("det([")
-    for(var j=0; j<n; ++j) {
-      if(j > 0) {
-        code.push(",")
-      }
-      code.push("[")
-      for(var k=0; k<n; ++k) {
-        if(k > 0) {
-          code.push(",")
-        }
-        if(k === i) {
-          code.push("+b[", j, "]")
-        } else {
-          code.push("+A[", j, "][", k, "]")
-        }
-      }
-      code.push("]")
-    }
-    code.push("]),")
-  }
-  code.push("det(A)]}return ", funcName)
-  var proc = new Function("det", code.join(""))
+  var fn =
+    n === 2 ? solve2d :
+    n === 3 ? solve3d :
+    n === 4 ? solve4d :
+    n === 5 ? solve5d : solve6d
+
   if(n < 6) {
-    return proc(determinant[n])
+    return fn(determinant[n])
   }
-  return proc(determinant)
+  return fn(determinant)
 }
 
 function robustLinearSolve0d() {
-  return [ 0 ]
+  return [ [ 0 ] ]
 }
 
 function robustLinearSolve1d(A, b) {
   return [ [ b[0] ], [ A[0][0] ] ]
+}
+
+function solve2d(det) {
+  return function robustLinearSolve2d(A, b) {
+    return [det([[+b[0], +A[0][1]], [+b[1], +A[1][1]]]), det([[+A[0][0], +b[0]], [+A[1][0], +b[1]]]), det(A)]
+  }
+}
+
+function solve3d(det) {
+  return function robustLinearSolve3d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2]], [+b[1], +A[1][1], +A[1][2]], [+b[2], +A[2][1], +A[2][2]]]), det([[+A[0][0], +b[0], +A[0][2]], [+A[1][0], +b[1], +A[1][2]], [+A[2][0], +b[2], +A[2][2]]]), det([[+A[0][0], +A[0][1], +b[0]], [+A[1][0], +A[1][1], +b[1]], [+A[2][0], +A[2][1], +b[2]]]), det(A)]
+  }
+}
+
+function solve4d(det) {
+  return function robustLinearSolve4d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3]], [+b[1], +A[1][1], +A[1][2], +A[1][3]], [+b[2], +A[2][1], +A[2][2], +A[2][3]], [+b[3], +A[3][1], +A[3][2], +A[3][3]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3]], [+A[1][0], +b[1], +A[1][2], +A[1][3]], [+A[2][0], +b[2], +A[2][2], +A[2][3]], [+A[3][0], +b[3], +A[3][2], +A[3][3]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3]], [+A[1][0], +A[1][1], +b[1], +A[1][3]], [+A[2][0], +A[2][1], +b[2], +A[2][3]], [+A[3][0], +A[3][1], +b[3], +A[3][3]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +b[3]]]), det(A)]
+  }
+}
+
+function solve5d(det) {
+  return function robustLinearSolve5d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3], +A[0][4]], [+b[1], +A[1][1], +A[1][2], +A[1][3], +A[1][4]], [+b[2], +A[2][1], +A[2][2], +A[2][3], +A[2][4]], [+b[3], +A[3][1], +A[3][2], +A[3][3], +A[3][4]], [+b[4], +A[4][1], +A[4][2], +A[4][3], +A[4][4]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3], +A[0][4]], [+A[1][0], +b[1], +A[1][2], +A[1][3], +A[1][4]], [+A[2][0], +b[2], +A[2][2], +A[2][3], +A[2][4]], [+A[3][0], +b[3], +A[3][2], +A[3][3], +A[3][4]], [+A[4][0], +b[4], +A[4][2], +A[4][3], +A[4][4]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3], +A[0][4]], [+A[1][0], +A[1][1], +b[1], +A[1][3], +A[1][4]], [+A[2][0], +A[2][1], +b[2], +A[2][3], +A[2][4]], [+A[3][0], +A[3][1], +b[3], +A[3][3], +A[3][4]], [+A[4][0], +A[4][1], +b[4], +A[4][3], +A[4][4]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0], +A[0][4]], [+A[1][0], +A[1][1], +A[1][2], +b[1], +A[1][4]], [+A[2][0], +A[2][1], +A[2][2], +b[2], +A[2][4]], [+A[3][0], +A[3][1], +A[3][2], +b[3], +A[3][4]], [+A[4][0], +A[4][1], +A[4][2], +b[4], +A[4][4]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +b[3]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +b[4]]]), det(A)]
+  }
+}
+
+function solve6d(det) {
+  return function robustLinearSolve6d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3], +A[0][4], +A[0][5]], [+b[1], +A[1][1], +A[1][2], +A[1][3], +A[1][4], +A[1][5]], [+b[2], +A[2][1], +A[2][2], +A[2][3], +A[2][4], +A[2][5]], [+b[3], +A[3][1], +A[3][2], +A[3][3], +A[3][4], +A[3][5]], [+b[4], +A[4][1], +A[4][2], +A[4][3], +A[4][4], +A[4][5]], [+b[5], +A[5][1], +A[5][2], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3], +A[0][4], +A[0][5]], [+A[1][0], +b[1], +A[1][2], +A[1][3], +A[1][4], +A[1][5]], [+A[2][0], +b[2], +A[2][2], +A[2][3], +A[2][4], +A[2][5]], [+A[3][0], +b[3], +A[3][2], +A[3][3], +A[3][4], +A[3][5]], [+A[4][0], +b[4], +A[4][2], +A[4][3], +A[4][4], +A[4][5]], [+A[5][0], +b[5], +A[5][2], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3], +A[0][4], +A[0][5]], [+A[1][0], +A[1][1], +b[1], +A[1][3], +A[1][4], +A[1][5]], [+A[2][0], +A[2][1], +b[2], +A[2][3], +A[2][4], +A[2][5]], [+A[3][0], +A[3][1], +b[3], +A[3][3], +A[3][4], +A[3][5]], [+A[4][0], +A[4][1], +b[4], +A[4][3], +A[4][4], +A[4][5]], [+A[5][0], +A[5][1], +b[5], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0], +A[0][4], +A[0][5]], [+A[1][0], +A[1][1], +A[1][2], +b[1], +A[1][4], +A[1][5]], [+A[2][0], +A[2][1], +A[2][2], +b[2], +A[2][4], +A[2][5]], [+A[3][0], +A[3][1], +A[3][2], +b[3], +A[3][4], +A[3][5]], [+A[4][0], +A[4][1], +A[4][2], +b[4], +A[4][4], +A[4][5]], [+A[5][0], +A[5][1], +A[5][2], +b[5], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +b[0], +A[0][5]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +b[1], +A[1][5]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +b[2], +A[2][5]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +b[3], +A[3][5]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +b[4], +A[4][5]], [+A[5][0], +A[5][1], +A[5][2], +A[5][3], +b[5], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +A[0][4], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +A[1][4], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +A[2][4], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +A[3][4], +b[3]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +A[4][4], +b[4]], [+A[5][0], +A[5][1], +A[5][2], +A[5][3], +A[5][4], +b[5]]]), det(A)]
+  }
 }
 
 var CACHE = [
@@ -48116,19 +45579,26 @@ var CACHE = [
   robustLinearSolve1d
 ]
 
+function proc(s0, s1, s2, s3, s4, s5, CACHE, g) {
+  return function dispatchLinearSolve(A, b) {
+    switch (A.length) {
+      case 0: return s0(A, b);
+      case 1: return s1(A, b);
+      case 2: return s2(A, b);
+      case 3: return s3(A, b);
+      case 4: return s4(A, b);
+      case 5: return s5(A, b);
+    }
+    var s = CACHE[A.length];
+    if (!s) s = CACHE[A.length] = g(A.length);
+    return s(A, b)
+  }
+}
+
 function generateDispatch() {
   while(CACHE.length < NUM_EXPAND) {
     CACHE.push(generateSolver(CACHE.length))
   }
-  var procArgs = []
-  var code = ["function dispatchLinearSolve(A,b){switch(A.length){"]
-  for(var i=0; i<NUM_EXPAND; ++i) {
-    procArgs.push("s" + i)
-    code.push("case ", i, ":return s", i, "(A,b);")
-  }
-  code.push("}var s=CACHE[A.length];if(!s)s=CACHE[A.length]=g(A.length);return s(A,b)}return dispatchLinearSolve")
-  procArgs.push("CACHE", "g", code.join(""))
-  var proc = Function.apply(undefined, procArgs)
   module.exports = proc.apply(undefined, CACHE.concat([CACHE, generateSolver]))
   for(var i=0; i<NUM_EXPAND; ++i) {
     module.exports[i] = CACHE[i]
@@ -48136,7 +45606,7 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-determinant":340}],344:[function(_dereq_,module,exports){
+},{"robust-determinant":325}],329:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -48150,81 +45620,39 @@ var EPSILON     = 1.1102230246251565e-16
 var ERRBOUND3   = (3.0 + 16.0 * EPSILON) * EPSILON
 var ERRBOUND4   = (7.0 + 56.0 * EPSILON) * EPSILON
 
-function cofactor(m, c) {
-  var result = new Array(m.length-1)
-  for(var i=1; i<m.length; ++i) {
-    var r = result[i-1] = new Array(m.length-1)
-    for(var j=0,k=0; j<m.length; ++j) {
-      if(j === c) {
-        continue
-      }
-      r[k++] = m[i][j]
-    }
-  }
-  return result
-}
-
-function matrix(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = new Array(n)
-    for(var j=0; j<n; ++j) {
-      result[i][j] = ["m", j, "[", (n-i-1), "]"].join("")
-    }
-  }
-  return result
-}
-
-function sign(n) {
-  if(n & 1) {
-    return "-"
-  }
-  return ""
-}
-
-function generateSum(expr) {
-  if(expr.length === 1) {
-    return expr[0]
-  } else if(expr.length === 2) {
-    return ["sum(", expr[0], ",", expr[1], ")"].join("")
-  } else {
-    var m = expr.length>>1
-    return ["sum(", generateSum(expr.slice(0, m)), ",", generateSum(expr.slice(m)), ")"].join("")
+function orientation_3(sum, prod, scale, sub) {
+  return function orientation3Exact(m0, m1, m2) {
+    var p = sum(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])))
+    var n = sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0]))
+    var d = sub(p, n)
+    return d[d.length - 1]
   }
 }
 
-function determinant(m) {
-  if(m.length === 2) {
-    return [["sum(prod(", m[0][0], ",", m[1][1], "),prod(-", m[0][1], ",", m[1][0], "))"].join("")]
-  } else {
-    var expr = []
-    for(var i=0; i<m.length; ++i) {
-      expr.push(["scale(", generateSum(determinant(cofactor(m, i))), ",", sign(i), m[0][i], ")"].join(""))
-    }
-    return expr
+function orientation_4(sum, prod, scale, sub) {
+  return function orientation4Exact(m0, m1, m2, m3) {
+    var p = sum(sum(scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m1[2]), sum(scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), -m2[2]), scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m3[2]))), sum(scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m3[2]))))
+    var n = sum(sum(scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m0[2]), sum(scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), -m2[2]), scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), m3[2]))), sum(scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m2[2]))))
+    var d = sub(p, n)
+    return d[d.length - 1]
+  }
+}
+
+function orientation_5(sum, prod, scale, sub) {
+  return function orientation5Exact(m0, m1, m2, m3, m4) {
+    var p = sum(sum(sum(scale(sum(scale(sum(prod(m3[1], m4[0]), prod(-m4[1], m3[0])), m2[2]), sum(scale(sum(prod(m2[1], m4[0]), prod(-m4[1], m2[0])), -m3[2]), scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m4[2]))), m1[3]), sum(scale(sum(scale(sum(prod(m3[1], m4[0]), prod(-m4[1], m3[0])), m1[2]), sum(scale(sum(prod(m1[1], m4[0]), prod(-m4[1], m1[0])), -m3[2]), scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), m4[2]))), -m2[3]), scale(sum(scale(sum(prod(m2[1], m4[0]), prod(-m4[1], m2[0])), m1[2]), sum(scale(sum(prod(m1[1], m4[0]), prod(-m4[1], m1[0])), -m2[2]), scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m4[2]))), m3[3]))), sum(scale(sum(scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m1[2]), sum(scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), -m2[2]), scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m3[2]))), -m4[3]), sum(scale(sum(scale(sum(prod(m3[1], m4[0]), prod(-m4[1], m3[0])), m1[2]), sum(scale(sum(prod(m1[1], m4[0]), prod(-m4[1], m1[0])), -m3[2]), scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), m4[2]))), m0[3]), scale(sum(scale(sum(prod(m3[1], m4[0]), prod(-m4[1], m3[0])), m0[2]), sum(scale(sum(prod(m0[1], m4[0]), prod(-m4[1], m0[0])), -m3[2]), scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), m4[2]))), -m1[3])))), sum(sum(scale(sum(scale(sum(prod(m1[1], m4[0]), prod(-m4[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m4[0]), prod(-m4[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m4[2]))), m3[3]), sum(scale(sum(scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m3[2]))), -m4[3]), scale(sum(scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m1[2]), sum(scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), -m2[2]), scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m3[2]))), m0[3]))), sum(scale(sum(scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m0[2]), sum(scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), -m2[2]), scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), m3[2]))), -m1[3]), sum(scale(sum(scale(sum(prod(m1[1], m3[0]), prod(-m3[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m3[2]))), m2[3]), scale(sum(scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m2[2]))), -m3[3])))))
+    var n = sum(sum(sum(scale(sum(scale(sum(prod(m3[1], m4[0]), prod(-m4[1], m3[0])), m2[2]), sum(scale(sum(prod(m2[1], m4[0]), prod(-m4[1], m2[0])), -m3[2]), scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m4[2]))), m0[3]), scale(sum(scale(sum(prod(m3[1], m4[0]), prod(-m4[1], m3[0])), m0[2]), sum(scale(sum(prod(m0[1], m4[0]), prod(-m4[1], m0[0])), -m3[2]), scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), m4[2]))), -m2[3])), sum(scale(sum(scale(sum(prod(m2[1], m4[0]), prod(-m4[1], m2[0])), m0[2]), sum(scale(sum(prod(m0[1], m4[0]), prod(-m4[1], m0[0])), -m2[2]), scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), m4[2]))), m3[3]), scale(sum(scale(sum(prod(m2[1], m3[0]), prod(-m3[1], m2[0])), m0[2]), sum(scale(sum(prod(m0[1], m3[0]), prod(-m3[1], m0[0])), -m2[2]), scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), m3[2]))), -m4[3]))), sum(sum(scale(sum(scale(sum(prod(m2[1], m4[0]), prod(-m4[1], m2[0])), m1[2]), sum(scale(sum(prod(m1[1], m4[0]), prod(-m4[1], m1[0])), -m2[2]), scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m4[2]))), m0[3]), scale(sum(scale(sum(prod(m2[1], m4[0]), prod(-m4[1], m2[0])), m0[2]), sum(scale(sum(prod(m0[1], m4[0]), prod(-m4[1], m0[0])), -m2[2]), scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), m4[2]))), -m1[3])), sum(scale(sum(scale(sum(prod(m1[1], m4[0]), prod(-m4[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m4[0]), prod(-m4[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m4[2]))), m2[3]), scale(sum(scale(sum(prod(m1[1], m2[0]), prod(-m2[1], m1[0])), m0[2]), sum(scale(sum(prod(m0[1], m2[0]), prod(-m2[1], m0[0])), -m1[2]), scale(sum(prod(m0[1], m1[0]), prod(-m1[1], m0[0])), m2[2]))), -m4[3]))))
+    var d = sub(p, n)
+    return d[d.length - 1]
   }
 }
 
 function orientation(n) {
-  var pos = []
-  var neg = []
-  var m = matrix(n)
-  var args = []
-  for(var i=0; i<n; ++i) {
-    if((i&1)===0) {
-      pos.push.apply(pos, determinant(cofactor(m, i)))
-    } else {
-      neg.push.apply(neg, determinant(cofactor(m, i)))
-    }
-    args.push("m" + i)
-  }
-  var posExpr = generateSum(pos)
-  var negExpr = generateSum(neg)
-  var funcName = "orientation" + n + "Exact"
-  var code = ["function ", funcName, "(", args.join(), "){var p=", posExpr, ",n=", negExpr, ",d=sub(p,n);\
-return d[d.length-1];};return ", funcName].join("")
-  var proc = new Function("sum", "prod", "scale", "sub", code)
-  return proc(robustSum, twoProduct, robustScale, robustSubtract)
+  var fn =
+    n === 3 ? orientation_3 :
+    n === 4 ? orientation_4 : orientation_5
+
+  return fn(robustSum, twoProduct, robustScale, robustSubtract)
 }
 
 var orientation3Exact = orientation(3)
@@ -48233,7 +45661,7 @@ var orientation4Exact = orientation(4)
 var CACHED = [
   function orientation0() { return 0 },
   function orientation1() { return 0 },
-  function orientation2(a, b) { 
+  function orientation2(a, b) {
     return b[0] - a[0]
   },
   function orientation3(a, b, c) {
@@ -48278,7 +45706,7 @@ var CACHED = [
     var adxcdy = adx * cdy
     var adxbdy = adx * bdy
     var bdxady = bdx * ady
-    var det = adz * (bdxcdy - cdxbdy) 
+    var det = adz * (bdxcdy - cdxbdy)
             + bdz * (cdxady - adxcdy)
             + cdz * (adxbdy - bdxady)
     var permanent = (Math.abs(bdxcdy) + Math.abs(cdxbdy)) * Math.abs(adz)
@@ -48300,26 +45728,34 @@ function slowOrient(args) {
   return proc.apply(undefined, args)
 }
 
+function proc (slow, o0, o1, o2, o3, o4, o5) {
+  return function getOrientation(a0, a1, a2, a3, a4) {
+    switch (arguments.length) {
+      case 0:
+      case 1:
+        return 0;
+      case 2:
+        return o2(a0, a1)
+      case 3:
+        return o3(a0, a1, a2)
+      case 4:
+        return o4(a0, a1, a2, a3)
+      case 5:
+        return o5(a0, a1, a2, a3, a4)
+    }
+
+    var s = new Array(arguments.length)
+    for (var i = 0; i < arguments.length; ++i) {
+      s[i] = arguments[i]
+    }
+    return slow(s)
+  }
+}
+
 function generateOrientationProc() {
   while(CACHED.length <= NUM_EXPAND) {
     CACHED.push(orientation(CACHED.length))
   }
-  var args = []
-  var procArgs = ["slow"]
-  for(var i=0; i<=NUM_EXPAND; ++i) {
-    args.push("a" + i)
-    procArgs.push("o" + i)
-  }
-  var code = [
-    "function getOrientation(", args.join(), "){switch(arguments.length){case 0:case 1:return 0;"
-  ]
-  for(var i=2; i<=NUM_EXPAND; ++i) {
-    code.push("case ", i, ":return o", i, "(", args.slice(0, i).join(), ");")
-  }
-  code.push("}var s=new Array(arguments.length);for(var i=0;i<arguments.length;++i){s[i]=arguments[i]};return slow(s);}return getOrientation")
-  procArgs.push(code.join(""))
-
-  var proc = Function.apply(undefined, procArgs)
   module.exports = proc.apply(undefined, [slowOrient].concat(CACHED))
   for(var i=0; i<=NUM_EXPAND; ++i) {
     module.exports[i] = CACHED[i]
@@ -48327,7 +45763,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":346,"robust-subtract":348,"robust-sum":349,"two-product":370}],345:[function(_dereq_,module,exports){
+},{"robust-scale":331,"robust-subtract":333,"robust-sum":334,"two-product":353}],330:[function(_dereq_,module,exports){
 "use strict"
 
 var robustSum = _dereq_("robust-sum")
@@ -48357,7 +45793,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":346,"robust-sum":349}],346:[function(_dereq_,module,exports){
+},{"robust-scale":331,"robust-sum":334}],331:[function(_dereq_,module,exports){
 "use strict"
 
 var twoProduct = _dereq_("two-product")
@@ -48408,7 +45844,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":370,"two-sum":371}],347:[function(_dereq_,module,exports){
+},{"two-product":353,"two-sum":354}],332:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
@@ -48456,7 +45892,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":344}],348:[function(_dereq_,module,exports){
+},{"robust-orientation":329}],333:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -48613,7 +46049,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],349:[function(_dereq_,module,exports){
+},{}],334:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -48770,7 +46206,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],350:[function(_dereq_,module,exports){
+},{}],335:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -48778,7 +46214,7 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],351:[function(_dereq_,module,exports){
+},{}],336:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = boundary
@@ -48790,7 +46226,7 @@ function boundary(cells) {
   return reduce(bnd(cells))
 }
 
-},{"boundary-cells":46,"reduce-simplicial-complex":336}],352:[function(_dereq_,module,exports){
+},{"boundary-cells":45,"reduce-simplicial-complex":321}],337:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = extractContour
@@ -48953,104 +46389,308 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":353,"ndarray":305,"ndarray-sort":304,"typedarray-pool":372}],353:[function(_dereq_,module,exports){
+},{"./lib/codegen":338,"ndarray":293,"ndarray-sort":292,"typedarray-pool":355}],338:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = getPolygonizer
 
-var pool = _dereq_('typedarray-pool')
-var createMSTable = _dereq_('marching-simplex-table')
-
-var CACHE = {}
-
-function createCellPolygonizer(d) {
-  var maxCellSize = 0
-  var tables = new Array(d+1)
-  tables[0] = [ [] ]
-  for(var i=1; i<=d; ++i) {
-    var tab = tables[i] = createMSTable(i)
-    for(var j=0; j<tab.length; ++j) {
-      maxCellSize = Math.max(maxCellSize, tab[i].length)
-    }
-  }
-
-  var code  = [
-  'function B(C,E,i,j){',
-    'var a=Math.min(i,j)|0,b=Math.max(i,j)|0,l=C[2*a],h=C[2*a+1];',
-    'while(l<h){',
-      'var m=(l+h)>>1,v=E[2*m+1];',
-      'if(v===b){return m}',
-      'if(b<v){h=m}else{l=m+1}',
-    '}',
-    'return l;',
-  '};',
-  'function getContour', d, 'd(F,E,C,S){',
-    'var n=F.length,R=[];',
-    'for(var i=0;i<n;++i){var c=F[i],l=c.length;'
-  ]
-
-  function generateCase(facets) {
-    if(facets.length <= 0) {
-      return
-    }
-    code.push('R.push(')
-    for(var i=0; i<facets.length; ++i) {
-      var facet = facets[i]
-      if(i > 0) {
-        code.push(',')
-      }
-      code.push('[')
-      for(var j=0; j<facet.length; ++j) {
-        var f = facet[j]
-        if(j > 0) {
-          code.push(',')
+var allFns = [
+  function cellPolygonizer_0() {
+    function B(C, E, i, j) {
+      var a = Math.min(i, j) | 0,
+        b = Math.max(i, j) | 0,
+        l = C[2 * a],
+        h = C[2 * a + 1]
+      while (l < h) {
+        var m = (l + h) >> 1,
+          v = E[2 * m + 1]
+        if (v === b) {
+          return m
         }
-        code.push('B(C,E,c[', f[0], '],c[', f[1], '])')
+        if (b < v) {
+          h = m
+        } else {
+          l = m + 1
+        }
       }
-      code.push(']')
+      return l
     }
-    code.push(');')
+    function getContour0d(F, E, C, S) {
+      var n = F.length,
+        R = []
+      for (var i = 0; i < n; ++i) {
+        var c = F[i],
+          l = c.length
+      }
+      return R
+    }
+    return getContour0d
+  },
+  function cellPolygonizer_1() {
+    function B(C, E, i, j) {
+      var a = Math.min(i, j) | 0,
+        b = Math.max(i, j) | 0,
+        l = C[2 * a],
+        h = C[2 * a + 1]
+      while (l < h) {
+        var m = (l + h) >> 1,
+          v = E[2 * m + 1]
+        if (v === b) {
+          return m
+        }
+        if (b < v) {
+          h = m
+        } else {
+          l = m + 1
+        }
+      }
+      return l
+    }
+    function getContour1d(F, E, C, S) {
+      var n = F.length,
+        R = []
+      for (var i = 0; i < n; ++i) {
+        var c = F[i],
+          l = c.length
+        if (l === 2) {
+          var M = (S[c[0]] << 0) + (S[c[1]] << 1)
+          if (M === 0 || M === 3) {
+            continue
+          }
+          switch (M) {
+            case 0:
+              break
+            case 1:
+              R.push([B(C, E, c[0], c[1])])
+              break
+            case 2:
+              R.push([B(C, E, c[1], c[0])])
+              break
+            case 3:
+              break
+          }
+        }
+      }
+      return R
+    }
+    return getContour1d
+  },
+  function cellPolygonizer_2() {
+    function B(C, E, i, j) {
+      var a = Math.min(i, j) | 0,
+        b = Math.max(i, j) | 0,
+        l = C[2 * a],
+        h = C[2 * a + 1]
+      while (l < h) {
+        var m = (l + h) >> 1,
+          v = E[2 * m + 1]
+        if (v === b) {
+          return m
+        }
+        if (b < v) {
+          h = m
+        } else {
+          l = m + 1
+        }
+      }
+      return l
+    }
+    function getContour2d(F, E, C, S) {
+      var n = F.length,
+        R = []
+      for (var i = 0; i < n; ++i) {
+        var c = F[i],
+          l = c.length
+        if (l === 3) {
+          var M = (S[c[0]] << 0) + (S[c[1]] << 1) + (S[c[2]] << 2)
+          if (M === 0 || M === 7) {
+            continue
+          }
+          switch (M) {
+            case 0:
+              break
+            case 1:
+              R.push([B(C, E, c[0], c[2]), B(C, E, c[0], c[1])])
+              break
+            case 2:
+              R.push([B(C, E, c[1], c[0]), B(C, E, c[1], c[2])])
+              break
+            case 3:
+              R.push([B(C, E, c[0], c[2]), B(C, E, c[1], c[2])])
+              break
+            case 4:
+              R.push([B(C, E, c[2], c[1]), B(C, E, c[2], c[0])])
+              break
+            case 5:
+              R.push([B(C, E, c[2], c[1]), B(C, E, c[0], c[1])])
+              break
+            case 6:
+              R.push([B(C, E, c[1], c[0]), B(C, E, c[2], c[0])])
+              break
+            case 7:
+              break
+          }
+        } else if (l === 2) {
+          var M = (S[c[0]] << 0) + (S[c[1]] << 1)
+          if (M === 0 || M === 3) {
+            continue
+          }
+          switch (M) {
+            case 0:
+              break
+            case 1:
+              R.push([B(C, E, c[0], c[1])])
+              break
+            case 2:
+              R.push([B(C, E, c[1], c[0])])
+              break
+            case 3:
+              break
+          }
+        }
+      }
+      return R
+    }
+    return getContour2d
+  },
+  function cellPolygonizer_3() {
+    function B(C, E, i, j) {
+      var a = Math.min(i, j) | 0,
+        b = Math.max(i, j) | 0,
+        l = C[2 * a],
+        h = C[2 * a + 1]
+      while (l < h) {
+        var m = (l + h) >> 1,
+          v = E[2 * m + 1]
+        if (v === b) {
+          return m
+        }
+        if (b < v) {
+          h = m
+        } else {
+          l = m + 1
+        }
+      }
+      return l
+    }
+    function getContour3d(F, E, C, S) {
+      var n = F.length,
+        R = []
+      for (var i = 0; i < n; ++i) {
+        var c = F[i],
+          l = c.length
+        if (l === 4) {
+          var M = (S[c[0]] << 0) + (S[c[1]] << 1) + (S[c[2]] << 2) + (S[c[3]] << 3)
+          if (M === 0 || M === 15) {
+            continue
+          }
+          switch (M) {
+            case 0:
+              break
+            case 1:
+              R.push([B(C, E, c[0], c[1]), B(C, E, c[0], c[2]), B(C, E, c[0], c[3])])
+              break
+            case 2:
+              R.push([B(C, E, c[1], c[2]), B(C, E, c[1], c[0]), B(C, E, c[1], c[3])])
+              break
+            case 3:
+              R.push([B(C, E, c[1], c[2]), B(C, E, c[0], c[2]), B(C, E, c[0], c[3])], [B(C, E, c[1], c[3]), B(C, E, c[1], c[2]), B(C, E, c[0], c[3])])
+              break
+            case 4:
+              R.push([B(C, E, c[2], c[0]), B(C, E, c[2], c[1]), B(C, E, c[2], c[3])])
+              break
+            case 5:
+              R.push([B(C, E, c[0], c[1]), B(C, E, c[2], c[1]), B(C, E, c[0], c[3])], [B(C, E, c[2], c[1]), B(C, E, c[2], c[3]), B(C, E, c[0], c[3])])
+              break
+            case 6:
+              R.push([B(C, E, c[2], c[0]), B(C, E, c[1], c[0]), B(C, E, c[1], c[3])], [B(C, E, c[2], c[3]), B(C, E, c[2], c[0]), B(C, E, c[1], c[3])])
+              break
+            case 7:
+              R.push([B(C, E, c[0], c[3]), B(C, E, c[1], c[3]), B(C, E, c[2], c[3])])
+              break
+            case 8:
+              R.push([B(C, E, c[3], c[1]), B(C, E, c[3], c[0]), B(C, E, c[3], c[2])])
+              break
+            case 9:
+              R.push([B(C, E, c[3], c[1]), B(C, E, c[0], c[1]), B(C, E, c[0], c[2])], [B(C, E, c[3], c[2]), B(C, E, c[3], c[1]), B(C, E, c[0], c[2])])
+              break
+            case 10:
+              R.push([B(C, E, c[1], c[0]), B(C, E, c[3], c[0]), B(C, E, c[1], c[2])], [B(C, E, c[3], c[0]), B(C, E, c[3], c[2]), B(C, E, c[1], c[2])])
+              break
+            case 11:
+              R.push([B(C, E, c[1], c[2]), B(C, E, c[0], c[2]), B(C, E, c[3], c[2])])
+              break
+            case 12:
+              R.push([B(C, E, c[3], c[0]), B(C, E, c[2], c[0]), B(C, E, c[2], c[1])], [B(C, E, c[3], c[1]), B(C, E, c[3], c[0]), B(C, E, c[2], c[1])])
+              break
+            case 13:
+              R.push([B(C, E, c[0], c[1]), B(C, E, c[2], c[1]), B(C, E, c[3], c[1])])
+              break
+            case 14:
+              R.push([B(C, E, c[2], c[0]), B(C, E, c[1], c[0]), B(C, E, c[3], c[0])])
+              break
+            case 15:
+              break
+          }
+        } else if (l === 3) {
+          var M = (S[c[0]] << 0) + (S[c[1]] << 1) + (S[c[2]] << 2)
+          if (M === 0 || M === 7) {
+            continue
+          }
+          switch (M) {
+            case 0:
+              break
+            case 1:
+              R.push([B(C, E, c[0], c[2]), B(C, E, c[0], c[1])])
+              break
+            case 2:
+              R.push([B(C, E, c[1], c[0]), B(C, E, c[1], c[2])])
+              break
+            case 3:
+              R.push([B(C, E, c[0], c[2]), B(C, E, c[1], c[2])])
+              break
+            case 4:
+              R.push([B(C, E, c[2], c[1]), B(C, E, c[2], c[0])])
+              break
+            case 5:
+              R.push([B(C, E, c[2], c[1]), B(C, E, c[0], c[1])])
+              break
+            case 6:
+              R.push([B(C, E, c[1], c[0]), B(C, E, c[2], c[0])])
+              break
+            case 7:
+              break
+          }
+        } else if (l === 2) {
+          var M = (S[c[0]] << 0) + (S[c[1]] << 1)
+          if (M === 0 || M === 3) {
+            continue
+          }
+          switch (M) {
+            case 0:
+              break
+            case 1:
+              R.push([B(C, E, c[0], c[1])])
+              break
+            case 2:
+              R.push([B(C, E, c[1], c[0])])
+              break
+            case 3:
+              break
+          }
+        }
+      }
+      return R
+    }
+    return getContour3d
   }
-
-  for(var i=d+1; i>1; --i) {
-    if(i < d+1) {
-      code.push('else ')
-    }
-    code.push('if(l===', i, '){')
-
-    //Generate mask
-    var maskStr = []
-    for(var j=0; j<i; ++j) {
-      maskStr.push('(S[c['+j+']]<<'+j+')')
-    }
-
-    //Perform table look up
-    code.push('var M=', maskStr.join('+'), 
-      ';if(M===0||M===', (1<<i)-1, 
-        '){continue}switch(M){')
-
-    var tab = tables[i-1]
-    for(var j=0; j<tab.length; ++j) {
-      code.push('case ', j, ':')
-      generateCase(tab[j])
-      code.push('break;')
-    }
-    code.push('}}')
-  }
-  code.push('}return R;};return getContour', d, 'd')
-
-  var proc = new Function('pool', code.join(''))
-  return proc(pool)
-}
+]
 
 function getPolygonizer(d) {
-  var alg = CACHE[d]
-  if(!alg) {
-    alg = CACHE[d] = createCellPolygonizer(d) 
-  }
-  return alg
+  return allFns[d]();
 }
-},{"marching-simplex-table":284,"typedarray-pool":372}],354:[function(_dereq_,module,exports){
+
+},{}],339:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 var bits      = _dereq_("bit-twiddle")
@@ -49394,11 +47034,11 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":44,"union-find":373}],355:[function(_dereq_,module,exports){
-arguments[4][44][0].apply(exports,arguments)
-},{"dup":44}],356:[function(_dereq_,module,exports){
-arguments[4][354][0].apply(exports,arguments)
-},{"bit-twiddle":355,"dup":354,"union-find":357}],357:[function(_dereq_,module,exports){
+},{"bit-twiddle":43,"union-find":356}],340:[function(_dereq_,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],341:[function(_dereq_,module,exports){
+arguments[4][339][0].apply(exports,arguments)
+},{"bit-twiddle":340,"dup":339,"union-find":342}],342:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -49455,7 +47095,7 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],358:[function(_dereq_,module,exports){
+},{}],343:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -49727,7 +47367,7 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":344,"simplicial-complex":356}],359:[function(_dereq_,module,exports){
+},{"robust-orientation":329,"simplicial-complex":341}],344:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -49823,9 +47463,7 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":344}],360:[function(_dereq_,module,exports){
-arguments[4][98][0].apply(exports,arguments)
-},{"dup":98}],361:[function(_dereq_,module,exports){
+},{"robust-orientation":329}],345:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -50056,7 +47694,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":359,"binary-search-bounds":360,"functional-red-black-tree":99,"robust-orientation":344}],362:[function(_dereq_,module,exports){
+},{"./lib/order-segments":344,"binary-search-bounds":42,"functional-red-black-tree":96,"robust-orientation":329}],346:[function(_dereq_,module,exports){
 "use strict"
 
 var robustDot = _dereq_("robust-dot-product")
@@ -50148,7 +47786,7 @@ function negative(points, plane) {
   }
   return neg
 }
-},{"robust-dot-product":341,"robust-sum":349}],363:[function(_dereq_,module,exports){
+},{"robust-dot-product":326,"robust-sum":334}],347:[function(_dereq_,module,exports){
 /* global window, exports, define */
 
 !function() {
@@ -50381,180 +48019,1570 @@ function negative(points, plane) {
     /* eslint-enable quote-props */
 }(); // eslint-disable-line
 
-},{}],364:[function(_dereq_,module,exports){
+},{}],348:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = surfaceNets
 
 var generateContourExtractor = _dereq_("ndarray-extract-contour")
-var triangulateCube = _dereq_("triangulate-hypercube")
 var zeroCrossings = _dereq_("zero-crossings")
 
+var F1_6 = 1 / 6
+var F5_6 = 5 / 6
+var F7_18 = 7 / 18
+var F1_14 = 1 / 14
+var F3_14 = 3 / 14
+var F5_14 = 5 / 14
+var F9_14 = 9 / 14
+var F11_18 = 11 / 18
+
+var allFns = {
+  "2d": function (genContour, order, dtype) {
+    var contour = genContour({
+      order: order,
+      scalarArguments: 3,
+      getters: dtype === "generic" ? [0] : undefined,
+      phase: function phaseFunc(p, a, b, c) {
+        return (p > c) | 0;
+      },
+      vertex: function vertexFunc(d0, d1, v0, v1, v2, v3, p0, p1, p2, p3, a, b, c) {
+        var m = ((p0 << 0) + (p1 << 1) + (p2 << 2) + (p3 << 3)) | 0;
+        if (m === 0 || m === 15) {
+          return;
+        }
+        switch (m) {
+          case 0:
+            a.push([d0 - 0.5, d1 - 0.5]);
+            break;
+          case 1:
+            a.push([d0 - 0.25 - (0.25 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.25 - (0.25 * (v2 + v0 - 2 * c)) / (v0 - v2)]);
+            break;
+          case 2:
+            a.push([d0 - 0.75 - (0.25 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.25 - (0.25 * (v3 + v1 - 2 * c)) / (v1 - v3)]);
+            break;
+          case 3:
+            a.push([d0 - 0.5, d1 - 0.5 - (0.5 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3)]);
+            break;
+          case 4:
+            a.push([d0 - 0.25 - (0.25 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.75 - (0.25 * (-v2 - v0 + 2 * c)) / (v2 - v0)]);
+            break;
+          case 5:
+            a.push([d0 - 0.5 - (0.5 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3), d1 - 0.5]);
+            break;
+          case 6:
+            a.push([d0 - 0.5 - (0.25 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3), d1 - 0.5 - (0.25 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3)]);
+            break;
+          case 7:
+            a.push([d0 - 0.75 - (0.25 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.75 - (0.25 * (v3 + v1 - 2 * c)) / (v1 - v3)]);
+            break;
+          case 8:
+            a.push([d0 - 0.75 - (0.25 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.75 - (0.25 * (-v3 - v1 + 2 * c)) / (v3 - v1)]);
+            break;
+          case 9:
+            a.push([d0 - 0.5 - (0.25 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2), d1 - 0.5 - (0.25 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1)]);
+            break;
+          case 10:
+            a.push([d0 - 0.5 - (0.5 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2), d1 - 0.5]);
+            break;
+          case 11:
+            a.push([d0 - 0.25 - (0.25 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.75 - (0.25 * (v2 + v0 - 2 * c)) / (v0 - v2)]);
+            break;
+          case 12:
+            a.push([d0 - 0.5, d1 - 0.5 - (0.5 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1)]);
+            break;
+          case 13:
+            a.push([d0 - 0.75 - (0.25 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.25 - (0.25 * (-v3 - v1 + 2 * c)) / (v3 - v1)]);
+            break;
+          case 14:
+            a.push([d0 - 0.25 - (0.25 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.25 - (0.25 * (-v2 - v0 + 2 * c)) / (v2 - v0)]);
+            break;
+          case 15:
+            a.push([d0 - 0.5, d1 - 0.5]);
+            break;
+        }
+      },
+      cell: function cellFunc(v0, v1, c0, c1, p0, p1, a, b, c) {
+        if (p0) {
+          b.push([v0, v1]);
+        } else {
+          b.push([v1, v0]);
+        }
+      },
+    });
+    return function (array, level) {
+      var verts = [],
+        cells = [];
+      contour(array, verts, cells, level);
+      return { positions: verts, cells: cells };
+    };
+  },
+  "3d": function (genContour, order, dtype) {
+    var contour = genContour({
+      order: order,
+      scalarArguments: 3,
+      getters: dtype === "generic" ? [0] : undefined,
+      phase: function phaseFunc(p, a, b, c) {
+        return (p > c) | 0;
+      },
+      vertex: function vertexFunc(d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, b, c) {
+        var m = ((p0 << 0) + (p1 << 1) + (p2 << 2) + (p3 << 3) + (p4 << 4) + (p5 << 5) + (p6 << 6) + (p7 << 7)) | 0;
+        if (m === 0 || m === 255) {
+          return;
+        }
+        switch (m >>> 7) {
+          case 0:
+            vExtra0(m & 0x7f, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c);
+            break;
+          case 1:
+            vExtra1(m & 0x7f, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c);
+            break;
+        }
+      },
+      cell: function cellFunc(v0, v1, v2, v3, c0, c1, p0, p1, a, b, c) {
+        if (p0) {
+          b.push([v3, v2, v0], [v0, v1, v3]);
+        } else {
+          b.push([v0, v2, v3], [v3, v1, v0]);
+        }
+      },
+    });
+    return function (array, level) {
+      var verts = [],
+        cells = [];
+      contour(array, verts, cells, level);
+      return { positions: verts, cells: cells };
+    };
+    function vExtra0(m, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c) {
+      switch (m) {
+        case 0:
+          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5]);
+          break;
+        case 1:
+          a.push([
+            d0 - F1_6 - (F1_6 * (v1 + v0 - 2 * c)) / (v0 - v1),
+            d1 - F1_6 - (F1_6 * (v2 + v0 - 2 * c)) / (v0 - v2),
+            d2 - F1_6 - (F1_6 * (v4 + v0 - 2 * c)) / (v0 - v4),
+          ]);
+          break;
+        case 2:
+          a.push([
+            d0 - F5_6 - (F1_6 * (-v1 - v0 + 2 * c)) / (v1 - v0),
+            d1 - F1_6 - (F1_6 * (v3 + v1 - 2 * c)) / (v1 - v3),
+            d2 - F1_6 - (F1_6 * (v5 + v1 - 2 * c)) / (v1 - v5),
+          ]);
+          break;
+        case 3:
+          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3), d2 - 0.25 - (0.25 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5)]);
+          break;
+        case 4:
+          a.push([
+            d0 - F1_6 - (F1_6 * (v3 + v2 - 2 * c)) / (v2 - v3),
+            d1 - F5_6 - (F1_6 * (-v2 - v0 + 2 * c)) / (v2 - v0),
+            d2 - F1_6 - (F1_6 * (v6 + v2 - 2 * c)) / (v2 - v6),
+          ]);
+          break;
+        case 5:
+          a.push([d0 - 0.25 - (0.25 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3), d1 - 0.5, d2 - 0.25 - (0.25 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6)]);
+          break;
+        case 6:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
+            d2 - F1_6 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
+          ]);
+          break;
+        case 7:
+          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.3 - (0.3 * (v4 + v0 + v5 + v1 + v6 + v2 - 6 * c)) / (v0 - v4 + v1 - v5 + v2 - v6)]);
+          break;
+        case 8:
+          a.push([
+            d0 - F5_6 - (F1_6 * (-v3 - v2 + 2 * c)) / (v3 - v2),
+            d1 - F5_6 - (F1_6 * (-v3 - v1 + 2 * c)) / (v3 - v1),
+            d2 - F1_6 - (F1_6 * (v7 + v3 - 2 * c)) / (v3 - v7),
+          ]);
+          break;
+        case 9:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
+            d2 - F1_6 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
+          ]);
+          break;
+        case 10:
+          a.push([d0 - 0.75 - (0.25 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2), d1 - 0.5, d2 - 0.25 - (0.25 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7)]);
+          break;
+        case 11:
+          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.3 - (0.3 * (v4 + v0 + v5 + v1 + v7 + v3 - 6 * c)) / (v0 - v4 + v1 - v5 + v3 - v7)]);
+          break;
+        case 12:
+          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1), d2 - 0.25 - (0.25 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7)]);
+          break;
+        case 13:
+          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.3 - (0.3 * (v4 + v0 + v6 + v2 + v7 + v3 - 6 * c)) / (v0 - v4 + v2 - v6 + v3 - v7)]);
+          break;
+        case 14:
+          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.3 - (0.3 * (v5 + v1 + v6 + v2 + v7 + v3 - 6 * c)) / (v1 - v5 + v2 - v6 + v3 - v7)]);
+          break;
+        case 15:
+          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5 - (0.5 * (v4 + v0 + v5 + v1 + v6 + v2 + v7 + v3 - 8 * c)) / (v0 - v4 + v1 - v5 + v2 - v6 + v3 - v7)]);
+          break;
+        case 16:
+          a.push([
+            d0 - F1_6 - (F1_6 * (v5 + v4 - 2 * c)) / (v4 - v5),
+            d1 - F1_6 - (F1_6 * (v6 + v4 - 2 * c)) / (v4 - v6),
+            d2 - F5_6 - (F1_6 * (-v4 - v0 + 2 * c)) / (v4 - v0),
+          ]);
+          break;
+        case 17:
+          a.push([d0 - 0.25 - (0.25 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5), d1 - 0.25 - (0.25 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6), d2 - 0.5]);
+          break;
+        case 18:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
+            d1 - F1_6 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
+          ]);
+          break;
+        case 19:
+          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.3 - (0.3 * (v2 + v0 + v3 + v1 + v6 + v4 - 6 * c)) / (v0 - v2 + v1 - v3 + v4 - v6), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
+          break;
+        case 20:
+          a.push([
+            d0 - F1_6 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
+          ]);
+          break;
+        case 21:
+          a.push([d0 - 0.3 - (0.3 * (v1 + v0 + v3 + v2 + v5 + v4 - 6 * c)) / (v0 - v1 + v2 - v3 + v4 - v5), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
+          break;
+        case 22:
+          a.push([
+            d0 - F7_18 - (F1_6 * (-v1 - v0 + v3 + v2 + v5 + v4 - 2 * c)) / (v1 - v0 + v2 - v3 + v4 - v5),
+            d1 - F7_18 - (F1_6 * (-v2 - v0 + v3 + v1 + v6 + v4 - 2 * c)) / (v2 - v0 + v1 - v3 + v4 - v6),
+            d2 - F7_18 - (F1_6 * (-v4 - v0 + v5 + v1 + v6 + v2 - 2 * c)) / (v4 - v0 + v1 - v5 + v2 - v6),
+          ]);
+          break;
+        case 23:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
+          ]);
+          break;
+        case 24:
+          a.push([d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5), d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6), d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7)]);
+          break;
+        case 25:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + v5 + v4 - 2 * c)) / (v0 - v1 + v3 - v2 + v4 - v5),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + v6 + v4 - 2 * c)) / (v0 - v2 + v3 - v1 + v4 - v6),
+            d2 - F5_14 - (F1_14 * (v7 + v3 - 2 * c)) / (v3 - v7),
+          ]);
+          break;
+        case 26:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v5 + v4 + 2 * c)) / (v1 - v0 + v3 - v2 + v4 - v5),
+            d1 - F5_14 - (F1_14 * (v6 + v4 - 2 * c)) / (v4 - v6),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + v7 + v3 - 2 * c)) / (v4 - v0 + v1 - v5 + v3 - v7),
+          ]);
+          break;
+        case 27:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7),
+          ]);
+          break;
+        case 28:
+          a.push([
+            d0 - F5_14 - (F1_14 * (v5 + v4 - 2 * c)) / (v4 - v5),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v6 + v4 + 2 * c)) / (v2 - v0 + v3 - v1 + v4 - v6),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + v6 + v2 + v7 + v3 - 2 * c)) / (v4 - v0 + v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 29:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 30:
+          a.push([
+            d0 - 0.375 - (0.125 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
+            d1 - 0.375 - (0.125 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
+            d2 - 0.5 - (0.25 * (-v4 - v0 + v5 + v1 + v6 + v2 + v7 + v3 - 4 * c)) / (v4 - v0 + v1 - v5 + v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 31:
+          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.7 - (0.3 * (v5 + v1 + v6 + v2 + v7 + v3 - 6 * c)) / (v1 - v5 + v2 - v6 + v3 - v7)]);
+          break;
+        case 32:
+          a.push([
+            d0 - F5_6 - (F1_6 * (-v5 - v4 + 2 * c)) / (v5 - v4),
+            d1 - F1_6 - (F1_6 * (v7 + v5 - 2 * c)) / (v5 - v7),
+            d2 - F5_6 - (F1_6 * (-v5 - v1 + 2 * c)) / (v5 - v1),
+          ]);
+          break;
+        case 33:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
+            d1 - F1_6 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
+          ]);
+          break;
+        case 34:
+          a.push([d0 - 0.75 - (0.25 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4), d1 - 0.25 - (0.25 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7), d2 - 0.5]);
+          break;
+        case 35:
+          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.3 - (0.3 * (v2 + v0 + v3 + v1 + v7 + v5 - 6 * c)) / (v0 - v2 + v1 - v3 + v5 - v7), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
+          break;
+        case 36:
+          a.push([d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4), d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7), d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6)]);
+          break;
+        case 37:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v5 - v4 - 2 * c)) / (v0 - v1 + v2 - v3 + v5 - v4),
+            d1 - F5_14 - (F1_14 * (v7 + v5 - 2 * c)) / (v5 - v7),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + v6 + v2 - 2 * c)) / (v0 - v4 + v5 - v1 + v2 - v6),
+          ]);
+          break;
+        case 38:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + -v5 - v4 + 2 * c)) / (v1 - v0 + v2 - v3 + v5 - v4),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + v7 + v5 - 2 * c)) / (v2 - v0 + v1 - v3 + v5 - v7),
+            d2 - F5_14 - (F1_14 * (v6 + v2 - 2 * c)) / (v2 - v6),
+          ]);
+          break;
+        case 39:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6),
+          ]);
+          break;
+        case 40:
+          a.push([
+            d0 - F5_6 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 41:
+          a.push([
+            d0 - F11_18 - (F1_6 * (v1 + v0 + -v3 - v2 + -v5 - v4 + 2 * c)) / (v0 - v1 + v3 - v2 + v5 - v4),
+            d1 - F7_18 - (F1_6 * (v2 + v0 + -v3 - v1 + v7 + v5 - 2 * c)) / (v0 - v2 + v3 - v1 + v5 - v7),
+            d2 - F7_18 - (F1_6 * (v4 + v0 + -v5 - v1 + v7 + v3 - 2 * c)) / (v0 - v4 + v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 42:
+          a.push([d0 - 0.7 - (0.3 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + 6 * c)) / (v1 - v0 + v3 - v2 + v5 - v4), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
+          break;
+        case 43:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
+          ]);
+          break;
+        case 44:
+          a.push([
+            d0 - F9_14 - (F1_14 * (-v5 - v4 + 2 * c)) / (v5 - v4),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v7 + v5 + 2 * c)) / (v2 - v0 + v3 - v1 + v5 - v7),
+            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + v7 + v3 - 2 * c)) / (v5 - v1 + v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 45:
+          a.push([
+            d0 - 0.625 - (0.125 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
+            d1 - 0.375 - (0.125 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
+            d2 - 0.5 - (0.25 * (v4 + v0 + -v5 - v1 + v6 + v2 + v7 + v3 - 4 * c)) / (v0 - v4 + v5 - v1 + v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 46:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 47:
+          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.7 - (0.3 * (v4 + v0 + v6 + v2 + v7 + v3 - 6 * c)) / (v0 - v4 + v2 - v6 + v3 - v7)]);
+          break;
+        case 48:
+          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7), d2 - 0.75 - (0.25 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1)]);
+          break;
+        case 49:
+          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.3 - (0.3 * (v2 + v0 + v6 + v4 + v7 + v5 - 6 * c)) / (v0 - v2 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
+          break;
+        case 50:
+          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.3 - (0.3 * (v3 + v1 + v6 + v4 + v7 + v5 - 6 * c)) / (v1 - v3 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
+          break;
+        case 51:
+          a.push([d0 - 0.5, d1 - 0.5 - (0.5 * (v2 + v0 + v3 + v1 + v6 + v4 + v7 + v5 - 8 * c)) / (v0 - v2 + v1 - v3 + v4 - v6 + v5 - v7), d2 - 0.5]);
+          break;
+        case 52:
+          a.push([
+            d0 - F5_14 - (F1_14 * (v3 + v2 - 2 * c)) / (v2 - v3),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + v6 + v4 + v7 + v5 - 2 * c)) / (v2 - v0 + v4 - v6 + v5 - v7),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v6 + v2 + 2 * c)) / (v4 - v0 + v5 - v1 + v2 - v6),
+          ]);
+          break;
+        case 53:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3),
+            d1 - 0.5 - (F1_6 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6),
+          ]);
+          break;
+        case 54:
+          a.push([
+            d0 - 0.375 - (0.125 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
+            d1 - 0.5 - (0.25 * (-v2 - v0 + v3 + v1 + v6 + v4 + v7 + v5 - 4 * c)) / (v2 - v0 + v1 - v3 + v4 - v6 + v5 - v7),
+            d2 - 0.375 - (0.125 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
+          ]);
+          break;
+        case 55:
+          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.7 - (0.3 * (v3 + v1 + v6 + v4 + v7 + v5 - 6 * c)) / (v1 - v3 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
+          break;
+        case 56:
+          a.push([
+            d0 - F9_14 - (F1_14 * (-v3 - v2 + 2 * c)) / (v3 - v2),
+            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + v7 + v5 - 2 * c)) / (v3 - v1 + v4 - v6 + v5 - v7),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v7 + v3 + 2 * c)) / (v4 - v0 + v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 57:
+          a.push([
+            d0 - 0.625 - (0.125 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
+            d1 - 0.5 - (0.25 * (v2 + v0 + -v3 - v1 + v6 + v4 + v7 + v5 - 4 * c)) / (v0 - v2 + v3 - v1 + v4 - v6 + v5 - v7),
+            d2 - 0.375 - (0.125 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 58:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2),
+            d1 - 0.5 - (F1_6 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7),
+          ]);
+          break;
+        case 59:
+          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.7 - (0.3 * (v2 + v0 + v6 + v4 + v7 + v5 - 6 * c)) / (v0 - v2 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
+          break;
+        case 60:
+          a.push([d0 - 0.5, d1 - 0.5 - (0.25 * (-v2 - v0 + -v3 - v1 + v6 + v4 + v7 + v5)) / (v2 - v0 + v3 - v1 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.25 * (-v4 - v0 + -v5 - v1 + v6 + v2 + v7 + v3)) / (v4 - v0 + v5 - v1 + v2 - v6 + v3 - v7)]);
+          break;
+        case 61:
+          a.push([
+            d0 - F9_14 - (F1_14 * (v1 + v0 - 2 * c)) / (v0 - v1),
+            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + v7 + v5 - 2 * c)) / (v3 - v1 + v4 - v6 + v5 - v7),
+            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + v7 + v3 - 2 * c)) / (v5 - v1 + v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 62:
+          a.push([
+            d0 - F5_14 - (F1_14 * (-v1 - v0 + 2 * c)) / (v1 - v0),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + v6 + v4 + v7 + v5 - 2 * c)) / (v2 - v0 + v4 - v6 + v5 - v7),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + v6 + v2 + v7 + v3 - 2 * c)) / (v4 - v0 + v2 - v6 + v3 - v7),
+          ]);
+          break;
+        case 63:
+          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7), d2 - 0.75 - (0.25 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7)]);
+          break;
+        case 64:
+          a.push([
+            d0 - F1_6 - (F1_6 * (v7 + v6 - 2 * c)) / (v6 - v7),
+            d1 - F5_6 - (F1_6 * (-v6 - v4 + 2 * c)) / (v6 - v4),
+            d2 - F5_6 - (F1_6 * (-v6 - v2 + 2 * c)) / (v6 - v2),
+          ]);
+          break;
+        case 65:
+          a.push([
+            d0 - F1_6 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
+          ]);
+          break;
+        case 66:
+          a.push([d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7), d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4), d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2)]);
+          break;
+        case 67:
+          a.push([
+            d0 - F5_14 - (F1_14 * (v7 + v6 - 2 * c)) / (v6 - v7),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v6 - v4 - 2 * c)) / (v0 - v2 + v1 - v3 + v6 - v4),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v6 - v2 - 2 * c)) / (v0 - v4 + v1 - v5 + v6 - v2),
+          ]);
+          break;
+        case 68:
+          a.push([d0 - 0.25 - (0.25 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7), d1 - 0.75 - (0.25 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4), d2 - 0.5]);
+          break;
+        case 69:
+          a.push([d0 - 0.3 - (0.3 * (v1 + v0 + v3 + v2 + v7 + v6 - 6 * c)) / (v0 - v1 + v2 - v3 + v6 - v7), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
+          break;
+        case 70:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + v7 + v6 - 2 * c)) / (v1 - v0 + v2 - v3 + v6 - v7),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + -v6 - v4 + 2 * c)) / (v2 - v0 + v1 - v3 + v6 - v4),
+            d2 - F5_14 - (F1_14 * (v5 + v1 - 2 * c)) / (v1 - v5),
+          ]);
+          break;
+        case 71:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5),
+          ]);
+          break;
+        case 72:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
+            d1 - F5_6 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 73:
+          a.push([
+            d0 - F7_18 - (F1_6 * (v1 + v0 + -v3 - v2 + v7 + v6 - 2 * c)) / (v0 - v1 + v3 - v2 + v6 - v7),
+            d1 - F11_18 - (F1_6 * (v2 + v0 + -v3 - v1 + -v6 - v4 + 2 * c)) / (v0 - v2 + v3 - v1 + v6 - v4),
+            d2 - F7_18 - (F1_6 * (v4 + v0 + -v6 - v2 + v7 + v3 - 2 * c)) / (v0 - v4 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 74:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v7 + v6 + 2 * c)) / (v1 - v0 + v3 - v2 + v6 - v7),
+            d1 - F9_14 - (F1_14 * (-v6 - v4 + 2 * c)) / (v6 - v4),
+            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + v7 + v3 - 2 * c)) / (v1 - v5 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 75:
+          a.push([
+            d0 - 0.375 - (0.125 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
+            d1 - 0.625 - (0.125 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
+            d2 - 0.5 - (0.25 * (v4 + v0 + v5 + v1 + -v6 - v2 + v7 + v3 - 4 * c)) / (v0 - v4 + v1 - v5 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 76:
+          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.7 - (0.3 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + 6 * c)) / (v2 - v0 + v3 - v1 + v6 - v4), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
+          break;
+        case 77:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
+          ]);
+          break;
+        case 78:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7),
+          ]);
+          break;
+        case 79:
+          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.7 - (0.3 * (v4 + v0 + v5 + v1 + v7 + v3 - 6 * c)) / (v0 - v4 + v1 - v5 + v3 - v7)]);
+          break;
+        case 80:
+          a.push([d0 - 0.25 - (0.25 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.75 - (0.25 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2)]);
+          break;
+        case 81:
+          a.push([d0 - 0.3 - (0.3 * (v1 + v0 + v5 + v4 + v7 + v6 - 6 * c)) / (v0 - v1 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
+          break;
+        case 82:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + v5 + v4 + v7 + v6 - 2 * c)) / (v1 - v0 + v4 - v5 + v6 - v7),
+            d1 - F5_14 - (F1_14 * (v3 + v1 - 2 * c)) / (v1 - v3),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + -v6 - v2 + 2 * c)) / (v4 - v0 + v1 - v5 + v6 - v2),
+          ]);
+          break;
+        case 83:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2),
+          ]);
+          break;
+        case 84:
+          a.push([d0 - 0.3 - (0.3 * (v3 + v2 + v5 + v4 + v7 + v6 - 6 * c)) / (v2 - v3 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
+          break;
+        case 85:
+          a.push([d0 - 0.5 - (0.5 * (v1 + v0 + v3 + v2 + v5 + v4 + v7 + v6 - 8 * c)) / (v0 - v1 + v2 - v3 + v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.5]);
+          break;
+        case 86:
+          a.push([
+            d0 - 0.5 - (0.25 * (-v1 - v0 + v3 + v2 + v5 + v4 + v7 + v6 - 4 * c)) / (v1 - v0 + v2 - v3 + v4 - v5 + v6 - v7),
+            d1 - 0.375 - (0.125 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
+            d2 - 0.375 - (0.125 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
+          ]);
+          break;
+        case 87:
+          a.push([d0 - 0.7 - (0.3 * (v3 + v2 + v5 + v4 + v7 + v6 - 6 * c)) / (v2 - v3 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
+          break;
+        case 88:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + v7 + v6 - 2 * c)) / (v3 - v2 + v4 - v5 + v6 - v7),
+            d1 - F9_14 - (F1_14 * (-v3 - v1 + 2 * c)) / (v3 - v1),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v6 - v2 + v7 + v3 + 2 * c)) / (v4 - v0 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 89:
+          a.push([
+            d0 - 0.5 - (0.25 * (v1 + v0 + -v3 - v2 + v5 + v4 + v7 + v6 - 4 * c)) / (v0 - v1 + v3 - v2 + v4 - v5 + v6 - v7),
+            d1 - 0.625 - (0.125 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
+            d2 - 0.375 - (0.125 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 90:
+          a.push([d0 - 0.5 - (0.25 * (-v1 - v0 + -v3 - v2 + v5 + v4 + v7 + v6)) / (v1 - v0 + v3 - v2 + v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.5 - (0.25 * (-v4 - v0 + v5 + v1 + -v6 - v2 + v7 + v3)) / (v4 - v0 + v1 - v5 + v6 - v2 + v3 - v7)]);
+          break;
+        case 91:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + v7 + v6 - 2 * c)) / (v3 - v2 + v4 - v5 + v6 - v7),
+            d1 - F9_14 - (F1_14 * (v2 + v0 - 2 * c)) / (v0 - v2),
+            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + v7 + v3 - 2 * c)) / (v1 - v5 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 92:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7),
+          ]);
+          break;
+        case 93:
+          a.push([d0 - 0.7 - (0.3 * (v1 + v0 + v5 + v4 + v7 + v6 - 6 * c)) / (v0 - v1 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
+          break;
+        case 94:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + v5 + v4 + v7 + v6 - 2 * c)) / (v1 - v0 + v4 - v5 + v6 - v7),
+            d1 - F5_14 - (F1_14 * (-v2 - v0 + 2 * c)) / (v2 - v0),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + v7 + v3 - 2 * c)) / (v4 - v0 + v1 - v5 + v3 - v7),
+          ]);
+          break;
+        case 95:
+          a.push([d0 - 0.75 - (0.25 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.75 - (0.25 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7)]);
+          break;
+        case 96:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
+            d2 - F5_6 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
+          ]);
+          break;
+        case 97:
+          a.push([
+            d0 - F7_18 - (F1_6 * (v1 + v0 + -v5 - v4 + v7 + v6 - 2 * c)) / (v0 - v1 + v5 - v4 + v6 - v7),
+            d1 - F7_18 - (F1_6 * (v2 + v0 + -v6 - v4 + v7 + v5 - 2 * c)) / (v0 - v2 + v6 - v4 + v5 - v7),
+            d2 - F11_18 - (F1_6 * (v4 + v0 + -v5 - v1 + -v6 - v2 + 2 * c)) / (v0 - v4 + v5 - v1 + v6 - v2),
+          ]);
+          break;
+        case 98:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v5 - v4 + v7 + v6 + 2 * c)) / (v1 - v0 + v5 - v4 + v6 - v7),
+            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + v7 + v5 - 2 * c)) / (v1 - v3 + v6 - v4 + v5 - v7),
+            d2 - F9_14 - (F1_14 * (-v6 - v2 + 2 * c)) / (v6 - v2),
+          ]);
+          break;
+        case 99:
+          a.push([
+            d0 - 0.375 - (0.125 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
+            d1 - 0.5 - (0.25 * (v2 + v0 + v3 + v1 + -v6 - v4 + v7 + v5 - 4 * c)) / (v0 - v2 + v1 - v3 + v6 - v4 + v5 - v7),
+            d2 - 0.625 - (0.125 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
+          ]);
+          break;
+        case 100:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + v7 + v6 - 2 * c)) / (v2 - v3 + v5 - v4 + v6 - v7),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v6 - v4 + v7 + v5 + 2 * c)) / (v2 - v0 + v6 - v4 + v5 - v7),
+            d2 - F9_14 - (F1_14 * (-v5 - v1 + 2 * c)) / (v5 - v1),
+          ]);
+          break;
+        case 101:
+          a.push([
+            d0 - 0.5 - (0.25 * (v1 + v0 + v3 + v2 + -v5 - v4 + v7 + v6 - 4 * c)) / (v0 - v1 + v2 - v3 + v5 - v4 + v6 - v7),
+            d1 - 0.375 - (0.125 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
+            d2 - 0.625 - (0.125 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
+          ]);
+          break;
+        case 102:
+          a.push([d0 - 0.5 - (0.25 * (-v1 - v0 + v3 + v2 + -v5 - v4 + v7 + v6)) / (v1 - v0 + v2 - v3 + v5 - v4 + v6 - v7), d1 - 0.5 - (0.25 * (-v2 - v0 + v3 + v1 + -v6 - v4 + v7 + v5)) / (v2 - v0 + v1 - v3 + v6 - v4 + v5 - v7), d2 - 0.5]);
+          break;
+        case 103:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + v7 + v6 - 2 * c)) / (v2 - v3 + v5 - v4 + v6 - v7),
+            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + v7 + v5 - 2 * c)) / (v1 - v3 + v6 - v4 + v5 - v7),
+            d2 - F9_14 - (F1_14 * (v4 + v0 - 2 * c)) / (v0 - v4),
+          ]);
+          break;
+        case 104:
+          a.push([
+            d0 - F11_18 - (F1_6 * (-v3 - v2 + -v5 - v4 + v7 + v6 + 2 * c)) / (v3 - v2 + v5 - v4 + v6 - v7),
+            d1 - F11_18 - (F1_6 * (-v3 - v1 + -v6 - v4 + v7 + v5 + 2 * c)) / (v3 - v1 + v6 - v4 + v5 - v7),
+            d2 - F11_18 - (F1_6 * (-v5 - v1 + -v6 - v2 + v7 + v3 + 2 * c)) / (v5 - v1 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 105:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + -v3 - v2 + -v5 - v4 + v7 + v6)) / (v0 - v1 + v3 - v2 + v5 - v4 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + -v3 - v1 + -v6 - v4 + v7 + v5)) / (v0 - v2 + v3 - v1 + v6 - v4 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + -v5 - v1 + -v6 - v2 + v7 + v3)) / (v0 - v4 + v5 - v1 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 106:
+          a.push([
+            d0 - 0.5 - (0.25 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + v7 + v6 + 4 * c)) / (v1 - v0 + v3 - v2 + v5 - v4 + v6 - v7),
+            d1 - 0.625 - (0.125 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
+            d2 - 0.625 - (0.125 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 107:
+          a.push([
+            d0 - F7_18 - (F1_6 * (-v3 - v2 + -v5 - v4 + v7 + v6 + 2 * c)) / (v3 - v2 + v5 - v4 + v6 - v7),
+            d1 - F11_18 - (F1_6 * (v2 + v0 + -v6 - v4 + v7 + v5 - 2 * c)) / (v0 - v2 + v6 - v4 + v5 - v7),
+            d2 - F11_18 - (F1_6 * (v4 + v0 + -v6 - v2 + v7 + v3 - 2 * c)) / (v0 - v4 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 108:
+          a.push([
+            d0 - 0.625 - (0.125 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
+            d1 - 0.5 - (0.25 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + v7 + v5 + 4 * c)) / (v2 - v0 + v3 - v1 + v6 - v4 + v5 - v7),
+            d2 - 0.625 - (0.125 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 109:
+          a.push([
+            d0 - F11_18 - (F1_6 * (v1 + v0 + -v5 - v4 + v7 + v6 - 2 * c)) / (v0 - v1 + v5 - v4 + v6 - v7),
+            d1 - F7_18 - (F1_6 * (-v3 - v1 + -v6 - v4 + v7 + v5 + 2 * c)) / (v3 - v1 + v6 - v4 + v5 - v7),
+            d2 - F11_18 - (F1_6 * (v4 + v0 + -v5 - v1 + v7 + v3 - 2 * c)) / (v0 - v4 + v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 110:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v5 - v4 + v7 + v6 + 2 * c)) / (v1 - v0 + v5 - v4 + v6 - v7),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v6 - v4 + v7 + v5 + 2 * c)) / (v2 - v0 + v6 - v4 + v5 - v7),
+            d2 - F9_14 - (F1_14 * (v7 + v3 - 2 * c)) / (v3 - v7),
+          ]);
+          break;
+        case 111:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
+            d2 - F5_6 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
+          ]);
+          break;
+        case 112:
+          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.7 - (0.3 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + 6 * c)) / (v4 - v0 + v5 - v1 + v6 - v2)]);
+          break;
+        case 113:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
+          ]);
+          break;
+        case 114:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2),
+          ]);
+          break;
+        case 115:
+          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.7 - (0.3 * (v2 + v0 + v3 + v1 + v7 + v5 - 6 * c)) / (v0 - v2 + v1 - v3 + v5 - v7), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
+          break;
+        case 116:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1),
+          ]);
+          break;
+        case 117:
+          a.push([d0 - 0.7 - (0.3 * (v1 + v0 + v3 + v2 + v7 + v6 - 6 * c)) / (v0 - v1 + v2 - v3 + v6 - v7), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
+          break;
+        case 118:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + v7 + v6 - 2 * c)) / (v1 - v0 + v2 - v3 + v6 - v7),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + v7 + v5 - 2 * c)) / (v2 - v0 + v1 - v3 + v5 - v7),
+            d2 - F5_14 - (F1_14 * (-v4 - v0 + 2 * c)) / (v4 - v0),
+          ]);
+          break;
+        case 119:
+          a.push([d0 - 0.75 - (0.25 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7), d1 - 0.75 - (0.25 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7), d2 - 0.5]);
+          break;
+        case 120:
+          a.push([
+            d0 - 0.625 - (0.125 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
+            d1 - 0.625 - (0.125 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
+            d2 - 0.5 - (0.25 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + v7 + v3 + 4 * c)) / (v4 - v0 + v5 - v1 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 121:
+          a.push([
+            d0 - F11_18 - (F1_6 * (v1 + v0 + -v3 - v2 + v7 + v6 - 2 * c)) / (v0 - v1 + v3 - v2 + v6 - v7),
+            d1 - F11_18 - (F1_6 * (v2 + v0 + -v3 - v1 + v7 + v5 - 2 * c)) / (v0 - v2 + v3 - v1 + v5 - v7),
+            d2 - F7_18 - (F1_6 * (-v5 - v1 + -v6 - v2 + v7 + v3 + 2 * c)) / (v5 - v1 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 122:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v7 + v6 + 2 * c)) / (v1 - v0 + v3 - v2 + v6 - v7),
+            d1 - F9_14 - (F1_14 * (v7 + v5 - 2 * c)) / (v5 - v7),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v6 - v2 + v7 + v3 + 2 * c)) / (v4 - v0 + v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 123:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
+            d1 - F5_6 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
+          ]);
+          break;
+        case 124:
+          a.push([
+            d0 - F9_14 - (F1_14 * (v7 + v6 - 2 * c)) / (v6 - v7),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v7 + v5 + 2 * c)) / (v2 - v0 + v3 - v1 + v5 - v7),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v7 + v3 + 2 * c)) / (v4 - v0 + v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 125:
+          a.push([
+            d0 - F5_6 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
+          ]);
+          break;
+        case 126:
+          a.push([d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7), d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7), d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7)]);
+          break;
+        case 127:
+          a.push([
+            d0 - F5_6 - (F1_6 * (v7 + v6 - 2 * c)) / (v6 - v7),
+            d1 - F5_6 - (F1_6 * (v7 + v5 - 2 * c)) / (v5 - v7),
+            d2 - F5_6 - (F1_6 * (v7 + v3 - 2 * c)) / (v3 - v7),
+          ]);
+          break;
+      }
+    }
+    function vExtra1(m, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c) {
+      switch (m) {
+        case 0:
+          a.push([
+            d0 - F5_6 - (F1_6 * (-v7 - v6 + 2 * c)) / (v7 - v6),
+            d1 - F5_6 - (F1_6 * (-v7 - v5 + 2 * c)) / (v7 - v5),
+            d2 - F5_6 - (F1_6 * (-v7 - v3 + 2 * c)) / (v7 - v3),
+          ]);
+          break;
+        case 1:
+          a.push([d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6), d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5), d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3)]);
+          break;
+        case 2:
+          a.push([
+            d0 - F5_6 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 3:
+          a.push([
+            d0 - F9_14 - (F1_14 * (-v7 - v6 + 2 * c)) / (v7 - v6),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v7 - v5 - 2 * c)) / (v0 - v2 + v1 - v3 + v7 - v5),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v7 - v3 - 2 * c)) / (v0 - v4 + v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 4:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
+            d1 - F5_6 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 5:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v7 - v6 - 2 * c)) / (v0 - v1 + v2 - v3 + v7 - v6),
+            d1 - F9_14 - (F1_14 * (-v7 - v5 + 2 * c)) / (v7 - v5),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + v6 + v2 + -v7 - v3 - 2 * c)) / (v0 - v4 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 6:
+          a.push([
+            d0 - F11_18 - (F1_6 * (-v1 - v0 + v3 + v2 + -v7 - v6 + 2 * c)) / (v1 - v0 + v2 - v3 + v7 - v6),
+            d1 - F11_18 - (F1_6 * (-v2 - v0 + v3 + v1 + -v7 - v5 + 2 * c)) / (v2 - v0 + v1 - v3 + v7 - v5),
+            d2 - F7_18 - (F1_6 * (v5 + v1 + v6 + v2 + -v7 - v3 - 2 * c)) / (v1 - v5 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 7:
+          a.push([
+            d0 - 0.625 - (0.125 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
+            d1 - 0.625 - (0.125 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
+            d2 - 0.5 - (0.25 * (v4 + v0 + v5 + v1 + v6 + v2 + -v7 - v3 - 4 * c)) / (v0 - v4 + v1 - v5 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 8:
+          a.push([d0 - 0.75 - (0.25 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6), d1 - 0.75 - (0.25 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5), d2 - 0.5]);
+          break;
+        case 9:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + -v7 - v6 + 2 * c)) / (v0 - v1 + v3 - v2 + v7 - v6),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + -v7 - v5 + 2 * c)) / (v0 - v2 + v3 - v1 + v7 - v5),
+            d2 - F5_14 - (F1_14 * (v4 + v0 - 2 * c)) / (v0 - v4),
+          ]);
+          break;
+        case 10:
+          a.push([d0 - 0.7 - (0.3 * (-v1 - v0 + -v3 - v2 + -v7 - v6 + 6 * c)) / (v1 - v0 + v3 - v2 + v7 - v6), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
+          break;
+        case 11:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5),
+          ]);
+          break;
+        case 12:
+          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.7 - (0.3 * (-v2 - v0 + -v3 - v1 + -v7 - v5 + 6 * c)) / (v2 - v0 + v3 - v1 + v7 - v5), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
+          break;
+        case 13:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6),
+          ]);
+          break;
+        case 14:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
+          ]);
+          break;
+        case 15:
+          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.7 - (0.3 * (v4 + v0 + v5 + v1 + v6 + v2 - 6 * c)) / (v0 - v4 + v1 - v5 + v2 - v6)]);
+          break;
+        case 16:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
+            d2 - F5_6 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
+          ]);
+          break;
+        case 17:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + v5 + v4 + -v7 - v6 - 2 * c)) / (v0 - v1 + v4 - v5 + v7 - v6),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + v6 + v4 + -v7 - v5 - 2 * c)) / (v0 - v2 + v4 - v6 + v7 - v5),
+            d2 - F9_14 - (F1_14 * (-v7 - v3 + 2 * c)) / (v7 - v3),
+          ]);
+          break;
+        case 18:
+          a.push([
+            d0 - F11_18 - (F1_6 * (-v1 - v0 + v5 + v4 + -v7 - v6 + 2 * c)) / (v1 - v0 + v4 - v5 + v7 - v6),
+            d1 - F7_18 - (F1_6 * (v3 + v1 + v6 + v4 + -v7 - v5 - 2 * c)) / (v1 - v3 + v4 - v6 + v7 - v5),
+            d2 - F11_18 - (F1_6 * (-v4 - v0 + v5 + v1 + -v7 - v3 + 2 * c)) / (v4 - v0 + v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 19:
+          a.push([
+            d0 - 0.625 - (0.125 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
+            d1 - 0.5 - (0.25 * (v2 + v0 + v3 + v1 + v6 + v4 + -v7 - v5 - 4 * c)) / (v0 - v2 + v1 - v3 + v4 - v6 + v7 - v5),
+            d2 - 0.625 - (0.125 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 20:
+          a.push([
+            d0 - F7_18 - (F1_6 * (v3 + v2 + v5 + v4 + -v7 - v6 - 2 * c)) / (v2 - v3 + v4 - v5 + v7 - v6),
+            d1 - F11_18 - (F1_6 * (-v2 - v0 + v6 + v4 + -v7 - v5 + 2 * c)) / (v2 - v0 + v4 - v6 + v7 - v5),
+            d2 - F11_18 - (F1_6 * (-v4 - v0 + v6 + v2 + -v7 - v3 + 2 * c)) / (v4 - v0 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 21:
+          a.push([
+            d0 - 0.5 - (0.25 * (v1 + v0 + v3 + v2 + v5 + v4 + -v7 - v6 - 4 * c)) / (v0 - v1 + v2 - v3 + v4 - v5 + v7 - v6),
+            d1 - 0.625 - (0.125 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
+            d2 - 0.625 - (0.125 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 22:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + v3 + v2 + v5 + v4 + -v7 - v6)) / (v1 - v0 + v2 - v3 + v4 - v5 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + v3 + v1 + v6 + v4 + -v7 - v5)) / (v2 - v0 + v1 - v3 + v4 - v6 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + v5 + v1 + v6 + v2 + -v7 - v3)) / (v4 - v0 + v1 - v5 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 23:
+          a.push([
+            d0 - F11_18 - (F1_6 * (v3 + v2 + v5 + v4 + -v7 - v6 - 2 * c)) / (v2 - v3 + v4 - v5 + v7 - v6),
+            d1 - F11_18 - (F1_6 * (v3 + v1 + v6 + v4 + -v7 - v5 - 2 * c)) / (v1 - v3 + v4 - v6 + v7 - v5),
+            d2 - F11_18 - (F1_6 * (v5 + v1 + v6 + v2 + -v7 - v3 - 2 * c)) / (v1 - v5 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 24:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + -v7 - v6 + 2 * c)) / (v3 - v2 + v4 - v5 + v7 - v6),
+            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + -v7 - v5 + 2 * c)) / (v3 - v1 + v4 - v6 + v7 - v5),
+            d2 - F9_14 - (F1_14 * (-v4 - v0 + 2 * c)) / (v4 - v0),
+          ]);
+          break;
+        case 25:
+          a.push([d0 - 0.5 - (0.25 * (v1 + v0 + -v3 - v2 + v5 + v4 + -v7 - v6)) / (v0 - v1 + v3 - v2 + v4 - v5 + v7 - v6), d1 - 0.5 - (0.25 * (v2 + v0 + -v3 - v1 + v6 + v4 + -v7 - v5)) / (v0 - v2 + v3 - v1 + v4 - v6 + v7 - v5), d2 - 0.5]);
+          break;
+        case 26:
+          a.push([
+            d0 - 0.5 - (0.25 * (-v1 - v0 + -v3 - v2 + v5 + v4 + -v7 - v6 + 4 * c)) / (v1 - v0 + v3 - v2 + v4 - v5 + v7 - v6),
+            d1 - 0.375 - (0.125 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
+            d2 - 0.625 - (0.125 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
+          ]);
+          break;
+        case 27:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + -v7 - v6 + 2 * c)) / (v3 - v2 + v4 - v5 + v7 - v6),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + v6 + v4 + -v7 - v5 - 2 * c)) / (v0 - v2 + v4 - v6 + v7 - v5),
+            d2 - F9_14 - (F1_14 * (v5 + v1 - 2 * c)) / (v1 - v5),
+          ]);
+          break;
+        case 28:
+          a.push([
+            d0 - 0.375 - (0.125 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
+            d1 - 0.5 - (0.25 * (-v2 - v0 + -v3 - v1 + v6 + v4 + -v7 - v5 + 4 * c)) / (v2 - v0 + v3 - v1 + v4 - v6 + v7 - v5),
+            d2 - 0.625 - (0.125 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
+          ]);
+          break;
+        case 29:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + v5 + v4 + -v7 - v6 - 2 * c)) / (v0 - v1 + v4 - v5 + v7 - v6),
+            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + -v7 - v5 + 2 * c)) / (v3 - v1 + v4 - v6 + v7 - v5),
+            d2 - F9_14 - (F1_14 * (v6 + v2 - 2 * c)) / (v2 - v6),
+          ]);
+          break;
+        case 30:
+          a.push([
+            d0 - F7_18 - (F1_6 * (-v1 - v0 + v5 + v4 + -v7 - v6 + 2 * c)) / (v1 - v0 + v4 - v5 + v7 - v6),
+            d1 - F7_18 - (F1_6 * (-v2 - v0 + v6 + v4 + -v7 - v5 + 2 * c)) / (v2 - v0 + v4 - v6 + v7 - v5),
+            d2 - F11_18 - (F1_6 * (-v4 - v0 + v5 + v1 + v6 + v2 - 2 * c)) / (v4 - v0 + v1 - v5 + v2 - v6),
+          ]);
+          break;
+        case 31:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
+            d2 - F5_6 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
+          ]);
+          break;
+        case 32:
+          a.push([d0 - 0.75 - (0.25 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.75 - (0.25 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3)]);
+          break;
+        case 33:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v0 - v1 + v5 - v4 + v7 - v6),
+            d1 - F5_14 - (F1_14 * (v2 + v0 - 2 * c)) / (v0 - v2),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + -v7 - v3 + 2 * c)) / (v0 - v4 + v5 - v1 + v7 - v3),
+          ]);
+          break;
+        case 34:
+          a.push([d0 - 0.7 - (0.3 * (-v1 - v0 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v1 - v0 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
+          break;
+        case 35:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3),
+          ]);
+          break;
+        case 36:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v2 - v3 + v5 - v4 + v7 - v6),
+            d1 - F9_14 - (F1_14 * (-v2 - v0 + 2 * c)) / (v2 - v0),
+            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + -v7 - v3 + 2 * c)) / (v5 - v1 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 37:
+          a.push([d0 - 0.5 - (0.25 * (v1 + v0 + v3 + v2 + -v5 - v4 + -v7 - v6)) / (v0 - v1 + v2 - v3 + v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.5 - (0.25 * (v4 + v0 + -v5 - v1 + v6 + v2 + -v7 - v3)) / (v0 - v4 + v5 - v1 + v2 - v6 + v7 - v3)]);
+          break;
+        case 38:
+          a.push([
+            d0 - 0.5 - (0.25 * (-v1 - v0 + v3 + v2 + -v5 - v4 + -v7 - v6 + 4 * c)) / (v1 - v0 + v2 - v3 + v5 - v4 + v7 - v6),
+            d1 - 0.625 - (0.125 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
+            d2 - 0.375 - (0.125 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 39:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v2 - v3 + v5 - v4 + v7 - v6),
+            d1 - F9_14 - (F1_14 * (v3 + v1 - 2 * c)) / (v1 - v3),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + v6 + v2 + -v7 - v3 - 2 * c)) / (v0 - v4 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 40:
+          a.push([d0 - 0.7 - (0.3 * (-v3 - v2 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v3 - v2 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
+          break;
+        case 41:
+          a.push([
+            d0 - 0.5 - (0.25 * (v1 + v0 + -v3 - v2 + -v5 - v4 + -v7 - v6 + 4 * c)) / (v0 - v1 + v3 - v2 + v5 - v4 + v7 - v6),
+            d1 - 0.375 - (0.125 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
+            d2 - 0.375 - (0.125 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
+          ]);
+          break;
+        case 42:
+          a.push([d0 - 0.5 - (0.5 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + -v7 - v6 + 8 * c)) / (v1 - v0 + v3 - v2 + v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.5]);
+          break;
+        case 43:
+          a.push([d0 - 0.3 - (0.3 * (-v3 - v2 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v3 - v2 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
+          break;
+        case 44:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6),
+          ]);
+          break;
+        case 45:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v0 - v1 + v5 - v4 + v7 - v6),
+            d1 - F5_14 - (F1_14 * (-v3 - v1 + 2 * c)) / (v3 - v1),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + v6 + v2 - 2 * c)) / (v0 - v4 + v5 - v1 + v2 - v6),
+          ]);
+          break;
+        case 46:
+          a.push([d0 - 0.3 - (0.3 * (-v1 - v0 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v1 - v0 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
+          break;
+        case 47:
+          a.push([d0 - 0.25 - (0.25 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.75 - (0.25 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6)]);
+          break;
+        case 48:
+          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.7 - (0.3 * (-v4 - v0 + -v5 - v1 + -v7 - v3 + 6 * c)) / (v4 - v0 + v5 - v1 + v7 - v3)]);
+          break;
+        case 49:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3),
+          ]);
+          break;
+        case 50:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
+          ]);
+          break;
+        case 51:
+          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.7 - (0.3 * (v2 + v0 + v3 + v1 + v6 + v4 - 6 * c)) / (v0 - v2 + v1 - v3 + v4 - v6), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
+          break;
+        case 52:
+          a.push([
+            d0 - 0.375 - (0.125 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
+            d1 - 0.625 - (0.125 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
+            d2 - 0.5 - (0.25 * (-v4 - v0 + -v5 - v1 + v6 + v2 + -v7 - v3 + 4 * c)) / (v4 - v0 + v5 - v1 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 53:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v7 - v6 - 2 * c)) / (v0 - v1 + v2 - v3 + v7 - v6),
+            d1 - F9_14 - (F1_14 * (v6 + v4 - 2 * c)) / (v4 - v6),
+            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + -v7 - v3 + 2 * c)) / (v5 - v1 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 54:
+          a.push([
+            d0 - F7_18 - (F1_6 * (-v1 - v0 + v3 + v2 + -v7 - v6 + 2 * c)) / (v1 - v0 + v2 - v3 + v7 - v6),
+            d1 - F11_18 - (F1_6 * (-v2 - v0 + v3 + v1 + v6 + v4 - 2 * c)) / (v2 - v0 + v1 - v3 + v4 - v6),
+            d2 - F7_18 - (F1_6 * (-v4 - v0 + v6 + v2 + -v7 - v3 + 2 * c)) / (v4 - v0 + v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 55:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
+            d1 - F5_6 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
+          ]);
+          break;
+        case 56:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1),
+          ]);
+          break;
+        case 57:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + -v7 - v6 + 2 * c)) / (v0 - v1 + v3 - v2 + v7 - v6),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + v6 + v4 - 2 * c)) / (v0 - v2 + v3 - v1 + v4 - v6),
+            d2 - F5_14 - (F1_14 * (-v5 - v1 + 2 * c)) / (v5 - v1),
+          ]);
+          break;
+        case 58:
+          a.push([d0 - 0.3 - (0.3 * (-v1 - v0 + -v3 - v2 + -v7 - v6 + 6 * c)) / (v1 - v0 + v3 - v2 + v7 - v6), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
+          break;
+        case 59:
+          a.push([d0 - 0.25 - (0.25 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6), d1 - 0.75 - (0.25 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6), d2 - 0.5]);
+          break;
+        case 60:
+          a.push([
+            d0 - F5_14 - (F1_14 * (-v7 - v6 + 2 * c)) / (v7 - v6),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v6 + v4 + 2 * c)) / (v2 - v0 + v3 - v1 + v4 - v6),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v6 + v2 + 2 * c)) / (v4 - v0 + v5 - v1 + v2 - v6),
+          ]);
+          break;
+        case 61:
+          a.push([d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6), d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6), d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6)]);
+          break;
+        case 62:
+          a.push([
+            d0 - F1_6 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
+          ]);
+          break;
+        case 63:
+          a.push([
+            d0 - F1_6 - (F1_6 * (-v7 - v6 + 2 * c)) / (v7 - v6),
+            d1 - F5_6 - (F1_6 * (v6 + v4 - 2 * c)) / (v4 - v6),
+            d2 - F5_6 - (F1_6 * (v6 + v2 - 2 * c)) / (v2 - v6),
+          ]);
+          break;
+        case 64:
+          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5), d2 - 0.75 - (0.25 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3)]);
+          break;
+        case 65:
+          a.push([
+            d0 - F5_14 - (F1_14 * (v1 + v0 - 2 * c)) / (v0 - v1),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v0 - v2 + v6 - v4 + v7 - v5),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v0 - v4 + v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 66:
+          a.push([
+            d0 - F9_14 - (F1_14 * (-v1 - v0 + 2 * c)) / (v1 - v0),
+            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v1 - v3 + v6 - v4 + v7 - v5),
+            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v1 - v5 + v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 67:
+          a.push([d0 - 0.5, d1 - 0.5 - (0.25 * (v2 + v0 + v3 + v1 + -v6 - v4 + -v7 - v5)) / (v0 - v2 + v1 - v3 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.25 * (v4 + v0 + v5 + v1 + -v6 - v2 + -v7 - v3)) / (v0 - v4 + v1 - v5 + v6 - v2 + v7 - v3)]);
+          break;
+        case 68:
+          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.7 - (0.3 * (-v2 - v0 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v2 - v0 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
+          break;
+        case 69:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3),
+            d1 - 0.5 - (F1_6 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3),
+          ]);
+          break;
+        case 70:
+          a.push([
+            d0 - 0.625 - (0.125 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
+            d1 - 0.5 - (0.25 * (-v2 - v0 + v3 + v1 + -v6 - v4 + -v7 - v5 + 4 * c)) / (v2 - v0 + v1 - v3 + v6 - v4 + v7 - v5),
+            d2 - 0.375 - (0.125 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 71:
+          a.push([
+            d0 - F9_14 - (F1_14 * (v3 + v2 - 2 * c)) / (v2 - v3),
+            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v1 - v3 + v6 - v4 + v7 - v5),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v7 - v3 - 2 * c)) / (v0 - v4 + v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 72:
+          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.7 - (0.3 * (-v3 - v1 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v3 - v1 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
+          break;
+        case 73:
+          a.push([
+            d0 - 0.375 - (0.125 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
+            d1 - 0.5 - (0.25 * (v2 + v0 + -v3 - v1 + -v6 - v4 + -v7 - v5 + 4 * c)) / (v0 - v2 + v3 - v1 + v6 - v4 + v7 - v5),
+            d2 - 0.375 - (0.125 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
+          ]);
+          break;
+        case 74:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2),
+            d1 - 0.5 - (F1_6 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2),
+          ]);
+          break;
+        case 75:
+          a.push([
+            d0 - F5_14 - (F1_14 * (-v3 - v2 + 2 * c)) / (v3 - v2),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v0 - v2 + v6 - v4 + v7 - v5),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v6 - v2 - 2 * c)) / (v0 - v4 + v1 - v5 + v6 - v2),
+          ]);
+          break;
+        case 76:
+          a.push([d0 - 0.5, d1 - 0.5 - (0.5 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + -v7 - v5 + 8 * c)) / (v2 - v0 + v3 - v1 + v6 - v4 + v7 - v5), d2 - 0.5]);
+          break;
+        case 77:
+          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.3 - (0.3 * (-v3 - v1 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v3 - v1 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
+          break;
+        case 78:
+          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.3 - (0.3 * (-v2 - v0 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v2 - v0 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
+          break;
+        case 79:
+          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5), d2 - 0.75 - (0.25 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5)]);
+          break;
+        case 80:
+          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.7 - (0.3 * (-v4 - v0 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v4 - v0 + v6 - v2 + v7 - v3)]);
+          break;
+        case 81:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 82:
+          a.push([
+            d0 - 0.625 - (0.125 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
+            d1 - 0.375 - (0.125 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
+            d2 - 0.5 - (0.25 * (-v4 - v0 + v5 + v1 + -v6 - v2 + -v7 - v3 + 4 * c)) / (v4 - v0 + v1 - v5 + v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 83:
+          a.push([
+            d0 - F9_14 - (F1_14 * (v5 + v4 - 2 * c)) / (v4 - v5),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v7 - v5 - 2 * c)) / (v0 - v2 + v1 - v3 + v7 - v5),
+            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v1 - v5 + v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 84:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
+          ]);
+          break;
+        case 85:
+          a.push([d0 - 0.7 - (0.3 * (v1 + v0 + v3 + v2 + v5 + v4 - 6 * c)) / (v0 - v1 + v2 - v3 + v4 - v5), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
+          break;
+        case 86:
+          a.push([
+            d0 - F11_18 - (F1_6 * (-v1 - v0 + v3 + v2 + v5 + v4 - 2 * c)) / (v1 - v0 + v2 - v3 + v4 - v5),
+            d1 - F7_18 - (F1_6 * (-v2 - v0 + v3 + v1 + -v7 - v5 + 2 * c)) / (v2 - v0 + v1 - v3 + v7 - v5),
+            d2 - F7_18 - (F1_6 * (-v4 - v0 + v5 + v1 + -v7 - v3 + 2 * c)) / (v4 - v0 + v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 87:
+          a.push([
+            d0 - F5_6 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
+          ]);
+          break;
+        case 88:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2),
+          ]);
+          break;
+        case 89:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + v5 + v4 - 2 * c)) / (v0 - v1 + v3 - v2 + v4 - v5),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + -v7 - v5 + 2 * c)) / (v0 - v2 + v3 - v1 + v7 - v5),
+            d2 - F5_14 - (F1_14 * (-v6 - v2 + 2 * c)) / (v6 - v2),
+          ]);
+          break;
+        case 90:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v5 + v4 + 2 * c)) / (v1 - v0 + v3 - v2 + v4 - v5),
+            d1 - F5_14 - (F1_14 * (-v7 - v5 + 2 * c)) / (v7 - v5),
+            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + -v6 - v2 + 2 * c)) / (v4 - v0 + v1 - v5 + v6 - v2),
+          ]);
+          break;
+        case 91:
+          a.push([d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5), d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5), d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2)]);
+          break;
+        case 92:
+          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.3 - (0.3 * (-v2 - v0 + -v3 - v1 + -v7 - v5 + 6 * c)) / (v2 - v0 + v3 - v1 + v7 - v5), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
+          break;
+        case 93:
+          a.push([d0 - 0.75 - (0.25 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5), d1 - 0.25 - (0.25 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5), d2 - 0.5]);
+          break;
+        case 94:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
+            d1 - F1_6 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
+            d2 - 0.5 - (F1_6 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
+          ]);
+          break;
+        case 95:
+          a.push([
+            d0 - F5_6 - (F1_6 * (v5 + v4 - 2 * c)) / (v4 - v5),
+            d1 - F1_6 - (F1_6 * (-v7 - v5 + 2 * c)) / (v7 - v5),
+            d2 - F5_6 - (F1_6 * (v5 + v1 - 2 * c)) / (v1 - v5),
+          ]);
+          break;
+        case 96:
+          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.7 - (0.3 * (-v5 - v1 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v5 - v1 + v6 - v2 + v7 - v3)]);
+          break;
+        case 97:
+          a.push([
+            d0 - 0.375 - (0.125 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
+            d1 - 0.375 - (0.125 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
+            d2 - 0.5 - (0.25 * (v4 + v0 + -v5 - v1 + -v6 - v2 + -v7 - v3 + 4 * c)) / (v0 - v4 + v5 - v1 + v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 98:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 99:
+          a.push([
+            d0 - F5_14 - (F1_14 * (-v5 - v4 + 2 * c)) / (v5 - v4),
+            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v6 - v4 - 2 * c)) / (v0 - v2 + v1 - v3 + v6 - v4),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v0 - v4 + v6 - v2 + v7 - v3),
+          ]);
+          break;
+        case 100:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3),
+          ]);
+          break;
+        case 101:
+          a.push([
+            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v5 - v4 - 2 * c)) / (v0 - v1 + v2 - v3 + v5 - v4),
+            d1 - F5_14 - (F1_14 * (-v6 - v4 + 2 * c)) / (v6 - v4),
+            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + -v7 - v3 + 2 * c)) / (v0 - v4 + v5 - v1 + v7 - v3),
+          ]);
+          break;
+        case 102:
+          a.push([
+            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + -v5 - v4 + 2 * c)) / (v1 - v0 + v2 - v3 + v5 - v4),
+            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + -v6 - v4 + 2 * c)) / (v2 - v0 + v1 - v3 + v6 - v4),
+            d2 - F5_14 - (F1_14 * (-v7 - v3 + 2 * c)) / (v7 - v3),
+          ]);
+          break;
+        case 103:
+          a.push([d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4), d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4), d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3)]);
+          break;
+        case 104:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
+          ]);
+          break;
+        case 105:
+          a.push([
+            d0 - F7_18 - (F1_6 * (v1 + v0 + -v3 - v2 + -v5 - v4 + 2 * c)) / (v0 - v1 + v3 - v2 + v5 - v4),
+            d1 - F7_18 - (F1_6 * (v2 + v0 + -v3 - v1 + -v6 - v4 + 2 * c)) / (v0 - v2 + v3 - v1 + v6 - v4),
+            d2 - F7_18 - (F1_6 * (v4 + v0 + -v5 - v1 + -v6 - v2 + 2 * c)) / (v0 - v4 + v5 - v1 + v6 - v2),
+          ]);
+          break;
+        case 106:
+          a.push([d0 - 0.3 - (0.3 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + 6 * c)) / (v1 - v0 + v3 - v2 + v5 - v4), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
+          break;
+        case 107:
+          a.push([
+            d0 - F1_6 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
+          ]);
+          break;
+        case 108:
+          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.3 - (0.3 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + 6 * c)) / (v2 - v0 + v3 - v1 + v6 - v4), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
+          break;
+        case 109:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
+            d1 - F1_6 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
+            d2 - 0.5 - (F1_6 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
+          ]);
+          break;
+        case 110:
+          a.push([d0 - 0.25 - (0.25 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4), d1 - 0.25 - (0.25 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4), d2 - 0.5]);
+          break;
+        case 111:
+          a.push([
+            d0 - F1_6 - (F1_6 * (-v5 - v4 + 2 * c)) / (v5 - v4),
+            d1 - F1_6 - (F1_6 * (-v6 - v4 + 2 * c)) / (v6 - v4),
+            d2 - F5_6 - (F1_6 * (v4 + v0 - 2 * c)) / (v0 - v4),
+          ]);
+          break;
+        case 112:
+          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5 - (0.5 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + -v7 - v3 + 8 * c)) / (v4 - v0 + v5 - v1 + v6 - v2 + v7 - v3)]);
+          break;
+        case 113:
+          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.3 - (0.3 * (-v5 - v1 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v5 - v1 + v6 - v2 + v7 - v3)]);
+          break;
+        case 114:
+          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.3 - (0.3 * (-v4 - v0 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v4 - v0 + v6 - v2 + v7 - v3)]);
+          break;
+        case 115:
+          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3), d2 - 0.25 - (0.25 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3)]);
+          break;
+        case 116:
+          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.3 - (0.3 * (-v4 - v0 + -v5 - v1 + -v7 - v3 + 6 * c)) / (v4 - v0 + v5 - v1 + v7 - v3)]);
+          break;
+        case 117:
+          a.push([d0 - 0.75 - (0.25 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3), d1 - 0.5, d2 - 0.25 - (0.25 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3)]);
+          break;
+        case 118:
+          a.push([
+            d0 - 0.5 - (F1_6 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
+            d1 - 0.5 - (F1_6 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
+            d2 - F1_6 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
+          ]);
+          break;
+        case 119:
+          a.push([
+            d0 - F5_6 - (F1_6 * (v3 + v2 - 2 * c)) / (v2 - v3),
+            d1 - F5_6 - (F1_6 * (v3 + v1 - 2 * c)) / (v1 - v3),
+            d2 - F1_6 - (F1_6 * (-v7 - v3 + 2 * c)) / (v7 - v3),
+          ]);
+          break;
+        case 120:
+          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.3 - (0.3 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + 6 * c)) / (v4 - v0 + v5 - v1 + v6 - v2)]);
+          break;
+        case 121:
+          a.push([
+            d0 - 0.5 - (F1_6 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
+            d1 - 0.5 - (F1_6 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
+            d2 - F1_6 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
+          ]);
+          break;
+        case 122:
+          a.push([d0 - 0.25 - (0.25 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2), d1 - 0.5, d2 - 0.25 - (0.25 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2)]);
+          break;
+        case 123:
+          a.push([
+            d0 - F1_6 - (F1_6 * (-v3 - v2 + 2 * c)) / (v3 - v2),
+            d1 - F5_6 - (F1_6 * (v2 + v0 - 2 * c)) / (v0 - v2),
+            d2 - F1_6 - (F1_6 * (-v6 - v2 + 2 * c)) / (v6 - v2),
+          ]);
+          break;
+        case 124:
+          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1), d2 - 0.25 - (0.25 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1)]);
+          break;
+        case 125:
+          a.push([
+            d0 - F5_6 - (F1_6 * (v1 + v0 - 2 * c)) / (v0 - v1),
+            d1 - F1_6 - (F1_6 * (-v3 - v1 + 2 * c)) / (v3 - v1),
+            d2 - F1_6 - (F1_6 * (-v5 - v1 + 2 * c)) / (v5 - v1),
+          ]);
+          break;
+        case 126:
+          a.push([
+            d0 - F1_6 - (F1_6 * (-v1 - v0 + 2 * c)) / (v1 - v0),
+            d1 - F1_6 - (F1_6 * (-v2 - v0 + 2 * c)) / (v2 - v0),
+            d2 - F1_6 - (F1_6 * (-v4 - v0 + 2 * c)) / (v4 - v0),
+          ]);
+          break;
+        case 127:
+          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5]);
+          break;
+      }
+    }
+  },
+}
+
 function buildSurfaceNets(order, dtype) {
-  var dimension = order.length
-  var code = ["'use strict';"]
-  var funcName = "surfaceNets" + order.join("_") + "d" + dtype
-
-  //Contour extraction function
-  code.push(
-    "var contour=genContour({",
-      "order:[", order.join(), "],",
-      "scalarArguments: 3,",
-      "phase:function phaseFunc(p,a,b,c) { return (p > c)|0 },")
-  if(dtype === "generic") {
-    code.push("getters:[0],")
-  }
-
-  //Generate vertex function
-  var cubeArgs = []
-  var extraArgs = []
-  for(var i=0; i<dimension; ++i) {
-    cubeArgs.push("d" + i)
-    extraArgs.push("d" + i)
-  }
-  for(var i=0; i<(1<<dimension); ++i) {
-    cubeArgs.push("v" + i)
-    extraArgs.push("v" + i)
-  }
-  for(var i=0; i<(1<<dimension); ++i) {
-    cubeArgs.push("p" + i)
-    extraArgs.push("p" + i)
-  }
-  cubeArgs.push("a", "b", "c")
-  extraArgs.push("a", "c")
-  code.push("vertex:function vertexFunc(", cubeArgs.join(), "){")
-  //Mask args together
-  var maskStr = []
-  for(var i=0; i<(1<<dimension); ++i) {
-    maskStr.push("(p" + i + "<<" + i + ")")
-  }
-  //Generate variables and giganto switch statement
-  code.push("var m=(", maskStr.join("+"), ")|0;if(m===0||m===", (1<<(1<<dimension))-1, "){return}")
-  var extraFuncs = []
-  var currentFunc = []
-  if(1<<(1<<dimension) <= 128) {
-    code.push("switch(m){")
-    currentFunc = code
-  } else {
-    code.push("switch(m>>>7){")
-  }
-  for(var i=0; i<1<<(1<<dimension); ++i) {
-    if(1<<(1<<dimension) > 128) {
-      if((i%128)===0) {
-        if(extraFuncs.length > 0) {
-          currentFunc.push("}}")
-        }
-        var efName = "vExtra" + extraFuncs.length
-        code.push("case ", (i>>>7), ":", efName, "(m&0x7f,", extraArgs.join(), ");break;")
-        currentFunc = [
-          "function ", efName, "(m,", extraArgs.join(), "){switch(m){"
-        ]
-        extraFuncs.push(currentFunc)
-      }  
-    }
-    currentFunc.push("case ", (i&0x7f), ":")
-    var crossings = new Array(dimension)
-    var denoms = new Array(dimension)
-    var crossingCount = new Array(dimension)
-    var bias = new Array(dimension)
-    var totalCrossings = 0
-    for(var j=0; j<dimension; ++j) {
-      crossings[j] = []
-      denoms[j] = []
-      crossingCount[j] = 0
-      bias[j] = 0
-    }
-    for(var j=0; j<(1<<dimension); ++j) {
-      for(var k=0; k<dimension; ++k) {
-        var u = j ^ (1<<k)
-        if(u > j) {
-          continue
-        }
-        if(!(i&(1<<u)) !== !(i&(1<<j))) {
-          var sign = 1
-          if(i&(1<<u)) {
-            denoms[k].push("v" + u + "-v" + j)
-          } else {
-            denoms[k].push("v" + j + "-v" + u)
-            sign = -sign
-          }
-          if(sign < 0) {
-            crossings[k].push("-v" + j + "-v" + u)
-            crossingCount[k] += 2
-          } else {
-            crossings[k].push("v" + j + "+v" + u)
-            crossingCount[k] -= 2            
-          }
-          totalCrossings += 1
-          for(var l=0; l<dimension; ++l) {
-            if(l === k) {
-              continue
-            }
-            if(u&(1<<l)) {
-              bias[l] += 1
-            } else {
-              bias[l] -= 1
-            }
-          }
-        }
-      }
-    }
-    var vertexStr = []
-    for(var k=0; k<dimension; ++k) {
-      if(crossings[k].length === 0) {
-        vertexStr.push("d" + k + "-0.5")
-      } else {
-        var cStr = ""
-        if(crossingCount[k] < 0) {
-          cStr = crossingCount[k] + "*c"
-        } else if(crossingCount[k] > 0) {
-          cStr = "+" + crossingCount[k] + "*c"
-        }
-        var weight = 0.5 * (crossings[k].length / totalCrossings)
-        var shift = 0.5 + 0.5 * (bias[k] / totalCrossings)
-        vertexStr.push("d" + k + "-" + shift + "-" + weight + "*(" + crossings[k].join("+") + cStr + ")/(" + denoms[k].join("+") + ")")
-        
-      }
-    }
-    currentFunc.push("a.push([", vertexStr.join(), "]);",
-      "break;")
-  }
-  code.push("}},")
-  if(extraFuncs.length > 0) {
-    currentFunc.push("}}")
-  }
-
-  //Create face function
-  var faceArgs = []
-  for(var i=0; i<(1<<(dimension-1)); ++i) {
-    faceArgs.push("v" + i)
-  }
-  faceArgs.push("c0", "c1", "p0", "p1", "a", "b", "c")
-  code.push("cell:function cellFunc(", faceArgs.join(), "){")
-
-  var facets = triangulateCube(dimension-1)
-  code.push("if(p0){b.push(",
-    facets.map(function(f) {
-      return "[" + f.map(function(v) {
-        return "v" + v
-      }) + "]"
-    }).join(), ")}else{b.push(",
-    facets.map(function(f) {
-      var e = f.slice()
-      e.reverse()
-      return "[" + e.map(function(v) {
-        return "v" + v
-      }) + "]"
-    }).join(),
-    ")}}});function ", funcName, "(array,level){var verts=[],cells=[];contour(array,verts,cells,level);return {positions:verts,cells:cells};} return ", funcName, ";")
-
-  for(var i=0; i<extraFuncs.length; ++i) {
-    code.push(extraFuncs[i].join(""))
-  }
-
-  //Compile and link
-  var proc = new Function("genContour", code.join(""))
-  return proc(generateContourExtractor)
+  var inKey = order.length + 'd'
+  var fn = allFns[inKey]
+  if(fn) return fn(generateContourExtractor, order, dtype)
 }
 
 //1D case: Need to handle specially
@@ -50589,7 +49617,7 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":297,"triangulate-hypercube":368,"zero-crossings":399}],365:[function(_dereq_,module,exports){
+},{"ndarray-extract-contour":285,"zero-crossings":382}],349:[function(_dereq_,module,exports){
 (function (setImmediate,clearImmediate){(function (){
 var nextTick = _dereq_('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -50668,7 +49696,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this)}).call(this,_dereq_("timers").setImmediate,_dereq_("timers").clearImmediate)
-},{"process/browser.js":330,"timers":365}],366:[function(_dereq_,module,exports){
+},{"process/browser.js":315,"timers":349}],350:[function(_dereq_,module,exports){
 // TinyColor v1.4.2
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -51865,7 +50893,7 @@ else {
 
 })(Math);
 
-},{}],367:[function(_dereq_,module,exports){
+},{}],351:[function(_dereq_,module,exports){
 'use strict'
 
 var parseUnit = _dereq_('parse-unit')
@@ -51926,41 +50954,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":313}],368:[function(_dereq_,module,exports){
-"use strict"
-
-module.exports = triangulateCube
-
-var perm = _dereq_("permutation-rank")
-var sgn = _dereq_("permutation-parity")
-var gamma = _dereq_("gamma")
-
-function triangulateCube(dimension) {
-  if(dimension < 0) {
-    return [ ]
-  }
-  if(dimension === 0) {
-    return [ [0] ]
-  }
-  var dfactorial = Math.round(gamma(dimension+1))|0
-  var result = []
-  for(var i=0; i<dfactorial; ++i) {
-    var p = perm.unrank(dimension, i)
-    var cell = [ 0 ]
-    var v = 0
-    for(var j=0; j<p.length; ++j) {
-      v += (1<<p[j])
-      cell.push(v)
-    }
-    if(sgn(p) < 1) {
-      cell[0] = v
-      cell[dimension] = 0
-    }
-    result.push(cell)
-  }
-  return result
-}
-},{"gamma":100,"permutation-parity":314,"permutation-rank":315}],369:[function(_dereq_,module,exports){
+},{"parse-unit":301}],352:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = createTurntableController
@@ -52533,7 +51527,7 @@ function createTurntableController(options) {
     theta,
     phi)
 }
-},{"filtered-vector":97,"gl-mat4/invert":141,"gl-mat4/rotate":147,"gl-vec3/cross":195,"gl-vec3/dot":200,"gl-vec3/normalize":217}],370:[function(_dereq_,module,exports){
+},{"filtered-vector":95,"gl-mat4/invert":136,"gl-mat4/rotate":142,"gl-vec3/cross":188,"gl-vec3/dot":193,"gl-vec3/normalize":210}],353:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -52567,7 +51561,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],371:[function(_dereq_,module,exports){
+},{}],354:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -52585,7 +51579,7 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],372:[function(_dereq_,module,exports){
+},{}],355:[function(_dereq_,module,exports){
 (function (global){(function (){
 'use strict'
 
@@ -52840,7 +51834,7 @@ exports.clearCache = function clearCache() {
 }
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"bit-twiddle":44,"buffer":56,"dup":93}],373:[function(_dereq_,module,exports){
+},{"bit-twiddle":43,"buffer":55,"dup":91}],356:[function(_dereq_,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -52903,7 +51897,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],374:[function(_dereq_,module,exports){
+},{}],357:[function(_dereq_,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -52962,7 +51956,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],375:[function(_dereq_,module,exports){
+},{}],358:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = createText
@@ -52989,7 +51983,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":376}],376:[function(_dereq_,module,exports){
+},{"./lib/vtext":359}],359:[function(_dereq_,module,exports){
 module.exports = vectorizeText
 module.exports.processPixels = processPixels
 
@@ -53444,7 +52438,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":57,"clean-pslg":66,"ndarray":305,"planar-graph-to-polyline":318,"simplify-planar-graph":358,"surface-nets":364}],377:[function(_dereq_,module,exports){
+},{"cdt2d":56,"clean-pslg":65,"ndarray":293,"planar-graph-to-polyline":304,"simplify-planar-graph":343,"surface-nets":348}],360:[function(_dereq_,module,exports){
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -54131,7 +53125,7 @@ function vectorizeText(str, canvas, context, options) {
   }
 })();
 
-},{}],378:[function(_dereq_,module,exports){
+},{}],361:[function(_dereq_,module,exports){
 var hiddenStore = _dereq_('./hidden-store.js');
 
 module.exports = createStore;
@@ -54152,7 +53146,7 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":379}],379:[function(_dereq_,module,exports){
+},{"./hidden-store.js":362}],362:[function(_dereq_,module,exports){
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -54170,7 +53164,7 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],380:[function(_dereq_,module,exports){
+},{}],363:[function(_dereq_,module,exports){
 // Original - @Gozola.
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
@@ -54201,14 +53195,14 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":378}],381:[function(_dereq_,module,exports){
+},{"./create-store.js":361}],364:[function(_dereq_,module,exports){
 var getContext = _dereq_('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":101}],382:[function(_dereq_,module,exports){
+},{"get-canvas-context":97}],365:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -54941,7 +53935,7 @@ function toSolar(yearOrDate, monthOrResult, day, isIntercalaryOrResult, result) 
 }
 
 
-},{"../main":396,"object-assign":308}],383:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],366:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -55125,7 +54119,7 @@ assign(CopticCalendar.prototype, {
 main.calendars.coptic = CopticCalendar;
 
 
-},{"../main":396,"object-assign":308}],384:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],367:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -55353,7 +54347,7 @@ var centuries = {
 main.calendars.discworld = DiscworldCalendar;
 
 
-},{"../main":396,"object-assign":308}],385:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],368:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -55537,7 +54531,7 @@ assign(EthiopianCalendar.prototype, {
 main.calendars.ethiopian = EthiopianCalendar;
 
 
-},{"../main":396,"object-assign":308}],386:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],369:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -55811,7 +54805,7 @@ function mod(a, b) {
 main.calendars.hebrew = HebrewCalendar;
 
 
-},{"../main":396,"object-assign":308}],387:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],370:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -55992,7 +54986,7 @@ assign(IslamicCalendar.prototype, {
 main.calendars.islamic = IslamicCalendar;
 
 
-},{"../main":396,"object-assign":308}],388:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],371:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -56175,7 +55169,7 @@ assign(JulianCalendar.prototype, {
 main.calendars.julian = JulianCalendar;
 
 
-},{"../main":396,"object-assign":308}],389:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],372:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -56470,7 +55464,7 @@ function amod(a, b) {
 main.calendars.mayan = MayanCalendar;
 
 
-},{"../main":396,"object-assign":308}],390:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],373:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -56650,7 +55644,7 @@ assign(NanakshahiCalendar.prototype, {
 main.calendars.nanakshahi = NanakshahiCalendar;
 
 
-},{"../main":396,"object-assign":308}],391:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],374:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -57073,7 +56067,7 @@ assign(NepaliCalendar.prototype, {
 main.calendars.nepali = NepaliCalendar;
 
 
-},{"../main":396,"object-assign":308}],392:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],375:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -57263,7 +56257,7 @@ main.calendars.persian = PersianCalendar;
 main.calendars.jalali = PersianCalendar;
 
 
-},{"../main":396,"object-assign":308}],393:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],376:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -57449,7 +56443,7 @@ assign(TaiwanCalendar.prototype, {
 main.calendars.taiwan = TaiwanCalendar;
 
 
-},{"../main":396,"object-assign":308}],394:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],377:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -57635,7 +56629,7 @@ assign(ThaiCalendar.prototype, {
 main.calendars.thai = ThaiCalendar;
 
 
-},{"../main":396,"object-assign":308}],395:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],378:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -58000,7 +56994,7 @@ var ummalqura_dat = [
     79990];
 
 
-},{"../main":396,"object-assign":308}],396:[function(_dereq_,module,exports){
+},{"../main":379,"object-assign":296}],379:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -58905,7 +57899,7 @@ _exports.baseCalendar = BaseCalendar;
 _exports.calendars.gregorian = GregorianCalendar;
 
 
-},{"object-assign":308}],397:[function(_dereq_,module,exports){
+},{"object-assign":296}],380:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -59407,59 +58401,70 @@ assign(main.baseCalendar.prototype, {
 });
 
 
-},{"./main":396,"object-assign":308}],398:[function(_dereq_,module,exports){
-module.exports = _dereq_('cwise-compiler')({
-    args: ['array', {
-        offset: [1],
-        array: 0
-    }, 'scalar', 'scalar', 'index'],
-    pre: {
-        "body": "{}",
-        "args": [],
-        "thisVars": [],
-        "localVars": []
-    },
-    post: {
-        "body": "{}",
-        "args": [],
-        "thisVars": [],
-        "localVars": []
-    },
-    body: {
-        "body": "{\n        var _inline_1_da = _inline_1_arg0_ - _inline_1_arg3_\n        var _inline_1_db = _inline_1_arg1_ - _inline_1_arg3_\n        if((_inline_1_da >= 0) !== (_inline_1_db >= 0)) {\n          _inline_1_arg2_.push(_inline_1_arg4_[0] + 0.5 + 0.5 * (_inline_1_da + _inline_1_db) / (_inline_1_da - _inline_1_db))\n        }\n      }",
-        "args": [{
-            "name": "_inline_1_arg0_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }, {
-            "name": "_inline_1_arg1_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }, {
-            "name": "_inline_1_arg2_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }, {
-            "name": "_inline_1_arg3_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 2
-        }, {
-            "name": "_inline_1_arg4_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }],
-        "thisVars": [],
-        "localVars": ["_inline_1_da", "_inline_1_db"]
-    },
+},{"./main":379,"object-assign":296}],381:[function(_dereq_,module,exports){
+"use strict"
+
+function CWiseOp() {
+  return function(SS, a0, t0, p0, Y0, Y1) {
+    var s0 = SS[0],
+      t0p0 = t0[0],
+      index = [0],
+      q0 = t0p0
+    p0 |= 0
+    var i0 = 0,
+      d0s0 = t0p0
+    for (i0 = 0; i0 < s0; ++i0) {
+      {
+        var da = a0[p0] - Y1
+        var db = a0[p0 + q0] - Y1
+        if (da >= 0 !== db >= 0) {
+          Y0.push(index[0] + 0.5 + (0.5 * (da + db)) / (da - db))
+        }
+      }
+      p0 += d0s0
+      ++index[0]
+    }
+  }
+}
+
+//Generates a cwise operator
+function generateCWiseOp() {
+  return CWiseOp()
+}
+
+var compile = generateCWiseOp
+
+function thunk(compile) {
+  var CACHED = {}
+  return function zeroCrossings_cwise_thunk(array0, scalar2, scalar3) {
+    var t0 = array0.dtype,
+      r0 = array0.order,
+      type = [t0, r0.join()].join(),
+      proc = CACHED[type]
+
+    if (!proc) {
+      CACHED[type] = proc = compile([t0, r0])
+    }
+
+    return proc(array0.shape.slice(0), array0.data, array0.stride, array0.offset | 0, scalar2, scalar3)
+  }
+}
+
+function createThunk(proc) {
+  return thunk(compile.bind(undefined, proc))
+}
+
+function compileCwise(user_args) {
+  return createThunk({
+    funcName: user_args.funcName
+  })
+}
+
+module.exports = compileCwise({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":84}],399:[function(_dereq_,module,exports){
+},{}],382:[function(_dereq_,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
@@ -59472,7 +58477,7 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":398}],400:[function(_dereq_,module,exports){
+},{"./lib/zc-core":381}],383:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -59535,7 +58540,7 @@ module.exports = [
     }
 ];
 
-},{}],401:[function(_dereq_,module,exports){
+},{}],384:[function(_dereq_,module,exports){
 'use strict';
 
 var ARROWPATHS = _dereq_('./arrow_paths');
@@ -59823,7 +58828,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../constants/axis_placeable_objects":521,"../../plot_api/plot_template":586,"../../plots/cartesian/constants":603,"../../plots/font_attributes":625,"./arrow_paths":400}],402:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":507,"../../plot_api/plot_template":572,"../../plots/cartesian/constants":590,"../../plots/font_attributes":612,"./arrow_paths":383}],385:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -59905,7 +58910,7 @@ function calcAxisExpansion(ann, ax) {
     ann._extremes[axId] = extremes;
 }
 
-},{"../../lib":549,"../../plots/cartesian/axes":597,"./draw":407}],403:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/cartesian/axes":583,"./draw":390}],386:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -60035,7 +59040,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":549,"../../plot_api/plot_template":586,"../../registry":645}],404:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/plot_template":572,"../../registry":632}],387:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -60106,7 +59111,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":549,"../color":418}],405:[function(_dereq_,module,exports){
+},{"../../lib":534,"../color":401}],388:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -60160,7 +59165,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":575,"fast-isnumeric":96}],406:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":561,"fast-isnumeric":94}],389:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -60259,7 +59264,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     }
 }
 
-},{"../../lib":549,"../../plots/array_container_defaults":592,"../../plots/cartesian/axes":597,"./attributes":401,"./common_defaults":404}],407:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/array_container_defaults":578,"../../plots/cartesian/axes":583,"./attributes":384,"./common_defaults":387}],390:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -61012,7 +60017,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     } else annText.call(textLayout);
 }
 
-},{"../../lib":549,"../../lib/setcursor":569,"../../lib/svg_text_utils":573,"../../plot_api/plot_template":586,"../../plots/cartesian/axes":597,"../../plots/plots":642,"../../registry":645,"../color":418,"../dragelement":437,"../drawing":440,"../fx":458,"./draw_arrow_head":408,"@plotly/d3":18}],408:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../lib/setcursor":554,"../../lib/svg_text_utils":559,"../../plot_api/plot_template":572,"../../plots/cartesian/axes":583,"../../plots/plots":629,"../../registry":632,"../color":401,"../dragelement":420,"../drawing":423,"../fx":441,"./draw_arrow_head":391,"@plotly/d3":17}],391:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -61159,7 +60164,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../../lib":549,"../color":418,"./arrow_paths":400,"@plotly/d3":18}],409:[function(_dereq_,module,exports){
+},{"../../lib":534,"../color":401,"./arrow_paths":383,"@plotly/d3":17}],392:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -61184,7 +60189,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":609,"./attributes":401,"./calc_autorange":402,"./click":403,"./convert_coords":405,"./defaults":406,"./draw":407}],410:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":596,"./attributes":384,"./calc_autorange":385,"./click":386,"./convert_coords":388,"./defaults":389,"./draw":390}],393:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -61253,7 +60258,7 @@ module.exports = overrideAll(templatedArray('annotation', {
     // zref: 'z'
 }), 'calc', 'from-root');
 
-},{"../../plot_api/edit_types":579,"../../plot_api/plot_template":586,"../annotations/attributes":401}],411:[function(_dereq_,module,exports){
+},{"../../plot_api/edit_types":565,"../../plot_api/plot_template":572,"../annotations/attributes":384}],394:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -61310,7 +60315,7 @@ function mockAnnAxes(ann, scene) {
     };
 }
 
-},{"../../lib":549,"../../plots/cartesian/axes":597}],412:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/cartesian/axes":583}],395:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -61378,7 +60383,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
     }
 }
 
-},{"../../lib":549,"../../plots/array_container_defaults":592,"../../plots/cartesian/axes":597,"../annotations/common_defaults":404,"./attributes":410}],413:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/array_container_defaults":578,"../../plots/cartesian/axes":583,"../annotations/common_defaults":387,"./attributes":393}],396:[function(_dereq_,module,exports){
 'use strict';
 
 var drawRaw = _dereq_('../annotations/draw').drawRaw;
@@ -61422,7 +60427,7 @@ module.exports = function draw(scene) {
     }
 };
 
-},{"../../plots/gl3d/project":637,"../annotations/draw":407}],414:[function(_dereq_,module,exports){
+},{"../../plots/gl3d/project":624,"../annotations/draw":390}],397:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -61462,7 +60467,7 @@ function includeGL3D(layoutIn, layoutOut) {
     }
 }
 
-},{"../../lib":549,"../../registry":645,"./attributes":410,"./convert":411,"./defaults":412,"./draw":413}],415:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632,"./attributes":393,"./convert":394,"./defaults":395,"./draw":396}],398:[function(_dereq_,module,exports){
 'use strict';
 
 // a trimmed down version of:
@@ -61487,7 +60492,7 @@ _dereq_('world-calendars/dist/calendars/taiwan');
 _dereq_('world-calendars/dist/calendars/thai');
 _dereq_('world-calendars/dist/calendars/ummalqura');
 
-},{"world-calendars/dist/calendars/chinese":382,"world-calendars/dist/calendars/coptic":383,"world-calendars/dist/calendars/discworld":384,"world-calendars/dist/calendars/ethiopian":385,"world-calendars/dist/calendars/hebrew":386,"world-calendars/dist/calendars/islamic":387,"world-calendars/dist/calendars/julian":388,"world-calendars/dist/calendars/mayan":389,"world-calendars/dist/calendars/nanakshahi":390,"world-calendars/dist/calendars/nepali":391,"world-calendars/dist/calendars/persian":392,"world-calendars/dist/calendars/taiwan":393,"world-calendars/dist/calendars/thai":394,"world-calendars/dist/calendars/ummalqura":395,"world-calendars/dist/main":396,"world-calendars/dist/plus":397}],416:[function(_dereq_,module,exports){
+},{"world-calendars/dist/calendars/chinese":365,"world-calendars/dist/calendars/coptic":366,"world-calendars/dist/calendars/discworld":367,"world-calendars/dist/calendars/ethiopian":368,"world-calendars/dist/calendars/hebrew":369,"world-calendars/dist/calendars/islamic":370,"world-calendars/dist/calendars/julian":371,"world-calendars/dist/calendars/mayan":372,"world-calendars/dist/calendars/nanakshahi":373,"world-calendars/dist/calendars/nepali":374,"world-calendars/dist/calendars/persian":375,"world-calendars/dist/calendars/taiwan":376,"world-calendars/dist/calendars/thai":377,"world-calendars/dist/calendars/ummalqura":378,"world-calendars/dist/main":379,"world-calendars/dist/plus":380}],399:[function(_dereq_,module,exports){
 'use strict';
 
 var calendars = _dereq_('./calendars');
@@ -61500,7 +60505,7 @@ var ONEDAY = constants.ONEDAY;
 
 var attributes = {
     valType: 'enumerated',
-    values: Object.keys(calendars.calendars),
+    values: Lib.sortObjectKeys(calendars.calendars),
     editType: 'calc',
     dflt: 'gregorian'
 };
@@ -61726,9 +60731,11 @@ module.exports = {
         transforms: {
             filter: {
                 valuecalendar: makeAttrs([
+                    'WARNING: All transforms are deprecated and may be removed from the API in next major version.',
                     'Sets the calendar system to use for `value`, if it is a date.'
                 ].join(' ')),
                 targetcalendar: makeAttrs([
+                    'WARNING: All transforms are deprecated and may be removed from the API in next major version.',
                     'Sets the calendar system to use for `target`, if it is an',
                     'array of dates. If `target` is a string (eg *x*) we use the',
                     'corresponding trace attribute (eg `xcalendar`) if it exists,',
@@ -61751,7 +60758,7 @@ module.exports = {
     worldCalFmt: worldCalFmt
 };
 
-},{"../../constants/numerical":527,"../../lib":549,"./calendars":415}],417:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534,"./calendars":398}],400:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -61783,11 +60790,12 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],418:[function(_dereq_,module,exports){
+},{}],401:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
 var isNumeric = _dereq_('fast-isnumeric');
+var isTypedArray = _dereq_('../../lib/array').isTypedArray;
 
 var color = module.exports = {};
 
@@ -61902,7 +60910,7 @@ color.clean = function(container) {
             if(!Array.isArray(el0) && el0 && typeof el0 === 'object') {
                 for(j = 0; j < val.length; j++) color.clean(val[j]);
             }
-        } else if(val && typeof val === 'object') color.clean(val);
+        } else if(val && typeof val === 'object' && !isTypedArray(val)) color.clean(val);
     }
 };
 
@@ -61948,7 +60956,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":417,"fast-isnumeric":96,"tinycolor2":366}],419:[function(_dereq_,module,exports){
+},{"../../lib/array":519,"./attributes":400,"fast-isnumeric":94,"tinycolor2":350}],402:[function(_dereq_,module,exports){
 'use strict';
 
 var axesAttrs = _dereq_('../../plots/cartesian/layout_attributes');
@@ -62040,6 +61048,8 @@ module.exports = overrideAll({
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
     ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
+    ticklabeloverflow: extendFlat({}, axesAttrs.ticklabeloverflow, {
+    }),
     ticklabelposition: {
         valType: 'enumerated',
         values: [
@@ -62093,7 +61103,7 @@ module.exports = overrideAll({
     }
 }, 'colorbars', 'from-root');
 
-},{"../../lib/extend":542,"../../plot_api/edit_types":579,"../../plots/cartesian/layout_attributes":611,"../../plots/font_attributes":625}],420:[function(_dereq_,module,exports){
+},{"../../lib/extend":527,"../../plot_api/edit_types":565,"../../plots/cartesian/layout_attributes":598,"../../plots/font_attributes":612}],403:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -62113,7 +61123,7 @@ module.exports = {
     }
 };
 
-},{}],421:[function(_dereq_,module,exports){
+},{}],404:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -62158,11 +61168,14 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('bordercolor');
     coerce('borderwidth');
     coerce('bgcolor');
+
     var ticklabelposition = coerce('ticklabelposition');
+    coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : 'hide past div');
 
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    var opts = {outerTicks: false, font: layout.font};
+    var font = layout.font;
+    var opts = {outerTicks: false, font: font};
     if(ticklabelposition.indexOf('inside') !== -1) {
         opts.bgColor = 'black'; // could we instead use the average of colors in the scale?
     }
@@ -62170,11 +61183,17 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
 
     coerce('title.text', layout._dfltTitle.colorbar);
-    Lib.coerceFont(coerce, 'title.font', layout.font);
+
+    var tickFont = colorbarOut.tickfont;
+    var dfltTitleFont = Lib.extendFlat({}, tickFont, {
+        color: font.color,
+        size: Lib.bigFont(tickFont.size)
+    });
+    Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     coerce('title.side');
 };
 
-},{"../../lib":549,"../../plot_api/plot_template":586,"../../plots/cartesian/tick_label_defaults":618,"../../plots/cartesian/tick_mark_defaults":619,"../../plots/cartesian/tick_value_defaults":620,"./attributes":419}],422:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/plot_template":572,"../../plots/cartesian/tick_label_defaults":605,"../../plots/cartesian/tick_mark_defaults":606,"../../plots/cartesian/tick_value_defaults":607,"./attributes":402}],405:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -62854,6 +61873,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         tickcolor: opts.tickcolor,
         showticklabels: opts.showticklabels,
         ticklabelposition: opts.ticklabelposition,
+        ticklabeloverflow: opts.ticklabeloverflow,
         tickfont: opts.tickfont,
         tickangle: opts.tickangle,
         tickformat: opts.tickformat,
@@ -62900,7 +61920,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":520,"../../lib":549,"../../lib/extend":542,"../../lib/setcursor":569,"../../lib/svg_text_utils":573,"../../plots/cartesian/axes":597,"../../plots/cartesian/axis_defaults":599,"../../plots/cartesian/layout_attributes":611,"../../plots/cartesian/position_defaults":614,"../../plots/plots":642,"../../registry":645,"../color":418,"../colorscale/helpers":429,"../dragelement":437,"../drawing":440,"../titles":513,"./constants":420,"@plotly/d3":18,"tinycolor2":366}],423:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../lib":534,"../../lib/extend":527,"../../lib/setcursor":554,"../../lib/svg_text_utils":559,"../../plots/cartesian/axes":583,"../../plots/cartesian/axis_defaults":585,"../../plots/cartesian/layout_attributes":598,"../../plots/cartesian/position_defaults":601,"../../plots/plots":629,"../../registry":632,"../color":401,"../colorscale/helpers":412,"../dragelement":420,"../drawing":423,"../titles":499,"./constants":403,"@plotly/d3":17,"tinycolor2":350}],406:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -62910,7 +61930,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":549}],424:[function(_dereq_,module,exports){
+},{"../../lib":534}],407:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -62924,14 +61944,15 @@ module.exports = {
     hasColorbar: _dereq_('./has_colorbar')
 };
 
-},{"./attributes":419,"./defaults":421,"./draw":422,"./has_colorbar":423}],425:[function(_dereq_,module,exports){
+},{"./attributes":402,"./defaults":404,"./draw":405,"./has_colorbar":406}],408:[function(_dereq_,module,exports){
 'use strict';
 
 var colorbarAttrs = _dereq_('../colorbar/attributes');
 var counterRegex = _dereq_('../../lib/regex').counter;
+var sortObjectKeys = _dereq_('../../lib/sort_object_keys');
 
 var palettes = _dereq_('./scales.js').scales;
-var paletteStr = Object.keys(palettes);
+var paletteStr = sortObjectKeys(palettes);
 
 function code(s) {
     return '`' + s + '`';
@@ -63104,7 +62125,7 @@ module.exports = function colorScaleAttrs(context, opts) {
     return attrs;
 };
 
-},{"../../lib/regex":565,"../colorbar/attributes":419,"./scales.js":433}],426:[function(_dereq_,module,exports){
+},{"../../lib/regex":550,"../../lib/sort_object_keys":556,"../colorbar/attributes":402,"./scales.js":416}],409:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -63175,7 +62196,7 @@ module.exports = function calc(gd, trace, opts) {
     }
 };
 
-},{"../../lib":549,"./helpers":429,"fast-isnumeric":96}],427:[function(_dereq_,module,exports){
+},{"../../lib":534,"./helpers":412,"fast-isnumeric":94}],410:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -63244,7 +62265,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
     }
 };
 
-},{"../../lib":549,"./helpers":429}],428:[function(_dereq_,module,exports){
+},{"../../lib":534,"./helpers":412}],411:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -63361,7 +62382,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
     }
 };
 
-},{"../../lib":549,"../../registry":645,"../colorbar/defaults":421,"../colorbar/has_colorbar":423,"./scales":433,"fast-isnumeric":96}],429:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632,"../colorbar/defaults":404,"../colorbar/has_colorbar":406,"./scales":416,"fast-isnumeric":94}],412:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -63593,7 +62614,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: makeColorScaleFuncFromTrace
 };
 
-},{"../../lib":549,"../color":418,"./scales":433,"@plotly/d3":18,"fast-isnumeric":96,"tinycolor2":366}],430:[function(_dereq_,module,exports){
+},{"../../lib":534,"../color":401,"./scales":416,"@plotly/d3":17,"fast-isnumeric":94,"tinycolor2":350}],413:[function(_dereq_,module,exports){
 'use strict';
 
 var scales = _dereq_('./scales');
@@ -63627,7 +62648,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: helpers.makeColorScaleFuncFromTrace
 };
 
-},{"./attributes":425,"./calc":426,"./cross_trace_defaults":427,"./defaults":428,"./helpers":429,"./layout_attributes":431,"./layout_defaults":432,"./scales":433}],431:[function(_dereq_,module,exports){
+},{"./attributes":408,"./calc":409,"./cross_trace_defaults":410,"./defaults":411,"./helpers":412,"./layout_attributes":414,"./layout_defaults":415,"./scales":416}],414:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
@@ -63673,7 +62694,7 @@ module.exports = {
     }))
 };
 
-},{"../../lib/extend":542,"./attributes":425,"./scales":433}],432:[function(_dereq_,module,exports){
+},{"../../lib/extend":527,"./attributes":408,"./scales":416}],415:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -63716,7 +62737,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 };
 
-},{"../../lib":549,"../../plot_api/plot_template":586,"./defaults":428,"./layout_attributes":431}],433:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/plot_template":572,"./defaults":411,"./layout_attributes":414}],416:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
@@ -63912,7 +62933,7 @@ module.exports = {
     isValid: isValidScale
 };
 
-},{"tinycolor2":366}],434:[function(_dereq_,module,exports){
+},{"tinycolor2":350}],417:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -63936,7 +62957,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],435:[function(_dereq_,module,exports){
+},{}],418:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -63965,7 +62986,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":549}],436:[function(_dereq_,module,exports){
+},{"../../lib":534}],419:[function(_dereq_,module,exports){
 'use strict';
 
 exports.selectMode = function(dragmode) {
@@ -64016,7 +63037,7 @@ exports.selectingOrDrawing = function(dragmode) {
     );
 };
 
-},{}],437:[function(_dereq_,module,exports){
+},{}],420:[function(_dereq_,module,exports){
 'use strict';
 
 var mouseOffset = _dereq_('mouse-event-offset');
@@ -64300,7 +63321,7 @@ function pointerOffset(e) {
     );
 }
 
-},{"../../lib":549,"../../plots/cartesian/constants":603,"./align":434,"./cursor":435,"./unhover":438,"has-hover":270,"has-passive-events":271,"mouse-event-offset":293}],438:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/cartesian/constants":590,"./align":417,"./cursor":418,"./unhover":421,"has-hover":263,"has-passive-events":264,"mouse-event-offset":281}],421:[function(_dereq_,module,exports){
 'use strict';
 
 var Events = _dereq_('../../lib/events');
@@ -64347,7 +63368,7 @@ unhover.raw = function raw(gd, evt) {
     }
 };
 
-},{"../../lib/dom":540,"../../lib/events":541,"../../lib/throttle":574,"../fx/constants":452}],439:[function(_dereq_,module,exports){
+},{"../../lib/dom":525,"../../lib/events":526,"../../lib/throttle":560,"../fx/constants":435}],422:[function(_dereq_,module,exports){
 'use strict';
 
 exports.dash = {
@@ -64361,17 +63382,66 @@ exports.dash = {
     editType: 'style',
 };
 
-},{}],440:[function(_dereq_,module,exports){
+exports.pattern = {
+    shape: {
+        valType: 'enumerated',
+        values: ['', '/', '\\', 'x', '-', '|', '+', '.'],
+        dflt: '',
+        arrayOk: true,
+        editType: 'style',
+    },
+    fillmode: {
+        valType: 'enumerated',
+        values: ['replace', 'overlay'],
+        dflt: 'replace',
+        editType: 'style',
+    },
+    bgcolor: {
+        valType: 'color',
+        arrayOk: true,
+        editType: 'style',
+    },
+    fgcolor: {
+        valType: 'color',
+        arrayOk: true,
+        editType: 'style',
+    },
+    fgopacity: {
+        valType: 'number',
+        editType: 'style',
+        min: 0,
+        max: 1,
+    },
+    size: {
+        valType: 'number',
+        min: 0,
+        dflt: 8,
+        arrayOk: true,
+        editType: 'style',
+    },
+    solidity: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0.3,
+        arrayOk: true,
+        editType: 'style',
+    },
+    editType: 'style',
+};
+
+},{}],423:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
+var Lib = _dereq_('../../lib');
+var numberFormat = Lib.numberFormat;
 var isNumeric = _dereq_('fast-isnumeric');
 var tinycolor = _dereq_('tinycolor2');
 
 var Registry = _dereq_('../../registry');
 var Color = _dereq_('../color');
 var Colorscale = _dereq_('../colorscale');
-var Lib = _dereq_('../../lib');
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = _dereq_('../../lib/svg_text_utils');
 
@@ -64639,7 +63709,7 @@ function makePointPath(symbolNumber, r) {
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
 var VERTGRADIENT = {x1: 0, x2: 0, y1: 1, y2: 0};
-var stopFormatter = d3.format('~.1f');
+var stopFormatter = numberFormat('~f');
 var gradientInfo = {
     radial: {node: 'radialGradient'},
     radialreversed: {node: 'radialGradient', reversed: true},
@@ -64718,6 +63788,217 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
     fullLayout._gradientUrlQueryParts[k] = 1;
 };
 
+/**
+ * pattern: create and apply a pattern fill
+ *
+ * @param {object} sel: d3 selection to apply this pattern to
+ *     You can use `selection.call(Drawing.pattern, ...)`
+ * @param {string} calledBy: option to know the caller component
+ * @param {DOM element} gd: the graph div `sel` is part of
+ * @param {string} patternID: a unique (within this plot) identifier
+ *     for this pattern, so that we don't create unnecessary definitions
+ * @param {number} size: size of unit squares for repetition of this pattern
+ * @param {number} solidity: how solid lines of this pattern are
+ * @param {string} mcc: color when painted with colorscale
+ * @param {string} fillmode: fillmode for this pattern
+ * @param {string} bgcolor: background color for this pattern
+ * @param {string} fgcolor: foreground color for this pattern
+ * @param {number} fgopacity: foreground opacity for this pattern
+ */
+drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, mcc, fillmode, bgcolor, fgcolor, fgopacity) {
+    var isLegend = calledBy === 'legend';
+
+    if(mcc) {
+        if(fillmode === 'overlay') {
+            bgcolor = mcc;
+            fgcolor = Color.contrast(bgcolor);
+        } else {
+            bgcolor = undefined;
+            fgcolor = mcc;
+        }
+    }
+
+    var fullLayout = gd._fullLayout;
+    var fullID = 'p' + fullLayout._uid + '-' + patternID;
+    var width, height;
+
+    // linear interpolation
+    var linearFn = function(x, x0, x1, y0, y1) {
+        return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+    };
+
+    var path, linewidth, radius;
+    var patternTag;
+    var patternAttrs = {};
+    switch(shape) {
+        case '/':
+            width = size * Math.sqrt(2);
+            height = size * Math.sqrt(2);
+            path = 'M-' + (width / 4) + ',' + (height / 4) + 'l' + (width / 2) + ',-' + (height / 2) +
+                   'M0,' + height + 'L' + width + ',0' +
+                   'M' + (width / 4 * 3) + ',' + (height / 4 * 5) + 'l' + (width / 2) + ',-' + (height / 2);
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'opacity': fgopacity,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
+            break;
+        case '\\':
+            width = size * Math.sqrt(2);
+            height = size * Math.sqrt(2);
+            path = 'M' + (width / 4 * 3) + ',-' + (height / 4) + 'l' + (width / 2) + ',' + (height / 2) +
+                   'M0,0L' + width + ',' + height +
+                   'M-' + (width / 4) + ',' + (height / 4 * 3) + 'l' + (width / 2) + ',' + (height / 2);
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'opacity': fgopacity,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
+            break;
+        case 'x':
+            width = size * Math.sqrt(2);
+            height = size * Math.sqrt(2);
+            path = 'M-' + (width / 4) + ',' + (height / 4) + 'l' + (width / 2) + ',-' + (height / 2) +
+                   'M0,' + height + 'L' + width + ',0' +
+                   'M' + (width / 4 * 3) + ',' + (height / 4 * 5) + 'l' + (width / 2) + ',-' + (height / 2) +
+                   'M' + (width / 4 * 3) + ',-' + (height / 4) + 'l' + (width / 2) + ',' + (height / 2) +
+                   'M0,0L' + width + ',' + height +
+                   'M-' + (width / 4) + ',' + (height / 4 * 3) + 'l' + (width / 2) + ',' + (height / 2);
+            linewidth = size - size * Math.sqrt(1.0 - solidity);
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'opacity': fgopacity,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
+            break;
+        case '|':
+            width = size;
+            height = size;
+            patternTag = 'path';
+            path = 'M' + (width / 2) + ',0L' + (width / 2) + ',' + height;
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'opacity': fgopacity,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
+            break;
+        case '-':
+            width = size;
+            height = size;
+            patternTag = 'path';
+            path = 'M0,' + (height / 2) + 'L' + width + ',' + (height / 2);
+            linewidth = solidity * size;
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'opacity': fgopacity,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
+            break;
+        case '+':
+            width = size;
+            height = size;
+            patternTag = 'path';
+            path = 'M' + (width / 2) + ',0L' + (width / 2) + ',' + height +
+                   'M0,' + (height / 2) + 'L' + width + ',' + (height / 2);
+            linewidth = size - size * Math.sqrt(1.0 - solidity);
+            patternTag = 'path';
+            patternAttrs = {
+                'd': path,
+                'opacity': fgopacity,
+                'stroke': fgcolor,
+                'stroke-width': linewidth + 'px'
+            };
+            break;
+        case '.':
+            width = size;
+            height = size;
+            if(solidity < Math.PI / 4) {
+                radius = Math.sqrt(solidity * size * size / Math.PI);
+            } else {
+                radius = linearFn(solidity, Math.PI / 4, 1.0, size / 2, size / Math.sqrt(2));
+            }
+            patternTag = 'circle';
+            patternAttrs = {
+                'cx': width / 2,
+                'cy': height / 2,
+                'r': radius,
+                'opacity': fgopacity,
+                'fill': fgcolor
+            };
+            break;
+    }
+
+    var str = [
+        shape || 'noSh',
+        bgcolor || 'noBg',
+        fgcolor || 'noFg',
+        size,
+        solidity
+    ].join(';');
+
+    var pattern = fullLayout._defs.select('.patterns')
+        .selectAll('#' + fullID)
+        .data([str], Lib.identity);
+
+    pattern.exit().remove();
+
+    pattern.enter()
+        .append('pattern')
+        .each(function() {
+            var el = d3.select(this);
+
+            el.attr({
+                'id': fullID,
+                'width': width + 'px',
+                'height': height + 'px',
+                'patternUnits': 'userSpaceOnUse',
+                // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
+                'patternTransform': isLegend ? 'scale(0.8)' : ''
+            });
+
+            if(bgcolor) {
+                var rects = el.selectAll('rect').data([0]);
+                rects.exit().remove();
+                rects.enter()
+                    .append('rect')
+                    .attr({
+                        'width': width + 'px',
+                        'height': height + 'px',
+                        'fill': bgcolor
+                    });
+            }
+
+            var patterns = el.selectAll(patternTag).data([0]);
+            patterns.exit().remove();
+            patterns.enter()
+                .append(patternTag)
+                .attr(patternAttrs);
+        });
+
+    sel.style('fill', getFullUrl(fullID, gd))
+        .style('fill-opacity', null);
+
+    sel.classed('pattern_filled', true);
+    var className2query = function(s) {
+        return '.' + s.attr('class').replace(/\s/g, '.');
+    };
+    var k = className2query(d3.select(sel.node().parentNode)) + '>.pattern_filled';
+    fullLayout._patternUrlQueryParts[k] = 1;
+};
+
 /*
  * Make the gradients container and clear out any previous gradients.
  * We never collect all the gradients we need in one place,
@@ -64736,6 +64017,23 @@ drawing.initGradients = function(gd) {
     fullLayout._gradientUrlQueryParts = {};
 };
 
+drawing.initPatterns = function(gd) {
+    var fullLayout = gd._fullLayout;
+
+    var patternsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'patterns');
+    patternsGroup.selectAll('pattern').remove();
+
+    // initialize stash of query parts filled in Drawing.pattern,
+    // used to fix URL strings during image exports
+    fullLayout._patternUrlQueryParts = {};
+};
+
+drawing.getPatternAttr = function(mp, i, dflt) {
+    if(mp && Lib.isArrayOrTypedArray(mp)) {
+        return i < mp.length ? mp[i] : dflt;
+    }
+    return mp;
+};
 
 drawing.pointStyle = function(s, trace, gd) {
     if(!s.size()) return;
@@ -64841,10 +64139,13 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
 
         // for legend - arrays will propagate through here, but we don't need
         // to treat it as per-point.
-        if(Array.isArray(gradientType)) {
+        if(Lib.isArrayOrTypedArray(gradientType)) {
             gradientType = gradientType[0];
             if(!gradientInfo[gradientType]) gradientType = 0;
         }
+
+        var markerPattern = marker.pattern;
+        var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, d.i, '');
 
         if(gradientType && gradientType !== 'none') {
             var gradientColor = d.mgc;
@@ -64856,6 +64157,27 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
 
             drawing.gradient(sel, gd, gradientID, gradientType,
                 [[0, gradientColor], [1, fillColor]], 'fill');
+        } else if(patternShape) {
+            var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
+            var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
+            var patternFGOpacity = markerPattern.fgopacity;
+            var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
+            var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
+            var perPointPattern = d.mcc ||
+                Lib.isArrayOrTypedArray(markerPattern.shape) ||
+                Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                Lib.isArrayOrTypedArray(markerPattern.size) ||
+                Lib.isArrayOrTypedArray(markerPattern.solidity);
+
+            var patternID = trace.uid;
+            if(perPointPattern) patternID += '-' + d.i;
+
+            drawing.pattern(
+                sel, 'point', gd, patternID,
+                patternShape, patternSize, patternSolidity,
+                d.mcc, markerPattern.fillmode,
+                patternBGColor, patternFGColor, patternFGOpacity
+            );
         } else {
             Color.fill(sel, fillColor);
         }
@@ -65094,7 +64416,8 @@ drawing.textPointStyle = function(s, trace, gd) {
         }
 
         if(texttemplate) {
-            var labels = trace._module.formatLabels ? trace._module.formatLabels(d, trace, fullLayout) : {};
+            var fn = trace._module.formatLabels;
+            var labels = fn ? fn(d, trace, fullLayout) : {};
             var pointValues = {};
             appendArrayPointValue(pointValues, trace, d.i);
             var meta = trace._meta || {};
@@ -65420,7 +64743,9 @@ function getFullUrl(localId, gd) {
 
     var context = gd._context;
     var baseUrl = context._exportedPlot ? '' : (context._baseUrl || '');
-    return 'url(\'' + baseUrl + '#' + localId + '\')';
+    return baseUrl ?
+        'url(\'' + baseUrl + '#' + localId + '\')' :
+        'url(#' + localId + ')';
 }
 
 drawing.getTranslate = function(element) {
@@ -65549,7 +64874,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../components/fx/helpers":454,"../../constants/alignment":520,"../../constants/interactions":526,"../../constants/xmlns_namespaces":528,"../../lib":549,"../../lib/svg_text_utils":573,"../../registry":645,"../../traces/scatter/make_bubble_size_func":691,"../../traces/scatter/subtypes":699,"../color":418,"../colorscale":430,"./symbol_defs":441,"@plotly/d3":18,"fast-isnumeric":96,"tinycolor2":366}],441:[function(_dereq_,module,exports){
+},{"../../components/fx/helpers":437,"../../constants/alignment":506,"../../constants/interactions":512,"../../constants/xmlns_namespaces":514,"../../lib":534,"../../lib/svg_text_utils":559,"../../registry":632,"../../traces/scatter/make_bubble_size_func":678,"../../traces/scatter/subtypes":686,"../color":401,"../colorscale":413,"./symbol_defs":424,"@plotly/d3":17,"fast-isnumeric":94,"tinycolor2":350}],424:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -66104,7 +65429,7 @@ module.exports = {
     }
 };
 
-},{"@plotly/d3":18}],442:[function(_dereq_,module,exports){
+},{"@plotly/d3":17}],425:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -66187,7 +65512,7 @@ module.exports = {
     }
 };
 
-},{}],443:[function(_dereq_,module,exports){
+},{}],426:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -66265,7 +65590,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }
 
-},{"../../lib":549,"../../plots/cartesian/axes":597,"../../registry":645,"./compute_error":444,"fast-isnumeric":96}],444:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/cartesian/axes":583,"../../registry":632,"./compute_error":427,"fast-isnumeric":94}],427:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -66357,7 +65682,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],445:[function(_dereq_,module,exports){
+},{}],428:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -66424,7 +65749,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":549,"../../plot_api/plot_template":586,"../../registry":645,"./attributes":442,"fast-isnumeric":96}],446:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/plot_template":572,"../../registry":632,"./attributes":425,"fast-isnumeric":94}],429:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -66485,7 +65810,7 @@ function hoverInfo(calcPoint, trace, hoverPoint) {
     }
 }
 
-},{"../../lib":549,"../../plot_api/edit_types":579,"./attributes":442,"./calc":443,"./compute_error":444,"./defaults":445,"./plot":447,"./style":448}],447:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/edit_types":565,"./attributes":425,"./calc":426,"./compute_error":427,"./defaults":428,"./plot":430,"./style":431}],430:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -66648,7 +65973,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":699,"../drawing":440,"@plotly/d3":18,"fast-isnumeric":96}],448:[function(_dereq_,module,exports){
+},{"../../traces/scatter/subtypes":686,"../drawing":423,"@plotly/d3":17,"fast-isnumeric":94}],431:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -66676,7 +66001,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":418,"@plotly/d3":18}],449:[function(_dereq_,module,exports){
+},{"../color":401,"@plotly/d3":17}],432:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -66701,7 +66026,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":542,"../../plots/font_attributes":625,"./layout_attributes":459}],450:[function(_dereq_,module,exports){
+},{"../../lib/extend":527,"../../plots/font_attributes":612,"./layout_attributes":442}],433:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -66752,7 +66077,7 @@ function paste(traceAttr, cd, cdAttr, fn) {
     }
 }
 
-},{"../../lib":549,"../../registry":645}],451:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632}],434:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -66781,7 +66106,7 @@ module.exports = function click(gd, evt, subplot) {
     }
 };
 
-},{"../../registry":645,"./hover":455}],452:[function(_dereq_,module,exports){
+},{"../../registry":632,"./hover":438}],435:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -66805,7 +66130,7 @@ module.exports = {
     HOVERID: '-hover'
 };
 
-},{}],453:[function(_dereq_,module,exports){
+},{}],436:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -66823,7 +66148,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(traceIn, traceOut, coerce, opts);
 };
 
-},{"../../lib":549,"./attributes":449,"./hoverlabel_defaults":456}],454:[function(_dereq_,module,exports){
+},{"../../lib":534,"./attributes":432,"./hoverlabel_defaults":439}],437:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -67077,7 +66402,7 @@ exports.isXYhover = function(hovermode) {
     return !!xyHoverMode[hovermode];
 };
 
-},{"../../lib":549}],455:[function(_dereq_,module,exports){
+},{"../../lib":534}],438:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -67118,6 +66443,19 @@ var YSHIFTY = Math.sin(YA_RADIANS);
 // size and display constants for hover text
 var HOVERARROWSIZE = constants.HOVERARROWSIZE;
 var HOVERTEXTPAD = constants.HOVERTEXTPAD;
+
+var multipleHoverPoints = {
+    box: true,
+    ohlc: true,
+    violin: true,
+    candlestick: true
+};
+
+var cartesianScatterPoints = {
+    scatter: true,
+    scattergl: true,
+    splom: true
+};
 
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
@@ -67193,7 +66531,48 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         hoverItems = [hoverItems];
     }
 
+    var gd = opts.gd;
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     var pointsData = hoverItems.map(function(hoverItem) {
+        var _x0 = hoverItem._x0 || hoverItem.x0 || hoverItem.x || 0;
+        var _x1 = hoverItem._x1 || hoverItem.x1 || hoverItem.x || 0;
+        var _y0 = hoverItem._y0 || hoverItem.y0 || hoverItem.y || 0;
+        var _y1 = hoverItem._y1 || hoverItem.y1 || hoverItem.y || 0;
+
+        var eventData = hoverItem.eventData;
+        if(eventData) {
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            var trace = hoverItem.trace;
+            if(Registry.traceIs(trace, 'gl3d')) {
+                var container = gd._fullLayout[trace.scene]._scene.container;
+                var dx = container.offsetLeft;
+                var dy = container.offsetTop;
+                x0 += dx;
+                x1 += dx;
+                y0 += dy;
+                y1 += dy;
+            } // TODO: handle heatmapgl
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
+
+            if(opts.inOut_bbox) {
+                opts.inOut_bbox.push(eventData.bbox);
+            }
+        } else {
+            eventData = false;
+        }
+
         return {
             color: hoverItem.color || Color.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
@@ -67225,23 +66604,22 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             index: 0,
 
             hovertemplate: hoverItem.hovertemplate || false,
-            eventData: hoverItem.eventData || false,
             hovertemplateLabels: hoverItem.hovertemplateLabels || false,
+
+            eventData: eventData
         };
     });
 
-    var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer ? d3.select(opts.outerContainer) : container3;
+    var rotateLabels = false;
 
-    var fullOpts = {
+    var hoverLabel = createHoverText(pointsData, {
+        gd: gd,
         hovermode: 'closest',
-        rotateLabels: false,
+        rotateLabels: rotateLabels,
         bgColor: opts.bgColor || Color.background,
-        container: container3,
-        outerContainer: outerContainer3
-    };
-
-    var hoverLabel = createHoverText(pointsData, fullOpts, opts.gd);
+        container: d3.select(opts.container),
+        outerContainer: opts.outerContainer || opts.container
+    });
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -67266,9 +66644,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    var scaleX = opts.gd._fullLayout._invScaleX;
-    var scaleY = opts.gd._fullLayout._invScaleY;
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
+    alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -67328,8 +66706,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         return dragElement.unhoverRaw(gd, evt);
     }
 
-    var hoverdistance = fullLayout.hoverdistance === -1 ? Infinity : fullLayout.hoverdistance;
-    var spikedistance = fullLayout.spikedistance === -1 ? Infinity : fullLayout.spikedistance;
+    var hoverdistance = fullLayout.hoverdistance;
+    if(hoverdistance === -1) hoverdistance = Infinity;
+
+    var spikedistance = fullLayout.spikedistance;
+    if(spikedistance === -1) spikedistance = Infinity;
 
     // hoverData: the set of candidate points we've found to highlight
     var hoverData = [];
@@ -67344,7 +66725,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     // mapped onto each of the currently selected overlaid subplots
     var xvalArray, yvalArray;
 
-    var itemnum, curvenum, cd, trace, subplotId, subploti, mode,
+    var itemnum, curvenum, cd, trace, subplotId, subploti, _mode,
         xval, yval, pointData, closedataPreviousLength;
 
     // spikePoints: the set of candidate points we've found to draw spikes to
@@ -67479,9 +66860,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             }
 
             // within one trace mode can sometimes be overridden
-            mode = hovermode;
-            if(helpers.isUnifiedHover(mode)) {
-                mode = mode.charAt(0);
+            _mode = hovermode;
+            if(helpers.isUnifiedHover(_mode)) {
+                _mode = _mode.charAt(0);
             }
 
             // container for new point, also used to pass info into module.hoverPoints
@@ -67539,20 +66920,20 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
             // for a highlighting array, figure out what
             // we're searching for with this element
-            if(mode === 'array') {
+            if(_mode === 'array') {
                 var selection = evt[curvenum];
                 if('pointNumber' in selection) {
                     pointData.index = selection.pointNumber;
-                    mode = 'closest';
+                    _mode = 'closest';
                 } else {
-                    mode = '';
+                    _mode = '';
                     if('xval' in selection) {
                         xval = selection.xval;
-                        mode = 'x';
+                        _mode = 'x';
                     }
                     if('yval' in selection) {
                         yval = selection.yval;
-                        mode = mode ? 'closest' : 'y';
+                        _mode = _mode ? 'closest' : 'y';
                     }
                 }
             } else if(customXVal !== undefined && customYVal !== undefined) {
@@ -67566,7 +66947,11 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             // Now if there is range to look in, find the points to hover.
             if(hoverdistance !== 0) {
                 if(trace._module && trace._module.hoverPoints) {
-                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, mode, fullLayout._hoverlayer);
+                    var newPoints = trace._module.hoverPoints(pointData, xval, yval, _mode, {
+                        finiteRange: true,
+                        hoverLayer: fullLayout._hoverlayer
+                    });
+
                     if(newPoints) {
                         var newPoint;
                         for(var newPointNum = 0; newPointNum < newPoints.length; newPointNum++) {
@@ -67595,7 +66980,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 if(hoverData.length === 0) {
                     pointData.distance = spikedistance;
                     pointData.index = false;
-                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', fullLayout._hoverlayer);
+                    var closestPoints = trace._module.hoverPoints(pointData, xval, yval, 'closest', {
+                        hoverLayer: fullLayout._hoverlayer
+                    });
                     if(closestPoints) {
                         closestPoints = closestPoints.filter(function(point) {
                             // some hover points, like scatter fills, do not allow spikes,
@@ -67638,12 +67025,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 
     findHoverPoints();
 
-    function selectClosestPoint(pointsData, spikedistance) {
+    function selectClosestPoint(pointsData, spikedistance, spikeOnWinning) {
         var resultPoint = null;
         var minDistance = Infinity;
         var thisSpikeDistance;
+
         for(var i = 0; i < pointsData.length; i++) {
             thisSpikeDistance = pointsData[i].spikeDistance;
+            if(spikeOnWinning && i === 0) thisSpikeDistance = -Infinity;
+
             if(thisSpikeDistance <= minDistance && thisSpikeDistance <= spikedistance) {
                 resultPoint = pointsData[i];
                 minDistance = thisSpikeDistance;
@@ -67670,7 +67060,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var spikelineOpts = {
         fullLayout: fullLayout,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
         event: evt
     };
     var oldspikepoints = gd._spikepoints;
@@ -67680,19 +67069,30 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     };
     gd._spikepoints = newspikepoints;
 
+    var sortHoverData = function() {
+        hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
+
+        // move period positioned points and box/bar-like traces to the end of the list
+        hoverData = orderRangePoints(hoverData, hovermode);
+    };
+    sortHoverData();
+
+    var axLetter = hovermode.charAt(0);
+    var spikeOnWinning = (axLetter === 'x' || axLetter === 'y') && hoverData[0] && cartesianScatterPoints[hoverData[0].trace.type];
+
     // Now if it is not restricted by spikedistance option, set the points to draw the spikelines
     if(hasCartesian && (spikedistance !== 0)) {
         if(hoverData.length !== 0) {
             var tmpHPointData = hoverData.filter(function(point) {
                 return point.ya.showspikes;
             });
-            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance);
+            var tmpHPoint = selectClosestPoint(tmpHPointData, spikedistance, spikeOnWinning);
             spikePoints.hLinePoint = fillSpikePoint(tmpHPoint);
 
             var tmpVPointData = hoverData.filter(function(point) {
                 return point.xa.showspikes;
             });
-            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance);
+            var tmpVPoint = selectClosestPoint(tmpVPointData, spikedistance, spikeOnWinning);
             spikePoints.vLinePoint = fillSpikePoint(tmpVPoint);
         }
     }
@@ -67714,51 +67114,70 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         }
     }
 
-    hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
-
-    // If in compare mode, select every point at position
     if(
-        helpers.isXYhover(mode) &&
+        helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
         hoverData[0].trace.type !== 'splom' // TODO: add support for splom
     ) {
-        var hd = hoverData[0];
-        var cd0 = hd.cd[hd.index];
-        var isGrouped = (fullLayout.boxmode === 'group' || fullLayout.violinmode === 'group');
-
-        var xVal = hd.xVal;
-        var ax = hd.xa;
-        if(ax.type === 'category') xVal = ax._categoriesMap[xVal];
-        if(ax.type === 'date') xVal = ax.d2c(xVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            xVal += cd0.t.dPos;
+        // pick winning point
+        var winningPoint = hoverData[0];
+        // discard other points
+        if(multipleHoverPoints[winningPoint.trace.type]) {
+            hoverData = hoverData.filter(function(d) {
+                return d.trace.index === winningPoint.trace.index;
+            });
+        } else {
+            hoverData = [winningPoint];
         }
+        var initLen = hoverData.length;
 
-        var yVal = hd.yVal;
-        ax = hd.ya;
-        if(ax.type === 'category') yVal = ax._categoriesMap[yVal];
-        if(ax.type === 'date') yVal = ax.d2c(yVal);
-        if(cd0 && cd0.t && cd0.t.posLetter === ax._id && isGrouped) {
-            yVal += cd0.t.dPos;
-        }
+        var winX = getCoord('x', winningPoint, fullLayout);
+        var winY = getCoord('y', winningPoint, fullLayout);
 
-        findHoverPoints(xVal, yVal);
+        // in compare mode, select every point at position
+        findHoverPoints(winX, winY);
 
-        // Remove duplicated hoverData points
-        // note that d3 also filters identical points in the rendering steps
-        var repeated = {};
-        hoverData = hoverData.filter(function(hd) {
-            var key = hoverDataKey(hd);
-            if(!repeated[key]) {
-                repeated[key] = true;
-                return repeated[key];
+        var finalPoints = [];
+        var seen = {};
+        var id = 0;
+        var insert = function(newHd) {
+            var key = multipleHoverPoints[newHd.trace.type] ? hoverDataKey(newHd) : newHd.trace.index;
+            if(!seen[key]) {
+                id++;
+                seen[key] = id;
+                finalPoints.push(newHd);
+            } else {
+                var oldId = seen[key] - 1;
+                var oldHd = finalPoints[oldId];
+                if(oldId > 0 &&
+                    Math.abs(newHd.distance) <
+                    Math.abs(oldHd.distance)
+                ) {
+                    // replace with closest
+                    finalPoints[oldId] = newHd;
+                }
             }
-        });
+        };
+
+        var k;
+        // insert the winnig point(s) first
+        for(k = 0; k < initLen; k++) {
+            insert(hoverData[k]);
+        }
+        // override from the end
+        for(k = hoverData.length - 1; k > initLen - 1; k--) {
+            insert(hoverData[k]);
+        }
+        hoverData = finalPoints;
+        sortHoverData();
     }
 
     // lastly, emit custom hover/unhover events
     var oldhoverdata = gd._hoverdata;
     var newhoverdata = [];
+
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
 
     // pull out just the data that's useful to
     // other people and send it to the event
@@ -67772,6 +67191,25 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 ht = pt.cd[pt.index].ht;
             }
             pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
+
+        if(pt.xa && pt.ya) {
+            var _x0 = pt.x0 + pt.xa._offset;
+            var _x1 = pt.x1 + pt.xa._offset;
+            var _y0 = pt.y0 + pt.ya._offset;
+            var _y1 = pt.y1 + pt.ya._offset;
+
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
         }
 
         pt.eventData = [eventData];
@@ -67790,17 +67228,16 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         fullLayout.paper_bgcolor
     );
 
-    var labelOpts = {
+    var hoverLabels = createHoverText(hoverData, {
+        gd: gd,
         hovermode: hovermode,
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
+        outerContainer: fullLayout._paper.node(),
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
-    };
-
-    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
+    });
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
@@ -67833,12 +67270,13 @@ function _hover(gd, evt, subplot, noHoverEvent) {
 }
 
 function hoverDataKey(d) {
-    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa, d.ya || ''].join(',');
+    return [d.trace.index, d.index, d.x0, d.y0, d.name, d.attr, d.xa ? d.xa._id : '', d.ya ? d.ya._id : ''].join(',');
 }
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(hoverData, opts) {
+    var gd = opts.gd;
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -67856,10 +67294,9 @@ function createHoverText(hoverData, opts, gd) {
     var c0 = hoverData[0];
     var xa = c0.xa;
     var ya = c0.ya;
-    var commonAttr = hovermode.charAt(0) === 'y' ? 'yLabel' : 'xLabel';
-    var t0 = c0[commonAttr];
-    var t00 = (String(t0) || '').split(' ')[0];
-    var outerContainerBB = outerContainer.node().getBoundingClientRect();
+    var axLetter = hovermode.charAt(0);
+    var t0 = c0[axLetter + 'Label'];
+    var outerContainerBB = getBoundingClientRect(gd, outerContainer);
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
     var outerHeight = outerContainerBB.height;
@@ -67934,7 +67371,7 @@ function createHoverText(hoverData, opts, gd) {
 
         label.attr('transform', '');
 
-        var tbb = ltext.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, ltext.node());
         var lx, ly;
 
         if(hovermode === 'x') {
@@ -68027,7 +67464,7 @@ function createHoverText(hoverData, opts, gd) {
                         var dummy = Drawing.tester.append('text')
                             .text(s.text())
                             .call(Drawing.font, commonLabelFont);
-                        var dummyBB = dummy.node().getBoundingClientRect();
+                        var dummyBB = getBoundingClientRect(gd, dummy.node());
                         if(Math.round(dummyBB.width) < Math.round(tbb.width)) {
                             s.attr('x', ltx - dummyBB.width);
                         }
@@ -68047,38 +67484,26 @@ function createHoverText(hoverData, opts, gd) {
         }
 
         label.attr('transform', strTranslate(lx, ly));
-
-        // remove the "close but not quite" points
-        // because of error bars, only take up to a space
-        hoverData = filterClosePoints(hoverData);
     });
-
-    function filterClosePoints(hoverData) {
-        return hoverData.filter(function(d) {
-            return (d.zLabelVal !== undefined) ||
-                (d[commonAttr] || '').split(' ')[0] === t00;
-        });
-    }
 
     // Show a single hover label
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
 
-        // similarly to compare mode, we remove the "close but not quite together" points
-        if((t0 !== undefined) && (c0.distance <= opts.hoverdistance)) hoverData = filterClosePoints(hoverData);
-
         // Return early if nothing is hovered on
         if(hoverData.length === 0) return;
 
         // mock legend
+        var hoverlabel = fullLayout.hoverlabel;
+        var font = hoverlabel.font;
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: fullLayout.hoverlabel.font},
-                font: fullLayout.hoverlabel.font,
-                bgcolor: fullLayout.hoverlabel.bgcolor,
-                bordercolor: fullLayout.hoverlabel.bordercolor,
+                title: {text: t0, font: font},
+                font: font,
+                bgcolor: hoverlabel.bgcolor,
+                bordercolor: hoverlabel.bordercolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
@@ -68087,10 +67512,10 @@ function createHoverText(hoverData, opts, gd) {
         };
         var mockLayoutOut = {};
         legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
-        var legendOpts = mockLayoutOut.legend;
+        var mockLegend = mockLayoutOut.legend;
 
         // prepare items for the legend
-        legendOpts.entries = [];
+        mockLegend.entries = [];
         for(var j = 0; j < hoverData.length; j++) {
             var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
             var text = texts[0];
@@ -68116,46 +67541,100 @@ function createHoverText(hoverData, opts, gd) {
             }
             pt._distinct = true;
 
-            legendOpts.entries.push([pt]);
+            mockLegend.entries.push([pt]);
         }
-        legendOpts.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
-        legendOpts.layer = container;
+        mockLegend.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
+        mockLegend.layer = container;
 
         // Draw unified hover label
-        legendDraw(gd, legendOpts);
+        mockLegend._inHover = true;
+        mockLegend._groupTitleFont = font;
+        legendDraw(gd, mockLegend);
 
         // Position the hover
-        var ly = Lib.mean(hoverData.map(function(c) {return (c.y0 + c.y1) / 2;}));
-        var lx = Lib.mean(hoverData.map(function(c) {return (c.x0 + c.x1) / 2;}));
         var legendContainer = container.select('g.legend');
-        var tbb = legendContainer.node().getBoundingClientRect();
-        lx += xa._offset;
-        ly += ya._offset - tbb.height / 2;
+        var tbb = getBoundingClientRect(gd, legendContainer.node());
+        var tWidth = tbb.width + 2 * HOVERTEXTPAD;
+        var tHeight = tbb.height + 2 * HOVERTEXTPAD;
+        var winningPoint = hoverData[0];
+        var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
+        var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
+        // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
+        var pointWon = !(
+            Registry.traceIs(winningPoint.trace, 'bar-like') ||
+            Registry.traceIs(winningPoint.trace, 'box-violin')
+        );
 
-        // Change horizontal alignment to end up on screen
-        var txWidth = tbb.width + 2 * HOVERTEXTPAD;
-        var anchorStartOK = lx + txWidth <= outerWidth;
-        var anchorEndOK = lx - txWidth >= 0;
-        if(!anchorStartOK && anchorEndOK) {
-            lx -= txWidth;
+        var lyBottom, lyTop;
+        if(axLetter === 'y') {
+            if(pointWon) {
+                lyTop = avgY - HOVERTEXTPAD;
+                lyBottom = avgY + HOVERTEXTPAD;
+            } else {
+                lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
+                lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
+            }
         } else {
-            lx += 2 * HOVERTEXTPAD;
+            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
         }
 
-        // Change vertical alignement to end up on screen
-        var txHeight = tbb.height + 2 * HOVERTEXTPAD;
-        var overflowTop = ly <= outerTop;
-        var overflowBottom = ly + txHeight >= outerHeight;
-        var canFit = txHeight <= outerHeight;
-        if(canFit) {
-            if(overflowTop) {
-                ly = ya._offset + 2 * HOVERTEXTPAD;
-            } else if(overflowBottom) {
-                ly = outerHeight - txHeight;
+        var lxRight, lxLeft;
+        if(axLetter === 'x') {
+            if(pointWon) {
+                lxRight = avgX + HOVERTEXTPAD;
+                lxLeft = avgX - HOVERTEXTPAD;
+            } else {
+                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
+                lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
+            }
+        } else {
+            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
+        }
+
+        var xOffset = xa._offset;
+        var yOffset = ya._offset;
+        lyBottom += yOffset;
+        lxRight += xOffset;
+        lxLeft += xOffset - tWidth;
+        lyTop += yOffset - tHeight;
+
+        var lx, ly; // top and left positions of the hover box
+
+        // horizontal alignment to end up on screen
+        if(lxRight + tWidth < outerWidth && lxRight >= 0) {
+            lx = lxRight;
+        } else if(lxLeft + tWidth < outerWidth && lxLeft >= 0) {
+            lx = lxLeft;
+        } else if(xOffset + tWidth < outerWidth) {
+            lx = xOffset; // subplot left corner
+        } else {
+            // closest left or right side of the paper
+            if(lxRight - avgX < avgX - lxLeft + tWidth) {
+                lx = outerWidth - tWidth;
+            } else {
+                lx = 0;
             }
         }
-        legendContainer.attr('transform', strTranslate(lx, ly));
+        lx += HOVERTEXTPAD;
 
+        // vertical alignement to end up on screen
+        if(lyBottom + tHeight < outerHeight && lyBottom >= 0) {
+            ly = lyBottom;
+        } else if(lyTop + tHeight < outerHeight && lyTop >= 0) {
+            ly = lyTop;
+        } else if(yOffset + tHeight < outerHeight) {
+            ly = yOffset; // subplot top corner
+        } else {
+            // closest top or bottom side of the paper
+            if(lyBottom - avgY < avgY - lyTop + tHeight) {
+                ly = outerHeight - tHeight;
+            } else {
+                ly = 0;
+            }
+        }
+        ly += HOVERTEXTPAD;
+
+        legendContainer.attr('transform', strTranslate(lx - 1, ly - 1));
         return legendContainer;
     }
 
@@ -68239,7 +67718,7 @@ function createHoverText(hoverData, opts, gd) {
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
 
-            var t2bb = tx2.node().getBoundingClientRect();
+            var t2bb = getBoundingClientRect(gd, tx2.node());
             tx2width = t2bb.width + 2 * HOVERTEXTPAD;
             tx2height = t2bb.height + 2 * HOVERTEXTPAD;
         } else {
@@ -68252,21 +67731,25 @@ function createHoverText(hoverData, opts, gd) {
             stroke: contrastColor
         });
 
-        var tbb = tx.node().getBoundingClientRect();
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
         var hty = d.ya._offset + (d.y0 + d.y1) / 2;
         var dx = Math.abs(d.x1 - d.x0);
         var dy = Math.abs(d.y1 - d.y0);
-        var txTotalWidth = tbb.width + HOVERARROWSIZE + HOVERTEXTPAD + tx2width;
-        var anchorStartOK, anchorEndOK;
 
-        d.ty0 = outerTop - tbb.top;
-        d.bx = tbb.width + 2 * HOVERTEXTPAD;
-        d.by = Math.max(tbb.height + 2 * HOVERTEXTPAD, tx2height);
+        var tbb = getBoundingClientRect(gd, tx.node());
+        var tbbWidth = tbb.width / fullLayout._invScaleX;
+        var tbbHeight = tbb.height / fullLayout._invScaleY;
+
+        d.ty0 = (outerTop - tbb.top) / fullLayout._invScaleY;
+        d.bx = tbbWidth + 2 * HOVERTEXTPAD;
+        d.by = Math.max(tbbHeight + 2 * HOVERTEXTPAD, tx2height);
         d.anchor = 'start';
-        d.txwidth = tbb.width;
+        d.txwidth = tbbWidth;
         d.tx2width = tx2width;
         d.offset = 0;
+
+        var txTotalWidth = (tbbWidth + HOVERARROWSIZE + HOVERTEXTPAD + tx2width) * fullLayout._invScaleX;
+        var anchorStartOK, anchorEndOK;
 
         if(rotateLabels) {
             d.pos = htx;
@@ -68323,14 +67806,17 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
         name = plainText(d.name, d.nameLength);
     }
 
+    var h0 = hovermode.charAt(0);
+    var h1 = h0 === 'x' ? 'y' : 'x';
+
     if(d.zLabel !== undefined) {
         if(d.xLabel !== undefined) text += 'x: ' + d.xLabel + '<br>';
         if(d.yLabel !== undefined) text += 'y: ' + d.yLabel + '<br>';
         if(d.trace.type !== 'choropleth' && d.trace.type !== 'choroplethmapbox') {
             text += (text ? 'z: ' : '') + d.zLabel;
         }
-    } else if(showCommonLabel && d[hovermode.charAt(0) + 'Label'] === t0) {
-        text = d[(hovermode.charAt(0) === 'x' ? 'y' : 'x') + 'Label'] || '';
+    } else if(showCommonLabel && d[h0 + 'Label'] === t0) {
+        text = d[h1 + 'Label'] || '';
     } else if(d.xLabel === undefined) {
         if(d.yLabel !== undefined && d.trace.type !== 'scattercarpet') {
             text = d.yLabel;
@@ -68359,16 +67845,20 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
     }
 
     // hovertemplate
-    var d3locale = fullLayout._d3locale;
     var hovertemplate = d.hovertemplate || false;
-    var hovertemplateLabels = d.hovertemplateLabels || d;
-    var eventData = d.eventData[0] || {};
     if(hovertemplate) {
+        var labels = d.hovertemplateLabels || d;
+
+        if(d[h0 + 'Label'] !== t0) {
+            labels[h0 + 'other'] = labels[h0 + 'Val'];
+            labels[h0 + 'otherLabel'] = labels[h0 + 'Label'];
+        }
+
         text = Lib.hovertemplateString(
             hovertemplate,
-            hovertemplateLabels,
-            d3locale,
-            eventData,
+            labels,
+            fullLayout._d3locale,
+            d.eventData[0] || {},
             d.trace._meta
         );
 
@@ -68685,11 +68175,11 @@ function cleanPoint(d, hovermode) {
 
     // and convert the x and y label values into formatted text
     if(d.xLabelVal !== undefined) {
-        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal);
+        d.xLabel = ('xLabel' in d) ? d.xLabel : Axes.hoverLabelText(d.xa, d.xLabelVal, trace.xhoverformat);
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
     if(d.yLabelVal !== undefined) {
-        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal);
+        d.yLabel = ('yLabel' in d) ? d.yLabel : Axes.hoverLabelText(d.ya, d.yLabelVal, trace.yhoverformat);
         d.yVal = d.ya.c2d(d.yLabelVal);
     }
 
@@ -68947,7 +68437,110 @@ function plainText(s, len) {
     });
 }
 
-},{"../../lib":549,"../../lib/events":541,"../../lib/override_cursor":560,"../../lib/svg_text_utils":573,"../../plots/cartesian/axes":597,"../../registry":645,"../color":418,"../dragelement":437,"../drawing":440,"../legend/defaults":470,"../legend/draw":471,"./constants":452,"./helpers":454,"@plotly/d3":18,"fast-isnumeric":96,"tinycolor2":366}],456:[function(_dereq_,module,exports){
+function orderRangePoints(hoverData, hovermode) {
+    var axLetter = hovermode.charAt(0);
+
+    var first = [];
+    var second = [];
+    var last = [];
+
+    for(var i = 0; i < hoverData.length; i++) {
+        var d = hoverData[i];
+
+        if(
+            Registry.traceIs(d.trace, 'bar-like') ||
+            Registry.traceIs(d.trace, 'box-violin')
+        ) {
+            last.push(d);
+        } else if(d.trace[axLetter + 'period']) {
+            second.push(d);
+        } else {
+            first.push(d);
+        }
+    }
+
+    return first.concat(second).concat(last);
+}
+
+function getCoord(axLetter, winningPoint, fullLayout) {
+    var ax = winningPoint[axLetter + 'a'];
+    var val = winningPoint[axLetter + 'Val'];
+
+    var cd0 = winningPoint.cd[0];
+
+    if(ax.type === 'category') val = ax._categoriesMap[val];
+    else if(ax.type === 'date') {
+        var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
+        if(periodalignment) {
+            var d = winningPoint.cd[winningPoint.index];
+
+            var start = d[axLetter + 'Start'];
+            if(start === undefined) start = d[axLetter];
+
+            var end = d[axLetter + 'End'];
+            if(end === undefined) end = d[axLetter];
+
+            var diff = end - start;
+
+            if(periodalignment === 'end') {
+                val += diff;
+            } else if(periodalignment === 'middle') {
+                val += diff / 2;
+            }
+        }
+
+        val = ax.d2c(val);
+    }
+
+    if(cd0 && cd0.t && cd0.t.posLetter === ax._id) {
+        if(
+            fullLayout.boxmode === 'group' ||
+            fullLayout.violinmode === 'group'
+        ) {
+            val += cd0.t.dPos;
+        }
+    }
+
+    return val;
+}
+
+// Top/left hover offsets relative to graph div. As long as hover content is
+// a sibling of the graph div, it will be positioned correctly relative to
+// the offset parent, whatever that may be.
+function getTopOffset(gd) { return gd.offsetTop + gd.clientTop; }
+function getLeftOffset(gd) { return gd.offsetLeft + gd.clientLeft; }
+
+function getBoundingClientRect(gd, node) {
+    var fullLayout = gd._fullLayout;
+
+    var rect = node.getBoundingClientRect();
+
+    var x0 = rect.x;
+    var y0 = rect.y;
+    var x1 = x0 + rect.width;
+    var y1 = y0 + rect.height;
+
+    var A = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
+    var B = Lib.apply3DTransform(fullLayout._invTransform)(x1, y1);
+
+    var Ax = A[0];
+    var Ay = A[1];
+    var Bx = B[0];
+    var By = B[1];
+
+    return {
+        x: Ax,
+        y: Ay,
+        width: Bx - Ax,
+        height: By - Ay,
+        top: Math.min(Ay, By),
+        left: Math.min(Ax, Bx),
+        right: Math.max(Ax, Bx),
+        bottom: Math.max(Ay, By),
+    };
+}
+
+},{"../../lib":534,"../../lib/events":526,"../../lib/override_cursor":545,"../../lib/svg_text_utils":559,"../../plots/cartesian/axes":583,"../../registry":632,"../color":401,"../dragelement":420,"../drawing":423,"../legend/defaults":453,"../legend/draw":454,"./constants":435,"./helpers":437,"@plotly/d3":17,"fast-isnumeric":94,"tinycolor2":350}],439:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -68985,13 +68578,13 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     coerce('hoverlabel.align', opts.align);
 };
 
-},{"../../lib":549,"../color":418,"./helpers":454}],457:[function(_dereq_,module,exports){
+},{"../../lib":534,"../color":401,"./helpers":437}],440:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
 var layoutAttributes = _dereq_('./layout_attributes');
 
-module.exports = function handleHoverModeDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
         // don't coerce if it is already coerced in other place e.g. in cartesian defaults
         if(layoutOut[attr] !== undefined) return layoutOut[attr];
@@ -68999,41 +68592,11 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut, fullData)
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
-    var clickmode = coerce('clickmode');
-
-    var hovermodeDflt;
-    if(layoutOut._has('cartesian')) {
-        if(clickmode.indexOf('select') > -1) {
-            hovermodeDflt = 'closest';
-        } else {
-            // flag for 'horizontal' plots:
-            // determines the state of the mode bar 'compare' hovermode button
-            layoutOut._isHoriz = isHoriz(fullData, layoutOut);
-            hovermodeDflt = layoutOut._isHoriz ? 'y' : 'x';
-        }
-    } else hovermodeDflt = 'closest';
-
-    return coerce('hovermode', hovermodeDflt);
+    coerce('clickmode');
+    return coerce('hovermode');
 };
 
-function isHoriz(fullData, fullLayout) {
-    var stackOpts = fullLayout._scatterStackOpts || {};
-
-    for(var i = 0; i < fullData.length; i++) {
-        var trace = fullData[i];
-        var subplot = trace.xaxis + trace.yaxis;
-        var subplotStackOpts = stackOpts[subplot] || {};
-        var groupOpts = subplotStackOpts[trace.stackgroup] || {};
-
-        if(trace.orientation !== 'h' && groupOpts.orientation !== 'h') {
-            return false;
-        }
-    }
-
-    return true;
-}
-
-},{"../../lib":549,"./layout_attributes":459}],458:[function(_dereq_,module,exports){
+},{"../../lib":534,"./layout_attributes":442}],441:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -69104,7 +68667,7 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
     return Lib.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }
 
-},{"../../lib":549,"../dragelement":437,"./attributes":449,"./calc":450,"./click":451,"./constants":452,"./defaults":453,"./helpers":454,"./hover":455,"./layout_attributes":459,"./layout_defaults":460,"./layout_global_defaults":461,"@plotly/d3":18}],459:[function(_dereq_,module,exports){
+},{"../../lib":534,"../dragelement":420,"./attributes":432,"./calc":433,"./click":434,"./constants":435,"./defaults":436,"./helpers":437,"./hover":438,"./layout_attributes":442,"./layout_defaults":443,"./layout_global_defaults":444,"@plotly/d3":17}],442:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -69145,6 +68708,7 @@ module.exports = {
     hovermode: {
         valType: 'enumerated',
         values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
+        dflt: 'closest',
         editType: 'modebar',
     },
     hoverdistance: {
@@ -69156,7 +68720,7 @@ module.exports = {
     spikedistance: {
         valType: 'integer',
         min: -1,
-        dflt: 20,
+        dflt: -1,
         editType: 'none',
     },
     hoverlabel: {
@@ -69191,24 +68755,23 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":625,"./constants":452}],460:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":612,"./constants":435}],443:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
-var isUnifiedHover = _dereq_('./helpers').isUnifiedHover;
 var layoutAttributes = _dereq_('./layout_attributes');
 var handleHoverModeDefaults = _dereq_('./hovermode_defaults');
 var handleHoverLabelDefaults = _dereq_('./hoverlabel_defaults');
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
         return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
-    var hoverMode = handleHoverModeDefaults(layoutIn, layoutOut, fullData);
+    var hoverMode = handleHoverModeDefaults(layoutIn, layoutOut);
     if(hoverMode) {
         coerce('hoverdistance');
-        coerce('spikedistance', isUnifiedHover(hoverMode) ? -1 : undefined);
+        coerce('spikedistance');
     }
 
     var dragMode = coerce('dragmode');
@@ -69231,7 +68794,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":549,"./helpers":454,"./hoverlabel_defaults":456,"./hovermode_defaults":457,"./layout_attributes":459}],461:[function(_dereq_,module,exports){
+},{"../../lib":534,"./hoverlabel_defaults":439,"./hovermode_defaults":440,"./layout_attributes":442}],444:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -69246,7 +68809,7 @@ module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":549,"./hoverlabel_defaults":456,"./layout_attributes":459}],462:[function(_dereq_,module,exports){
+},{"../../lib":534,"./hoverlabel_defaults":439,"./layout_attributes":442}],445:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -69589,7 +69152,7 @@ module.exports = {
     contentDefaults: contentDefaults
 };
 
-},{"../../lib":549,"../../lib/regex":565,"../../plot_api/plot_template":586,"../../plots/cartesian/constants":603,"../../plots/domain":624}],463:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../lib/regex":550,"../../plot_api/plot_template":572,"../../plots/cartesian/constants":590,"../../plots/domain":611}],446:[function(_dereq_,module,exports){
 'use strict';
 
 var cartesianConstants = _dereq_('../../plots/cartesian/constants');
@@ -69691,7 +69254,7 @@ module.exports = templatedArray('image', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":521,"../../plot_api/plot_template":586,"../../plots/cartesian/constants":603}],464:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":507,"../../plot_api/plot_template":572,"../../plots/cartesian/constants":590}],447:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -69763,7 +69326,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":575,"fast-isnumeric":96}],465:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":561,"fast-isnumeric":94}],448:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -69820,7 +69383,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":549,"../../plots/array_container_defaults":592,"../../plots/cartesian/axes":597,"./attributes":463}],466:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/array_container_defaults":578,"../../plots/cartesian/axes":583,"./attributes":446}],449:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -70070,7 +69633,7 @@ module.exports = function draw(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":528,"../../plots/cartesian/axes":597,"../../plots/cartesian/axis_ids":600,"../drawing":440,"@plotly/d3":18}],467:[function(_dereq_,module,exports){
+},{"../../constants/xmlns_namespaces":514,"../../plots/cartesian/axes":583,"../../plots/cartesian/axis_ids":587,"../drawing":423,"@plotly/d3":17}],450:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -70086,7 +69649,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":609,"./attributes":463,"./convert_coords":464,"./defaults":465,"./draw":466}],468:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":596,"./attributes":446,"./convert_coords":447,"./defaults":448,"./draw":449}],451:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -70142,7 +69705,6 @@ module.exports = {
         dflt: 30,
         editType: 'legend',
     },
-
     itemclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
@@ -70155,7 +69717,12 @@ module.exports = {
         dflt: 'toggleothers',
         editType: 'legend',
     },
-
+    groupclick: {
+        valType: 'enumerated',
+        values: ['toggleitem', 'togglegroup'],
+        dflt: 'togglegroup',
+        editType: 'legend',
+    },
     x: {
         valType: 'number',
         min: -2,
@@ -70205,11 +69772,10 @@ module.exports = {
         },
         editType: 'legend',
     },
-
     editType: 'legend'
 };
 
-},{"../../plots/font_attributes":625,"../color/attributes":417}],469:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":612,"../color/attributes":400}],452:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -70225,7 +69791,7 @@ module.exports = {
     itemGap: 5
 };
 
-},{}],470:[function(_dereq_,module,exports){
+},{}],453:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -70305,12 +69871,13 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
-    Lib.coerceFont(coerce, 'font', layoutOut.font);
+    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     var orientation = coerce('orientation');
+    var isHorizontal = orientation === 'h';
     var defaultX, defaultY, defaultYAnchor;
 
-    if(orientation === 'h') {
+    if(isHorizontal) {
         defaultX = 0;
 
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
@@ -70337,6 +69904,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     coerce('itemclick');
     coerce('itemdoubleclick');
+    coerce('groupclick');
 
     coerce('x', defaultX);
     coerce('xanchor');
@@ -70347,12 +69915,16 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     var titleText = coerce('title.text');
     if(titleText) {
-        coerce('title.side', orientation === 'h' ? 'left' : 'top');
-        Lib.coerceFont(coerce, 'title.font', layoutOut.font);
+        coerce('title.side', isHorizontal ? 'left' : 'top');
+        var dfltTitleFont = Lib.extendFlat({}, itemFont, {
+            size: Lib.bigFont(itemFont.size)
+        });
+
+        Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     }
 };
 
-},{"../../lib":549,"../../plot_api/plot_template":586,"../../plots/layout_attributes":640,"../../registry":645,"./attributes":468,"./helpers":474}],471:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/plot_template":572,"../../plots/layout_attributes":627,"../../registry":632,"./attributes":451,"./helpers":457}],454:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -70377,19 +69949,24 @@ var getLegendData = _dereq_('./get_legend_data');
 var style = _dereq_('./style');
 var helpers = _dereq_('./helpers');
 
+var MAIN_TITLE = 1;
+
 module.exports = function draw(gd, opts) {
+    if(!opts) opts = gd._fullLayout.legend || {};
+    return _draw(gd, opts);
+};
+
+function _draw(gd, legendObj) {
     var fullLayout = gd._fullLayout;
     var clipId = 'legend' + fullLayout._uid;
     var layer;
 
-    // Check whether this is the main legend (ie. called without any opts)
-    if(!opts) {
-        opts = fullLayout.legend || {};
-        opts._main = true;
-        layer = fullLayout._infolayer;
-    } else {
-        layer = opts.layer;
+    var inHover = legendObj._inHover;
+    if(inHover) {
+        layer = legendObj.layer;
         clipId += '-hover';
+    } else {
+        layer = fullLayout._infolayer;
     }
 
     if(!layer) return;
@@ -70397,24 +69974,24 @@ module.exports = function draw(gd, opts) {
     if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
 
     var legendData;
-    if(opts._main) {
+    if(!inHover) {
         if(!gd.calcdata) return;
-        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, opts);
+        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj);
     } else {
-        if(!opts.entries) return;
-        legendData = getLegendData(opts.entries, opts);
+        if(!legendObj.entries) return;
+        legendData = getLegendData(legendObj.entries, legendObj);
     }
 
     var hiddenSlices = fullLayout.hiddenlabels || [];
 
-    if(opts._main && (!fullLayout.showlegend || !legendData.length)) {
+    if(!inHover && (!fullLayout.showlegend || !legendData.length)) {
         layer.selectAll('.legend').remove();
         fullLayout._topdefs.select('#' + clipId).remove();
         return Plots.autoMargin(gd, 'legend');
     }
 
     var legend = Lib.ensureSingle(layer, 'g', 'legend', function(s) {
-        if(opts._main) s.attr('pointer-events', 'all');
+        if(!inHover) s.attr('pointer-events', 'all');
     });
 
     var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', clipId, function(s) {
@@ -70424,22 +70001,22 @@ module.exports = function draw(gd, opts) {
     var bg = Lib.ensureSingle(legend, 'rect', 'bg', function(s) {
         s.attr('shape-rendering', 'crispEdges');
     });
-    bg.call(Color.stroke, opts.bordercolor)
-        .call(Color.fill, opts.bgcolor)
-        .style('stroke-width', opts.borderwidth + 'px');
+    bg.call(Color.stroke, legendObj.bordercolor)
+        .call(Color.fill, legendObj.bgcolor)
+        .style('stroke-width', legendObj.borderwidth + 'px');
 
     var scrollBox = Lib.ensureSingle(legend, 'g', 'scrollbox');
 
-    var title = opts.title;
-    opts._titleWidth = 0;
-    opts._titleHeight = 0;
+    var title = legendObj.title;
+    legendObj._titleWidth = 0;
+    legendObj._titleHeight = 0;
     if(title.text) {
         var titleEl = Lib.ensureSingle(scrollBox, 'text', 'legendtitletext');
         titleEl.attr('text-anchor', 'start')
             .call(Drawing.font, title.font)
             .text(title.text);
 
-        textLayout(titleEl, scrollBox, gd, opts); // handle mathjax or multi-line text and compute title height
+        textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE); // handle mathjax or multi-line text and compute title height
     } else {
         scrollBox.selectAll('.legendtitletext').remove();
     }
@@ -70465,31 +70042,31 @@ module.exports = function draw(gd, opts) {
             return trace.visible === 'legendonly' ? 0.5 : 1;
         }
     })
-    .each(function() { d3.select(this).call(drawTexts, gd, opts); })
-    .call(style, gd, opts)
-    .each(function() { if(opts._main) d3.select(this).call(setupTraceToggle, gd); });
+    .each(function() { d3.select(this).call(drawTexts, gd, legendObj); })
+    .call(style, gd, legendObj)
+    .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
 
     Lib.syncOrAsync([
         Plots.previousPromises,
-        function() { return computeLegendDimensions(gd, groups, traces, opts); },
+        function() { return computeLegendDimensions(gd, groups, traces, legendObj); },
         function() {
             // IF expandMargin return a Promise (which is truthy),
             // we're under a doAutoMargin redraw, so we don't have to
             // draw the remaining pieces below
-            if(opts._main && expandMargin(gd)) return;
+            if(!inHover && expandMargin(gd)) return;
 
             var gs = fullLayout._size;
-            var bw = opts.borderwidth;
+            var bw = legendObj.borderwidth;
 
-            var lx = gs.l + gs.w * opts.x - FROM_TL[getXanchor(opts)] * opts._width;
-            var ly = gs.t + gs.h * (1 - opts.y) - FROM_TL[getYanchor(opts)] * opts._effHeight;
+            var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+            var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
 
-            if(opts._main && fullLayout.margin.autoexpand) {
+            if(!inHover && fullLayout.margin.autoexpand) {
                 var lx0 = lx;
                 var ly0 = ly;
 
-                lx = Lib.constrain(lx, 0, fullLayout.width - opts._width);
-                ly = Lib.constrain(ly, 0, fullLayout.height - opts._effHeight);
+                lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
+                ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
 
                 if(lx !== lx0) {
                     Lib.log('Constrain legend.x to make legend fit inside graph');
@@ -70501,21 +70078,21 @@ module.exports = function draw(gd, opts) {
 
             // Set size and position of all the elements that make up a legend:
             // legend, background and border, scroll box and scroll bar as well as title
-            if(opts._main) Drawing.setTranslate(legend, lx, ly);
+            if(!inHover) Drawing.setTranslate(legend, lx, ly);
 
             // to be safe, remove previous listeners
             scrollBar.on('.drag', null);
             legend.on('wheel', null);
 
-            if(!opts._main || opts._height <= opts._maxHeight || gd._context.staticPlot) {
+            if(inHover || legendObj._height <= legendObj._maxHeight || gd._context.staticPlot) {
                 // if scrollbar should not be shown.
-                var height = opts._effHeight;
+                var height = legendObj._effHeight;
 
-                // if not the main legend, let it be its full size
-                if(!opts._main) height = opts._height;
+                // if unified hover, let it be its full size
+                if(inHover) height = legendObj._height;
 
                 bg.attr({
-                    width: opts._width - bw,
+                    width: legendObj._width - bw,
                     height: height - bw,
                     x: bw / 2,
                     y: bw / 2
@@ -70524,7 +70101,7 @@ module.exports = function draw(gd, opts) {
                 Drawing.setTranslate(scrollBox, 0, 0);
 
                 clipPath.select('rect').attr({
-                    width: opts._width - 2 * bw,
+                    width: legendObj._width - 2 * bw,
                     height: height - 2 * bw,
                     x: bw,
                     y: bw
@@ -70533,36 +70110,36 @@ module.exports = function draw(gd, opts) {
                 Drawing.setClipUrl(scrollBox, clipId, gd);
 
                 Drawing.setRect(scrollBar, 0, 0, 0, 0);
-                delete opts._scrollY;
+                delete legendObj._scrollY;
             } else {
                 var scrollBarHeight = Math.max(constants.scrollBarMinHeight,
-                    opts._effHeight * opts._effHeight / opts._height);
-                var scrollBarYMax = opts._effHeight -
+                    legendObj._effHeight * legendObj._effHeight / legendObj._height);
+                var scrollBarYMax = legendObj._effHeight -
                     scrollBarHeight -
                     2 * constants.scrollBarMargin;
-                var scrollBoxYMax = opts._height - opts._effHeight;
+                var scrollBoxYMax = legendObj._height - legendObj._effHeight;
                 var scrollRatio = scrollBarYMax / scrollBoxYMax;
 
-                var scrollBoxY = Math.min(opts._scrollY || 0, scrollBoxYMax);
+                var scrollBoxY = Math.min(legendObj._scrollY || 0, scrollBoxYMax);
 
                 // increase the background and clip-path width
                 // by the scrollbar width and margin
                 bg.attr({
-                    width: opts._width -
+                    width: legendObj._width -
                         2 * bw +
                         constants.scrollBarWidth +
                         constants.scrollBarMargin,
-                    height: opts._effHeight - bw,
+                    height: legendObj._effHeight - bw,
                     x: bw / 2,
                     y: bw / 2
                 });
 
                 clipPath.select('rect').attr({
-                    width: opts._width -
+                    width: legendObj._width -
                         2 * bw +
                         constants.scrollBarWidth +
                         constants.scrollBarMargin,
-                    height: opts._effHeight - 2 * bw,
+                    height: legendObj._effHeight - 2 * bw,
                     x: bw,
                     y: bw + scrollBoxY
                 });
@@ -70574,7 +70151,7 @@ module.exports = function draw(gd, opts) {
                 // scroll legend by mousewheel or touchpad swipe up/down
                 legend.on('wheel', function() {
                     scrollBoxY = Lib.constrain(
-                        opts._scrollY +
+                        legendObj._scrollY +
                             ((d3.event.deltaY / scrollBarYMax) * scrollBoxYMax),
                         0, scrollBoxYMax);
                     scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio);
@@ -70640,12 +70217,12 @@ module.exports = function draw(gd, opts) {
             }
 
             function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
-                opts._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
+                legendObj._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
                 Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
 
                 Drawing.setRect(
                     scrollBar,
-                    opts._width,
+                    legendObj._width,
                     constants.scrollBarMargin + scrollBoxY * scrollRatio,
                     constants.scrollBarWidth,
                     scrollBarHeight
@@ -70672,8 +70249,8 @@ module.exports = function draw(gd, opts) {
 
                         Drawing.setTranslate(legend, newX, newY);
 
-                        xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, opts.xanchor);
-                        yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, opts.yanchor);
+                        xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, legendObj.xanchor);
+                        yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, legendObj.yanchor);
                     },
                     doneFn: function() {
                         if(xf !== undefined && yf !== undefined) {
@@ -70695,7 +70272,7 @@ module.exports = function draw(gd, opts) {
                 });
             }
         }], gd);
-};
+}
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
@@ -70724,6 +70301,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
 
     if(numClicks === 1) {
         legend._clickTimeout = setTimeout(function() {
+            if(!gd._fullLayout) return;
             handleClick(legendItem, gd, numClicks);
         }, gd._context.doubleClickDelay);
     } else if(numClicks === 2) {
@@ -70735,39 +70313,44 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     }
 }
 
-function drawTexts(g, gd, opts) {
+function drawTexts(g, gd, legendObj) {
     var legendItem = g.data()[0][0];
     var trace = legendItem.trace;
     var isPieLike = Registry.traceIs(trace, 'pie-like');
-    var traceIndex = trace.index;
-    var isEditable = opts._main && gd._context.edits.legendText && !isPieLike;
-    var maxNameLength = opts._maxNameLength;
+    var isEditable = !legendObj._inHover && gd._context.edits.legendText && !isPieLike;
+    var maxNameLength = legendObj._maxNameLength;
 
-    var name;
-    if(!opts.entries) {
-        name = isPieLike ? legendItem.label : trace.name;
-        if(trace._meta) {
-            name = Lib.templateString(name, trace._meta);
-        }
+    var name, font;
+    if(legendItem.groupTitle) {
+        name = legendItem.groupTitle.text;
+        font = legendItem.groupTitle.font;
     } else {
-        name = legendItem.text;
+        font = legendObj.font;
+        if(!legendObj.entries) {
+            name = isPieLike ? legendItem.label : trace.name;
+            if(trace._meta) {
+                name = Lib.templateString(name, trace._meta);
+            }
+        } else {
+            name = legendItem.text;
+        }
     }
 
     var textEl = Lib.ensureSingle(g, 'text', 'legendtext');
 
     textEl.attr('text-anchor', 'start')
-        .call(Drawing.font, opts.font)
+        .call(Drawing.font, font)
         .text(isEditable ? ensureLength(name, maxNameLength) : name);
 
-    var textGap = opts.itemwidth + constants.itemGap * 2;
+    var textGap = legendObj.itemwidth + constants.itemGap * 2;
     svgTextUtils.positionText(textEl, textGap, 0);
 
     if(isEditable) {
         textEl.call(svgTextUtils.makeEditable, {gd: gd, text: name})
-            .call(textLayout, g, gd, opts)
+            .call(textLayout, g, gd, legendObj)
             .on('edit', function(newName) {
                 this.text(ensureLength(newName, maxNameLength))
-                    .call(textLayout, g, gd, opts);
+                    .call(textLayout, g, gd, legendObj);
 
                 var fullInput = legendItem.trace._fullInput || {};
                 var update = {};
@@ -70785,10 +70368,10 @@ function drawTexts(g, gd, opts) {
                     update.name = newName;
                 }
 
-                return Registry.call('_guiRestyle', gd, update, traceIndex);
+                return Registry.call('_guiRestyle', gd, update, trace.index);
             });
     } else {
-        textLayout(textEl, g, gd, opts);
+        textLayout(textEl, g, gd, legendObj);
     }
 }
 
@@ -70844,25 +70427,33 @@ function setupTraceToggle(g, gd) {
     });
 }
 
-function textLayout(s, g, gd, opts) {
-    if(!opts._main) s.attr('data-notex', true); // do not process MathJax if not main
+function textLayout(s, g, gd, legendObj, aTitle) {
+    if(legendObj._inHover) s.attr('data-notex', true); // do not process MathJax for unified hover
     svgTextUtils.convertToTspans(s, gd, function() {
-        computeTextDimensions(g, gd, opts);
+        computeTextDimensions(g, gd, legendObj, aTitle);
     });
 }
 
-function computeTextDimensions(g, gd, opts) {
+function computeTextDimensions(g, gd, legendObj, aTitle) {
     var legendItem = g.data()[0][0];
-    if(opts._main && legendItem && !legendItem.trace.showlegend) {
+    if(!legendObj._inHover && legendItem && !legendItem.trace.showlegend) {
         g.remove();
         return;
     }
 
     var mathjaxGroup = g.select('g[class*=math-group]');
     var mathjaxNode = mathjaxGroup.node();
-    if(!opts) opts = gd._fullLayout.legend;
-    var bw = opts.borderwidth;
-    var lineHeight = (legendItem ? opts : opts.title).font.size * LINE_SPACING;
+    if(!legendObj) legendObj = gd._fullLayout.legend;
+    var bw = legendObj.borderwidth;
+    var font;
+    if(aTitle === MAIN_TITLE) {
+        font = legendObj.title.font;
+    } else if(legendItem.groupTitle) {
+        font = legendItem.groupTitle.font;
+    } else {
+        font = legendObj.font;
+    }
+    var lineHeight = font.size * LINE_SPACING;
     var height, width;
 
     if(mathjaxNode) {
@@ -70871,14 +70462,14 @@ function computeTextDimensions(g, gd, opts) {
         height = mathjaxBB.height;
         width = mathjaxBB.width;
 
-        if(legendItem) {
+        if(aTitle === MAIN_TITLE) {
+            Drawing.setTranslate(mathjaxGroup, bw, bw + height * 0.75);
+        } else { // legend item
             Drawing.setTranslate(mathjaxGroup, 0, height * 0.25);
-        } else { // case of title
-            Drawing.setTranslate(mathjaxGroup, bw, height * 0.75 + bw);
         }
     } else {
-        var textEl = g.select(legendItem ?
-            '.legendtext' : '.legendtitletext'
+        var textEl = g.select(aTitle === MAIN_TITLE ?
+            '.legendtitletext' : '.legendtext'
         );
         var textLines = svgTextUtils.lineCount(textEl);
         var textNode = textEl.node();
@@ -70888,36 +70479,51 @@ function computeTextDimensions(g, gd, opts) {
 
         // approximation to height offset to center the font
         // to avoid getBoundingClientRect
-        var textY = lineHeight * ((textLines - 1) / 2 - 0.3);
-        if(legendItem) {
-            var textGap = opts.itemwidth + constants.itemGap * 2;
-            svgTextUtils.positionText(textEl, textGap, -textY);
-        } else { // case of title
-            svgTextUtils.positionText(textEl, constants.titlePad + bw, lineHeight + bw);
+        if(aTitle === MAIN_TITLE) {
+            if(legendObj.title.side === 'left') {
+                // add extra space between legend title and itmes
+                width += constants.itemGap * 2;
+            }
+
+            svgTextUtils.positionText(textEl,
+                bw + constants.titlePad,
+                bw + lineHeight
+            );
+        } else { // legend item
+            var x = constants.itemGap * 2 + legendObj.itemwidth;
+            if(legendItem.groupTitle) {
+                x = constants.itemGap;
+                width -= legendObj.itemwidth;
+            }
+
+            svgTextUtils.positionText(textEl,
+                x,
+                -lineHeight * ((textLines - 1) / 2 - 0.3)
+            );
         }
     }
 
-    if(legendItem) {
+    if(aTitle === MAIN_TITLE) {
+        legendObj._titleWidth = width;
+        legendObj._titleHeight = height;
+    } else { // legend item
         legendItem.lineHeight = lineHeight;
         legendItem.height = Math.max(height, 16) + 3;
         legendItem.width = width;
-    } else { // case of title
-        opts._titleWidth = width;
-        opts._titleHeight = height;
     }
 }
 
-function getTitleSize(opts) {
+function getTitleSize(legendObj) {
     var w = 0;
     var h = 0;
 
-    var side = opts.title.side;
+    var side = legendObj.title.side;
     if(side) {
         if(side.indexOf('left') !== -1) {
-            w = opts._titleWidth;
+            w = legendObj._titleWidth;
         }
         if(side.indexOf('top') !== -1) {
-            h = opts._titleHeight;
+            h = legendObj._titleHeight;
         }
     }
 
@@ -70934,68 +70540,70 @@ function getTitleSize(opts) {
  *  - _width: legend width
  *  - _maxWidth (for orientation:h only): maximum width before starting new row
  */
-function computeLegendDimensions(gd, groups, traces, opts) {
+function computeLegendDimensions(gd, groups, traces, legendObj) {
     var fullLayout = gd._fullLayout;
-    if(!opts) opts = fullLayout.legend;
+    if(!legendObj) legendObj = fullLayout.legend;
     var gs = fullLayout._size;
 
-    var isVertical = helpers.isVertical(opts);
-    var isGrouped = helpers.isGrouped(opts);
+    var isVertical = helpers.isVertical(legendObj);
+    var isGrouped = helpers.isGrouped(legendObj);
 
-    var bw = opts.borderwidth;
+    var bw = legendObj.borderwidth;
     var bw2 = 2 * bw;
     var itemGap = constants.itemGap;
-    var textGap = opts.itemwidth + itemGap * 2;
+    var textGap = legendObj.itemwidth + itemGap * 2;
     var endPad = 2 * (bw + itemGap);
 
-    var yanchor = getYanchor(opts);
-    var isBelowPlotArea = opts.y < 0 || (opts.y === 0 && yanchor === 'top');
-    var isAbovePlotArea = opts.y > 1 || (opts.y === 1 && yanchor === 'bottom');
+    var yanchor = getYanchor(legendObj);
+    var isBelowPlotArea = legendObj.y < 0 || (legendObj.y === 0 && yanchor === 'top');
+    var isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
+
+    var traceGroupGap = legendObj.tracegroupgap;
 
     // - if below/above plot area, give it the maximum potential margin-push value
     // - otherwise, extend the height of the plot area
-    opts._maxHeight = Math.max(
+    legendObj._maxHeight = Math.max(
         (isBelowPlotArea || isAbovePlotArea) ? fullLayout.height / 2 : gs.h,
         30
     );
 
     var toggleRectWidth = 0;
-    opts._width = 0;
-    opts._height = 0;
-    var titleSize = getTitleSize(opts);
+    legendObj._width = 0;
+    legendObj._height = 0;
+    var titleSize = getTitleSize(legendObj);
 
     if(isVertical) {
         traces.each(function(d) {
             var h = d[0].height;
             Drawing.setTranslate(this,
                 bw + titleSize[0],
-                bw + titleSize[1] + opts._height + h / 2 + itemGap
+                bw + titleSize[1] + legendObj._height + h / 2 + itemGap
             );
-            opts._height += h;
-            opts._width = Math.max(opts._width, d[0].width);
+            legendObj._height += h;
+            legendObj._width = Math.max(legendObj._width, d[0].width);
         });
 
-        toggleRectWidth = textGap + opts._width;
-        opts._width += itemGap + textGap + bw2;
-        opts._height += endPad;
+        toggleRectWidth = textGap + legendObj._width;
+        legendObj._width += itemGap + textGap + bw2;
+        legendObj._height += endPad;
 
         if(isGrouped) {
             groups.each(function(d, i) {
-                Drawing.setTranslate(this, 0, i * opts.tracegroupgap);
+                Drawing.setTranslate(this, 0, i * legendObj.tracegroupgap);
             });
-            opts._height += (opts._lgroupsLength - 1) * opts.tracegroupgap;
+            legendObj._height += (legendObj._lgroupsLength - 1) * legendObj.tracegroupgap;
         }
     } else {
-        var xanchor = getXanchor(opts);
-        var isLeftOfPlotArea = opts.x < 0 || (opts.x === 0 && xanchor === 'right');
-        var isRightOfPlotArea = opts.x > 1 || (opts.x === 1 && xanchor === 'left');
+        var xanchor = getXanchor(legendObj);
+        var isLeftOfPlotArea = legendObj.x < 0 || (legendObj.x === 0 && xanchor === 'right');
+        var isRightOfPlotArea = legendObj.x > 1 || (legendObj.x === 1 && xanchor === 'left');
         var isBeyondPlotAreaY = isAbovePlotArea || isBelowPlotArea;
         var hw = fullLayout.width / 2;
 
         // - if placed within x-margins, extend the width of the plot area
         // - else if below/above plot area and anchored in the margin, extend to opposite margin,
         // - otherwise give it the maximum potential margin-push value
-        opts._maxWidth = Math.max(
+        legendObj._maxWidth = Math.max(
             isLeftOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'left') ? gs.l + gs.w : hw) :
             isRightOfPlotArea ? ((isBeyondPlotAreaY && xanchor === 'right') ? gs.r + gs.w : hw) :
             gs.w,
@@ -71031,10 +70639,10 @@ function computeLegendDimensions(gd, groups, traces, opts) {
 
                 var next = maxWidthInGroup + itemGap;
 
-                if((next + bw + groupOffsetX) > opts._maxWidth) {
+                if((next + bw + groupOffsetX) > legendObj._maxWidth) {
                     maxRowWidth = Math.max(maxRowWidth, groupOffsetX);
                     groupOffsetX = 0;
-                    groupOffsetY += maxGroupHeightInRow + opts.tracegroupgap;
+                    groupOffsetY += maxGroupHeightInRow + traceGroupGap;
                     maxGroupHeightInRow = offsetY;
                 }
 
@@ -71043,11 +70651,11 @@ function computeLegendDimensions(gd, groups, traces, opts) {
                 groupOffsetX += next;
             });
 
-            opts._width = Math.max(maxRowWidth, groupOffsetX) + bw;
-            opts._height = groupOffsetY + maxGroupHeightInRow + endPad;
+            legendObj._width = Math.max(maxRowWidth, groupOffsetX) + bw;
+            legendObj._height = groupOffsetY + maxGroupHeightInRow + endPad;
         } else {
             var nTraces = traces.size();
-            var oneRowLegend = (combinedItemWidth + bw2 + (nTraces - 1) * itemGap) < opts._maxWidth;
+            var oneRowLegend = (combinedItemWidth + bw2 + (nTraces - 1) * itemGap) < legendObj._maxWidth;
 
             var maxItemHeightInRow = 0;
             var offsetX = 0;
@@ -71058,11 +70666,11 @@ function computeLegendDimensions(gd, groups, traces, opts) {
                 var w = textGap + d[0].width;
                 var next = (oneRowLegend ? w : maxItemWidth) + itemGap;
 
-                if((next + bw + offsetX - itemGap) >= opts._maxWidth) {
+                if((next + bw + offsetX - itemGap) >= legendObj._maxWidth) {
                     maxRowWidth = Math.max(maxRowWidth, rowWidth);
                     offsetX = 0;
                     offsetY += maxItemHeightInRow;
-                    opts._height += maxItemHeightInRow;
+                    legendObj._height += maxItemHeightInRow;
                     maxItemHeightInRow = 0;
                 }
 
@@ -71077,30 +70685,30 @@ function computeLegendDimensions(gd, groups, traces, opts) {
             });
 
             if(oneRowLegend) {
-                opts._width = offsetX + bw2;
-                opts._height = maxItemHeightInRow + endPad;
+                legendObj._width = offsetX + bw2;
+                legendObj._height = maxItemHeightInRow + endPad;
             } else {
-                opts._width = Math.max(maxRowWidth, rowWidth) + bw2;
-                opts._height += maxItemHeightInRow + endPad;
+                legendObj._width = Math.max(maxRowWidth, rowWidth) + bw2;
+                legendObj._height += maxItemHeightInRow + endPad;
             }
         }
     }
 
-    opts._width = Math.ceil(
+    legendObj._width = Math.ceil(
         Math.max(
-            opts._width + titleSize[0],
-            opts._titleWidth + 2 * (bw + constants.titlePad)
+            legendObj._width + titleSize[0],
+            legendObj._titleWidth + 2 * (bw + constants.titlePad)
         )
     );
 
-    opts._height = Math.ceil(
+    legendObj._height = Math.ceil(
         Math.max(
-            opts._height + titleSize[1],
-            opts._titleHeight + 2 * (bw + constants.itemGap)
+            legendObj._height + titleSize[1],
+            legendObj._titleHeight + 2 * (bw + constants.itemGap)
         )
     );
 
-    opts._effHeight = Math.min(opts._height, opts._maxHeight);
+    legendObj._effHeight = Math.min(legendObj._height, legendObj._maxHeight);
 
     var edits = gd._context.edits;
     var isEditable = edits.legendText || edits.legendPosition;
@@ -71115,39 +70723,43 @@ function computeLegendDimensions(gd, groups, traces, opts) {
 
 function expandMargin(gd) {
     var fullLayout = gd._fullLayout;
-    var opts = fullLayout.legend;
-    var xanchor = getXanchor(opts);
-    var yanchor = getYanchor(opts);
+    var legendObj = fullLayout.legend;
+    var xanchor = getXanchor(legendObj);
+    var yanchor = getYanchor(legendObj);
 
     return Plots.autoMargin(gd, 'legend', {
-        x: opts.x,
-        y: opts.y,
-        l: opts._width * (FROM_TL[xanchor]),
-        r: opts._width * (FROM_BR[xanchor]),
-        b: opts._effHeight * (FROM_BR[yanchor]),
-        t: opts._effHeight * (FROM_TL[yanchor])
+        x: legendObj.x,
+        y: legendObj.y,
+        l: legendObj._width * (FROM_TL[xanchor]),
+        r: legendObj._width * (FROM_BR[xanchor]),
+        b: legendObj._effHeight * (FROM_BR[yanchor]),
+        t: legendObj._effHeight * (FROM_TL[yanchor])
     });
 }
 
-function getXanchor(opts) {
-    return Lib.isRightAnchor(opts) ? 'right' :
-        Lib.isCenterAnchor(opts) ? 'center' :
+function getXanchor(legendObj) {
+    return Lib.isRightAnchor(legendObj) ? 'right' :
+        Lib.isCenterAnchor(legendObj) ? 'center' :
         'left';
 }
 
-function getYanchor(opts) {
-    return Lib.isBottomAnchor(opts) ? 'bottom' :
-        Lib.isMiddleAnchor(opts) ? 'middle' :
+function getYanchor(legendObj) {
+    return Lib.isBottomAnchor(legendObj) ? 'bottom' :
+        Lib.isMiddleAnchor(legendObj) ? 'middle' :
         'top';
 }
 
-},{"../../constants/alignment":520,"../../lib":549,"../../lib/events":541,"../../lib/svg_text_utils":573,"../../plots/plots":642,"../../registry":645,"../color":418,"../dragelement":437,"../drawing":440,"./constants":469,"./get_legend_data":472,"./handle_click":473,"./helpers":474,"./style":476,"@plotly/d3":18}],472:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../lib":534,"../../lib/events":526,"../../lib/svg_text_utils":559,"../../plots/plots":629,"../../registry":632,"../color":401,"../dragelement":420,"../drawing":423,"./constants":452,"./get_legend_data":455,"./handle_click":456,"./helpers":457,"./style":459,"@plotly/d3":17}],455:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
 var helpers = _dereq_('./helpers');
 
 module.exports = function getLegendData(calcdata, opts) {
+    var inHover = opts._inHover;
+    var grouped = helpers.isGrouped(opts);
+    var reversed = helpers.isReversed(opts);
+
     var lgroupToTraces = {};
     var lgroups = [];
     var hasOneNonBlankGroup = false;
@@ -71155,7 +70767,6 @@ module.exports = function getLegendData(calcdata, opts) {
     var lgroupi = 0;
     var maxNameLength = 0;
     var i, j;
-    var main = opts._main;
 
     function addOneItem(legendGroup, legendItem) {
         // each '' legend group is treated as a separate group
@@ -71163,14 +70774,14 @@ module.exports = function getLegendData(calcdata, opts) {
             // TODO: check this against fullData legendgroups?
             var uniqueGroup = '~~i' + lgroupi;
             lgroups.push(uniqueGroup);
-            lgroupToTraces[uniqueGroup] = [[legendItem]];
+            lgroupToTraces[uniqueGroup] = [legendItem];
             lgroupi++;
         } else if(lgroups.indexOf(legendGroup) === -1) {
             lgroups.push(legendGroup);
             hasOneNonBlankGroup = true;
-            lgroupToTraces[legendGroup] = [[legendItem]];
+            lgroupToTraces[legendGroup] = [legendItem];
         } else {
-            lgroupToTraces[legendGroup].push([legendItem]);
+            lgroupToTraces[legendGroup].push(legendItem);
         }
     }
 
@@ -71181,7 +70792,7 @@ module.exports = function getLegendData(calcdata, opts) {
         var trace = cd0.trace;
         var lgroup = trace.legendgroup;
 
-        if(main && (!trace.visible || !trace.showlegend)) continue;
+        if(!inHover && (!trace.visible || !trace.showlegend)) continue;
 
         if(Registry.traceIs(trace, 'pie-like')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
@@ -71211,38 +70822,110 @@ module.exports = function getLegendData(calcdata, opts) {
     // won't draw a legend in this case
     if(!lgroups.length) return [];
 
-    // rearrange lgroupToTraces into a d3-friendly array of arrays
-    var lgroupsLength = lgroups.length;
-    var ltraces;
-    var legendData;
+    // collapse all groups into one if all groups are blank
+    var shouldCollapse = !hasOneNonBlankGroup || !grouped;
 
-    if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
-        legendData = new Array(lgroupsLength);
-
-        for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]];
-            legendData[i] = helpers.isReversed(opts) ? ltraces.reverse() : ltraces;
+    var legendData = [];
+    for(i = 0; i < lgroups.length; i++) {
+        var t = lgroupToTraces[lgroups[i]];
+        if(shouldCollapse) {
+            legendData.push(t[0]);
+        } else {
+            legendData.push(t);
         }
-    } else {
-        // collapse all groups into one if all groups are blank
-        legendData = [new Array(lgroupsLength)];
+    }
+    if(shouldCollapse) legendData = [legendData];
 
-        for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]][0];
-            legendData[0][helpers.isReversed(opts) ? lgroupsLength - i - 1 : i] = ltraces;
+    for(i = 0; i < legendData.length; i++) {
+        // find minimum rank within group
+        var groupMinRank = Infinity;
+        for(j = 0; j < legendData[i].length; j++) {
+            var rank = legendData[i][j].trace.legendrank;
+            if(groupMinRank > rank) groupMinRank = rank;
         }
-        lgroupsLength = 1;
+
+        // record on first group element
+        legendData[i][0]._groupMinRank = groupMinRank;
+        legendData[i][0]._preGroupSort = i;
+    }
+
+    var orderFn1 = function(a, b) {
+        return (
+            (a[0]._groupMinRank - b[0]._groupMinRank) ||
+            (a[0]._preGroupSort - b[0]._preGroupSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
+        );
+    };
+
+    var orderFn2 = function(a, b) {
+        return (
+            (a.trace.legendrank - b.trace.legendrank) ||
+            (a._preSort - b._preSort) // fallback for old Chrome < 70 https://bugs.chromium.org/p/v8/issues/detail?id=90
+        );
+    };
+
+    // sort considering minimum group legendrank
+    legendData.forEach(function(a, k) { a[0]._preGroupSort = k; });
+    legendData.sort(orderFn1);
+    for(i = 0; i < legendData.length; i++) {
+        // sort considering trace.legendrank and legend.traceorder
+        legendData[i].forEach(function(a, k) { a._preSort = k; });
+        legendData[i].sort(orderFn2);
+
+        var firstItemTrace = legendData[i][0].trace;
+
+        var groupTitle = null;
+        // get group title text
+        for(j = 0; j < legendData[i].length; j++) {
+            var gt = legendData[i][j].trace.legendgrouptitle;
+            if(gt && gt.text) {
+                groupTitle = gt;
+                if(inHover) gt.font = opts._groupTitleFont;
+                break;
+            }
+        }
+
+        // reverse order
+        if(reversed) legendData[i].reverse();
+
+        if(groupTitle) {
+            var hasPieLike = false;
+            for(j = 0; j < legendData[i].length; j++) {
+                if(Registry.traceIs(legendData[i][j].trace, 'pie-like')) {
+                    hasPieLike = true;
+                    break;
+                }
+            }
+
+            // set group title text
+            legendData[i].unshift({
+                i: -1,
+                groupTitle: groupTitle,
+                noClick: hasPieLike,
+                trace: {
+                    showlegend: firstItemTrace.showlegend,
+                    legendgroup: firstItemTrace.legendgroup,
+                    visible: opts.groupclick === 'toggleitem' ? true : firstItemTrace.visible
+                }
+            });
+        }
+
+        // rearrange lgroupToTraces into a d3-friendly array of arrays
+        for(j = 0; j < legendData[i].length; j++) {
+            legendData[i][j] = [
+                legendData[i][j]
+            ];
+        }
     }
 
     // number of legend groups - needed in legend/draw.js
-    opts._lgroupsLength = lgroupsLength;
+    opts._lgroupsLength = legendData.length;
     // maximum name/label length - needed in legend/draw.js
     opts._maxNameLength = maxNameLength;
 
     return legendData;
 };
 
-},{"../../registry":645,"./helpers":474}],473:[function(_dereq_,module,exports){
+},{"../../registry":632,"./helpers":457}],456:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -71257,6 +70940,7 @@ module.exports = function handleClick(g, gd, numClicks) {
 
     var itemClick = fullLayout.legend.itemclick;
     var itemDoubleClick = fullLayout.legend.itemdoubleclick;
+    var groupClick = fullLayout.legend.groupclick;
 
     if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
@@ -71272,11 +70956,15 @@ module.exports = function handleClick(g, gd, numClicks) {
     else if(numClicks === 2) mode = itemDoubleClick;
     if(!mode) return;
 
+    var toggleGroup = groupClick === 'togglegroup';
+
     var hiddenSlices = fullLayout.hiddenlabels ?
         fullLayout.hiddenlabels.slice() :
         [];
 
     var legendItem = g.data()[0][0];
+    if(legendItem.groupTitle && legendItem.noClick) return;
+
     var fullData = gd._fullData;
     var fullTrace = legendItem.trace;
     var legendgroup = fullTrace.legendgroup;
@@ -71305,6 +70993,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 
     function setVisibility(fullTrace, visibility) {
+        if(legendItem.groupTitle && !toggleGroup) return;
+
         var fullInput = fullTrace._fullInput;
         if(Registry.hasTransform(fullInput, 'groupby')) {
             var kcont = carrs[fullInput.index];
@@ -71391,10 +71081,14 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
 
             if(hasLegendgroup) {
-                for(i = 0; i < fullData.length; i++) {
-                    if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-                        setVisibility(fullData[i], nextVisibility);
+                if(toggleGroup) {
+                    for(i = 0; i < fullData.length; i++) {
+                        if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
+                            setVisibility(fullData[i], nextVisibility);
+                        }
                     }
+                } else {
+                    setVisibility(fullTrace, nextVisibility);
                 }
             } else {
                 setVisibility(fullTrace, nextVisibility);
@@ -71462,7 +71156,7 @@ module.exports = function handleClick(g, gd, numClicks) {
         for(i = 0; i < keys.length; i++) {
             key = keys[i];
             for(j = 0; j < attrIndices.length; j++) {
-                // Use hasOwnPropety to protect against falsey values:
+                // Use hasOwnProperty to protect against falsy values:
                 if(!attrUpdate[key].hasOwnProperty(j)) {
                     attrUpdate[key][j] = undefined;
                 }
@@ -71473,7 +71167,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 };
 
-},{"../../lib":549,"../../registry":645}],474:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632}],457:[function(_dereq_,module,exports){
 'use strict';
 
 exports.isGrouped = function isGrouped(legendLayout) {
@@ -71488,7 +71182,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{}],475:[function(_dereq_,module,exports){
+},{}],458:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -71503,7 +71197,7 @@ module.exports = {
     style: _dereq_('./style')
 };
 
-},{"./attributes":468,"./defaults":470,"./draw":471,"./style":476}],476:[function(_dereq_,module,exports){
+},{"./attributes":451,"./defaults":453,"./draw":454,"./style":459}],459:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -71601,13 +71295,16 @@ module.exports = function style(s, gd, legend) {
     .each(styleOHLC);
 
     function styleLines(d) {
+        var styleGuide = getStyleGuide(d);
+        var showFill = styleGuide.showFill;
+        var showLine = styleGuide.showLine;
+        var showGradientLine = styleGuide.showGradientLine;
+        var showGradientFill = styleGuide.showGradientFill;
+        var anyFill = styleGuide.anyFill;
+        var anyLine = styleGuide.anyLine;
+
         var d0 = d[0];
         var trace = d0.trace;
-        var showFill = trace.visible && trace.fill && trace.fill !== 'none';
-        var showLine = subTypes.hasLines(trace);
-        var contours = trace.contours;
-        var showGradientLine = false;
-        var showGradientFill = false;
         var dMod, tMod;
 
         var cOpts = extractOpts(trace);
@@ -71633,28 +71330,10 @@ module.exports = function style(s, gd, legend) {
             }
         };
 
-        if(contours) {
-            var coloring = contours.coloring;
-
-            if(coloring === 'lines') {
-                showGradientLine = true;
-            } else {
-                showLine = coloring === 'none' || coloring === 'heatmap' || contours.showlines;
-            }
-
-            if(contours.type === 'constraint') {
-                showFill = contours._operation !== '=';
-            } else if(coloring === 'fill' || coloring === 'heatmap') {
-                showGradientFill = true;
-            }
-        }
-
         // with fill and no markers or text, move the line and fill up a bit
         // so it's more centered
-        var markersOrText = subTypes.hasMarkers(trace) || subTypes.hasText(trace);
-        var anyFill = showFill || showGradientFill;
-        var anyLine = showLine || showGradientLine;
-        var pathStart = (markersOrText || !anyFill) ? 'M5,0' :
+
+        var pathStart = (subTypes.hasMarkers(trace) || !anyFill) ? 'M5,0' :
             // with a line leave it slightly below center, to leave room for the
             // line thickness and because the line is usually more prominent
             anyLine ? 'M5,-2' : 'M5,-3';
@@ -71690,11 +71369,15 @@ module.exports = function style(s, gd, legend) {
     }
 
     function stylePoints(d) {
+        var styleGuide = getStyleGuide(d);
+        var anyFill = styleGuide.anyFill;
+        var anyLine = styleGuide.anyLine;
+        var showLine = styleGuide.showLine;
+        var showMarker = styleGuide.showMarker;
+
         var d0 = d[0];
         var trace = d0.trace;
-        var showMarkers = subTypes.hasMarkers(trace);
-        var showText = subTypes.hasText(trace);
-        var showLines = subTypes.hasLines(trace);
+        var showText = !showMarker && !anyLine && !anyFill && subTypes.hasText(trace);
         var dMod, tMod;
 
         // 'scatter3d' don't use gd.calcdata,
@@ -71723,11 +71406,11 @@ module.exports = function style(s, gd, legend) {
         }
 
         // constrain text, markers, etc so they'll fit on the legend
-        if(showMarkers || showText || showLines) {
+        if(showMarker || showText || showLine) {
             var dEdit = {};
             var tEdit = {};
 
-            if(showMarkers) {
+            if(showMarker) {
                 dEdit.mc = boundVal('marker.color', pickFirst);
                 dEdit.mx = boundVal('marker.symbol', pickFirst);
                 dEdit.mo = boundVal('marker.opacity', Lib.mean, [0.2, 1]);
@@ -71744,7 +71427,7 @@ module.exports = function style(s, gd, legend) {
                 tEdit.marker.size = ms;
             }
 
-            if(showLines) {
+            if(showLine) {
                 tEdit.line = {
                     width: boundVal('line.width', pickFirst, [0, 10], CST_LINE_WIDTH)
                 };
@@ -71771,7 +71454,7 @@ module.exports = function style(s, gd, legend) {
         var ptgroup = d3.select(this).select('g.legendpoints');
 
         var pts = ptgroup.selectAll('path.scatterpts')
-            .data(showMarkers ? dMod : []);
+            .data(showMarker ? dMod : []);
         // make sure marker is on the bottom, in case it enters after text
         pts.enter().insert('path', ':first-child')
             .classed('scatterpts', true)
@@ -71781,7 +71464,7 @@ module.exports = function style(s, gd, legend) {
 
         // 'mrc' is set in pointStyle and used in textPointStyle:
         // constrain it here
-        if(showMarkers) dMod[0].mrc = 3;
+        if(showMarker) dMod[0].mrc = 3;
 
         var txt = ptgroup.selectAll('g.pointtext')
             .data(showText ? dMod : []);
@@ -71863,8 +71546,38 @@ module.exports = function style(s, gd, legend) {
             var d0 = d[0];
             var w = boundLineWidth(d0.mlw, marker.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            p.style('stroke-width', w + 'px')
-                .call(Color.fill, d0.mc || marker.color);
+            p.style('stroke-width', w + 'px');
+
+            var mcc = d0.mcc;
+            if(!legend._inHover && 'mc' in d0) {
+                // not in unified hover but
+                // for legend use the color in the middle of scale
+                var cOpts = extractOpts(marker);
+                var mid = cOpts.mid;
+                if(mid === undefined) mid = (cOpts.max + cOpts.min) / 2;
+                mcc = Drawing.tryColorscale(marker, '')(mid);
+            }
+            var fillColor = mcc || d0.mc || marker.color;
+
+            var markerPattern = marker.pattern;
+            var patternShape = markerPattern && Drawing.getPatternAttr(markerPattern.shape, 0, '');
+
+            if(patternShape) {
+                var patternBGColor = Drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
+                var patternFGColor = Drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+                var patternFGOpacity = markerPattern.fgopacity;
+                var patternSize = dimAttr(markerPattern.size, 8, 10);
+                var patternSolidity = dimAttr(markerPattern.solidity, 0.5, 1);
+                var patternID = 'legend-' + trace.uid;
+                p.call(
+                    Drawing.pattern, 'legend', gd, patternID,
+                    patternShape, patternSize, patternSolidity,
+                    mcc, markerPattern.fillmode,
+                    patternBGColor, patternFGColor, patternFGOpacity
+                );
+            } else {
+                p.call(Color.fill, fillColor);
+            }
 
             if(w) Color.stroke(p, d0.mlc || markerLine.color);
         });
@@ -72128,7 +71841,94 @@ function getGradientDirection(reversescale, isRadial) {
     return str + (reversescale ? '' : 'reversed');
 }
 
-},{"../../lib":549,"../../registry":645,"../../traces/pie/helpers":671,"../../traces/pie/style_one":672,"../../traces/scatter/subtypes":699,"../color":418,"../colorscale/helpers":429,"../drawing":440,"./constants":469,"@plotly/d3":18}],477:[function(_dereq_,module,exports){
+function getStyleGuide(d) {
+    var trace = d[0].trace;
+    var contours = trace.contours;
+    var showLine = subTypes.hasLines(trace);
+    var showMarker = subTypes.hasMarkers(trace);
+
+    var showFill = trace.visible && trace.fill && trace.fill !== 'none';
+    var showGradientLine = false;
+    var showGradientFill = false;
+
+    if(contours) {
+        var coloring = contours.coloring;
+
+        if(coloring === 'lines') {
+            showGradientLine = true;
+        } else {
+            showLine = coloring === 'none' || coloring === 'heatmap' || contours.showlines;
+        }
+
+        if(contours.type === 'constraint') {
+            showFill = contours._operation !== '=';
+        } else if(coloring === 'fill' || coloring === 'heatmap') {
+            showGradientFill = true;
+        }
+    }
+
+    return {
+        showMarker: showMarker,
+        showLine: showLine,
+        showFill: showFill,
+        showGradientLine: showGradientLine,
+        showGradientFill: showGradientFill,
+        anyLine: showLine || showGradientLine,
+        anyFill: showFill || showGradientFill,
+    };
+}
+
+function dimAttr(v, dflt, max) {
+    if(v && Lib.isArrayOrTypedArray(v)) return dflt;
+    if(v > max) return max;
+    return v;
+}
+
+},{"../../lib":534,"../../registry":632,"../../traces/pie/helpers":658,"../../traces/pie/style_one":659,"../../traces/scatter/subtypes":686,"../color":401,"../colorscale/helpers":412,"../drawing":423,"./constants":452,"@plotly/d3":17}],460:[function(_dereq_,module,exports){
+'use strict';
+
+var constants = _dereq_('./constants');
+
+module.exports = {
+    editType: 'modebar',
+
+    orientation: {
+        valType: 'enumerated',
+        values: ['v', 'h'],
+        dflt: 'h',
+        editType: 'modebar',
+    },
+    bgcolor: {
+        valType: 'color',
+        editType: 'modebar',
+    },
+    color: {
+        valType: 'color',
+        editType: 'modebar',
+    },
+    activecolor: {
+        valType: 'color',
+        editType: 'modebar',
+    },
+    uirevision: {
+        valType: 'any',
+        editType: 'none',
+    },
+    add: {
+        valType: 'string',
+        arrayOk: true,
+        dflt: '',
+        editType: 'modebar',
+    },
+    remove: {
+        valType: 'string',
+        arrayOk: true,
+        dflt: '',
+        editType: 'modebar',
+    }
+};
+
+},{"./constants":462}],461:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -72223,6 +72023,7 @@ modeBarButtons.editInChartStudio = {
 
 modeBarButtons.zoom2d = {
     name: 'zoom2d',
+    _cat: 'zoom',
     title: function(gd) { return _(gd, 'Zoom'); },
     attr: 'dragmode',
     val: 'zoom',
@@ -72232,6 +72033,7 @@ modeBarButtons.zoom2d = {
 
 modeBarButtons.pan2d = {
     name: 'pan2d',
+    _cat: 'pan',
     title: function(gd) { return _(gd, 'Pan'); },
     attr: 'dragmode',
     val: 'pan',
@@ -72241,6 +72043,7 @@ modeBarButtons.pan2d = {
 
 modeBarButtons.select2d = {
     name: 'select2d',
+    _cat: 'select',
     title: function(gd) { return _(gd, 'Box Select'); },
     attr: 'dragmode',
     val: 'select',
@@ -72250,6 +72053,7 @@ modeBarButtons.select2d = {
 
 modeBarButtons.lasso2d = {
     name: 'lasso2d',
+    _cat: 'lasso',
     title: function(gd) { return _(gd, 'Lasso Select'); },
     attr: 'dragmode',
     val: 'lasso',
@@ -72311,6 +72115,7 @@ modeBarButtons.eraseshape = {
 
 modeBarButtons.zoomIn2d = {
     name: 'zoomIn2d',
+    _cat: 'zoomin',
     title: function(gd) { return _(gd, 'Zoom in'); },
     attr: 'zoom',
     val: 'in',
@@ -72320,6 +72125,7 @@ modeBarButtons.zoomIn2d = {
 
 modeBarButtons.zoomOut2d = {
     name: 'zoomOut2d',
+    _cat: 'zoomout',
     title: function(gd) { return _(gd, 'Zoom out'); },
     attr: 'zoom',
     val: 'out',
@@ -72329,6 +72135,7 @@ modeBarButtons.zoomOut2d = {
 
 modeBarButtons.autoScale2d = {
     name: 'autoScale2d',
+    _cat: 'autoscale',
     title: function(gd) { return _(gd, 'Autoscale'); },
     attr: 'zoom',
     val: 'auto',
@@ -72338,6 +72145,7 @@ modeBarButtons.autoScale2d = {
 
 modeBarButtons.resetScale2d = {
     name: 'resetScale2d',
+    _cat: 'resetscale',
     title: function(gd) { return _(gd, 'Reset axes'); },
     attr: 'zoom',
     val: 'reset',
@@ -72347,6 +72155,7 @@ modeBarButtons.resetScale2d = {
 
 modeBarButtons.hoverClosestCartesian = {
     name: 'hoverClosestCartesian',
+    _cat: 'hoverclosest',
     title: function(gd) { return _(gd, 'Show closest data on hover'); },
     attr: 'hovermode',
     val: 'closest',
@@ -72357,6 +72166,7 @@ modeBarButtons.hoverClosestCartesian = {
 
 modeBarButtons.hoverCompareCartesian = {
     name: 'hoverCompareCartesian',
+    _cat: 'hoverCompare',
     title: function(gd) { return _(gd, 'Compare data on hover'); },
     attr: 'hovermode',
     val: function(gd) {
@@ -72440,6 +72250,7 @@ function handleCartesian(gd, ev) {
 
 modeBarButtons.zoom3d = {
     name: 'zoom3d',
+    _cat: 'zoom',
     title: function(gd) { return _(gd, 'Zoom'); },
     attr: 'scene.dragmode',
     val: 'zoom',
@@ -72449,6 +72260,7 @@ modeBarButtons.zoom3d = {
 
 modeBarButtons.pan3d = {
     name: 'pan3d',
+    _cat: 'pan',
     title: function(gd) { return _(gd, 'Pan'); },
     attr: 'scene.dragmode',
     val: 'pan',
@@ -72496,6 +72308,7 @@ function handleDrag3d(gd, ev) {
 
 modeBarButtons.resetCameraDefault3d = {
     name: 'resetCameraDefault3d',
+    _cat: 'resetCameraDefault',
     title: function(gd) { return _(gd, 'Reset camera to default'); },
     attr: 'resetDefault',
     icon: Icons.home,
@@ -72504,6 +72317,7 @@ modeBarButtons.resetCameraDefault3d = {
 
 modeBarButtons.resetCameraLastSave3d = {
     name: 'resetCameraLastSave3d',
+    _cat: 'resetCameraLastSave',
     title: function(gd) { return _(gd, 'Reset camera to last save'); },
     attr: 'resetLastSave',
     icon: Icons.movie,
@@ -72553,6 +72367,7 @@ function handleCamera3d(gd, ev) {
 
 modeBarButtons.hoverClosest3d = {
     name: 'hoverClosest3d',
+    _cat: 'hoverclosest',
     title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },
     attr: 'hovermode',
     val: null,
@@ -72607,6 +72422,7 @@ function handleHover3d(gd, ev) {
 
 modeBarButtons.zoomInGeo = {
     name: 'zoomInGeo',
+    _cat: 'zoomin',
     title: function(gd) { return _(gd, 'Zoom in'); },
     attr: 'zoom',
     val: 'in',
@@ -72616,6 +72432,7 @@ modeBarButtons.zoomInGeo = {
 
 modeBarButtons.zoomOutGeo = {
     name: 'zoomOutGeo',
+    _cat: 'zoomout',
     title: function(gd) { return _(gd, 'Zoom out'); },
     attr: 'zoom',
     val: 'out',
@@ -72625,6 +72442,7 @@ modeBarButtons.zoomOutGeo = {
 
 modeBarButtons.resetGeo = {
     name: 'resetGeo',
+    _cat: 'reset',
     title: function(gd) { return _(gd, 'Reset'); },
     attr: 'reset',
     val: null,
@@ -72634,6 +72452,7 @@ modeBarButtons.resetGeo = {
 
 modeBarButtons.hoverClosestGeo = {
     name: 'hoverClosestGeo',
+    _cat: 'hoverclosest',
     title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },
     attr: 'hovermode',
     val: null,
@@ -72669,6 +72488,7 @@ function handleGeo(gd, ev) {
 
 modeBarButtons.hoverClosestGl2d = {
     name: 'hoverClosestGl2d',
+    _cat: 'hoverclosest',
     title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },
     attr: 'hovermode',
     val: null,
@@ -72680,6 +72500,7 @@ modeBarButtons.hoverClosestGl2d = {
 
 modeBarButtons.hoverClosestPie = {
     name: 'hoverClosestPie',
+    _cat: 'hoverclosest',
     title: function(gd) { return _(gd, 'Toggle show closest data on hover'); },
     attr: 'hovermode',
     val: 'closest',
@@ -72792,6 +72613,7 @@ function setSpikelineVisibility(gd) {
 
 modeBarButtons.resetViewMapbox = {
     name: 'resetViewMapbox',
+    _cat: 'resetView',
     title: function(gd) { return _(gd, 'Reset view'); },
     attr: 'reset',
     icon: Icons.home,
@@ -72802,6 +72624,7 @@ modeBarButtons.resetViewMapbox = {
 
 modeBarButtons.zoomInMapbox = {
     name: 'zoomInMapbox',
+    _cat: 'zoomin',
     title: function(gd) { return _(gd, 'Zoom in'); },
     attr: 'zoom',
     val: 'in',
@@ -72811,6 +72634,7 @@ modeBarButtons.zoomInMapbox = {
 
 modeBarButtons.zoomOutMapbox = {
     name: 'zoomOutMapbox',
+    _cat: 'zoomout',
     title: function(gd) { return _(gd, 'Zoom out'); },
     attr: 'zoom',
     val: 'out',
@@ -72856,12 +72680,89 @@ function resetView(gd, subplotType) {
     Registry.call('_guiRelayout', gd, aObj);
 }
 
-},{"../../fonts/ploticon":531,"../../lib":549,"../../plots/cartesian/axis_ids":600,"../../plots/plots":642,"../../registry":645,"../shapes/draw":499}],478:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":516,"../../lib":534,"../../plots/cartesian/axis_ids":587,"../../plots/plots":629,"../../registry":632,"../shapes/draw":485}],462:[function(_dereq_,module,exports){
 'use strict';
 
-exports.manage = _dereq_('./manage');
+var modeBarButtons = _dereq_('./buttons');
+var buttonList = Object.keys(modeBarButtons);
 
-},{"./manage":479}],479:[function(_dereq_,module,exports){
+var DRAW_MODES = [
+    'drawline',
+    'drawopenpath',
+    'drawclosedpath',
+    'drawcircle',
+    'drawrect',
+    'eraseshape'
+];
+
+var backButtons = [
+    'v1hovermode',
+    'hoverclosest',
+    'hovercompare',
+    'togglehover',
+    'togglespikelines'
+].concat(DRAW_MODES);
+
+var foreButtons = [];
+var addToForeButtons = function(b) {
+    if(backButtons.indexOf(b._cat || b.name) !== -1) return;
+    // for convenience add lowercase shotname e.g. zoomin as well fullname zoomInGeo
+    var name = b.name;
+    var _cat = (b._cat || b.name).toLowerCase();
+    if(foreButtons.indexOf(name) === -1) foreButtons.push(name);
+    if(foreButtons.indexOf(_cat) === -1) foreButtons.push(_cat);
+};
+buttonList.forEach(function(k) {
+    addToForeButtons(modeBarButtons[k]);
+});
+foreButtons.sort();
+
+module.exports = {
+    DRAW_MODES: DRAW_MODES,
+    backButtons: backButtons,
+    foreButtons: foreButtons
+};
+
+},{"./buttons":461}],463:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var Color = _dereq_('../color');
+var Template = _dereq_('../../plot_api/plot_template');
+var attributes = _dereq_('./attributes');
+
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+    var containerIn = layoutIn.modebar || {};
+    var containerOut = Template.newContainer(layoutOut, 'modebar');
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
+    }
+
+    coerce('orientation');
+    coerce('bgcolor', Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
+    var defaultColor = Color.contrast(Color.rgb(layoutOut.modebar.bgcolor));
+    coerce('color', Color.addOpacity(defaultColor, 0.3));
+    coerce('activecolor', Color.addOpacity(defaultColor, 0.7));
+    coerce('uirevision', layoutOut.uirevision);
+    coerce('add');
+    coerce('remove');
+};
+
+},{"../../lib":534,"../../plot_api/plot_template":572,"../color":401,"./attributes":460}],464:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = {
+    moduleType: 'component',
+    name: 'modebar',
+
+    layoutAttributes: _dereq_('./attributes'),
+    supplyLayoutDefaults: _dereq_('./defaults'),
+
+    manage: _dereq_('./manage')
+};
+
+},{"./attributes":460,"./defaults":463,"./manage":465}],465:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIds = _dereq_('../../plots/cartesian/axis_ids');
@@ -72871,6 +72772,7 @@ var isUnifiedHover = _dereq_('../fx/helpers').isUnifiedHover;
 
 var createModeBar = _dereq_('./modebar');
 var modeBarButtons = _dereq_('./buttons');
+var DRAW_MODES = _dereq_('./constants').DRAW_MODES;
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -72922,22 +72824,47 @@ module.exports = function manageModeBar(gd) {
     else fullLayout._modeBar = createModeBar(gd, buttonGroups);
 };
 
-var DRAW_MODES = [
-    'drawline',
-    'drawopenpath',
-    'drawclosedpath',
-    'drawcircle',
-    'drawrect',
-    'eraseshape'
-];
-
 // logic behind which buttons are displayed by default
 function getButtonGroups(gd) {
     var fullLayout = gd._fullLayout;
     var fullData = gd._fullData;
     var context = gd._context;
-    var buttonsToRemove = context.modeBarButtonsToRemove;
-    var buttonsToAdd = context.modeBarButtonsToAdd;
+
+    function match(name, B) {
+        if(typeof B === 'string') {
+            if(B.toLowerCase() === name.toLowerCase()) return true;
+        } else {
+            var v0 = B.name;
+            var v1 = (B._cat || B.name);
+
+            if(v0 === name || v1 === name.toLowerCase()) return true;
+        }
+        return false;
+    }
+
+    var layoutAdd = fullLayout.modebar.add;
+    if(typeof layoutAdd === 'string') layoutAdd = [layoutAdd];
+
+    var layoutRemove = fullLayout.modebar.remove;
+    if(typeof layoutRemove === 'string') layoutRemove = [layoutRemove];
+
+    var buttonsToAdd = context.modeBarButtonsToAdd.concat(
+        layoutAdd.filter(function(e) {
+            for(var i = 0; i < context.modeBarButtonsToRemove.length; i++) {
+                if(match(e, context.modeBarButtonsToRemove[i])) return false;
+            }
+            return true;
+        })
+    );
+
+    var buttonsToRemove = context.modeBarButtonsToRemove.concat(
+        layoutRemove.filter(function(e) {
+            for(var i = 0; i < context.modeBarButtonsToAdd.length; i++) {
+                if(match(e, context.modeBarButtonsToAdd[i])) return false;
+            }
+            return true;
+        })
+    );
 
     var hasCartesian = fullLayout._has('cartesian');
     var hasGL3D = fullLayout._has('gl3d');
@@ -72960,9 +72887,20 @@ function getButtonGroups(gd) {
         var out = [];
 
         for(var i = 0; i < newGroup.length; i++) {
-            var button = newGroup[i];
-            if(buttonsToRemove.indexOf(button) !== -1) continue;
-            out.push(modeBarButtons[button]);
+            var name = newGroup[i];
+            var B = modeBarButtons[name];
+            var v0 = B.name.toLowerCase();
+            var v1 = (B._cat || B.name).toLowerCase();
+            var found = false;
+            for(var q = 0; q < buttonsToRemove.length; q++) {
+                var t = buttonsToRemove[q].toLowerCase();
+                if(t === v0 || t === v1) {
+                    found = true;
+                    break;
+                }
+            }
+            if(found) continue;
+            out.push(modeBarButtons[name]);
         }
 
         groups.push(out);
@@ -73034,19 +72972,50 @@ function getButtonGroups(gd) {
         dragModeGroup.push('select2d', 'lasso2d');
     }
 
-    // accept pre-defined buttons as string
+    var enabledHoverGroup = [];
+    var enableHover = function(a) {
+        // return if already added
+        if(enabledHoverGroup.indexOf(a) !== -1) return;
+        // should be in hoverGroup
+        if(hoverGroup.indexOf(a) !== -1) {
+            enabledHoverGroup.push(a);
+        }
+    };
     if(Array.isArray(buttonsToAdd)) {
         var newList = [];
         for(var i = 0; i < buttonsToAdd.length; i++) {
             var b = buttonsToAdd[i];
             if(typeof b === 'string') {
+                b = b.toLowerCase();
+
                 if(DRAW_MODES.indexOf(b) !== -1) {
+                    // accept pre-defined drag modes i.e. shape drawing features as string
                     if(
                         fullLayout._has('mapbox') || // draw shapes in paper coordinate (could be improved in future to support data coordinate, when there is no pitch)
                         fullLayout._has('cartesian') // draw shapes in data coordinate
                     ) {
                         dragModeGroup.push(b);
                     }
+                } else if(b === 'togglespikelines') {
+                    enableHover('toggleSpikelines');
+                } else if(b === 'togglehover') {
+                    enableHover('toggleHover');
+                } else if(b === 'hovercompare') {
+                    enableHover('hoverCompareCartesian');
+                } else if(b === 'hoverclosest') {
+                    enableHover('hoverClosestCartesian');
+                    enableHover('hoverClosestGeo');
+                    enableHover('hoverClosest3d');
+                    enableHover('hoverClosestGl2d');
+                    enableHover('hoverClosestPie');
+                } else if(b === 'v1hovermode') {
+                    enableHover('toggleHover');
+                    enableHover('hoverClosestCartesian');
+                    enableHover('hoverCompareCartesian');
+                    enableHover('hoverClosestGeo');
+                    enableHover('hoverClosest3d');
+                    enableHover('hoverClosestGl2d');
+                    enableHover('hoverClosestPie');
                 }
             } else newList.push(b);
         }
@@ -73055,7 +73024,7 @@ function getButtonGroups(gd) {
 
     addGroup(dragModeGroup);
     addGroup(zoomGroup.concat(resetGroup));
-    addGroup(hoverGroup);
+    addGroup(enabledHoverGroup);
 
     return appendButtonsToGroups(groups, buttonsToAdd);
 }
@@ -73148,7 +73117,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":600,"../../registry":645,"../../traces/scatter/subtypes":699,"../fx/helpers":454,"./buttons":477,"./modebar":480}],480:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axis_ids":587,"../../registry":632,"../../traces/scatter/subtypes":686,"../fx/helpers":437,"./buttons":461,"./constants":462,"./modebar":466}],466:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -73485,7 +73454,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../fonts/ploticon":531,"../../lib":549,"@plotly/d3":18,"fast-isnumeric":96}],481:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":516,"../../lib":534,"@plotly/d3":17,"fast-isnumeric":94}],467:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -73583,7 +73552,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{"../../plot_api/plot_template":586,"../../plots/font_attributes":625,"../color/attributes":417}],482:[function(_dereq_,module,exports){
+},{"../../plot_api/plot_template":572,"../../plots/font_attributes":612,"../color/attributes":400}],468:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -73604,7 +73573,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],483:[function(_dereq_,module,exports){
+},{}],469:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -73688,7 +73657,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":549,"../../plot_api/plot_template":586,"../../plots/array_container_defaults":592,"../color":418,"./attributes":481,"./constants":482}],484:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/plot_template":572,"../../plots/array_container_defaults":578,"../color":401,"./attributes":467,"./constants":468}],470:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -73935,10 +73904,11 @@ function reposition(gd, buttons, opts, axName, selector) {
     selector.attr('transform', strTranslate(lx, ly));
 }
 
-},{"../../constants/alignment":520,"../../lib":549,"../../lib/svg_text_utils":573,"../../plots/cartesian/axis_ids":600,"../../plots/plots":642,"../../registry":645,"../color":418,"../drawing":440,"./constants":482,"./get_update_object":485,"@plotly/d3":18}],485:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../lib":534,"../../lib/svg_text_utils":559,"../../plots/cartesian/axis_ids":587,"../../plots/plots":629,"../../registry":632,"../color":401,"../drawing":423,"./constants":468,"./get_update_object":471,"@plotly/d3":17}],471:[function(_dereq_,module,exports){
 'use strict';
 
-var d3 = _dereq_('@plotly/d3');
+var d3Time = _dereq_('d3-time');
+var titleCase = _dereq_('../../lib').titleCase;
 
 module.exports = function getUpdateObject(axisLayout, buttonLayout) {
     var axName = axisLayout._name;
@@ -73960,18 +73930,21 @@ function getXRange(axisLayout, buttonLayout) {
     var currentRange = axisLayout.range;
     var base = new Date(axisLayout.r2l(currentRange[1]));
     var step = buttonLayout.step;
+
+    var utcStep = d3Time['utc' + titleCase(step)];
+
     var count = buttonLayout.count;
     var range0;
 
     switch(buttonLayout.stepmode) {
         case 'backward':
-            range0 = axisLayout.l2r(+d3.time[step].utc.offset(base, -count));
+            range0 = axisLayout.l2r(+utcStep.offset(base, -count));
             break;
 
         case 'todate':
-            var base2 = d3.time[step].utc.offset(base, -count);
+            var base2 = utcStep.offset(base, -count);
 
-            range0 = axisLayout.l2r(+d3.time[step].utc.ceil(base2));
+            range0 = axisLayout.l2r(+utcStep.ceil(base2));
             break;
     }
 
@@ -73980,7 +73953,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"@plotly/d3":18}],486:[function(_dereq_,module,exports){
+},{"../../lib":534,"d3-time":86}],472:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -73999,7 +73972,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":481,"./defaults":483,"./draw":484}],487:[function(_dereq_,module,exports){
+},{"./attributes":467,"./defaults":469,"./draw":470}],473:[function(_dereq_,module,exports){
 'use strict';
 
 var colorAttributes = _dereq_('../color/attributes');
@@ -74051,7 +74024,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{"../color/attributes":417}],488:[function(_dereq_,module,exports){
+},{"../color/attributes":400}],474:[function(_dereq_,module,exports){
 'use strict';
 
 var listAxes = _dereq_('../../plots/cartesian/axis_ids').list;
@@ -74077,7 +74050,7 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
-},{"../../plots/cartesian/autorange":596,"../../plots/cartesian/axis_ids":600,"./constants":489}],489:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/autorange":582,"../../plots/cartesian/axis_ids":587,"./constants":475}],475:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -74125,7 +74098,7 @@ module.exports = {
     extraPad: 15
 };
 
-},{}],490:[function(_dereq_,module,exports){
+},{}],476:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -74203,7 +74176,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":549,"../../plot_api/plot_template":586,"../../plots/cartesian/axis_ids":600,"./attributes":487,"./oppaxis_attributes":494}],491:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plot_api/plot_template":572,"../../plots/cartesian/axis_ids":587,"./attributes":473,"./oppaxis_attributes":480}],477:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -74839,7 +74812,7 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     grabAreaMax.attr('height', opts._height);
 }
 
-},{"../../lib":549,"../../lib/setcursor":569,"../../plots/cartesian":610,"../../plots/cartesian/axis_ids":600,"../../plots/plots":642,"../../registry":645,"../color":418,"../dragelement":437,"../drawing":440,"../titles":513,"./constants":489,"@plotly/d3":18}],492:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../lib/setcursor":554,"../../plots/cartesian":597,"../../plots/cartesian/axis_ids":587,"../../plots/plots":629,"../../registry":632,"../color":401,"../dragelement":420,"../drawing":423,"../titles":499,"./constants":475,"@plotly/d3":17}],478:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIDs = _dereq_('../../plots/cartesian/axis_ids');
@@ -74906,7 +74879,7 @@ exports.autoMarginOpts = function(gd, ax) {
     };
 };
 
-},{"../../constants/alignment":520,"../../lib/svg_text_utils":573,"../../plots/cartesian/axis_ids":600,"./constants":489}],493:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../lib/svg_text_utils":559,"../../plots/cartesian/axis_ids":587,"./constants":475}],479:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -74937,7 +74910,7 @@ module.exports = {
     autoMarginOpts: helpers.autoMarginOpts
 };
 
-},{"../../lib":549,"./attributes":487,"./calc_autorange":488,"./defaults":490,"./draw":491,"./helpers":492,"./oppaxis_attributes":494}],494:[function(_dereq_,module,exports){
+},{"../../lib":534,"./attributes":473,"./calc_autorange":474,"./defaults":476,"./draw":477,"./helpers":478,"./oppaxis_attributes":480}],480:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -74963,7 +74936,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{}],495:[function(_dereq_,module,exports){
+},{}],481:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -75073,7 +75046,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":521,"../../lib/extend":542,"../../plot_api/plot_template":586,"../../traces/scatter/attributes":674,"../annotations/attributes":401,"../drawing/attributes":439}],496:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":507,"../../lib/extend":527,"../../plot_api/plot_template":572,"../../traces/scatter/attributes":661,"../annotations/attributes":384,"../drawing/attributes":422}],482:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -75185,7 +75158,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":549,"../../plots/cartesian/axes":597,"./constants":497,"./helpers":506}],497:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/cartesian/axes":583,"./constants":483,"./helpers":492}],483:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -75240,7 +75213,7 @@ module.exports = {
     }
 };
 
-},{}],498:[function(_dereq_,module,exports){
+},{}],484:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -75362,7 +75335,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     }
 }
 
-},{"../../lib":549,"../../plots/array_container_defaults":592,"../../plots/cartesian/axes":597,"./attributes":495,"./helpers":506}],499:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/array_container_defaults":578,"../../plots/cartesian/axes":583,"./attributes":481,"./helpers":492}],485:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -76127,7 +76100,7 @@ function eraseActiveShape(gd) {
     }
 }
 
-},{"../../lib":549,"../../lib/setcursor":569,"../../plot_api/plot_template":586,"../../plots/cartesian/axes":597,"../../plots/cartesian/handle_outline":607,"../../registry":645,"../color":418,"../dragelement":437,"../drawing":440,"./constants":497,"./draw_newshape/display_outlines":503,"./draw_newshape/helpers":504,"./helpers":506}],500:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../lib/setcursor":554,"../../plot_api/plot_template":572,"../../plots/cartesian/axes":583,"../../plots/cartesian/handle_outline":594,"../../registry":632,"../color":401,"../dragelement":420,"../drawing":423,"./constants":483,"./draw_newshape/display_outlines":489,"./draw_newshape/helpers":490,"./helpers":492}],486:[function(_dereq_,module,exports){
 'use strict';
 
 var dash = _dereq_('../../drawing/attributes').dash;
@@ -76203,7 +76176,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":542,"../../drawing/attributes":439}],501:[function(_dereq_,module,exports){
+},{"../../../lib/extend":527,"../../drawing/attributes":422}],487:[function(_dereq_,module,exports){
 'use strict';
 
 var CIRCLE_SIDES = 32;  // should be divisible by 4
@@ -76219,7 +76192,7 @@ module.exports = {
     SQRT2: Math.sqrt(2)
 };
 
-},{}],502:[function(_dereq_,module,exports){
+},{}],488:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../color');
@@ -76242,7 +76215,7 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
     coerce('activeshape.opacity');
 };
 
-},{"../../color":418}],503:[function(_dereq_,module,exports){
+},{"../../color":401}],489:[function(_dereq_,module,exports){
 'use strict';
 
 var dragElement = _dereq_('../../dragelement');
@@ -76528,7 +76501,7 @@ function recordPositions(polygonsOut, polygonsIn) {
     return polygonsOut;
 }
 
-},{"../../../plots/cartesian/handle_outline":607,"../../../registry":645,"../../dragelement":437,"../../dragelement/helpers":436,"./constants":501,"./helpers":504,"./newshapes":505}],504:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/handle_outline":594,"../../../registry":632,"../../dragelement":420,"../../dragelement/helpers":419,"./constants":487,"./helpers":490,"./newshapes":491}],490:[function(_dereq_,module,exports){
 'use strict';
 
 var parseSvgPath = _dereq_('parse-svg-path');
@@ -76857,7 +76830,7 @@ exports.ellipseOver = function(pos) {
     };
 };
 
-},{"../../../plots/cartesian/helpers":608,"./constants":501,"parse-svg-path":312}],505:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/helpers":595,"./constants":487,"parse-svg-path":300}],491:[function(_dereq_,module,exports){
 'use strict';
 
 var dragHelpers = _dereq_('../../dragelement/helpers');
@@ -77107,7 +77080,7 @@ function fixDatesForPaths(polygons, xaxis, yaxis) {
     return polygons;
 }
 
-},{"../../../plots/cartesian/handle_outline":607,"../../../plots/cartesian/helpers":608,"../../dragelement/helpers":436,"./constants":501,"./helpers":504}],506:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/handle_outline":594,"../../../plots/cartesian/helpers":595,"../../dragelement/helpers":419,"./constants":487,"./helpers":490}],492:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -77256,7 +77229,7 @@ exports.makeOptionsAndPlotinfo = function(gd, index) {
     };
 };
 
-},{"../../lib":549,"./constants":497}],507:[function(_dereq_,module,exports){
+},{"../../lib":534,"./constants":483}],493:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -77275,7 +77248,7 @@ module.exports = {
     drawOne: drawModule.drawOne
 };
 
-},{"../../plots/cartesian/include_components":609,"./attributes":495,"./calc_autorange":496,"./defaults":498,"./draw":499,"./draw_newshape/defaults":502}],508:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":596,"./attributes":481,"./calc_autorange":482,"./defaults":484,"./draw":485,"./draw_newshape/defaults":488}],494:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -77449,7 +77422,7 @@ module.exports = overrideAll(templatedArray('slider', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":542,"../../plot_api/edit_types":579,"../../plot_api/plot_template":586,"../../plots/animation_attributes":591,"../../plots/font_attributes":625,"../../plots/pad_attributes":641,"./constants":509}],509:[function(_dereq_,module,exports){
+},{"../../lib/extend":527,"../../plot_api/edit_types":565,"../../plot_api/plot_template":572,"../../plots/animation_attributes":577,"../../plots/font_attributes":612,"../../plots/pad_attributes":628,"./constants":495}],495:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -77534,7 +77507,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],510:[function(_dereq_,module,exports){
+},{}],496:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -77641,7 +77614,7 @@ function stepDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../lib":549,"../../plots/array_container_defaults":592,"./attributes":508,"./constants":509}],511:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/array_container_defaults":578,"./attributes":494,"./constants":495}],497:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -78105,7 +78078,7 @@ function attachGripEvents(item, gd, sliderGroup) {
         return sliderGroup.data()[0];
     }
 
-    item.on('mousedown', function() {
+    function mouseDownHandler() {
         var sliderOpts = getSliderOpts();
         gd.emit('plotly_sliderstart', {slider: sliderOpts});
 
@@ -78119,25 +78092,36 @@ function attachGripEvents(item, gd, sliderGroup) {
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
         sliderOpts._dragging = true;
 
-        $gd.on('mousemove', function() {
+        function mouseMoveHandler() {
             var sliderOpts = getSliderOpts();
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
             handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, false);
-        });
+        }
 
-        $gd.on('mouseup', function() {
+        $gd.on('mousemove', mouseMoveHandler);
+        $gd.on('touchmove', mouseMoveHandler);
+
+        function mouseUpHandler() {
             var sliderOpts = getSliderOpts();
             sliderOpts._dragging = false;
             grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
+            $gd.on('touchend', null);
+            $gd.on('touchmove', null);
 
             gd.emit('plotly_sliderend', {
                 slider: sliderOpts,
                 step: sliderOpts.steps[sliderOpts.active]
             });
-        });
-    });
+        }
+
+        $gd.on('mouseup', mouseUpHandler);
+        $gd.on('touchend', mouseUpHandler);
+    }
+
+    item.on('mousedown', mouseDownHandler);
+    item.on('touchstart', mouseDownHandler);
 }
 
 function drawTicks(sliderGroup, sliderOpts) {
@@ -78264,7 +78248,7 @@ function drawRail(sliderGroup, sliderOpts) {
     );
 }
 
-},{"../../constants/alignment":520,"../../lib":549,"../../lib/svg_text_utils":573,"../../plot_api/plot_template":586,"../../plots/plots":642,"../color":418,"../drawing":440,"./constants":509,"@plotly/d3":18}],512:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../lib":534,"../../lib/svg_text_utils":559,"../../plot_api/plot_template":572,"../../plots/plots":629,"../color":401,"../drawing":423,"./constants":495,"@plotly/d3":17}],498:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -78279,7 +78263,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":508,"./constants":509,"./defaults":510,"./draw":511}],513:[function(_dereq_,module,exports){
+},{"./attributes":494,"./constants":495,"./defaults":496,"./draw":497}],499:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -78538,7 +78522,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":520,"../../constants/interactions":526,"../../lib":549,"../../lib/svg_text_utils":573,"../../plots/plots":642,"../../registry":645,"../color":418,"../drawing":440,"@plotly/d3":18,"fast-isnumeric":96}],514:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../constants/interactions":512,"../../lib":534,"../../lib/svg_text_utils":559,"../../plots/plots":629,"../../registry":632,"../color":401,"../drawing":423,"@plotly/d3":17,"fast-isnumeric":94}],500:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -78661,7 +78645,7 @@ module.exports = overrideAll(templatedArray('updatemenu', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":542,"../../plot_api/edit_types":579,"../../plot_api/plot_template":586,"../../plots/font_attributes":625,"../../plots/pad_attributes":641,"../color/attributes":417}],515:[function(_dereq_,module,exports){
+},{"../../lib/extend":527,"../../plot_api/edit_types":565,"../../plot_api/plot_template":572,"../../plots/font_attributes":612,"../../plots/pad_attributes":628,"../color/attributes":400}],501:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -78733,7 +78717,7 @@ module.exports = {
     }
 };
 
-},{}],516:[function(_dereq_,module,exports){
+},{}],502:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -78808,7 +78792,7 @@ function buttonDefaults(buttonIn, buttonOut) {
     }
 }
 
-},{"../../lib":549,"../../plots/array_container_defaults":592,"./attributes":514,"./constants":515}],517:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../plots/array_container_defaults":578,"./attributes":500,"./constants":501}],503:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -79450,9 +79434,9 @@ function removeAllButtons(gButton, newMenuIndexAttr) {
         .selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
 
-},{"../../constants/alignment":520,"../../lib":549,"../../lib/svg_text_utils":573,"../../plot_api/plot_template":586,"../../plots/plots":642,"../color":418,"../drawing":440,"./constants":515,"./scrollbox":519,"@plotly/d3":18}],518:[function(_dereq_,module,exports){
-arguments[4][512][0].apply(exports,arguments)
-},{"./attributes":514,"./constants":515,"./defaults":516,"./draw":517,"dup":512}],519:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../lib":534,"../../lib/svg_text_utils":559,"../../plot_api/plot_template":572,"../../plots/plots":629,"../color":401,"../drawing":423,"./constants":501,"./scrollbox":505,"@plotly/d3":17}],504:[function(_dereq_,module,exports){
+arguments[4][498][0].apply(exports,arguments)
+},{"./attributes":500,"./constants":501,"./defaults":502,"./draw":503,"dup":498}],505:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = ScrollBox;
@@ -79909,7 +79893,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     }
 };
 
-},{"../../lib":549,"../color":418,"../drawing":440,"@plotly/d3":18}],520:[function(_dereq_,module,exports){
+},{"../../lib":534,"../color":401,"../drawing":423,"@plotly/d3":17}],506:[function(_dereq_,module,exports){
 'use strict';
 
 // fraction of some size to get to a named position
@@ -79966,7 +79950,7 @@ module.exports = {
     }
 };
 
-},{}],521:[function(_dereq_,module,exports){
+},{}],507:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -79989,15 +79973,15 @@ module.exports = {
     }
 };
 
-},{}],522:[function(_dereq_,module,exports){
+},{}],508:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
-    FORMAT_LINK: 'https://github.com/d3/d3-3.x-api-reference/blob/master/Formatting.md#d3_format',
-    DATE_FORMAT_LINK: 'https://github.com/d3/d3-time-format#locale_format'
+    FORMAT_LINK: 'https://github.com/d3/d3-format/tree/v1.4.5#d3-format',
+    DATE_FORMAT_LINK: 'https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format'
 };
 
-},{}],523:[function(_dereq_,module,exports){
+},{}],509:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -80027,7 +80011,7 @@ module.exports = {
     }
 };
 
-},{}],524:[function(_dereq_,module,exports){
+},{}],510:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -80039,7 +80023,7 @@ module.exports = {
     longdashdot: [[0.5, 0.7, 0.8, 1], 10]
 };
 
-},{}],525:[function(_dereq_,module,exports){
+},{}],511:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -80053,7 +80037,7 @@ module.exports = {
     x: '❌'
 };
 
-},{}],526:[function(_dereq_,module,exports){
+},{}],512:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -80068,7 +80052,7 @@ module.exports = {
     DESELECTDIM: 0.2
 };
 
-},{}],527:[function(_dereq_,module,exports){
+},{}],513:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -80086,7 +80070,7 @@ module.exports = {
      * to avoid glitches: Make sure that even when you multiply it by the
      * number of pixels on a giant screen it still works
      */
-    FP_SAFE: Number.MAX_VALUE / 10000,
+    FP_SAFE: Number.MAX_VALUE * 1e-4,
 
     /*
      * conversion of date units to milliseconds
@@ -80133,7 +80117,7 @@ module.exports = {
     MINUS_SIGN: '\u2212'
 };
 
-},{}],528:[function(_dereq_,module,exports){
+},{}],514:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -80148,7 +80132,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],529:[function(_dereq_,module,exports){
+},{}],515:[function(_dereq_,module,exports){
 'use strict';
 
 exports.version = _dereq_('./version').version;
@@ -80158,9 +80142,6 @@ _dereq_('native-promise-only');
 
 // inject plot css
 _dereq_('../build/plotcss');
-
-// inject default MathJax config
-_dereq_('./fonts/mathjax_config')();
 
 // include registry module and expose register method
 var Registry = _dereq_('./registry');
@@ -80198,7 +80179,8 @@ register([
     _dereq_('./components/grid'),
     _dereq_('./components/errorbars'),
     _dereq_('./components/colorscale'),
-    _dereq_('./components/colorbar')
+    _dereq_('./components/colorbar'),
+    _dereq_('./components/modebar')
 ]);
 
 // locales en and en-US are required for default behavior
@@ -80234,30 +80216,7 @@ exports.Fx = {
 exports.Snapshot = _dereq_('./snapshot');
 exports.PlotSchema = _dereq_('./plot_api/plot_schema');
 
-},{"../build/plotcss":1,"./components/annotations":409,"./components/annotations3d":414,"./components/colorbar":424,"./components/colorscale":430,"./components/errorbars":446,"./components/fx":458,"./components/grid":462,"./components/images":467,"./components/legend":475,"./components/rangeselector":486,"./components/rangeslider":493,"./components/shapes":507,"./components/sliders":512,"./components/updatemenus":518,"./fonts/mathjax_config":530,"./fonts/ploticon":531,"./locale-en":577,"./locale-en-us":576,"./plot_api":581,"./plot_api/plot_schema":585,"./plots/plots":642,"./registry":645,"./snapshot":650,"./traces/scatter":686,"./version":727,"native-promise-only":296}],530:[function(_dereq_,module,exports){
-'use strict';
-
-/* global MathJax:false */
-
-module.exports = function() {
-    if(typeof MathJax !== 'undefined') {
-        var globalConfig = (window.PlotlyConfig || {}).MathJaxConfig !== 'local';
-
-        if(globalConfig) {
-            MathJax.Hub.Config({
-                messageStyle: 'none',
-                skipStartupTypeset: true,
-                displayAlign: 'left',
-                tex2jax: {
-                    inlineMath: [['$', '$'], ['\\(', '\\)']]
-                }
-            });
-            MathJax.Hub.Configured();
-        }
-    }
-};
-
-},{}],531:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"./components/annotations":392,"./components/annotations3d":397,"./components/colorbar":407,"./components/colorscale":413,"./components/errorbars":429,"./components/fx":441,"./components/grid":445,"./components/images":450,"./components/legend":458,"./components/modebar":464,"./components/rangeselector":472,"./components/rangeslider":479,"./components/shapes":493,"./components/sliders":498,"./components/updatemenus":504,"./fonts/ploticon":516,"./locale-en":563,"./locale-en-us":562,"./plot_api":567,"./plot_api/plot_schema":571,"./plots/plots":629,"./registry":632,"./snapshot":637,"./traces/scatter":673,"./version":714,"native-promise-only":284}],516:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -80429,7 +80388,7 @@ module.exports = {
     }
 };
 
-},{}],532:[function(_dereq_,module,exports){
+},{}],517:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -80484,7 +80443,7 @@ exports.isBottomAnchor = function isBottomAnchor(opts) {
     );
 };
 
-},{}],533:[function(_dereq_,module,exports){
+},{}],518:[function(_dereq_,module,exports){
 'use strict';
 
 var modModule = _dereq_('./mod');
@@ -80717,7 +80676,7 @@ module.exports = {
     pathAnnulus: pathAnnulus
 };
 
-},{"./mod":556}],534:[function(_dereq_,module,exports){
+},{"./mod":541}],519:[function(_dereq_,module,exports){
 'use strict';
 
 var isArray = Array.isArray;
@@ -80859,7 +80818,7 @@ function _rowLength(z, fn, len0) {
     return 0;
 }
 
-},{}],535:[function(_dereq_,module,exports){
+},{}],520:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -80883,7 +80842,7 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":527,"fast-isnumeric":96}],536:[function(_dereq_,module,exports){
+},{"../constants/numerical":513,"fast-isnumeric":94}],521:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -80903,7 +80862,7 @@ module.exports = function clearGlCanvases(gd) {
     }
 };
 
-},{}],537:[function(_dereq_,module,exports){
+},{}],522:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -80918,7 +80877,7 @@ module.exports = function clearResponsive(gd) {
     }
 };
 
-},{}],538:[function(_dereq_,module,exports){
+},{}],523:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -80926,6 +80885,7 @@ var tinycolor = _dereq_('tinycolor2');
 
 var baseTraceAttrs = _dereq_('../plots/attributes');
 var colorscales = _dereq_('../components/colorscale/scales');
+var Color = _dereq_('../components/color');
 var DESELECTDIM = _dereq_('../constants/interactions').DESELECTDIM;
 
 var nestedProperty = _dereq_('./nested_property');
@@ -81250,6 +81210,36 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     return out;
 };
 
+/*
+ * Shortcut to coerce the pattern attributes
+ */
+exports.coercePattern = function(coerce, attr, markerColor, hasMarkerColorscale) {
+    var shape = coerce(attr + '.shape');
+    if(shape) {
+        coerce(attr + '.solidity');
+        coerce(attr + '.size');
+        var fillmode = coerce(attr + '.fillmode');
+        var isOverlay = fillmode === 'overlay';
+
+        if(!hasMarkerColorscale) {
+            var bgcolor = coerce(attr + '.bgcolor', isOverlay ?
+                markerColor :
+                undefined
+            );
+
+            coerce(attr + '.fgcolor', isOverlay ?
+                Color.contrast(bgcolor) :
+                markerColor
+            );
+        }
+
+        coerce(attr + '.fgopacity', isOverlay ?
+            0.5 :
+            1
+        );
+    }
+};
+
 /** Coerce shortcut for 'hoverinfo'
  * handling 1-vs-multi-trace dflt logic
  *
@@ -81332,7 +81322,7 @@ function validate(value, opts) {
 }
 exports.validate = validate;
 
-},{"../components/colorscale/scales":433,"../constants/interactions":526,"../plots/attributes":593,"./array":534,"./mod":556,"./nested_property":557,"./regex":565,"fast-isnumeric":96,"tinycolor2":366}],539:[function(_dereq_,module,exports){
+},{"../components/color":401,"../components/colorscale/scales":416,"../constants/interactions":512,"../plots/attributes":579,"./array":519,"./mod":541,"./nested_property":542,"./regex":550,"fast-isnumeric":94,"tinycolor2":350}],524:[function(_dereq_,module,exports){
 'use strict';
 
 var timeFormat = _dereq_('d3-time-format').timeFormat;
@@ -81705,11 +81695,19 @@ exports.cleanDate = function(v, dflt, calendar) {
  */
 
 /*
- * modDateFormat: Support world calendars, and add one item to
+ * modDateFormat: Support world calendars, and add two items to
  * d3's vocabulary:
  * %{n}f where n is the max number of digits of fractional seconds
+ * %h formats: half of the year as a decimal number [1,2]
  */
 var fracMatch = /%\d?f/g;
+var halfYearMatch = /%h/g;
+var quarterToHalfYear = {
+    '1': '1',
+    '2': '1',
+    '3': '2',
+    '4': '2',
+};
 function modDateFormat(fmt, x, formatter, calendar) {
     fmt = fmt.replace(fracMatch, function(match) {
         var digits = Math.min(+(match.charAt(1)) || 6, 6);
@@ -81720,6 +81718,10 @@ function modDateFormat(fmt, x, formatter, calendar) {
     });
 
     var d = new Date(Math.floor(x + 0.05));
+
+    fmt = fmt.replace(halfYearMatch, function() {
+        return quarterToHalfYear[formatter('%q')(d)];
+    });
 
     if(isWorldCalendar(calendar)) {
         try {
@@ -81924,7 +81926,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":527,"../registry":645,"./loggers":553,"./mod":556,"d3-time-format":87,"fast-isnumeric":96}],540:[function(_dereq_,module,exports){
+},{"../constants/numerical":513,"../registry":632,"./loggers":538,"./mod":541,"d3-time-format":84,"fast-isnumeric":94}],525:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -82094,7 +82096,7 @@ module.exports = {
     equalDomRects: equalDomRects
 };
 
-},{"./loggers":553,"./matrix":555,"@plotly/d3":18,"gl-mat4":140}],541:[function(_dereq_,module,exports){
+},{"./loggers":538,"./matrix":540,"@plotly/d3":17,"gl-mat4":135}],526:[function(_dereq_,module,exports){
 'use strict';
 
 /* global jQuery:false */
@@ -82258,7 +82260,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":55}],542:[function(_dereq_,module,exports){
+},{"events":54}],527:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('./is_plain_object.js');
@@ -82363,7 +82365,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":550}],543:[function(_dereq_,module,exports){
+},{"./is_plain_object.js":535}],528:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -82405,7 +82407,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],544:[function(_dereq_,module,exports){
+},{}],529:[function(_dereq_,module,exports){
 'use strict';
 
 /** Filter out object items with visible !== true
@@ -82445,7 +82447,7 @@ function isCalcData(cont) {
     );
 }
 
-},{}],545:[function(_dereq_,module,exports){
+},{}],530:[function(_dereq_,module,exports){
 'use strict';
 
 var mod = _dereq_('./mod').mod;
@@ -82681,7 +82683,7 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     return pt;
 };
 
-},{"./mod":556}],546:[function(_dereq_,module,exports){
+},{"./mod":541}],531:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -82774,7 +82776,7 @@ module.exports = {
     parseColorScale: parseColorScale
 };
 
-},{"../components/color/attributes":417,"../components/colorscale":430,"./array":534,"color-normalize":69,"fast-isnumeric":96,"tinycolor2":366}],547:[function(_dereq_,module,exports){
+},{"../components/color/attributes":400,"../components/colorscale":413,"./array":519,"color-normalize":68,"fast-isnumeric":94,"tinycolor2":350}],532:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -82782,7 +82784,7 @@ module.exports = {
 
 module.exports = function identity(d) { return d; };
 
-},{}],548:[function(_dereq_,module,exports){
+},{}],533:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function incrementNumeric(x, delta) {
@@ -82815,18 +82817,62 @@ module.exports = function incrementNumeric(x, delta) {
     return newX;
 };
 
-},{}],549:[function(_dereq_,module,exports){
+},{}],534:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
 var utcFormat = _dereq_('d3-time-format').utcFormat;
+var d3Format = _dereq_('d3-format').format;
 var isNumeric = _dereq_('fast-isnumeric');
 
 var numConstants = _dereq_('../constants/numerical');
-var FP_SAFE = numConstants.FP_SAFE;
+var MAX_SAFE = numConstants.FP_SAFE;
+var MIN_SAFE = -MAX_SAFE;
 var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
+
+lib.adjustFormat = function adjustFormat(formatStr) {
+    if(
+        !formatStr ||
+        /^\d[.]\df/.test(formatStr) ||
+        /[.]\d%/.test(formatStr)
+    ) return formatStr;
+
+    if(formatStr === '0.f') return '~f';
+    if(/^\d%/.test(formatStr)) return '~%';
+    if(/^\ds/.test(formatStr)) return '~s';
+
+    // try adding tilde to the start of format in order to trim
+    if(!(/^[~,.0$]/.test(formatStr)) && /[&fps]/.test(formatStr)) return '~' + formatStr;
+
+    return formatStr;
+};
+
+var seenBadFormats = {};
+lib.warnBadFormat = function(f) {
+    var key = String(f);
+    if(!seenBadFormats[key]) {
+        seenBadFormats[key] = 1;
+        lib.warn('encountered bad format: "' + key + '"');
+    }
+};
+
+lib.noFormat = function(value) {
+    return String(value);
+};
+
+lib.numberFormat = function(formatStr) {
+    var fn;
+    try {
+        fn = d3Format(lib.adjustFormat(formatStr));
+    } catch(e) {
+        lib.warnBadFormat(formatStr);
+        return lib.noFormat;
+    }
+
+    return fn;
+};
 
 lib.nestedProperty = _dereq_('./nested_property');
 lib.keyedContainer = _dereq_('./keyed_container');
@@ -82853,6 +82899,7 @@ lib.valObjectMeta = coerceModule.valObjectMeta;
 lib.coerce = coerceModule.coerce;
 lib.coerce2 = coerceModule.coerce2;
 lib.coerceFont = coerceModule.coerceFont;
+lib.coercePattern = coerceModule.coercePattern;
 lib.coerceHoverinfo = coerceModule.coerceHoverinfo;
 lib.coerceSelectionMarkerOpacity = coerceModule.coerceSelectionMarkerOpacity;
 lib.validate = coerceModule.validate;
@@ -82880,6 +82927,8 @@ lib.distinctVals = searchModule.distinctVals;
 lib.roundUp = searchModule.roundUp;
 lib.sort = searchModule.sort;
 lib.findIndexOfMin = searchModule.findIndexOfMin;
+
+lib.sortObjectKeys = _dereq_('./sort_object_keys');
 
 var statsModule = _dereq_('./stats');
 lib.aggNums = statsModule.aggNums;
@@ -82983,8 +83032,7 @@ lib.cleanNumber = _dereq_('./clean_number');
 lib.ensureNumber = function ensureNumber(v) {
     if(!isNumeric(v)) return BADNUM;
     v = Number(v);
-    if(v < -FP_SAFE || v > FP_SAFE) return BADNUM;
-    return isNumeric(v) ? Number(v) : BADNUM;
+    return (v > MAX_SAFE || v < MIN_SAFE) ? BADNUM : v;
 };
 
 /**
@@ -83227,8 +83275,7 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
         ret = fni(arg);
 
         if(ret && ret.then) {
-            return ret.then(continueAsync)
-                .then(undefined, lib.promiseError);
+            return ret.then(continueAsync);
         }
     }
 
@@ -83530,6 +83577,18 @@ lib.isSafari = function() {
 var IS_IOS_REGEX = /iPad|iPhone|iPod/;
 lib.isIOS = function() {
     return IS_IOS_REGEX.test(window.navigator.userAgent);
+};
+
+var FIREFOX_VERSION_REGEX = /Firefox\/(\d+)\.\d+/;
+lib.getFirefoxVersion = function() {
+    var match = FIREFOX_VERSION_REGEX.exec(window.navigator.userAgent);
+    if(match && match.length === 2) {
+        var versionInt = parseInt(match[1]);
+        if(!isNaN(versionInt)) {
+            return versionInt;
+        }
+    }
+    return null;
 };
 
 lib.isD3Selection = function(obj) {
@@ -83860,21 +83919,50 @@ function templateFormatString(string, labels, d3locale) {
     // just in case it speeds things up *slightly*:
     var getterCache = {};
 
-    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, key, format) {
-        var obj, value, i;
-        for(i = 3; i < args.length; i++) {
-            obj = args[i];
-            if(!obj) continue;
-            if(obj.hasOwnProperty(key)) {
-                value = obj[key];
-                break;
-            }
+    return string.replace(lib.TEMPLATE_STRING_REGEX, function(match, rawKey, format) {
+        var isOther =
+            rawKey === 'xother' ||
+            rawKey === 'yother';
 
-            if(!SIMPLE_PROPERTY_REGEX.test(key)) {
-                value = getterCache[key] || lib.nestedProperty(obj, key).get();
-                if(value) getterCache[key] = value;
+        var isSpaceOther =
+            rawKey === '_xother' ||
+            rawKey === '_yother';
+
+        var isSpaceOtherSpace =
+            rawKey === '_xother_' ||
+            rawKey === '_yother_';
+
+        var isOtherSpace =
+            rawKey === 'xother_' ||
+            rawKey === 'yother_';
+
+        var hasOther = isOther || isSpaceOther || isOtherSpace || isSpaceOtherSpace;
+
+        var key = rawKey;
+        if(isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
+        if(isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
+
+        var value;
+        if(hasOther) {
+            value = labels[key];
+            if(value === undefined) return '';
+        } else {
+            var obj, i;
+            for(i = 3; i < args.length; i++) {
+                obj = args[i];
+                if(!obj) continue;
+                if(obj.hasOwnProperty(key)) {
+                    value = obj[key];
+                    break;
+                }
+
+                if(!SIMPLE_PROPERTY_REGEX.test(key)) {
+                    value = lib.nestedProperty(obj, key).get();
+                    value = getterCache[key] || lib.nestedProperty(obj, key).get();
+                    if(value) getterCache[key] = value;
+                }
+                if(value !== undefined) break;
             }
-            if(value !== undefined) break;
         }
 
         if(value === undefined && opts) {
@@ -83894,7 +83982,7 @@ function templateFormatString(string, labels, d3locale) {
         if(format) {
             var fmt;
             if(format[0] === ':') {
-                fmt = d3locale ? d3locale.numberFormat : d3.format;
+                fmt = d3locale ? d3locale.numberFormat : lib.numberFormat;
                 value = fmt(format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''))(value);
             }
 
@@ -83904,8 +83992,16 @@ function templateFormatString(string, labels, d3locale) {
                 value = lib.formatDate(ms, format.replace(TEMPLATE_STRING_FORMAT_SEPARATOR, ''), false, fmt);
             }
         } else {
-            if(labels.hasOwnProperty(key + 'Label')) value = labels[key + 'Label'];
+            var keyLabel = key + 'Label';
+            if(labels.hasOwnProperty(keyLabel)) value = labels[keyLabel];
         }
+
+        if(hasOther) {
+            value = '(' + value + ')';
+            if(isSpaceOther || isSpaceOtherSpace) value = ' ' + value;
+            if(isOtherSpace || isSpaceOtherSpace) value = value + ' ';
+        }
+
         return value;
     });
 }
@@ -84081,7 +84177,35 @@ lib.join2 = function(arr, mainSeparator, lastSeparator) {
     return arr.join(mainSeparator);
 };
 
-},{"../constants/numerical":527,"./anchor_utils":532,"./angles":533,"./array":534,"./clean_number":535,"./clear_responsive":537,"./coerce":538,"./dates":539,"./dom":540,"./extend":542,"./filter_unique":543,"./filter_visible":544,"./geometry2d":545,"./identity":547,"./increment":548,"./is_plain_object":550,"./keyed_container":551,"./localize":552,"./loggers":553,"./make_trace_groups":554,"./matrix":555,"./mod":556,"./nested_property":557,"./noop":558,"./notifier":559,"./preserve_drawing_buffer":562,"./push_unique":563,"./regex":565,"./relative_attr":566,"./relink_private":567,"./search":568,"./stats":571,"./throttle":574,"./to_log_range":575,"@plotly/d3":18,"d3-time-format":87,"fast-isnumeric":96}],550:[function(_dereq_,module,exports){
+lib.bigFont = function(size) {
+    return Math.round(1.2 * size);
+};
+
+var firefoxVersion = lib.getFirefoxVersion();
+// see https://bugzilla.mozilla.org/show_bug.cgi?id=1684973
+var isProblematicFirefox = firefoxVersion !== null && firefoxVersion < 86;
+
+/**
+ * Return the mouse position from the last event registered by D3.
+ * @returns An array with two numbers, representing the x and y coordinates of the mouse pointer
+ *   at the event relative to the targeted node.
+ */
+lib.getPositionFromD3Event = function() {
+    if(isProblematicFirefox) {
+        // layerX and layerY are non-standard, so we only fallback to them when we have to:
+        return [
+            d3.event.layerX,
+            d3.event.layerY
+        ];
+    } else {
+        return [
+            d3.event.offsetX,
+            d3.event.offsetY
+        ];
+    }
+};
+
+},{"../constants/numerical":513,"./anchor_utils":517,"./angles":518,"./array":519,"./clean_number":520,"./clear_responsive":522,"./coerce":523,"./dates":524,"./dom":525,"./extend":527,"./filter_unique":528,"./filter_visible":529,"./geometry2d":530,"./identity":532,"./increment":533,"./is_plain_object":535,"./keyed_container":536,"./localize":537,"./loggers":538,"./make_trace_groups":539,"./matrix":540,"./mod":541,"./nested_property":542,"./noop":543,"./notifier":544,"./preserve_drawing_buffer":547,"./push_unique":548,"./regex":550,"./relative_attr":551,"./relink_private":552,"./search":553,"./sort_object_keys":556,"./stats":557,"./throttle":560,"./to_log_range":561,"@plotly/d3":17,"d3-format":83,"d3-time-format":84,"fast-isnumeric":94}],535:[function(_dereq_,module,exports){
 'use strict';
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
@@ -84100,7 +84224,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],551:[function(_dereq_,module,exports){
+},{}],536:[function(_dereq_,module,exports){
 'use strict';
 
 var nestedProperty = _dereq_('./nested_property');
@@ -84285,7 +84409,7 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     return obj;
 };
 
-},{"./nested_property":557}],552:[function(_dereq_,module,exports){
+},{"./nested_property":542}],537:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -84332,7 +84456,7 @@ module.exports = function localize(gd, s) {
     return s;
 };
 
-},{"../registry":645}],553:[function(_dereq_,module,exports){
+},{"../registry":632}],538:[function(_dereq_,module,exports){
 'use strict';
 
 /* eslint-disable no-console */
@@ -84409,7 +84533,7 @@ loggers.error = function() {
     }
 };
 
-},{"../plot_api/plot_config":584,"./notifier":559}],554:[function(_dereq_,module,exports){
+},{"../plot_api/plot_config":570,"./notifier":544}],539:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -84444,7 +84568,7 @@ module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
     return traces;
 };
 
-},{"@plotly/d3":18}],555:[function(_dereq_,module,exports){
+},{"@plotly/d3":17}],540:[function(_dereq_,module,exports){
 'use strict';
 
 var mat4X4 = _dereq_('gl-mat4');
@@ -84587,7 +84711,7 @@ exports.inverseTransformMatrix = function(m) {
     ];
 };
 
-},{"gl-mat4":140}],556:[function(_dereq_,module,exports){
+},{"gl-mat4":135}],541:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -84614,7 +84738,7 @@ module.exports = {
     modHalf: modHalf
 };
 
-},{}],557:[function(_dereq_,module,exports){
+},{}],542:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -84851,7 +84975,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./array":534,"fast-isnumeric":96}],558:[function(_dereq_,module,exports){
+},{"./array":519,"fast-isnumeric":94}],543:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -84859,7 +84983,7 @@ function badContainer(container, propStr, propParts) {
 
 module.exports = function noop() {};
 
-},{}],559:[function(_dereq_,module,exports){
+},{}],544:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -84938,7 +85062,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"@plotly/d3":18,"fast-isnumeric":96}],560:[function(_dereq_,module,exports){
+},{"@plotly/d3":17,"fast-isnumeric":94}],545:[function(_dereq_,module,exports){
 'use strict';
 
 var setCursor = _dereq_('./setcursor');
@@ -84977,7 +85101,7 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":569}],561:[function(_dereq_,module,exports){
+},{"./setcursor":554}],546:[function(_dereq_,module,exports){
 'use strict';
 
 var dot = _dereq_('./matrix').dot;
@@ -85220,7 +85344,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"../constants/numerical":527,"./matrix":555}],562:[function(_dereq_,module,exports){
+},{"../constants/numerical":513,"./matrix":540}],547:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -85282,7 +85406,7 @@ function getUserAgent() {
     return ua;
 }
 
-},{"fast-isnumeric":96,"is-mobile":280}],563:[function(_dereq_,module,exports){
+},{"fast-isnumeric":94,"is-mobile":270}],548:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -85312,7 +85436,7 @@ module.exports = function pushUnique(array, item) {
     return array;
 };
 
-},{}],564:[function(_dereq_,module,exports){
+},{}],549:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -85504,7 +85628,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":549,"../plot_api/plot_config":584}],565:[function(_dereq_,module,exports){
+},{"../lib":534,"../plot_api/plot_config":570}],550:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -85526,7 +85650,7 @@ exports.counter = function(head, tail, openEnded, matchBeginning) {
     return new RegExp(startWithPrefix + head + '([2-9]|[1-9][0-9]+)?' + fullTail);
 };
 
-},{}],566:[function(_dereq_,module,exports){
+},{}],551:[function(_dereq_,module,exports){
 'use strict';
 
 // ASCEND: chop off the last nesting level - either [<n>] or .<key> - to ascend
@@ -85570,7 +85694,7 @@ module.exports = function(baseAttr, relativeAttr) {
     return baseAttr + relativeAttr;
 };
 
-},{}],567:[function(_dereq_,module,exports){
+},{}],552:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('./array').isArrayOrTypedArray;
@@ -85618,7 +85742,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     }
 };
 
-},{"./array":534,"./is_plain_object":550}],568:[function(_dereq_,module,exports){
+},{"./array":519,"./is_plain_object":535}],553:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -85683,9 +85807,7 @@ exports.sorterDes = function(a, b) { return b - a; };
  * just be off by a rounding error
  * return the distinct values and the minimum difference between any two
  */
-exports.distinctVals = function(valsIn, opts) {
-    var unitMinDiff = (opts || {}).unitMinDiff;
-
+exports.distinctVals = function(valsIn) {
     var vals = valsIn.slice();  // otherwise we sort the original array...
     vals.sort(exports.sorterAsc); // undefined listed in the end - also works on IE11
 
@@ -85694,9 +85816,7 @@ exports.distinctVals = function(valsIn, opts) {
         if(vals[last] !== BADNUM) break;
     }
 
-    var minDiff = 1;
-    if(!unitMinDiff) minDiff = (vals[last] - vals[0]) || 1;
-
+    var minDiff = (vals[last] - vals[0]) || 1;
     var errDiff = minDiff / (last || 1) / 10000;
     var newVals = [];
     var preV;
@@ -85814,7 +85934,7 @@ exports.findIndexOfMin = function(arr, fn) {
     return ind;
 };
 
-},{"../constants/numerical":527,"./identity":547,"./loggers":553,"fast-isnumeric":96}],569:[function(_dereq_,module,exports){
+},{"../constants/numerical":513,"./identity":532,"./loggers":538,"fast-isnumeric":94}],554:[function(_dereq_,module,exports){
 'use strict';
 
 // works with our CSS cursor classes (see css/_cursor.scss)
@@ -85828,7 +85948,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],570:[function(_dereq_,module,exports){
+},{}],555:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../components/color');
@@ -85883,7 +86003,14 @@ module.exports = function showNoWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":418}],571:[function(_dereq_,module,exports){
+},{"../components/color":401}],556:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = function sortObjectKeys(obj) {
+    return Object.keys(obj).sort();
+};
+
+},{}],557:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -85984,7 +86111,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"./array":534,"fast-isnumeric":96}],572:[function(_dereq_,module,exports){
+},{"./array":519,"fast-isnumeric":94}],558:[function(_dereq_,module,exports){
 'use strict';
 
 var rgba = _dereq_('color-normalize');
@@ -85996,7 +86123,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"color-normalize":69}],573:[function(_dereq_,module,exports){
+},{"color-normalize":68}],559:[function(_dereq_,module,exports){
 'use strict';
 
 /* global MathJax:false */
@@ -86594,14 +86721,9 @@ function buildSVGText(containerNode, str) {
                     var href = getQuotedMatch(extra, HREFMATCH);
 
                     if(href) {
-                        // check safe protocols
-                        var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
-                            // Decode href to allow both already encoded and not encoded
-                            // URIs. Without decoding prior encoding, an already encoded
-                            // URI would be encoded twice producing a semantically different URI.
-                            nodeSpec.href = encodeURI(decodeURI(href));
+                        var safeHref = sanitizeHref(href);
+                        if(safeHref) {
+                            nodeSpec.href = safeHref;
                             nodeSpec.target = getQuotedMatch(extra, TARGETMATCH) || '_blank';
                             nodeSpec.popup = getQuotedMatch(extra, POPUPMATCH);
                         }
@@ -86614,6 +86736,27 @@ function buildSVGText(containerNode, str) {
     }
 
     return hasLink;
+}
+
+function sanitizeHref(href) {
+    var decodedHref = encodeURI(decodeURI(href));
+    var dummyAnchor1 = document.createElement('a');
+    var dummyAnchor2 = document.createElement('a');
+    dummyAnchor1.href = href;
+    dummyAnchor2.href = decodedHref;
+
+    var p1 = dummyAnchor1.protocol;
+    var p2 = dummyAnchor2.protocol;
+
+    // check safe protocols
+    if(
+        PROTOCOLS.indexOf(p1) !== -1 &&
+        PROTOCOLS.indexOf(p2) !== -1
+    ) {
+        return decodedHref;
+    } else {
+        return '';
+    }
 }
 
 /*
@@ -86650,10 +86793,9 @@ exports.sanitizeHTML = function sanitizeHTML(str) {
                     var href = getQuotedMatch(extra, HREFMATCH);
 
                     if(href) {
-                        var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = href;
-                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) !== -1) {
-                            nodeAttrs.href = encodeURI(decodeURI(href));
+                        var safeHref = sanitizeHref(href);
+                        if(safeHref) {
+                            nodeAttrs.href = safeHref;
                             var target = getQuotedMatch(extra, TARGETMATCH);
                             if(target) {
                                 nodeAttrs.target = target;
@@ -86753,6 +86895,18 @@ function alignHTMLWith(_base, container, options) {
         return this;
     };
 }
+
+var onePx = '1px ';
+
+exports.makeTextShadow = function(color) {
+    var x = onePx;
+    var y = onePx;
+    var b = onePx;
+    return x + y + b + color + ', ' +
+        '-' + x + '-' + y + b + color + ', ' +
+        x + '-' + y + b + color + ', ' +
+        '-' + x + y + b + color;
+};
 
 /*
  * Editable title
@@ -86878,7 +87032,7 @@ exports.makeEditable = function(context, options) {
     return d3.rebind(context, dispatch, 'on');
 };
 
-},{"../constants/alignment":520,"../constants/xmlns_namespaces":528,"../lib":549,"@plotly/d3":18}],574:[function(_dereq_,module,exports){
+},{"../constants/alignment":506,"../constants/xmlns_namespaces":514,"../lib":534,"@plotly/d3":17}],560:[function(_dereq_,module,exports){
 'use strict';
 
 var timerCache = {};
@@ -86973,7 +87127,7 @@ function _clearTimeout(cache) {
     }
 }
 
-},{}],575:[function(_dereq_,module,exports){
+},{}],561:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -86993,7 +87147,7 @@ module.exports = function toLogRange(val, range) {
     return newVal;
 };
 
-},{"fast-isnumeric":96}],576:[function(_dereq_,module,exports){
+},{"fast-isnumeric":94}],562:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -87007,7 +87161,7 @@ module.exports = {
     }
 };
 
-},{}],577:[function(_dereq_,module,exports){
+},{}],563:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -87042,7 +87196,7 @@ module.exports = {
     }
 };
 
-},{}],578:[function(_dereq_,module,exports){
+},{}],564:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -87091,7 +87245,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":645}],579:[function(_dereq_,module,exports){
+},{"../registry":632}],565:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -87206,7 +87360,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     }
 }
 
-},{"../lib":549}],580:[function(_dereq_,module,exports){
+},{"../lib":534}],566:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -87900,7 +88054,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     }
 };
 
-},{"../components/color":418,"../lib":549,"../plots/cartesian/axis_ids":600,"../plots/plots":642,"../registry":645,"fast-isnumeric":96,"gl-mat4/fromQuat":130}],581:[function(_dereq_,module,exports){
+},{"../components/color":401,"../lib":534,"../plots/cartesian/axis_ids":587,"../plots/plots":629,"../registry":632,"fast-isnumeric":94,"gl-mat4/fromQuat":125}],567:[function(_dereq_,module,exports){
 'use strict';
 
 var main = _dereq_('./plot_api');
@@ -87935,7 +88089,7 @@ var templateApi = _dereq_('./template_api');
 exports.makeTemplate = templateApi.makeTemplate;
 exports.validateTemplate = templateApi.validateTemplate;
 
-},{"../snapshot/download":647,"./plot_api":583,"./template_api":588,"./to_image":589,"./validate":590}],582:[function(_dereq_,module,exports){
+},{"../snapshot/download":634,"./plot_api":569,"./template_api":574,"./to_image":575,"./validate":576}],568:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('../lib/is_plain_object');
@@ -88139,7 +88293,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":550,"../lib/loggers":553,"../lib/noop":558,"../lib/search":568,"../registry":645,"./container_array_match":578}],583:[function(_dereq_,module,exports){
+},{"../lib/is_plain_object":535,"../lib/loggers":538,"../lib/noop":543,"../lib/search":553,"../registry":632,"./container_array_match":564}],569:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -88286,8 +88440,9 @@ function _doPlot(gd, data, layout, config) {
         }
     }
 
-    // clear gradient defs on each .plot call, because we know we'll loop through all traces
+    // clear gradient and pattern defs on each .plot call, because we know we'll loop through all traces
     Drawing.initGradients(gd);
+    Drawing.initPatterns(gd);
 
     // save initial show spikes once per graph
     if(graphWasEmpty) Axes.saveShowSpikeInitial(gd);
@@ -88363,17 +88518,20 @@ function _doPlot(gd, data, layout, config) {
                 });
         }
 
+        var plotGlPixelRatio = gd._context.plotGlPixelRatio;
         if(fullLayout._glcanvas) {
             fullLayout._glcanvas
-                .attr('width', fullLayout.width)
-                .attr('height', fullLayout.height);
+                .attr('width', fullLayout.width * plotGlPixelRatio)
+                .attr('height', fullLayout.height * plotGlPixelRatio)
+                .style('width', fullLayout.width + 'px')
+                .style('height', fullLayout.height + 'px');
 
             var regl = fullLayout._glcanvas.data()[0].regl;
             if(regl) {
                 // Unfortunately, this can happen when relayouting to large
                 // width/height on some browsers.
-                if(Math.floor(fullLayout.width) !== regl._gl.drawingBufferWidth ||
-                    Math.floor(fullLayout.height) !== regl._gl.drawingBufferHeight
+                if(Math.floor(fullLayout.width * plotGlPixelRatio) !== regl._gl.drawingBufferWidth ||
+                    Math.floor(fullLayout.height * plotGlPixelRatio) !== regl._gl.drawingBufferHeight
                  ) {
                     var msg = 'WebGL context buffer and canvas dimensions do not match due to browser/WebGL bug.';
                     if(drawFrameworkCalls) {
@@ -90515,7 +90673,7 @@ var traceUIControlPatterns = [
     {pattern: /(^|value\.)visible$/, attr: 'legend.uirevision'},
     {pattern: /^dimensions\[\d+\]\.constraintrange/},
     {pattern: /^node\.(x|y|groups)/}, // for Sankey nodes
-    {pattern: /^level$/}, // for Sunburst & Treemap traces
+    {pattern: /^level$/}, // for Sunburst, Treemap and Icicle traces
 
     // below this you must be in editable: true mode
     // TODO: I still put name and title with `trace.uirevision`
@@ -91880,6 +92038,9 @@ function makePlotFramework(gd) {
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
     // single treemap layer for the whole plot
+    fullLayout._iciclelayer = fullLayout._paper.append('g').classed('iciclelayer', true);
+
+    // single treemap layer for the whole plot
     fullLayout._treemaplayer = fullLayout._paper.append('g').classed('treemaplayer', true);
 
     // single sunburst layer for the whole plot
@@ -91946,7 +92107,7 @@ exports._guiUpdate = guiEdit(update);
 
 exports._storeDirectGUIEdit = _storeDirectGUIEdit;
 
-},{"../components/color":418,"../components/drawing":440,"../constants/xmlns_namespaces":528,"../lib":549,"../lib/events":541,"../lib/queue":564,"../plots/cartesian/axes":597,"../plots/cartesian/constants":603,"../plots/cartesian/graph_interact":606,"../plots/cartesian/select":616,"../plots/plots":642,"../registry":645,"./edit_types":579,"./helpers":580,"./manage_arrays":582,"./plot_config":584,"./plot_schema":585,"./subroutines":587,"@plotly/d3":18,"fast-isnumeric":96,"has-hover":270}],584:[function(_dereq_,module,exports){
+},{"../components/color":401,"../components/drawing":423,"../constants/xmlns_namespaces":514,"../lib":534,"../lib/events":526,"../lib/queue":549,"../plots/cartesian/axes":583,"../plots/cartesian/constants":590,"../plots/cartesian/graph_interact":593,"../plots/cartesian/select":603,"../plots/plots":629,"../registry":632,"./edit_types":565,"./helpers":566,"./manage_arrays":568,"./plot_config":570,"./plot_schema":571,"./subroutines":573,"@plotly/d3":17,"fast-isnumeric":94,"has-hover":263}],570:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -92207,7 +92368,7 @@ module.exports = {
     dfltConfig: dfltConfig
 };
 
-},{}],585:[function(_dereq_,module,exports){
+},{}],571:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -92872,7 +93033,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":549,"../plots/animation_attributes":591,"../plots/attributes":593,"../plots/frame_attributes":626,"../plots/layout_attributes":640,"../registry":645,"./edit_types":579,"./plot_config":584}],586:[function(_dereq_,module,exports){
+},{"../lib":534,"../plots/animation_attributes":577,"../plots/attributes":579,"../plots/frame_attributes":613,"../plots/layout_attributes":627,"../registry":632,"./edit_types":565,"./plot_config":570}],572:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -93171,7 +93332,7 @@ exports.arrayEditor = function(parentIn, containerStr, itemOut) {
     };
 };
 
-},{"../lib":549,"../plots/attributes":593}],587:[function(_dereq_,module,exports){
+},{"../lib":534,"../plots/attributes":579}],573:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -93887,7 +94048,7 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('colorbar', 'draw')(gd);
 };
 
-},{"../components/color":418,"../components/drawing":440,"../components/modebar":478,"../components/titles":513,"../constants/alignment":520,"../lib":549,"../lib/clear_gl_canvases":536,"../plots/cartesian/autorange":596,"../plots/cartesian/axes":597,"../plots/cartesian/constraints":604,"../plots/plots":642,"../registry":645,"@plotly/d3":18}],588:[function(_dereq_,module,exports){
+},{"../components/color":401,"../components/drawing":423,"../components/modebar":464,"../components/titles":499,"../constants/alignment":506,"../lib":534,"../lib/clear_gl_canvases":521,"../plots/cartesian/autorange":582,"../plots/cartesian/axes":583,"../plots/cartesian/constraints":591,"../plots/plots":629,"../registry":632,"@plotly/d3":17}],574:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -94340,7 +94501,7 @@ function format(opts) {
     return opts;
 }
 
-},{"../lib":549,"../plots/attributes":593,"../plots/plots":642,"./plot_config":584,"./plot_schema":585,"./plot_template":586}],589:[function(_dereq_,module,exports){
+},{"../lib":534,"../plots/attributes":579,"../plots/plots":629,"./plot_config":570,"./plot_schema":571,"./plot_template":572}],575:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -94547,7 +94708,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":549,"../plots/plots":642,"../snapshot/helpers":649,"../snapshot/svgtoimg":651,"../snapshot/tosvg":653,"../version":727,"./plot_api":583,"fast-isnumeric":96}],590:[function(_dereq_,module,exports){
+},{"../lib":534,"../plots/plots":629,"../snapshot/helpers":636,"../snapshot/svgtoimg":638,"../snapshot/tosvg":640,"../version":714,"./plot_api":569,"fast-isnumeric":94}],576:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -94970,7 +95131,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":549,"../plots/plots":642,"./plot_config":584,"./plot_schema":585}],591:[function(_dereq_,module,exports){
+},{"../lib":534,"../plots/plots":629,"./plot_config":570,"./plot_schema":571}],577:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -95058,7 +95219,7 @@ module.exports = {
     }
 };
 
-},{}],592:[function(_dereq_,module,exports){
+},{}],578:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -95145,9 +95306,10 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     return contOut;
 };
 
-},{"../lib":549,"../plot_api/plot_template":586}],593:[function(_dereq_,module,exports){
+},{"../lib":534,"../plot_api/plot_template":572}],579:[function(_dereq_,module,exports){
 'use strict';
 
+var fontAttrs = _dereq_('./font_attributes');
 var fxAttrs = _dereq_('../components/fx/attributes');
 
 module.exports = {
@@ -95172,6 +95334,22 @@ module.exports = {
     legendgroup: {
         valType: 'string',
         dflt: '',
+        editType: 'style',
+    },
+    legendgrouptitle: {
+        text: {
+            valType: 'string',
+            dflt: '',
+            editType: 'style',
+        },
+        font: fontAttrs({
+            editType: 'style',
+        }),
+        editType: 'style',
+    },
+    legendrank: {
+        valType: 'number',
+        dflt: 1000,
         editType: 'style',
     },
     opacity: {
@@ -95250,7 +95428,7 @@ module.exports = {
     }
 };
 
-},{"../components/fx/attributes":449}],594:[function(_dereq_,module,exports){
+},{"../components/fx/attributes":432,"./font_attributes":612}],580:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -95261,21 +95439,21 @@ var constants = _dereq_('../../constants/numerical');
 var ONEAVGMONTH = constants.ONEAVGMONTH;
 
 module.exports = function alignPeriod(trace, ax, axLetter, vals) {
-    if(ax.type !== 'date') return vals;
+    if(ax.type !== 'date') return {vals: vals};
 
     var alignment = trace[axLetter + 'periodalignment'];
-    if(!alignment) return vals;
+    if(!alignment) return {vals: vals};
 
     var period = trace[axLetter + 'period'];
     var mPeriod;
     if(isNumeric(period)) {
         period = +period;
-        if(period <= 0) return vals;
+        if(period <= 0) return {vals: vals};
     } else if(typeof period === 'string' && period.charAt(0) === 'M') {
         var n = +(period.substring(1));
         if(n > 0 && Math.round(n) === n) {
             mPeriod = n;
-        } else return vals;
+        } else return {vals: vals};
     }
 
     var calendar = ax.calendar;
@@ -95288,6 +95466,9 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     var base = dateTime2ms(period0, calendar) || 0;
 
     var newVals = [];
+    var starts = [];
+    var ends = [];
+
     var len = vals.length;
     for(var i = 0; i < len; i++) {
         var v = vals[i];
@@ -95330,11 +95511,19 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
             isEnd ? endTime :
             (startTime + endTime) / 2
         );
+
+        starts[i] = startTime;
+        ends[i] = endTime;
     }
-    return newVals;
+
+    return {
+        vals: newVals,
+        starts: starts,
+        ends: ends
+    };
 };
 
-},{"../../constants/numerical":527,"../../lib":549,"fast-isnumeric":96}],595:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534,"fast-isnumeric":94}],581:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -95351,14 +95540,16 @@ module.exports = {
     }
 };
 
-},{}],596:[function(_dereq_,module,exports){
+},{}],582:[function(_dereq_,module,exports){
 'use strict';
 
+var d3 = _dereq_('@plotly/d3');
 var isNumeric = _dereq_('fast-isnumeric');
 
 var Lib = _dereq_('../../lib');
 var FP_SAFE = _dereq_('../../constants/numerical').FP_SAFE;
 var Registry = _dereq_('../../registry');
+var Drawing = _dereq_('../../components/drawing');
 
 var axIds = _dereq_('./axis_ids');
 var getFromId = axIds.getFromId;
@@ -95571,7 +95762,7 @@ function makePadFn(fullLayout, ax, max) {
 
     var zero = 0;
     if(!isLinked(fullLayout, ax._id)) {
-        zero = padInsideLabelsOnAnchorAxis(ax, max);
+        zero = padInsideLabelsOnAnchorAxis(fullLayout, ax, max);
     }
     extrappad = Math.max(zero, extrappad);
 
@@ -95590,45 +95781,69 @@ function makePadFn(fullLayout, ax, max) {
 
 var TEXTPAD = 3;
 
-function padInsideLabelsOnAnchorAxis(ax, max) {
+function padInsideLabelsOnAnchorAxis(fullLayout, ax, max) {
     var pad = 0;
-    var anchorAxis = ax._anchorAxis || {};
-    if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
-        // increase padding to make more room for inside tick labels of the counter axis
-        if((
-            !max && (
-                anchorAxis.side === 'left' ||
-                anchorAxis.side === 'bottom'
-            )
-        ) || (
-            max && (
-                anchorAxis.side === 'top' ||
-                anchorAxis.side === 'right'
-            )
-        )) {
-            var isX = ax._id.charAt(0) === 'x';
 
-            if(anchorAxis._vals) {
-                var rad = Lib.deg2rad(anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0);
-                var cosA = Math.abs(Math.cos(rad));
-                var sinA = Math.abs(Math.sin(rad));
+    var isX = ax._id.charAt(0) === 'x';
 
-                // use bounding boxes
-                anchorAxis._vals.forEach(function(t) {
-                    if(t.bb) {
-                        var w = 2 * TEXTPAD + t.bb.width;
-                        var h = 2 * TEXTPAD + t.bb.height;
+    for(var subplot in fullLayout._plots) {
+        var plotinfo = fullLayout._plots[subplot];
 
-                        pad = Math.max(pad, isX ?
-                            Math.max(w * cosA, h * sinA) :
-                            Math.max(h * cosA, w * sinA)
-                        );
+        if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+
+        var anchorAxis = (isX ? plotinfo.yaxis : plotinfo.xaxis) || {};
+
+        if((anchorAxis.ticklabelposition || '').indexOf('inside') !== -1) {
+            // increase padding to make more room for inside tick labels of the counter axis
+            if((
+                !max && (
+                    anchorAxis.side === 'left' ||
+                    anchorAxis.side === 'bottom'
+                )
+            ) || (
+                max && (
+                    anchorAxis.side === 'top' ||
+                    anchorAxis.side === 'right'
+                )
+            )) {
+                if(anchorAxis._vals) {
+                    var rad = Lib.deg2rad(anchorAxis._tickAngles[anchorAxis._id + 'tick'] || 0);
+                    var cosA = Math.abs(Math.cos(rad));
+                    var sinA = Math.abs(Math.sin(rad));
+
+                    // no stashed bounding boxes - stash bounding boxes
+                    if(!anchorAxis._vals[0].bb) {
+                        var cls = anchorAxis._id + 'tick';
+                        var tickLabels = anchorAxis._selections[cls];
+                        tickLabels.each(function(d) {
+                            var thisLabel = d3.select(this);
+                            var mathjaxGroup = thisLabel.select('.text-math-group');
+                            if(mathjaxGroup.empty()) {
+                                d.bb = Drawing.bBox(thisLabel.node());
+                            }
+                        });
                     }
-                });
-            }
 
-            if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
-                pad += anchorAxis.ticklen || 0;
+                    // use bounding boxes
+                    for(var i = 0; i < anchorAxis._vals.length; i++) {
+                        var t = anchorAxis._vals[i];
+                        var bb = t.bb;
+
+                        if(bb) {
+                            var w = 2 * TEXTPAD + bb.width;
+                            var h = 2 * TEXTPAD + bb.height;
+
+                            pad = Math.max(pad, isX ?
+                                Math.max(w * cosA, h * sinA) :
+                                Math.max(h * cosA, w * sinA)
+                            );
+                        }
+                    }
+                }
+
+                if(anchorAxis.ticks === 'inside' && anchorAxis.ticklabelposition === 'inside') {
+                    pad += anchorAxis.ticklen || 0;
+                }
             }
         }
     }
@@ -95952,7 +96167,7 @@ function goodNumber(v) {
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
-},{"../../constants/numerical":527,"../../lib":549,"../../registry":645,"./axis_ids":600,"fast-isnumeric":96}],597:[function(_dereq_,module,exports){
+},{"../../components/drawing":423,"../../constants/numerical":513,"../../lib":534,"../../registry":632,"./axis_ids":587,"@plotly/d3":17,"fast-isnumeric":94}],583:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -95988,6 +96203,11 @@ var ONEMIN = constants.ONEMIN;
 var ONESEC = constants.ONESEC;
 var MINUS_SIGN = constants.MINUS_SIGN;
 var BADNUM = constants.BADNUM;
+
+var ZERO_PATH = { K: 'zeroline' };
+var GRID_PATH = { K: 'gridline', L: 'path' };
+var TICK_PATH = { K: 'tick', L: 'path' };
+var TICK_TEXT = { K: 'tick', L: 'text' };
 
 var alignmentConstants = _dereq_('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
@@ -96504,7 +96724,7 @@ axes.prepTicks = function(ax, opts) {
 
         if(!nt) {
             if(ax.type === 'category' || ax.type === 'multicategory') {
-                minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
+                minPx = ax.tickfont ? Lib.bigFont(ax.tickfont.size || 12) : 15;
                 nt = ax._length / minPx;
             } else {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
@@ -97311,16 +97531,23 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
  * log axes (where negative values can't be displayed but can appear in hover text)
  *
  * @param {object} ax: the axis to format text for
- * @param {number} val: calcdata value to format
- * @param {Optional(number)} val2: a second value to display
+ * @param {number or array of numbers} values: calcdata value(s) to format
+ * @param {Optional(string)} hoverformat: trace (x|y)hoverformat to override axis.hoverformat
  *
  * @returns {string} `val` formatted as a string appropriate to this axis, or
- *     `val` and `val2` as a range (ie '<val> - <val2>') if `val2` is provided and
- *     it's different from `val`.
+ *     first value and second value as a range (ie '<val1> - <val2>') if the second value is provided and
+ *     it's different from the first value.
  */
-axes.hoverLabelText = function(ax, val, val2) {
-    if(val2 !== BADNUM && val2 !== val) {
-        return axes.hoverLabelText(ax, val) + ' - ' + axes.hoverLabelText(ax, val2);
+axes.hoverLabelText = function(ax, values, hoverformat) {
+    if(hoverformat) ax = Lib.extendFlat({}, ax, {hoverformat: hoverformat});
+
+    var val = Array.isArray(values) ? values[0] : values;
+    var val2 = Array.isArray(values) ? values[1] : undefined;
+    if(val2 !== undefined && val2 !== val) {
+        return (
+            axes.hoverLabelText(ax, val, hoverformat) + ' - ' +
+            axes.hoverLabelText(ax, val2, hoverformat)
+        );
     }
 
     var logOffScale = (ax.type === 'log' && val <= 0);
@@ -97404,7 +97631,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 ax._prevDateHead = headStr;
                 dateStr += '<br>' + headStr;
             } else {
-                var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+                var isInside = insideTicklabelposition(ax);
                 var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
                 if(
                     (!isInside && side === 'top') ||
@@ -98135,6 +98362,7 @@ axes.drawOne = function(gd, ax, opts) {
         return axes.drawLabels(gd, ax, {
             vals: vals,
             layer: mainAxLayer,
+            plotinfo: plotinfo,
             transFn: transTickLabelFn,
             labelFns: axes.makeLabelFns(ax, mainLinePosition)
         });
@@ -98753,7 +98981,10 @@ axes.drawTicks = function(gd, ax, opts) {
         .classed('crisp', opts.crisp !== false)
         .call(Color.stroke, ax.tickcolor)
         .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
-        .attr('d', opts.path);
+        .attr('d', opts.path)
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [TICK_PATH]);
 
     ticks.attr('transform', opts.transFn);
 };
@@ -98816,7 +99047,10 @@ axes.drawGrid = function(gd, ax, opts) {
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
-        .style('stroke-width', ax._gw + 'px');
+        .style('stroke-width', ax._gw + 'px')
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
 
     if(typeof opts.path === 'function') grid.attr('d', opts.path);
 };
@@ -98865,7 +99099,10 @@ axes.drawZeroLine = function(gd, ax, opts) {
     zl.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.zerolinecolor || Color.defaultLine)
-        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px');
+        .style('stroke-width', Drawing.crispRound(gd, ax.zerolinewidth, ax._gw || 1) + 'px')
+        .style('display', null); // visible
+
+    hideCounterAxisInsideTickLabels(ax, [ZERO_PATH]);
 };
 
 /**
@@ -98940,6 +99177,8 @@ axes.drawLabels = function(gd, ax, opts) {
                 }
             });
 
+    hideCounterAxisInsideTickLabels(ax, [TICK_TEXT]);
+
     tickLabels.exit().remove();
 
     if(opts.repositionOnUpdate) {
@@ -98950,8 +99189,6 @@ axes.drawLabels = function(gd, ax, opts) {
     }
 
     function positionLabels(s, angle) {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
-
         s.each(function(d) {
             var thisLabel = d3.select(this);
             var mathjaxGroup = thisLabel.select('.text-math-group');
@@ -98979,13 +99216,10 @@ axes.drawLabels = function(gd, ax, opts) {
                     'text-anchor': anchor
                 });
 
-                if(isInside) {
-                    // ensure visible
-                    thisText.style({ opacity: 100 });
+                thisText.style('opacity', 1); // visible
 
-                    if(ax._hideOutOfRangeInsideTickLabels) {
-                        ax._hideOutOfRangeInsideTickLabels();
-                    }
+                if(ax._adjustTickLabelsOverflow) {
+                    ax._adjustTickLabelsOverflow();
                 }
             } else {
                 var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
@@ -98995,39 +99229,135 @@ axes.drawLabels = function(gd, ax, opts) {
         });
     }
 
-    ax._hideOutOfRangeInsideTickLabels = undefined;
-    if((ax.ticklabelposition || '').indexOf('inside') !== -1) {
-        ax._hideOutOfRangeInsideTickLabels = function() {
+    ax._adjustTickLabelsOverflow = function() {
+        var ticklabeloverflow = ax.ticklabeloverflow;
+        if(!ticklabeloverflow || ticklabeloverflow === 'allow') return;
+
+        var hideOverflow = ticklabeloverflow.indexOf('hide') !== -1;
+
+        var isX = ax._id.charAt(0) === 'x';
+        // div positions
+        var p0 = 0;
+        var p1 = isX ?
+            gd._fullLayout.width :
+            gd._fullLayout.height;
+
+        if(ticklabeloverflow.indexOf('domain') !== -1) {
+            // domain positions
             var rl = Lib.simpleMap(ax.range, ax.r2l);
+            p0 = ax.l2p(rl[0]) + ax._offset;
+            p1 = ax.l2p(rl[1]) + ax._offset;
+        }
 
-            // hide inside tick labels that go outside axis end points
-            var p0 = ax.l2p(rl[0]);
-            var p1 = ax.l2p(rl[1]);
+        var min = Math.min(p0, p1);
+        var max = Math.max(p0, p1);
 
-            var min = Math.min(p0, p1) + ax._offset;
-            var max = Math.max(p0, p1) + ax._offset;
+        var side = ax.side;
 
-            var isX = ax._id.charAt(0) === 'x';
+        var visibleLabelMin = Infinity;
+        var visibleLabelMax = -Infinity;
 
-            tickLabels.each(function(d) {
-                var thisLabel = d3.select(this);
-                var mathjaxGroup = thisLabel.select('.text-math-group');
+        tickLabels.each(function(d) {
+            var thisLabel = d3.select(this);
+            var mathjaxGroup = thisLabel.select('.text-math-group');
 
-                if(mathjaxGroup.empty()) {
-                    var bb = Drawing.bBox(thisLabel.node());
-                    var hide = false;
-                    if(isX) {
-                        if(bb.right > max) hide = true;
-                        else if(bb.left < min) hide = true;
+            if(mathjaxGroup.empty()) {
+                var bb = Drawing.bBox(thisLabel.node());
+                var adjust = 0;
+                if(isX) {
+                    if(bb.right > max) adjust = 1;
+                    else if(bb.left < min) adjust = 1;
+                } else {
+                    if(bb.bottom > max) adjust = 1;
+                    else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) adjust = 1;
+                }
+
+                var t = thisLabel.select('text');
+                if(adjust) {
+                    if(hideOverflow) t.style('opacity', 0); // hidden
+                } else {
+                    t.style('opacity', 1); // visible
+
+                    if(side === 'bottom' || side === 'right') {
+                        visibleLabelMin = Math.min(visibleLabelMin, isX ? bb.top : bb.left);
                     } else {
-                        if(bb.bottom > max) hide = true;
-                        else if(bb.top + (ax.tickangle ? 0 : d.fontSize / 4) < min) hide = true;
+                        visibleLabelMin = -Infinity;
                     }
-                    if(hide) thisLabel.select('text').style({ opacity: 0 });
-                } // TODO: hide mathjax?
-            });
-        };
-    }
+
+                    if(side === 'top' || side === 'left') {
+                        visibleLabelMax = Math.max(visibleLabelMax, isX ? bb.bottom : bb.right);
+                    } else {
+                        visibleLabelMax = Infinity;
+                    }
+                }
+            } // TODO: hide mathjax?
+        });
+
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            var anchorAx = isX ? plotinfo.yaxis : plotinfo.xaxis;
+            if(anchorAx) {
+                anchorAx['_visibleLabelMin_' + ax._id] = visibleLabelMin;
+                anchorAx['_visibleLabelMax_' + ax._id] = visibleLabelMax;
+            }
+        }
+    };
+
+    ax._hideCounterAxisInsideTickLabels = function(partialOpts) {
+        var isX = ax._id.charAt(0) === 'x';
+
+        var anchoredAxes = [];
+        for(var subplot in fullLayout._plots) {
+            var plotinfo = fullLayout._plots[subplot];
+            if(ax._id !== plotinfo.xaxis._id && ax._id !== plotinfo.yaxis._id) continue;
+            anchoredAxes.push(isX ? plotinfo.yaxis : plotinfo.xaxis);
+        }
+
+        anchoredAxes.forEach(function(anchorAx, idx) {
+            if(anchorAx && insideTicklabelposition(anchorAx)) {
+                (partialOpts || [
+                    ZERO_PATH,
+                    GRID_PATH,
+                    TICK_PATH,
+                    TICK_TEXT
+                ]).forEach(function(e) {
+                    var isPeriodLabel =
+                        e.K === 'tick' &&
+                        e.L === 'text' &&
+                        ax.ticklabelmode === 'period';
+
+                    var mainPlotinfo = fullLayout._plots[ax._mainSubplot];
+
+                    var sel;
+                    if(e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                    else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);
+                    else sel = mainPlotinfo[ax._id.charAt(0) + 'axislayer'];
+
+                    sel.each(function() {
+                        var w = d3.select(this);
+                        if(e.L) w = w.selectAll(e.L);
+
+                        w.each(function(d) {
+                            var q = ax.l2p(
+                                isPeriodLabel ? getPosX(d) : d.x
+                            ) + ax._offset;
+
+                            var t = d3.select(this);
+                            if(
+                                q < ax['_visibleLabelMax_' + anchorAx._id] &&
+                                q > ax['_visibleLabelMin_' + anchorAx._id]
+                            ) {
+                                t.style('display', 'none'); // hidden
+                            } else if(e.K === 'tick' && !idx) {
+                                t.style('display', null); // visible
+                            }
+                        });
+                    });
+                });
+            }
+        });
+    };
 
     // make sure all labels are correctly positioned at their base angle
     // the positionLabels call above is only for newly drawn labels.
@@ -99156,7 +99486,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var anchorAx = ax._anchorAxis;
     if(
         anchorAx && anchorAx.autorange &&
-        (ax.ticklabelposition || '').indexOf('inside') !== -1 &&
+        insideTicklabelposition(ax) &&
         !isLinked(fullLayout, ax._id)
     ) {
         if(!fullLayout._insideTickLabelsAutorange) {
@@ -99168,7 +99498,10 @@ axes.drawLabels = function(gd, ax, opts) {
             function computeFinalTickLabelBoundingBoxes() {
                 tickLabels.each(function(d, i) {
                     var thisLabel = selectTickLabel(this);
-                    ax._vals[i].bb = Drawing.bBox(thisLabel.node());
+                    var mathjaxGroup = thisLabel.select('.text-math-group');
+                    if(mathjaxGroup.empty()) {
+                        ax._vals[i].bb = Drawing.bBox(thisLabel.node());
+                    }
                 });
             }
         );
@@ -99305,7 +99638,7 @@ function drawTitle(gd, ax) {
     if(ax.title.hasOwnProperty('standoff')) {
         titleStandoff = ax._depth + ax.title.standoff + approxTitleDepth(ax);
     } else {
-        var isInside = (ax.ticklabelposition || '').indexOf('inside') !== -1;
+        var isInside = insideTicklabelposition(ax);
 
         if(ax.type === 'multicategory') {
             titleStandoff = ax._depth;
@@ -99664,7 +99997,19 @@ function moveOutsideBreak(v, ax) {
     return v;
 }
 
-},{"../../components/color":418,"../../components/drawing":440,"../../components/titles":513,"../../constants/alignment":520,"../../constants/numerical":527,"../../lib":549,"../../lib/svg_text_utils":573,"../../plots/plots":642,"../../registry":645,"./autorange":596,"./axis_autotype":598,"./axis_ids":600,"./clean_ticks":602,"./layout_attributes":611,"./set_convert":617,"@plotly/d3":18,"fast-isnumeric":96}],598:[function(_dereq_,module,exports){
+function insideTicklabelposition(ax) {
+    return ((ax.ticklabelposition || '').indexOf('inside') !== -1);
+}
+
+function hideCounterAxisInsideTickLabels(ax, opts) {
+    if(insideTicklabelposition(ax._anchorAxis || {})) {
+        if(ax._hideCounterAxisInsideTickLabels) {
+            ax._hideCounterAxisInsideTickLabels(opts);
+        }
+    }
+}
+
+},{"../../components/color":401,"../../components/drawing":423,"../../components/titles":499,"../../constants/alignment":506,"../../constants/numerical":513,"../../lib":534,"../../lib/svg_text_utils":559,"../../plots/plots":629,"../../registry":632,"./autorange":582,"./axis_autotype":584,"./axis_ids":587,"./clean_ticks":589,"./layout_attributes":598,"./set_convert":604,"@plotly/d3":17,"fast-isnumeric":94}],584:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -99786,7 +100131,7 @@ function multiCategory(a) {
     return isArrayOrTypedArray(a[0]) && isArrayOrTypedArray(a[1]);
 }
 
-},{"../../constants/numerical":527,"../../lib":549,"fast-isnumeric":96}],599:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534,"fast-isnumeric":94}],585:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -99845,8 +100190,9 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
+    var ticklabelposition = '';
     if(!options.noTicklabelposition || axType === 'multicategory') {
-        Lib.coerce(containerIn, containerOut, {
+        ticklabelposition = Lib.coerce(containerIn, containerOut, {
             ticklabelposition: {
                 valType: 'enumerated',
                 dflt: 'outside',
@@ -99862,6 +100208,17 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
                 ]
             }
         }, 'ticklabelposition');
+    }
+
+    if(!options.noTicklabeloverflow) {
+        coerce('ticklabeloverflow',
+            ticklabelposition.indexOf('inside') !== -1 ?
+                'hide past domain' :
+            axType === 'category' ||
+            axType === 'multicategory' ?
+                'allow' :
+                'hide past div'
+        );
     }
 
     setConvert(containerOut, layoutOut);
@@ -99893,7 +100250,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('title.text', dfltTitle);
     Lib.coerceFont(coerce, 'title.font', {
         family: font.family,
-        size: Math.round(font.size * 1.2),
+        size: Lib.bigFont(font.size),
         color: dfltFontColor
     });
 
@@ -100086,7 +100443,56 @@ function indexOfDay(v) {
     ];
 }
 
-},{"../../lib":549,"../../registry":645,"../array_container_defaults":592,"./category_order_defaults":601,"./constants":603,"./layout_attributes":611,"./line_grid_defaults":613,"./set_convert":617,"./tick_label_defaults":618,"./tick_mark_defaults":619,"./tick_value_defaults":620,"fast-isnumeric":96}],600:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632,"../array_container_defaults":578,"./category_order_defaults":588,"./constants":590,"./layout_attributes":598,"./line_grid_defaults":600,"./set_convert":604,"./tick_label_defaults":605,"./tick_mark_defaults":606,"./tick_value_defaults":607,"fast-isnumeric":94}],586:[function(_dereq_,module,exports){
+'use strict';
+
+var docs = _dereq_('../../constants/docs');
+var FORMAT_LINK = docs.FORMAT_LINK;
+var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
+
+function axisHoverFormat(x, noDates) {
+    return {
+        valType: 'string',
+        dflt: '',
+        editType: 'none',
+        description: (
+            noDates ? descriptionOnlyNumbers : descriptionWithDates
+        )('hover text', x) + [
+            'By default the values are formatted using ' + (
+                noDates ?
+                    'generic number format' :
+                    ('`' + x + 'axis.hoverformat`')
+            ) + '.',
+        ].join(' ')
+    };
+}
+
+function descriptionOnlyNumbers(label, x) {
+    return [
+        'Sets the ' + label + ' formatting rule' + (x ? 'for `' + x + '` ' : ''),
+        'using d3 formatting mini-languages',
+        'which are very similar to those in Python. For numbers, see: ' + FORMAT_LINK + '.'
+    ].join(' ');
+}
+
+function descriptionWithDates(label, x) {
+    return descriptionOnlyNumbers(label, x) + [
+        ' And for dates see: ' + DATE_FORMAT_LINK + '.',
+        'We add two items to d3\'s date formatter:',
+        '*%h* for half of the year as a decimal number as well as',
+        '*%{n}f* for fractional seconds',
+        'with n digits. For example, *2016-10-13 09:15:23.456* with tickformat',
+        '*%H~%M~%S.%2f* would display *09~15~23.46*'
+    ].join(' ');
+}
+
+module.exports = {
+    axisHoverFormat: axisHoverFormat,
+    descriptionOnlyNumbers: descriptionOnlyNumbers,
+    descriptionWithDates: descriptionWithDates
+};
+
+},{"../../constants/docs":508}],587:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -100234,7 +100640,7 @@ exports.isLinked = function(fullLayout, axId) {
     );
 };
 
-},{"../../registry":645,"./constants":603}],601:[function(_dereq_,module,exports){
+},{"../../registry":632,"./constants":590}],588:[function(_dereq_,module,exports){
 'use strict';
 
 function findCategories(ax, opts) {
@@ -100320,7 +100726,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],602:[function(_dereq_,module,exports){
+},{}],589:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -100404,7 +100810,7 @@ exports.tick0 = function(tick0, axType, calendar, dtick) {
     return isNumeric(tick0) ? Number(tick0) : 0;
 };
 
-},{"../../constants/numerical":527,"../../lib":549,"fast-isnumeric":96}],603:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534,"fast-isnumeric":94}],590:[function(_dereq_,module,exports){
 'use strict';
 
 var counterRegex = _dereq_('../../lib/regex').counter;
@@ -100488,7 +100894,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/regex":565}],604:[function(_dereq_,module,exports){
+},{"../../lib/regex":550}],591:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -101131,15 +101537,16 @@ function updateDomain(ax, factor) {
     ax.setScale();
 }
 
-},{"../../constants/alignment":520,"../../constants/numerical":527,"../../lib":549,"./autorange":596,"./axis_ids":600,"./layout_attributes":611,"./scale_zoom":615,"./set_convert":617}],605:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506,"../../constants/numerical":513,"../../lib":534,"./autorange":582,"./axis_ids":587,"./layout_attributes":598,"./scale_zoom":602,"./set_convert":604}],592:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
+var Lib = _dereq_('../../lib');
+var numberFormat = Lib.numberFormat;
 var tinycolor = _dereq_('tinycolor2');
 var supportsPassive = _dereq_('has-passive-events');
 
 var Registry = _dereq_('../../registry');
-var Lib = _dereq_('../../lib');
 var strTranslate = Lib.strTranslate;
 var svgTextUtils = _dereq_('../../lib/svg_text_utils');
 var Color = _dereq_('../../components/color');
@@ -101669,6 +102076,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // then replot after a delay to make sure
         // no more scrolling is coming
         redrawTimer = setTimeout(function() {
+            if(!gd._fullLayout) return;
             scrollViewBox = [0, 0, pw, ph];
             dragTail();
         }, REDRAWDELAY);
@@ -102162,11 +102570,11 @@ function getEndText(ax, end) {
         return initialVal;
     } else if(ax.type === 'log') {
         dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
-        return d3.format('.' + dig + 'g')(Math.pow(10, initialVal));
+        return numberFormat('.' + dig + 'g')(Math.pow(10, initialVal));
     } else { // linear numeric (or category... but just show numbers here)
         dig = Math.floor(Math.log(Math.abs(initialVal)) / Math.LN10) -
             Math.floor(Math.log(diff) / Math.LN10) + 4;
-        return d3.format('.' + String(dig) + 'g')(initialVal);
+        return numberFormat('.' + String(dig) + 'g')(initialVal);
     }
 }
 
@@ -102461,7 +102869,7 @@ module.exports = {
     attachWheelEventHandler: attachWheelEventHandler
 };
 
-},{"../../components/color":418,"../../components/dragelement":437,"../../components/dragelement/helpers":436,"../../components/drawing":440,"../../components/fx":458,"../../constants/alignment":520,"../../lib":549,"../../lib/clear_gl_canvases":536,"../../lib/setcursor":569,"../../lib/svg_text_utils":573,"../../plot_api/subroutines":587,"../../registry":645,"../plots":642,"./axes":597,"./axis_ids":600,"./constants":603,"./scale_zoom":615,"./select":616,"@plotly/d3":18,"has-passive-events":271,"tinycolor2":366}],606:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../components/dragelement":420,"../../components/dragelement/helpers":419,"../../components/drawing":423,"../../components/fx":441,"../../constants/alignment":506,"../../lib":534,"../../lib/clear_gl_canvases":521,"../../lib/setcursor":554,"../../lib/svg_text_utils":559,"../../plot_api/subroutines":573,"../../registry":632,"../plots":629,"./axes":583,"./axis_ids":587,"./constants":590,"./scale_zoom":602,"./select":603,"@plotly/d3":17,"has-passive-events":264,"tinycolor2":350}],593:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -102620,7 +103028,7 @@ exports.updateFx = function(gd) {
     setCursor(fullLayout._draggers, cursor);
 };
 
-},{"../../components/dragelement":437,"../../components/fx":458,"../../lib/setcursor":569,"./constants":603,"./dragbox":605,"@plotly/d3":18}],607:[function(_dereq_,module,exports){
+},{"../../components/dragelement":420,"../../components/fx":441,"../../lib/setcursor":554,"./constants":590,"./dragbox":592,"@plotly/d3":17}],594:[function(_dereq_,module,exports){
 'use strict';
 
 function clearOutlineControllers(gd) {
@@ -102647,7 +103055,7 @@ module.exports = {
     clearSelect: clearSelect
 };
 
-},{}],608:[function(_dereq_,module,exports){
+},{}],595:[function(_dereq_,module,exports){
 'use strict';
 
 var strTranslate = _dereq_('../../lib').strTranslate;
@@ -102695,7 +103103,7 @@ module.exports = {
     getTransform: getTransform
 };
 
-},{"../../lib":549}],609:[function(_dereq_,module,exports){
+},{"../../lib":534}],596:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -102764,7 +103172,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
     };
 };
 
-},{"../../lib":549,"../../registry":645,"./axis_ids":600}],610:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632,"./axis_ids":587}],597:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -103363,8 +103771,8 @@ exports.toSVG = function(gd) {
             preserveAspectRatio: 'none',
             x: 0,
             y: 0,
-            width: canvas.width,
-            height: canvas.height
+            width: canvas.style.width,
+            height: canvas.style.height
         });
     }
 
@@ -103373,7 +103781,7 @@ exports.toSVG = function(gd) {
 
 exports.updateFx = _dereq_('./graph_interact').updateFx;
 
-},{"../../components/drawing":440,"../../constants/xmlns_namespaces":528,"../../lib":549,"../../registry":645,"../get_data":627,"../plots":642,"./attributes":595,"./axis_ids":600,"./constants":603,"./graph_interact":606,"./layout_attributes":611,"./layout_defaults":612,"./transition_axes":621,"@plotly/d3":18}],611:[function(_dereq_,module,exports){
+},{"../../components/drawing":423,"../../constants/xmlns_namespaces":514,"../../lib":534,"../../registry":632,"../get_data":614,"../plots":629,"./attributes":581,"./axis_ids":587,"./constants":590,"./graph_interact":593,"./layout_attributes":598,"./layout_defaults":599,"./transition_axes":608,"@plotly/d3":17}],598:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../font_attributes');
@@ -103381,9 +103789,8 @@ var colorAttrs = _dereq_('../../components/color/attributes');
 var dash = _dereq_('../../components/drawing/attributes').dash;
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
 var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
+var descriptionWithDates = _dereq_('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 
-var FORMAT_LINK = _dereq_('../../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = _dereq_('../../constants/docs').DATE_FORMAT_LINK;
 var ONEDAY = _dereq_('../../constants/numerical').ONEDAY;
 var constants = _dereq_('./constants');
 var HOUR = constants.HOUR_PATTERN;
@@ -103623,6 +104030,15 @@ module.exports = {
         dflt: 'outside',
         editType: 'calc',
     },
+    ticklabeloverflow: {
+        valType: 'enumerated',
+        values: [
+            'allow',
+            'hide past div',
+            'hide past domain'
+        ],
+        editType: 'calc',
+    },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
@@ -103681,7 +104097,7 @@ module.exports = {
     spikesnap: {
         valType: 'enumerated',
         values: ['data', 'cursor', 'hovered data'],
-        dflt: 'data',
+        dflt: 'hovered data',
         editType: 'none',
     },
     tickfont: fontAttrs({
@@ -103741,6 +104157,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         editType: 'ticks',
+        description: descriptionWithDates('tick label')
     },
     tickformatstops: templatedArray('tickformatstop', {
         enabled: {
@@ -103767,6 +104184,7 @@ module.exports = {
         valType: 'string',
         dflt: '',
         editType: 'none',
+        description: descriptionWithDates('hover text')
     },
     // lines and grids
     showline: {
@@ -103924,7 +104342,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":417,"../../components/drawing/attributes":439,"../../constants/docs":522,"../../constants/numerical":527,"../../lib/extend":542,"../../plot_api/plot_template":586,"../font_attributes":625,"./constants":603}],612:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":400,"../../components/drawing/attributes":422,"../../constants/numerical":513,"../../lib/extend":527,"../../plot_api/plot_template":572,"../../plots/cartesian/axis_format_attributes":586,"../font_attributes":612,"./constants":590}],599:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -104127,7 +104545,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         }
     }
 
-    var hovermode = handleHoverModeDefaults(layoutIn, layoutOut, fullData);
+    var hovermode = handleHoverModeDefaults(layoutIn, layoutOut);
     var unifiedHover = isUnifiedHover(hovermode);
 
     // first pass creates the containers, determines types, and handles most of the settings
@@ -104180,7 +104598,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var spikethickness = coerce2('spikethickness', unifiedHover ? 1.5 : undefined);
         var spikedash = coerce2('spikedash', unifiedHover ? 'dot' : undefined);
         var spikemode = coerce2('spikemode', unifiedHover ? 'across' : undefined);
-        var spikesnap = coerce2('spikesnap', unifiedHover ? 'hovered data' : undefined);
+        var spikesnap = coerce2('spikesnap');
         var showSpikes = coerce('showspikes', !!unifiedSpike || !!spikecolor || !!spikethickness || !!spikedash || !!spikemode || !!spikesnap);
 
         if(!showSpikes) {
@@ -104302,7 +104720,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":418,"../../components/fx/helpers":454,"../../components/fx/hovermode_defaults":457,"../../lib":549,"../../plot_api/plot_template":586,"../../registry":645,"../layout_attributes":640,"./axis_defaults":599,"./axis_ids":600,"./constants":603,"./constraints":604,"./layout_attributes":611,"./position_defaults":614,"./type_defaults":622}],613:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../components/fx/helpers":437,"../../components/fx/hovermode_defaults":440,"../../lib":534,"../../plot_api/plot_template":572,"../../registry":632,"../layout_attributes":627,"./axis_defaults":585,"./axis_ids":587,"./constants":590,"./constraints":591,"./layout_attributes":598,"./position_defaults":601,"./type_defaults":609}],600:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
@@ -104359,7 +104777,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     }
 };
 
-},{"../../components/color/attributes":417,"../../lib":549,"tinycolor2":366}],614:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":400,"../../lib":534,"tinycolor2":350}],601:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -104438,7 +104856,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":549,"fast-isnumeric":96}],615:[function(_dereq_,module,exports){
+},{"../../lib":534,"fast-isnumeric":94}],602:[function(_dereq_,module,exports){
 'use strict';
 
 var FROM_BL = _dereq_('../../constants/alignment').FROM_BL;
@@ -104458,7 +104876,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     ax.setScale();
 };
 
-},{"../../constants/alignment":520}],616:[function(_dereq_,module,exports){
+},{"../../constants/alignment":506}],603:[function(_dereq_,module,exports){
 'use strict';
 
 var polybool = _dereq_('polybooljs');
@@ -105392,14 +105810,15 @@ module.exports = {
     selectOnClick: selectOnClick
 };
 
-},{"../../components/color":418,"../../components/dragelement/helpers":436,"../../components/drawing":440,"../../components/fx":458,"../../components/fx/helpers":454,"../../components/shapes/draw_newshape/display_outlines":503,"../../components/shapes/draw_newshape/helpers":504,"../../components/shapes/draw_newshape/newshapes":505,"../../lib":549,"../../lib/clear_gl_canvases":536,"../../lib/polygon":561,"../../lib/throttle":574,"../../plot_api/subroutines":587,"../../registry":645,"./axis_ids":600,"./constants":603,"./handle_outline":607,"./helpers":608,"polybooljs":321}],617:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../components/dragelement/helpers":419,"../../components/drawing":423,"../../components/fx":441,"../../components/fx/helpers":437,"../../components/shapes/draw_newshape/display_outlines":489,"../../components/shapes/draw_newshape/helpers":490,"../../components/shapes/draw_newshape/newshapes":491,"../../lib":534,"../../lib/clear_gl_canvases":521,"../../lib/polygon":546,"../../lib/throttle":560,"../../plot_api/subroutines":573,"../../registry":632,"./axis_ids":587,"./constants":590,"./handle_outline":594,"./helpers":595,"polybooljs":306}],604:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
 var utcFormat = _dereq_('d3-time-format').utcFormat;
+var Lib = _dereq_('../../lib');
+var numberFormat = Lib.numberFormat;
 var isNumeric = _dereq_('fast-isnumeric');
 
-var Lib = _dereq_('../../lib');
 var cleanNumber = Lib.cleanNumber;
 var ms2DateTime = Lib.ms2DateTime;
 var dateTime2ms = Lib.dateTime2ms;
@@ -105995,16 +106414,29 @@ module.exports = function setConvert(ax, fullLayout) {
         var rangebreaksIn = ax.rangebreaks || [];
         var bnds, b0, b1, vb, vDate;
 
+
+        if(!rangebreaksIn._cachedPatterns) {
+            rangebreaksIn._cachedPatterns = rangebreaksIn.map(function(brk) {
+                return brk.enabled && brk.bounds ? Lib.simpleMap(brk.bounds, brk.pattern ?
+                    cleanNumber :
+                    ax.d2c // case of pattern: ''
+                ) : null;
+            });
+        }
+        if(!rangebreaksIn._cachedValues) {
+            rangebreaksIn._cachedValues = rangebreaksIn.map(function(brk) {
+                return brk.enabled && brk.values ? Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc) : null;
+            });
+        }
+
+
         for(var i = 0; i < rangebreaksIn.length; i++) {
             var brk = rangebreaksIn[i];
 
             if(brk.enabled) {
                 if(brk.bounds) {
                     var pattern = brk.pattern;
-                    bnds = Lib.simpleMap(brk.bounds, pattern ?
-                        cleanNumber :
-                        ax.d2c // case of pattern: ''
-                    );
+                    bnds = rangebreaksIn._cachedPatterns[i];
                     b0 = bnds[0];
                     b1 = bnds[1];
 
@@ -106048,7 +106480,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
                     if(vb >= b0 && vb < b1) return BADNUM;
                 } else {
-                    var vals = Lib.simpleMap(brk.values, ax.d2c).sort(Lib.sorterAsc);
+                    var vals = rangebreaksIn._cachedValues[i];
                     for(var j = 0; j < vals.length; j++) {
                         b0 = vals[j];
                         b1 = b0 + brk.dvalue;
@@ -106335,14 +106767,14 @@ module.exports = function setConvert(ax, fullLayout) {
     // occasionally we need _numFormat to pass through
     // even though it won't be needed by this axis
     ax._separators = fullLayout.separators;
-    ax._numFormat = locale ? locale.numberFormat : d3.format;
+    ax._numFormat = locale ? locale.numberFormat : numberFormat;
 
     // and for bar charts and box plots: reset forced minimum tick spacing
     delete ax._minDtick;
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":527,"../../lib":549,"./axis_ids":600,"./constants":603,"@plotly/d3":18,"d3-time-format":87,"fast-isnumeric":96}],618:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534,"./axis_ids":587,"./constants":590,"@plotly/d3":17,"d3-time-format":84,"fast-isnumeric":94}],605:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -106460,7 +106892,7 @@ function tickformatstopDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../components/color":418,"../../lib":549,"../array_container_defaults":592,"./layout_attributes":611}],619:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../lib":534,"../array_container_defaults":578,"./layout_attributes":598}],606:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -106484,7 +106916,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":549,"./layout_attributes":611}],620:[function(_dereq_,module,exports){
+},{"../../lib":534,"./layout_attributes":598}],607:[function(_dereq_,module,exports){
 'use strict';
 
 var cleanTicks = _dereq_('./clean_ticks');
@@ -106523,7 +106955,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../lib":549,"./clean_ticks":602}],621:[function(_dereq_,module,exports){
+},{"../../lib":534,"./clean_ticks":589}],608:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -106728,7 +107160,7 @@ module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnComple
     return Promise.resolve();
 };
 
-},{"../../components/drawing":440,"../../lib":549,"../../registry":645,"./axes":597,"@plotly/d3":18}],622:[function(_dereq_,module,exports){
+},{"../../components/drawing":423,"../../lib":534,"../../registry":632,"./axes":583,"@plotly/d3":17}],609:[function(_dereq_,module,exports){
 'use strict';
 
 var traceIs = _dereq_('../../registry').traceIs;
@@ -106860,7 +107292,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-},{"../../registry":645,"./axis_autotype":598}],623:[function(_dereq_,module,exports){
+},{"../../registry":632,"./axis_autotype":584}],610:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -107279,7 +107711,7 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":549,"../registry":645}],624:[function(_dereq_,module,exports){
+},{"../lib":534,"../registry":632}],611:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../lib/extend').extendFlat;
@@ -107376,7 +107808,7 @@ exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
     if(!(y[0] < y[1])) containerOut.domain.y = dfltY.slice();
 };
 
-},{"../lib/extend":542}],625:[function(_dereq_,module,exports){
+},{"../lib/extend":527}],612:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -107428,7 +107860,7 @@ module.exports = function(opts) {
     return attrs;
 };
 
-},{}],626:[function(_dereq_,module,exports){
+},{}],613:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -107454,7 +107886,7 @@ module.exports = {
     }
 };
 
-},{}],627:[function(_dereq_,module,exports){
+},{}],614:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -107575,7 +108007,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-},{"../registry":645,"./cartesian/constants":603}],628:[function(_dereq_,module,exports){
+},{"../registry":632,"./cartesian/constants":590}],615:[function(_dereq_,module,exports){
 'use strict';
 
 var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
@@ -107726,7 +108158,7 @@ exports.updateFx = function(gd) {
     }
 };
 
-},{"../../components/fx/layout_attributes":459,"../../constants/xmlns_namespaces":528,"../../lib":549,"../../plot_api/edit_types":579,"../get_data":627,"./layout/attributes":629,"./layout/defaults":633,"./layout/layout_attributes":634,"./scene":638}],629:[function(_dereq_,module,exports){
+},{"../../components/fx/layout_attributes":442,"../../constants/xmlns_namespaces":514,"../../lib":534,"../../plot_api/edit_types":565,"../get_data":614,"./layout/attributes":616,"./layout/defaults":620,"./layout/layout_attributes":621,"./scene":625}],616:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -107738,7 +108170,7 @@ module.exports = {
     }
 };
 
-},{}],630:[function(_dereq_,module,exports){
+},{}],617:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../../components/color');
@@ -107840,7 +108272,7 @@ module.exports = overrideAll({
     }
 }, 'plot', 'from-root');
 
-},{"../../../components/color":418,"../../../lib/extend":542,"../../../plot_api/edit_types":579,"../../cartesian/layout_attributes":611}],631:[function(_dereq_,module,exports){
+},{"../../../components/color":401,"../../../lib/extend":527,"../../../plot_api/edit_types":565,"../../cartesian/layout_attributes":598}],618:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
@@ -107887,6 +108319,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 noTickson: true,
                 noTicklabelmode: true,
                 noTicklabelposition: true,
+                noTicklabeloverflow: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
             },
@@ -107908,7 +108341,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../lib":549,"../../../plot_api/plot_template":586,"../../cartesian/axis_defaults":599,"../../cartesian/type_defaults":622,"./axis_attributes":630,"tinycolor2":366}],632:[function(_dereq_,module,exports){
+},{"../../../lib":534,"../../../plot_api/plot_template":572,"../../cartesian/axis_defaults":585,"../../cartesian/type_defaults":609,"./axis_attributes":617,"tinycolor2":350}],619:[function(_dereq_,module,exports){
 'use strict';
 
 var str2RgbaArray = _dereq_('../../../lib/str2rgbarray');
@@ -108065,7 +108498,7 @@ function createAxesOptions(fullLayout, sceneLayout) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib":549,"../../../lib/str2rgbarray":572}],633:[function(_dereq_,module,exports){
+},{"../../../lib":534,"../../../lib/str2rgbarray":558}],620:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../../lib');
@@ -108206,7 +108639,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     coerce('hovermode', opts.getDfltFromLayout('hovermode'));
 }
 
-},{"../../../components/color":418,"../../../lib":549,"../../../registry":645,"../../get_data":627,"../../subplot_defaults":643,"./axis_defaults":631,"./layout_attributes":634}],634:[function(_dereq_,module,exports){
+},{"../../../components/color":401,"../../../lib":534,"../../../registry":632,"../../get_data":614,"../../subplot_defaults":630,"./axis_defaults":618,"./layout_attributes":621}],621:[function(_dereq_,module,exports){
 'use strict';
 
 var gl3dAxisAttrs = _dereq_('./axis_attributes');
@@ -108325,7 +108758,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib":549,"../../../lib/extend":542,"../../domain":624,"./axis_attributes":630}],635:[function(_dereq_,module,exports){
+},{"../../../lib":534,"../../../lib/extend":527,"../../domain":611,"./axis_attributes":617}],622:[function(_dereq_,module,exports){
 'use strict';
 
 var str2RGBArray = _dereq_('../../../lib/str2rgbarray');
@@ -108368,7 +108801,7 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":572}],636:[function(_dereq_,module,exports){
+},{"../../../lib/str2rgbarray":558}],623:[function(_dereq_,module,exports){
 /* eslint block-scoped-var: 0*/
 /* eslint no-redeclare: 0*/
 
@@ -108461,7 +108894,7 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib":549,"../../cartesian/axes":597}],637:[function(_dereq_,module,exports){
+},{"../../../lib":534,"../../cartesian/axes":583}],624:[function(_dereq_,module,exports){
 'use strict';
 
 function xformMatrix(m, v) {
@@ -108486,7 +108919,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],638:[function(_dereq_,module,exports){
+},{}],625:[function(_dereq_,module,exports){
 'use strict';
 
 var glPlot3d = _dereq_('gl-plot3d');
@@ -108811,10 +109244,14 @@ proto.render = function() {
         if(trace.setContourLevels) trace.setContourLevels();
     }
 
-    function formatter(axisName, val) {
-        var axis = scene.fullSceneLayout[axisName];
+    function formatter(axLetter, val, hoverformat) {
+        var ax = scene.fullSceneLayout[axLetter + 'axis'];
 
-        return Axes.tickText(axis, axis.d2l(val), 'hover').text;
+        if(ax.type !== 'log') {
+            val = ax.d2l(val);
+        }
+
+        return Axes.hoverLabelText(ax, val, hoverformat);
     }
 
     var oldEventData;
@@ -108826,9 +109263,9 @@ proto.render = function() {
         var ptNumber = selection.index;
 
         var labels = {
-            xLabel: formatter('xaxis', selection.traceCoordinate[0]),
-            yLabel: formatter('yaxis', selection.traceCoordinate[1]),
-            zLabel: formatter('zaxis', selection.traceCoordinate[2])
+            xLabel: formatter('x', selection.traceCoordinate[0], trace.xhoverformat),
+            yLabel: formatter('y', selection.traceCoordinate[1], trace.yhoverformat),
+            zLabel: formatter('z', selection.traceCoordinate[2], trace.zhoverformat)
         };
 
         var hoverinfo = Fx.castHoverinfo(traceNow, scene.fullLayout, ptNumber);
@@ -108847,17 +109284,17 @@ proto.render = function() {
         var vectorTx = [];
 
         if(trace.type === 'cone' || trace.type === 'streamtube') {
-            labels.uLabel = formatter('xaxis', selection.traceCoordinate[3]);
+            labels.uLabel = formatter('x', selection.traceCoordinate[3], trace.uhoverformat);
             if(isHoverinfoAll || hoverinfoParts.indexOf('u') !== -1) {
                 vectorTx.push('u: ' + labels.uLabel);
             }
 
-            labels.vLabel = formatter('yaxis', selection.traceCoordinate[4]);
+            labels.vLabel = formatter('y', selection.traceCoordinate[4], trace.vhoverformat);
             if(isHoverinfoAll || hoverinfoParts.indexOf('v') !== -1) {
                 vectorTx.push('v: ' + labels.vLabel);
             }
 
-            labels.wLabel = formatter('zaxis', selection.traceCoordinate[5]);
+            labels.wLabel = formatter('z', selection.traceCoordinate[5], trace.whoverformat);
             if(isHoverinfoAll || hoverinfoParts.indexOf('w') !== -1) {
                 vectorTx.push('w: ' + labels.wLabel);
             }
@@ -108877,7 +109314,7 @@ proto.render = function() {
             }
             tx = vectorTx.join('<br>');
         } else if(trace.type === 'isosurface' || trace.type === 'volume') {
-            labels.valueLabel = Axes.tickText(scene._mockAxis, scene._mockAxis.d2l(selection.traceCoordinate[3]), 'hover').text;
+            labels.valueLabel = Axes.hoverLabelText(scene._mockAxis, scene._mockAxis.d2l(selection.traceCoordinate[3]), trace.valuehoverformat);
             vectorTx.push('value: ' + labels.valueLabel);
             if(selection.textLabel) {
                 vectorTx.push(selection.textLabel);
@@ -108906,6 +109343,7 @@ proto.render = function() {
         var eventData = {points: [pointData]};
 
         if(scene.fullSceneLayout.hovermode) {
+            var bbox = [];
             Fx.loneHover({
                 trace: traceNow,
                 x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
@@ -108927,8 +109365,11 @@ proto.render = function() {
                 eventData: [pointData]
             }, {
                 container: svgContainer,
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+
+            pointData.bbox = bbox[0];
         }
 
         if(selection.buttons && selection.distance < 5) {
@@ -109614,7 +110055,7 @@ proto.make4thDimension = function() {
 
 module.exports = Scene;
 
-},{"../../components/fx":458,"../../lib":549,"../../lib/show_no_webgl_msg":570,"../../lib/str2rgbarray":572,"../../plots/cartesian/axes":597,"../../registry":645,"./layout/convert":632,"./layout/spikes":635,"./layout/tick_marks":636,"./project":637,"gl-plot3d":161,"has-passive-events":271,"webgl-context":381}],639:[function(_dereq_,module,exports){
+},{"../../components/fx":441,"../../lib":534,"../../lib/show_no_webgl_msg":555,"../../lib/str2rgbarray":558,"../../plots/cartesian/axes":583,"../../registry":632,"./layout/convert":619,"./layout/spikes":622,"./layout/tick_marks":623,"./project":624,"gl-plot3d":155,"has-passive-events":264,"webgl-context":364}],626:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function zip3(x, y, z, len) {
@@ -109627,7 +110068,7 @@ module.exports = function zip3(x, y, z, len) {
     return result;
 };
 
-},{}],640:[function(_dereq_,module,exports){
+},{}],627:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
@@ -109830,31 +110271,6 @@ module.exports = {
         valType: 'any',
         editType: 'calc',
     },
-    modebar: {
-        orientation: {
-            valType: 'enumerated',
-            values: ['v', 'h'],
-            dflt: 'h',
-            editType: 'modebar',
-        },
-        bgcolor: {
-            valType: 'color',
-            editType: 'modebar',
-        },
-        color: {
-            valType: 'color',
-            editType: 'modebar',
-        },
-        activecolor: {
-            valType: 'color',
-            editType: 'modebar',
-        },
-        uirevision: {
-            valType: 'any',
-            editType: 'none',
-        },
-        editType: 'modebar'
-    },
 
     newshape: drawNewShapeAttrs.newshape,
     activeshape: drawNewShapeAttrs.activeshape,
@@ -109879,7 +110295,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":417,"../components/shapes/draw_newshape/attributes":500,"../lib/extend":542,"./animation_attributes":591,"./font_attributes":625,"./pad_attributes":641}],641:[function(_dereq_,module,exports){
+},{"../components/color/attributes":400,"../components/shapes/draw_newshape/attributes":486,"../lib/extend":527,"./animation_attributes":577,"./font_attributes":612,"./pad_attributes":628}],628:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -109918,11 +110334,12 @@ module.exports = function(opts) {
     };
 };
 
-},{}],642:[function(_dereq_,module,exports){
+},{}],629:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
 var timeFormatLocale = _dereq_('d3-time-format').timeFormatLocale;
+var formatLocale = _dereq_('d3-format').formatLocale;
 var isNumeric = _dereq_('fast-isnumeric');
 
 var Registry = _dereq_('../registry');
@@ -109972,6 +110389,7 @@ plots.redrawText = function(gd) {
 
     return new Promise(function(resolve) {
         setTimeout(function() {
+            if(!gd._fullLayout) return;
             Registry.getComponentMethod('annotations', 'draw')(gd);
             Registry.getComponentMethod('legend', 'draw')(gd);
             Registry.getComponentMethod('colorbar', 'draw')(gd);
@@ -110622,7 +111040,18 @@ function getFormatter(formatObj, separators) {
     formatObj.thousands = separators.charAt(1);
 
     return {
-        numberFormat: d3.locale(formatObj).numberFormat,
+        numberFormat: function(formatStr) {
+            try {
+                formatStr = formatLocale(formatObj).format(
+                    Lib.adjustFormat(formatStr)
+                );
+            } catch(e) {
+                Lib.warnBadFormat(formatStr);
+                return Lib.noFormat;
+            }
+
+            return formatStr;
+        },
         timeFormat: timeFormatLocale(formatObj).utcFormat
     };
 }
@@ -111229,6 +111658,14 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
+            var titleText = coerce('legendgrouptitle.text');
+            if(titleText) {
+                Lib.coerceFont(coerce, 'legendgrouptitle.font', Lib.extendFlat({}, layout.font, {
+                    size: Math.round(layout.font.size * 1.1) // default to larger font size
+                }));
+            }
+
+            coerce('legendrank');
 
             traceOut._dfltShowLegend = true;
         } else {
@@ -111437,12 +111874,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('editrevision', uirevision);
     coerce('selectionrevision', uirevision);
 
-    coerce('modebar.orientation');
-    coerce('modebar.bgcolor', Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
-    var modebarDefaultColor = Color.contrast(Color.rgb(layoutOut.modebar.bgcolor));
-    coerce('modebar.color', Color.addOpacity(modebarDefaultColor, 0.3));
-    coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
-    coerce('modebar.uirevision', uirevision);
+    Registry.getComponentMethod(
+        'modebar',
+        'supplyLayoutDefaults'
+    )(layoutIn, layoutOut);
 
     Registry.getComponentMethod(
         'shapes',
@@ -111996,17 +112431,21 @@ plots.doAutoMargin = function(gd) {
         }
     }
 
-    hideOutOfRangeInsideTickLabels(gd);
+    refineTicks(gd);
 };
 
-function hideOutOfRangeInsideTickLabels(gd) {
+function refineTicks(gd) {
     var axList = axisIDs.list(gd, '', true);
-    for(var i = 0; i < axList.length; i++) {
-        var ax = axList[i];
 
-        var hideFn = ax._hideOutOfRangeInsideTickLabels;
-        if(hideFn) hideFn();
-    }
+    [
+        '_adjustTickLabelsOverflow',
+        '_hideCounterAxisInsideTickLabels'
+    ].forEach(function(k) {
+        for(var i = 0; i < axList.length; i++) {
+            var hideFn = axList[i][k];
+            if(hideFn) hideFn();
+        }
+    });
 }
 
 var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];
@@ -112641,6 +113080,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionAxes() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 if(basePlotModules[j].transitionAxes) {
                     basePlotModules[j].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
@@ -112649,6 +113089,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionTraces() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
             }
@@ -112843,10 +113284,11 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies / sunbursts / treemap / funnelarea (and for legend)
+    // for sharing colors across pies / sunbursts / treemap / icicle / funnelarea (and for legend)
     fullLayout._piecolormap = {};
     fullLayout._sunburstcolormap = {};
     fullLayout._treemapcolormap = {};
+    fullLayout._iciclecolormap = {};
     fullLayout._funnelareacolormap = {};
 
     // If traces were specified and this trace was not included,
@@ -113318,7 +113760,7 @@ plots.cleanBasePlot = function(desiredType, newFullData, newFullLayout, oldFullD
     }
 };
 
-},{"../components/color":418,"../constants/numerical":527,"../lib":549,"../plot_api/plot_schema":585,"../plot_api/plot_template":586,"../plots/get_data":627,"../registry":645,"./animation_attributes":591,"./attributes":593,"./cartesian/axis_ids":600,"./cartesian/handle_outline":607,"./command":623,"./font_attributes":625,"./frame_attributes":626,"./layout_attributes":640,"@plotly/d3":18,"d3-time-format":87,"fast-isnumeric":96}],643:[function(_dereq_,module,exports){
+},{"../components/color":401,"../constants/numerical":513,"../lib":534,"../plot_api/plot_schema":571,"../plot_api/plot_template":572,"../plots/get_data":614,"../registry":632,"./animation_attributes":577,"./attributes":579,"./cartesian/axis_ids":587,"./cartesian/handle_outline":594,"./command":610,"./font_attributes":612,"./frame_attributes":613,"./layout_attributes":627,"@plotly/d3":17,"d3-format":83,"d3-time-format":84,"fast-isnumeric":94}],630:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -113394,21 +113836,31 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     }
 };
 
-},{"../lib":549,"../plot_api/plot_template":586,"./domain":624}],644:[function(_dereq_,module,exports){
+},{"../lib":534,"../plot_api/plot_template":572,"./domain":611}],631:[function(_dereq_,module,exports){
 'use strict';
 
-var FORMAT_LINK = _dereq_('../constants/docs').FORMAT_LINK;
-var DATE_FORMAT_LINK = _dereq_('../constants/docs').DATE_FORMAT_LINK;
+var docs = _dereq_('../constants/docs');
+var FORMAT_LINK = docs.FORMAT_LINK;
+var DATE_FORMAT_LINK = docs.DATE_FORMAT_LINK;
 
-var templateFormatStringDescription = [
-    'Variables are inserted using %{variable}, for example "y: %{y}".',
-    'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
-    FORMAT_LINK,
-    'for details on the formatting syntax.',
-    'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".',
-    DATE_FORMAT_LINK,
-    'for details on the date formatting syntax.'
-].join(' ');
+function templateFormatStringDescription(opts) {
+    var supportOther = opts && opts.supportOther;
+
+    return [
+        'Variables are inserted using %{variable},',
+        'for example "y: %{y}"' + (
+            supportOther ?
+                ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.' :
+                '.'
+        ),
+        'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".',
+        FORMAT_LINK,
+        'for details on the formatting syntax.',
+        'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".',
+        DATE_FORMAT_LINK,
+        'for details on the date formatting syntax.'
+    ].join(' ');
+}
 
 function describeVariables(extra) {
     var descPart = extra.description ? ' ' + extra.description : '';
@@ -113465,7 +113917,7 @@ exports.texttemplateAttrs = function(opts, extra) {
     return texttemplate;
 };
 
-},{"../constants/docs":522}],645:[function(_dereq_,module,exports){
+},{"../constants/docs":508}],632:[function(_dereq_,module,exports){
 'use strict';
 
 var Loggers = _dereq_('./lib/loggers');
@@ -113923,7 +114375,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib/dom":540,"./lib/extend":542,"./lib/is_plain_object":550,"./lib/loggers":553,"./lib/noop":558,"./lib/push_unique":563,"./plots/attributes":593,"./plots/layout_attributes":640}],646:[function(_dereq_,module,exports){
+},{"./lib/dom":525,"./lib/extend":527,"./lib/is_plain_object":535,"./lib/loggers":538,"./lib/noop":543,"./lib/push_unique":548,"./plots/attributes":579,"./plots/layout_attributes":627}],633:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -114083,7 +114535,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":549,"../registry":645}],647:[function(_dereq_,module,exports){
+},{"../lib":534,"../registry":632}],634:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -114147,7 +114599,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":549,"../plot_api/to_image":589,"./filesaver":648,"./helpers":649}],648:[function(_dereq_,module,exports){
+},{"../lib":534,"../plot_api/to_image":575,"./filesaver":635,"./helpers":636}],635:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -114172,13 +114624,6 @@ function fileSaver(url, name, format) {
     var promise = new Promise(function(resolve, reject) {
         var blob;
         var objectUrl;
-
-        // Safari doesn't allow downloading of blob urls
-        if(Lib.isSafari()) {
-            var prefix = format === 'svg' ? ',' : ';base64,';
-            helpers.octetStream(prefix + encodeURIComponent(url));
-            return resolve(name);
-        }
 
         // IE 10+ (native saveAs)
         if(Lib.isIE()) {
@@ -114206,6 +114651,13 @@ function fileSaver(url, name, format) {
             return resolve(name);
         }
 
+        // Older versions of Safari did not allow downloading of blob urls
+        if(Lib.isSafari()) {
+            var prefix = format === 'svg' ? ',' : ';base64,';
+            helpers.octetStream(prefix + encodeURIComponent(url));
+            return resolve(name);
+        }
+
         reject(new Error('download error'));
     });
 
@@ -114215,7 +114667,7 @@ function fileSaver(url, name, format) {
 
 module.exports = fileSaver;
 
-},{"../lib":549,"./helpers":649}],649:[function(_dereq_,module,exports){
+},{"../lib":534,"./helpers":636}],636:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -114284,7 +114736,7 @@ exports.IMAGE_URL_PREFIX = /^data:image\/\w+;base64,/;
 
 exports.MSG_IE_BAD_FORMAT = 'Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.';
 
-},{"../registry":645}],650:[function(_dereq_,module,exports){
+},{"../registry":632}],637:[function(_dereq_,module,exports){
 'use strict';
 
 var helpers = _dereq_('./helpers');
@@ -114301,7 +114753,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":646,"./download":647,"./helpers":649,"./svgtoimg":651,"./toimage":652,"./tosvg":653}],651:[function(_dereq_,module,exports){
+},{"./cloneplot":633,"./download":634,"./helpers":636,"./svgtoimg":638,"./toimage":639,"./tosvg":640}],638:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -114420,7 +114872,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":549,"./helpers":649,"events":55}],652:[function(_dereq_,module,exports){
+},{"../lib":534,"./helpers":636,"events":54}],639:[function(_dereq_,module,exports){
 'use strict';
 
 var EventEmitter = _dereq_('events').EventEmitter;
@@ -114489,7 +114941,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":549,"../registry":645,"./cloneplot":646,"./helpers":649,"./svgtoimg":651,"./tosvg":653,"events":55}],653:[function(_dereq_,module,exports){
+},{"../lib":534,"../registry":632,"./cloneplot":633,"./helpers":636,"./svgtoimg":638,"./tosvg":640,"events":54}],640:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -114525,7 +114977,7 @@ module.exports = function toSVG(gd, format, scale) {
     var toppaper = fullLayout._toppaper;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var i;
+    var i, k;
 
     // make background color a rect in the svg, then revert after scraping
     // all other alterations have been dealt with by properly preparing the svg
@@ -114598,28 +115050,31 @@ module.exports = function toSVG(gd, format, scale) {
             }
         });
 
-
+    var queryParts = [];
     if(fullLayout._gradientUrlQueryParts) {
-        var queryParts = [];
-        for(var k in fullLayout._gradientUrlQueryParts) queryParts.push(k);
+        for(k in fullLayout._gradientUrlQueryParts) queryParts.push(k);
+    }
 
-        if(queryParts.length) {
-            svg.selectAll(queryParts.join(',')).each(function() {
-                var pt = d3.select(this);
+    if(fullLayout._patternUrlQueryParts) {
+        for(k in fullLayout._patternUrlQueryParts) queryParts.push(k);
+    }
 
-                // similar to font family styles above,
-                // we must remove " after the SVG DOM has been serialized
-                var fill = this.style.fill;
-                if(fill && fill.indexOf('url(') !== -1) {
-                    pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
-                }
+    if(queryParts.length) {
+        svg.selectAll(queryParts.join(',')).each(function() {
+            var pt = d3.select(this);
 
-                var stroke = this.style.stroke;
-                if(stroke && stroke.indexOf('url(') !== -1) {
-                    pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
-                }
-            });
-        }
+            // similar to font family styles above,
+            // we must remove " after the SVG DOM has been serialized
+            var fill = this.style.fill;
+            if(fill && fill.indexOf('url(') !== -1) {
+                pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+            }
+
+            var stroke = this.style.stroke;
+            if(stroke && stroke.indexOf('url(') !== -1) {
+                pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+            }
+        });
     }
 
     if(format === 'pdf' || format === 'eps') {
@@ -114671,10 +115126,11 @@ module.exports = function toSVG(gd, format, scale) {
     return s;
 };
 
-},{"../components/color":418,"../components/drawing":440,"../constants/xmlns_namespaces":528,"../lib":549,"@plotly/d3":18}],654:[function(_dereq_,module,exports){
+},{"../components/color":401,"../components/drawing":423,"../constants/xmlns_namespaces":514,"../lib":534,"@plotly/d3":17}],641:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
 var mesh3dAttrs = _dereq_('../mesh3d/attributes');
 var baseAttrs = _dereq_('../../plots/attributes');
@@ -114782,6 +115238,13 @@ var attrs = {
     },
 
     hovertemplate: hovertemplateAttrs({editType: 'calc'}, {keys: ['norm']}),
+    uhoverformat: axisHoverFormat('u', 1),
+    vhoverformat: axisHoverFormat('v', 1),
+    whoverformat: axisHoverFormat('w', 1),
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 };
 
@@ -114807,7 +115270,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorscale/attributes":425,"../../lib/extend":542,"../../plots/attributes":593,"../../plots/template_attributes":644,"../mesh3d/attributes":666}],655:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":408,"../../lib/extend":527,"../../plots/attributes":579,"../../plots/cartesian/axis_format_attributes":586,"../../plots/template_attributes":631,"../mesh3d/attributes":653}],642:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -114843,7 +115306,7 @@ module.exports = function calc(gd, trace) {
     });
 };
 
-},{"../../components/colorscale/calc":426}],656:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":409}],643:[function(_dereq_,module,exports){
 'use strict';
 
 var conePlot = _dereq_('gl-cone3d');
@@ -114982,7 +115445,7 @@ function createConeTrace(scene, data) {
 
 module.exports = createConeTrace;
 
-},{"../../components/colorscale":430,"../../lib":549,"../../lib/gl_format_color":546,"../../plots/gl3d/zip3":639,"gl-cone3d":112}],657:[function(_dereq_,module,exports){
+},{"../../components/colorscale":413,"../../lib":534,"../../lib/gl_format_color":531,"../../plots/gl3d/zip3":626,"gl-cone3d":107}],644:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -115030,12 +115493,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('uhoverformat');
+    coerce('vhoverformat');
+    coerce('whoverformat');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('zhoverformat');
 
     // disable 1D transforms (for now)
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":428,"../../lib":549,"./attributes":654}],658:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":411,"../../lib":534,"./attributes":641}],645:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -115061,7 +115530,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":628,"./attributes":654,"./calc":655,"./convert":656,"./defaults":657}],659:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":615,"./attributes":641,"./calc":642,"./convert":643,"./defaults":644}],646:[function(_dereq_,module,exports){
 'use strict';
 
 var maxRowLength = _dereq_('../../lib').maxRowLength;
@@ -115158,7 +115627,7 @@ module.exports = function findEmpties(z) {
     return empties.sort(function(a, b) { return b[2] - a[2]; });
 };
 
-},{"../../lib":549}],660:[function(_dereq_,module,exports){
+},{"../../lib":534}],647:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -115283,10 +115752,11 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../lib":549}],661:[function(_dereq_,module,exports){
+},{"../../lib":534}],648:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
 var meshAttrs = _dereq_('../mesh3d/attributes');
 var baseAttrs = _dereq_('../../plots/attributes');
@@ -115408,6 +115878,11 @@ var attrs = module.exports = overrideAll(extendFlat({
         arrayOk: true,
     },
     hovertemplate: hovertemplateAttrs(),
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+    valuehoverformat: axisHoverFormat('value', 1),
+
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 },
 
@@ -115431,7 +115906,7 @@ attrs.flatshading.dflt = true; attrs.lighting.facenormalsepsilon.dflt = 0;
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/colorscale/attributes":425,"../../lib/extend":542,"../../plot_api/edit_types":579,"../../plots/attributes":593,"../../plots/template_attributes":644,"../mesh3d/attributes":666}],662:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":408,"../../lib/extend":527,"../../plot_api/edit_types":565,"../../plots/attributes":579,"../../plots/cartesian/axis_format_attributes":586,"../../plots/template_attributes":631,"../mesh3d/attributes":653}],649:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -115478,7 +115953,7 @@ module.exports = function calc(gd, trace) {
     });
 };
 
-},{"../../components/colorscale/calc":426,"../streamtube/calc":709}],663:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":409,"../streamtube/calc":696}],650:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('gl-mesh3d');
@@ -116526,7 +117001,7 @@ module.exports = {
     createIsosurfaceTrace: createIsosurfaceTrace,
 };
 
-},{"../../components/colorscale":430,"../../lib/gl_format_color":546,"../../lib/str2rgbarray":572,"../../plots/gl3d/zip3":639,"gl-mesh3d":157}],664:[function(_dereq_,module,exports){
+},{"../../components/colorscale":413,"../../lib/gl_format_color":531,"../../lib/str2rgbarray":558,"../../plots/gl3d/zip3":626,"gl-mesh3d":152}],651:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -116572,7 +117047,10 @@ function supplyIsoDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var handleCalendarDefaults = Registry.getComponentMethod('calendars', 'handleTraceDefaults');
     handleCalendarDefaults(traceIn, traceOut, ['x', 'y', 'z'], layout);
 
+    coerce('valuehoverformat');
     ['x', 'y', 'z'].forEach(function(dim) {
+        coerce(dim + 'hoverformat');
+
         var capDim = 'caps.' + dim;
         var showCap = coerce(capDim + '.show');
         if(showCap) {
@@ -116635,7 +117113,7 @@ module.exports = {
     supplyIsoDefaults: supplyIsoDefaults
 };
 
-},{"../../components/colorscale/defaults":428,"../../lib":549,"../../registry":645,"./attributes":661}],665:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":411,"../../lib":534,"../../registry":632,"./attributes":648}],652:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -116656,10 +117134,11 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":628,"./attributes":661,"./calc":662,"./convert":663,"./defaults":664}],666:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":615,"./attributes":648,"./calc":649,"./convert":650,"./defaults":651}],653:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
 var surfaceAttrs = _dereq_('../surface/attributes');
 var baseAttrs = _dereq_('../../plots/attributes');
@@ -116708,6 +117187,10 @@ module.exports = extendFlat({
         editType: 'calc',
     },
     hovertemplate: hovertemplateAttrs({editType: 'calc'}),
+
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
 
     delaunayaxis: {
         valType: 'enumerated',
@@ -116799,7 +117282,7 @@ colorScaleAttrs('', {
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 });
 
-},{"../../components/colorscale/attributes":425,"../../lib/extend":542,"../../plots/attributes":593,"../../plots/template_attributes":644,"../surface/attributes":713}],667:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":408,"../../lib/extend":527,"../../plots/attributes":579,"../../plots/cartesian/axis_format_attributes":586,"../../plots/template_attributes":631,"../surface/attributes":700}],654:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -116814,7 +117297,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":426}],668:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":409}],655:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('gl-mesh3d');
@@ -117009,7 +117492,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../components/colorscale":430,"../../lib/gl_format_color":546,"../../lib/str2rgbarray":572,"../../plots/gl3d/zip3":639,"alpha-shape":23,"convex-hull":79,"delaunay-triangulate":90,"gl-mesh3d":157}],669:[function(_dereq_,module,exports){
+},{"../../components/colorscale":413,"../../lib/gl_format_color":531,"../../lib/str2rgbarray":558,"../../plots/gl3d/zip3":626,"alpha-shape":22,"convex-hull":78,"delaunay-triangulate":88,"gl-mesh3d":152}],656:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -117095,6 +117578,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('zhoverformat');
 
     // disable 1D transforms
     // x/y/z should match lengths, and i/j/k should match as well, but
@@ -117102,7 +117588,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":428,"../../lib":549,"../../registry":645,"./attributes":666}],670:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":411,"../../lib":534,"../../registry":632,"./attributes":653}],657:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -117123,7 +117609,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":628,"./attributes":666,"./calc":667,"./convert":668,"./defaults":669}],671:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":615,"./attributes":653,"./calc":654,"./convert":655,"./defaults":656}],658:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -117163,7 +117649,7 @@ exports.getRotationAngle = function(rotation) {
     return (rotation === 'auto' ? 0 : rotation) * Math.PI / 180;
 };
 
-},{"../../lib":549}],672:[function(_dereq_,module,exports){
+},{"../../lib":534}],659:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -117179,7 +117665,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":418,"./helpers":671}],673:[function(_dereq_,module,exports){
+},{"../../components/color":401,"./helpers":658}],660:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -117222,9 +117708,10 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":549}],674:[function(_dereq_,module,exports){
+},{"../../lib":534}],661:[function(_dereq_,module,exports){
 'use strict';
 
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var texttemplateAttrs = _dereq_('../../plots/template_attributes').texttemplateAttrs;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -117304,6 +117791,8 @@ module.exports = {
     yperiod0: axisPeriod0('y0'),
     xperiodalignment: axisPeriodAlignment('x'),
     yperiodalignment: axisPeriodAlignment('y'),
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
 
     stackgroup: {
         valType: 'string',
@@ -117358,6 +117847,7 @@ module.exports = {
     hovertemplate: hovertemplateAttrs({}, {
         keys: constants.eventDataKeys
     }),
+
     line: {
         color: {
             valType: 'color',
@@ -117568,7 +118058,7 @@ module.exports = {
     }),
 };
 
-},{"../../components/colorscale/attributes":425,"../../components/drawing":440,"../../components/drawing/attributes":439,"../../lib/extend":542,"../../plots/font_attributes":625,"../../plots/template_attributes":644,"./constants":678}],675:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":408,"../../components/drawing":423,"../../components/drawing/attributes":422,"../../lib/extend":527,"../../plots/cartesian/axis_format_attributes":586,"../../plots/font_attributes":612,"../../plots/template_attributes":631,"./constants":665}],662:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -117589,8 +118079,10 @@ function calc(gd, trace) {
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
-    var x = alignPeriod(trace, xa, 'x', origX);
-    var y = alignPeriod(trace, ya, 'y', origY);
+    var xObj = alignPeriod(trace, xa, 'x', origX);
+    var yObj = alignPeriod(trace, ya, 'y', origY);
+    var x = xObj.vals;
+    var y = yObj.vals;
 
     var serieslen = trace._length;
     var cd = new Array(serieslen);
@@ -117635,9 +118127,13 @@ function calc(gd, trace) {
 
             if(hasPeriodX) {
                 cdi.orig_x = origX[i]; // used by hover
+                cdi.xEnd = xObj.ends[i];
+                cdi.xStart = xObj.starts[i];
             }
             if(hasPeriodY) {
                 cdi.orig_y = origY[i]; // used by hover
+                cdi.yEnd = yObj.ends[i];
+                cdi.yStart = yObj.starts[i];
             }
         } else if(stackGroupOpts && (isV ? xValid : yValid)) {
             // if we're stacking we need to hold on to all valid positions
@@ -117859,7 +118355,7 @@ module.exports = {
     getStackOpts: getStackOpts
 };
 
-},{"../../constants/numerical":527,"../../lib":549,"../../plots/cartesian/align_period":594,"../../plots/cartesian/axes":597,"./arrays_to_calcdata":673,"./calc_selection":676,"./colorscale_calc":677,"./subtypes":699,"fast-isnumeric":96}],676:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534,"../../plots/cartesian/align_period":580,"../../plots/cartesian/axes":583,"./arrays_to_calcdata":660,"./calc_selection":663,"./colorscale_calc":664,"./subtypes":686,"fast-isnumeric":94}],663:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -117870,7 +118366,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":549}],677:[function(_dereq_,module,exports){
+},{"../../lib":534}],664:[function(_dereq_,module,exports){
 'use strict';
 
 var hasColorscale = _dereq_('../../components/colorscale/helpers').hasColorscale;
@@ -117905,7 +118401,7 @@ module.exports = function calcMarkerColorscale(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":426,"../../components/colorscale/helpers":429,"./subtypes":699}],678:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":409,"../../components/colorscale/helpers":412,"./subtypes":686}],665:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -117925,7 +118421,7 @@ module.exports = {
     eventDataKeys: []
 };
 
-},{}],679:[function(_dereq_,module,exports){
+},{}],666:[function(_dereq_,module,exports){
 'use strict';
 
 var calc = _dereq_('./calc');
@@ -118097,7 +118593,7 @@ function getInterp(calcTrace, index, position, posAttr) {
     return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
 }
 
-},{"./calc":675}],680:[function(_dereq_,module,exports){
+},{"./calc":662}],667:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -118127,7 +118623,7 @@ module.exports = function crossTraceDefaults(fullData) {
     }
 };
 
-},{}],681:[function(_dereq_,module,exports){
+},{}],668:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -118156,6 +118652,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(!traceOut.visible) return;
 
     handlePeriodDefaults(traceIn, traceOut, layout, coerce);
+    coerce('xhoverformat');
+    coerce('yhoverformat');
 
     var stackGroupOpts = handleStackDefaults(traceIn, traceOut, layout, coerce);
 
@@ -118212,7 +118710,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":549,"../../registry":645,"./attributes":674,"./constants":678,"./fillcolor_defaults":682,"./line_defaults":687,"./line_shape_defaults":689,"./marker_defaults":693,"./period_defaults":694,"./stack_defaults":697,"./subtypes":699,"./text_defaults":700,"./xy_defaults":701}],682:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632,"./attributes":661,"./constants":665,"./fillcolor_defaults":669,"./line_defaults":674,"./line_shape_defaults":676,"./marker_defaults":680,"./period_defaults":681,"./stack_defaults":684,"./subtypes":686,"./text_defaults":687,"./xy_defaults":688}],669:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -118240,7 +118738,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":418,"../../lib":549}],683:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../lib":534}],670:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../../plots/cartesian/axes');
@@ -118252,13 +118750,13 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     var xa = Axes.getFromTrace(mockGd, trace, 'x');
     var ya = Axes.getFromTrace(mockGd, trace, 'y');
 
-    labels.xLabel = Axes.tickText(xa, cdi.x, true).text;
-    labels.yLabel = Axes.tickText(ya, cdi.y, true).text;
+    labels.xLabel = Axes.tickText(xa, xa.c2l(cdi.x), true).text;
+    labels.yLabel = Axes.tickText(ya, ya.c2l(cdi.y), true).text;
 
     return labels;
 };
 
-},{"../../plots/cartesian/axes":597}],684:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axes":583}],671:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -118298,7 +118796,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":418,"./subtypes":699}],685:[function(_dereq_,module,exports){
+},{"../../components/color":401,"./subtypes":686}],672:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -118319,30 +118817,54 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var hoveron = trace.hoveron || '';
     var minRad = (trace.mode.indexOf('markers') !== -1) ? 3 : 0.5;
 
+    var xPeriod = !!trace.xperiodalignment;
+    var yPeriod = !!trace.yperiodalignment;
+
     // look for points to hover on first, then take fills only if we
     // didn't find a point
+
     if(hoveron.indexOf('points') !== -1) {
+        // dx and dy are used in compare modes - here we want to always
+        // prioritize the closest data point, at least as long as markers are
+        // the same size or nonexistent, but still try to prioritize small markers too.
         var dx = function(di) {
-            // dx and dy are used in compare modes - here we want to always
-            // prioritize the closest data point, at least as long as markers are
-            // the same size or nonexistent, but still try to prioritize small markers too.
+            if(xPeriod) {
+                var x0 = xa.c2p(di.xStart);
+                var x1 = xa.c2p(di.xEnd);
+
+                return (
+                    xpx >= Math.min(x0, x1) &&
+                    xpx <= Math.max(x0, x1)
+                ) ? 0 : Infinity;
+            }
+
             var rad = Math.max(3, di.mrc || 0);
             var kink = 1 - 1 / rad;
             var dxRaw = Math.abs(xa.c2p(di.x) - xpx);
-            var d = (dxRaw < rad) ? (kink * dxRaw / rad) : (dxRaw - rad + kink);
-            return d;
+            return (dxRaw < rad) ? (kink * dxRaw / rad) : (dxRaw - rad + kink);
         };
         var dy = function(di) {
+            if(yPeriod) {
+                var y0 = ya.c2p(di.yStart);
+                var y1 = ya.c2p(di.yEnd);
+
+                return (
+                    ypx >= Math.min(y0, y1) &&
+                    ypx <= Math.max(y0, y1)
+                ) ? 0 : Infinity;
+            }
+
             var rad = Math.max(3, di.mrc || 0);
             var kink = 1 - 1 / rad;
             var dyRaw = Math.abs(ya.c2p(di.y) - ypx);
             return (dyRaw < rad) ? (kink * dyRaw / rad) : (dyRaw - rad + kink);
         };
+
+        // scatter points: d.mrc is the calculated marker radius
+        // adjust the distance so if you're inside the marker it
+        // always will show up regardless of point size, but
+        // prioritize smaller points
         var dxy = function(di) {
-            // scatter points: d.mrc is the calculated marker radius
-            // adjust the distance so if you're inside the marker it
-            // always will show up regardless of point size, but
-            // prioritize smaller points
             var rad = Math.max(minRad, di.mrc || 0);
             var dx = xa.c2p(di.x) - xpx;
             var dy = ya.c2p(di.y) - ypx;
@@ -118485,7 +119007,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":418,"../../components/fx":458,"../../lib":549,"../../registry":645,"./get_trace_color":684}],686:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../components/fx":441,"../../lib":534,"../../registry":632,"./get_trace_color":671}],673:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -118522,7 +119044,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian":610,"./arrays_to_calcdata":673,"./attributes":674,"./calc":675,"./cross_trace_calc":679,"./cross_trace_defaults":680,"./defaults":681,"./format_labels":683,"./hover":685,"./marker_colorbar":692,"./plot":695,"./select":696,"./style":698,"./subtypes":699}],687:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":597,"./arrays_to_calcdata":660,"./attributes":661,"./calc":662,"./cross_trace_calc":666,"./cross_trace_defaults":667,"./defaults":668,"./format_labels":670,"./hover":672,"./marker_colorbar":679,"./plot":682,"./select":683,"./style":685,"./subtypes":686}],674:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
@@ -118545,7 +119067,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":428,"../../components/colorscale/helpers":429,"../../lib":549}],688:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":411,"../../components/colorscale/helpers":412,"../../lib":534}],675:[function(_dereq_,module,exports){
 'use strict';
 
 var numConstants = _dereq_('../../constants/numerical');
@@ -118997,7 +119519,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":527,"../../lib":549,"./constants":678}],689:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534,"./constants":665}],676:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -119007,7 +119529,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],690:[function(_dereq_,module,exports){
+},{}],677:[function(_dereq_,module,exports){
 'use strict';
 
 var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
@@ -119089,7 +119611,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     return cdscatterSorted;
 };
 
-},{}],691:[function(_dereq_,module,exports){
+},{}],678:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -119097,7 +119619,10 @@ var isNumeric = _dereq_('fast-isnumeric');
 
 // used in the drawing step for 'scatter' and 'scattegeo' and
 // in the convert step for 'scatter3d'
-module.exports = function makeBubbleSizeFn(trace) {
+module.exports = function makeBubbleSizeFn(trace, factor) {
+    if(!factor) {
+        factor = 2;
+    }
     var marker = trace.marker;
     var sizeRef = marker.sizeref || 1;
     var sizeMin = marker.sizemin || 0;
@@ -119113,7 +119638,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     // TODO add support for position/negative bubbles?
     // TODO add 'sizeoffset' attribute?
     return function(v) {
-        var baseSize = baseFn(v / 2);
+        var baseSize = baseFn(v / factor);
 
         // don't show non-numeric and negative sizes
         return (isNumeric(baseSize) && (baseSize > 0)) ?
@@ -119122,7 +119647,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":96}],692:[function(_dereq_,module,exports){
+},{"fast-isnumeric":94}],679:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -119131,7 +119656,7 @@ module.exports = {
     max: 'cmax'
 };
 
-},{}],693:[function(_dereq_,module,exports){
+},{}],680:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -119204,7 +119729,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":418,"../../components/colorscale/defaults":428,"../../components/colorscale/helpers":429,"./subtypes":699}],694:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../components/colorscale/defaults":411,"../../components/colorscale/helpers":412,"./subtypes":686}],681:[function(_dereq_,module,exports){
 'use strict';
 
 var dateTick0 = _dereq_('../../lib').dateTick0;
@@ -119243,7 +119768,7 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     }
 };
 
-},{"../../constants/numerical":527,"../../lib":549}],695:[function(_dereq_,module,exports){
+},{"../../constants/numerical":513,"../../lib":534}],682:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -119795,7 +120320,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":440,"../../lib":549,"../../lib/polygon":561,"../../registry":645,"./line_points":688,"./link_traces":690,"./subtypes":699,"@plotly/d3":18}],696:[function(_dereq_,module,exports){
+},{"../../components/drawing":423,"../../lib":534,"../../lib/polygon":546,"../../registry":632,"./line_points":675,"./link_traces":677,"./subtypes":686,"@plotly/d3":17}],683:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -119840,7 +120365,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"./subtypes":699}],697:[function(_dereq_,module,exports){
+},{"./subtypes":686}],684:[function(_dereq_,module,exports){
 'use strict';
 
 var perStackAttrs = ['orientation', 'groupnorm', 'stackgaps'];
@@ -119937,7 +120462,7 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
     }
 };
 
-},{}],698:[function(_dereq_,module,exports){
+},{}],685:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -119999,7 +120524,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/drawing":440,"../../registry":645,"@plotly/d3":18}],699:[function(_dereq_,module,exports){
+},{"../../components/drawing":423,"../../registry":632,"@plotly/d3":17}],686:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -120029,7 +120554,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":549}],700:[function(_dereq_,module,exports){
+},{"../../lib":534}],687:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -120050,7 +120575,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":549}],701:[function(_dereq_,module,exports){
+},{"../../lib":534}],688:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -120086,11 +120611,12 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../lib":549,"../../registry":645}],702:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632}],689:[function(_dereq_,module,exports){
 'use strict';
 
 var scatterAttrs = _dereq_('../scatter/attributes');
 var colorAttributes = _dereq_('../../components/colorscale/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = _dereq_('../../plots/template_attributes').texttemplateAttrs;
 var baseAttrs = _dereq_('../../plots/attributes');
@@ -120099,6 +120625,7 @@ var DASHES = _dereq_('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = _dereq_('../../constants/gl3d_markers');
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
 var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var sortObjectKeys = _dereq_('../../lib/sort_object_keys');
 
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -120108,7 +120635,7 @@ var lineAttrs = extendFlat({
     width: scatterLineAttrs.width,
     dash: {
         valType: 'enumerated',
-        values: Object.keys(DASHES),
+        values: sortObjectKeys(DASHES),
         dflt: 'solid',
     }
 }, colorAttributes('line'));
@@ -120150,6 +120677,10 @@ var attrs = module.exports = overrideAll({
     }),
     hovertemplate: hovertemplateAttrs(),
 
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
     surfaceaxis: {
@@ -120172,7 +120703,7 @@ var attrs = module.exports = overrideAll({
     marker: extendFlat({  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
-            values: Object.keys(MARKER_SYMBOLS),
+            values: sortObjectKeys(MARKER_SYMBOLS),
             dflt: 'circle',
             arrayOk: true,
         },
@@ -120206,7 +120737,7 @@ var attrs = module.exports = overrideAll({
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 
-},{"../../components/colorscale/attributes":425,"../../constants/gl3d_dashes":524,"../../constants/gl3d_markers":525,"../../lib/extend":542,"../../plot_api/edit_types":579,"../../plots/attributes":593,"../../plots/template_attributes":644,"../scatter/attributes":674}],703:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":408,"../../constants/gl3d_dashes":510,"../../constants/gl3d_markers":511,"../../lib/extend":527,"../../lib/sort_object_keys":556,"../../plot_api/edit_types":565,"../../plots/attributes":579,"../../plots/cartesian/axis_format_attributes":586,"../../plots/template_attributes":631,"../scatter/attributes":661}],690:[function(_dereq_,module,exports){
 'use strict';
 
 var arraysToCalcdata = _dereq_('../scatter/arrays_to_calcdata');
@@ -120226,7 +120757,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":673,"../scatter/colorscale_calc":677}],704:[function(_dereq_,module,exports){
+},{"../scatter/arrays_to_calcdata":660,"../scatter/colorscale_calc":664}],691:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -120305,7 +120836,7 @@ function calculateErrors(data, scaleFactor, sceneLayout) {
 
 module.exports = calculateErrors;
 
-},{"../../registry":645}],705:[function(_dereq_,module,exports){
+},{"../../registry":632}],692:[function(_dereq_,module,exports){
 'use strict';
 
 var createLinePlot = _dereq_('gl-line3d');
@@ -120850,7 +121381,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../components/fx/helpers":454,"../../constants/gl3d_dashes":524,"../../constants/gl3d_markers":525,"../../lib":549,"../../lib/gl_format_color":546,"../../lib/str2rgbarray":572,"../../plots/cartesian/axes":597,"../scatter/make_bubble_size_func":691,"./calc_errors":704,"delaunay-triangulate":90,"gl-error3d":117,"gl-line3d":123,"gl-mesh3d":157,"gl-scatter3d":167}],706:[function(_dereq_,module,exports){
+},{"../../components/fx/helpers":437,"../../constants/gl3d_dashes":510,"../../constants/gl3d_markers":511,"../../lib":534,"../../lib/gl_format_color":531,"../../lib/str2rgbarray":558,"../../plots/cartesian/axes":583,"../scatter/make_bubble_size_func":678,"./calc_errors":691,"delaunay-triangulate":88,"gl-error3d":112,"gl-line3d":118,"gl-mesh3d":152,"gl-scatter3d":161}],693:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -120877,6 +121408,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('zhoverformat');
+
     coerce('mode');
 
     if(subTypes.hasLines(traceOut)) {
@@ -120930,7 +121465,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     return len;
 }
 
-},{"../../lib":549,"../../registry":645,"../scatter/line_defaults":687,"../scatter/marker_defaults":693,"../scatter/subtypes":699,"../scatter/text_defaults":700,"./attributes":702}],707:[function(_dereq_,module,exports){
+},{"../../lib":534,"../../registry":632,"../scatter/line_defaults":674,"../scatter/marker_defaults":680,"../scatter/subtypes":686,"../scatter/text_defaults":687,"./attributes":689}],694:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -120959,10 +121494,11 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl3d_markers":525,"../../plots/gl3d":628,"./attributes":702,"./calc":703,"./convert":705,"./defaults":706}],708:[function(_dereq_,module,exports){
+},{"../../constants/gl3d_markers":511,"../../plots/gl3d":615,"./attributes":689,"./calc":690,"./convert":692,"./defaults":693}],695:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
 var mesh3dAttrs = _dereq_('../mesh3d/attributes');
 var baseAttrs = _dereq_('../../plots/attributes');
@@ -121059,6 +121595,13 @@ var attrs = {
             'norm', 'divergence'
         ]
     }),
+    uhoverformat: axisHoverFormat('u', 1),
+    vhoverformat: axisHoverFormat('v', 1),
+    whoverformat: axisHoverFormat('w', 1),
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 };
 
@@ -121083,7 +121626,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorscale/attributes":425,"../../lib/extend":542,"../../plots/attributes":593,"../../plots/template_attributes":644,"../mesh3d/attributes":666}],709:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":408,"../../lib/extend":527,"../../plots/attributes":579,"../../plots/cartesian/axis_format_attributes":586,"../../plots/template_attributes":631,"../mesh3d/attributes":653}],696:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -121331,7 +121874,7 @@ module.exports = {
     processGrid: processGrid
 };
 
-},{"../../components/colorscale/calc":426,"../../lib":549}],710:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":409,"../../lib":534}],697:[function(_dereq_,module,exports){
 'use strict';
 
 var tube2mesh = _dereq_('gl-streamtube3d');
@@ -121549,7 +122092,7 @@ function createStreamtubeTrace(scene, data) {
 
 module.exports = createStreamtubeTrace;
 
-},{"../../components/colorscale":430,"../../lib":549,"../../lib/gl_format_color":546,"../../plots/gl3d/zip3":639,"gl-streamtube3d":181}],711:[function(_dereq_,module,exports){
+},{"../../components/colorscale":413,"../../lib":534,"../../lib/gl_format_color":531,"../../plots/gl3d/zip3":626,"gl-streamtube3d":174}],698:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -121599,6 +122142,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('uhoverformat');
+    coerce('vhoverformat');
+    coerce('whoverformat');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('zhoverformat');
 
     // disable 1D transforms (for now)
     // x/y/z and u/v/w have matching lengths,
@@ -121606,7 +122155,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":428,"../../lib":549,"./attributes":708}],712:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":411,"../../lib":534,"./attributes":695}],699:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -121647,11 +122196,12 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":628,"./attributes":708,"./calc":709,"./convert":710,"./defaults":711}],713:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":615,"./attributes":695,"./calc":696,"./convert":697,"./defaults":698}],700:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
+var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
 var baseAttrs = _dereq_('../../plots/attributes');
 
@@ -121748,6 +122298,10 @@ var attrs = module.exports = overrideAll(extendFlat({
         arrayOk: true,
     },
     hovertemplate: hovertemplateAttrs(),
+
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
 
     connectgaps: {
         valType: 'boolean',
@@ -121858,7 +122412,7 @@ colorScaleAttrs('', {
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/color":418,"../../components/colorscale/attributes":425,"../../lib/extend":542,"../../plot_api/edit_types":579,"../../plots/attributes":593,"../../plots/template_attributes":644}],714:[function(_dereq_,module,exports){
+},{"../../components/color":401,"../../components/colorscale/attributes":408,"../../lib/extend":527,"../../plot_api/edit_types":565,"../../plots/attributes":579,"../../plots/cartesian/axis_format_attributes":586,"../../plots/template_attributes":631}],701:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -121881,7 +122435,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":426}],715:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":409}],702:[function(_dereq_,module,exports){
 'use strict';
 
 var createSurface = _dereq_('gl-surface3d');
@@ -122572,7 +123126,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../components/colorscale":430,"../../lib":549,"../../lib/gl_format_color":546,"../../lib/str2rgbarray":572,"../heatmap/find_empties":659,"../heatmap/interp2d":660,"gl-surface3d":183,"ndarray":305,"ndarray-linear-interpolate":299}],716:[function(_dereq_,module,exports){
+},{"../../components/colorscale":413,"../../lib":534,"../../lib/gl_format_color":531,"../../lib/str2rgbarray":558,"../heatmap/find_empties":646,"../heatmap/interp2d":647,"gl-surface3d":176,"ndarray":293,"ndarray-linear-interpolate":287}],703:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -122647,6 +123201,9 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('xhoverformat');
+    coerce('yhoverformat');
+    coerce('zhoverformat');
 
     // Coerce remaining properties
     [
@@ -122738,7 +123295,7 @@ module.exports = {
     opacityscaleDefaults: opacityscaleDefaults
 };
 
-},{"../../components/colorscale/defaults":428,"../../lib":549,"../../registry":645,"./attributes":713}],717:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":411,"../../lib":534,"../../registry":632,"./attributes":700}],704:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -122759,7 +123316,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":628,"./attributes":713,"./calc":714,"./convert":715,"./defaults":716}],718:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":615,"./attributes":700,"./calc":701,"./convert":702,"./defaults":703}],705:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -122795,6 +123352,10 @@ var attrs = module.exports = overrideAll(extendFlat({
     caps: isosurfaceAttrs.caps,
     text: isosurfaceAttrs.text,
     hovertext: isosurfaceAttrs.hovertext,
+    xhoverformat: isosurfaceAttrs.xhoverformat,
+    yhoverformat: isosurfaceAttrs.yhoverformat,
+    zhoverformat: isosurfaceAttrs.zhoverformat,
+    valuehoverformat: isosurfaceAttrs.valuehoverformat,
     hovertemplate: isosurfaceAttrs.hovertemplate
 },
 
@@ -122820,7 +123381,7 @@ colorScaleAttrs('', {
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/colorscale/attributes":425,"../../lib/extend":542,"../../plot_api/edit_types":579,"../../plots/attributes":593,"../isosurface/attributes":661,"../surface/attributes":713}],719:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":408,"../../lib/extend":527,"../../plot_api/edit_types":565,"../../plots/attributes":579,"../isosurface/attributes":648,"../surface/attributes":700}],706:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('gl-mesh3d');
@@ -122945,7 +123506,7 @@ function createVolumeTrace(scene, data) {
 
 module.exports = createVolumeTrace;
 
-},{"../../components/colorscale":430,"../../lib/gl_format_color":546,"../../lib/str2rgbarray":572,"../../plots/gl3d/zip3":639,"../isosurface/convert":663,"gl-mesh3d":157}],720:[function(_dereq_,module,exports){
+},{"../../components/colorscale":413,"../../lib/gl_format_color":531,"../../lib/str2rgbarray":558,"../../plots/gl3d/zip3":626,"../isosurface/convert":650,"gl-mesh3d":152}],707:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -122963,7 +123524,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     opacityscaleDefaults(traceIn, traceOut, layout, coerce);
 };
 
-},{"../../lib":549,"../isosurface/defaults":664,"../surface/defaults":716,"./attributes":718}],721:[function(_dereq_,module,exports){
+},{"../../lib":534,"../isosurface/defaults":651,"../surface/defaults":703,"./attributes":705}],708:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -122984,7 +123545,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":628,"../isosurface/calc":662,"./attributes":718,"./convert":719,"./defaults":720}],722:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":615,"../isosurface/calc":649,"./attributes":705,"./convert":706,"./defaults":707}],709:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../plots/cartesian/axes');
@@ -123388,7 +123949,7 @@ function last(array, indices) {
     return array[indices[indices.length - 1]];
 }
 
-},{"../constants/numerical":527,"../lib":549,"../plot_api/plot_schema":585,"../plots/cartesian/axes":597,"./helpers":725}],723:[function(_dereq_,module,exports){
+},{"../constants/numerical":513,"../lib":534,"../plot_api/plot_schema":571,"../plots/cartesian/axes":583,"./helpers":712}],710:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -123648,7 +124209,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
     }
 }
 
-},{"../constants/filter_ops":523,"../lib":549,"../plots/cartesian/axes":597,"../registry":645,"./helpers":725}],724:[function(_dereq_,module,exports){
+},{"../constants/filter_ops":509,"../lib":534,"../plots/cartesian/axes":583,"../registry":632,"./helpers":712}],711:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -123892,7 +124453,7 @@ function transformOne(trace, state) {
     return newData;
 }
 
-},{"../lib":549,"../plot_api/plot_schema":585,"../plots/plots":642,"./helpers":725}],725:[function(_dereq_,module,exports){
+},{"../lib":534,"../plot_api/plot_schema":571,"../plots/plots":629,"./helpers":712}],712:[function(_dereq_,module,exports){
 'use strict';
 
 exports.pointsAccessorFunction = function(transforms, opts) {
@@ -123910,7 +124471,7 @@ exports.pointsAccessorFunction = function(transforms, opts) {
     return originalPointsAccessor;
 };
 
-},{}],726:[function(_dereq_,module,exports){
+},{}],713:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -124048,11 +124609,11 @@ function getSortFunc(opts, d2c) {
     }
 }
 
-},{"../constants/numerical":527,"../lib":549,"../plots/cartesian/axes":597,"./helpers":725}],727:[function(_dereq_,module,exports){
+},{"../constants/numerical":513,"../lib":534,"../plots/cartesian/axes":583,"./helpers":712}],714:[function(_dereq_,module,exports){
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.0.0-rc.0';
+exports.version = '2.5.0';
 
 },{}]},{},[8])(8)
 });

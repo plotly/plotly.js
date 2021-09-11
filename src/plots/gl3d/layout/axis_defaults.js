@@ -44,6 +44,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 noTickson: true,
                 noTicklabelmode: true,
                 noTicklabelposition: true,
+                noTicklabeloverflow: true,
                 bgColor: options.bgColor,
                 calendar: options.calendar
             },

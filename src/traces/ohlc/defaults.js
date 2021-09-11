@@ -17,6 +17,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     handlePeriodDefaults(traceIn, traceOut, layout, coerce, {x: true});
+    coerce('xhoverformat');
+    coerce('yhoverformat');
 
     coerce('line.width');
     coerce('line.dash');

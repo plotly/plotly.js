@@ -84,7 +84,6 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the width (in px) of the legend item symbols (the part other than the title.text).',
     },
-
     itemclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
@@ -94,7 +93,7 @@ module.exports = {
             'Determines the behavior on legend item click.',
             '*toggle* toggles the visibility of the item clicked on the graph.',
             '*toggleothers* makes the clicked item the sole visible item on the graph.',
-            '*false* disable legend item click interactions.'
+            '*false* disables legend item click interactions.'
         ].join(' ')
     },
     itemdoubleclick: {
@@ -106,10 +105,20 @@ module.exports = {
             'Determines the behavior on legend item double-click.',
             '*toggle* toggles the visibility of the item clicked on the graph.',
             '*toggleothers* makes the clicked item the sole visible item on the graph.',
-            '*false* disable legend item double-click interactions.'
+            '*false* disables legend item double-click interactions.'
         ].join(' ')
     },
-
+    groupclick: {
+        valType: 'enumerated',
+        values: ['toggleitem', 'togglegroup'],
+        dflt: 'togglegroup',
+        editType: 'legend',
+        description: [
+            'Determines the behavior on legend group item click.',
+            '*toggleitem* toggles the visibility of the individual item clicked on the graph.',
+            '*togglegroup* toggles the visibility of all items in the same legendgroup as the item clicked on the graph.'
+        ].join(' ')
+    },
     x: {
         valType: 'number',
         min: -2,
@@ -189,7 +198,8 @@ module.exports = {
         font: fontAttrs({
             editType: 'legend',
             description: [
-                'Sets this legend\'s title font.'
+                'Sets this legend\'s title font.',
+                'Defaults to `legend.font` with its size increased about 20%.'
             ].join(' '),
         }),
         side: {
@@ -207,6 +217,5 @@ module.exports = {
         },
         editType: 'legend',
     },
-
     editType: 'legend'
 };

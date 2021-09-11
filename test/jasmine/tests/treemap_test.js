@@ -1,4 +1,4 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Drawing = require('@src/components/drawing');
@@ -627,6 +627,12 @@ describe('Test treemap hover:', function() {
                 for(var k in exp.ptData) {
                     expect(ptData[k]).toBe(exp.ptData[k], 'pt event data key ' + k);
                 }
+
+                expect(typeof ptData.bbox).toEqual('object');
+                expect(typeof ptData.bbox.x0).toEqual('number');
+                expect(typeof ptData.bbox.x1).toEqual('number');
+                expect(typeof ptData.bbox.y0).toEqual('number');
+                expect(typeof ptData.bbox.y1).toEqual('number');
 
                 if(exp.style) {
                     var gd3 = d3Select(gd);

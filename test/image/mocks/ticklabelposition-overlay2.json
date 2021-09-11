@@ -1,0 +1,65 @@
+{
+    "data": [
+        {
+            "y": [0, 100],
+            "yaxis": "y"
+        },
+        {
+            "y": [100, 0],
+            "yaxis": "y2"
+        },
+        {
+            "x": [0, 100],
+            "xaxis": "x2",
+            "yaxis": "y3"
+        },
+        {
+            "x": [100, 0],
+            "xaxis": "x3",
+            "yaxis": "y3"
+        }
+    ],
+    "layout": {
+        "width": 300,
+        "height": 400,
+        "margin": {
+            "t": 40,
+            "b": 40,
+            "l": 40,
+            "r": 40
+        },
+        "plot_bgcolor": "lightblue",
+        "showlegend": false,
+        "yaxis": {
+            "domain" : [0, 0.45],
+            "anchor": "x",
+            "ticklabelposition": "inside",
+            "side": "left"
+        },
+        "yaxis2": {
+            "overlaying": "y",
+            "anchor": "x",
+            "ticklabelposition": "inside",
+            "side": "right"
+        },
+        "yaxis3": {
+            "anchor": "x3",
+            "domain" : [0.55, 1],
+            "range": [-1.1, 2.1]
+        },
+        "xaxis": {
+            "range": [-1.1, 2.1]
+        },
+        "xaxis2": {
+            "overlaying": "x3",
+            "anchor": "y3",
+            "ticklabelposition": "inside",
+            "side": "bottom"
+        },
+        "xaxis3": {
+            "anchor": "y3",
+            "ticklabelposition": "inside",
+            "side": "top"
+        }
+    }
+}

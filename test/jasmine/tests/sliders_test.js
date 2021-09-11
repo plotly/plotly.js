@@ -3,10 +3,11 @@ var constants = require('@src/components/sliders/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var touchEvent = require('../assets/touch_event');
 
 var delay = require('../assets/delay');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
@@ -503,6 +504,44 @@ describe('sliders interactions', function() {
             var mouseupFill = firstGrip.node().style.fill;
             expect(mouseupFill).toEqual(originalFill);
             expect(mockCopy.layout.sliders[0].active).toEqual(0);
+        })
+        .then(done, done.fail);
+    });
+
+    it('should respond to touch interactions', function(done) {
+        var firstGroup = gd._fullLayout._infolayer.select('.' + constants.railTouchRectClass);
+        var firstGrip = gd._fullLayout._infolayer.select('.' + constants.gripRectClass);
+        var railNode = firstGroup.node();
+        var gripNode = firstGrip.node();
+        var touchRect = railNode.getBoundingClientRect();
+        var gripRect = gripNode.getBoundingClientRect();
+
+        var originalFill = gripNode.style.fill;
+
+        expect(mockCopy.layout.sliders[0].active).toEqual(2);
+
+        // Dispatch start of touch where the grip control is
+        touchEvent('touchstart', gripRect.left + 5, gripRect.top + 5);
+
+        expect(mockCopy.layout.sliders[0].active).toEqual(2);
+        var touchdownFill = gripNode.style.fill;
+        expect(touchdownFill).not.toEqual(originalFill);
+
+        // Drag to the right side:
+        touchEvent('touchmove', touchRect.left + touchRect.width - 5, gripRect.top + 5);
+
+        var touchmoveFill = gripNode.style.fill;
+        expect(touchmoveFill).toEqual(touchdownFill);
+
+        delay(100)()
+        .then(function() {
+            expect(mockCopy.layout.sliders[0].active).toEqual(5);
+
+            touchEvent('touchend', touchRect.left + touchRect.width - 5, gripRect.top + 5);
+
+            var touchupFill = gripNode.style.fill;
+            expect(touchupFill).toEqual(originalFill);
+            expect(mockCopy.layout.sliders[0].active).toEqual(5);
         })
         .then(done, done.fail);
     });

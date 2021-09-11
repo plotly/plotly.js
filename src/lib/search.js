@@ -62,9 +62,7 @@ exports.sorterDes = function(a, b) { return b - a; };
  * just be off by a rounding error
  * return the distinct values and the minimum difference between any two
  */
-exports.distinctVals = function(valsIn, opts) {
-    var unitMinDiff = (opts || {}).unitMinDiff;
-
+exports.distinctVals = function(valsIn) {
     var vals = valsIn.slice();  // otherwise we sort the original array...
     vals.sort(exports.sorterAsc); // undefined listed in the end - also works on IE11
 
@@ -73,9 +71,7 @@ exports.distinctVals = function(valsIn, opts) {
         if(vals[last] !== BADNUM) break;
     }
 
-    var minDiff = 1;
-    if(!unitMinDiff) minDiff = (vals[last] - vals[0]) || 1;
-
+    var minDiff = (vals[last] - vals[0]) || 1;
     var errDiff = minDiff / (last || 1) / 10000;
     var newVals = [];
     var preV;

@@ -18,7 +18,9 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
     var hierarchy = cd0.hierarchy;
 
     var isSunburst = trace.type === 'sunburst';
-    var isTreemap = trace.type === 'treemap';
+    var isTreemapOrIcicle =
+        trace.type === 'treemap' ||
+        trace.type === 'icicle';
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
@@ -50,6 +52,8 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var hoverinfo = Fx.castHoverinfo(traceNow, fullLayoutNow, ptNumber);
         var separators = fullLayoutNow.separators;
 
+        var eventData;
+
         if(hovertemplate || (hoverinfo && hoverinfo !== 'none' && hoverinfo !== 'skip')) {
             var hoverCenterX;
             var hoverCenterY;
@@ -57,7 +61,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverCenterX = cd0.cx + pt.pxmid[0] * (1 - pt.rInscribed);
                 hoverCenterY = cd0.cy + pt.pxmid[1] * (1 - pt.rInscribed);
             }
-            if(isTreemap) {
+            if(isTreemapOrIcicle) {
                 hoverCenterX = pt._hoverX;
                 hoverCenterY = pt._hoverY;
             }
@@ -123,9 +127,15 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 if(Lib.isValidTextValue(tx)) thisText.push(tx);
             }
 
+            eventData = [makeEventData(pt, traceNow, opts.eventDataKeys)];
+
             var hoverItems = {
                 trace: traceNow,
                 y: hoverCenterY,
+                _x0: pt._x0,
+                _x1: pt._x1,
+                _y0: pt._y0,
+                _y1: pt._y1,
                 text: thisText.join('<br>'),
                 name: (hovertemplate || hasFlag('name')) ? traceNow.name : undefined,
                 color: _cast('hoverlabel.bgcolor') || cdi.color,
@@ -137,7 +147,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 textAlign: _cast('hoverlabel.align'),
                 hovertemplate: hovertemplate,
                 hovertemplateLabels: hoverPt,
-                eventData: [makeEventData(pt, traceNow, opts.eventDataKeys)]
+                eventData: eventData
             };
 
             if(isSunburst) {
@@ -145,21 +155,24 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverItems.x1 = hoverCenterX + pt.rInscribed * pt.rpx1;
                 hoverItems.idealAlign = pt.pxmid[0] < 0 ? 'left' : 'right';
             }
-            if(isTreemap) {
+            if(isTreemapOrIcicle) {
                 hoverItems.x = hoverCenterX;
                 hoverItems.idealAlign = hoverCenterX < 0 ? 'left' : 'right';
             }
 
+            var bbox = [];
             Fx.loneHover(hoverItems, {
                 container: fullLayoutNow._hoverlayer.node(),
                 outerContainer: fullLayoutNow._paper.node(),
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+            eventData[0].bbox = bbox[0];
 
             trace._hasHoverLabel = true;
         }
 
-        if(isTreemap) {
+        if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
             opts.styleOne(slice, pt, traceNow, {
                 hovered: true
@@ -168,7 +181,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         trace._hasHoverEvent = true;
         gd.emit('plotly_hover', {
-            points: [makeEventData(pt, traceNow, opts.eventDataKeys)],
+            points: eventData || [makeEventData(pt, traceNow, opts.eventDataKeys)],
             event: d3.event
         });
     };
@@ -192,7 +205,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
             trace._hasHoverLabel = false;
         }
 
-        if(isTreemap) {
+        if(isTreemapOrIcicle) {
             var slice = sliceTop.select('path.surface');
             opts.styleOne(slice, pt, traceNow, {
                 hovered: false

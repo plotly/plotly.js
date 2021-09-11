@@ -10,143 +10,233 @@ version: 2.0
 jobs:
   install-and-cibuild:
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/node:16.8.0
     working_directory: ~/plotly.js
     steps:
       - checkout
       - run:
-          name: set heap option before very first node.js call
-          command: |
-            export NODE_OPTIONS='--max-old-space-size=4096'
-      - run:
-          name: Install dependencies
-          command: |
-            npm ci
-      - run:
-          name: List dependency versions
-          command: |
-            echo "npm: $(npm --version)"
-            echo "node: $(node --version)"
-            npm ls || true
+          name: Set up build environment
+          command: .circleci/env_build.sh
       - run:
           name: Pretest
-          command: |
-            npm run pretest
-            npm run cibuild
+          command: npm run pretest
       - run:
+          name: CI-Build
+          command: npm run cibuild
+      - run:
+          name: Delete git
           command: rm -rf .git
       - persist_to_workspace:
           root: /home/circleci
           paths:
             - plotly.js
 
+  timezone-jasmine:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: circleci/node:16.8.0-browsers
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run hover_label test in UTC timezone
+          environment:
+            TZ: "UTC"
+          command: date && npm run test-jasmine hover_label
+      - run:
+          name: Run hover_label test in Europe/Berlin timezone
+          environment:
+            TZ: "Europe/Berlin"
+          command: date && npm run test-jasmine hover_label
+      - run:
+          name: Run hover_label test in Asia/Tokyo timezone
+          environment:
+            TZ: "Asia/Tokyo"
+          command: date && npm run test-jasmine hover_label
+      - run:
+          name: Run hover_label test in America/Toronto timezone
+          environment:
+            TZ: "America/Toronto"
+          command: date && npm run test-jasmine hover_label
+
   no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
-    parallelism: 2
+      - image: circleci/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    parallelism: 8
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
       - run:
           name: Run jasmine tests (part A)
-          command: ./.circleci/test.sh no-gl-jasmine
+          command: .circleci/test.sh no-gl-jasmine
 
   webgl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
-    parallelism: 3
+      - image: circleci/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    parallelism: 8
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
       - run:
           name: Run jasmine tests (part B)
-          command: ./.circleci/test.sh webgl-jasmine
+          command: .circleci/test.sh webgl-jasmine
 
-  no-gl-flaky-jasmine:
+  flaky-no-gl-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
       - run:
           name: Run jasmine tests (part C)
-          command: ./.circleci/test.sh no-gl-flaky-jasmine
+          command: .circleci/test.sh flaky-no-gl-jasmine
 
-  stable-image:
-    docker:
-      - image: plotly/testbed:latest
-    parallelism: 4
-    working_directory: /var/www/streambed/image_server/plotly.js/
-    steps:
-      - attach_workspace:
-          at: /var/www/streambed/image_server/
-      - run:
-          name: Run and setup container
-          command: |
-            supervisord &
-            npm run docker -- setup
-      - run:
-          name: Run image tests (part A)
-          command: ./.circleci/test.sh stable-image
-      - store_artifacts:
-          path: build
-          destination: /
-
-  flaky-image:
-    docker:
-      - image: plotly/testbed:latest
-    working_directory: /var/www/streambed/image_server/plotly.js/
-    steps:
-      - attach_workspace:
-          at: /var/www/streambed/image_server/
-      - run:
-          name: Run and setup container
-          command: |
-            supervisord &
-            npm run docker -- setup
-      - run:
-          name: Run image tests (part B)
-          command: ./.circleci/test.sh flaky-image
-      - store_artifacts:
-          path: build
-          destination: /
-
-  source-syntax:
-    docker:
-      - image: circleci/node:12.13.0
-    working_directory: ~/plotly.js
-    steps:
-      - attach_workspace:
-          at: ~/
-      - run:
-          name: Run syntax tests on source files
-          command: ./.circleci/test.sh source-syntax
-
-  jasmine-bundle:
+  bundle-jasmine:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
-      - image: circleci/node:12.13.0-browsers
+      - image: circleci/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
       - run:
           name: Run jasmine tests (part D)
-          command: ./.circleci/test.sh jasmine-bundle
+          command: .circleci/test.sh bundle-jasmine
 
-  publish-dist:
+  make-baselines:
+    parallelism: 4
     docker:
-      - image: circleci/node:12.13.0
+      - image: circleci/python:3.8.9
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
           at: ~/
+      - run:
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
+      - run:
+          name: Create all png files
+          command: .circleci/test.sh make-baselines
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
+  test-baselines:
+    docker:
+      - image: circleci/node:16.8.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Compare pixels
+          command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
+      - store_artifacts:
+          path: build
+          destination: /
+
+  make-exports:
+    docker:
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
+      - run:
+          name: Install poppler-utils to have pdftops for exporting eps
+          command: sudo apt-get install poppler-utils
+      - run:
+          name: Create svg, jpg, jpeg, webp, pdf and eps files
+          command: python3 test/image/make_exports.py
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
+  test-exports:
+    docker:
+      - image: circleci/node:16.8.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test export sizes
+          command: node test/image/export_test.js ; find build -maxdepth 1 -type f -delete
+      - store_artifacts:
+          path: build
+          destination: /
+
+  mock-validation:
+    docker:
+      - image: circleci/node:16.8.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test validation using node.js and jsdom
+          command: npm run test-plain-obj
+      - run:
+          name: Validate mocks
+          command: npm run test-mock
+
+  source-syntax:
+    docker:
+      - image: circleci/node:16.8.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Run syntax tests on source files
+          command: .circleci/test.sh source-syntax
+
+  publish-dist:
+    docker:
+      - image: circleci/node:16.8.0
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - run:
+          name: Set up build environment
+          command: .circleci/env_build.sh
+      - run:
+          name: Preview CHANGELOG for next release (only on master)
+          command: |
+            if [ $CIRCLE_BRANCH == "master" ]
+              then npm run use-draftlogs && git --no-pager diff --color-words CHANGELOG.md || true
+            fi
+      - run:
+          name: Set draft version in package.json
+          command: |
+            node --eval "var fs = require('fs'); var inOut = './package.json'; var data = JSON.parse(fs.readFileSync(inOut)); var a = process.argv; data.version = a[a.length - 1].replace('v', ''); fs.writeFileSync(inOut, JSON.stringify(data, null, 2) + '\n');" `git describe`
+      - run:
+          name: View package.json diff between previous and next releases (including above draft version change)
+          command: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) package.json || true
       - run:
           name: Build dist/
           command: npm run build
@@ -154,10 +244,19 @@ jobs:
           path: dist
           destination: dist
       - run:
+          name: View dist/README.md diff between previous and next releases (including new bundle sizes)
+          command: git --no-pager diff --color-words tags/$(git describe --tags --abbrev=0) dist/README.md || true
+      - run:
+          name: Preview plot-schema diff between previous and next releases (only on master)
+          command: |
+            if [ $CIRCLE_BRANCH == "master" ]
+              then git --no-pager diff tags/$(git describe --tags --abbrev=0) dist/plot-schema.json || true
+            fi
+      - run:
           name: Pack tarball
           command: |
             npm pack
-            version=$(node -e "console.log(require('./package.json').version)")
+            version=$(node --eval "console.log(require('./package.json').version)")
             mv plotly.js-$version.tgz plotly.js.tgz
       - store_artifacts:
           path: plotly.js.tgz
@@ -171,8 +270,8 @@ jobs:
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plotly.min.js
             echo https://$CIRCLE_BUILD_NUM-$PROJECT_NUM-gh.circle-artifacts.com/0/dist/plot-schema.json
       - run:
-          name: Test validation using node.js and jsdom
-          command: npm run test-plain-obj
+          name: Test plot-schema.json diff - If failed, after (npm start) you could run (npm run schema && git add test/plot-schema.json && git commit -m "update plot-schema diff")
+          command: diff --unified --color dist/plot-schema.json test/plot-schema.json
       - run:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
@@ -180,23 +279,24 @@ jobs:
           name: Test plotly bundles againt unexpected characters
           command: npm run no-bad-char
       - run:
+          name: Display function constructors in plotly.js bundle
+          command: npm run log-new-func
+      - run:
           name: Test certain bundles against function constructors
           command: npm run no-new-func
       - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
-      - run:
-          name: Test plotly bundles againt duplicate keys
-          environment:
-            NODE_OPTIONS: --max_old_space_size=4096
-          command: npm run no-dup-keys
 
 workflows:
   version: 2
   build-and-test:
     jobs:
       - install-and-cibuild
-      - jasmine-bundle:
+      - timezone-jasmine:
+          requires:
+            - install-and-cibuild
+      - bundle-jasmine:
           requires:
             - install-and-cibuild
       - no-gl-jasmine:
@@ -205,18 +305,26 @@ workflows:
       - webgl-jasmine:
           requires:
             - install-and-cibuild
-      - no-gl-flaky-jasmine:
+      - flaky-no-gl-jasmine:
           requires:
             - install-and-cibuild
-      - stable-image:
+      - make-baselines:
           requires:
             - install-and-cibuild
-      - flaky-image:
+      - test-baselines:
+          requires:
+            - make-baselines
+      - make-exports:
+          requires:
+            - install-and-cibuild
+      - test-exports:
+          requires:
+            - make-exports
+      - mock-validation:
           requires:
             - install-and-cibuild
       - source-syntax:
           requires:
             - install-and-cibuild
-      - publish-dist:
-          requires:
-            - install-and-cibuild
+
+      - publish-dist

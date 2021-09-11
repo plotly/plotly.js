@@ -158,7 +158,7 @@ function getBarColor(cd, trace) {
     if(trace.type === 'waterfall') {
         return trace[cd.dir].marker.color;
     }
-    return cd.mc || trace.marker.color;
+    return cd.mcc || cd.mc || trace.marker.color;
 }
 
 module.exports = {

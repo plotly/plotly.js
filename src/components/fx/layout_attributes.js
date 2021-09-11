@@ -67,6 +67,7 @@ module.exports = {
         valType: 'enumerated',
         role: 'info',
         values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
+        dflt: 'closest',
         editType: 'modebar',
         description: [
             'Determines the mode of hover interactions.',
@@ -79,14 +80,7 @@ module.exports = {
             'multiple points at the closest x- (or y-) coordinate within the `hoverdistance`',
             'with the caveat that no more than one hoverlabel will appear per trace.',
             'In this mode, spikelines are enabled by default perpendicular to the specified axis.',
-            'If false, hover interactions are disabled.',
-            'If `clickmode` includes the *select* flag,',
-            '`hovermode` defaults to *closest*.',
-            'If `clickmode` lacks the *select* flag,',
-            'it defaults to *x* or *y* (depending on the trace\'s',
-            '`orientation` value) for plots based on',
-            'cartesian coordinates. For anything else the default',
-            'value is *closest*.',
+            'If false, hover interactions are disabled.'
         ].join(' ')
     },
     hoverdistance: {
@@ -107,8 +101,7 @@ module.exports = {
     spikedistance: {
         valType: 'integer',
         min: -1,
-        dflt: 20,
-        role: 'info',
+        dflt: -1,
         editType: 'none',
         description: [
             'Sets the default distance (in pixels) to look for data to draw',

@@ -130,6 +130,35 @@ describe('Test Geo layout defaults', function() {
         });
     });
 
+    it('should only coerce projection.tilt and projection.distance if type is satellite', function() {
+        var projTypes = layoutAttributes.projection.type.values;
+
+        function testOne(projType) {
+            layoutIn = {
+                geo: {
+                    projection: {
+                        type: projType,
+                        tilt: 30,
+                        distance: 3
+                    }
+                }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+
+        projTypes.forEach(function(projType) {
+            testOne(projType);
+            if(projType === 'satellite') {
+                expect(layoutOut.geo.projection.tilt).toBeDefined();
+                expect(layoutOut.geo.projection.distance).toBeDefined();
+            } else {
+                expect(layoutOut.geo.projection.tilt).toBeUndefined();
+                expect(layoutOut.geo.projection.distance).toBeUndefined();
+            }
+        });
+    });
+
     it('should only coerce projection.parallels if type is conic', function() {
         var projTypes = layoutAttributes.projection.type.values;
 
@@ -148,7 +177,7 @@ describe('Test Geo layout defaults', function() {
 
         projTypes.forEach(function(projType) {
             testOne(projType);
-            if(projType.indexOf('conic') !== -1) {
+            if(projType.indexOf('conic') !== -1 || projType === 'albers') {
                 expect(layoutOut.geo.projection.parallels).toBeDefined();
             } else {
                 expect(layoutOut.geo.projection.parallels).toBeUndefined();
@@ -853,10 +882,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
                 expect(cnt).toEqual(1);
             });
 
@@ -918,10 +947,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -950,10 +979,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -979,10 +1008,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1007,10 +1036,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1039,10 +1068,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1362,8 +1391,8 @@ describe('Test geo interactions', function() {
                 .toBe(hoverLabelCnt, msg);
         }
 
-        var px = 390;
-        var py = 290;
+        var px = 200;
+        var py = 200;
         var cnt = 0;
 
         Plotly.newPlot(gd, fig).then(function() {
@@ -1374,14 +1403,14 @@ describe('Test geo interactions', function() {
 
             return new Promise(function(resolve) {
                 var interval = setInterval(function() {
-                    px += 2;
+                    py -= 2;
                     mouseEvent('mousemove', px, py);
 
-                    if(px < 402) {
-                        _assert('- px ' + px, 1);
+                    if(py > 175) {
+                        _assert('- py ' + py, 1);
                         expect(cnt).toBe(0, 'no plotly_unhover event so far');
                     } else {
-                        _assert('- px ' + px, 0);
+                        _assert('- py ' + py, 0);
                         expect(cnt).toBe(1, 'plotly_unhover event count');
 
                         clearInterval(interval);
@@ -1417,66 +1446,6 @@ describe('Test geo interactions', function() {
 
             check([px, 163], 0);
             check([px, 360], 1);
-        })
-        .then(done, done.fail);
-    });
-
-    it('should plot to scope defaults when user setting lead to NaN map bounds', function(done) {
-        var gd = createGraphDiv();
-
-        spyOn(Lib, 'warn');
-
-        Plotly.newPlot(gd, [{
-            type: 'scattergeo',
-            lon: [0],
-            lat: [0]
-        }], {
-            geo: {
-                projection: {
-                    type: 'kavrayskiy7',
-                    rotation: {
-                        lat: 38.794799,
-                        lon: -81.622334,
-                    }
-                },
-                center: {
-                    lat: -81
-                },
-                lataxis: {
-                    range: [38.794799, 45.122292]
-                },
-                lonaxis: {
-                    range: [-82.904731, -81.622334]
-                }
-            },
-            width: 700,
-            heigth: 500
-        })
-        .then(function() {
-            var geoLayout = gd._fullLayout.geo;
-            var geo = geoLayout._subplot;
-
-            expect(geoLayout.projection.rotation).toEqual({
-                lon: 0, lat: 0, roll: 0,
-            });
-            expect(geoLayout.center).toEqual({
-                lon: 0, lat: 0
-            });
-            expect(geoLayout.lonaxis.range).toEqual([-180, 180]);
-            expect(geoLayout.lataxis.range).toEqual([-90, 90]);
-
-            expect(geo.viewInitial).toEqual({
-                'fitbounds': false,
-                'projection.rotation.lon': 0,
-                'center.lon': 0,
-                'center.lat': 0,
-                'projection.scale': 1
-            });
-
-            expect(Lib.warn).toHaveBeenCalledTimes(1);
-            expect(Lib.warn).toHaveBeenCalledWith(
-                'Invalid geo settings, relayout\'ing to default view.'
-            );
         })
         .then(done, done.fail);
     });
@@ -1820,11 +1789,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
                 'location', 'text', 'marker.size'
-            ]);
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1878,11 +1847,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             // var pt = futureData.points[0],
             //     evt = futureData.event;
 
-            // expect(Object.keys(pt)).toEqual([
-            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            // expect(Object.keys(pt).sort()).toEqual([
+            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
             //     'lon', 'lat',
             //     'location', 'text', 'marker.size'
-            // ]);
+            // ].sort());
 
             // expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             // expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1924,11 +1893,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
                 'location', 'text', 'marker.size'
-            ]);
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1965,11 +1934,11 @@ describe('Test event property of interactions on a geo plot:', function() {
                 var pt = futureData.points[0];
                 var evt = futureData.event;
 
-                expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(pt).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat',
                     'location', 'text', 'marker.size'
-                ]);
+                ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');

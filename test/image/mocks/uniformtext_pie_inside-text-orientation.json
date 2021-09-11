@@ -361,7 +361,7 @@
         },
         "legend": {
             "title": {
-                "text": "<b>inside text orientation</b>"
+                "text": "inside text orientation"
             }
         },
         "font": {

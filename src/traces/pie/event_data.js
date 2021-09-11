@@ -16,6 +16,7 @@ module.exports = function eventData(pt, trace) {
         value: pt.v,
         percent: pt.percent,
         text: pt.text,
+        bbox: pt.bbox,
 
         // pt.v (and pt.i below) for backward compatibility
         v: pt.v
