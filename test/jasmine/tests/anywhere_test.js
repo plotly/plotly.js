@@ -23,13 +23,13 @@ function resetEvents(gd) {
 }
 
 describe('Click-to-select', function() {
-    var mock14Pts = {
+    var mock14PtsScatter = {
         'in-margin': { x: 28, y: 28 },
         'point-0': { x: 92, y: 102 },
         'between-point-0-and-1': { x: 117, y: 110 },
         'point-11': { x: 339, y: 214 },
     };
-    var expectedEvents = {
+    var expectedEventsScatter = {
         'in-margin': false,
         'point-0': {
             curveNumber: 0,
@@ -47,15 +47,48 @@ describe('Click-to-select', function() {
             y: 2.125
         },
     };
+
+    var mockPtsGeoscatter = {
+        'start': {lat: 40.7127, lon: -74.0059},
+        'end': {lat: 51.5072, lon: 0.1275},
+    };
+    var mockPtsGeoscatterClick = {
+        'in-margin': { x: 28, y: 28 },
+        'start': {x: 239, y: 174},
+        'end': {x: 426, y: 157},
+        'iceland': {x: 322, y: 150},
+    };
+    var expectedEventsGeoscatter = {
+        'in-margin': false,
+        'start': {
+            curveNumber: 0,
+            pointIndex: 0,
+            pointNumber: 0,
+            lat: 40.7127,
+            lon: -74.0059,
+        },
+        'end': {
+            curveNumber: 0,
+            pointIndex: 1,
+            pointNumber: 1,
+            lat: 51.5072,
+            lon: 51.5072,
+        },
+        'iceland': {lat: -18.666562962962963, lon: 56.66635185185185},
+    };
+
     var gd;
 
     beforeEach(function() {
         gd = createGraphDiv();
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        resetEvents(gd);
+        destroyGraphDiv();
+    });
 
-    function plotMock14(layoutOpts) {
+    function plotMock14Anywhere(layoutOpts) {
         var mock = require('@mocks/14.json');
         var defaultLayoutOpts = {
             layout: {
@@ -70,6 +103,41 @@ describe('Click-to-select', function() {
             { layout: layoutOpts });
 
         return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
+    }
+
+    function plotMock14AnywhereSelect(layoutOpts) {
+        var mock = require('@mocks/14.json');
+        var defaultLayoutOpts = {
+            layout: {
+                clickmode: 'select+event+anywhere',
+                hoverdistance: 1
+            }
+        };
+        var mockCopy = Lib.extendDeep(
+            {},
+            mock,
+            defaultLayoutOpts,
+            { layout: layoutOpts });
+
+        return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
+    }
+
+    function plotGeoscatterAnywhere() {
+        var layout = {
+            clickmode: 'event+anywhere',
+            hoverdistance: 1
+        };
+        var data = [{
+            type: 'scattergeo',
+            lat: [ mockPtsGeoscatter.start.lat, mockPtsGeoscatter.end.lat ],
+            lon: [ mockPtsGeoscatter.start.lon, mockPtsGeoscatter.end.lat ],
+            mode: 'lines',
+            line: {
+                width: 2,
+                color: 'blue'
+            }
+        }];
+        return Plotly.newPlot(gd, data, layout);
     }
 
     function isSubset(superObj, subObj) {
@@ -93,9 +161,9 @@ describe('Click-to-select', function() {
         return clickedPromise;
     }
 
-    function clickAndTestPoint(pointKey, clickOpts) {
-        var x = mock14Pts[pointKey].x;
-        var y = mock14Pts[pointKey].y;
+    function clickAndTestPoint(mockPts, expectedEvents, pointKey, clickOpts) {
+        var x = mockPts[pointKey].x;
+        var y = mockPts[pointKey].y;
         var expectedEvent = expectedEvents[pointKey];
         var result = _click(x, y, clickOpts);
         if(expectedEvent) {
@@ -109,12 +177,30 @@ describe('Click-to-select', function() {
         return result;
     }
 
-    it('selects point and/or coordinate when clicked', function(done) {
-        plotMock14()
-            .then(function() { return clickAndTestPoint('in-margin'); })
-            .then(function() { return clickAndTestPoint('point-0'); })
-            .then(function() { return clickAndTestPoint('between-point-0-and-1'); })
-            .then(function() { return clickAndTestPoint('point-11'); })
+    it('selects point and/or coordinate when clicked - scatter - event+anywhere', function(done) {
+        plotMock14Anywhere()
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'in-margin'); })
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'point-0'); })
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'between-point-0-and-1'); })
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'point-11'); })
+            .then(done, done.fail);
+    });
+
+    it('selects point and/or coordinate when clicked - scatter - select+event+anywhere', function(done) {
+        plotMock14AnywhereSelect()
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'in-margin'); })
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'point-0'); })
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'between-point-0-and-1'); })
+            .then(function() { return clickAndTestPoint(mock14PtsScatter, expectedEventsScatter, 'point-11'); })
+            .then(done, done.fail);
+    });
+
+    it('selects point and/or coordinate when clicked - geoscatter - event+anywhere', function(done) {
+        plotGeoscatterAnywhere()
+            .then(function() { return clickAndTestPoint(mockPtsGeoscatterClick, expectedEventsGeoscatter, 'in-margin'); })
+            .then(function() { return clickAndTestPoint(mockPtsGeoscatterClick, expectedEventsGeoscatter, 'start'); })
+            .then(function() { return clickAndTestPoint(mockPtsGeoscatterClick, expectedEventsGeoscatter, 'end'); })
+            .then(function() { return clickAndTestPoint(mockPtsGeoscatterClick, expectedEventsGeoscatter, 'iceland'); })
             .then(done, done.fail);
     });
 });
