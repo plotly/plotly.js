@@ -138,7 +138,7 @@
     "regl-scatter2d": "^3.2.7",
     "regl-splom": "^1.0.14",
     "right-now": "^1.0.0",
-    "robust-determinant": "plotly/robust-determinant#300761b3d887e88a8d2232e7c70dad59ab7ff01f",
+    "robust-determinant": "plotly/robust-determinant#v1.2.1",
     "robust-in-sphere": "1.2.1",
     "robust-linear-solve": "plotly/robust-linear-solve#v1.1.0",
     "robust-orientation": "1.2.1",
