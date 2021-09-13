@@ -145,7 +145,7 @@
     "simplicial-complex-contour": "plotly/simplicial-complex-contour#v1.1.0",
     "strongly-connected-components": "^1.0.1",
     "superscript-text": "^1.0.0",
-    "surface-nets": "plotly/surface-nets#7bb2849afe7abcce19bfee761cf11a292c439030",
+    "surface-nets": "plotly/surface-nets#v1.1.1",
     "svg-path-sdf": "^1.1.3",
     "tinycolor2": "^1.4.2",
     "to-px": "1.0.1",
