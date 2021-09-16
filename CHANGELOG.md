@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.5.1] -- 2021-09-16
+
+### Fixed
+ - Reduce bundle sizes by updating `surface-nets`, `robust-determinant`, `robust-linear-solve` modules [[#5934](https://github.com/plotly/plotly.js/pull/5934), [#5935](https://github.com/plotly/plotly.js/pull/5935), [#5936](https://github.com/plotly/plotly.js/pull/5936)]
+ - Update CONTRIBUTING guidelines to use `npm v7` and `node.js v16` [[#5933](https://github.com/plotly/plotly.js/pull/5933)],
+   with thanks to @sleighsoft for the contribution!
+
+
 ## [2.5.0] -- 2021-09-03
 
 ### Added
