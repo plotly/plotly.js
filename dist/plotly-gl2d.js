@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v2.5.0
+* plotly.js (gl2d) v2.5.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -29848,8 +29848,6 @@ var GlText = function GlText (o) {
 GlText.prototype.createShader = function createShader () {
 	var regl = this.regl
 
-	// FIXME: store 2 shader versions: with normal viewport and without
-	// draw texture method
 	var draw = regl({
 		blend: {
 			enable: true,
@@ -29899,9 +29897,9 @@ GlText.prototype.createShader = function createShader () {
 		primitive: 'points',
 		viewport: regl.this('viewport'),
 
-		vert: ("\n\t\t\tprecision highp float;\n\t\t\tattribute float width, charOffset, char;\n\t\t\tattribute vec2 position;\n\t\t\tuniform float fontSize, charStep, em, align, baseline;\n\t\t\tuniform vec4 viewport;\n\t\t\tuniform vec4 color;\n\t\t\tuniform vec2 atlasSize, atlasDim, scale, translate, positionOffset;\n\t\t\tvarying vec2 charCoord, charId;\n\t\t\tvarying float charWidth;\n\t\t\tvarying vec4 fontColor;\n\t\t\tvoid main () {\n\t\t\t\t" + (!GlText.normalViewport ? 'vec2 positionOffset = vec2(positionOffset.x,- positionOffset.y);' : '') + "\n\n\t\t\t\tvec2 offset = floor(em * (vec2(align + charOffset, baseline)\n\t\t\t\t\t+ positionOffset))\n\t\t\t\t\t/ (viewport.zw * scale.xy);\n\n\t\t\t\tvec2 position = (position + translate) * scale;\n\t\t\t\tposition += offset * scale;\n\n\t\t\t\t" + (GlText.normalViewport ? 'position.y = 1. - position.y;' : '') + "\n\n\t\t\t\tcharCoord = position * viewport.zw + viewport.xy;\n\n\t\t\t\tgl_Position = vec4(position * 2. - 1., 0, 1);\n\n\t\t\t\tgl_PointSize = charStep;\n\n\t\t\t\tcharId.x = mod(char, atlasDim.x);\n\t\t\t\tcharId.y = floor(char / atlasDim.x);\n\n\t\t\t\tcharWidth = width * em;\n\n\t\t\t\tfontColor = color / 255.;\n\t\t\t}"),
+		vert: "\n\t\t\tprecision highp float;\n\t\t\tattribute float width, charOffset, char;\n\t\t\tattribute vec2 position;\n\t\t\tuniform float fontSize, charStep, em, align, baseline;\n\t\t\tuniform vec4 viewport;\n\t\t\tuniform vec4 color;\n\t\t\tuniform vec2 atlasSize, atlasDim, scale, translate, positionOffset;\n\t\t\tvarying vec2 charCoord, charId;\n\t\t\tvarying float charWidth;\n\t\t\tvarying vec4 fontColor;\n\t\t\tvoid main () {\n\t\t\t\tvec2 offset = floor(em * (vec2(align + charOffset, baseline)\n\t\t\t\t\t+ vec2(positionOffset.x, -positionOffset.y)))\n\t\t\t\t\t/ (viewport.zw * scale.xy);\n\n\t\t\t\tvec2 position = (position + translate) * scale;\n\t\t\t\tposition += offset * scale;\n\n\t\t\t\tcharCoord = position * viewport.zw + viewport.xy;\n\n\t\t\t\tgl_Position = vec4(position * 2. - 1., 0, 1);\n\n\t\t\t\tgl_PointSize = charStep;\n\n\t\t\t\tcharId.x = mod(char, atlasDim.x);\n\t\t\t\tcharId.y = floor(char / atlasDim.x);\n\n\t\t\t\tcharWidth = width * em;\n\n\t\t\t\tfontColor = color / 255.;\n\t\t\t}",
 
-		frag: "\n\t\t\tprecision highp float;\n\t\t\tuniform sampler2D atlas;\n\t\t\tuniform float fontSize, charStep, opacity;\n\t\t\tuniform vec2 atlasSize;\n\t\t\tuniform vec4 viewport;\n\t\t\tvarying vec4 fontColor;\n\t\t\tvarying vec2 charCoord, charId;\n\t\t\tvarying float charWidth;\n\n\t\t\tfloat lightness(vec4 color) {\n\t\t\t\treturn color.r * 0.299 + color.g * 0.587 + color.b * 0.114;\n\t\t\t}\n\n\t\t\tvoid main () {\n\t\t\t\tvec2 uv = gl_FragCoord.xy - charCoord + charStep * .5;\n\t\t\t\tfloat halfCharStep = floor(charStep * .5 + .5);\n\n\t\t\t\t// invert y and shift by 1px (FF expecially needs that)\n\t\t\t\tuv.y = charStep - uv.y;\n\n\t\t\t\t// ignore points outside of character bounding box\n\t\t\t\tfloat halfCharWidth = ceil(charWidth * .5);\n\t\t\t\tif (floor(uv.x) > halfCharStep + halfCharWidth ||\n\t\t\t\t\tfloor(uv.x) < halfCharStep - halfCharWidth) return;\n\n\t\t\t\tuv += charId * charStep;\n\t\t\t\tuv = uv / atlasSize;\n\n\t\t\t\tvec4 color = fontColor;\n\t\t\t\tvec4 mask = texture2D(atlas, uv);\n\n\t\t\t\tfloat maskY = lightness(mask);\n\t\t\t\t// float colorY = lightness(color);\n\t\t\t\tcolor.a *= maskY;\n\t\t\t\tcolor.a *= opacity;\n\n\t\t\t\t// color.a += .1;\n\n\t\t\t\t// antialiasing, see yiq color space y-channel formula\n\t\t\t\t// color.rgb += (1. - color.rgb) * (1. - mask.rgb);\n\n\t\t\t\tgl_FragColor = color;\n\t\t\t}"
+		frag: "\n\t\t\tprecision highp float;\n\t\t\tuniform float fontSize, charStep, opacity;\n\t\t\tuniform vec2 atlasSize;\n\t\t\tuniform vec4 viewport;\n\t\t\tuniform sampler2D atlas;\n\t\t\tvarying vec4 fontColor;\n\t\t\tvarying vec2 charCoord, charId;\n\t\t\tvarying float charWidth;\n\n\t\t\tfloat lightness(vec4 color) {\n\t\t\t\treturn color.r * 0.299 + color.g * 0.587 + color.b * 0.114;\n\t\t\t}\n\n\t\t\tvoid main () {\n\t\t\t\tvec2 uv = gl_FragCoord.xy - charCoord + charStep * .5;\n\t\t\t\tfloat halfCharStep = floor(charStep * .5 + .5);\n\n\t\t\t\t// invert y and shift by 1px (FF expecially needs that)\n\t\t\t\tuv.y = charStep - uv.y;\n\n\t\t\t\t// ignore points outside of character bounding box\n\t\t\t\tfloat halfCharWidth = ceil(charWidth * .5);\n\t\t\t\tif (floor(uv.x) > halfCharStep + halfCharWidth ||\n\t\t\t\t\tfloor(uv.x) < halfCharStep - halfCharWidth) return;\n\n\t\t\t\tuv += charId * charStep;\n\t\t\t\tuv = uv / atlasSize;\n\n\t\t\t\tvec4 color = fontColor;\n\t\t\t\tvec4 mask = texture2D(atlas, uv);\n\n\t\t\t\tfloat maskY = lightness(mask);\n\t\t\t\t// float colorY = lightness(color);\n\t\t\t\tcolor.a *= maskY;\n\t\t\t\tcolor.a *= opacity;\n\n\t\t\t\t// color.a += .1;\n\n\t\t\t\t// antialiasing, see yiq color space y-channel formula\n\t\t\t\t// color.rgb += (1. - color.rgb) * (1. - mask.rgb);\n\n\t\t\t\tgl_FragColor = color;\n\t\t\t}"
 	})
 
 	// per font-size atlas
@@ -29945,10 +29943,6 @@ GlText.prototype.update = function update (o) {
 
 	if (o.viewport != null) {
 		this.viewport = parseRect(o.viewport)
-
-		if (GlText.normalViewport) {
-			this.viewport.y = this.canvas.height - this.viewport.y - this.viewport.height
-		}
 
 		this.viewportArray = [this.viewport.x, this.viewport.y, this.viewport.width, this.viewport.height]
 
@@ -30351,7 +30345,7 @@ GlText.prototype.update = function update (o) {
 				base += -m[baseline]
 			}
 
-			if (!GlText.normalViewport) { base *= -1 }
+			base *= -1
 			return base
 		})
 	}
@@ -30459,9 +30453,6 @@ GlText.prototype.opacity = 1
 GlText.prototype.color = new Uint8Array([0, 0, 0, 255])
 GlText.prototype.alignOffset = [0, 0]
 
-
-// whether viewport should be top↓bottom 2d one (true) or webgl one (false)
-GlText.normalViewport = false
 
 // size of an atlas
 GlText.maxAtlasSize = 1024
@@ -39033,11 +39024,11 @@ Line2D.createShaders = function (regl) {
 			translateFract: regl.prop('translateFract'),
 			translate: regl.prop('translate'),
 			thickness: regl.prop('thickness'),
-			dashPattern: regl.prop('dashTexture'),
+			dashTexture: regl.prop('dashTexture'),
 			opacity: regl.prop('opacity'),
 			pixelRatio: regl.context('pixelRatio'),
 			id: regl.prop('id'),
-			dashSize: regl.prop('dashLength'),
+			dashLength: regl.prop('dashLength'),
 			viewport: function (c, p) { return [p.viewport.x, p.viewport.y, c.viewportWidth, c.viewportHeight]; },
 			depth: regl.prop('depth')
 		},
@@ -39073,7 +39064,7 @@ Line2D.createShaders = function (regl) {
 	// simplified rectangular line shader
 	var drawRectLine = regl(extend({
 		vert: glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aCoord, bCoord, aCoordFract, bCoordFract;\nattribute vec4 color;\nattribute float lineEnd, lineTop;\n\nuniform vec2 scale, scaleFract, translate, translateFract;\nuniform float thickness, pixelRatio, id, depth;\nuniform vec4 viewport;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\n\nvec2 project(vec2 position, vec2 positionFract, vec2 scale, vec2 scaleFract, vec2 translate, vec2 translateFract) {\n\t// the order is important\n\treturn position * scale + translate\n       + positionFract * scale + translateFract\n       + position * scaleFract\n       + positionFract * scaleFract;\n}\n\nvoid main() {\n\tfloat lineStart = 1. - lineEnd;\n\tfloat lineOffset = lineTop * 2. - 1.;\n\n\tvec2 diff = (bCoord + bCoordFract - aCoord - aCoordFract);\n\ttangent = normalize(diff * scale * viewport.zw);\n\tvec2 normal = vec2(-tangent.y, tangent.x);\n\n\tvec2 position = project(aCoord, aCoordFract, scale, scaleFract, translate, translateFract) * lineStart\n\t\t+ project(bCoord, bCoordFract, scale, scaleFract, translate, translateFract) * lineEnd\n\n\t\t+ thickness * normal * .5 * lineOffset / viewport.zw;\n\n\tgl_Position = vec4(position * 2.0 - 1.0, depth, 1);\n\n\tfragColor = color / 255.;\n}\n"]),
-		frag: glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D dashPattern;\n\nuniform float dashSize, pixelRatio, thickness, opacity, id;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\n\nvoid main() {\n\tfloat alpha = 1.;\n\n\tfloat t = fract(dot(tangent, gl_FragCoord.xy) / dashSize) * .5 + .25;\n\tfloat dash = texture2D(dashPattern, vec2(t, .5)).r;\n\n\tgl_FragColor = fragColor;\n\tgl_FragColor.a *= alpha * opacity * dash;\n}\n"]),
+		frag: glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform float dashLength, pixelRatio, thickness, opacity, id;\nuniform sampler2D dashTexture;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\n\nvoid main() {\n\tfloat alpha = 1.;\n\n\tfloat t = fract(dot(tangent, gl_FragCoord.xy) / dashLength) * .5 + .25;\n\tfloat dash = texture2D(dashTexture, vec2(t, .5)).r;\n\n\tgl_FragColor = fragColor;\n\tgl_FragColor.a *= alpha * opacity * dash;\n}\n"]),
 
 		attributes: {
 			// if point is at the end of segment
@@ -39137,7 +39128,7 @@ Line2D.createShaders = function (regl) {
 			},
 
 			vert: glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute vec2 aCoord, bCoord, nextCoord, prevCoord;\nattribute vec4 aColor, bColor;\nattribute float lineEnd, lineTop;\n\nuniform vec2 scale, translate;\nuniform float thickness, pixelRatio, id, depth;\nuniform vec4 viewport;\nuniform float miterLimit, miterMode;\n\nvarying vec4 fragColor;\nvarying vec4 startCutoff, endCutoff;\nvarying vec2 tangent;\nvarying vec2 startCoord, endCoord;\nvarying float enableStartMiter, enableEndMiter;\n\nconst float REVERSE_THRESHOLD = -.875;\nconst float MIN_DIFF = 1e-6;\n\n// TODO: possible optimizations: avoid overcalculating all for vertices and calc just one instead\n// TODO: precalculate dot products, normalize things beforehead etc.\n// TODO: refactor to rectangular algorithm\n\nfloat distToLine(vec2 p, vec2 a, vec2 b) {\n\tvec2 diff = b - a;\n\tvec2 perp = normalize(vec2(-diff.y, diff.x));\n\treturn dot(p - a, perp);\n}\n\nbool isNaN( float val ){\n  return ( val < 0.0 || 0.0 < val || val == 0.0 ) ? false : true;\n}\n\nvoid main() {\n\tvec2 aCoord = aCoord, bCoord = bCoord, prevCoord = prevCoord, nextCoord = nextCoord;\n\n  vec2 adjustedScale;\n  adjustedScale.x = (abs(scale.x) < MIN_DIFF) ? MIN_DIFF : scale.x;\n  adjustedScale.y = (abs(scale.y) < MIN_DIFF) ? MIN_DIFF : scale.y;\n\n  vec2 scaleRatio = adjustedScale * viewport.zw;\n\tvec2 normalWidth = thickness / scaleRatio;\n\n\tfloat lineStart = 1. - lineEnd;\n\tfloat lineBot = 1. - lineTop;\n\n\tfragColor = (lineStart * aColor + lineEnd * bColor) / 255.;\n\n\tif (isNaN(aCoord.x) || isNaN(aCoord.y) || isNaN(bCoord.x) || isNaN(bCoord.y)) return;\n\n\tif (aCoord == prevCoord) prevCoord = aCoord + normalize(bCoord - aCoord);\n\tif (bCoord == nextCoord) nextCoord = bCoord - normalize(bCoord - aCoord);\n\n\tvec2 prevDiff = aCoord - prevCoord;\n\tvec2 currDiff = bCoord - aCoord;\n\tvec2 nextDiff = nextCoord - bCoord;\n\n\tvec2 prevTangent = normalize(prevDiff * scaleRatio);\n\tvec2 currTangent = normalize(currDiff * scaleRatio);\n\tvec2 nextTangent = normalize(nextDiff * scaleRatio);\n\n\tvec2 prevNormal = vec2(-prevTangent.y, prevTangent.x);\n\tvec2 currNormal = vec2(-currTangent.y, currTangent.x);\n\tvec2 nextNormal = vec2(-nextTangent.y, nextTangent.x);\n\n\tvec2 startJoinDirection = normalize(prevTangent - currTangent);\n\tvec2 endJoinDirection = normalize(currTangent - nextTangent);\n\n\t// collapsed/unidirectional segment cases\n\t// FIXME: there should be more elegant solution\n\tvec2 prevTanDiff = abs(prevTangent - currTangent);\n\tvec2 nextTanDiff = abs(nextTangent - currTangent);\n\tif (max(prevTanDiff.x, prevTanDiff.y) < MIN_DIFF) {\n\t\tstartJoinDirection = currNormal;\n\t}\n\tif (max(nextTanDiff.x, nextTanDiff.y) < MIN_DIFF) {\n\t\tendJoinDirection = currNormal;\n\t}\n\tif (aCoord == bCoord) {\n\t\tendJoinDirection = startJoinDirection;\n\t\tcurrNormal = prevNormal;\n\t\tcurrTangent = prevTangent;\n\t}\n\n\ttangent = currTangent;\n\n\t//calculate join shifts relative to normals\n\tfloat startJoinShift = dot(currNormal, startJoinDirection);\n\tfloat endJoinShift = dot(currNormal, endJoinDirection);\n\n\tfloat startMiterRatio = abs(1. / startJoinShift);\n\tfloat endMiterRatio = abs(1. / endJoinShift);\n\n\tvec2 startJoin = startJoinDirection * startMiterRatio;\n\tvec2 endJoin = endJoinDirection * endMiterRatio;\n\n\tvec2 startTopJoin, startBotJoin, endTopJoin, endBotJoin;\n\tstartTopJoin = sign(startJoinShift) * startJoin * .5;\n\tstartBotJoin = -startTopJoin;\n\n\tendTopJoin = sign(endJoinShift) * endJoin * .5;\n\tendBotJoin = -endTopJoin;\n\n\tvec2 aTopCoord = aCoord + normalWidth * startTopJoin;\n\tvec2 bTopCoord = bCoord + normalWidth * endTopJoin;\n\tvec2 aBotCoord = aCoord + normalWidth * startBotJoin;\n\tvec2 bBotCoord = bCoord + normalWidth * endBotJoin;\n\n\t//miter anti-clipping\n\tfloat baClipping = distToLine(bCoord, aCoord, aBotCoord) / dot(normalize(normalWidth * endBotJoin), normalize(normalWidth.yx * vec2(-startBotJoin.y, startBotJoin.x)));\n\tfloat abClipping = distToLine(aCoord, bCoord, bTopCoord) / dot(normalize(normalWidth * startBotJoin), normalize(normalWidth.yx * vec2(-endBotJoin.y, endBotJoin.x)));\n\n\t//prevent close to reverse direction switch\n\tbool prevReverse = dot(currTangent, prevTangent) <= REVERSE_THRESHOLD && abs(dot(currTangent, prevNormal)) * min(length(prevDiff), length(currDiff)) <  length(normalWidth * currNormal);\n\tbool nextReverse = dot(currTangent, nextTangent) <= REVERSE_THRESHOLD && abs(dot(currTangent, nextNormal)) * min(length(nextDiff), length(currDiff)) <  length(normalWidth * currNormal);\n\n\tif (prevReverse) {\n\t\t//make join rectangular\n\t\tvec2 miterShift = normalWidth * startJoinDirection * miterLimit * .5;\n\t\tfloat normalAdjust = 1. - min(miterLimit / startMiterRatio, 1.);\n\t\taBotCoord = aCoord + miterShift - normalAdjust * normalWidth * currNormal * .5;\n\t\taTopCoord = aCoord + miterShift + normalAdjust * normalWidth * currNormal * .5;\n\t}\n\telse if (!nextReverse && baClipping > 0. && baClipping < length(normalWidth * endBotJoin)) {\n\t\t//handle miter clipping\n\t\tbTopCoord -= normalWidth * endTopJoin;\n\t\tbTopCoord += normalize(endTopJoin * normalWidth) * baClipping;\n\t}\n\n\tif (nextReverse) {\n\t\t//make join rectangular\n\t\tvec2 miterShift = normalWidth * endJoinDirection * miterLimit * .5;\n\t\tfloat normalAdjust = 1. - min(miterLimit / endMiterRatio, 1.);\n\t\tbBotCoord = bCoord + miterShift - normalAdjust * normalWidth * currNormal * .5;\n\t\tbTopCoord = bCoord + miterShift + normalAdjust * normalWidth * currNormal * .5;\n\t}\n\telse if (!prevReverse && abClipping > 0. && abClipping < length(normalWidth * startBotJoin)) {\n\t\t//handle miter clipping\n\t\taBotCoord -= normalWidth * startBotJoin;\n\t\taBotCoord += normalize(startBotJoin * normalWidth) * abClipping;\n\t}\n\n\tvec2 aTopPosition = (aTopCoord) * adjustedScale + translate;\n\tvec2 aBotPosition = (aBotCoord) * adjustedScale + translate;\n\n\tvec2 bTopPosition = (bTopCoord) * adjustedScale + translate;\n\tvec2 bBotPosition = (bBotCoord) * adjustedScale + translate;\n\n\t//position is normalized 0..1 coord on the screen\n\tvec2 position = (aTopPosition * lineTop + aBotPosition * lineBot) * lineStart + (bTopPosition * lineTop + bBotPosition * lineBot) * lineEnd;\n\n\tstartCoord = aCoord * scaleRatio + translate * viewport.zw + viewport.xy;\n\tendCoord = bCoord * scaleRatio + translate * viewport.zw + viewport.xy;\n\n\tgl_Position = vec4(position  * 2.0 - 1.0, depth, 1);\n\n\tenableStartMiter = step(dot(currTangent, prevTangent), .5);\n\tenableEndMiter = step(dot(currTangent, nextTangent), .5);\n\n\t//bevel miter cutoffs\n\tif (miterMode == 1.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tvec2 startMiterWidth = vec2(startJoinDirection) * thickness * miterLimit * .5;\n\t\t\tstartCutoff = vec4(aCoord, aCoord);\n\t\t\tstartCutoff.zw += vec2(-startJoinDirection.y, startJoinDirection.x) / scaleRatio;\n\t\t\tstartCutoff = startCutoff * scaleRatio.xyxy + translate.xyxy * viewport.zwzw;\n\t\t\tstartCutoff += viewport.xyxy;\n\t\t\tstartCutoff += startMiterWidth.xyxy;\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tvec2 endMiterWidth = vec2(endJoinDirection) * thickness * miterLimit * .5;\n\t\t\tendCutoff = vec4(bCoord, bCoord);\n\t\t\tendCutoff.zw += vec2(-endJoinDirection.y, endJoinDirection.x)  / scaleRatio;\n\t\t\tendCutoff = endCutoff * scaleRatio.xyxy + translate.xyxy * viewport.zwzw;\n\t\t\tendCutoff += viewport.xyxy;\n\t\t\tendCutoff += endMiterWidth.xyxy;\n\t\t}\n\t}\n\n\t//round miter cutoffs\n\telse if (miterMode == 2.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tvec2 startMiterWidth = vec2(startJoinDirection) * thickness * abs(dot(startJoinDirection, currNormal)) * .5;\n\t\t\tstartCutoff = vec4(aCoord, aCoord);\n\t\t\tstartCutoff.zw += vec2(-startJoinDirection.y, startJoinDirection.x) / scaleRatio;\n\t\t\tstartCutoff = startCutoff * scaleRatio.xyxy + translate.xyxy * viewport.zwzw;\n\t\t\tstartCutoff += viewport.xyxy;\n\t\t\tstartCutoff += startMiterWidth.xyxy;\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tvec2 endMiterWidth = vec2(endJoinDirection) * thickness * abs(dot(endJoinDirection, currNormal)) * .5;\n\t\t\tendCutoff = vec4(bCoord, bCoord);\n\t\t\tendCutoff.zw += vec2(-endJoinDirection.y, endJoinDirection.x)  / scaleRatio;\n\t\t\tendCutoff = endCutoff * scaleRatio.xyxy + translate.xyxy * viewport.zwzw;\n\t\t\tendCutoff += viewport.xyxy;\n\t\t\tendCutoff += endMiterWidth.xyxy;\n\t\t}\n\t}\n}\n"]),
-			frag: glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform sampler2D dashPattern;\nuniform float dashSize, pixelRatio, thickness, opacity, id, miterMode;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\nvarying vec4 startCutoff, endCutoff;\nvarying vec2 startCoord, endCoord;\nvarying float enableStartMiter, enableEndMiter;\n\nfloat distToLine(vec2 p, vec2 a, vec2 b) {\n\tvec2 diff = b - a;\n\tvec2 perp = normalize(vec2(-diff.y, diff.x));\n\treturn dot(p - a, perp);\n}\n\nvoid main() {\n\tfloat alpha = 1., distToStart, distToEnd;\n\tfloat cutoff = thickness * .5;\n\n\t//bevel miter\n\tif (miterMode == 1.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tdistToStart = distToLine(gl_FragCoord.xy, startCutoff.xy, startCutoff.zw);\n\t\t\tif (distToStart < -1.) {\n\t\t\t\tdiscard;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\talpha *= min(max(distToStart + 1., 0.), 1.);\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tdistToEnd = distToLine(gl_FragCoord.xy, endCutoff.xy, endCutoff.zw);\n\t\t\tif (distToEnd < -1.) {\n\t\t\t\tdiscard;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\talpha *= min(max(distToEnd + 1., 0.), 1.);\n\t\t}\n\t}\n\n\t// round miter\n\telse if (miterMode == 2.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tdistToStart = distToLine(gl_FragCoord.xy, startCutoff.xy, startCutoff.zw);\n\t\t\tif (distToStart < 0.) {\n\t\t\t\tfloat radius = length(gl_FragCoord.xy - startCoord);\n\n\t\t\t\tif(radius > cutoff + .5) {\n\t\t\t\t\tdiscard;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\talpha -= smoothstep(cutoff - .5, cutoff + .5, radius);\n\t\t\t}\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tdistToEnd = distToLine(gl_FragCoord.xy, endCutoff.xy, endCutoff.zw);\n\t\t\tif (distToEnd < 0.) {\n\t\t\t\tfloat radius = length(gl_FragCoord.xy - endCoord);\n\n\t\t\t\tif(radius > cutoff + .5) {\n\t\t\t\t\tdiscard;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\talpha -= smoothstep(cutoff - .5, cutoff + .5, radius);\n\t\t\t}\n\t\t}\n\t}\n\n\tfloat t = fract(dot(tangent, gl_FragCoord.xy) / dashSize) * .5 + .25;\n\tfloat dash = texture2D(dashPattern, vec2(t, .5)).r;\n\n\tgl_FragColor = fragColor;\n\tgl_FragColor.a *= alpha * opacity * dash;\n}\n"]),
+			frag: glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform float dashLength, pixelRatio, thickness, opacity, id, miterMode;\nuniform sampler2D dashTexture;\n\nvarying vec4 fragColor;\nvarying vec2 tangent;\nvarying vec4 startCutoff, endCutoff;\nvarying vec2 startCoord, endCoord;\nvarying float enableStartMiter, enableEndMiter;\n\nfloat distToLine(vec2 p, vec2 a, vec2 b) {\n\tvec2 diff = b - a;\n\tvec2 perp = normalize(vec2(-diff.y, diff.x));\n\treturn dot(p - a, perp);\n}\n\nvoid main() {\n\tfloat alpha = 1., distToStart, distToEnd;\n\tfloat cutoff = thickness * .5;\n\n\t//bevel miter\n\tif (miterMode == 1.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tdistToStart = distToLine(gl_FragCoord.xy, startCutoff.xy, startCutoff.zw);\n\t\t\tif (distToStart < -1.) {\n\t\t\t\tdiscard;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\talpha *= min(max(distToStart + 1., 0.), 1.);\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tdistToEnd = distToLine(gl_FragCoord.xy, endCutoff.xy, endCutoff.zw);\n\t\t\tif (distToEnd < -1.) {\n\t\t\t\tdiscard;\n\t\t\t\treturn;\n\t\t\t}\n\t\t\talpha *= min(max(distToEnd + 1., 0.), 1.);\n\t\t}\n\t}\n\n\t// round miter\n\telse if (miterMode == 2.) {\n\t\tif (enableStartMiter == 1.) {\n\t\t\tdistToStart = distToLine(gl_FragCoord.xy, startCutoff.xy, startCutoff.zw);\n\t\t\tif (distToStart < 0.) {\n\t\t\t\tfloat radius = length(gl_FragCoord.xy - startCoord);\n\n\t\t\t\tif(radius > cutoff + .5) {\n\t\t\t\t\tdiscard;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\talpha -= smoothstep(cutoff - .5, cutoff + .5, radius);\n\t\t\t}\n\t\t}\n\n\t\tif (enableEndMiter == 1.) {\n\t\t\tdistToEnd = distToLine(gl_FragCoord.xy, endCutoff.xy, endCutoff.zw);\n\t\t\tif (distToEnd < 0.) {\n\t\t\t\tfloat radius = length(gl_FragCoord.xy - endCoord);\n\n\t\t\t\tif(radius > cutoff + .5) {\n\t\t\t\t\tdiscard;\n\t\t\t\t\treturn;\n\t\t\t\t}\n\n\t\t\t\talpha -= smoothstep(cutoff - .5, cutoff + .5, radius);\n\t\t\t}\n\t\t}\n\t}\n\n\tfloat t = fract(dot(tangent, gl_FragCoord.xy) / dashLength) * .5 + .25;\n\tfloat dash = texture2D(dashTexture, vec2(t, .5)).r;\n\n\tgl_FragColor = fragColor;\n\tgl_FragColor.a *= alpha * opacity * dash;\n}\n"]),
 
 			attributes: {
 				// is line end
@@ -39889,17 +39880,17 @@ function Scatter(regl, options) {
   var shaderOptions = {
     uniforms: {
       constPointSize: !!options.constPointSize,
-      pixelRatio: regl.context('pixelRatio'),
-      palette: paletteTexture,
+      opacity: regl.prop('opacity'),
       paletteSize: function paletteSize(ctx, prop) {
         return [_this.tooManyColors ? 0 : maxColors, paletteTexture.height];
       },
+      pixelRatio: regl.context('pixelRatio'),
       scale: regl.prop('scale'),
       scaleFract: regl.prop('scaleFract'),
       translate: regl.prop('translate'),
       translateFract: regl.prop('translateFract'),
-      opacity: regl.prop('opacity'),
-      marker: regl.prop('markerTexture')
+      markerTexture: regl.prop('markerTexture'),
+      paletteTexture: paletteTexture
     },
     attributes: {
       // FIXME: optimize these parts
@@ -40008,13 +39999,13 @@ function Scatter(regl, options) {
   }; // draw sdf-marker
 
   var markerOptions = extend({}, shaderOptions);
-  markerOptions.frag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragWidth, fragBorderColorLevel, fragColorLevel;\n\nuniform sampler2D marker;\nuniform float opacity;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float dist = texture2D(marker, gl_PointCoord).r, delta = fragWidth;\n\n  // max-distance alpha\n  if (dist < 0.003) discard;\n\n  // null-border case\n  if (fragBorderColorLevel == fragColorLevel || fragBorderColor.a == 0.) {\n    float colorAmt = smoothstep(.5 - delta, .5 + delta, dist);\n    gl_FragColor = vec4(fragColor.rgb, colorAmt * fragColor.a * opacity);\n  }\n  else {\n    float borderColorAmt = smoothstep(fragBorderColorLevel - delta, fragBorderColorLevel + delta, dist);\n    float colorAmt = smoothstep(fragColorLevel - delta, fragColorLevel + delta, dist);\n\n    vec4 color = fragBorderColor;\n    color.a *= borderColorAmt;\n    color = mix(color, fragColor, colorAmt);\n    color.a *= opacity;\n\n    gl_FragColor = color;\n  }\n\n}\n"]);
-  markerOptions.vert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute float x, y, xFract, yFract;\nattribute float size, borderSize;\nattribute vec4 colorId, borderColorId;\nattribute float isActive;\n\nuniform vec2 scale, scaleFract, translate, translateFract, paletteSize;\nuniform float pixelRatio;\nuniform bool constPointSize;\nuniform sampler2D palette;\n\nconst float maxSize = 100.;\nconst float borderLevel = .5;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragPointSize, fragBorderRadius, fragWidth, fragBorderColorLevel, fragColorLevel;\n\nfloat pointSizeScale = (constPointSize) ? 2. : pixelRatio;\n\nbool isDirect = (paletteSize.x < 1.);\n\nvec4 getColor(vec4 id) {\n  return isDirect ? id / 255. : texture2D(palette,\n    vec2(\n      (id.x + .5) / paletteSize.x,\n      (id.y + .5) / paletteSize.y\n    )\n  );\n}\n\nvoid main() {\n  // ignore inactive points\n  if (isActive == 0.) return;\n\n  vec2 position = vec2(x, y);\n  vec2 positionFract = vec2(xFract, yFract);\n\n  vec4 color = getColor(colorId);\n  vec4 borderColor = getColor(borderColorId);\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = 2. * size * pointSizeScale;\n  fragPointSize = size * pixelRatio;\n\n  vec2 pos = (position + translate) * scale\n      + (positionFract + translateFract) * scale\n      + (position + translate) * scaleFract\n      + (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0., 1.);\n\n  fragColor = color;\n  fragBorderColor = borderColor;\n  fragWidth = 1. / gl_PointSize;\n\n  fragBorderColorLevel = clamp(borderLevel - borderLevel * borderSize / size, 0., 1.);\n  fragColorLevel = clamp(borderLevel + (1. - borderLevel) * borderSize / size, 0., 1.);\n}"]);
+  markerOptions.frag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nuniform float opacity;\nuniform sampler2D markerTexture;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragWidth, fragBorderColorLevel, fragColorLevel;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float dist = texture2D(markerTexture, gl_PointCoord).r, delta = fragWidth;\n\n  // max-distance alpha\n  if (dist < 0.003) discard;\n\n  // null-border case\n  if (fragBorderColorLevel == fragColorLevel || fragBorderColor.a == 0.) {\n    float colorAmt = smoothstep(.5 - delta, .5 + delta, dist);\n    gl_FragColor = vec4(fragColor.rgb, colorAmt * fragColor.a * opacity);\n  }\n  else {\n    float borderColorAmt = smoothstep(fragBorderColorLevel - delta, fragBorderColorLevel + delta, dist);\n    float colorAmt = smoothstep(fragColorLevel - delta, fragColorLevel + delta, dist);\n\n    vec4 color = fragBorderColor;\n    color.a *= borderColorAmt;\n    color = mix(color, fragColor, colorAmt);\n    color.a *= opacity;\n\n    gl_FragColor = color;\n  }\n\n}\n"]);
+  markerOptions.vert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute float x, y, xFract, yFract;\nattribute float size, borderSize;\nattribute vec4 colorId, borderColorId;\nattribute float isActive;\n\nuniform bool constPointSize;\nuniform float pixelRatio;\nuniform vec2 scale, scaleFract, translate, translateFract, paletteSize;\nuniform sampler2D paletteTexture;\n\nconst float maxSize = 100.;\nconst float borderLevel = .5;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragPointSize, fragBorderRadius, fragWidth, fragBorderColorLevel, fragColorLevel;\n\nfloat pointSizeScale = (constPointSize) ? 2. : pixelRatio;\n\nbool isDirect = (paletteSize.x < 1.);\n\nvec4 getColor(vec4 id) {\n  return isDirect ? id / 255. : texture2D(paletteTexture,\n    vec2(\n      (id.x + .5) / paletteSize.x,\n      (id.y + .5) / paletteSize.y\n    )\n  );\n}\n\nvoid main() {\n  // ignore inactive points\n  if (isActive == 0.) return;\n\n  vec2 position = vec2(x, y);\n  vec2 positionFract = vec2(xFract, yFract);\n\n  vec4 color = getColor(colorId);\n  vec4 borderColor = getColor(borderColorId);\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = 2. * size * pointSizeScale;\n  fragPointSize = size * pixelRatio;\n\n  vec2 pos = (position + translate) * scale\n      + (positionFract + translateFract) * scale\n      + (position + translate) * scaleFract\n      + (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0., 1.);\n\n  fragColor = color;\n  fragBorderColor = borderColor;\n  fragWidth = 1. / gl_PointSize;\n\n  fragBorderColorLevel = clamp(borderLevel - borderLevel * borderSize / size, 0., 1.);\n  fragColorLevel = clamp(borderLevel + (1. - borderLevel) * borderSize / size, 0., 1.);\n}"]);
   this.drawMarker = regl(markerOptions); // draw circle
 
   var circleOptions = extend({}, shaderOptions);
-  circleOptions.frag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor, fragBorderColor;\n\nuniform float opacity;\nvarying float fragBorderRadius, fragWidth;\n\nfloat smoothStep(float edge0, float edge1, float x) {\n\tfloat t;\n\tt = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);\n\treturn t * t * (3.0 - 2.0 * t);\n}\n\nvoid main() {\n\tfloat radius, alpha = 1.0, delta = fragWidth;\n\n\tradius = length(2.0 * gl_PointCoord.xy - 1.0);\n\n\tif (radius > 1.0 + delta) {\n\t\tdiscard;\n\t}\n\n\talpha -= smoothstep(1.0 - delta, 1.0 + delta, radius);\n\n\tfloat borderRadius = fragBorderRadius;\n\tfloat ratio = smoothstep(borderRadius - delta, borderRadius + delta, radius);\n\tvec4 color = mix(fragColor, fragBorderColor, ratio);\n\tcolor.a *= alpha * opacity;\n\tgl_FragColor = color;\n}\n"]);
-  circleOptions.vert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute float x, y, xFract, yFract;\nattribute float size, borderSize;\nattribute vec4 colorId, borderColorId;\nattribute float isActive;\n\nuniform vec2 scale, scaleFract, translate, translateFract;\nuniform float pixelRatio;\nuniform bool constPointSize;\nuniform sampler2D palette;\nuniform vec2 paletteSize;\n\nconst float maxSize = 100.;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragBorderRadius, fragWidth;\n\nfloat pointSizeScale = (constPointSize) ? 2. : pixelRatio;\n\nbool isDirect = (paletteSize.x < 1.);\n\nvec4 getColor(vec4 id) {\n  return isDirect ? id / 255. : texture2D(palette,\n    vec2(\n      (id.x + .5) / paletteSize.x,\n      (id.y + .5) / paletteSize.y\n    )\n  );\n}\n\nvoid main() {\n  // ignore inactive points\n  if (isActive == 0.) return;\n\n  vec2 position = vec2(x, y);\n  vec2 positionFract = vec2(xFract, yFract);\n\n  vec4 color = getColor(colorId);\n  vec4 borderColor = getColor(borderColorId);\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = (size + borderSize) * pointSizeScale;\n\n  vec2 pos = (position + translate) * scale\n      + (positionFract + translateFract) * scale\n      + (position + translate) * scaleFract\n      + (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0., 1.);\n\n  fragBorderRadius = 1. - 2. * borderSize / (size + borderSize);\n  fragColor = color;\n  fragBorderColor = borderColor.a == 0. || borderSize == 0. ? vec4(color.rgb, 0.) : borderColor;\n  fragWidth = 1. / gl_PointSize;\n}\n"]); // polyfill IE
+  circleOptions.frag = glslify(["precision highp float;\n#define GLSLIFY 1\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragBorderRadius, fragWidth;\n\nuniform float opacity;\n\nfloat smoothStep(float edge0, float edge1, float x) {\n\tfloat t;\n\tt = clamp((x - edge0) / (edge1 - edge0), 0.0, 1.0);\n\treturn t * t * (3.0 - 2.0 * t);\n}\n\nvoid main() {\n\tfloat radius, alpha = 1.0, delta = fragWidth;\n\n\tradius = length(2.0 * gl_PointCoord.xy - 1.0);\n\n\tif (radius > 1.0 + delta) {\n\t\tdiscard;\n\t}\n\n\talpha -= smoothstep(1.0 - delta, 1.0 + delta, radius);\n\n\tfloat borderRadius = fragBorderRadius;\n\tfloat ratio = smoothstep(borderRadius - delta, borderRadius + delta, radius);\n\tvec4 color = mix(fragColor, fragBorderColor, ratio);\n\tcolor.a *= alpha * opacity;\n\tgl_FragColor = color;\n}\n"]);
+  circleOptions.vert = glslify(["precision highp float;\n#define GLSLIFY 1\n\nattribute float x, y, xFract, yFract;\nattribute float size, borderSize;\nattribute vec4 colorId, borderColorId;\nattribute float isActive;\n\nuniform bool constPointSize;\nuniform float pixelRatio;\nuniform vec2 paletteSize, scale, scaleFract, translate, translateFract;\nuniform sampler2D paletteTexture;\n\nconst float maxSize = 100.;\n\nvarying vec4 fragColor, fragBorderColor;\nvarying float fragBorderRadius, fragWidth;\n\nfloat pointSizeScale = (constPointSize) ? 2. : pixelRatio;\n\nbool isDirect = (paletteSize.x < 1.);\n\nvec4 getColor(vec4 id) {\n  return isDirect ? id / 255. : texture2D(paletteTexture,\n    vec2(\n      (id.x + .5) / paletteSize.x,\n      (id.y + .5) / paletteSize.y\n    )\n  );\n}\n\nvoid main() {\n  // ignore inactive points\n  if (isActive == 0.) return;\n\n  vec2 position = vec2(x, y);\n  vec2 positionFract = vec2(xFract, yFract);\n\n  vec4 color = getColor(colorId);\n  vec4 borderColor = getColor(borderColorId);\n\n  float size = size * maxSize / 255.;\n  float borderSize = borderSize * maxSize / 255.;\n\n  gl_PointSize = (size + borderSize) * pointSizeScale;\n\n  vec2 pos = (position + translate) * scale\n      + (positionFract + translateFract) * scale\n      + (position + translate) * scaleFract\n      + (positionFract + translateFract) * scaleFract;\n\n  gl_Position = vec4(pos * 2. - 1., 0., 1.);\n\n  fragBorderRadius = 1. - 2. * borderSize / (size + borderSize);\n  fragColor = color;\n  fragBorderColor = borderColor.a == 0. || borderSize == 0. ? vec4(color.rgb, 0.) : borderColor;\n  fragWidth = 1. / gl_PointSize;\n}\n"]); // polyfill IE
 
   if (ie) {
     circleOptions.frag = circleOptions.frag.replace('smoothstep', 'smoothStep');
@@ -40074,10 +40065,10 @@ Scatter.prototype.draw = function () {
     }
   } // draw all passes
   else {
-      groups.forEach(function (group, i) {
-        _this2.drawItem(i);
-      });
-    }
+    groups.forEach(function (group, i) {
+      _this2.drawItem(i);
+    });
+  }
 
   return this;
 }; // draw specific scatter group
@@ -40379,8 +40370,8 @@ Scatter.prototype.update = function () {
           });
         } // existing tree instance
         else if (snap && snap.length) {
-            group.tree = snap;
-          }
+          group.tree = snap;
+        }
 
         if (group.tree) {
           var opts = {
@@ -40427,33 +40418,33 @@ Scatter.prototype.update = function () {
           activation[id] = true;
         } // per-point markers use mask buffers to enable markers in vert shader
         else {
-            var markerMasks = [];
+          var markerMasks = [];
 
-            for (var _i = 0, l = Math.min(markers.length, group.count); _i < l; _i++) {
-              var _id = _this3.addMarker(markers[_i]);
+          for (var _i = 0, l = Math.min(markers.length, group.count); _i < l; _i++) {
+            var _id = _this3.addMarker(markers[_i]);
 
-              if (!markerMasks[_id]) markerMasks[_id] = new Uint8Array(group.count); // enable marker by default
+            if (!markerMasks[_id]) markerMasks[_id] = new Uint8Array(group.count); // enable marker by default
 
-              markerMasks[_id][_i] = 1;
-            }
-
-            for (var _id2 = 0; _id2 < markerMasks.length; _id2++) {
-              if (!markerMasks[_id2]) continue;
-              var opts = {
-                data: markerMasks[_id2],
-                type: 'uint8',
-                usage: 'static'
-              };
-
-              if (!activation[_id2]) {
-                activation[_id2] = regl.buffer(opts);
-              } else {
-                activation[_id2](opts);
-              }
-
-              activation[_id2].data = markerMasks[_id2];
-            }
+            markerMasks[_id][_i] = 1;
           }
+
+          for (var _id2 = 0; _id2 < markerMasks.length; _id2++) {
+            if (!markerMasks[_id2]) continue;
+            var opts = {
+              data: markerMasks[_id2],
+              type: 'uint8',
+              usage: 'static'
+            };
+
+            if (!activation[_id2]) {
+              activation[_id2] = regl.buffer(opts);
+            } else {
+              activation[_id2](opts);
+            }
+
+            activation[_id2].data = markerMasks[_id2];
+          }
+        }
 
         return markers;
       },
@@ -40527,24 +40518,24 @@ Scatter.prototype.update = function () {
       } // if limited amount of colors - keep palette color picking
       // that saves significant memory
       else {
-          if (color.length || borderColor.length) {
-            // we need slight data increase by 2 due to vec4 borderId in shader
-            colors = new Uint8Array(_count * 4 + 2);
+        if (color.length || borderColor.length) {
+          // we need slight data increase by 2 due to vec4 borderId in shader
+          colors = new Uint8Array(_count * 4 + 2);
 
-            for (var _i4 = 0; _i4 < _count; _i4++) {
-              // put color coords in palette texture
-              if (color[_i4] != null) {
-                colors[_i4 * 4] = color[_i4] % maxColors;
-                colors[_i4 * 4 + 1] = Math.floor(color[_i4] / maxColors);
-              }
+          for (var _i4 = 0; _i4 < _count; _i4++) {
+            // put color coords in palette texture
+            if (color[_i4] != null) {
+              colors[_i4 * 4] = color[_i4] % maxColors;
+              colors[_i4 * 4 + 1] = Math.floor(color[_i4] / maxColors);
+            }
 
-              if (borderColor[_i4] != null) {
-                colors[_i4 * 4 + 2] = borderColor[_i4] % maxColors;
-                colors[_i4 * 4 + 3] = Math.floor(borderColor[_i4] / maxColors);
-              }
+            if (borderColor[_i4] != null) {
+              colors[_i4 * 4 + 2] = borderColor[_i4] % maxColors;
+              colors[_i4 * 4 + 3] = Math.floor(borderColor[_i4] / maxColors);
             }
           }
         }
+      }
 
       colorBuffer({
         data: colors || new Uint8Array(0),
@@ -43494,15 +43485,6 @@ module.exports = surfaceNets
 var generateContourExtractor = _dereq_("ndarray-extract-contour")
 var zeroCrossings = _dereq_("zero-crossings")
 
-var F1_6 = 1 / 6
-var F5_6 = 5 / 6
-var F7_18 = 7 / 18
-var F1_14 = 1 / 14
-var F3_14 = 3 / 14
-var F5_14 = 5 / 14
-var F9_14 = 9 / 14
-var F11_18 = 11 / 18
-
 var allFns = {
   "2d": function (genContour, order, dtype) {
     var contour = genContour({
@@ -43582,1468 +43564,7 @@ var allFns = {
       contour(array, verts, cells, level);
       return { positions: verts, cells: cells };
     };
-  },
-  "3d": function (genContour, order, dtype) {
-    var contour = genContour({
-      order: order,
-      scalarArguments: 3,
-      getters: dtype === "generic" ? [0] : undefined,
-      phase: function phaseFunc(p, a, b, c) {
-        return (p > c) | 0;
-      },
-      vertex: function vertexFunc(d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, b, c) {
-        var m = ((p0 << 0) + (p1 << 1) + (p2 << 2) + (p3 << 3) + (p4 << 4) + (p5 << 5) + (p6 << 6) + (p7 << 7)) | 0;
-        if (m === 0 || m === 255) {
-          return;
-        }
-        switch (m >>> 7) {
-          case 0:
-            vExtra0(m & 0x7f, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c);
-            break;
-          case 1:
-            vExtra1(m & 0x7f, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c);
-            break;
-        }
-      },
-      cell: function cellFunc(v0, v1, v2, v3, c0, c1, p0, p1, a, b, c) {
-        if (p0) {
-          b.push([v3, v2, v0], [v0, v1, v3]);
-        } else {
-          b.push([v0, v2, v3], [v3, v1, v0]);
-        }
-      },
-    });
-    return function (array, level) {
-      var verts = [],
-        cells = [];
-      contour(array, verts, cells, level);
-      return { positions: verts, cells: cells };
-    };
-    function vExtra0(m, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c) {
-      switch (m) {
-        case 0:
-          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5]);
-          break;
-        case 1:
-          a.push([
-            d0 - F1_6 - (F1_6 * (v1 + v0 - 2 * c)) / (v0 - v1),
-            d1 - F1_6 - (F1_6 * (v2 + v0 - 2 * c)) / (v0 - v2),
-            d2 - F1_6 - (F1_6 * (v4 + v0 - 2 * c)) / (v0 - v4),
-          ]);
-          break;
-        case 2:
-          a.push([
-            d0 - F5_6 - (F1_6 * (-v1 - v0 + 2 * c)) / (v1 - v0),
-            d1 - F1_6 - (F1_6 * (v3 + v1 - 2 * c)) / (v1 - v3),
-            d2 - F1_6 - (F1_6 * (v5 + v1 - 2 * c)) / (v1 - v5),
-          ]);
-          break;
-        case 3:
-          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3), d2 - 0.25 - (0.25 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5)]);
-          break;
-        case 4:
-          a.push([
-            d0 - F1_6 - (F1_6 * (v3 + v2 - 2 * c)) / (v2 - v3),
-            d1 - F5_6 - (F1_6 * (-v2 - v0 + 2 * c)) / (v2 - v0),
-            d2 - F1_6 - (F1_6 * (v6 + v2 - 2 * c)) / (v2 - v6),
-          ]);
-          break;
-        case 5:
-          a.push([d0 - 0.25 - (0.25 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3), d1 - 0.5, d2 - 0.25 - (0.25 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6)]);
-          break;
-        case 6:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
-            d2 - F1_6 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
-          ]);
-          break;
-        case 7:
-          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.3 - (0.3 * (v4 + v0 + v5 + v1 + v6 + v2 - 6 * c)) / (v0 - v4 + v1 - v5 + v2 - v6)]);
-          break;
-        case 8:
-          a.push([
-            d0 - F5_6 - (F1_6 * (-v3 - v2 + 2 * c)) / (v3 - v2),
-            d1 - F5_6 - (F1_6 * (-v3 - v1 + 2 * c)) / (v3 - v1),
-            d2 - F1_6 - (F1_6 * (v7 + v3 - 2 * c)) / (v3 - v7),
-          ]);
-          break;
-        case 9:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
-            d2 - F1_6 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
-          ]);
-          break;
-        case 10:
-          a.push([d0 - 0.75 - (0.25 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2), d1 - 0.5, d2 - 0.25 - (0.25 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7)]);
-          break;
-        case 11:
-          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.3 - (0.3 * (v4 + v0 + v5 + v1 + v7 + v3 - 6 * c)) / (v0 - v4 + v1 - v5 + v3 - v7)]);
-          break;
-        case 12:
-          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1), d2 - 0.25 - (0.25 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7)]);
-          break;
-        case 13:
-          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.3 - (0.3 * (v4 + v0 + v6 + v2 + v7 + v3 - 6 * c)) / (v0 - v4 + v2 - v6 + v3 - v7)]);
-          break;
-        case 14:
-          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.3 - (0.3 * (v5 + v1 + v6 + v2 + v7 + v3 - 6 * c)) / (v1 - v5 + v2 - v6 + v3 - v7)]);
-          break;
-        case 15:
-          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5 - (0.5 * (v4 + v0 + v5 + v1 + v6 + v2 + v7 + v3 - 8 * c)) / (v0 - v4 + v1 - v5 + v2 - v6 + v3 - v7)]);
-          break;
-        case 16:
-          a.push([
-            d0 - F1_6 - (F1_6 * (v5 + v4 - 2 * c)) / (v4 - v5),
-            d1 - F1_6 - (F1_6 * (v6 + v4 - 2 * c)) / (v4 - v6),
-            d2 - F5_6 - (F1_6 * (-v4 - v0 + 2 * c)) / (v4 - v0),
-          ]);
-          break;
-        case 17:
-          a.push([d0 - 0.25 - (0.25 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5), d1 - 0.25 - (0.25 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6), d2 - 0.5]);
-          break;
-        case 18:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
-            d1 - F1_6 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
-          ]);
-          break;
-        case 19:
-          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.3 - (0.3 * (v2 + v0 + v3 + v1 + v6 + v4 - 6 * c)) / (v0 - v2 + v1 - v3 + v4 - v6), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
-          break;
-        case 20:
-          a.push([
-            d0 - F1_6 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
-          ]);
-          break;
-        case 21:
-          a.push([d0 - 0.3 - (0.3 * (v1 + v0 + v3 + v2 + v5 + v4 - 6 * c)) / (v0 - v1 + v2 - v3 + v4 - v5), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
-          break;
-        case 22:
-          a.push([
-            d0 - F7_18 - (F1_6 * (-v1 - v0 + v3 + v2 + v5 + v4 - 2 * c)) / (v1 - v0 + v2 - v3 + v4 - v5),
-            d1 - F7_18 - (F1_6 * (-v2 - v0 + v3 + v1 + v6 + v4 - 2 * c)) / (v2 - v0 + v1 - v3 + v4 - v6),
-            d2 - F7_18 - (F1_6 * (-v4 - v0 + v5 + v1 + v6 + v2 - 2 * c)) / (v4 - v0 + v1 - v5 + v2 - v6),
-          ]);
-          break;
-        case 23:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
-          ]);
-          break;
-        case 24:
-          a.push([d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5), d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6), d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7)]);
-          break;
-        case 25:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + v5 + v4 - 2 * c)) / (v0 - v1 + v3 - v2 + v4 - v5),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + v6 + v4 - 2 * c)) / (v0 - v2 + v3 - v1 + v4 - v6),
-            d2 - F5_14 - (F1_14 * (v7 + v3 - 2 * c)) / (v3 - v7),
-          ]);
-          break;
-        case 26:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v5 + v4 + 2 * c)) / (v1 - v0 + v3 - v2 + v4 - v5),
-            d1 - F5_14 - (F1_14 * (v6 + v4 - 2 * c)) / (v4 - v6),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + v7 + v3 - 2 * c)) / (v4 - v0 + v1 - v5 + v3 - v7),
-          ]);
-          break;
-        case 27:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7),
-          ]);
-          break;
-        case 28:
-          a.push([
-            d0 - F5_14 - (F1_14 * (v5 + v4 - 2 * c)) / (v4 - v5),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v6 + v4 + 2 * c)) / (v2 - v0 + v3 - v1 + v4 - v6),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + v6 + v2 + v7 + v3 - 2 * c)) / (v4 - v0 + v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 29:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 30:
-          a.push([
-            d0 - 0.375 - (0.125 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
-            d1 - 0.375 - (0.125 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
-            d2 - 0.5 - (0.25 * (-v4 - v0 + v5 + v1 + v6 + v2 + v7 + v3 - 4 * c)) / (v4 - v0 + v1 - v5 + v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 31:
-          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.7 - (0.3 * (v5 + v1 + v6 + v2 + v7 + v3 - 6 * c)) / (v1 - v5 + v2 - v6 + v3 - v7)]);
-          break;
-        case 32:
-          a.push([
-            d0 - F5_6 - (F1_6 * (-v5 - v4 + 2 * c)) / (v5 - v4),
-            d1 - F1_6 - (F1_6 * (v7 + v5 - 2 * c)) / (v5 - v7),
-            d2 - F5_6 - (F1_6 * (-v5 - v1 + 2 * c)) / (v5 - v1),
-          ]);
-          break;
-        case 33:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
-            d1 - F1_6 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
-          ]);
-          break;
-        case 34:
-          a.push([d0 - 0.75 - (0.25 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4), d1 - 0.25 - (0.25 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7), d2 - 0.5]);
-          break;
-        case 35:
-          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.3 - (0.3 * (v2 + v0 + v3 + v1 + v7 + v5 - 6 * c)) / (v0 - v2 + v1 - v3 + v5 - v7), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
-          break;
-        case 36:
-          a.push([d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4), d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7), d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6)]);
-          break;
-        case 37:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v5 - v4 - 2 * c)) / (v0 - v1 + v2 - v3 + v5 - v4),
-            d1 - F5_14 - (F1_14 * (v7 + v5 - 2 * c)) / (v5 - v7),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + v6 + v2 - 2 * c)) / (v0 - v4 + v5 - v1 + v2 - v6),
-          ]);
-          break;
-        case 38:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + -v5 - v4 + 2 * c)) / (v1 - v0 + v2 - v3 + v5 - v4),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + v7 + v5 - 2 * c)) / (v2 - v0 + v1 - v3 + v5 - v7),
-            d2 - F5_14 - (F1_14 * (v6 + v2 - 2 * c)) / (v2 - v6),
-          ]);
-          break;
-        case 39:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6),
-          ]);
-          break;
-        case 40:
-          a.push([
-            d0 - F5_6 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 41:
-          a.push([
-            d0 - F11_18 - (F1_6 * (v1 + v0 + -v3 - v2 + -v5 - v4 + 2 * c)) / (v0 - v1 + v3 - v2 + v5 - v4),
-            d1 - F7_18 - (F1_6 * (v2 + v0 + -v3 - v1 + v7 + v5 - 2 * c)) / (v0 - v2 + v3 - v1 + v5 - v7),
-            d2 - F7_18 - (F1_6 * (v4 + v0 + -v5 - v1 + v7 + v3 - 2 * c)) / (v0 - v4 + v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 42:
-          a.push([d0 - 0.7 - (0.3 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + 6 * c)) / (v1 - v0 + v3 - v2 + v5 - v4), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
-          break;
-        case 43:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
-          ]);
-          break;
-        case 44:
-          a.push([
-            d0 - F9_14 - (F1_14 * (-v5 - v4 + 2 * c)) / (v5 - v4),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v7 + v5 + 2 * c)) / (v2 - v0 + v3 - v1 + v5 - v7),
-            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + v7 + v3 - 2 * c)) / (v5 - v1 + v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 45:
-          a.push([
-            d0 - 0.625 - (0.125 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
-            d1 - 0.375 - (0.125 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
-            d2 - 0.5 - (0.25 * (v4 + v0 + -v5 - v1 + v6 + v2 + v7 + v3 - 4 * c)) / (v0 - v4 + v5 - v1 + v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 46:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 47:
-          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.7 - (0.3 * (v4 + v0 + v6 + v2 + v7 + v3 - 6 * c)) / (v0 - v4 + v2 - v6 + v3 - v7)]);
-          break;
-        case 48:
-          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7), d2 - 0.75 - (0.25 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1)]);
-          break;
-        case 49:
-          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.3 - (0.3 * (v2 + v0 + v6 + v4 + v7 + v5 - 6 * c)) / (v0 - v2 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
-          break;
-        case 50:
-          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.3 - (0.3 * (v3 + v1 + v6 + v4 + v7 + v5 - 6 * c)) / (v1 - v3 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
-          break;
-        case 51:
-          a.push([d0 - 0.5, d1 - 0.5 - (0.5 * (v2 + v0 + v3 + v1 + v6 + v4 + v7 + v5 - 8 * c)) / (v0 - v2 + v1 - v3 + v4 - v6 + v5 - v7), d2 - 0.5]);
-          break;
-        case 52:
-          a.push([
-            d0 - F5_14 - (F1_14 * (v3 + v2 - 2 * c)) / (v2 - v3),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + v6 + v4 + v7 + v5 - 2 * c)) / (v2 - v0 + v4 - v6 + v5 - v7),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v6 + v2 + 2 * c)) / (v4 - v0 + v5 - v1 + v2 - v6),
-          ]);
-          break;
-        case 53:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3),
-            d1 - 0.5 - (F1_6 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6),
-          ]);
-          break;
-        case 54:
-          a.push([
-            d0 - 0.375 - (0.125 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
-            d1 - 0.5 - (0.25 * (-v2 - v0 + v3 + v1 + v6 + v4 + v7 + v5 - 4 * c)) / (v2 - v0 + v1 - v3 + v4 - v6 + v5 - v7),
-            d2 - 0.375 - (0.125 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
-          ]);
-          break;
-        case 55:
-          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.7 - (0.3 * (v3 + v1 + v6 + v4 + v7 + v5 - 6 * c)) / (v1 - v3 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
-          break;
-        case 56:
-          a.push([
-            d0 - F9_14 - (F1_14 * (-v3 - v2 + 2 * c)) / (v3 - v2),
-            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + v7 + v5 - 2 * c)) / (v3 - v1 + v4 - v6 + v5 - v7),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v7 + v3 + 2 * c)) / (v4 - v0 + v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 57:
-          a.push([
-            d0 - 0.625 - (0.125 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
-            d1 - 0.5 - (0.25 * (v2 + v0 + -v3 - v1 + v6 + v4 + v7 + v5 - 4 * c)) / (v0 - v2 + v3 - v1 + v4 - v6 + v5 - v7),
-            d2 - 0.375 - (0.125 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 58:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2),
-            d1 - 0.5 - (F1_6 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7),
-          ]);
-          break;
-        case 59:
-          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.7 - (0.3 * (v2 + v0 + v6 + v4 + v7 + v5 - 6 * c)) / (v0 - v2 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
-          break;
-        case 60:
-          a.push([d0 - 0.5, d1 - 0.5 - (0.25 * (-v2 - v0 + -v3 - v1 + v6 + v4 + v7 + v5)) / (v2 - v0 + v3 - v1 + v4 - v6 + v5 - v7), d2 - 0.5 - (0.25 * (-v4 - v0 + -v5 - v1 + v6 + v2 + v7 + v3)) / (v4 - v0 + v5 - v1 + v2 - v6 + v3 - v7)]);
-          break;
-        case 61:
-          a.push([
-            d0 - F9_14 - (F1_14 * (v1 + v0 - 2 * c)) / (v0 - v1),
-            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + v7 + v5 - 2 * c)) / (v3 - v1 + v4 - v6 + v5 - v7),
-            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + v7 + v3 - 2 * c)) / (v5 - v1 + v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 62:
-          a.push([
-            d0 - F5_14 - (F1_14 * (-v1 - v0 + 2 * c)) / (v1 - v0),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + v6 + v4 + v7 + v5 - 2 * c)) / (v2 - v0 + v4 - v6 + v5 - v7),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + v6 + v2 + v7 + v3 - 2 * c)) / (v4 - v0 + v2 - v6 + v3 - v7),
-          ]);
-          break;
-        case 63:
-          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (v6 + v4 + v7 + v5 - 4 * c)) / (v4 - v6 + v5 - v7), d2 - 0.75 - (0.25 * (v6 + v2 + v7 + v3 - 4 * c)) / (v2 - v6 + v3 - v7)]);
-          break;
-        case 64:
-          a.push([
-            d0 - F1_6 - (F1_6 * (v7 + v6 - 2 * c)) / (v6 - v7),
-            d1 - F5_6 - (F1_6 * (-v6 - v4 + 2 * c)) / (v6 - v4),
-            d2 - F5_6 - (F1_6 * (-v6 - v2 + 2 * c)) / (v6 - v2),
-          ]);
-          break;
-        case 65:
-          a.push([
-            d0 - F1_6 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
-          ]);
-          break;
-        case 66:
-          a.push([d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7), d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4), d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2)]);
-          break;
-        case 67:
-          a.push([
-            d0 - F5_14 - (F1_14 * (v7 + v6 - 2 * c)) / (v6 - v7),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v6 - v4 - 2 * c)) / (v0 - v2 + v1 - v3 + v6 - v4),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v6 - v2 - 2 * c)) / (v0 - v4 + v1 - v5 + v6 - v2),
-          ]);
-          break;
-        case 68:
-          a.push([d0 - 0.25 - (0.25 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7), d1 - 0.75 - (0.25 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4), d2 - 0.5]);
-          break;
-        case 69:
-          a.push([d0 - 0.3 - (0.3 * (v1 + v0 + v3 + v2 + v7 + v6 - 6 * c)) / (v0 - v1 + v2 - v3 + v6 - v7), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
-          break;
-        case 70:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + v7 + v6 - 2 * c)) / (v1 - v0 + v2 - v3 + v6 - v7),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + -v6 - v4 + 2 * c)) / (v2 - v0 + v1 - v3 + v6 - v4),
-            d2 - F5_14 - (F1_14 * (v5 + v1 - 2 * c)) / (v1 - v5),
-          ]);
-          break;
-        case 71:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5),
-          ]);
-          break;
-        case 72:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
-            d1 - F5_6 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 73:
-          a.push([
-            d0 - F7_18 - (F1_6 * (v1 + v0 + -v3 - v2 + v7 + v6 - 2 * c)) / (v0 - v1 + v3 - v2 + v6 - v7),
-            d1 - F11_18 - (F1_6 * (v2 + v0 + -v3 - v1 + -v6 - v4 + 2 * c)) / (v0 - v2 + v3 - v1 + v6 - v4),
-            d2 - F7_18 - (F1_6 * (v4 + v0 + -v6 - v2 + v7 + v3 - 2 * c)) / (v0 - v4 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 74:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v7 + v6 + 2 * c)) / (v1 - v0 + v3 - v2 + v6 - v7),
-            d1 - F9_14 - (F1_14 * (-v6 - v4 + 2 * c)) / (v6 - v4),
-            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + v7 + v3 - 2 * c)) / (v1 - v5 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 75:
-          a.push([
-            d0 - 0.375 - (0.125 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
-            d1 - 0.625 - (0.125 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
-            d2 - 0.5 - (0.25 * (v4 + v0 + v5 + v1 + -v6 - v2 + v7 + v3 - 4 * c)) / (v0 - v4 + v1 - v5 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 76:
-          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.7 - (0.3 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + 6 * c)) / (v2 - v0 + v3 - v1 + v6 - v4), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
-          break;
-        case 77:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
-          ]);
-          break;
-        case 78:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7),
-          ]);
-          break;
-        case 79:
-          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.7 - (0.3 * (v4 + v0 + v5 + v1 + v7 + v3 - 6 * c)) / (v0 - v4 + v1 - v5 + v3 - v7)]);
-          break;
-        case 80:
-          a.push([d0 - 0.25 - (0.25 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.75 - (0.25 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2)]);
-          break;
-        case 81:
-          a.push([d0 - 0.3 - (0.3 * (v1 + v0 + v5 + v4 + v7 + v6 - 6 * c)) / (v0 - v1 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
-          break;
-        case 82:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + v5 + v4 + v7 + v6 - 2 * c)) / (v1 - v0 + v4 - v5 + v6 - v7),
-            d1 - F5_14 - (F1_14 * (v3 + v1 - 2 * c)) / (v1 - v3),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + -v6 - v2 + 2 * c)) / (v4 - v0 + v1 - v5 + v6 - v2),
-          ]);
-          break;
-        case 83:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2),
-          ]);
-          break;
-        case 84:
-          a.push([d0 - 0.3 - (0.3 * (v3 + v2 + v5 + v4 + v7 + v6 - 6 * c)) / (v2 - v3 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
-          break;
-        case 85:
-          a.push([d0 - 0.5 - (0.5 * (v1 + v0 + v3 + v2 + v5 + v4 + v7 + v6 - 8 * c)) / (v0 - v1 + v2 - v3 + v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.5]);
-          break;
-        case 86:
-          a.push([
-            d0 - 0.5 - (0.25 * (-v1 - v0 + v3 + v2 + v5 + v4 + v7 + v6 - 4 * c)) / (v1 - v0 + v2 - v3 + v4 - v5 + v6 - v7),
-            d1 - 0.375 - (0.125 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
-            d2 - 0.375 - (0.125 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
-          ]);
-          break;
-        case 87:
-          a.push([d0 - 0.7 - (0.3 * (v3 + v2 + v5 + v4 + v7 + v6 - 6 * c)) / (v2 - v3 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
-          break;
-        case 88:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + v7 + v6 - 2 * c)) / (v3 - v2 + v4 - v5 + v6 - v7),
-            d1 - F9_14 - (F1_14 * (-v3 - v1 + 2 * c)) / (v3 - v1),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v6 - v2 + v7 + v3 + 2 * c)) / (v4 - v0 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 89:
-          a.push([
-            d0 - 0.5 - (0.25 * (v1 + v0 + -v3 - v2 + v5 + v4 + v7 + v6 - 4 * c)) / (v0 - v1 + v3 - v2 + v4 - v5 + v6 - v7),
-            d1 - 0.625 - (0.125 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
-            d2 - 0.375 - (0.125 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 90:
-          a.push([d0 - 0.5 - (0.25 * (-v1 - v0 + -v3 - v2 + v5 + v4 + v7 + v6)) / (v1 - v0 + v3 - v2 + v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.5 - (0.25 * (-v4 - v0 + v5 + v1 + -v6 - v2 + v7 + v3)) / (v4 - v0 + v1 - v5 + v6 - v2 + v3 - v7)]);
-          break;
-        case 91:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + v7 + v6 - 2 * c)) / (v3 - v2 + v4 - v5 + v6 - v7),
-            d1 - F9_14 - (F1_14 * (v2 + v0 - 2 * c)) / (v0 - v2),
-            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + v7 + v3 - 2 * c)) / (v1 - v5 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 92:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7),
-          ]);
-          break;
-        case 93:
-          a.push([d0 - 0.7 - (0.3 * (v1 + v0 + v5 + v4 + v7 + v6 - 6 * c)) / (v0 - v1 + v4 - v5 + v6 - v7), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.5 - (0.1 * (v7 + v3 - 2 * c)) / (v3 - v7)]);
-          break;
-        case 94:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + v5 + v4 + v7 + v6 - 2 * c)) / (v1 - v0 + v4 - v5 + v6 - v7),
-            d1 - F5_14 - (F1_14 * (-v2 - v0 + 2 * c)) / (v2 - v0),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + v7 + v3 - 2 * c)) / (v4 - v0 + v1 - v5 + v3 - v7),
-          ]);
-          break;
-        case 95:
-          a.push([d0 - 0.75 - (0.25 * (v5 + v4 + v7 + v6 - 4 * c)) / (v4 - v5 + v6 - v7), d1 - 0.5, d2 - 0.75 - (0.25 * (v5 + v1 + v7 + v3 - 4 * c)) / (v1 - v5 + v3 - v7)]);
-          break;
-        case 96:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
-            d2 - F5_6 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
-          ]);
-          break;
-        case 97:
-          a.push([
-            d0 - F7_18 - (F1_6 * (v1 + v0 + -v5 - v4 + v7 + v6 - 2 * c)) / (v0 - v1 + v5 - v4 + v6 - v7),
-            d1 - F7_18 - (F1_6 * (v2 + v0 + -v6 - v4 + v7 + v5 - 2 * c)) / (v0 - v2 + v6 - v4 + v5 - v7),
-            d2 - F11_18 - (F1_6 * (v4 + v0 + -v5 - v1 + -v6 - v2 + 2 * c)) / (v0 - v4 + v5 - v1 + v6 - v2),
-          ]);
-          break;
-        case 98:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v5 - v4 + v7 + v6 + 2 * c)) / (v1 - v0 + v5 - v4 + v6 - v7),
-            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + v7 + v5 - 2 * c)) / (v1 - v3 + v6 - v4 + v5 - v7),
-            d2 - F9_14 - (F1_14 * (-v6 - v2 + 2 * c)) / (v6 - v2),
-          ]);
-          break;
-        case 99:
-          a.push([
-            d0 - 0.375 - (0.125 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
-            d1 - 0.5 - (0.25 * (v2 + v0 + v3 + v1 + -v6 - v4 + v7 + v5 - 4 * c)) / (v0 - v2 + v1 - v3 + v6 - v4 + v5 - v7),
-            d2 - 0.625 - (0.125 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
-          ]);
-          break;
-        case 100:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + v7 + v6 - 2 * c)) / (v2 - v3 + v5 - v4 + v6 - v7),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v6 - v4 + v7 + v5 + 2 * c)) / (v2 - v0 + v6 - v4 + v5 - v7),
-            d2 - F9_14 - (F1_14 * (-v5 - v1 + 2 * c)) / (v5 - v1),
-          ]);
-          break;
-        case 101:
-          a.push([
-            d0 - 0.5 - (0.25 * (v1 + v0 + v3 + v2 + -v5 - v4 + v7 + v6 - 4 * c)) / (v0 - v1 + v2 - v3 + v5 - v4 + v6 - v7),
-            d1 - 0.375 - (0.125 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
-            d2 - 0.625 - (0.125 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
-          ]);
-          break;
-        case 102:
-          a.push([d0 - 0.5 - (0.25 * (-v1 - v0 + v3 + v2 + -v5 - v4 + v7 + v6)) / (v1 - v0 + v2 - v3 + v5 - v4 + v6 - v7), d1 - 0.5 - (0.25 * (-v2 - v0 + v3 + v1 + -v6 - v4 + v7 + v5)) / (v2 - v0 + v1 - v3 + v6 - v4 + v5 - v7), d2 - 0.5]);
-          break;
-        case 103:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + v7 + v6 - 2 * c)) / (v2 - v3 + v5 - v4 + v6 - v7),
-            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + v7 + v5 - 2 * c)) / (v1 - v3 + v6 - v4 + v5 - v7),
-            d2 - F9_14 - (F1_14 * (v4 + v0 - 2 * c)) / (v0 - v4),
-          ]);
-          break;
-        case 104:
-          a.push([
-            d0 - F11_18 - (F1_6 * (-v3 - v2 + -v5 - v4 + v7 + v6 + 2 * c)) / (v3 - v2 + v5 - v4 + v6 - v7),
-            d1 - F11_18 - (F1_6 * (-v3 - v1 + -v6 - v4 + v7 + v5 + 2 * c)) / (v3 - v1 + v6 - v4 + v5 - v7),
-            d2 - F11_18 - (F1_6 * (-v5 - v1 + -v6 - v2 + v7 + v3 + 2 * c)) / (v5 - v1 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 105:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + -v3 - v2 + -v5 - v4 + v7 + v6)) / (v0 - v1 + v3 - v2 + v5 - v4 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + -v3 - v1 + -v6 - v4 + v7 + v5)) / (v0 - v2 + v3 - v1 + v6 - v4 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + -v5 - v1 + -v6 - v2 + v7 + v3)) / (v0 - v4 + v5 - v1 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 106:
-          a.push([
-            d0 - 0.5 - (0.25 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + v7 + v6 + 4 * c)) / (v1 - v0 + v3 - v2 + v5 - v4 + v6 - v7),
-            d1 - 0.625 - (0.125 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
-            d2 - 0.625 - (0.125 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 107:
-          a.push([
-            d0 - F7_18 - (F1_6 * (-v3 - v2 + -v5 - v4 + v7 + v6 + 2 * c)) / (v3 - v2 + v5 - v4 + v6 - v7),
-            d1 - F11_18 - (F1_6 * (v2 + v0 + -v6 - v4 + v7 + v5 - 2 * c)) / (v0 - v2 + v6 - v4 + v5 - v7),
-            d2 - F11_18 - (F1_6 * (v4 + v0 + -v6 - v2 + v7 + v3 - 2 * c)) / (v0 - v4 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 108:
-          a.push([
-            d0 - 0.625 - (0.125 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
-            d1 - 0.5 - (0.25 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + v7 + v5 + 4 * c)) / (v2 - v0 + v3 - v1 + v6 - v4 + v5 - v7),
-            d2 - 0.625 - (0.125 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 109:
-          a.push([
-            d0 - F11_18 - (F1_6 * (v1 + v0 + -v5 - v4 + v7 + v6 - 2 * c)) / (v0 - v1 + v5 - v4 + v6 - v7),
-            d1 - F7_18 - (F1_6 * (-v3 - v1 + -v6 - v4 + v7 + v5 + 2 * c)) / (v3 - v1 + v6 - v4 + v5 - v7),
-            d2 - F11_18 - (F1_6 * (v4 + v0 + -v5 - v1 + v7 + v3 - 2 * c)) / (v0 - v4 + v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 110:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v5 - v4 + v7 + v6 + 2 * c)) / (v1 - v0 + v5 - v4 + v6 - v7),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v6 - v4 + v7 + v5 + 2 * c)) / (v2 - v0 + v6 - v4 + v5 - v7),
-            d2 - F9_14 - (F1_14 * (v7 + v3 - 2 * c)) / (v3 - v7),
-          ]);
-          break;
-        case 111:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v5 - v4 + v7 + v6)) / (v5 - v4 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (-v6 - v4 + v7 + v5)) / (v6 - v4 + v5 - v7),
-            d2 - F5_6 - (F1_6 * (v4 + v0 + v7 + v3 - 4 * c)) / (v0 - v4 + v3 - v7),
-          ]);
-          break;
-        case 112:
-          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.7 - (0.3 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + 6 * c)) / (v4 - v0 + v5 - v1 + v6 - v2)]);
-          break;
-        case 113:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
-          ]);
-          break;
-        case 114:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2),
-          ]);
-          break;
-        case 115:
-          a.push([d0 - 0.5 - (0.1 * (v7 + v6 - 2 * c)) / (v6 - v7), d1 - 0.7 - (0.3 * (v2 + v0 + v3 + v1 + v7 + v5 - 6 * c)) / (v0 - v2 + v1 - v3 + v5 - v7), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
-          break;
-        case 116:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1),
-          ]);
-          break;
-        case 117:
-          a.push([d0 - 0.7 - (0.3 * (v1 + v0 + v3 + v2 + v7 + v6 - 6 * c)) / (v0 - v1 + v2 - v3 + v6 - v7), d1 - 0.5 - (0.1 * (v7 + v5 - 2 * c)) / (v5 - v7), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
-          break;
-        case 118:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + v7 + v6 - 2 * c)) / (v1 - v0 + v2 - v3 + v6 - v7),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + v7 + v5 - 2 * c)) / (v2 - v0 + v1 - v3 + v5 - v7),
-            d2 - F5_14 - (F1_14 * (-v4 - v0 + 2 * c)) / (v4 - v0),
-          ]);
-          break;
-        case 119:
-          a.push([d0 - 0.75 - (0.25 * (v3 + v2 + v7 + v6 - 4 * c)) / (v2 - v3 + v6 - v7), d1 - 0.75 - (0.25 * (v3 + v1 + v7 + v5 - 4 * c)) / (v1 - v3 + v5 - v7), d2 - 0.5]);
-          break;
-        case 120:
-          a.push([
-            d0 - 0.625 - (0.125 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
-            d1 - 0.625 - (0.125 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
-            d2 - 0.5 - (0.25 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + v7 + v3 + 4 * c)) / (v4 - v0 + v5 - v1 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 121:
-          a.push([
-            d0 - F11_18 - (F1_6 * (v1 + v0 + -v3 - v2 + v7 + v6 - 2 * c)) / (v0 - v1 + v3 - v2 + v6 - v7),
-            d1 - F11_18 - (F1_6 * (v2 + v0 + -v3 - v1 + v7 + v5 - 2 * c)) / (v0 - v2 + v3 - v1 + v5 - v7),
-            d2 - F7_18 - (F1_6 * (-v5 - v1 + -v6 - v2 + v7 + v3 + 2 * c)) / (v5 - v1 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 122:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v7 + v6 + 2 * c)) / (v1 - v0 + v3 - v2 + v6 - v7),
-            d1 - F9_14 - (F1_14 * (v7 + v5 - 2 * c)) / (v5 - v7),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v6 - v2 + v7 + v3 + 2 * c)) / (v4 - v0 + v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 123:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + v7 + v6)) / (v3 - v2 + v6 - v7),
-            d1 - F5_6 - (F1_6 * (v2 + v0 + v7 + v5 - 4 * c)) / (v0 - v2 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v6 - v2 + v7 + v3)) / (v6 - v2 + v3 - v7),
-          ]);
-          break;
-        case 124:
-          a.push([
-            d0 - F9_14 - (F1_14 * (v7 + v6 - 2 * c)) / (v6 - v7),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v7 + v5 + 2 * c)) / (v2 - v0 + v3 - v1 + v5 - v7),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v7 + v3 + 2 * c)) / (v4 - v0 + v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 125:
-          a.push([
-            d0 - F5_6 - (F1_6 * (v1 + v0 + v7 + v6 - 4 * c)) / (v0 - v1 + v6 - v7),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + v7 + v5)) / (v3 - v1 + v5 - v7),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + v7 + v3)) / (v5 - v1 + v3 - v7),
-          ]);
-          break;
-        case 126:
-          a.push([d0 - 0.5 - (F1_6 * (-v1 - v0 + v7 + v6)) / (v1 - v0 + v6 - v7), d1 - 0.5 - (F1_6 * (-v2 - v0 + v7 + v5)) / (v2 - v0 + v5 - v7), d2 - 0.5 - (F1_6 * (-v4 - v0 + v7 + v3)) / (v4 - v0 + v3 - v7)]);
-          break;
-        case 127:
-          a.push([
-            d0 - F5_6 - (F1_6 * (v7 + v6 - 2 * c)) / (v6 - v7),
-            d1 - F5_6 - (F1_6 * (v7 + v5 - 2 * c)) / (v5 - v7),
-            d2 - F5_6 - (F1_6 * (v7 + v3 - 2 * c)) / (v3 - v7),
-          ]);
-          break;
-      }
-    }
-    function vExtra1(m, d0, d1, d2, v0, v1, v2, v3, v4, v5, v6, v7, p0, p1, p2, p3, p4, p5, p6, p7, a, c) {
-      switch (m) {
-        case 0:
-          a.push([
-            d0 - F5_6 - (F1_6 * (-v7 - v6 + 2 * c)) / (v7 - v6),
-            d1 - F5_6 - (F1_6 * (-v7 - v5 + 2 * c)) / (v7 - v5),
-            d2 - F5_6 - (F1_6 * (-v7 - v3 + 2 * c)) / (v7 - v3),
-          ]);
-          break;
-        case 1:
-          a.push([d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6), d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5), d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3)]);
-          break;
-        case 2:
-          a.push([
-            d0 - F5_6 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 3:
-          a.push([
-            d0 - F9_14 - (F1_14 * (-v7 - v6 + 2 * c)) / (v7 - v6),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v7 - v5 - 2 * c)) / (v0 - v2 + v1 - v3 + v7 - v5),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v7 - v3 - 2 * c)) / (v0 - v4 + v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 4:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
-            d1 - F5_6 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 5:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v7 - v6 - 2 * c)) / (v0 - v1 + v2 - v3 + v7 - v6),
-            d1 - F9_14 - (F1_14 * (-v7 - v5 + 2 * c)) / (v7 - v5),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + v6 + v2 + -v7 - v3 - 2 * c)) / (v0 - v4 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 6:
-          a.push([
-            d0 - F11_18 - (F1_6 * (-v1 - v0 + v3 + v2 + -v7 - v6 + 2 * c)) / (v1 - v0 + v2 - v3 + v7 - v6),
-            d1 - F11_18 - (F1_6 * (-v2 - v0 + v3 + v1 + -v7 - v5 + 2 * c)) / (v2 - v0 + v1 - v3 + v7 - v5),
-            d2 - F7_18 - (F1_6 * (v5 + v1 + v6 + v2 + -v7 - v3 - 2 * c)) / (v1 - v5 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 7:
-          a.push([
-            d0 - 0.625 - (0.125 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
-            d1 - 0.625 - (0.125 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
-            d2 - 0.5 - (0.25 * (v4 + v0 + v5 + v1 + v6 + v2 + -v7 - v3 - 4 * c)) / (v0 - v4 + v1 - v5 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 8:
-          a.push([d0 - 0.75 - (0.25 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6), d1 - 0.75 - (0.25 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5), d2 - 0.5]);
-          break;
-        case 9:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + -v7 - v6 + 2 * c)) / (v0 - v1 + v3 - v2 + v7 - v6),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + -v7 - v5 + 2 * c)) / (v0 - v2 + v3 - v1 + v7 - v5),
-            d2 - F5_14 - (F1_14 * (v4 + v0 - 2 * c)) / (v0 - v4),
-          ]);
-          break;
-        case 10:
-          a.push([d0 - 0.7 - (0.3 * (-v1 - v0 + -v3 - v2 + -v7 - v6 + 6 * c)) / (v1 - v0 + v3 - v2 + v7 - v6), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
-          break;
-        case 11:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5),
-          ]);
-          break;
-        case 12:
-          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.7 - (0.3 * (-v2 - v0 + -v3 - v1 + -v7 - v5 + 6 * c)) / (v2 - v0 + v3 - v1 + v7 - v5), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
-          break;
-        case 13:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6),
-          ]);
-          break;
-        case 14:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
-          ]);
-          break;
-        case 15:
-          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.7 - (0.3 * (v4 + v0 + v5 + v1 + v6 + v2 - 6 * c)) / (v0 - v4 + v1 - v5 + v2 - v6)]);
-          break;
-        case 16:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
-            d2 - F5_6 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
-          ]);
-          break;
-        case 17:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + v5 + v4 + -v7 - v6 - 2 * c)) / (v0 - v1 + v4 - v5 + v7 - v6),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + v6 + v4 + -v7 - v5 - 2 * c)) / (v0 - v2 + v4 - v6 + v7 - v5),
-            d2 - F9_14 - (F1_14 * (-v7 - v3 + 2 * c)) / (v7 - v3),
-          ]);
-          break;
-        case 18:
-          a.push([
-            d0 - F11_18 - (F1_6 * (-v1 - v0 + v5 + v4 + -v7 - v6 + 2 * c)) / (v1 - v0 + v4 - v5 + v7 - v6),
-            d1 - F7_18 - (F1_6 * (v3 + v1 + v6 + v4 + -v7 - v5 - 2 * c)) / (v1 - v3 + v4 - v6 + v7 - v5),
-            d2 - F11_18 - (F1_6 * (-v4 - v0 + v5 + v1 + -v7 - v3 + 2 * c)) / (v4 - v0 + v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 19:
-          a.push([
-            d0 - 0.625 - (0.125 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
-            d1 - 0.5 - (0.25 * (v2 + v0 + v3 + v1 + v6 + v4 + -v7 - v5 - 4 * c)) / (v0 - v2 + v1 - v3 + v4 - v6 + v7 - v5),
-            d2 - 0.625 - (0.125 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 20:
-          a.push([
-            d0 - F7_18 - (F1_6 * (v3 + v2 + v5 + v4 + -v7 - v6 - 2 * c)) / (v2 - v3 + v4 - v5 + v7 - v6),
-            d1 - F11_18 - (F1_6 * (-v2 - v0 + v6 + v4 + -v7 - v5 + 2 * c)) / (v2 - v0 + v4 - v6 + v7 - v5),
-            d2 - F11_18 - (F1_6 * (-v4 - v0 + v6 + v2 + -v7 - v3 + 2 * c)) / (v4 - v0 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 21:
-          a.push([
-            d0 - 0.5 - (0.25 * (v1 + v0 + v3 + v2 + v5 + v4 + -v7 - v6 - 4 * c)) / (v0 - v1 + v2 - v3 + v4 - v5 + v7 - v6),
-            d1 - 0.625 - (0.125 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
-            d2 - 0.625 - (0.125 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 22:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + v3 + v2 + v5 + v4 + -v7 - v6)) / (v1 - v0 + v2 - v3 + v4 - v5 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + v3 + v1 + v6 + v4 + -v7 - v5)) / (v2 - v0 + v1 - v3 + v4 - v6 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + v5 + v1 + v6 + v2 + -v7 - v3)) / (v4 - v0 + v1 - v5 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 23:
-          a.push([
-            d0 - F11_18 - (F1_6 * (v3 + v2 + v5 + v4 + -v7 - v6 - 2 * c)) / (v2 - v3 + v4 - v5 + v7 - v6),
-            d1 - F11_18 - (F1_6 * (v3 + v1 + v6 + v4 + -v7 - v5 - 2 * c)) / (v1 - v3 + v4 - v6 + v7 - v5),
-            d2 - F11_18 - (F1_6 * (v5 + v1 + v6 + v2 + -v7 - v3 - 2 * c)) / (v1 - v5 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 24:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + -v7 - v6 + 2 * c)) / (v3 - v2 + v4 - v5 + v7 - v6),
-            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + -v7 - v5 + 2 * c)) / (v3 - v1 + v4 - v6 + v7 - v5),
-            d2 - F9_14 - (F1_14 * (-v4 - v0 + 2 * c)) / (v4 - v0),
-          ]);
-          break;
-        case 25:
-          a.push([d0 - 0.5 - (0.25 * (v1 + v0 + -v3 - v2 + v5 + v4 + -v7 - v6)) / (v0 - v1 + v3 - v2 + v4 - v5 + v7 - v6), d1 - 0.5 - (0.25 * (v2 + v0 + -v3 - v1 + v6 + v4 + -v7 - v5)) / (v0 - v2 + v3 - v1 + v4 - v6 + v7 - v5), d2 - 0.5]);
-          break;
-        case 26:
-          a.push([
-            d0 - 0.5 - (0.25 * (-v1 - v0 + -v3 - v2 + v5 + v4 + -v7 - v6 + 4 * c)) / (v1 - v0 + v3 - v2 + v4 - v5 + v7 - v6),
-            d1 - 0.375 - (0.125 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
-            d2 - 0.625 - (0.125 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
-          ]);
-          break;
-        case 27:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v3 - v2 + v5 + v4 + -v7 - v6 + 2 * c)) / (v3 - v2 + v4 - v5 + v7 - v6),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + v6 + v4 + -v7 - v5 - 2 * c)) / (v0 - v2 + v4 - v6 + v7 - v5),
-            d2 - F9_14 - (F1_14 * (v5 + v1 - 2 * c)) / (v1 - v5),
-          ]);
-          break;
-        case 28:
-          a.push([
-            d0 - 0.375 - (0.125 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
-            d1 - 0.5 - (0.25 * (-v2 - v0 + -v3 - v1 + v6 + v4 + -v7 - v5 + 4 * c)) / (v2 - v0 + v3 - v1 + v4 - v6 + v7 - v5),
-            d2 - 0.625 - (0.125 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
-          ]);
-          break;
-        case 29:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + v5 + v4 + -v7 - v6 - 2 * c)) / (v0 - v1 + v4 - v5 + v7 - v6),
-            d1 - 0.5 - (F3_14 * (-v3 - v1 + v6 + v4 + -v7 - v5 + 2 * c)) / (v3 - v1 + v4 - v6 + v7 - v5),
-            d2 - F9_14 - (F1_14 * (v6 + v2 - 2 * c)) / (v2 - v6),
-          ]);
-          break;
-        case 30:
-          a.push([
-            d0 - F7_18 - (F1_6 * (-v1 - v0 + v5 + v4 + -v7 - v6 + 2 * c)) / (v1 - v0 + v4 - v5 + v7 - v6),
-            d1 - F7_18 - (F1_6 * (-v2 - v0 + v6 + v4 + -v7 - v5 + 2 * c)) / (v2 - v0 + v4 - v6 + v7 - v5),
-            d2 - F11_18 - (F1_6 * (-v4 - v0 + v5 + v1 + v6 + v2 - 2 * c)) / (v4 - v0 + v1 - v5 + v2 - v6),
-          ]);
-          break;
-        case 31:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v5 + v4 + -v7 - v6)) / (v4 - v5 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (v6 + v4 + -v7 - v5)) / (v4 - v6 + v7 - v5),
-            d2 - F5_6 - (F1_6 * (v5 + v1 + v6 + v2 - 4 * c)) / (v1 - v5 + v2 - v6),
-          ]);
-          break;
-        case 32:
-          a.push([d0 - 0.75 - (0.25 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.75 - (0.25 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3)]);
-          break;
-        case 33:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v0 - v1 + v5 - v4 + v7 - v6),
-            d1 - F5_14 - (F1_14 * (v2 + v0 - 2 * c)) / (v0 - v2),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + -v7 - v3 + 2 * c)) / (v0 - v4 + v5 - v1 + v7 - v3),
-          ]);
-          break;
-        case 34:
-          a.push([d0 - 0.7 - (0.3 * (-v1 - v0 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v1 - v0 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
-          break;
-        case 35:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3),
-          ]);
-          break;
-        case 36:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v2 - v3 + v5 - v4 + v7 - v6),
-            d1 - F9_14 - (F1_14 * (-v2 - v0 + 2 * c)) / (v2 - v0),
-            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + -v7 - v3 + 2 * c)) / (v5 - v1 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 37:
-          a.push([d0 - 0.5 - (0.25 * (v1 + v0 + v3 + v2 + -v5 - v4 + -v7 - v6)) / (v0 - v1 + v2 - v3 + v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.5 - (0.25 * (v4 + v0 + -v5 - v1 + v6 + v2 + -v7 - v3)) / (v0 - v4 + v5 - v1 + v2 - v6 + v7 - v3)]);
-          break;
-        case 38:
-          a.push([
-            d0 - 0.5 - (0.25 * (-v1 - v0 + v3 + v2 + -v5 - v4 + -v7 - v6 + 4 * c)) / (v1 - v0 + v2 - v3 + v5 - v4 + v7 - v6),
-            d1 - 0.625 - (0.125 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
-            d2 - 0.375 - (0.125 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 39:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v3 + v2 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v2 - v3 + v5 - v4 + v7 - v6),
-            d1 - F9_14 - (F1_14 * (v3 + v1 - 2 * c)) / (v1 - v3),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + v6 + v2 + -v7 - v3 - 2 * c)) / (v0 - v4 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 40:
-          a.push([d0 - 0.7 - (0.3 * (-v3 - v2 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v3 - v2 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
-          break;
-        case 41:
-          a.push([
-            d0 - 0.5 - (0.25 * (v1 + v0 + -v3 - v2 + -v5 - v4 + -v7 - v6 + 4 * c)) / (v0 - v1 + v3 - v2 + v5 - v4 + v7 - v6),
-            d1 - 0.375 - (0.125 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
-            d2 - 0.375 - (0.125 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
-          ]);
-          break;
-        case 42:
-          a.push([d0 - 0.5 - (0.5 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + -v7 - v6 + 8 * c)) / (v1 - v0 + v3 - v2 + v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.5]);
-          break;
-        case 43:
-          a.push([d0 - 0.3 - (0.3 * (-v3 - v2 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v3 - v2 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
-          break;
-        case 44:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6),
-          ]);
-          break;
-        case 45:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + -v5 - v4 + -v7 - v6 + 2 * c)) / (v0 - v1 + v5 - v4 + v7 - v6),
-            d1 - F5_14 - (F1_14 * (-v3 - v1 + 2 * c)) / (v3 - v1),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + v6 + v2 - 2 * c)) / (v0 - v4 + v5 - v1 + v2 - v6),
-          ]);
-          break;
-        case 46:
-          a.push([d0 - 0.3 - (0.3 * (-v1 - v0 + -v5 - v4 + -v7 - v6 + 6 * c)) / (v1 - v0 + v5 - v4 + v7 - v6), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.5 - (0.1 * (v6 + v2 - 2 * c)) / (v2 - v6)]);
-          break;
-        case 47:
-          a.push([d0 - 0.25 - (0.25 * (-v5 - v4 + -v7 - v6 + 4 * c)) / (v5 - v4 + v7 - v6), d1 - 0.5, d2 - 0.75 - (0.25 * (v4 + v0 + v6 + v2 - 4 * c)) / (v0 - v4 + v2 - v6)]);
-          break;
-        case 48:
-          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.7 - (0.3 * (-v4 - v0 + -v5 - v1 + -v7 - v3 + 6 * c)) / (v4 - v0 + v5 - v1 + v7 - v3)]);
-          break;
-        case 49:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3),
-          ]);
-          break;
-        case 50:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
-          ]);
-          break;
-        case 51:
-          a.push([d0 - 0.5 - (0.1 * (-v7 - v6 + 2 * c)) / (v7 - v6), d1 - 0.7 - (0.3 * (v2 + v0 + v3 + v1 + v6 + v4 - 6 * c)) / (v0 - v2 + v1 - v3 + v4 - v6), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
-          break;
-        case 52:
-          a.push([
-            d0 - 0.375 - (0.125 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
-            d1 - 0.625 - (0.125 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
-            d2 - 0.5 - (0.25 * (-v4 - v0 + -v5 - v1 + v6 + v2 + -v7 - v3 + 4 * c)) / (v4 - v0 + v5 - v1 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 53:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v7 - v6 - 2 * c)) / (v0 - v1 + v2 - v3 + v7 - v6),
-            d1 - F9_14 - (F1_14 * (v6 + v4 - 2 * c)) / (v4 - v6),
-            d2 - 0.5 - (F3_14 * (-v5 - v1 + v6 + v2 + -v7 - v3 + 2 * c)) / (v5 - v1 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 54:
-          a.push([
-            d0 - F7_18 - (F1_6 * (-v1 - v0 + v3 + v2 + -v7 - v6 + 2 * c)) / (v1 - v0 + v2 - v3 + v7 - v6),
-            d1 - F11_18 - (F1_6 * (-v2 - v0 + v3 + v1 + v6 + v4 - 2 * c)) / (v2 - v0 + v1 - v3 + v4 - v6),
-            d2 - F7_18 - (F1_6 * (-v4 - v0 + v6 + v2 + -v7 - v3 + 2 * c)) / (v4 - v0 + v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 55:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + -v7 - v6)) / (v2 - v3 + v7 - v6),
-            d1 - F5_6 - (F1_6 * (v3 + v1 + v6 + v4 - 4 * c)) / (v1 - v3 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (v6 + v2 + -v7 - v3)) / (v2 - v6 + v7 - v3),
-          ]);
-          break;
-        case 56:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1),
-          ]);
-          break;
-        case 57:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + -v7 - v6 + 2 * c)) / (v0 - v1 + v3 - v2 + v7 - v6),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + v6 + v4 - 2 * c)) / (v0 - v2 + v3 - v1 + v4 - v6),
-            d2 - F5_14 - (F1_14 * (-v5 - v1 + 2 * c)) / (v5 - v1),
-          ]);
-          break;
-        case 58:
-          a.push([d0 - 0.3 - (0.3 * (-v1 - v0 + -v3 - v2 + -v7 - v6 + 6 * c)) / (v1 - v0 + v3 - v2 + v7 - v6), d1 - 0.5 - (0.1 * (v6 + v4 - 2 * c)) / (v4 - v6), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
-          break;
-        case 59:
-          a.push([d0 - 0.25 - (0.25 * (-v3 - v2 + -v7 - v6 + 4 * c)) / (v3 - v2 + v7 - v6), d1 - 0.75 - (0.25 * (v2 + v0 + v6 + v4 - 4 * c)) / (v0 - v2 + v4 - v6), d2 - 0.5]);
-          break;
-        case 60:
-          a.push([
-            d0 - F5_14 - (F1_14 * (-v7 - v6 + 2 * c)) / (v7 - v6),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + -v3 - v1 + v6 + v4 + 2 * c)) / (v2 - v0 + v3 - v1 + v4 - v6),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + -v5 - v1 + v6 + v2 + 2 * c)) / (v4 - v0 + v5 - v1 + v2 - v6),
-          ]);
-          break;
-        case 61:
-          a.push([d0 - 0.5 - (F1_6 * (v1 + v0 + -v7 - v6)) / (v0 - v1 + v7 - v6), d1 - 0.5 - (F1_6 * (-v3 - v1 + v6 + v4)) / (v3 - v1 + v4 - v6), d2 - 0.5 - (F1_6 * (-v5 - v1 + v6 + v2)) / (v5 - v1 + v2 - v6)]);
-          break;
-        case 62:
-          a.push([
-            d0 - F1_6 - (F1_6 * (-v1 - v0 + -v7 - v6 + 4 * c)) / (v1 - v0 + v7 - v6),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + v6 + v4)) / (v2 - v0 + v4 - v6),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + v6 + v2)) / (v4 - v0 + v2 - v6),
-          ]);
-          break;
-        case 63:
-          a.push([
-            d0 - F1_6 - (F1_6 * (-v7 - v6 + 2 * c)) / (v7 - v6),
-            d1 - F5_6 - (F1_6 * (v6 + v4 - 2 * c)) / (v4 - v6),
-            d2 - F5_6 - (F1_6 * (v6 + v2 - 2 * c)) / (v2 - v6),
-          ]);
-          break;
-        case 64:
-          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5), d2 - 0.75 - (0.25 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3)]);
-          break;
-        case 65:
-          a.push([
-            d0 - F5_14 - (F1_14 * (v1 + v0 - 2 * c)) / (v0 - v1),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v0 - v2 + v6 - v4 + v7 - v5),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v0 - v4 + v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 66:
-          a.push([
-            d0 - F9_14 - (F1_14 * (-v1 - v0 + 2 * c)) / (v1 - v0),
-            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v1 - v3 + v6 - v4 + v7 - v5),
-            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v1 - v5 + v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 67:
-          a.push([d0 - 0.5, d1 - 0.5 - (0.25 * (v2 + v0 + v3 + v1 + -v6 - v4 + -v7 - v5)) / (v0 - v2 + v1 - v3 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.25 * (v4 + v0 + v5 + v1 + -v6 - v2 + -v7 - v3)) / (v0 - v4 + v1 - v5 + v6 - v2 + v7 - v3)]);
-          break;
-        case 68:
-          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.7 - (0.3 * (-v2 - v0 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v2 - v0 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
-          break;
-        case 69:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3),
-            d1 - 0.5 - (F1_6 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3),
-          ]);
-          break;
-        case 70:
-          a.push([
-            d0 - 0.625 - (0.125 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
-            d1 - 0.5 - (0.25 * (-v2 - v0 + v3 + v1 + -v6 - v4 + -v7 - v5 + 4 * c)) / (v2 - v0 + v1 - v3 + v6 - v4 + v7 - v5),
-            d2 - 0.375 - (0.125 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 71:
-          a.push([
-            d0 - F9_14 - (F1_14 * (v3 + v2 - 2 * c)) / (v2 - v3),
-            d1 - 0.5 - (F3_14 * (v3 + v1 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v1 - v3 + v6 - v4 + v7 - v5),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v7 - v3 - 2 * c)) / (v0 - v4 + v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 72:
-          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.7 - (0.3 * (-v3 - v1 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v3 - v1 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
-          break;
-        case 73:
-          a.push([
-            d0 - 0.375 - (0.125 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
-            d1 - 0.5 - (0.25 * (v2 + v0 + -v3 - v1 + -v6 - v4 + -v7 - v5 + 4 * c)) / (v0 - v2 + v3 - v1 + v6 - v4 + v7 - v5),
-            d2 - 0.375 - (0.125 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
-          ]);
-          break;
-        case 74:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2),
-            d1 - 0.5 - (F1_6 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2),
-          ]);
-          break;
-        case 75:
-          a.push([
-            d0 - F5_14 - (F1_14 * (-v3 - v2 + 2 * c)) / (v3 - v2),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + -v6 - v4 + -v7 - v5 + 2 * c)) / (v0 - v2 + v6 - v4 + v7 - v5),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + v5 + v1 + -v6 - v2 - 2 * c)) / (v0 - v4 + v1 - v5 + v6 - v2),
-          ]);
-          break;
-        case 76:
-          a.push([d0 - 0.5, d1 - 0.5 - (0.5 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + -v7 - v5 + 8 * c)) / (v2 - v0 + v3 - v1 + v6 - v4 + v7 - v5), d2 - 0.5]);
-          break;
-        case 77:
-          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.3 - (0.3 * (-v3 - v1 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v3 - v1 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (v4 + v0 - 2 * c)) / (v0 - v4)]);
-          break;
-        case 78:
-          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.3 - (0.3 * (-v2 - v0 + -v6 - v4 + -v7 - v5 + 6 * c)) / (v2 - v0 + v6 - v4 + v7 - v5), d2 - 0.5 - (0.1 * (v5 + v1 - 2 * c)) / (v1 - v5)]);
-          break;
-        case 79:
-          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (-v6 - v4 + -v7 - v5 + 4 * c)) / (v6 - v4 + v7 - v5), d2 - 0.75 - (0.25 * (v4 + v0 + v5 + v1 - 4 * c)) / (v0 - v4 + v1 - v5)]);
-          break;
-        case 80:
-          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.7 - (0.3 * (-v4 - v0 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v4 - v0 + v6 - v2 + v7 - v3)]);
-          break;
-        case 81:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 82:
-          a.push([
-            d0 - 0.625 - (0.125 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
-            d1 - 0.375 - (0.125 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
-            d2 - 0.5 - (0.25 * (-v4 - v0 + v5 + v1 + -v6 - v2 + -v7 - v3 + 4 * c)) / (v4 - v0 + v1 - v5 + v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 83:
-          a.push([
-            d0 - F9_14 - (F1_14 * (v5 + v4 - 2 * c)) / (v4 - v5),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v7 - v5 - 2 * c)) / (v0 - v2 + v1 - v3 + v7 - v5),
-            d2 - 0.5 - (F3_14 * (v5 + v1 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v1 - v5 + v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 84:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
-          ]);
-          break;
-        case 85:
-          a.push([d0 - 0.7 - (0.3 * (v1 + v0 + v3 + v2 + v5 + v4 - 6 * c)) / (v0 - v1 + v2 - v3 + v4 - v5), d1 - 0.5 - (0.1 * (-v7 - v5 + 2 * c)) / (v7 - v5), d2 - 0.5 - (0.1 * (-v7 - v3 + 2 * c)) / (v7 - v3)]);
-          break;
-        case 86:
-          a.push([
-            d0 - F11_18 - (F1_6 * (-v1 - v0 + v3 + v2 + v5 + v4 - 2 * c)) / (v1 - v0 + v2 - v3 + v4 - v5),
-            d1 - F7_18 - (F1_6 * (-v2 - v0 + v3 + v1 + -v7 - v5 + 2 * c)) / (v2 - v0 + v1 - v3 + v7 - v5),
-            d2 - F7_18 - (F1_6 * (-v4 - v0 + v5 + v1 + -v7 - v3 + 2 * c)) / (v4 - v0 + v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 87:
-          a.push([
-            d0 - F5_6 - (F1_6 * (v3 + v2 + v5 + v4 - 4 * c)) / (v2 - v3 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + -v7 - v5)) / (v1 - v3 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (v5 + v1 + -v7 - v3)) / (v1 - v5 + v7 - v3),
-          ]);
-          break;
-        case 88:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2),
-          ]);
-          break;
-        case 89:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + -v3 - v2 + v5 + v4 - 2 * c)) / (v0 - v1 + v3 - v2 + v4 - v5),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + -v3 - v1 + -v7 - v5 + 2 * c)) / (v0 - v2 + v3 - v1 + v7 - v5),
-            d2 - F5_14 - (F1_14 * (-v6 - v2 + 2 * c)) / (v6 - v2),
-          ]);
-          break;
-        case 90:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + -v3 - v2 + v5 + v4 + 2 * c)) / (v1 - v0 + v3 - v2 + v4 - v5),
-            d1 - F5_14 - (F1_14 * (-v7 - v5 + 2 * c)) / (v7 - v5),
-            d2 - 0.5 - (F3_14 * (-v4 - v0 + v5 + v1 + -v6 - v2 + 2 * c)) / (v4 - v0 + v1 - v5 + v6 - v2),
-          ]);
-          break;
-        case 91:
-          a.push([d0 - 0.5 - (F1_6 * (-v3 - v2 + v5 + v4)) / (v3 - v2 + v4 - v5), d1 - 0.5 - (F1_6 * (v2 + v0 + -v7 - v5)) / (v0 - v2 + v7 - v5), d2 - 0.5 - (F1_6 * (v5 + v1 + -v6 - v2)) / (v1 - v5 + v6 - v2)]);
-          break;
-        case 92:
-          a.push([d0 - 0.5 - (0.1 * (v5 + v4 - 2 * c)) / (v4 - v5), d1 - 0.3 - (0.3 * (-v2 - v0 + -v3 - v1 + -v7 - v5 + 6 * c)) / (v2 - v0 + v3 - v1 + v7 - v5), d2 - 0.5 - (0.1 * (-v4 - v0 + 2 * c)) / (v4 - v0)]);
-          break;
-        case 93:
-          a.push([d0 - 0.75 - (0.25 * (v1 + v0 + v5 + v4 - 4 * c)) / (v0 - v1 + v4 - v5), d1 - 0.25 - (0.25 * (-v3 - v1 + -v7 - v5 + 4 * c)) / (v3 - v1 + v7 - v5), d2 - 0.5]);
-          break;
-        case 94:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + v5 + v4)) / (v1 - v0 + v4 - v5),
-            d1 - F1_6 - (F1_6 * (-v2 - v0 + -v7 - v5 + 4 * c)) / (v2 - v0 + v7 - v5),
-            d2 - 0.5 - (F1_6 * (-v4 - v0 + v5 + v1)) / (v4 - v0 + v1 - v5),
-          ]);
-          break;
-        case 95:
-          a.push([
-            d0 - F5_6 - (F1_6 * (v5 + v4 - 2 * c)) / (v4 - v5),
-            d1 - F1_6 - (F1_6 * (-v7 - v5 + 2 * c)) / (v7 - v5),
-            d2 - F5_6 - (F1_6 * (v5 + v1 - 2 * c)) / (v1 - v5),
-          ]);
-          break;
-        case 96:
-          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.7 - (0.3 * (-v5 - v1 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v5 - v1 + v6 - v2 + v7 - v3)]);
-          break;
-        case 97:
-          a.push([
-            d0 - 0.375 - (0.125 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
-            d1 - 0.375 - (0.125 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
-            d2 - 0.5 - (0.25 * (v4 + v0 + -v5 - v1 + -v6 - v2 + -v7 - v3 + 4 * c)) / (v0 - v4 + v5 - v1 + v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 98:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 99:
-          a.push([
-            d0 - F5_14 - (F1_14 * (-v5 - v4 + 2 * c)) / (v5 - v4),
-            d1 - 0.5 - (F3_14 * (v2 + v0 + v3 + v1 + -v6 - v4 - 2 * c)) / (v0 - v2 + v1 - v3 + v6 - v4),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + -v6 - v2 + -v7 - v3 + 2 * c)) / (v0 - v4 + v6 - v2 + v7 - v3),
-          ]);
-          break;
-        case 100:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3),
-          ]);
-          break;
-        case 101:
-          a.push([
-            d0 - 0.5 - (F3_14 * (v1 + v0 + v3 + v2 + -v5 - v4 - 2 * c)) / (v0 - v1 + v2 - v3 + v5 - v4),
-            d1 - F5_14 - (F1_14 * (-v6 - v4 + 2 * c)) / (v6 - v4),
-            d2 - 0.5 - (F3_14 * (v4 + v0 + -v5 - v1 + -v7 - v3 + 2 * c)) / (v0 - v4 + v5 - v1 + v7 - v3),
-          ]);
-          break;
-        case 102:
-          a.push([
-            d0 - 0.5 - (F3_14 * (-v1 - v0 + v3 + v2 + -v5 - v4 + 2 * c)) / (v1 - v0 + v2 - v3 + v5 - v4),
-            d1 - 0.5 - (F3_14 * (-v2 - v0 + v3 + v1 + -v6 - v4 + 2 * c)) / (v2 - v0 + v1 - v3 + v6 - v4),
-            d2 - F5_14 - (F1_14 * (-v7 - v3 + 2 * c)) / (v7 - v3),
-          ]);
-          break;
-        case 103:
-          a.push([d0 - 0.5 - (F1_6 * (v3 + v2 + -v5 - v4)) / (v2 - v3 + v5 - v4), d1 - 0.5 - (F1_6 * (v3 + v1 + -v6 - v4)) / (v1 - v3 + v6 - v4), d2 - 0.5 - (F1_6 * (v4 + v0 + -v7 - v3)) / (v0 - v4 + v7 - v3)]);
-          break;
-        case 104:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
-          ]);
-          break;
-        case 105:
-          a.push([
-            d0 - F7_18 - (F1_6 * (v1 + v0 + -v3 - v2 + -v5 - v4 + 2 * c)) / (v0 - v1 + v3 - v2 + v5 - v4),
-            d1 - F7_18 - (F1_6 * (v2 + v0 + -v3 - v1 + -v6 - v4 + 2 * c)) / (v0 - v2 + v3 - v1 + v6 - v4),
-            d2 - F7_18 - (F1_6 * (v4 + v0 + -v5 - v1 + -v6 - v2 + 2 * c)) / (v0 - v4 + v5 - v1 + v6 - v2),
-          ]);
-          break;
-        case 106:
-          a.push([d0 - 0.3 - (0.3 * (-v1 - v0 + -v3 - v2 + -v5 - v4 + 6 * c)) / (v1 - v0 + v3 - v2 + v5 - v4), d1 - 0.5 - (0.1 * (-v6 - v4 + 2 * c)) / (v6 - v4), d2 - 0.5 - (0.1 * (-v6 - v2 + 2 * c)) / (v6 - v2)]);
-          break;
-        case 107:
-          a.push([
-            d0 - F1_6 - (F1_6 * (-v3 - v2 + -v5 - v4 + 4 * c)) / (v3 - v2 + v5 - v4),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + -v6 - v4)) / (v0 - v2 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + -v6 - v2)) / (v0 - v4 + v6 - v2),
-          ]);
-          break;
-        case 108:
-          a.push([d0 - 0.5 - (0.1 * (-v5 - v4 + 2 * c)) / (v5 - v4), d1 - 0.3 - (0.3 * (-v2 - v0 + -v3 - v1 + -v6 - v4 + 6 * c)) / (v2 - v0 + v3 - v1 + v6 - v4), d2 - 0.5 - (0.1 * (-v5 - v1 + 2 * c)) / (v5 - v1)]);
-          break;
-        case 109:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + -v5 - v4)) / (v0 - v1 + v5 - v4),
-            d1 - F1_6 - (F1_6 * (-v3 - v1 + -v6 - v4 + 4 * c)) / (v3 - v1 + v6 - v4),
-            d2 - 0.5 - (F1_6 * (v4 + v0 + -v5 - v1)) / (v0 - v4 + v5 - v1),
-          ]);
-          break;
-        case 110:
-          a.push([d0 - 0.25 - (0.25 * (-v1 - v0 + -v5 - v4 + 4 * c)) / (v1 - v0 + v5 - v4), d1 - 0.25 - (0.25 * (-v2 - v0 + -v6 - v4 + 4 * c)) / (v2 - v0 + v6 - v4), d2 - 0.5]);
-          break;
-        case 111:
-          a.push([
-            d0 - F1_6 - (F1_6 * (-v5 - v4 + 2 * c)) / (v5 - v4),
-            d1 - F1_6 - (F1_6 * (-v6 - v4 + 2 * c)) / (v6 - v4),
-            d2 - F5_6 - (F1_6 * (v4 + v0 - 2 * c)) / (v0 - v4),
-          ]);
-          break;
-        case 112:
-          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5 - (0.5 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + -v7 - v3 + 8 * c)) / (v4 - v0 + v5 - v1 + v6 - v2 + v7 - v3)]);
-          break;
-        case 113:
-          a.push([d0 - 0.5 - (0.1 * (v1 + v0 - 2 * c)) / (v0 - v1), d1 - 0.5 - (0.1 * (v2 + v0 - 2 * c)) / (v0 - v2), d2 - 0.3 - (0.3 * (-v5 - v1 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v5 - v1 + v6 - v2 + v7 - v3)]);
-          break;
-        case 114:
-          a.push([d0 - 0.5 - (0.1 * (-v1 - v0 + 2 * c)) / (v1 - v0), d1 - 0.5 - (0.1 * (v3 + v1 - 2 * c)) / (v1 - v3), d2 - 0.3 - (0.3 * (-v4 - v0 + -v6 - v2 + -v7 - v3 + 6 * c)) / (v4 - v0 + v6 - v2 + v7 - v3)]);
-          break;
-        case 115:
-          a.push([d0 - 0.5, d1 - 0.75 - (0.25 * (v2 + v0 + v3 + v1 - 4 * c)) / (v0 - v2 + v1 - v3), d2 - 0.25 - (0.25 * (-v6 - v2 + -v7 - v3 + 4 * c)) / (v6 - v2 + v7 - v3)]);
-          break;
-        case 116:
-          a.push([d0 - 0.5 - (0.1 * (v3 + v2 - 2 * c)) / (v2 - v3), d1 - 0.5 - (0.1 * (-v2 - v0 + 2 * c)) / (v2 - v0), d2 - 0.3 - (0.3 * (-v4 - v0 + -v5 - v1 + -v7 - v3 + 6 * c)) / (v4 - v0 + v5 - v1 + v7 - v3)]);
-          break;
-        case 117:
-          a.push([d0 - 0.75 - (0.25 * (v1 + v0 + v3 + v2 - 4 * c)) / (v0 - v1 + v2 - v3), d1 - 0.5, d2 - 0.25 - (0.25 * (-v5 - v1 + -v7 - v3 + 4 * c)) / (v5 - v1 + v7 - v3)]);
-          break;
-        case 118:
-          a.push([
-            d0 - 0.5 - (F1_6 * (-v1 - v0 + v3 + v2)) / (v1 - v0 + v2 - v3),
-            d1 - 0.5 - (F1_6 * (-v2 - v0 + v3 + v1)) / (v2 - v0 + v1 - v3),
-            d2 - F1_6 - (F1_6 * (-v4 - v0 + -v7 - v3 + 4 * c)) / (v4 - v0 + v7 - v3),
-          ]);
-          break;
-        case 119:
-          a.push([
-            d0 - F5_6 - (F1_6 * (v3 + v2 - 2 * c)) / (v2 - v3),
-            d1 - F5_6 - (F1_6 * (v3 + v1 - 2 * c)) / (v1 - v3),
-            d2 - F1_6 - (F1_6 * (-v7 - v3 + 2 * c)) / (v7 - v3),
-          ]);
-          break;
-        case 120:
-          a.push([d0 - 0.5 - (0.1 * (-v3 - v2 + 2 * c)) / (v3 - v2), d1 - 0.5 - (0.1 * (-v3 - v1 + 2 * c)) / (v3 - v1), d2 - 0.3 - (0.3 * (-v4 - v0 + -v5 - v1 + -v6 - v2 + 6 * c)) / (v4 - v0 + v5 - v1 + v6 - v2)]);
-          break;
-        case 121:
-          a.push([
-            d0 - 0.5 - (F1_6 * (v1 + v0 + -v3 - v2)) / (v0 - v1 + v3 - v2),
-            d1 - 0.5 - (F1_6 * (v2 + v0 + -v3 - v1)) / (v0 - v2 + v3 - v1),
-            d2 - F1_6 - (F1_6 * (-v5 - v1 + -v6 - v2 + 4 * c)) / (v5 - v1 + v6 - v2),
-          ]);
-          break;
-        case 122:
-          a.push([d0 - 0.25 - (0.25 * (-v1 - v0 + -v3 - v2 + 4 * c)) / (v1 - v0 + v3 - v2), d1 - 0.5, d2 - 0.25 - (0.25 * (-v4 - v0 + -v6 - v2 + 4 * c)) / (v4 - v0 + v6 - v2)]);
-          break;
-        case 123:
-          a.push([
-            d0 - F1_6 - (F1_6 * (-v3 - v2 + 2 * c)) / (v3 - v2),
-            d1 - F5_6 - (F1_6 * (v2 + v0 - 2 * c)) / (v0 - v2),
-            d2 - F1_6 - (F1_6 * (-v6 - v2 + 2 * c)) / (v6 - v2),
-          ]);
-          break;
-        case 124:
-          a.push([d0 - 0.5, d1 - 0.25 - (0.25 * (-v2 - v0 + -v3 - v1 + 4 * c)) / (v2 - v0 + v3 - v1), d2 - 0.25 - (0.25 * (-v4 - v0 + -v5 - v1 + 4 * c)) / (v4 - v0 + v5 - v1)]);
-          break;
-        case 125:
-          a.push([
-            d0 - F5_6 - (F1_6 * (v1 + v0 - 2 * c)) / (v0 - v1),
-            d1 - F1_6 - (F1_6 * (-v3 - v1 + 2 * c)) / (v3 - v1),
-            d2 - F1_6 - (F1_6 * (-v5 - v1 + 2 * c)) / (v5 - v1),
-          ]);
-          break;
-        case 126:
-          a.push([
-            d0 - F1_6 - (F1_6 * (-v1 - v0 + 2 * c)) / (v1 - v0),
-            d1 - F1_6 - (F1_6 * (-v2 - v0 + 2 * c)) / (v2 - v0),
-            d2 - F1_6 - (F1_6 * (-v4 - v0 + 2 * c)) / (v4 - v0),
-          ]);
-          break;
-        case 127:
-          a.push([d0 - 0.5, d1 - 0.5, d2 - 0.5]);
-          break;
-      }
-    }
-  },
+  }
 }
 
 function buildSurfaceNets(order, dtype) {
@@ -121486,7 +120007,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.5.0';
+exports.version = '2.5.1';
 
 },{}]},{},[8])(8)
 });
