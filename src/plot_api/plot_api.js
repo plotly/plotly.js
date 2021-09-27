@@ -3729,6 +3729,9 @@ function makePlotFramework(gd) {
     // single polar layer for the whole plot
     fullLayout._polarlayer = fullLayout._paper.append('g').classed('polarlayer', true);
 
+    // single smith layer for the whole plot
+    fullLayout._smithlayer = fullLayout._paper.append('g').classed('smithlayer', true);
+
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
 

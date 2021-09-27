@@ -1,0 +1,49 @@
+{
+  "data": [
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "mode": "markers+lines"
+    },
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, null, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "mode": "markers+lines",
+      "subplot": "smith2"
+    },
+    {
+      "type": "scattersmith",
+      "re": [0, 0.1, null, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
+      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "connectgaps": true,
+      "mode": "markers+lines",
+      "subplot": "smith3"
+    }
+   ],
+  "layout": {
+    "smith": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0.56, 1]
+      }
+    },
+    "smith2": {
+      "domain": {
+        "x": [0, 0.46],
+        "y": [0, 0.44]
+      }
+    },
+    "smith3": {
+      "domain": {
+        "x": [0.54, 1],
+        "y": [0.56, 1]
+      }
+    },
+    "showlegend": false,
+    "margin": {"t": 40, "b": 40, "r": 40, "l": 40},
+    "width": 800,
+    "height": 800
+  }
+}
