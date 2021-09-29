@@ -17,12 +17,8 @@ var axisLineGridAttr = overrideAll({
 }, 'plot', 'from-root');
 
 var axisTickAttrs = overrideAll({
-    tickmode: axesAttrs.tickmode,
-    tickvals: axesAttrs.tickvals,
-    ticktext: axesAttrs.ticktext,
-    ticks: axesAttrs.ticks,
     ticklen: axesAttrs.ticklen,
-    tickwidth: axesAttrs.tickwidth,
+    tickwidth: extendFlat({}, axesAttrs.tickwidth, {dflt: 2}),
     tickcolor: axesAttrs.tickcolor,
     showticklabels: axesAttrs.showticklabels,
     showtickprefix: axesAttrs.showtickprefix,
@@ -34,38 +30,54 @@ var axisTickAttrs = overrideAll({
     minexponent: axesAttrs.minexponent,
     separatethousands: axesAttrs.separatethousands,
     tickfont: axesAttrs.tickfont,
-    tickangle: axesAttrs.tickangle,
     tickformat: axesAttrs.tickformat,
-    tickformatstops: axesAttrs.tickformatstops,
+    hoverformat: axesAttrs.hoverformat,
     layer: axesAttrs.layer
 }, 'plot', 'from-root');
 
 var realAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
+    tickvals: {
+        dflt: [
+            0.2, 0.4, 0.6, 0.8,
+            1, 1.5, 2, 3, 4, 5, 10, 20
+        ],
+        valType: 'data_array',
+        editType: 'plot',
+        description: 'Sets the values at which ticks on this axis appear.'
+    },
+
+    tickangle: extendFlat({}, axesAttrs.tickangle, {dflt: 90}),
+
+    ticks: {
+        valType: 'enumerated',
+        values: ['top', 'bottom', ''],
+        editType: 'ticks',
+        description: [
+            'Determines whether ticks are drawn or not.',
+            'If **, this axis\' ticks are not drawn.',
+            'If *top* (*bottom*), this axis\' are drawn above (below)',
+            'the axis line.'
+        ].join(' ')
+    },
+
+    side: {
+        valType: 'enumerated',
+        values: ['top', 'bottom'],
+        dflt: 'top',
+        editType: 'plot',
+        description: [
+            'Determines on which side of real axis line',
+            'the tick and tick labels appear.'
+        ].join(' ')
+    },
+
     title: {
-        // radial title is not gui-editable at the moment,
-        // so it needs dflt: '', similar to carpet axes.
         text: extendFlat({}, axesAttrs.title.text, {editType: 'plot', dflt: ''}),
         font: extendFlat({}, axesAttrs.title.font, {editType: 'plot'}),
 
-        // TODO
-        // - might need a 'titleside' and even 'titledirection' down the road
-        // - what about standoff ??
-
         editType: 'plot'
-    },
-
-    hoverformat: axesAttrs.hoverformat,
-
-    uirevision: {
-        valType: 'any',
-        editType: 'none',
-        description: [
-            'Controls persistence of user-driven changes in axis `range`,',
-            '`autorange`, `angle`, and `title` if in `editable: true` configuration.',
-            'Defaults to `smith<N>.uirevision`.'
-        ].join(' ')
     },
 
     editType: 'calc',
@@ -73,9 +85,6 @@ var realAxisAttrs = {
 
 extendFlat(
     realAxisAttrs,
-
-    // N.B. realaxis grid lines are circular,
-    // but realaxis lines are straight from circle center to outer bound
     axisLineGridAttr,
     axisTickAttrs
 );
@@ -83,60 +92,32 @@ extendFlat(
 var imaginaryAxisAttrs = {
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
-    direction: {
-        valType: 'enumerated',
-        values: ['counterclockwise', 'clockwise'],
-        dflt: 'counterclockwise',
-        editType: 'calc',
-        description: [
-            'Sets the direction corresponding to positive angles.'
-        ].join(' ')
+    tickvals: {
+        dflt: [
+            -20, -10, -5, -4, -3, -2, -1.5, -1,
+            -0.8, -0.6, -0.4, -0.2,
+            0, 0.2, 0.4, 0.6, 0.8,
+            1, 1.5, 2, 3, 4, 5, 10, 20
+        ],
+        valType: 'data_array',
+        editType: 'plot',
+        description: 'Sets the values at which ticks on this axis appear.'
     },
 
-    rotation: {
-        valType: 'angle',
-        editType: 'calc',
-        description: [
-            'Sets that start position (in degrees) of the angular axis',
-            'By default, smith subplots with `direction` set to *counterclockwise*',
-            'get a `rotation` of *0*',
-            'which corresponds to due East (like what mathematicians prefer).',
-            'In turn, smith with `direction` set to *clockwise* get a rotation of *90*',
-            'which corresponds to due North (like on a compass),'
-        ].join(' ')
-    },
+    tickangle: axesAttrs.tickangle,
 
-    hoverformat: axesAttrs.hoverformat,
-
-    uirevision: {
-        valType: 'any',
-        editType: 'none',
-        description: [
-            'Controls persistence of user-driven changes in axis `rotation`.',
-            'Defaults to `smith<N>.uirevision`.'
-        ].join(' ')
-    },
+    ticks: axesAttrs.ticks,
 
     editType: 'calc'
 };
 
 extendFlat(
     imaginaryAxisAttrs,
-
-    // N.B. angular grid lines are straight lines from circle center to outer bound
-    // the angular line is circular bounding the smith plot area.
     axisLineGridAttr,
-
-    // N.B. ticksuffix defaults to '°' for angular axes with `thetaunit: 'degrees'`
     axisTickAttrs
 );
 
 module.exports = {
-    // TODO for x/y/zoom system for paper-based zooming:
-    // x: {},
-    // y: {},
-    // zoom: {},
-
     domain: domainAttrs({name: 'smith', editType: 'plot'}),
 
     bgcolor: {
@@ -148,16 +129,6 @@ module.exports = {
 
     realaxis: realAxisAttrs,
     imaginaryaxis: imaginaryAxisAttrs,
-
-    uirevision: {
-        valType: 'any',
-        editType: 'none',
-        description: [
-            'Controls persistence of user-driven changes in axis attributes,',
-            'if not overridden in the individual axes.',
-            'Defaults to `layout.uirevision`.'
-        ].join(' ')
-    },
 
     editType: 'calc'
 };

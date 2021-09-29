@@ -3,7 +3,7 @@
 var getSubplotCalcData = require('../get_data').getSubplotCalcData;
 var counterRegex = require('../../lib').counterRegex;
 
-var createSmith = require('./smith');
+var createPolar = require('../polar/polar');
 var constants = require('./constants');
 
 var attr = constants.attr;
@@ -34,7 +34,7 @@ function plot(gd) {
         var subplot = fullLayout[id]._subplot;
 
         if(!subplot) {
-            subplot = createSmith(gd, id);
+            subplot = createPolar(gd, id, true);
             fullLayout[id]._subplot = subplot;
         }
 
@@ -44,7 +44,6 @@ function plot(gd) {
 
 function clean(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var oldIds = oldFullLayout._subplots[name] || [];
-
     for(var i = 0; i < oldIds.length; i++) {
         var id = oldIds[i];
         var oldSubplot = oldFullLayout[id]._subplot;

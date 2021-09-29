@@ -7361,16 +7361,6 @@
       "editType": "plot",
       "valType": "color"
      },
-     "direction": {
-      "description": "Sets the direction corresponding to positive angles.",
-      "dflt": "counterclockwise",
-      "editType": "calc",
-      "valType": "enumerated",
-      "values": [
-       "counterclockwise",
-       "clockwise"
-      ]
-     },
      "editType": "plot",
      "exponentformat": {
       "description": "Determines a formatting rule for the tick exponents. For example, consider the number 1,000,000,000. If *none*, it appears as 1,000,000,000. If *e*, 1e+9. If *E*, 1E+9. If *power*, 1x10^9 (with 9 in a super script). If *SI*, 1G. If *B*, 1B.",
@@ -7402,7 +7392,7 @@
      "hoverformat": {
       "description": "Sets the hover text formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. And for dates see: https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format. We add two items to d3's date formatter: *%h* for half of the year as a decimal number as well as *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*",
       "dflt": "",
-      "editType": "none",
+      "editType": "plot",
       "valType": "string"
      },
      "layer": {
@@ -7436,11 +7426,6 @@
       "valType": "number"
      },
      "role": "object",
-     "rotation": {
-      "description": "Sets that start position (in degrees) of the angular axis By default, smith subplots with `direction` set to *counterclockwise* get a `rotation` of *0* which corresponds to due East (like what mathematicians prefer). In turn, smith with `direction` set to *clockwise* get a rotation of *90* which corresponds to due North (like on a compass),",
-      "editType": "calc",
-      "valType": "angle"
-     },
      "separatethousands": {
       "description": "If \"true\", even 4-digit integers are separated",
       "dflt": false,
@@ -7504,7 +7489,7 @@
      "tickangle": {
       "description": "Sets the angle of the tick labels with respect to the horizontal. For example, a `tickangle` of -90 draws the tick labels vertically.",
       "dflt": "auto",
-      "editType": "plot",
+      "editType": "ticks",
       "valType": "angle"
      },
      "tickcolor": {
@@ -7540,69 +7525,12 @@
       "editType": "plot",
       "valType": "string"
      },
-     "tickformatstops": {
-      "items": {
-       "tickformatstop": {
-        "dtickrange": {
-         "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*",
-         "editType": "plot",
-         "items": [
-          {
-           "editType": "plot",
-           "valType": "any"
-          },
-          {
-           "editType": "plot",
-           "valType": "any"
-          }
-         ],
-         "valType": "info_array"
-        },
-        "editType": "plot",
-        "enabled": {
-         "description": "Determines whether or not this stop is used. If `false`, this stop is ignored even within its `dtickrange`.",
-         "dflt": true,
-         "editType": "plot",
-         "valType": "boolean"
-        },
-        "name": {
-         "description": "When used in a template, named items are created in the output figure in addition to any items the figure already has in this array. You can modify these items in the output figure by making your own item with `templateitemname` matching this `name` alongside your modifications (including `visible: false` or `enabled: false` to hide it). Has no effect outside of a template.",
-         "editType": "plot",
-         "valType": "string"
-        },
-        "role": "object",
-        "templateitemname": {
-         "description": "Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`.",
-         "editType": "plot",
-         "valType": "string"
-        },
-        "value": {
-         "description": "string - dtickformat for described zoom level, the same as *tickformat*",
-         "dflt": "",
-         "editType": "plot",
-         "valType": "string"
-        }
-       }
-      },
-      "role": "object"
-     },
      "ticklen": {
       "description": "Sets the tick length (in px).",
       "dflt": 5,
       "editType": "plot",
       "min": 0,
       "valType": "number"
-     },
-     "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "enumerated",
-      "values": [
-       "auto",
-       "linear",
-       "array"
-      ]
      },
      "tickprefix": {
       "description": "Sets a tick label prefix.",
@@ -7612,7 +7540,7 @@
      },
      "ticks": {
       "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
-      "editType": "plot",
+      "editType": "ticks",
       "valType": "enumerated",
       "values": [
        "outside",
@@ -7626,18 +7554,35 @@
       "editType": "plot",
       "valType": "string"
      },
-     "ticktext": {
-      "description": "Sets the text displayed at the ticks position via `tickvals`. Only has an effect if `tickmode` is set to *array*. Used with `tickvals`.",
-      "editType": "plot",
-      "valType": "data_array"
-     },
-     "ticktextsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for  ticktext .",
-      "editType": "none",
-      "valType": "string"
-     },
      "tickvals": {
-      "description": "Sets the values at which ticks on this axis appear. Only has an effect if `tickmode` is set to *array*. Used with `ticktext`.",
+      "description": "Sets the values at which ticks on this axis appear.",
+      "dflt": [
+       -20,
+       -10,
+       -5,
+       -4,
+       -3,
+       -2,
+       -1.5,
+       -1,
+       -0.8,
+       -0.6,
+       -0.4,
+       -0.2,
+       0,
+       0.2,
+       0.4,
+       0.6,
+       0.8,
+       1,
+       1.5,
+       2,
+       3,
+       4,
+       5,
+       10,
+       20
+      ],
       "editType": "plot",
       "valType": "data_array"
      },
@@ -7648,15 +7593,10 @@
      },
      "tickwidth": {
       "description": "Sets the tick width (in px).",
-      "dflt": 1,
+      "dflt": 2,
       "editType": "plot",
       "min": 0,
       "valType": "number"
-     },
-     "uirevision": {
-      "description": "Controls persistence of user-driven changes in axis `rotation`. Defaults to `smith<N>.uirevision`.",
-      "editType": "none",
-      "valType": "any"
      },
      "visible": {
       "description": "A single toggle to hide the axis while preserving interaction like dragging. Default is true when a cheater plot is present on the axis, otherwise false",
@@ -7703,7 +7643,7 @@
      "hoverformat": {
       "description": "Sets the hover text formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format. And for dates see: https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format. We add two items to d3's date formatter: *%h* for half of the year as a decimal number as well as *%{n}f* for fractional seconds with n digits. For example, *2016-10-13 09:15:23.456* with tickformat *%H~%M~%S.%2f* would display *09~15~23.46*",
       "dflt": "",
-      "editType": "none",
+      "editType": "plot",
       "valType": "string"
      },
      "layer": {
@@ -7797,10 +7737,20 @@
        "none"
       ]
      },
+     "side": {
+      "description": "Determines on which side of real axis line the tick and tick labels appear.",
+      "dflt": "top",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "top",
+       "bottom"
+      ]
+     },
      "tickangle": {
       "description": "Sets the angle of the tick labels with respect to the horizontal. For example, a `tickangle` of -90 draws the tick labels vertically.",
-      "dflt": "auto",
-      "editType": "plot",
+      "dflt": 90,
+      "editType": "ticks",
       "valType": "angle"
      },
      "tickcolor": {
@@ -7836,69 +7786,12 @@
       "editType": "plot",
       "valType": "string"
      },
-     "tickformatstops": {
-      "items": {
-       "tickformatstop": {
-        "dtickrange": {
-         "description": "range [*min*, *max*], where *min*, *max* - dtick values which describe some zoom level, it is possible to omit *min* or *max* value by passing *null*",
-         "editType": "plot",
-         "items": [
-          {
-           "editType": "plot",
-           "valType": "any"
-          },
-          {
-           "editType": "plot",
-           "valType": "any"
-          }
-         ],
-         "valType": "info_array"
-        },
-        "editType": "plot",
-        "enabled": {
-         "description": "Determines whether or not this stop is used. If `false`, this stop is ignored even within its `dtickrange`.",
-         "dflt": true,
-         "editType": "plot",
-         "valType": "boolean"
-        },
-        "name": {
-         "description": "When used in a template, named items are created in the output figure in addition to any items the figure already has in this array. You can modify these items in the output figure by making your own item with `templateitemname` matching this `name` alongside your modifications (including `visible: false` or `enabled: false` to hide it). Has no effect outside of a template.",
-         "editType": "plot",
-         "valType": "string"
-        },
-        "role": "object",
-        "templateitemname": {
-         "description": "Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`.",
-         "editType": "plot",
-         "valType": "string"
-        },
-        "value": {
-         "description": "string - dtickformat for described zoom level, the same as *tickformat*",
-         "dflt": "",
-         "editType": "plot",
-         "valType": "string"
-        }
-       }
-      },
-      "role": "object"
-     },
      "ticklen": {
       "description": "Sets the tick length (in px).",
       "dflt": 5,
       "editType": "plot",
       "min": 0,
       "valType": "number"
-     },
-     "tickmode": {
-      "description": "Sets the tick mode for this axis. If *auto*, the number of ticks is set via `nticks`. If *linear*, the placement of the ticks is determined by a starting position `tick0` and a tick step `dtick` (*linear* is the default value if `tick0` and `dtick` are provided). If *array*, the placement of the ticks is set via `tickvals` and the tick text is `ticktext`. (*array* is the default value if `tickvals` is provided).",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "enumerated",
-      "values": [
-       "auto",
-       "linear",
-       "array"
-      ]
      },
      "tickprefix": {
       "description": "Sets a tick label prefix.",
@@ -7907,12 +7800,12 @@
       "valType": "string"
      },
      "ticks": {
-      "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *outside* (*inside*), this axis' are drawn outside (inside) the axis lines.",
-      "editType": "plot",
+      "description": "Determines whether ticks are drawn or not. If **, this axis' ticks are not drawn. If *top* (*bottom*), this axis' are drawn above (below) the axis line.",
+      "editType": "ticks",
       "valType": "enumerated",
       "values": [
-       "outside",
-       "inside",
+       "top",
+       "bottom",
        ""
       ]
      },
@@ -7922,18 +7815,22 @@
       "editType": "plot",
       "valType": "string"
      },
-     "ticktext": {
-      "description": "Sets the text displayed at the ticks position via `tickvals`. Only has an effect if `tickmode` is set to *array*. Used with `tickvals`.",
-      "editType": "plot",
-      "valType": "data_array"
-     },
-     "ticktextsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for  ticktext .",
-      "editType": "none",
-      "valType": "string"
-     },
      "tickvals": {
-      "description": "Sets the values at which ticks on this axis appear. Only has an effect if `tickmode` is set to *array*. Used with `ticktext`.",
+      "description": "Sets the values at which ticks on this axis appear.",
+      "dflt": [
+       0.2,
+       0.4,
+       0.6,
+       0.8,
+       1,
+       1.5,
+       2,
+       3,
+       4,
+       5,
+       10,
+       20
+      ],
       "editType": "plot",
       "valType": "data_array"
      },
@@ -7944,7 +7841,7 @@
      },
      "tickwidth": {
       "description": "Sets the tick width (in px).",
-      "dflt": 1,
+      "dflt": 2,
       "editType": "plot",
       "min": 0,
       "valType": "number"
@@ -7980,11 +7877,6 @@
        "valType": "string"
       }
      },
-     "uirevision": {
-      "description": "Controls persistence of user-driven changes in axis `range`, `autorange`, `angle`, and `title` if in `editable: true` configuration. Defaults to `smith<N>.uirevision`.",
-      "editType": "none",
-      "valType": "any"
-     },
      "visible": {
       "description": "A single toggle to hide the axis while preserving interaction like dragging. Default is true when a cheater plot is present on the axis, otherwise false",
       "dflt": true,
@@ -7992,12 +7884,7 @@
       "valType": "boolean"
      }
     },
-    "role": "object",
-    "uirevision": {
-     "description": "Controls persistence of user-driven changes in axis attributes, if not overridden in the individual axes. Defaults to `layout.uirevision`.",
-     "editType": "none",
-     "valType": "any"
-    }
+    "role": "object"
    },
    "spikedistance": {
     "description": "Sets the default distance (in pixels) to look for data to draw spikelines to (-1 means no cutoff, 0 means no looking for data). As with hoverdistance, distance does not apply to area-like objects. In addition, some objects can be hovered on but will not generate spikelines, such as scatter fills.",
@@ -56481,7 +56368,7 @@
    "attributes": {
     "cliponaxis": {
      "description": "Determines whether or not markers and text nodes are clipped about the subplot axes. To show markers and text nodes above axis lines and tick labels, make sure to set `xaxis.layer` and `yaxis.layer` to *below traces*.",
-     "dflt": false,
+     "dflt": true,
      "editType": "plot",
      "valType": "boolean"
     },
@@ -56528,9 +56415,8 @@
       "skip"
      ],
      "flags": [
-      "x",
-      "y",
-      "z",
+      "real",
+      "imag",
       "text",
       "name"
      ],
@@ -56679,13 +56565,13 @@
      "editType": "none",
      "valType": "string"
     },
-    "im": {
+    "imag": {
      "description": "Sets the imaginary coordinates",
      "editType": "calc+clearAxisTypes",
      "valType": "data_array"
     },
-    "imsrc": {
-     "description": "Sets the source reference on Chart Studio Cloud for  im .",
+    "imagsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for  imag .",
      "editType": "none",
      "valType": "string"
     },
@@ -58034,13 +57920,13 @@
      "min": 0,
      "valType": "number"
     },
-    "re": {
+    "real": {
      "description": "Sets the real coordinates",
      "editType": "calc+clearAxisTypes",
      "valType": "data_array"
     },
-    "resrc": {
-     "description": "Sets the source reference on Chart Studio Cloud for  re .",
+    "realsrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for  real .",
      "editType": "none",
      "valType": "string"
     },
@@ -58191,7 +58077,7 @@
     },
     "texttemplate": {
      "arrayOk": true,
-     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. variables `re`, `im` and `text`.",
+     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. variables `real`, `imag` and `text`.",
      "dflt": "",
      "editType": "plot",
      "valType": "string"
@@ -58270,12 +58156,13 @@
     }
    },
    "categories": [
+    "smith",
     "symbols",
     "showLegend",
     "scatter-like"
    ],
    "meta": {
-    "description": "The scattersmith trace type encompasses line charts, scatter charts, text charts, and bubble charts in smith chart coordinates. The data visualized as scatter point or lines is set in `re` (real) and `im` (imaginary) coordinates Text (appearing either on the chart or on hover only) is via `text`. Bubble charts are achieved by setting `marker.size` and/or `marker.color` to numerical arrays.",
+    "description": "The scattersmith trace type encompasses line charts, scatter charts, text charts, and bubble charts in smith coordinates. The data visualized as scatter point or lines is set in `real` and `imag` (imaginary) coordinates Text (appearing either on the chart or on hover only) is via `text`. Bubble charts are achieved by setting `marker.size` and/or `marker.color` to numerical arrays.",
     "hrName": "scatter_smith"
    },
    "type": "scattersmith"

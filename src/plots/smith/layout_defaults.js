@@ -7,7 +7,7 @@ var Template = require('../../plot_api/plot_template');
 var handleSubplotDefaults = require('../subplot_defaults');
 var getSubplotData = require('../get_data').getSubplotData;
 
-var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
+var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 
 var layoutAttributes = require('./layout_attributes');
@@ -40,12 +40,12 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut._id = axOut._name = axName;
         axOut._attr = opts.id + '.' + axName;
         axOut._traceIndices = subplotData.map(function(t) { return t._expandedIndex; });
-        axOut.type = 'linear';
 
         var visible = coerceAxis('visible');
-        setConvert(axOut, contOut, layoutOut);
 
-        coerceAxis('uirevision', contOut.uirevision);
+        axOut.type = 'linear';
+        setConvert(axOut, contOut, layoutOut);
+        delete axOut.type;
 
         var dfltColor;
         var dfltFontColor;
@@ -56,8 +56,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         // We don't want to make downstream code call ax.setScale,
-        // as both radial and angular axes don't have a set domain.
-        // Furthermore, angular axes don't have a set range.
+        // as both real and imaginary axes don't have a set domain.
+        // Furthermore, imaginary axes don't have a set range.
         //
         // Mocked domains and ranges are set by the smith subplot instances,
         // but Axes.findExtremes uses the sign of _m to determine which padding value
@@ -67,29 +67,31 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // range[1] > range[0], and vice-versa for `autorange: 'reversed'` below.
         axOut._m = 1;
 
-        switch(axName) {
-            case 'realaxis':
-                axIn.autorange = false;
-                axOut.cleanRange('range', {dfltRange: [0, 1]});
-
-                if(visible) {
-                    coerceAxis('title.text');
-                    Lib.coerceFont(coerceAxis, 'title.font', {
-                        family: opts.font.family,
-                        size: Lib.bigFont(opts.font.size),
-                        color: dfltFontColor
-                    });
-                }
-                break;
-
-            case 'imaginaryaxis':
-                var direction = coerceAxis('direction');
-                coerceAxis('rotation', {counterclockwise: 0, clockwise: 90}[direction]);
-                break;
-        }
-
         if(visible) {
-            handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
+            if(axName === 'realaxis') {
+                coerceAxis('side');
+
+                coerceAxis('title.text');
+                Lib.coerceFont(coerceAxis, 'title.font', {
+                    family: opts.font.family,
+                    size: Lib.bigFont(opts.font.size),
+                    color: dfltFontColor
+                });
+            }
+
+            coerceAxis('tickvals');
+
+            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {});
+
+            Lib.coerce2(contIn, contOut, layoutAttributes, axName + '.ticklen');
+            Lib.coerce2(contIn, contOut, layoutAttributes, axName + '.tickwidth');
+            Lib.coerce2(contIn, contOut, layoutAttributes, axName + '.tickcolor', contOut.color);
+            var showTicks = coerceAxis('ticks');
+            if(!showTicks) {
+                delete contOut[axName].ticklen;
+                delete contOut[axName].tickwidth;
+                delete contOut[axName].tickcolor;
+            }
 
             var showTickLabels = coerceAxis('showticklabels');
             if(showTickLabels) {
@@ -125,11 +127,11 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+        noUirevision: true,
         type: constants.name,
         attributes: layoutAttributes,
         handleDefaults: handleDefaults,
         font: layoutOut.font,
-        autotypenumbersDflt: layoutOut.autotypenumbers,
         paper_bgcolor: layoutOut.paper_bgcolor,
         fullData: fullData,
         layoutOut: layoutOut

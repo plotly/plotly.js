@@ -4,18 +4,19 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var extendFlat = require('../../lib/extend').extendFlat;
 var scatterAttrs = require('../scatter/attributes');
+var baseAttrs = require('../../plots/attributes');
 var lineAttrs = scatterAttrs.line;
 
 module.exports = {
     mode: scatterAttrs.mode,
 
-    re: {
+    real: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         description: 'Sets the real coordinates'
     },
 
-    im: {
+    imag: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
         description: 'Sets the imaginary coordinates'
@@ -23,7 +24,7 @@ module.exports = {
 
     text: scatterAttrs.text,
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
-        keys: ['re', 'im', 'text']
+        keys: ['real', 'imag', 'text']
     }),
     hovertext: scatterAttrs.hovertext,
 
@@ -40,7 +41,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
-    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {dflt: false}),
+    cliponaxis: scatterAttrs.cliponaxis,
 
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,
@@ -62,6 +63,14 @@ module.exports = {
     }),
     fillcolor: scatterAttrs.fillcolor,
 
+    // TODO error bars
+    // https://stackoverflow.com/a/26597487/4068492
+    // error_x (error_r, error_imag)
+    // error_y
+
+    hoverinfo: extendFlat({}, baseAttrs.hoverinfo, {
+        flags: ['real', 'imag', 'text', 'name']
+    }),
     hoveron: scatterAttrs.hoveron,
     hovertemplate: hovertemplateAttrs(),
 

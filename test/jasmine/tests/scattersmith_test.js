@@ -1,12 +1,16 @@
 var Plotly = require('@lib/index');
 var ScatterSmith = require('@src/traces/scattersmith');
-var Lib = require('@src/lib');
-var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
+
+var basicMock = require('@mocks/zzz_smith_basic.json');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var mouseEvent = require('../assets/mouse_event');
+
+var customAssertions = require('../assets/custom_assertions');
+var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
+var checkTextTemplate = require('../assets/check_texttemplate');
 
 describe('Test scattersmith trace defaults:', function() {
     var traceOut;
@@ -16,32 +20,32 @@ describe('Test scattersmith trace defaults:', function() {
         ScatterSmith.supplyDefaults(traceIn, traceOut, '#444', layout || {});
     }
 
-    it('should not truncate *re* when longer than *im*', function() {
+    it('should not truncate *real* when longer than *imag*', function() {
         // this is handled at the calc step now via _length.
         _supply({
-            re: [1, 2, 3, 4, 5],
-            im: [1, 2, 3]
+            real: [1, 2, 3, 4, 5],
+            imag: [1, 2, 3]
         });
 
-        expect(traceOut.re).toEqual([1, 2, 3, 4, 5]);
-        expect(traceOut.im).toEqual([1, 2, 3]);
+        expect(traceOut.real).toEqual([1, 2, 3, 4, 5]);
+        expect(traceOut.imag).toEqual([1, 2, 3]);
         expect(traceOut._length).toBe(3);
     });
 
-    it('should not truncate *im* when longer than *re*', function() {
+    it('should not truncate *imag* when longer than *real*', function() {
         // this is handled at the calc step now via _length.
         _supply({
-            re: [1, 2, 3],
-            im: [1, 2, 3, 4, 5]
+            real: [1, 2, 3],
+            imag: [1, 2, 3, 4, 5]
         });
 
-        expect(traceOut.re).toEqual([1, 2, 3]);
-        expect(traceOut.im).toEqual([1, 2, 3, 4, 5]);
+        expect(traceOut.real).toEqual([1, 2, 3]);
+        expect(traceOut.imag).toEqual([1, 2, 3, 4, 5]);
         expect(traceOut._length).toBe(3);
     });
 });
 
-describe('Test scattersmith hover', function() {
+describe('Test scattersmith hover:', function() {
     var gd;
 
     afterEach(destroyGraphDiv);
@@ -49,16 +53,8 @@ describe('Test scattersmith hover', function() {
     function run(specs) {
         gd = createGraphDiv();
 
-        var fig = Lib.extendDeep(
-            {width: 700, height: 500},
-            specs.mock || require('@mocks/zzz_smith_basic.json')
-        );
-
-        if(specs.patch) {
-            fig = specs.patch(fig);
-        }
-
-        var pos = specs.pos || [200, 200];
+        var fig = basicMock;
+        var pos = specs.pos;
 
         return Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', pos[0], pos[1]);
@@ -67,13 +63,43 @@ describe('Test scattersmith hover', function() {
     }
 
     [{
-        desc: 'Smith chart hover labels',
-        nums: '0.1 + 0.1j',
-        pos: [80, 175],
-        name: 'trace 0'
+        desc: 'base',
+        pos: [400, 70],
+        nums: 'real: 0\nimag: 1'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).then(done, done.fail);
         });
     });
+});
+
+describe('Test scattersmith texttemplate:', function() {
+    checkTextTemplate([{
+        'type': 'scattersmith',
+        'mode': 'markers+text',
+        'text': ['A', 'B', 'C'],
+        'textposition': 'top center',
+        'real': [1, 0.5, 1],
+        'imag': [0, 90, 180],
+    }], 'g.textpoint', [
+        ['%{text}: (%{real:0.2f}, %{imag:0.1f})', ['A: (1.00, 0.0)', 'B: (0.50, 90.0)', 'C: (1.00, 180.0)']],
+        [['', 'b%{imag:0.2f}', '%{imag:0.2f}'], ['', 'b90.00', '180.00']]
+    ]);
+
+    checkTextTemplate({
+        data: [{
+            type: 'scattersmith',
+            mode: 'text',
+            real: ['0.125', '0.625'],
+            imag: ['0.5', '1']
+        }],
+        layout: {
+            smith: {
+                realaxis: { tickprefix: 'R', ticksuffix: 'r', tickformat: '.1f'},
+                imaginaryaxis: { tickprefix: 'I', ticksuffix: 'i' }
+            }
+        }
+    }, '.textpoint', [
+        ['%{real} X %{imag}', ['R0.1r X I0.5i', 'R0.6r X I1i']]
+    ]);
 });

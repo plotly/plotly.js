@@ -2,70 +2,24 @@
   "data": [
     {
       "type": "scattersmith",
-      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
-      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
-      "mode": "markers",
-      "marker": {
-        "symbol": "triangle-up",
-        "size": 20
-      }
-    },
-    {
-      "type": "scattersmith",
-      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
-      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
+      "real": [0, 0, 1, 1, 2, 5, 10, "Infinity"],
+      "imag": [0, 1, 0, -2, -2, -5, -10, "Infinity"],
       "mode": "lines+markers",
-      "subplot": "smith2"
-    },
-    {
-      "type": "scattersmith",
-      "re": [],
-      "im": [],
-      "subplot": "smith3"
-    },
-    {
-      "type": "scattersmith",
-      "re": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, 0.1, 0.5, 10],
-      "im": [0, 0.1, 0.5, 1, 2, 3, 4, 5, 10, -0.1, -0.5, -10],
-      "mode": "markers+text",
       "marker": {
-        "symbol": "x",
-        "color": "green"
-      },
-      "line": {
-        "color": "chartreuse"
-      },
-      "texttemplate": "value: (%{re}, %{im})",
-      "subplot": "smith4"
+        "size": 20,
+        "opacity": 0.5
+      }
     }
   ],
   "layout": {
-    "smith": {
-      "domain": {
-        "x": [0, 0.46],
-        "y": [0.56, 1]
-      }
-    },
-    "smith2": {
-      "domain": {
-        "x": [0, 0.46],
-        "y": [0, 0.44]
-      }
-    },
-    "smith3": {
-      "domain": {
-        "x": [0.54, 1],
-        "y": [0.56, 1]
-      }
-    },
-    "smith4": {
-      "domain": {
-        "x": [0.54, 1],
-        "y": [0, 0.44]
-      }
-    },
     "showlegend": false,
-    "margin": {"t": 40, "b": 40, "r": 40, "l": 40},
+    "paper_bgcolor": "lightgray",
+    "margin": {
+      "t": 40,
+      "b": 40,
+      "r": 40,
+      "l": 40
+    },
     "width": 800,
     "height": 800
   }

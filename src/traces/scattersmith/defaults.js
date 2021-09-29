@@ -12,12 +12,12 @@ var PTS_LINESONLY = require('../scatter/constants').PTS_LINESONLY;
 
 var attributes = require('./attributes');
 
-function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleReImDefaults(traceIn, traceOut, layout, coerce);
+    var len = handleRealImagDefaults(traceIn, traceOut, layout, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -64,21 +64,17 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
-}
+};
 
-function handleReImDefaults(traceIn, traceOut, layout, coerce) {
-    var re = coerce('re');
-    var im = coerce('im');
-    var len = 0;
+function handleRealImagDefaults(traceIn, traceOut, layout, coerce) {
+    var real = coerce('real');
+    var imag = coerce('imag');
+    var len;
 
-    if(re && im) {
-        len = Math.min(re.length, im.length);
+    if(real && imag) {
+        len = Math.min(real.length, imag.length);
     }
 
     traceOut._length = len;
     return len;
 }
-
-module.exports = {
-    supplyDefaults: supplyDefaults
-};

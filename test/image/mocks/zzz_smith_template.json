@@ -1,0 +1,61 @@
+{
+  "data": [
+    {
+      "real": [0, 0, 1, 1],
+      "imag": [0, 1, 1, 0],
+      "type": "scattersmith"
+    }
+  ],
+  "layout": {
+    "width": 400,
+    "height": 400,
+    "template": {
+      "data": {
+        "scattersmith": [
+          {
+            "marker": {
+              "opacity": 0.5,
+              "color": "hotpink",
+              "size": 20
+            },
+            "line": {
+              "color": "cyan"
+            }
+          }
+        ]
+      },
+      "layout": {
+        "margin": {
+          "t": 40,
+          "b": 40,
+          "l": 40,
+          "r": 40
+        },
+        "paper_bgcolor": "lightblue",
+        "smith": {
+          "bgcolor": "darkred",
+          "realaxis": {
+            "tickfont": {
+              "color": "orange"
+            },
+            "side": "bottom",
+            "ticks": "bottom",
+            "ticklen": 10,
+            "tickwidth": 5,
+            "tickcolor": "yellow",
+            "gridcolor": "white",
+            "linecolor": "white"
+          },
+          "imaginaryaxis": {
+            "ticks": "inside",
+            "ticklen": 10,
+            "tickwidth": 5,
+            "tickcolor": "darkblue",
+            "gridcolor": "white",
+            "linecolor": "white"
+          }
+        }
+      }
+    }
+  }
+}

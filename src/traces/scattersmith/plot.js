@@ -2,22 +2,8 @@
 
 var scatterPlot = require('../scatter/plot');
 var BADNUM = require('../../constants/numerical').BADNUM;
-
-function sq(x) {
-    return x * x;
-}
-
-function gammaTransformReal(re, im) {
-    var denom = sq(re + 1.0) + sq(im);
-    var result = (sq(re) + sq(im) - 1.0) / denom;
-    return result;
-}
-
-function gammaTransformImaginary(re, im) {
-    var denom = sq(re + 1.0) + sq(im);
-    var result = (2 * im) / denom;
-    return result;
-}
+var helpers = require('../../plots/smith/helpers');
+var smith = helpers.smith;
 
 module.exports = function plot(gd, subplot, moduleCalcData) {
     var mlayer = subplot.layers.frontplot.select('g.scatterlayer');
@@ -30,20 +16,21 @@ module.exports = function plot(gd, subplot, moduleCalcData) {
     };
 
     // convert:
-    // 'c' (r,theta) -> 'geometric' (r,theta) -> (x,y)
+    // 'c' (real,imag) -> (x,y)
     for(var i = 0; i < moduleCalcData.length; i++) {
         var cdi = moduleCalcData[i];
 
         for(var j = 0; j < cdi.length; j++) {
             var cd = cdi[j];
-            var re = cd.re;
-            var im = cd.im;
+            var real = cd.real;
 
-            if(re === BADNUM) {
+            if(real === BADNUM) {
                 cd.x = cd.y = BADNUM;
             } else {
-                cd.x = gammaTransformReal(re, im);
-                cd.y = gammaTransformImaginary(re, im);
+                var t = smith([real, cd.imag]);
+
+                cd.x = t[0];
+                cd.y = t[1];
             }
         }
     }

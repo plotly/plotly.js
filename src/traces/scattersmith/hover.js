@@ -27,19 +27,36 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 }
 
 function makeHoverPointText(cdi, trace, subplot, pointData) {
-    var radialAxis = subplot.radialAxis;
-    var angularAxis = subplot.angularAxis;
-    radialAxis._hovertitle = 're';
-    angularAxis._hovertitle = 'im';
+    var realAxis = subplot.radialAxis;
+    var imaginaryAxis = subplot.angularAxis;
+    realAxis._hovertitle = 'real';
+    imaginaryAxis._hovertitle = 'imag';
 
     var fullLayout = {};
     fullLayout[trace.subplot] = {_subplot: subplot};
     var labels = trace._module.formatLabels(cdi, trace, fullLayout);
-    pointData.rLabel = labels.rLabel;
-    pointData.thetaLabel = labels.thetaLabel;
+    pointData.realLabel = labels.realLabel;
+    pointData.imagLabel = labels.imagLabel;
+
+    var hoverinfo = cdi.hi || trace.hoverinfo;
+    var text = [];
+    function textPart(ax, val) {
+        text.push(ax._hovertitle + ': ' + val);
+    }
 
     if(!trace.hovertemplate) {
-        pointData.extraText = cdi.re + ' + ' + cdi.im + 'j';
+        var parts = hoverinfo.split('+');
+
+        if(parts.indexOf('all') !== -1) parts = ['real', 'imag', 'text'];
+        if(parts.indexOf('real') !== -1) textPart(realAxis, pointData.realLabel);
+        if(parts.indexOf('imag') !== -1) textPart(imaginaryAxis, pointData.imagLabel);
+
+        if(parts.indexOf('text') !== -1 && pointData.text) {
+            text.push(pointData.text);
+            delete pointData.text;
+        }
+
+        pointData.extraText = text.join('<br>');
     }
 }
 

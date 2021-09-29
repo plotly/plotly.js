@@ -80,6 +80,7 @@ function notBlackListed(name) {
         // has transforms See https://github.com/plotly/plotly.js/issues/4759
         'gl2d_transforms',
         'polar_transforms',
+        'zzz_smith_transforms',
         'transforms',
 
         // has contourcarpet See https://github.com/plotly/plotly.js/issues/5669

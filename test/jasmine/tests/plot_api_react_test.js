@@ -462,13 +462,13 @@ describe('@noCIdep Plotly.react', function() {
     });
 
     it('can put smith plots into staticPlot mode', function(done) {
-        var data = [{re: [0, 1, 2, 3, 4, 5], im: [0, 1, 2, 3, 4, 5], type: 'scattersmith'}];
+        var data = [{real: [0, 1, 2], imag: [0, 1, 2], type: 'scattersmith'}];
         var layout = {};
 
         Plotly.newPlot(gd, data, layout)
         .then(countPlots)
         .then(function() {
-            expect(d3Select(gd).selectAll('.drag').size()).toBe(4);
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(1);
 
             return Plotly.react(gd, data, layout, {staticPlot: true});
         })
@@ -478,7 +478,7 @@ describe('@noCIdep Plotly.react', function() {
             return Plotly.react(gd, data, layout, {});
         })
         .then(function() {
-            expect(d3Select(gd).selectAll('.drag').size()).toBe(4);
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(1);
         })
         .then(done, done.fail);
     });

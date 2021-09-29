@@ -1,29 +1,33 @@
 var Plotly = require('@lib/index');
-var constants = require('@src/plots/smith/constants');
-var Smith = require('@src/plots/smith');
 var Lib = require('@src/lib');
+var Smith = require('@src/plots/smith');
+var layerNames = require('@src/plots/polar/constants').layerNames;
+
+var basicMock = require('@mocks/zzz_smith_basic.json');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-
-var destroyGraphDiv = require('../assets/destroy_graph_div');
 var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+var negateIf = require('../assets/negate_if');
 var mouseEvent = require('../assets/mouse_event');
+var click = require('../assets/click');
+var doubleClick = require('../assets/double_click');
 
-describe('Test smith plot defaults:', function() {
+describe('Test smith plots defaults:', function() {
     var layoutOut;
 
     function _supply(layoutIn, fullData) {
         fullData = fullData || [{
             type: 'scattersmith',
-            r: [],
-            theta: [],
+            real: [],
+            imag: [],
             subplot: 'smith'
         }];
 
         layoutOut = {
-            autotypenumbers: 'convert types',
+            noUirevision: true,
             font: {color: 'red'},
             _subplots: {smith: ['smith']}
         };
@@ -41,18 +45,6 @@ describe('Test smith plot defaults:', function() {
         expect(smith.domain.x).toEqual([0, 1]);
         expect(smith.domain.y).toEqual([0, 1]);
         expect(smith.bgcolor).toBe('#fff');
-    });
-
-    it('should contain correct defaults for the axes', function() {
-        _supply({
-            smith: {}
-        });
-
-        var imag = layoutOut.smith.imaginaryaxis;
-        var real = layoutOut.smith.realaxis;
-
-        expect(imag.type).toBe('linear');
-        expect(real.type).toBe('linear');
     });
 
     it('should propagate axis *color* settings', function() {
@@ -85,8 +77,8 @@ describe('Test smith plot defaults:', function() {
             }
         }, [{
             type: 'scattersmith',
-            re: [1, 2],
-            im: [90, 180],
+            real: [1, 2],
+            imag: [90, 180],
             visible: true,
             subplot: 'smith'
         }]);
@@ -101,8 +93,8 @@ describe('Test relayout on smith subplots:', function() {
 
     it('should be able to reorder axis layers when relayout\'ing *layer*', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/zzz_smith_axes.json'));
-        var dflt = constants.layerNames;
+        var fig = Lib.extendDeep({}, basicMock);
+        var dflt = layerNames;
 
         function _assert(expected) {
             var actual = d3SelectAll('g.smith > .smithsublayer');
@@ -124,7 +116,7 @@ describe('Test relayout on smith subplots:', function() {
         })
         .then(function() {
             _assert([
-                'draglayer', 'plotbg', 'angular-grid', 'radial-grid',
+                'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
                 'radial-line', 'radial-axis',
                 'frontplot',
                 'angular-line', 'angular-axis'
@@ -133,7 +125,7 @@ describe('Test relayout on smith subplots:', function() {
         })
         .then(function() {
             _assert([
-                'draglayer', 'plotbg', 'angular-grid', 'radial-grid',
+                'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
                 'angular-line',
                 'radial-line',
                 'angular-axis',
@@ -144,7 +136,7 @@ describe('Test relayout on smith subplots:', function() {
         })
         .then(function() {
             _assert([
-                'draglayer', 'plotbg', 'angular-grid', 'radial-grid',
+                'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
                 'angular-line', 'angular-axis',
                 'frontplot',
                 'radial-line', 'radial-axis'
@@ -157,78 +149,126 @@ describe('Test relayout on smith subplots:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to toggle axis features', function(done) {
+    it('should be able to relayout imaginary axis ticks', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/zzz_smith_single.json'));
+        var fig = Lib.extendDeep({}, basicMock);
 
-        function assertCnt(selector, expected, msg) {
-            var sel = d3Select(gd).selectAll(selector);
-            expect(sel.size()).toBe(expected, msg);
-        }
+        function check(cnt, expected) {
+            var ticks = d3SelectAll('path.imaginaryaxistick');
 
-        function assertDisplay(selector, expected, msg) {
-            var sel = d3Select(gd).select(selector);
-
-            if(!sel.size()) fail(selector + ' not found');
-
-            sel.each(function() {
-                expect(d3Select(this).attr('display')).toBe(expected, msg);
+            expect(ticks.size()).toBe(cnt, '# of ticks');
+            ticks.each(function() {
+                expect(d3Select(this).attr('d')).toBe(expected);
             });
         }
 
-        function toggle(astr, vals, exps, selector, fn) {
-            return function() {
-                return Plotly.relayout(gd, astr, vals[0]).then(function() {
-                    fn(selector, exps[0], astr + ' ' + vals[0]);
-                    return Plotly.relayout(gd, astr, vals[1]);
-                })
-                .then(function() {
-                    fn(selector, exps[1], astr + ' ' + vals[1]);
-                    return Plotly.relayout(gd, astr, vals[0]);
-                })
-                .then(function() {
-                    fn(selector, exps[0], astr + ' ' + vals[0]);
-                });
-            };
+        Plotly.newPlot(gd, fig).then(function() {
+            check(0);
+            return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: 'inside'});
+        })
+        .then(function() {
+            check(26, 'M-0.5,0h-5');
+            return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: 'outside'});
+        })
+        .then(function() {
+            check(26, 'M0.5,0h5');
+            return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: ''});
+        })
+        .then(function() {
+            check(0);
+            return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: 'inside'});
+        })
+        .then(function() {
+            check(26, 'M-0.5,0h-5');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should be able to relayout real axis ticks', function(done) {
+        var gd = createGraphDiv();
+        var fig = Lib.extendDeep({}, basicMock);
+
+        function check(cnt, expected) {
+            var ticks = d3SelectAll('path.xtick');
+
+            expect(ticks.size()).toBe(cnt, '# of ticks');
+            ticks.each(function() {
+                expect(d3Select(this).attr('d')).toBe(expected);
+            });
         }
 
-        Plotly.newPlot(gd, fig)
-        .then(toggle(
-            'smith.realaxis.showline',
-            [true, false], [null, 'none'],
-            '.radial-line > line', assertDisplay
-        ))
-        .then(toggle(
-            'smith.realaxis.showgrid',
-            [true, false], [null, 'none'],
-            '.radial-grid', assertDisplay
-        ))
-        .then(toggle(
-            'smith.realaxis.showticklabels',
-            [true, false], [5, 0],
-            '.radial-axis > .realaxis2tick > text', assertCnt
-        ))
-        .then(toggle(
-            'smith.imaginaryaxis.showline',
-            [true, false], [null, 'none'],
-            '.angular-line > path', assertDisplay
-        ))
-        .then(toggle(
-            'smith.imaginaryaxis.showgrid',
-            [true, false], [10, 0],
-            '.angular-grid > path', assertCnt
-        ))
-        .then(toggle(
-            'smith.imaginaryaxis.showticklabels',
-            [true, false], [12, 0],
-            '.angular-axis > .imaginaryaxistick > text', assertCnt
-        ))
+        Plotly.newPlot(gd, fig).then(function() {
+            check(0);
+            return Plotly.relayout(gd, 'smith.realaxis', {ticks: 'top'});
+        })
+        .then(function() {
+            check(12, 'M0,-0.5v-5');
+            return Plotly.relayout(gd, 'smith.realaxis', {ticks: 'bottom'});
+        })
+        .then(function() {
+            check(12, 'M0,0.5v5');
+            return Plotly.relayout(gd, 'smith.realaxis', {ticks: ''});
+        })
+        .then(function() {
+            check(0);
+            return Plotly.relayout(gd, 'smith.realaxis', {ticks: 'top'});
+        })
+        .then(function() {
+            check(12, 'M0,-0.5v-5');
+        })
+        .then(done, done.fail);
+    });
+
+    it('should be able to restyle radial axis title', function(done) {
+        var gd = createGraphDiv();
+        var lastBBox;
+
+        function assertTitle(content, didBBoxChanged) {
+            var radialAxisTitle = d3Select('g.g-smithtitle');
+            var txt = radialAxisTitle.select('text');
+            var bb = radialAxisTitle.node().getBBox();
+            var newBBox = [bb.x, bb.y, bb.width, bb.height];
+
+            if(content === '') {
+                expect(txt.size()).toBe(0, 'cleared <text>');
+            } else {
+                expect(txt.text()).toBe(content, 'real axis title');
+            }
+
+            negateIf(didBBoxChanged, expect(newBBox)).toEqual(lastBBox, 'did bbox change');
+            lastBBox = newBBox;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'scattersmith',
+            real: [1, 2, 3],
+            imag: [0, 0, 0]
+        }], {
+            smith: {
+                realaxis: {title: 'yo'}
+            }
+        })
+        .then(function() {
+            assertTitle('yo', true);
+            return Plotly.relayout(gd, 'smith.realaxis.title.text', '');
+        })
+        .then(function() {
+            assertTitle('', true);
+            return Plotly.relayout(gd, 'smith.realaxis.title.text', 'yo2');
+        })
+        .then(function() {
+            assertTitle('yo2', true);
+            return Plotly.relayout(gd, 'smith.realaxis.title.font.color', 'red');
+        })
+        .then(function() {
+            assertTitle('yo2', false);
+        })
         .then(done, done.fail);
     });
 
     it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/zzz_smith_fill.json'));
+        var fig = Lib.extendDeep({}, basicMock);
         var traces = Lib.extendDeep([], fig.data);
         var inds = traces.map(function(_, i) { return i; });
 
@@ -331,11 +371,46 @@ describe('Test smith interactions:', function() {
         mouseEvent('mouseout', pos[0], pos[1]);
     }
 
+    function _click(pos, opts) {
+        eventData = '';
+        gd._mouseDownTime = 0;
+        click(pos[0], pos[1], opts);
+    }
+
+    function _doubleClick(pos) {
+        gd._mouseDownTime = 0;
+        eventData = '';
+        return doubleClick(pos[0], pos[1]);
+    }
+
+    var modClickOpts = {
+        altKey: true,
+        ctrlKey: true, // this makes it effectively into a right-click
+        metaKey: true,
+        shiftKey: true,
+        button: 0,
+        cancelContext: true
+    };
+
+    var rightClickOpts = {
+        altKey: false,
+        ctrlKey: false,
+        metaKey: false,
+        shiftKey: false,
+        button: 2,
+        cancelContext: true
+    };
+
     it('should trigger hover/unhover/click/doubleclick events', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/zzz_smith_axes.json'));
-        var ptPos = [159, 138];
-        var blankPos = [109, 109];
+        var fig = Lib.extendDeep({}, basicMock);
+        var ptPos = [400, 60];
+        var blankPos = [400, 100];
         var marginPos = [20, 20];
+
+        var exp = [{
+            real: 0,
+            imag: 1
+        }];
 
         function _assert(ptExpectation, cntExpecation, msg) {
             if(Array.isArray(ptExpectation)) {
@@ -349,19 +424,14 @@ describe('Test smith interactions:', function() {
         _plot(fig)
         .then(function() { _hover(ptPos); })
         .then(function() {
-            _assert([{
-                re: 0.5,
-                im: 0.5
-            }], {
+            _assert(exp, {
                 plotly_hover: 1
             }, 'after hover on pt');
         })
+
         .then(function() { _unhover(blankPos);})
         .then(function() {
-            _assert([{
-                re: 0.5,
-                im: 0.5
-            }], {
+            _assert(exp, {
                 plotly_hover: 1,
                 plotly_unhover: 1
             }, 'after unhover off pt');
@@ -372,6 +442,44 @@ describe('Test smith interactions:', function() {
                 plotly_hover: 1,
                 plotly_unhover: 1,
             }, 'after hovering in margin');
+        })
+        .then(function() { _click(ptPos); })
+        .then(function() {
+            _assert(exp, {
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 1
+            }, 'after click');
+        })
+        .then(function() { return _doubleClick(ptPos); })
+        .then(function() {
+            assertEventCnt({
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 3,
+                plotly_doubleclick: 1,
+                plotly_relayout: 1
+            }, 'after doubleclick');
+        })
+        .then(function() { _click(ptPos, modClickOpts); })
+        .then(function() {
+            _assert(exp, {
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 4,
+                plotly_doubleclick: 1,
+                plotly_relayout: 1
+            }, 'after modified click');
+        })
+        .then(function() { _click(ptPos, rightClickOpts); })
+        .then(function() {
+            _assert(exp, {
+                plotly_hover: 2,
+                plotly_unhover: 1,
+                plotly_click: 5,
+                plotly_doubleclick: 1,
+                plotly_relayout: 1
+            }, 'after right click');
         })
         .then(done, done.fail);
     });
