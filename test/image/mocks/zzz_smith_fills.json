@@ -39,10 +39,7 @@
       },
       "realaxis": {
         "ticks": "top",
-        "side": "bottom",
-        "title": {
-          "text": "Real axis<br>Title"
-        }
+        "side": "bottom"
       },
       "imaginaryaxis": {
         "ticks": "outside"
@@ -55,10 +52,7 @@
       },
       "realaxis": {
         "ticks": "top",
-        "side": "top",
-        "title": {
-          "text": "Real axis<br>Title"
-        }
+        "side": "top"
       },
       "imaginaryaxis": {
         "ticks": "inside"

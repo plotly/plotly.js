@@ -70,13 +70,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         if(visible) {
             if(axName === 'realaxis') {
                 coerceAxis('side');
-
-                coerceAxis('title.text');
-                Lib.coerceFont(coerceAxis, 'title.font', {
-                    family: opts.font.family,
-                    size: Lib.bigFont(opts.font.size),
-                    color: dfltFontColor
-                });
             }
 
             coerceAxis('tickvals');

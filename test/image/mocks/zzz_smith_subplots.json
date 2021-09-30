@@ -44,14 +44,7 @@
         "x": [0, 0.44]
       },
       "realaxis": {
-        "showgrid": false,
-        "title": {
-          "text": "1st subplot",
-          "font": {
-            "size": 50,
-            "color": "orange"
-          }
-        }
+        "showgrid": false
       }
     },
     "smith2": {
@@ -60,15 +53,6 @@
       },
       "imaginaryaxis": {
         "showgrid": false
-      },
-      "realaxis": {
-        "title": {
-          "text": "2nd subplot",
-          "font": {
-            "size": 25,
-            "color": "blue"
-          }
-        }
       }
     }
   }

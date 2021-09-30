@@ -91,13 +91,6 @@
         "tickfont": {
           "color": "white"
         },
-        "title": {
-          "text": "$E=mc^2$",
-          "font": {
-            "size": 40,
-            "color": "yellow"
-          }
-        },
         "gridcolor": "blue",
         "linecolor": "white",
         "linewidth": 3,

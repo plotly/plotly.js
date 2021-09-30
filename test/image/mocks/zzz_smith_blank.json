@@ -42,11 +42,7 @@
         "y": [0.56, 1]
       },
       "realaxis": {
-        "side": "top",
-        "title": {
-          "text": "real title",
-          "font": { "size": 20 }
-        }
+        "side": "top"
       }
     },
     "smith2": {
@@ -73,10 +69,6 @@
         "y": [0.56, 1]
       },
       "realaxis": {
-        "title": {
-          "text": "real title",
-          "font": { "color": "red" }
-        },
         "ticks": "top",
         "side": "bottom"
       },

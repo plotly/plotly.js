@@ -10,7 +10,6 @@ var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-var negateIf = require('../assets/negate_if');
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
@@ -58,7 +57,6 @@ describe('Test smith plots defaults:', function() {
         expect(layoutOut.smith.imaginaryaxis.linecolor).toBe('red');
         expect(layoutOut.smith.imaginaryaxis.gridcolor).toBe('rgb(255, 153, 153)', 'blend by 60% with bgcolor');
 
-        expect(layoutOut.smith.realaxis.title.font.color).toBe('blue');
         expect(layoutOut.smith.realaxis.linecolor).toBe('blue');
         expect(layoutOut.smith.realaxis.gridcolor).toBe('rgb(153, 153, 255)', 'blend by 60% with bgcolor');
     });
@@ -219,53 +217,6 @@ describe('Test relayout on smith subplots:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to restyle radial axis title', function(done) {
-        var gd = createGraphDiv();
-        var lastBBox;
-
-        function assertTitle(content, didBBoxChanged) {
-            var radialAxisTitle = d3Select('g.g-smithtitle');
-            var txt = radialAxisTitle.select('text');
-            var bb = radialAxisTitle.node().getBBox();
-            var newBBox = [bb.x, bb.y, bb.width, bb.height];
-
-            if(content === '') {
-                expect(txt.size()).toBe(0, 'cleared <text>');
-            } else {
-                expect(txt.text()).toBe(content, 'real axis title');
-            }
-
-            negateIf(didBBoxChanged, expect(newBBox)).toEqual(lastBBox, 'did bbox change');
-            lastBBox = newBBox;
-        }
-
-        Plotly.newPlot(gd, [{
-            type: 'scattersmith',
-            real: [1, 2, 3],
-            imag: [0, 0, 0]
-        }], {
-            smith: {
-                realaxis: {title: 'yo'}
-            }
-        })
-        .then(function() {
-            assertTitle('yo', true);
-            return Plotly.relayout(gd, 'smith.realaxis.title.text', '');
-        })
-        .then(function() {
-            assertTitle('', true);
-            return Plotly.relayout(gd, 'smith.realaxis.title.text', 'yo2');
-        })
-        .then(function() {
-            assertTitle('yo2', true);
-            return Plotly.relayout(gd, 'smith.realaxis.title.font.color', 'red');
-        })
-        .then(function() {
-            assertTitle('yo2', false);
-        })
-        .then(done, done.fail);
-    });
-
     it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, basicMock);
@@ -274,7 +225,6 @@ describe('Test relayout on smith subplots:', function() {
 
         function _assert(exp) {
             expect(d3SelectAll('g.smith').size()).toBe(exp.subplot, '# subplot layer');
-            expect(d3SelectAll('g.g-smithtitle').size()).toBe(exp.rtitle, '# radial title');
 
             var clipCnt = 0;
             d3SelectAll('clipPath').each(function() {
@@ -284,17 +234,17 @@ describe('Test relayout on smith subplots:', function() {
         }
 
         Plotly.newPlot(gd, fig).then(function() {
-            _assert({subplot: 1, clip: 1, rtitle: 1});
+            _assert({subplot: 1, clip: 1});
 
             return Plotly.deleteTraces(gd, inds);
         })
         .then(function() {
-            _assert({subplot: 0, clip: 0, rtitle: 0});
+            _assert({subplot: 0, clip: 0});
 
             return Plotly.addTraces(gd, traces);
         })
         .then(function() {
-            _assert({subplot: 1, clip: 1, rtitle: 1});
+            _assert({subplot: 1, clip: 1});
         })
         .then(done, done.fail);
     });

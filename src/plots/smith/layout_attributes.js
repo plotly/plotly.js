@@ -73,13 +73,6 @@ var realAxisAttrs = {
         ].join(' ')
     },
 
-    title: {
-        text: extendFlat({}, axesAttrs.title.text, {editType: 'plot', dflt: ''}),
-        font: extendFlat({}, axesAttrs.title.font, {editType: 'plot'}),
-
-        editType: 'plot'
-    },
-
     editType: 'calc',
 };
 

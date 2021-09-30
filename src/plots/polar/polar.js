@@ -535,8 +535,9 @@ proto.updateRadialAxis = function(fullLayout, polarLayout) {
 };
 
 proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
+    if(this.isSmith) return;
+
     var _this = this;
-    var isSmith = this.isSmith;
     var gd = _this.gd;
     var radius = _this.radius;
     var cx = _this.cx;
@@ -560,21 +561,14 @@ proto.updateRadialAxisTitle = function(fullLayout, polarLayout, _angle) {
                 h + ts * 0.8;
     }
 
-    var x, y, angle;
-    if(isSmith) {
-        x = cx;
-        y = cy + pad;
-        angle = 0;
-    } else {
-        angle = _angle !== undefined ? _angle : _this.radialAxisAngle;
+    var angle = _angle !== undefined ? _angle : _this.radialAxisAngle;
 
-        var angleRad = deg2rad(angle);
-        var cosa = Math.cos(angleRad);
-        var sina = Math.sin(angleRad);
+    var angleRad = deg2rad(angle);
+    var cosa = Math.cos(angleRad);
+    var sina = Math.sin(angleRad);
 
-        x = cx + (radius / 2) * cosa + pad * sina;
-        y = cy - (radius / 2) * sina + pad * cosa;
-    }
+    var x = cx + (radius / 2) * cosa + pad * sina;
+    var y = cy - (radius / 2) * sina + pad * cosa;
 
     _this.layers['radial-axis-title'] = Titles.draw(gd, titleClass, {
         propContainer: radialLayout,
