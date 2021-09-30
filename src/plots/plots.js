@@ -2981,15 +2981,6 @@ plots.doCalcdata = function(gd, traces) {
         );
     }
 
-    // add smith axes to axis list
-    var smithIds = fullLayout._subplots.smith || [];
-    for(i = 0; i < smithIds.length; i++) {
-        axList.push(
-            fullLayout[smithIds[i]].realaxis,
-            fullLayout[smithIds[i]].imaginaryaxis
-        );
-    }
-
     // clear relinked cmin/cmax values in shared axes to start aggregation from scratch
     for(var k in fullLayout._colorAxes) {
         var cOpts = fullLayout[k];
