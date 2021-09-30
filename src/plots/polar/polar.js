@@ -100,14 +100,15 @@ proto.plot = function(polarCalcData, fullLayout) {
     var _this = this;
     var polarLayout = fullLayout[_this.id];
 
-    _this._hasClipOnAxisFalse = false;
+    var found = false;
     for(var i = 0; i < polarCalcData.length; i++) {
         var trace = polarCalcData[i][0].trace;
         if(trace.cliponaxis === false) {
-            _this._hasClipOnAxisFalse = true;
+            found = true;
             break;
         }
     }
+    _this._hasClipOnAxisFalse = found;
 
     _this.updateLayers(fullLayout, polarLayout);
     _this.updateLayout(fullLayout, polarLayout);
