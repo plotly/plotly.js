@@ -2,8 +2,8 @@
   "data": [
     {
       "type": "scattersmith",
-      "real": [0, 0, 1, 1, 2, 5, 10, "Infinity"],
-      "imag": [0, 1, 0, -2, -2, -5, -10, "Infinity"],
+      "real": [0, 0, 1, 1, 2, 5, 10],
+      "imag": [0, 1, 0, -2, -2, -5, -10],
       "mode": "lines+markers",
       "marker": {
         "size": 20,
