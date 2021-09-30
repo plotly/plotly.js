@@ -114,6 +114,11 @@ proto.plot = function(polarCalcData, fullLayout) {
     _this.updateLayout(fullLayout, polarLayout);
     Plots.generalUpdatePerTraceModule(_this.gd, _this, polarCalcData, polarLayout);
     _this.updateFx(fullLayout, polarLayout);
+
+    if(_this.isSmith) {
+        delete polarLayout.realaxis.range;
+        delete polarLayout.imaginaryaxis.range;
+    }
 };
 
 proto.updateLayers = function(fullLayout, polarLayout) {
