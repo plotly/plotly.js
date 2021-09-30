@@ -550,7 +550,7 @@ describe('Test gl3d trace click/hover:', function() {
         .then(done, done.fail);
     });
 
-    fit('@gl should emit correct event data on unhover', function(done) {
+    it('@gl should emit correct event data on unhover', function(done) {
         var _mock = Lib.extendDeep({}, mock2);
         var x = 655;
         var y = 221;
