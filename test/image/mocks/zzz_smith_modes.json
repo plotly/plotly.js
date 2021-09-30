@@ -25,6 +25,7 @@
         "width": 3,
         "dash": "dot"
       },
+      "cliponaxis": true,
       "subplot": "smith2"
     },
     {
@@ -42,7 +43,6 @@
         "symbol": "x",
         "size": 10
       },
-      "cliponaxis": false,
       "textposition": ["right", "top", "bottom", "left"],
       "texttemplate": "[%{real}, %{imag}]",
       "textfont": { "size": 20 },

@@ -36,12 +36,18 @@
   }],
 
   "layout": {
-    "width": 900,
-    "height": 450,
+    "width": 800,
+    "height": 400,
+    "margin": {
+      "t": 40,
+      "b": 40,
+      "l": 40,
+      "r": 40
+    },
     "showlegend": false,
     "smith": {
       "domain": {
-        "x": [0, 0.44]
+        "x": [0.05, 0.45]
       },
       "realaxis": {
         "showgrid": false
@@ -49,7 +55,7 @@
     },
     "smith2": {
       "domain": {
-        "x": [0.56, 1]
+        "x": [0.55, 0.95]
       },
       "imaginaryaxis": {
         "showgrid": false

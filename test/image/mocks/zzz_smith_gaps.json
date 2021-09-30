@@ -2,102 +2,29 @@
   "data": [
     {
       "type": "scattersmith",
+      "name": "gaps",
       "real": [
-        0,
-        0.1,
-        0.5,
-        1,
-        2,
-        3,
-        4,
-        5,
-        10,
-        0.1,
-        0.5,
-        10
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
       ],
       "imag": [
-        0,
-        0.1,
-        0.5,
-        1,
-        2,
-        3,
-        4,
-        5,
-        10,
-        -0.1,
-        -0.5,
-        -10
-      ],
-      "mode": "markers+lines"
-    },
-    {
-      "type": "scattersmith",
-      "real": [
-        0,
-        0.1,
-        null,
-        1,
-        2,
-        3,
-        4,
-        5,
-        10,
-        0.1,
-        0.5,
-        10
-      ],
-      "imag": [
-        0,
-        0.1,
-        0.5,
-        1,
-        2,
-        3,
-        4,
-        5,
-        10,
-        -0.1,
-        -0.5,
-        -10
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
       ],
       "mode": "markers+lines",
-      "subplot": "smith2"
+      "line": { "shape": "spline" }
     },
     {
       "type": "scattersmith",
-      "real": [
-        0,
-        0.1,
-        null,
-        1,
-        2,
-        3,
-        4,
-        5,
-        10,
-        0.1,
-        0.5,
-        10
-      ],
-      "imag": [
-        0,
-        0.1,
-        0.5,
-        1,
-        2,
-        3,
-        4,
-        5,
-        10,
-        -0.1,
-        -0.5,
-        -10
-      ],
+      "name": "connectgaps",
       "connectgaps": true,
+      "real": [
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
+      ],
+      "imag": [
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
+      ],
       "mode": "markers+lines",
-      "subplot": "smith3"
+      "line": { "shape": "spline" },
+      "subplot": "smith2"
     }
   ],
   "layout": {
@@ -105,11 +32,11 @@
       "domain": {
         "x": [
           0,
-          0.46
+          1
         ],
         "y": [
-          0.56,
-          1
+          0,
+          0.45
         ]
       }
     },
@@ -117,34 +44,22 @@
       "domain": {
         "x": [
           0,
-          0.46
-        ],
-        "y": [
-          0,
-          0.44
-        ]
-      }
-    },
-    "smith3": {
-      "domain": {
-        "x": [
-          0.54,
           1
         ],
         "y": [
-          0.56,
+          0.55,
           1
         ]
       }
     },
-    "showlegend": false,
+    "legend": { "orientation": "h" },
     "margin": {
-      "t": 40,
-      "b": 40,
-      "r": 40,
-      "l": 40
+      "t": 30,
+      "b": 30,
+      "r": 30,
+      "l": 30
     },
-    "width": 800,
-    "height": 800
+    "width": 300,
+    "height": 600
   }
 }

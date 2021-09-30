@@ -68,8 +68,11 @@
         ]
     }],
     "layout": {
-        "width": 600,
-        "height": 400,
+        "legend": {
+            "orientation": "h"
+        },
+        "width": 500,
+        "height": 500,
         "title": {"text": "Transforms on smith subplot"}
     }
 }

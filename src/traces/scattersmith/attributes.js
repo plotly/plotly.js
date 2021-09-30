@@ -41,7 +41,7 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
 
     marker: scatterAttrs.marker,
-    cliponaxis: scatterAttrs.cliponaxis,
+    cliponaxis: extendFlat({}, scatterAttrs.cliponaxis, {dflt: false}),
 
     textposition: scatterAttrs.textposition,
     textfont: scatterAttrs.textfont,
