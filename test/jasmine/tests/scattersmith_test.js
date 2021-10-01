@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
 var ScatterSmith = require('@src/traces/scattersmith');
 
 var basicMock = require('@mocks/zzz_smith_basic.json');
@@ -53,19 +54,65 @@ describe('Test scattersmith hover:', function() {
     function run(specs) {
         gd = createGraphDiv();
 
-        var fig = basicMock;
-        var pos = specs.pos;
+        var fig = Lib.extendDeep(basicMock);
+
+        if(specs.patch) {
+            fig = specs.patch(fig);
+        }
 
         return Plotly.newPlot(gd, fig).then(function() {
-            mouseEvent('mousemove', pos[0], pos[1]);
+            mouseEvent('mousemove', 400, 70);
             assertHoverLabelContent(specs);
         });
     }
 
     [{
         desc: 'base',
-        pos: [400, 70],
         nums: 'real: 0\nimag: 1'
+    }, {
+        desc: 'with tickformat',
+        patch: function(fig) {
+            fig.layout.smith = {
+                realaxis: { tickformat: '.1f' },
+                imaginaryaxis: { tickformat: '.2f' }
+            };
+            return fig;
+        },
+        nums: 'real: 0.0\nimag: 1.00'
+    }, {
+        desc: 'with prefix and suffix',
+        patch: function(fig) {
+            fig.layout.smith = {
+                realaxis: {
+                    tickprefix: '(',
+                    ticksuffix: ')'
+                },
+                imaginaryaxis: {
+                    tickprefix: '[',
+                    ticksuffix: ']'
+                }
+            };
+            return fig;
+        },
+        nums: 'real: (0)\nimag: [1]'
+    }, {
+        desc: 'with prefix and suffix on invisible axes',
+        patch: function(fig) {
+            fig.layout.smith = {
+                realaxis: {
+                    visible: false,
+                    tickprefix: '(',
+                    ticksuffix: ')'
+                },
+                imaginaryaxis: {
+                    visible: false,
+                    tickprefix: '[',
+                    ticksuffix: ']'
+                }
+            };
+            return fig;
+        },
+        nums: 'real: (0)\nimag: [1]'
     }].forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
             run(specs).then(done, done.fail);

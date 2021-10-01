@@ -7,6 +7,7 @@ var Template = require('../../plot_api/plot_template');
 var handleSubplotDefaults = require('../subplot_defaults');
 var getSubplotData = require('../get_data').getSubplotData;
 
+var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 
@@ -45,7 +46,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         axOut.type = 'linear';
         setConvert(axOut, contOut, layoutOut);
-        delete axOut.type;
 
         var dfltColor;
         var dfltFontColor;
@@ -67,6 +67,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         // range[1] > range[0], and vice-versa for `autorange: 'reversed'` below.
         axOut._m = 1;
 
+        handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type);
+
         if(visible) {
             if(axName === 'realaxis') {
                 coerceAxis('side');
@@ -74,7 +76,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
             coerceAxis('tickvals');
 
-            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {});
+            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type);
 
             Lib.coerce2(contIn, contOut, layoutAttributes, axName + '.ticklen');
             Lib.coerce2(contIn, contOut, layoutAttributes, axName + '.tickwidth');
@@ -113,6 +115,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         }
 
         coerceAxis('hoverformat');
+
+        delete axOut.type;
 
         axOut._input = axIn;
     }
