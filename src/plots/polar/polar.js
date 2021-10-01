@@ -777,6 +777,7 @@ proto.updateFx = function(fullLayout, polarLayout) {
 
 proto.updateHoverAndMainDrag = function(fullLayout) {
     var _this = this;
+    var isSmith = _this.isSmith;
     var gd = _this.gd;
     var layers = _this.layers;
     var zoomlayer = fullLayout._zoomlayer;
@@ -1089,14 +1090,18 @@ proto.updateHoverAndMainDrag = function(fullLayout) {
 
         switch(dragModeNow) {
             case 'zoom':
-                if(vangles) {
-                    dragOpts.moveFn = zoomMoveForPolygons;
-                } else {
-                    dragOpts.moveFn = zoomMove;
-                }
                 dragOpts.clickFn = zoomClick;
-                dragOpts.doneFn = zoomDone;
-                zoomPrep(evt, startX, startY);
+
+                if(!isSmith) {
+                    if(vangles) {
+                        dragOpts.moveFn = zoomMoveForPolygons;
+                    } else {
+                        dragOpts.moveFn = zoomMove;
+                    }
+
+                    dragOpts.doneFn = zoomDone;
+                    zoomPrep(evt, startX, startY);
+                }
                 break;
             case 'select':
             case 'lasso':

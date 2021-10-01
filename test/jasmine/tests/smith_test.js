@@ -1,7 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Smith = require('@src/plots/smith');
-var layerNames = require('@src/plots/polar/constants').layerNames;
 
 var basicMock = require('@mocks/zzz_smith_basic.json');
 
@@ -88,64 +87,6 @@ describe('Test smith plots defaults:', function() {
 
 describe('Test relayout on smith subplots:', function() {
     afterEach(destroyGraphDiv);
-
-    it('should be able to reorder axis layers when relayout\'ing *layer*', function(done) {
-        var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, basicMock);
-        var dflt = layerNames;
-
-        function _assert(expected) {
-            var actual = d3SelectAll('g.smith > .smithsublayer');
-
-            expect(actual.size()).toBe(expected.length, '# of layer');
-
-            actual.each(function(d, i) {
-                var className = d3Select(this)
-                    .attr('class')
-                    .split('smithsublayer ')[1];
-
-                expect(className).toBe(expected[i], 'layer ' + i);
-            });
-        }
-
-        Plotly.newPlot(gd, fig).then(function() {
-            _assert(dflt);
-            return Plotly.relayout(gd, 'smith.realaxis.layer', 'below traces');
-        })
-        .then(function() {
-            _assert([
-                'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'radial-line', 'radial-axis',
-                'frontplot',
-                'angular-line', 'angular-axis'
-            ]);
-            return Plotly.relayout(gd, 'smith.imaginaryaxis.layer', 'below traces');
-        })
-        .then(function() {
-            _assert([
-                'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-line',
-                'radial-line',
-                'angular-axis',
-                'radial-axis',
-                'frontplot'
-            ]);
-            return Plotly.relayout(gd, 'smith.realaxis.layer', 'above traces');
-        })
-        .then(function() {
-            _assert([
-                'draglayer', 'plotbg', 'backplot', 'angular-grid', 'radial-grid',
-                'angular-line', 'angular-axis',
-                'frontplot',
-                'radial-line', 'radial-axis'
-            ]);
-            return Plotly.relayout(gd, 'smith.imaginaryaxis.layer', null);
-        })
-        .then(function() {
-            _assert(dflt);
-        })
-        .then(done, done.fail);
-    });
 
     it('should be able to relayout imaginary axis ticks', function(done) {
         var gd = createGraphDiv();
