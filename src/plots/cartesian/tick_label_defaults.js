@@ -6,27 +6,8 @@ var layoutAttributes = require('./layout_attributes');
 var getShowAttrDflt = require('./show_dflt');
 var handleArrayContainerDefaults = require('../array_container_defaults');
 
-module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, config) {
-    if(!config || config.pass === 1) {
-        handlePrefixSuffix(containerIn, containerOut, coerce, axType, options);
-    }
-
-    if(!config || config.pass === 2) {
-        handleOtherDefaults(containerIn, containerOut, coerce, axType, options);
-    }
-};
-
-function handlePrefixSuffix(containerIn, containerOut, coerce, axType, options) {
-    var showAttrDflt = getShowAttrDflt(containerIn);
-
-    var tickPrefix = coerce('tickprefix');
-    if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-    var tickSuffix = coerce('ticksuffix', options.tickSuffixDflt);
-    if(tickSuffix) coerce('showticksuffix', showAttrDflt);
-}
-
-function handleOtherDefaults(containerIn, containerOut, coerce, axType, options) {
+module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
+    if(!options) options = {};
     var showAttrDflt = getShowAttrDflt(containerIn);
 
     var showTickLabels = coerce('showticklabels');
@@ -68,7 +49,7 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
             }
         }
     }
-}
+};
 
 function tickformatstopDefaults(valueIn, valueOut) {
     function coerce(attr, dflt) {

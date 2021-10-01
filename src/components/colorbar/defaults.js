@@ -6,6 +6,7 @@ var Template = require('../../plot_api/plot_template');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../../plots/cartesian/prefix_suffix_defaults');
 
 var attributes = require('./attributes');
 
@@ -53,6 +54,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     if(ticklabelposition.indexOf('inside') !== -1) {
         opts.bgColor = 'black'; // could we instead use the average of colors in the scale?
     }
+    handlePrefixSuffixDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
     handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
     handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
 

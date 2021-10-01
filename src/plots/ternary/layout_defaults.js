@@ -6,6 +6,7 @@ var Lib = require('../../lib');
 
 var handleSubplotDefaults = require('../subplot_defaults');
 var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
 var handleTickValueDefaults = require('../cartesian/tick_value_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
@@ -90,7 +91,8 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     coerce('min');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
-    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear', {});
+    handlePrefixSuffixDefaults(containerIn, containerOut, coerce, 'linear');
+    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear');
     handleTickMarkDefaults(containerIn, containerOut, coerce,
         { outerTicks: true });
 

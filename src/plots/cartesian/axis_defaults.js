@@ -11,6 +11,7 @@ var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
 var handleTickMarkDefaults = require('./tick_mark_defaults');
 var handleTickLabelDefaults = require('./tick_label_defaults');
+var handlePrefixSuffixDefaults = require('./prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
 var setConvert = require('./set_convert');
@@ -110,7 +111,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // try to get default title from splom trace, fallback to graph-wide value
     var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 1});
+    handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options);
     if(!visible) return containerOut;
 
     coerce('title.text', dfltTitle);
@@ -121,7 +122,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     });
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 2});
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
