@@ -28,12 +28,6 @@ function handlePrefixSuffix(containerIn, containerOut, coerce, axType, options) 
 function handleOtherDefaults(containerIn, containerOut, coerce, axType, options) {
     var showAttrDflt = getShowAttrDflt(containerIn);
 
-    var tickPrefix = coerce('tickprefix');
-    if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-    var tickSuffix = coerce('ticksuffix', options.tickSuffixDflt);
-    if(tickSuffix) coerce('showticksuffix', showAttrDflt);
-
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
         var font = options.font || {};
