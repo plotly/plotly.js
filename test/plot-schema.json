@@ -7405,18 +7405,6 @@
       "valType": "number"
      },
      "role": "object",
-     "showexponent": {
-      "description": "If *all*, all exponents are shown besides their significands. If *first*, only the exponent of the first tick is shown. If *last*, only the exponent of the last tick is shown. If *none*, no exponents appear.",
-      "dflt": "all",
-      "editType": "plot",
-      "valType": "enumerated",
-      "values": [
-       "all",
-       "first",
-       "last",
-       "none"
-      ]
-     },
      "showgrid": {
       "description": "Determines whether or not grid lines are drawn. If *true*, the grid lines are drawn at every tick mark.",
       "dflt": true,
@@ -7623,18 +7611,6 @@
       "valType": "number"
      },
      "role": "object",
-     "showexponent": {
-      "description": "If *all*, all exponents are shown besides their significands. If *first*, only the exponent of the first tick is shown. If *last*, only the exponent of the last tick is shown. If *none*, no exponents appear.",
-      "dflt": "all",
-      "editType": "plot",
-      "valType": "enumerated",
-      "values": [
-       "all",
-       "first",
-       "last",
-       "none"
-      ]
-     },
      "showgrid": {
       "description": "Determines whether or not grid lines are drawn. If *true*, the grid lines are drawn at every tick mark.",
       "dflt": true,

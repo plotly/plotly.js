@@ -25,7 +25,6 @@ var axisTickAttrs = overrideAll({
     tickprefix: axesAttrs.tickprefix,
     showticksuffix: axesAttrs.showticksuffix,
     ticksuffix: axesAttrs.ticksuffix,
-    showexponent: axesAttrs.showexponent,
     tickfont: axesAttrs.tickfont,
     tickformat: axesAttrs.tickformat,
     hoverformat: axesAttrs.hoverformat,
