@@ -20,7 +20,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
     var bgColor = coerce('bgcolor');
     opts.bgColor = Color.combine(bgColor, opts.paper_bgcolor);
 
-    // could optimize, subplotData is not always needed!
     var subplotData = getSubplotData(opts.fullData, constants.name, opts.id);
     var layoutOut = opts.layoutOut;
     var axName;
@@ -46,18 +45,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         axOut.type = 'linear';
         setConvert(axOut, contOut, layoutOut);
-
-        // We don't want to make downstream code call ax.setScale,
-        // as both real and imaginary axes don't have a set domain.
-        // Furthermore, imaginary axes don't have a set range.
-        //
-        // Mocked domains and ranges are set by the smith subplot instances,
-        // but Axes.findExtremes uses the sign of _m to determine which padding value
-        // to use.
-        //
-        // By setting, _m to 1 here, we make Axes.findExtremes think that
-        // range[1] > range[0], and vice-versa for `autorange: 'reversed'` below.
-        axOut._m = 1;
 
         handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type);
 
