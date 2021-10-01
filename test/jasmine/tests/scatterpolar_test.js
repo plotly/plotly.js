@@ -192,6 +192,30 @@ describe('Test scatterpolar hover:', function() {
         },
         nums: 'r: 4.022892\nθ: 128.342°\n4.02289202968',
         name: 'Trial 3'
+    }, {
+        desc: 'with prefix and suffix',
+        patch: function(fig) {
+            fig.layout.polar.radialaxis.tickprefix = '(';
+            fig.layout.polar.radialaxis.ticksuffix = ')';
+            fig.layout.polar.angularaxis.tickprefix = '[';
+            fig.layout.polar.angularaxis.ticksuffix = ']';
+            return fig;
+        },
+        nums: 'r: (4.022892)\nθ: [128.342]',
+        name: 'Trial 3'
+    }, {
+        desc: 'with prefix and suffix on invisible axes',
+        patch: function(fig) {
+            fig.layout.polar.radialaxis.visible = false,
+            fig.layout.polar.radialaxis.tickprefix = '(';
+            fig.layout.polar.radialaxis.ticksuffix = ')';
+            fig.layout.polar.angularaxis.visible = false;
+            fig.layout.polar.angularaxis.tickprefix = '[';
+            fig.layout.polar.angularaxis.ticksuffix = ']';
+            return fig;
+        },
+        nums: 'r: (4.022892)\nθ: [128.342]',
+        name: 'Trial 3'
     }]
     .forEach(function(specs) {
         it('should generate correct hover labels ' + specs.desc, function(done) {
