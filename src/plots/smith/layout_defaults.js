@@ -10,9 +10,9 @@ var getSubplotData = require('../get_data').getSubplotData;
 var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
+var setConvertCartesian = require('../cartesian/set_convert');
 
 var layoutAttributes = require('./layout_attributes');
-var setConvert = require('./set_convert');
 var constants = require('./constants');
 var axisNames = constants.axisNames;
 
@@ -44,7 +44,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         var visible = coerceAxis('visible');
 
         axOut.type = 'linear';
-        setConvert(axOut, contOut, layoutOut);
+        setConvertCartesian(axOut, layoutOut);
 
         handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type);
 
