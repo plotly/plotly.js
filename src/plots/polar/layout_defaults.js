@@ -137,11 +137,12 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 break;
         }
 
+        handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type, {
+            tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
+        });
+
         if(visible) {
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
-            handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type, {
-                tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
-            });
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type);
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
 
