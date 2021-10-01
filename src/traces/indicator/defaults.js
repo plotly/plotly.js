@@ -10,6 +10,7 @@ var cn = require('./constants.js');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../../plots/cartesian/prefix_suffix_defaults');
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -128,6 +129,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
         var opts = {outerTicks: true};
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
+        handlePrefixSuffixDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
         handleTickLabelDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
         handleTickMarkDefaults(axisIn, axisOut, coerceGaugeAxis, opts);
     } else {

@@ -10,6 +10,7 @@ var getSubplotData = require('../get_data').getSubplotData;
 var handleTickValueDefaults = require('../cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 var autoType = require('../cartesian/axis_autotype');
@@ -138,9 +139,10 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         if(visible) {
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
-            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
+            handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type, {
                 tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
             });
+            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type);
             handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
 
             var showTickLabels = coerceAxis('showticklabels');
