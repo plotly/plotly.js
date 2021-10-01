@@ -47,14 +47,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         axOut.type = 'linear';
         setConvert(axOut, contOut, layoutOut);
 
-        var dfltColor;
-        var dfltFontColor;
-
-        if(visible) {
-            dfltColor = coerceAxis('color');
-            dfltFontColor = (dfltColor === axIn.color) ? dfltColor : opts.font.color;
-        }
-
         // We don't want to make downstream code call ax.setScale,
         // as both real and imaginary axes don't have a set domain.
         // Furthermore, imaginary axes don't have a set range.
@@ -70,13 +62,33 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type);
 
         if(visible) {
-            if(axName === 'realaxis') {
-                coerceAxis('side');
-            }
+            var isRealAxis = axName === 'realaxis';
+            if(isRealAxis) coerceAxis('side');
 
             coerceAxis('tickvals');
 
-            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type);
+            var dfltColor;
+            var dfltFontColor;
+            var dfltFontSize;
+            var dfltFontFamily;
+            var font = opts.font || {};
+
+            if(visible) {
+                dfltColor = coerceAxis('color');
+                dfltFontColor = (dfltColor === axIn.color) ? dfltColor : font.color;
+                dfltFontSize = font.size;
+                dfltFontFamily = font.family;
+            }
+
+            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
+                noAng: !isRealAxis,
+                noExp: true,
+                font: {
+                    color: dfltFontColor,
+                    size: dfltFontSize,
+                    family: dfltFontFamily
+                }
+            });
 
             Lib.coerce2(contIn, contOut, layoutAttributes, axName + '.ticklen');
             Lib.coerce2(contIn, contOut, layoutAttributes, axName + '.tickwidth');
@@ -86,17 +98,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 delete contOut[axName].ticklen;
                 delete contOut[axName].tickwidth;
                 delete contOut[axName].tickcolor;
-            }
-
-            var showTickLabels = coerceAxis('showticklabels');
-            if(showTickLabels) {
-                Lib.coerceFont(coerceAxis, 'tickfont', {
-                    family: opts.font.family,
-                    size: opts.font.size,
-                    color: dfltFontColor
-                });
-                coerceAxis('tickangle');
-                coerceAxis('tickformat');
             }
 
             handleLineGridDefaults(axIn, axOut, coerceAxis, {

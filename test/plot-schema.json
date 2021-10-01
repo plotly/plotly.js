@@ -7362,20 +7362,6 @@
       "valType": "color"
      },
      "editType": "plot",
-     "exponentformat": {
-      "description": "Determines a formatting rule for the tick exponents. For example, consider the number 1,000,000,000. If *none*, it appears as 1,000,000,000. If *e*, 1e+9. If *E*, 1E+9. If *power*, 1x10^9 (with 9 in a super script). If *SI*, 1G. If *B*, 1B.",
-      "dflt": "B",
-      "editType": "plot",
-      "valType": "enumerated",
-      "values": [
-       "none",
-       "e",
-       "E",
-       "power",
-       "SI",
-       "B"
-      ]
-     },
      "gridcolor": {
       "description": "Sets the color of the grid lines.",
       "dflt": "#eee",
@@ -7418,20 +7404,7 @@
       "min": 0,
       "valType": "number"
      },
-     "minexponent": {
-      "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
-      "dflt": 3,
-      "editType": "plot",
-      "min": 0,
-      "valType": "number"
-     },
      "role": "object",
-     "separatethousands": {
-      "description": "If \"true\", even 4-digit integers are separated",
-      "dflt": false,
-      "editType": "plot",
-      "valType": "boolean"
-     },
      "showexponent": {
       "description": "If *all*, all exponents are shown besides their significands. If *first*, only the exponent of the first tick is shown. If *last*, only the exponent of the last tick is shown. If *none*, no exponents appear.",
       "dflt": "all",
@@ -7485,12 +7458,6 @@
        "last",
        "none"
       ]
-     },
-     "tickangle": {
-      "description": "Sets the angle of the tick labels with respect to the horizontal. For example, a `tickangle` of -90 draws the tick labels vertically.",
-      "dflt": "auto",
-      "editType": "ticks",
-      "valType": "angle"
      },
      "tickcolor": {
       "description": "Sets the tick color.",
@@ -7613,20 +7580,6 @@
       "valType": "color"
      },
      "editType": "plot",
-     "exponentformat": {
-      "description": "Determines a formatting rule for the tick exponents. For example, consider the number 1,000,000,000. If *none*, it appears as 1,000,000,000. If *e*, 1e+9. If *E*, 1E+9. If *power*, 1x10^9 (with 9 in a super script). If *SI*, 1G. If *B*, 1B.",
-      "dflt": "B",
-      "editType": "plot",
-      "valType": "enumerated",
-      "values": [
-       "none",
-       "e",
-       "E",
-       "power",
-       "SI",
-       "B"
-      ]
-     },
      "gridcolor": {
       "description": "Sets the color of the grid lines.",
       "dflt": "#eee",
@@ -7669,20 +7622,7 @@
       "min": 0,
       "valType": "number"
      },
-     "minexponent": {
-      "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
-      "dflt": 3,
-      "editType": "plot",
-      "min": 0,
-      "valType": "number"
-     },
      "role": "object",
-     "separatethousands": {
-      "description": "If \"true\", even 4-digit integers are separated",
-      "dflt": false,
-      "editType": "plot",
-      "valType": "boolean"
-     },
      "showexponent": {
       "description": "If *all*, all exponents are shown besides their significands. If *first*, only the exponent of the first tick is shown. If *last*, only the exponent of the last tick is shown. If *none*, no exponents appear.",
       "dflt": "all",

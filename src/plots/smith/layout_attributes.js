@@ -26,9 +26,6 @@ var axisTickAttrs = overrideAll({
     showticksuffix: axesAttrs.showticksuffix,
     ticksuffix: axesAttrs.ticksuffix,
     showexponent: axesAttrs.showexponent,
-    exponentformat: axesAttrs.exponentformat,
-    minexponent: axesAttrs.minexponent,
-    separatethousands: axesAttrs.separatethousands,
     tickfont: axesAttrs.tickfont,
     tickformat: axesAttrs.tickformat,
     hoverformat: axesAttrs.hoverformat,
@@ -96,8 +93,6 @@ var imaginaryAxisAttrs = {
         editType: 'plot',
         description: 'Sets the values at which ticks on this axis appear.'
     },
-
-    tickangle: axesAttrs.tickangle,
 
     ticks: axesAttrs.ticks,
 
