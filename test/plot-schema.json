@@ -44927,7 +44927,7 @@
     "opacity": {
      "description": "Sets the opacity of the trace.",
      "dflt": 1,
-     "editType": "style",
+     "editType": "calc",
      "max": 1,
      "min": 0,
      "valType": "number"

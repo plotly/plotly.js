@@ -161,6 +161,8 @@ var attrs = module.exports = overrideAll({
         family: extendFlat({}, scatterAttrs.textfont.family, {arrayOk: false})
     },
 
+    opacity: baseAttrs.opacity,
+
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }, 'calc', 'nested');
 
