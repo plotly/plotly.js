@@ -8,22 +8,24 @@ assertES5();
 
 // Ensure no ES6 has snuck through into the build:
 function assertES5() {
-    var CLIEngine = eslint.CLIEngine;
+    var ESLint = eslint.ESLint;
 
-    var cli = new CLIEngine({
+    var cli = new ESLint({
         allowInlineConfig: false,
         useEslintrc: false,
         ignore: false,
-        parserOptions: {
-            ecmaVersion: 5
+        overrideConfig: {
+            parserOptions: {
+                ecmaVersion: 5
+            }
         }
     });
 
     var files = partialBundlePaths.map(function(f) { return f.dist; });
     files.unshift(constants.pathToPlotlyDist);
 
-    var report = cli.executeOnFiles(files);
-    var formatter = cli.getFormatter();
+    var report = cli.lintFiles(files);
+    var formatter = cli.loadFormatter();
 
     var errors = [];
     if(report.errorCount > 0) {
