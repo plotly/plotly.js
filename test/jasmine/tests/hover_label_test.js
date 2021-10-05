@@ -4628,12 +4628,12 @@ describe('hovermode: (x|y)unified', function() {
             data: [{
                 name: 'high',
                 x: x1,
-                y: y1,
-                hoverinfo: 'none'
+                y: y1
             }, {
                 name: 'low',
                 x: x2,
-                y: y2
+                y: y2,
+                hoverinfo: 'none'
             }],
             layout: {
                 hovermode: 'x unified',
