@@ -2210,7 +2210,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertPoints = makeAssertPoints(['real', 'imag']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/zzz_smith_basic.json'));
+            var fig = Lib.extendDeep({}, require('@mocks/smith_basic.json'));
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 

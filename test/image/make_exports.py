@@ -28,7 +28,7 @@ allNames = [
     'gl2d_no-clustering2',
     'gl3d_surface-heatmap-treemap_transparent-colorscale',
     'mapbox_stamen-style',
-    'zzz_smith_modes',
+    'smith_modes',
     'zsmooth_methods',
     'fonts',
     'worldcup',

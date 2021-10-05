@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var ScatterSmith = require('@src/traces/scattersmith');
 
-var basicMock = require('@mocks/zzz_smith_basic.json');
+var basicMock = require('@mocks/smith_basic.json');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

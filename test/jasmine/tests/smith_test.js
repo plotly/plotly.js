@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Smith = require('@src/plots/smith');
 
-var basicMock = require('@mocks/zzz_smith_basic.json');
+var basicMock = require('@mocks/smith_basic.json');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
