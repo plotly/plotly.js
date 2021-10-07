@@ -4602,37 +4602,13 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should not display hover for display: none', function(done) {
-        var x1 = [];
-        var y1 = [];
-        var x2 = [];
-        var y2 = [];
-        var i, t;
-
-        function r100(v) {
-            return Math.round(v * 100);
-        }
-
-        for(i = 0; i <= 1800; i++) {
-            t = i / 180 * Math.PI;
-            x1.push(r100(t / 5));
-            y1.push(r100(Math.sin(t)));
-        }
-
-        for(i = 0; i <= 360; i++) {
-            t = i / 180 * Math.PI;
-            x2.push(r100(t));
-            y2.push(r100(Math.sin(t)));
-        }
-
         Plotly.newPlot(gd, {
             data: [{
-                name: 'high',
-                x: x1,
-                y: y1
+                name: 'A',
+                y: [1]
             }, {
-                name: 'low',
-                x: x2,
-                y: y2,
+                name: 'B',
+                y: [2],
                 hoverinfo: 'none'
             }],
             layout: {
@@ -4649,21 +4625,9 @@ describe('hovermode: (x|y)unified', function() {
             }
         })
         .then(function() {
-            _hover(gd, { xpx: 100, ypx: 200 });
-            assertLabel({title: '157', items: [
-                'low : 100'
-            ]});
-        })
-        .then(function() {
-            _hover(gd, { xpx: 175, ypx: 200 });
-            assertLabel({title: '274', items: [
-                'low : 39'
-            ]});
-        })
-        .then(function() {
-            _hover(gd, { xpx: 350, ypx: 200 });
-            assertLabel({title: '550', items: [
-                'low : −71'
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'A : 1'
             ]});
         })
         .then(done, done.fail);
