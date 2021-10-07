@@ -4592,6 +4592,38 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
+    it('should not display hover for display: none', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'A',
+                y: [1]
+            }, {
+                name: 'B',
+                y: [2],
+                hoverinfo: 'none'
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'A : 1'
+            ]});
+        })
+        .then(done, done.fail);
+    });
+
     it('y unified should work for x/y cartesian traces', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'y unified';
