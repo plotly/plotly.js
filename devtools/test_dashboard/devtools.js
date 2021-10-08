@@ -178,11 +178,16 @@ var fuse = new Fuse(mocks, {
     }]
 });
 
-var searchBar = document.getElementById('mocks-search');
+var transformInput = document.getElementById('css-transform');
+var mockInput = document.getElementById('mocks-search');
 var mocksList = document.getElementById('mocks-list');
 var plotArea = document.getElementById('plots');
 
-searchBar.addEventListener('keyup', debounce(searchMocks, 250));
+mockInput.addEventListener('keyup', debounce(searchMocks, 250));
+
+transformInput.addEventListener('keyup', function(e) {
+    plotArea.style.transform = e.target.value;
+});
 
 function debounce(func, wait, immediate) {
     var timeout;
@@ -230,7 +235,16 @@ function searchMocks(e) {
 
         var listWidth = mocksList.getBoundingClientRect().width;
         var plotAreaWidth = Math.floor(window.innerWidth - listWidth);
-        plotArea.setAttribute('style', 'width: ' + plotAreaWidth + 'px;');
+
+        var allStyles = [
+            'width: ' + plotAreaWidth + 'px;'
+        ];
+
+        if(transformInput.value !== '') {
+            allStyles.push('transform: ' + transformInput.value + ';');
+        }
+
+        plotArea.setAttribute('style', allStyles.join(' '));
     });
 }
 

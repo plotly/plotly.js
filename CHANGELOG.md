@@ -9,6 +9,58 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.5.1] -- 2021-09-16
+
+### Fixed
+ - Reduce bundle sizes by updating `surface-nets`, `robust-determinant`, `robust-linear-solve` modules [[#5934](https://github.com/plotly/plotly.js/pull/5934), [#5935](https://github.com/plotly/plotly.js/pull/5935), [#5936](https://github.com/plotly/plotly.js/pull/5936)]
+ - Update CONTRIBUTING guidelines to use `npm v7` and `node.js v16` [[#5933](https://github.com/plotly/plotly.js/pull/5933)],
+   with thanks to @sleighsoft for the contribution!
+
+
+## [2.5.0] -- 2021-09-03
+
+### Added
+ - Include `surface`, `isosurface`, `volume`, `streamtube`, `cone`, `mesh3d`, `scatter3d`, `pointcloud`
+   and `heatmapgl` in the "strict" bundle by avoid function generation for these traces at runtime [[#5888](https://github.com/plotly/plotly.js/pull/5888)]
+
+### Changed
+ - Use `node.js v16` and `npm v7` in development and upgrade the version of `package-lock.json` [[#5922](https://github.com/plotly/plotly.js/pull/5922), [#5919](https://github.com/plotly/plotly.js/pull/5919)]
+
+### Fixed
+ - Adjust position of hover in respect to CSS transform [[#5916](https://github.com/plotly/plotly.js/pull/5916)]
+
+
+## [2.4.2] -- 2021-08-31
+
+### Fixed
+ - Fix positioning unified hover box when div has zero height
+   (regression introduced in 2.3.0) [[#5913](https://github.com/plotly/plotly.js/pull/5913)]
+
+
+## [2.4.1] -- 2021-08-27
+
+### Fixed
+ - Fix double click legends when `groupclick` is set to "toggleitem" [[#5909](https://github.com/plotly/plotly.js/pull/5909)]
+
+
+## [2.4.0] -- 2021-08-27
+
+### Added
+ - Add `legend.groupclick` options [[#5849](https://github.com/plotly/plotly.js/pull/5849), [#5906](https://github.com/plotly/plotly.js/pull/5906)],
+   with thanks to @brussee for the contribution!
+ - Add touch support to `slider` component [[#5856](https://github.com/plotly/plotly.js/pull/5856)],
+  with thanks to @keul for the contribution!
+ - Provide `bbox` of hover items in event data [[#5512](https://github.com/plotly/plotly.js/pull/5512)]
+
+### Changed
+ - Upgrade `regl` module from version 1.6.1 to version 2.1.0 [[#5870](https://github.com/plotly/plotly.js/pull/5870)]
+
+### Fixed
+ - Fix invalid call to `lib.promiseError` in lib.syncOrAsync  [[#5878](https://github.com/plotly/plotly.js/pull/5878)],
+   with thanks to @jklimke for the contribution!
+ - Use `hoverlabel.font` for group titles in unified hover modes [[#5895](https://github.com/plotly/plotly.js/pull/5895)]
+
+
 ## [2.3.1] -- 2021-07-30
 
 ### Fixed

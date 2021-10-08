@@ -1664,7 +1664,7 @@ describe('A bar plot', function() {
         }
     });
 
-    it('should be able to restyle', function(done) {
+    it('@noCI should be able to restyle', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/bar_attrs_relative'));
 
         Plotly.newPlot(gd, mock.data, mock.layout).then(function() {

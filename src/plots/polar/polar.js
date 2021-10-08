@@ -334,7 +334,6 @@ proto.doAutoRange = function(fullLayout, polarLayout) {
     var radialAxis = this.radialAxis;
     var radialLayout = polarLayout.radialaxis;
 
-    radialAxis.setScale();
     doAutoRange(gd, radialAxis);
 
     var rng = radialAxis.range;

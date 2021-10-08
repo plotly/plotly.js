@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.3.1
+* plotly.js (cartesian) v2.5.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -36288,7 +36288,48 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         hoverItems = [hoverItems];
     }
 
+    var gd = opts.gd;
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     var pointsData = hoverItems.map(function(hoverItem) {
+        var _x0 = hoverItem._x0 || hoverItem.x0 || hoverItem.x || 0;
+        var _x1 = hoverItem._x1 || hoverItem.x1 || hoverItem.x || 0;
+        var _y0 = hoverItem._y0 || hoverItem.y0 || hoverItem.y || 0;
+        var _y1 = hoverItem._y1 || hoverItem.y1 || hoverItem.y || 0;
+
+        var eventData = hoverItem.eventData;
+        if(eventData) {
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            var trace = hoverItem.trace;
+            if(Registry.traceIs(trace, 'gl3d')) {
+                var container = gd._fullLayout[trace.scene]._scene.container;
+                var dx = container.offsetLeft;
+                var dy = container.offsetTop;
+                x0 += dx;
+                x1 += dx;
+                y0 += dy;
+                y1 += dy;
+            } // TODO: handle heatmapgl
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
+
+            if(opts.inOut_bbox) {
+                opts.inOut_bbox.push(eventData.bbox);
+            }
+        } else {
+            eventData = false;
+        }
+
         return {
             color: hoverItem.color || Color.defaultLine,
             x0: hoverItem.x0 || hoverItem.x || 0,
@@ -36320,23 +36361,22 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             index: 0,
 
             hovertemplate: hoverItem.hovertemplate || false,
-            eventData: hoverItem.eventData || false,
             hovertemplateLabels: hoverItem.hovertemplateLabels || false,
+
+            eventData: eventData
         };
     });
 
-    var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer ? d3.select(opts.outerContainer) : container3;
+    var rotateLabels = false;
 
-    var fullOpts = {
+    var hoverLabel = createHoverText(pointsData, {
+        gd: gd,
         hovermode: 'closest',
-        rotateLabels: false,
+        rotateLabels: rotateLabels,
         bgColor: opts.bgColor || Color.background,
-        container: container3,
-        outerContainer: outerContainer3
-    };
-
-    var hoverLabel = createHoverText(pointsData, fullOpts, opts.gd);
+        container: d3.select(opts.container),
+        outerContainer: opts.outerContainer || opts.container
+    });
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -36361,9 +36401,9 @@ exports.loneHover = function loneHover(hoverItems, opts) {
             d.offset -= anchor;
         });
 
-    var scaleX = opts.gd._fullLayout._invScaleX;
-    var scaleY = opts.gd._fullLayout._invScaleY;
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
+    var scaleX = gd._fullLayout._invScaleX;
+    var scaleY = gd._fullLayout._invScaleY;
+    alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -36777,7 +36817,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var spikelineOpts = {
         fullLayout: fullLayout,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
         event: evt
     };
     var oldspikepoints = gd._spikepoints;
@@ -36894,6 +36933,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var oldhoverdata = gd._hoverdata;
     var newhoverdata = [];
 
+    var gTop = getTopOffset(gd);
+    var gLeft = getLeftOffset(gd);
+
     // pull out just the data that's useful to
     // other people and send it to the event
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
@@ -36906,6 +36948,25 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 ht = pt.cd[pt.index].ht;
             }
             pt.hovertemplate = ht || pt.trace.hovertemplate || false;
+        }
+
+        if(pt.xa && pt.ya) {
+            var _x0 = pt.x0 + pt.xa._offset;
+            var _x1 = pt.x1 + pt.xa._offset;
+            var _y0 = pt.y0 + pt.ya._offset;
+            var _y1 = pt.y1 + pt.ya._offset;
+
+            var x0 = Math.min(_x0, _x1);
+            var x1 = Math.max(_x0, _x1);
+            var y0 = Math.min(_y0, _y1);
+            var y1 = Math.max(_y0, _y1);
+
+            eventData.bbox = {
+                x0: x0 + gLeft,
+                x1: x1 + gLeft,
+                y0: y0 + gTop,
+                y1: y1 + gTop
+            };
         }
 
         pt.eventData = [eventData];
@@ -36924,17 +36985,16 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         fullLayout.paper_bgcolor
     );
 
-    var labelOpts = {
+    var hoverLabels = createHoverText(hoverData, {
+        gd: gd,
         hovermode: hovermode,
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
+        outerContainer: fullLayout._paper.node(),
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
-    };
-
-    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
+    });
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
@@ -36972,7 +37032,8 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(hoverData, opts) {
+    var gd = opts.gd;
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -36992,7 +37053,7 @@ function createHoverText(hoverData, opts, gd) {
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
     var t0 = c0[axLetter + 'Label'];
-    var outerContainerBB = outerContainer.node().getBoundingClientRect();
+    var outerContainerBB = getBoundingClientRect(gd, outerContainer);
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
     var outerHeight = outerContainerBB.height;
@@ -37067,7 +37128,7 @@ function createHoverText(hoverData, opts, gd) {
 
         label.attr('transform', '');
 
-        var tbb = ltext.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, ltext.node());
         var lx, ly;
 
         if(hovermode === 'x') {
@@ -37160,7 +37221,7 @@ function createHoverText(hoverData, opts, gd) {
                         var dummy = Drawing.tester.append('text')
                             .text(s.text())
                             .call(Drawing.font, commonLabelFont);
-                        var dummyBB = dummy.node().getBoundingClientRect();
+                        var dummyBB = getBoundingClientRect(gd, dummy.node());
                         if(Math.round(dummyBB.width) < Math.round(tbb.width)) {
                             s.attr('x', ltx - dummyBB.width);
                         }
@@ -37191,13 +37252,15 @@ function createHoverText(hoverData, opts, gd) {
         if(hoverData.length === 0) return;
 
         // mock legend
+        var hoverlabel = fullLayout.hoverlabel;
+        var font = hoverlabel.font;
         var mockLayoutIn = {
             showlegend: true,
             legend: {
-                title: {text: t0, font: fullLayout.hoverlabel.font},
-                font: fullLayout.hoverlabel.font,
-                bgcolor: fullLayout.hoverlabel.bgcolor,
-                bordercolor: fullLayout.hoverlabel.bordercolor,
+                title: {text: t0, font: font},
+                font: font,
+                bgcolor: hoverlabel.bgcolor,
+                bordercolor: hoverlabel.bordercolor,
                 borderwidth: 1,
                 tracegroupgap: 7,
                 traceorder: fullLayout.legend ? fullLayout.legend.traceorder : undefined,
@@ -37242,11 +37305,12 @@ function createHoverText(hoverData, opts, gd) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
+        mockLegend._groupTitleFont = font;
         legendDraw(gd, mockLegend);
 
         // Position the hover
         var legendContainer = container.select('g.legend');
-        var tbb = legendContainer.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, legendContainer.node());
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
         var winningPoint = hoverData[0];
@@ -37411,7 +37475,7 @@ function createHoverText(hoverData, opts, gd) {
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
 
-            var t2bb = tx2.node().getBoundingClientRect();
+            var t2bb = getBoundingClientRect(gd, tx2.node());
             tx2width = t2bb.width + 2 * HOVERTEXTPAD;
             tx2height = t2bb.height + 2 * HOVERTEXTPAD;
         } else {
@@ -37424,21 +37488,25 @@ function createHoverText(hoverData, opts, gd) {
             stroke: contrastColor
         });
 
-        var tbb = tx.node().getBoundingClientRect();
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
         var hty = d.ya._offset + (d.y0 + d.y1) / 2;
         var dx = Math.abs(d.x1 - d.x0);
         var dy = Math.abs(d.y1 - d.y0);
-        var txTotalWidth = tbb.width + HOVERARROWSIZE + HOVERTEXTPAD + tx2width;
-        var anchorStartOK, anchorEndOK;
 
-        d.ty0 = outerTop - tbb.top;
-        d.bx = tbb.width + 2 * HOVERTEXTPAD;
-        d.by = Math.max(tbb.height + 2 * HOVERTEXTPAD, tx2height);
+        var tbb = getBoundingClientRect(gd, tx.node());
+        var tbbWidth = tbb.width / fullLayout._invScaleX;
+        var tbbHeight = tbb.height / fullLayout._invScaleY;
+
+        d.ty0 = (outerTop - tbb.top) / fullLayout._invScaleY;
+        d.bx = tbbWidth + 2 * HOVERTEXTPAD;
+        d.by = Math.max(tbbHeight + 2 * HOVERTEXTPAD, tx2height);
         d.anchor = 'start';
-        d.txwidth = tbb.width;
+        d.txwidth = tbbWidth;
         d.tx2width = tx2width;
         d.offset = 0;
+
+        var txTotalWidth = (tbbWidth + HOVERARROWSIZE + HOVERTEXTPAD + tx2width) * fullLayout._invScaleX;
+        var anchorStartOK, anchorEndOK;
 
         if(rotateLabels) {
             d.pos = htx;
@@ -38191,6 +38259,42 @@ function getCoord(axLetter, winningPoint, fullLayout) {
     }
 
     return val;
+}
+
+// Top/left hover offsets relative to graph div. As long as hover content is
+// a sibling of the graph div, it will be positioned correctly relative to
+// the offset parent, whatever that may be.
+function getTopOffset(gd) { return gd.offsetTop + gd.clientTop; }
+function getLeftOffset(gd) { return gd.offsetLeft + gd.clientLeft; }
+
+function getBoundingClientRect(gd, node) {
+    var fullLayout = gd._fullLayout;
+
+    var rect = node.getBoundingClientRect();
+
+    var x0 = rect.x;
+    var y0 = rect.y;
+    var x1 = x0 + rect.width;
+    var y1 = y0 + rect.height;
+
+    var A = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
+    var B = Lib.apply3DTransform(fullLayout._invTransform)(x1, y1);
+
+    var Ax = A[0];
+    var Ay = A[1];
+    var Bx = B[0];
+    var By = B[1];
+
+    return {
+        x: Ax,
+        y: Ay,
+        width: Bx - Ax,
+        height: By - Ay,
+        top: Math.min(Ay, By),
+        left: Math.min(Ax, Bx),
+        right: Math.max(Ax, Bx),
+        bottom: Math.max(Ay, By),
+    };
 }
 
 },{"../../lib":287,"../../lib/events":280,"../../lib/override_cursor":298,"../../lib/svg_text_utils":310,"../../plots/cartesian/axes":334,"../../registry":376,"../color":157,"../dragelement":176,"../drawing":179,"../legend/defaults":209,"../legend/draw":210,"./constants":191,"./helpers":193,"@plotly/d3":20,"fast-isnumeric":33,"tinycolor2":121}],195:[function(_dereq_,module,exports){
@@ -39358,7 +39462,6 @@ module.exports = {
         dflt: 30,
         editType: 'legend',
     },
-
     itemclick: {
         valType: 'enumerated',
         values: ['toggle', 'toggleothers', false],
@@ -39371,7 +39474,12 @@ module.exports = {
         dflt: 'toggleothers',
         editType: 'legend',
     },
-
+    groupclick: {
+        valType: 'enumerated',
+        values: ['toggleitem', 'togglegroup'],
+        dflt: 'togglegroup',
+        editType: 'legend',
+    },
     x: {
         valType: 'number',
         min: -2,
@@ -39421,7 +39529,6 @@ module.exports = {
         },
         editType: 'legend',
     },
-
     editType: 'legend'
 };
 
@@ -39554,6 +39661,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     coerce('itemclick');
     coerce('itemdoubleclick');
+    coerce('groupclick');
 
     coerce('x', defaultX);
     coerce('xanchor');
@@ -40405,6 +40513,7 @@ var Registry = _dereq_('../../registry');
 var helpers = _dereq_('./helpers');
 
 module.exports = function getLegendData(calcdata, opts) {
+    var inHover = opts._inHover;
     var grouped = helpers.isGrouped(opts);
     var reversed = helpers.isReversed(opts);
 
@@ -40440,7 +40549,7 @@ module.exports = function getLegendData(calcdata, opts) {
         var trace = cd0.trace;
         var lgroup = trace.legendgroup;
 
-        if(!opts._inHover && (!trace.visible || !trace.showlegend)) continue;
+        if(!inHover && (!trace.visible || !trace.showlegend)) continue;
 
         if(Registry.traceIs(trace, 'pie-like')) {
             if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
@@ -40527,6 +40636,7 @@ module.exports = function getLegendData(calcdata, opts) {
             var gt = legendData[i][j].trace.legendgrouptitle;
             if(gt && gt.text) {
                 groupTitle = gt;
+                if(inHover) gt.font = opts._groupTitleFont;
                 break;
             }
         }
@@ -40551,7 +40661,7 @@ module.exports = function getLegendData(calcdata, opts) {
                 trace: {
                     showlegend: firstItemTrace.showlegend,
                     legendgroup: firstItemTrace.legendgroup,
-                    visible: firstItemTrace.visible
+                    visible: opts.groupclick === 'toggleitem' ? true : firstItemTrace.visible
                 }
             });
         }
@@ -40587,6 +40697,7 @@ module.exports = function handleClick(g, gd, numClicks) {
 
     var itemClick = fullLayout.legend.itemclick;
     var itemDoubleClick = fullLayout.legend.itemdoubleclick;
+    var groupClick = fullLayout.legend.groupclick;
 
     if(numClicks === 1 && itemClick === 'toggle' && itemDoubleClick === 'toggleothers' &&
         SHOWISOLATETIP && gd.data && gd._context.showTips
@@ -40601,6 +40712,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     if(numClicks === 1) mode = itemClick;
     else if(numClicks === 2) mode = itemDoubleClick;
     if(!mode) return;
+
+    var toggleGroup = groupClick === 'togglegroup';
 
     var hiddenSlices = fullLayout.hiddenlabels ?
         fullLayout.hiddenlabels.slice() :
@@ -40637,6 +40750,8 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 
     function setVisibility(fullTrace, visibility) {
+        if(legendItem.groupTitle && !toggleGroup) return;
+
         var fullInput = fullTrace._fullInput;
         if(Registry.hasTransform(fullInput, 'groupby')) {
             var kcont = carrs[fullInput.index];
@@ -40723,10 +40838,14 @@ module.exports = function handleClick(g, gd, numClicks) {
             }
 
             if(hasLegendgroup) {
-                for(i = 0; i < fullData.length; i++) {
-                    if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
-                        setVisibility(fullData[i], nextVisibility);
+                if(toggleGroup) {
+                    for(i = 0; i < fullData.length; i++) {
+                        if(fullData[i].visible !== false && fullData[i].legendgroup === legendgroup) {
+                            setVisibility(fullData[i], nextVisibility);
+                        }
                     }
+                } else {
+                    setVisibility(fullTrace, nextVisibility);
                 }
             } else {
                 setVisibility(fullTrace, nextVisibility);
@@ -40794,7 +40913,7 @@ module.exports = function handleClick(g, gd, numClicks) {
         for(i = 0; i < keys.length; i++) {
             key = keys[i];
             for(j = 0; j < attrIndices.length; j++) {
-                // Use hasOwnPropety to protect against falsey values:
+                // Use hasOwnProperty to protect against falsy values:
                 if(!attrUpdate[key].hasOwnProperty(j)) {
                     attrUpdate[key][j] = undefined;
                 }
@@ -47716,7 +47835,7 @@ function attachGripEvents(item, gd, sliderGroup) {
         return sliderGroup.data()[0];
     }
 
-    item.on('mousedown', function() {
+    function mouseDownHandler() {
         var sliderOpts = getSliderOpts();
         gd.emit('plotly_sliderstart', {slider: sliderOpts});
 
@@ -47730,25 +47849,36 @@ function attachGripEvents(item, gd, sliderGroup) {
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
         sliderOpts._dragging = true;
 
-        $gd.on('mousemove', function() {
+        function mouseMoveHandler() {
             var sliderOpts = getSliderOpts();
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
             handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, false);
-        });
+        }
 
-        $gd.on('mouseup', function() {
+        $gd.on('mousemove', mouseMoveHandler);
+        $gd.on('touchmove', mouseMoveHandler);
+
+        function mouseUpHandler() {
             var sliderOpts = getSliderOpts();
             sliderOpts._dragging = false;
             grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
+            $gd.on('touchend', null);
+            $gd.on('touchmove', null);
 
             gd.emit('plotly_sliderend', {
                 slider: sliderOpts,
                 step: sliderOpts.steps[sliderOpts.active]
             });
-        });
-    });
+        }
+
+        $gd.on('mouseup', mouseUpHandler);
+        $gd.on('touchend', mouseUpHandler);
+    }
+
+    item.on('mousedown', mouseDownHandler);
+    item.on('touchstart', mouseDownHandler);
 }
 
 function drawTicks(sliderGroup, sliderOpts) {
@@ -52783,8 +52913,7 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
         ret = fni(arg);
 
         if(ret && ret.then) {
-            return ret.then(continueAsync)
-                .then(undefined, lib.promiseError);
+            return ret.then(continueAsync);
         }
     }
 
@@ -95329,6 +95458,7 @@ module.exports = function eventData(pt, trace) {
         value: pt.v,
         percent: pt.percent,
         text: pt.text,
+        bbox: pt.bbox,
 
         // pt.v (and pt.i below) for backward compatibility
         v: pt.v
@@ -95798,9 +95928,10 @@ function plotTextLines(slices, trace) {
 
 function attachFxHandlers(sliceTop, gd, cd) {
     var cd0 = cd[0];
-    var trace = cd0.trace;
     var cx = cd0.cx;
     var cy = cd0.cy;
+    var trace = cd0.trace;
+    var isFunnelArea = trace.type === 'funnelarea';
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
@@ -95858,11 +95989,16 @@ function attachFxHandlers(sliceTop, gd, cd) {
             var hoverLabel = trace2.hoverlabel;
             var hoverFont = hoverLabel.font;
 
+            var bbox = [];
             Fx.loneHover({
                 trace: trace,
                 x0: hoverCenterX - rInscribed * cd0.r,
                 x1: hoverCenterX + rInscribed * cd0.r,
                 y: hoverCenterY,
+                _x0: isFunnelArea ? cx + pt.TL[0] : hoverCenterX - rInscribed * cd0.r,
+                _x1: isFunnelArea ? cx + pt.TR[0] : hoverCenterX + rInscribed * cd0.r,
+                _y0: isFunnelArea ? cy + pt.TL[1] : hoverCenterY - rInscribed * cd0.r,
+                _y1: isFunnelArea ? cy + pt.BL[1] : hoverCenterY + rInscribed * cd0.r,
                 text: text.join('<br>'),
                 name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
@@ -95879,8 +96015,10 @@ function attachFxHandlers(sliceTop, gd, cd) {
             }, {
                 container: fullLayout2._hoverlayer.node(),
                 outerContainer: fullLayout2._paper.node(),
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+            pt.bbox = bbox[0];
 
             trace._hasHoverLabel = true;
         }
@@ -101958,7 +102096,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.3.1';
+exports.version = '2.5.1';
 
 },{}]},{},[15])(15)
 });

@@ -593,7 +593,7 @@ describe('Test streamtube hover', function() {
         .then(delay(20))
         .then(function() {
             if(ptData) {
-                expect(Object.keys(ptData).length).toBe(12, 'key cnt');
+                expect(Object.keys(ptData).length).toBe(13, 'key cnt');
 
                 expect(ptData.tubex).toBeCloseTo(2.19, TOL, 'tubex');
                 expect(ptData.tubey).toBeCloseTo(0.55, TOL, 'tubey');

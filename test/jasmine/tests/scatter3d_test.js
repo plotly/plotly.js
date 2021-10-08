@@ -309,4 +309,24 @@ describe('Test scatter3d interactions:', function() {
         })
         .then(done, done.fail);
     });
+
+    it('@gl should change marker opacity when restyle is called', function(done) {
+        Plotly.newPlot(
+            gd,
+            [
+                {
+                    type: 'scatter3d',
+                    x: [0],
+                    y: [0],
+                    z: [0],
+                    mode: 'markers',
+                },
+            ]
+        ).then(function() {
+            Plotly.restyle(gd, 'opacity', 0.5).then(function() {
+                expect(gd._fullLayout.scene._scene.glplot.objects[0].hasAlpha).toEqual(true);
+            });
+        })
+        .then(done, done.fail);
+    });
 });

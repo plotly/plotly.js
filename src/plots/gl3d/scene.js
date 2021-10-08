@@ -421,6 +421,7 @@ proto.render = function() {
         var eventData = {points: [pointData]};
 
         if(scene.fullSceneLayout.hovermode) {
+            var bbox = [];
             Fx.loneHover({
                 trace: traceNow,
                 x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
@@ -442,8 +443,11 @@ proto.render = function() {
                 eventData: [pointData]
             }, {
                 container: svgContainer,
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+
+            pointData.bbox = bbox[0];
         }
 
         if(selection.buttons && selection.distance < 5) {

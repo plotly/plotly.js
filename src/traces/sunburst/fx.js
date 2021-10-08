@@ -52,6 +52,8 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
         var hoverinfo = Fx.castHoverinfo(traceNow, fullLayoutNow, ptNumber);
         var separators = fullLayoutNow.separators;
 
+        var eventData;
+
         if(hovertemplate || (hoverinfo && hoverinfo !== 'none' && hoverinfo !== 'skip')) {
             var hoverCenterX;
             var hoverCenterY;
@@ -125,9 +127,15 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 if(Lib.isValidTextValue(tx)) thisText.push(tx);
             }
 
+            eventData = [makeEventData(pt, traceNow, opts.eventDataKeys)];
+
             var hoverItems = {
                 trace: traceNow,
                 y: hoverCenterY,
+                _x0: pt._x0,
+                _x1: pt._x1,
+                _y0: pt._y0,
+                _y1: pt._y1,
                 text: thisText.join('<br>'),
                 name: (hovertemplate || hasFlag('name')) ? traceNow.name : undefined,
                 color: _cast('hoverlabel.bgcolor') || cdi.color,
@@ -139,7 +147,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 textAlign: _cast('hoverlabel.align'),
                 hovertemplate: hovertemplate,
                 hovertemplateLabels: hoverPt,
-                eventData: [makeEventData(pt, traceNow, opts.eventDataKeys)]
+                eventData: eventData
             };
 
             if(isSunburst) {
@@ -152,11 +160,14 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
                 hoverItems.idealAlign = hoverCenterX < 0 ? 'left' : 'right';
             }
 
+            var bbox = [];
             Fx.loneHover(hoverItems, {
                 container: fullLayoutNow._hoverlayer.node(),
                 outerContainer: fullLayoutNow._paper.node(),
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+            eventData[0].bbox = bbox[0];
 
             trace._hasHoverLabel = true;
         }
@@ -170,7 +181,7 @@ module.exports = function attachFxHandlers(sliceTop, entry, gd, cd, opts) {
 
         trace._hasHoverEvent = true;
         gd.emit('plotly_hover', {
-            points: [makeEventData(pt, traceNow, opts.eventDataKeys)],
+            points: eventData || [makeEventData(pt, traceNow, opts.eventDataKeys)],
             event: d3.event
         });
     };

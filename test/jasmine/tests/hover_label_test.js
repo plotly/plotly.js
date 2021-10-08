@@ -26,6 +26,8 @@ var assertElemRightTo = customAssertions.assertElemRightTo;
 var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
 var assertElemInside = customAssertions.assertElemInside;
 
+var groupTitlesMock = require('@mocks/legendgroup-titles');
+
 function touch(path, options) {
     var len = path.length;
     Lib.clearThrottle();
@@ -4547,17 +4549,6 @@ describe('hovermode: (x|y)unified', function() {
         });
     }
 
-    function assertFont(fontFamily, fontSize, fontColor) {
-        var hover = getHoverLabel();
-        var text = hover.select('text.legendtext');
-        var node = text.node();
-
-        var textStyle = window.getComputedStyle(node);
-        expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
-        expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
-        expect(textStyle.fill).toBe(fontColor, 'wrong font color');
-    }
-
     it('set smart defaults for spikeline in x unified', function(done) {
         Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
             .then(function(gd) {
@@ -4599,6 +4590,38 @@ describe('hovermode: (x|y)unified', function() {
                 assertLabel({title: '3', items: ['trace 0 : 4', 'trace 1 : 8']});
             })
             .then(done, done.fail);
+    });
+
+    it('should not display hover for display: none', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                name: 'A',
+                y: [1]
+            }, {
+                name: 'B',
+                y: [2],
+                hoverinfo: 'none'
+            }],
+            layout: {
+                hovermode: 'x unified',
+                showlegend: false,
+                width: 500,
+                height: 500,
+                margin: {
+                    t: 50,
+                    b: 50,
+                    l: 50,
+                    r: 50
+                }
+            }
+        })
+        .then(function() {
+            _hover(gd, { xpx: 200, ypx: 200 });
+            assertLabel({title: '0', items: [
+                'A : 1'
+            ]});
+        })
+        .then(done, done.fail);
     });
 
     it('y unified should work for x/y cartesian traces', function(done) {
@@ -6011,6 +6034,17 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should use hoverlabel.font or legend.font or layout.font', function(done) {
+        function assertFont(fontFamily, fontSize, fontColor) {
+            var hover = getHoverLabel();
+            var text = hover.select('text.legendtext');
+            var node = text.node();
+
+            var textStyle = window.getComputedStyle(node);
+            expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
+            expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
+            expect(textStyle.fill).toBe(fontColor, 'wrong font color');
+        }
+
         var mockCopy = Lib.extendDeep({}, mock);
 
         // Set layout.font
@@ -6074,6 +6108,38 @@ describe('hovermode: (x|y)unified', function() {
                 _hover(gd, { xval: 3 });
 
                 assertFont('Mono', '30px', 'rgb(255, 0, 0)');
+            })
+            .then(done, done.fail);
+    });
+
+    it('should use hoverlabel.font for group titles as well as traces', function(done) {
+        function assertFont(fontFamily, fontSize, fontColor) {
+            var hover = getHoverLabel();
+            var traces = hover.selectAll('g.traces');
+
+            traces.each(function() {
+                var e = d3Select(this);
+                var text = e.select('text.legendtext');
+                var node = text.node();
+
+                var textStyle = window.getComputedStyle(node);
+                expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
+                expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
+                expect(textStyle.fill).toBe(fontColor, 'wrong font color');
+            });
+        }
+
+        var mockCopy = Lib.extendDeep({}, groupTitlesMock);
+
+        mockCopy.layout.hoverlabel = {
+            font: {size: 20, family: 'Mono', color: 'rgb(255, 127, 0)'}
+        };
+
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 0});
+
+                assertFont('Mono', '20px', 'rgb(255, 127, 0)');
             })
             .then(done, done.fail);
     });
