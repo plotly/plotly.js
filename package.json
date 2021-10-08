@@ -199,7 +199,7 @@
     "read-last-lines": "^1.8.0",
     "run-series": "^1.1.9",
     "sane-topojson": "^4.0.0",
-    "sass": "^1.35.2",
+    "sass": "^1.42.1",
     "through2": "^4.0.2",
     "true-case-path": "^2.2.1",
     "watchify": "^4.0.0"
