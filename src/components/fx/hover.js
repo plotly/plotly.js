@@ -205,18 +205,16 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         };
     });
 
-    var container3 = d3.select(opts.container);
-    var outerContainer3 = opts.outerContainer ? d3.select(opts.outerContainer) : container3;
+    var rotateLabels = false;
 
-    var fullOpts = {
+    var hoverLabel = createHoverText(pointsData, {
+        gd: gd,
         hovermode: 'closest',
-        rotateLabels: false,
+        rotateLabels: rotateLabels,
         bgColor: opts.bgColor || Color.background,
-        container: container3,
-        outerContainer: outerContainer3
-    };
-
-    var hoverLabel = createHoverText(pointsData, fullOpts, gd);
+        container: d3.select(opts.container),
+        outerContainer: opts.outerContainer || opts.container
+    });
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -243,7 +241,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 
     var scaleX = gd._fullLayout._invScaleX;
     var scaleY = gd._fullLayout._invScaleY;
-    alignHoverText(hoverLabel, fullOpts.rotateLabels, scaleX, scaleY);
+    alignHoverText(hoverLabel, rotateLabels, scaleX, scaleY);
 
     return multiHover ? hoverLabel : hoverLabel.node();
 };
@@ -657,7 +655,6 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     var spikelineOpts = {
         fullLayout: fullLayout,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
         event: evt
     };
     var oldspikepoints = gd._spikepoints;
@@ -826,17 +823,16 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         fullLayout.paper_bgcolor
     );
 
-    var labelOpts = {
+    var hoverLabels = createHoverText(hoverData, {
+        gd: gd,
         hovermode: hovermode,
         rotateLabels: rotateLabels,
         bgColor: bgColor,
         container: fullLayout._hoverlayer,
-        outerContainer: fullLayout._paperdiv,
+        outerContainer: fullLayout._paper.node(),
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
-    };
-
-    var hoverLabels = createHoverText(hoverData, labelOpts, gd);
+    });
 
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
@@ -874,7 +870,8 @@ function hoverDataKey(d) {
 
 var EXTRA_STRING_REGEX = /<extra>([\s\S]*)<\/extra>/;
 
-function createHoverText(hoverData, opts, gd) {
+function createHoverText(hoverData, opts) {
+    var gd = opts.gd;
     var fullLayout = gd._fullLayout;
     var hovermode = opts.hovermode;
     var rotateLabels = opts.rotateLabels;
@@ -882,6 +879,8 @@ function createHoverText(hoverData, opts, gd) {
     var container = opts.container;
     var outerContainer = opts.outerContainer;
     var commonLabelOpts = opts.commonLabelOpts || {};
+    // Early exit if no labels are drawn
+    if(hoverData.length === 0) return [[]];
 
     // opts.fontFamily/Size are used for the common label
     // and as defaults for each hover label, though the individual labels
@@ -894,7 +893,7 @@ function createHoverText(hoverData, opts, gd) {
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
     var t0 = c0[axLetter + 'Label'];
-    var outerContainerBB = outerContainer.node().getBoundingClientRect();
+    var outerContainerBB = getBoundingClientRect(gd, outerContainer);
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
     var outerHeight = outerContainerBB.height;
@@ -969,7 +968,7 @@ function createHoverText(hoverData, opts, gd) {
 
         label.attr('transform', '');
 
-        var tbb = ltext.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, ltext.node());
         var lx, ly;
 
         if(hovermode === 'x') {
@@ -1062,7 +1061,7 @@ function createHoverText(hoverData, opts, gd) {
                         var dummy = Drawing.tester.append('text')
                             .text(s.text())
                             .call(Drawing.font, commonLabelFont);
-                        var dummyBB = dummy.node().getBoundingClientRect();
+                        var dummyBB = getBoundingClientRect(gd, dummy.node());
                         if(Math.round(dummyBB.width) < Math.round(tbb.width)) {
                             s.attr('x', ltx - dummyBB.width);
                         }
@@ -1088,9 +1087,9 @@ function createHoverText(hoverData, opts, gd) {
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
-
+        var groupedHoverData = hoverData.filter(function(data) {return data.hoverinfo !== 'none';});
         // Return early if nothing is hovered on
-        if(hoverData.length === 0) return;
+        if(groupedHoverData.length === 0) return;
 
         // mock legend
         var hoverlabel = fullLayout.hoverlabel;
@@ -1114,11 +1113,14 @@ function createHoverText(hoverData, opts, gd) {
 
         // prepare items for the legend
         mockLegend.entries = [];
-        for(var j = 0; j < hoverData.length; j++) {
-            var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
+        for(var j = 0; j < groupedHoverData.length; j++) {
+            var pt = groupedHoverData[j];
+            if(pt.hoverinfo === 'none') continue;
+
+            var texts = getHoverLabelText(pt, true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
-            var pt = hoverData[j];
+
             pt.name = name;
             if(name !== '') {
                 pt.text = name + ' : ' + text;
@@ -1151,10 +1153,10 @@ function createHoverText(hoverData, opts, gd) {
 
         // Position the hover
         var legendContainer = container.select('g.legend');
-        var tbb = legendContainer.node().getBoundingClientRect();
+        var tbb = getBoundingClientRect(gd, legendContainer.node());
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
-        var winningPoint = hoverData[0];
+        var winningPoint = groupedHoverData[0];
         var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
         var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
         // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
@@ -1169,11 +1171,11 @@ function createHoverText(hoverData, opts, gd) {
                 lyTop = avgY - HOVERTEXTPAD;
                 lyBottom = avgY + HOVERTEXTPAD;
             } else {
-                lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
-                lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
+                lyTop = Math.min.apply(null, groupedHoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
+                lyBottom = Math.max.apply(null, groupedHoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
             }
         } else {
-            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
+            lyTop = lyBottom = Lib.mean(groupedHoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
         }
 
         var lxRight, lxLeft;
@@ -1182,11 +1184,11 @@ function createHoverText(hoverData, opts, gd) {
                 lxRight = avgX + HOVERTEXTPAD;
                 lxLeft = avgX - HOVERTEXTPAD;
             } else {
-                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
-                lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
+                lxRight = Math.max.apply(null, groupedHoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
+                lxLeft = Math.min.apply(null, groupedHoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
             }
         } else {
-            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
+            lxRight = lxLeft = Lib.mean(groupedHoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
         }
 
         var xOffset = xa._offset;
@@ -1316,7 +1318,7 @@ function createHoverText(hoverData, opts, gd) {
                 .call(svgTextUtils.positionText, 0, 0)
                 .call(svgTextUtils.convertToTspans, gd);
 
-            var t2bb = tx2.node().getBoundingClientRect();
+            var t2bb = getBoundingClientRect(gd, tx2.node());
             tx2width = t2bb.width + 2 * HOVERTEXTPAD;
             tx2height = t2bb.height + 2 * HOVERTEXTPAD;
         } else {
@@ -1329,21 +1331,25 @@ function createHoverText(hoverData, opts, gd) {
             stroke: contrastColor
         });
 
-        var tbb = tx.node().getBoundingClientRect();
         var htx = d.xa._offset + (d.x0 + d.x1) / 2;
         var hty = d.ya._offset + (d.y0 + d.y1) / 2;
         var dx = Math.abs(d.x1 - d.x0);
         var dy = Math.abs(d.y1 - d.y0);
-        var txTotalWidth = tbb.width + HOVERARROWSIZE + HOVERTEXTPAD + tx2width;
-        var anchorStartOK, anchorEndOK;
 
-        d.ty0 = outerTop - tbb.top;
-        d.bx = tbb.width + 2 * HOVERTEXTPAD;
-        d.by = Math.max(tbb.height + 2 * HOVERTEXTPAD, tx2height);
+        var tbb = getBoundingClientRect(gd, tx.node());
+        var tbbWidth = tbb.width / fullLayout._invScaleX;
+        var tbbHeight = tbb.height / fullLayout._invScaleY;
+
+        d.ty0 = (outerTop - tbb.top) / fullLayout._invScaleY;
+        d.bx = tbbWidth + 2 * HOVERTEXTPAD;
+        d.by = Math.max(tbbHeight + 2 * HOVERTEXTPAD, tx2height);
         d.anchor = 'start';
-        d.txwidth = tbb.width;
+        d.txwidth = tbbWidth;
         d.tx2width = tx2width;
         d.offset = 0;
+
+        var txTotalWidth = (tbbWidth + HOVERARROWSIZE + HOVERTEXTPAD + tx2width) * fullLayout._invScaleX;
+        var anchorStartOK, anchorEndOK;
 
         if(rotateLabels) {
             d.pos = htx;
@@ -2103,3 +2109,33 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 // the offset parent, whatever that may be.
 function getTopOffset(gd) { return gd.offsetTop + gd.clientTop; }
 function getLeftOffset(gd) { return gd.offsetLeft + gd.clientLeft; }
+
+function getBoundingClientRect(gd, node) {
+    var fullLayout = gd._fullLayout;
+
+    var rect = node.getBoundingClientRect();
+
+    var x0 = rect.x;
+    var y0 = rect.y;
+    var x1 = x0 + rect.width;
+    var y1 = y0 + rect.height;
+
+    var A = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
+    var B = Lib.apply3DTransform(fullLayout._invTransform)(x1, y1);
+
+    var Ax = A[0];
+    var Ay = A[1];
+    var Bx = B[0];
+    var By = B[1];
+
+    return {
+        x: Ax,
+        y: Ay,
+        width: Bx - Ax,
+        height: By - Ay,
+        top: Math.min(Ay, By),
+        left: Math.min(Ax, Bx),
+        right: Math.max(Ax, Bx),
+        bottom: Math.max(Ay, By),
+    };
+}

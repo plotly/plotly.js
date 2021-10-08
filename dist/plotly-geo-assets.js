@@ -1,5 +1,5 @@
 /**
-* plotly.js v2.4.1
+* plotly.js v2.5.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -68,7 +68,7 @@ exports.topojson = saneTopojson;
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.4.1';
+exports.version = '2.5.1';
 
 },{}]},{},[16])(16)
 });

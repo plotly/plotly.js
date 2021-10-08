@@ -7,6 +7,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../../plots/cartesian/prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var setConvert = require('../../plots/cartesian/set_convert');
 var autoType = require('../../plots/cartesian/axis_autotype');
@@ -128,6 +129,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     coerce('fixedrange');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
+    handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, {
         data: options.data,
