@@ -27,11 +27,18 @@
     "imag": [0, 0, 1, 1],
     "text": ["A1", "B1", "C1"],
     "hovertext": ["hover A1", "hover B1", "hover C1"],
-    "line": {"shape": "spline"},
+    "line": {
+      "shape": "spline",
+      "dash": "dash",
+      "width": 4
+    },
     "marker": {
         "symbol": "square",
         "size": 15,
-        "color": [-1, 1, 2],
+        "color": [0, 2, 1, 3],
+        "opacity": 0.75,
+        "colorscale": "Portland",
+        "reversescale": true,
         "showscale": true
     },
     "textfont": {
@@ -41,7 +48,6 @@
     "textposition": ["top left", "bottom right", "bottom right"],
     "subplot": "smith2"
   }],
-
   "layout": {
     "width": 800,
     "height": 400,
