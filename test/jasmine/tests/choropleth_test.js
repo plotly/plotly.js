@@ -321,7 +321,7 @@ describe('Test choropleth hover:', function() {
                 data: [{
                     type: 'choropleth',
                     locations: ['RUS'],
-                    z: [10.02132132143214321]
+                    z: [10.021321321432143]
                 }]
             };
         };
