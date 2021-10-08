@@ -7,7 +7,14 @@
     "text": ["A0", "B0", "C0"],
     "hovertext": ["hover A0", "hover B0", "hover C0"],
     "line": {"shape": "spline"},
-    "marker": {"symbol": "square", "size": 15},
+    "marker": {
+      "symbol": ["circle", "square", "x", "diamond"],
+      "gradient": {
+        "type": ["radial", "horizontal", "radial", "vertical"],
+        "color": ["white", "yellow", "orange", "red"]
+      },
+      "size": 30
+    },
     "textfont": {
       "color": ["red", "green", "blue"],
       "size": 20
@@ -31,7 +38,7 @@
       "color": "green",
       "size": [20, 15, 10]
     },
-    "textposition": "top left",
+    "textposition": ["top left", "bottom right", "bottom right"],
     "subplot": "smith2"
   }],
 
