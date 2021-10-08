@@ -603,7 +603,7 @@ function mergeValTypeAndRole(attrs) {
     function makeSrcAttr(attrName) {
         return {
             valType: 'string',
-            description: 'Sets the source reference on Chart Studio Cloud for ' + attrName + '.',
+            description: 'Sets the source reference on Chart Studio Cloud for `' + attrName + '`.',
             editType: 'none'
         };
     }
