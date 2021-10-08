@@ -51015,7 +51015,7 @@
       "valType": "color"
      },
      "colorsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for  color .",
+      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
       "editType": "none",
       "valType": "string"
      },
@@ -51044,7 +51044,7 @@
       "valType": "number"
      },
      "opacitysrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for  opacity .",
+      "description": "Sets the source reference on Chart Studio Cloud for `opacity`.",
       "editType": "none",
       "valType": "string"
      },
@@ -51058,7 +51058,7 @@
       "valType": "number"
      },
      "sizesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for  size .",
+      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
       "editType": "none",
       "valType": "string"
      },
@@ -51071,7 +51071,7 @@
       "valType": "number"
      },
      "stepsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for  step .",
+      "description": "Sets the source reference on Chart Studio Cloud for `step`.",
       "editType": "none",
       "valType": "string"
      }
