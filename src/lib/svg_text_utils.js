@@ -111,7 +111,11 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
                 var newSvgW = getSize(g, 'width');
                 var newSvgH = getSize(g, 'height');
-                var newX = +_context.attr('x') - newSvgW *
+
+                var x = +_context.attr('x');
+                var y = +_context.attr('y');
+
+                var newX = x - newSvgW *
                     {start: 0, middle: 0.5, end: 1}[_context.attr('text-anchor') || 'start'];
                 // font baseline is about 1/4 fontSize below centerline
                 var textHeight = fontSize || getSize(_context, 'height');
@@ -119,16 +123,16 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
                 if(svgClass[0] === 'y') {
                     mathjaxGroup.attr({
-                        transform: 'rotate(' + [-90, +_context.attr('x'), +_context.attr('y')] +
+                        transform: 'rotate(' + [-90, x, y] +
                         ')' + strTranslate(-newSvgW / 2, dy - newSvgH / 2)
                     });
-                    newSvg.attr({x: +_context.attr('x'), y: +_context.attr('y')});
+                    newSvg.attr({x: x, y: y});
                 } else if(svgClass[0] === 'l') {
-                    newSvg.attr({x: +_context.attr('x'), y: dy - (newSvgH / 2)});
+                    newSvg.attr({x: x, y: dy - (newSvgH / 2)});
                 } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
                     newSvg.attr({x: 0, y: dy});
                 } else {
-                    newSvg.attr({x: newX, y: (+_context.attr('y') + dy - newSvgH / 2)});
+                    newSvg.attr({x: newX, y: (y + dy - newSvgH / 2)});
                 }
 
                 if(_callback) _callback.call(_context, mathjaxGroup);
