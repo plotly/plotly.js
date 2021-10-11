@@ -457,7 +457,7 @@ proto.render = function() {
         this.oldEventData = eventData;
     } else {
         Fx.loneUnhover(svgContainer);
-        gd.emit('plotly_unhover', this.oldEventData);
+        if(this.oldEventData) gd.emit('plotly_unhover', this.oldEventData);
         this.oldEventData = undefined;
     }
 
