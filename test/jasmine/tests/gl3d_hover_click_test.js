@@ -1268,6 +1268,81 @@ describe('Test gl3d trace click/hover:', function() {
             });
         });
     });
+
+    it('@gl should emit correct event data on unhover', function(done) {
+        var _mock = Lib.extendDeep({}, mock2);
+        var x = 655;
+        var y = 221;
+
+        function _hover() {
+            mouseEvent('mouseover', x, y);
+        }
+
+        function _unhover() {
+            return new Promise(function(resolve) {
+                var x0 = x;
+                var y0 = y;
+                var initialElement = document.elementFromPoint(x0, y0);
+                var canceler = setInterval(function() {
+                    x0 -= 2;
+                    y0 -= 2;
+                    mouseEvent('mouseover', x0, y0);
+
+                    var nowElement = document.elementFromPoint(x0, y0);
+                    if(nowElement !== initialElement) {
+                        mouseEvent('mouseout', x0, y0, {element: initialElement});
+                    }
+                }, 10);
+
+                gd.on('plotly_unhover', function(eventData) {
+                    clearInterval(canceler);
+                    resolve(eventData);
+                });
+
+                setTimeout(function() {
+                    clearInterval(canceler);
+                    resolve(null);
+                }, 350);
+            });
+        }
+
+        Plotly.newPlot(gd, _mock)
+        .then(delay(20))
+        .then(function() {
+            gd.on('plotly_hover', function(eventData) {
+                ptData = eventData.points[0];
+            });
+            gd.on('plotly_unhover', function(eventData) {
+                if(eventData) {
+                    ptData = eventData.points[0];
+                } else {
+                    ptData = {};
+                }
+            });
+        })
+        .then(delay(20))
+        .then(_hover)
+        .then(delay(20))
+        .then(function() {
+            assertEventData(100.75, -102.63, -102.63, 0, 0, {
+                'marker.symbol': 'circle',
+                'marker.size': 10,
+                'marker.color': 'blue',
+                'marker.line.color': 'black'
+            });
+        })
+        .then(_unhover)
+        .then(delay(20))
+        .then(function() {
+            assertEventData(100.75, -102.63, -102.63, 0, 0, {
+                'marker.symbol': 'circle',
+                'marker.size': 10,
+                'marker.color': 'blue',
+                'marker.line.color': 'black'
+            });
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', function() {

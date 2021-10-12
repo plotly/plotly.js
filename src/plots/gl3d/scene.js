@@ -332,8 +332,6 @@ proto.render = function() {
         return Axes.hoverLabelText(ax, val, hoverformat);
     }
 
-    var oldEventData;
-
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
@@ -456,10 +454,11 @@ proto.render = function() {
             gd.emit('plotly_hover', eventData);
         }
 
-        oldEventData = eventData;
+        this.oldEventData = eventData;
     } else {
         Fx.loneUnhover(svgContainer);
-        gd.emit('plotly_unhover', oldEventData);
+        if(this.oldEventData) gd.emit('plotly_unhover', this.oldEventData);
+        this.oldEventData = undefined;
     }
 
     scene.drawAnnotations(scene);
