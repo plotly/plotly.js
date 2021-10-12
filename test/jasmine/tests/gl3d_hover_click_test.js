@@ -1313,7 +1313,7 @@ describe('Test gl3d trace click/hover:', function() {
                 ptData = eventData.points[0];
             });
             gd.on('plotly_unhover', function(eventData) {
-                if (eventData) {
+                if(eventData) {
                     ptData = eventData.points[0];
                 } else {
                     ptData = {};
@@ -1343,7 +1343,6 @@ describe('Test gl3d trace click/hover:', function() {
         })
         .then(done, done.fail);
     });
-
 });
 
 describe('hover on traces with (x|y|z|u|v|w)hoverformat and valuehoverformat', function() {
