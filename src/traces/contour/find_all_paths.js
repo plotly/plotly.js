@@ -274,8 +274,8 @@ function getInterpPx(pi, loc, step) {
         var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);
         // Interpolate, but protect against NaN linear values for log axis (dx will equal 1 or 0)
         var dxl =
-            (dx !== 1 ? (1 - dx) * xa.c2l(pi.x[locx]) : 0)
-            + (dx !== 0 ? dx * xa.c2l(pi.x[locx + 1]) : 0);
+            (dx !== 1 ? (1 - dx) * xa.c2l(pi.x[locx]) : 0) +
+            (dx !== 0 ? dx * xa.c2l(pi.x[locx + 1]) : 0);
 
         return [xa.l2p(dxl, true),
             ya.c2p(pi.y[locy], true),
@@ -283,8 +283,8 @@ function getInterpPx(pi, loc, step) {
     } else {
         var dy = (pi.level - zxy) / (pi.z[locy + 1][locx] - zxy);
         var dyl =
-            (dy !== 1 ? (1 - dy) * ya.c2l(pi.y[locy]) : 0)
-            + (dy !== 0 ? dy * ya.c2l(pi.y[locy + 1]) : 0);
+            (dy !== 1 ? (1 - dy) * ya.c2l(pi.y[locy]) : 0) + 
+            (dy !== 0 ? dy * ya.c2l(pi.y[locy + 1]) : 0);
 
         return [xa.c2p(pi.x[locx], true),
             ya.l2p(dyl, true),
