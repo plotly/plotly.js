@@ -59,17 +59,6 @@ function smith(a) {
     return circleCircleIntersect(reactanceCircle(X), resistanceCircle(R));
 }
 
-function smithInvert(a) {
-    var x = a[0];
-    var y = a[1];
-
-    if(hypot(x, y) > 1) return;
-    return [
-        (1 - x * x - y * y) / (x * x - 2 * x + y * y + 1),
-        2 * y / ((x - 1) * (x - 1) + y * y)
-    ];
-}
-
 function transform(subplot, a) {
     var x = a[0];
     var y = a[1];
@@ -139,7 +128,6 @@ function resistanceArc(subplot, R, X1, X2) {
 
 module.exports = {
     smith: smith,
-    smithInvert: smithInvert,
     reactanceArc: reactanceArc,
     resistanceArc: resistanceArc,
     smithTransform: transform
