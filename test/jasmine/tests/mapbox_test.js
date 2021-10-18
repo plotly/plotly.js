@@ -1550,7 +1550,7 @@ describe('mapbox plots', function() {
                 expect(s.text()).toEqual('© Mapbox © OpenStreetMap Improve this map');
                 assertLinks(s, [
                     'https://www.mapbox.com/about/maps/',
-                    'http://www.openstreetmap.org/about/',
+                    'https://www.openstreetmap.org/about/',
                     'https://www.mapbox.com/map-feedback/' // Improve this map
                 ]);
             })
