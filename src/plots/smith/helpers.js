@@ -7,56 +7,15 @@ function sign(x) {
     );
 }
 
-function hypot(x, y) {
-    return Math.sqrt(x * x + y * y);
-}
-
 // adapted from Mike Bostock's https://observablehq.com/@mbostock/smith-chart
-function resistanceCircle(R) {
-    return [
-        R / (R + 1), // cx
-        0, // cy
-        1 / (R + 1) // cr
-    ];
-}
-
-function reactanceCircle(X) {
-    return [
-        1, // cx
-        1 / X, // cy
-        1 / Math.abs(X) // cr
-    ];
-}
-
-function circleCircleIntersect(A, B) {
-    var ax = A[0];
-    var ay = A[1];
-    var ar = A[2];
-
-    var bx = B[0];
-    var by = B[1];
-    var br = B[2];
-
-    var dx = bx - ax;
-    var dy = by - ay;
-    var d = hypot(dx, dy);
-
-    var x = (dx * dx + dy * dy - br * br + ar * ar) / (2 * d);
-    var y = sign(ay) * Math.sqrt(ar * ar - x * x);
-    return [
-        ax + (dx * x + dy * y) / d,
-        ay + (dy * x - dx * y) / d
-    ];
-}
-
 function smith(a) {
     var R = a[0];
     var X = a[1];
 
-    if(isNaN(X) || isNaN(R)) return;
     if(R === Infinity || Math.abs(X) === Infinity) return [1, 0];
-    if(X === 0) return [(R - 1) / (R + 1), 0];
-    return circleCircleIntersect(reactanceCircle(X), resistanceCircle(R));
+
+    var D = (R + 1) * (R + 1) + X * X;
+    return [(R * R + X * X - 1) / D, 2 * X / D];
 }
 
 function transform(subplot, a) {
