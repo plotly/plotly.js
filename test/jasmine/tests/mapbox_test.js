@@ -1551,7 +1551,7 @@ describe('mapbox plots', function() {
                 assertLinks(s, [
                     'https://www.mapbox.com/about/maps/',
                     'https://www.openstreetmap.org/about/',
-                    'https://www.mapbox.com/map-feedback/' // Improve this map
+                    'https://apps.mapbox.com/feedback/?owner=mapbox&id=basic-v9&access_token=' + MAPBOX_ACCESS_TOKEN // Improve this map
                 ]);
             })
             .then(done, done.fail);
