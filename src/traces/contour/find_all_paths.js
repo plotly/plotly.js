@@ -277,17 +277,17 @@ function getInterpPx(pi, loc, step) {
             (dx !== 1 ? (1 - dx) * xa.c2l(pi.x[locx]) : 0) +
             (dx !== 0 ? dx * xa.c2l(pi.x[locx + 1]) : 0);
 
-        return [xa.l2p(dxl, true),
-            ya.c2p(pi.y[locy], true),
-            locx + dx, locy];
+        return [xa.c2p(xa.l2c(dxl), true),
+                ya.c2p(pi.y[locy], true),
+                locx + dx, locy];
     } else {
         var dy = (pi.level - zxy) / (pi.z[locy + 1][locx] - zxy);
         var dyl =
-            (dy !== 1 ? (1 - dy) * ya.c2l(pi.y[locy]) : 0) + 
+            (dy !== 1 ? (1 - dy) * ya.c2l(pi.y[locy]) : 0) +
             (dy !== 0 ? dy * ya.c2l(pi.y[locy + 1]) : 0);
 
         return [xa.c2p(pi.x[locx], true),
-            ya.l2p(dyl, true),
-            locx, locy + dy];
+                ya.c2p(ya.l2c(dyl), true),
+                locx, locy + dy];
     }
 }
