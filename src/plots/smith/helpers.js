@@ -12,7 +12,7 @@ function smith(a) {
     var R = a[0];
     var X = a[1];
 
-    if(R === Infinity || Math.abs(X) === Infinity) return [1, 0];
+    if(!isFinite(R) || !isFinite(X)) return [1, 0];
 
     var D = (R + 1) * (R + 1) + X * X;
     return [(R * R + X * X - 1) / D, 2 * X / D];
