@@ -31,7 +31,7 @@ var axisTickAttrs = overrideAll({
     layer: axesAttrs.layer
 }, 'plot', 'from-root');
 
-var realAxisAttrs = {
+var realAxisAttrs = extendFlat({
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
     tickvals: {
@@ -70,15 +70,9 @@ var realAxisAttrs = {
     },
 
     editType: 'calc',
-};
+}, axisLineGridAttr, axisTickAttrs);
 
-extendFlat(
-    realAxisAttrs,
-    axisLineGridAttr,
-    axisTickAttrs
-);
-
-var imaginaryAxisAttrs = {
+var imaginaryAxisAttrs = extendFlat({
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
     tickvals: {
@@ -96,13 +90,7 @@ var imaginaryAxisAttrs = {
     ticks: axesAttrs.ticks,
 
     editType: 'calc'
-};
-
-extendFlat(
-    imaginaryAxisAttrs,
-    axisLineGridAttr,
-    axisTickAttrs
-);
+}, axisLineGridAttr, axisTickAttrs);
 
 module.exports = {
     domain: domainAttrs({name: 'smith', editType: 'plot'}),
