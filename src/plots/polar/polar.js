@@ -692,7 +692,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
         }) : Axes.calcTicks(ax);
 
     if(isSmith) {
-        vals[0].text = '±∞';
+        vals[0].text = '∞';
         vals[0].fontSize *= 1.5;
     }
 
