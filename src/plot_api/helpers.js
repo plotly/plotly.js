@@ -46,7 +46,6 @@ exports.cleanLayout = function(layout) {
 
     var axisAttrRegex = (Plots.subplotsRegistry.cartesian || {}).attrRegex;
     var polarAttrRegex = (Plots.subplotsRegistry.polar || {}).attrRegex;
-    var smithAttrRegex = (Plots.subplotsRegistry.smith || {}).attrRegex;
     var ternaryAttrRegex = (Plots.subplotsRegistry.ternary || {}).attrRegex;
     var sceneAttrRegex = (Plots.subplotsRegistry.gl3d || {}).attrRegex;
 
@@ -94,11 +93,6 @@ exports.cleanLayout = function(layout) {
 
             var polar = layout[key];
             cleanTitle(polar.radialaxis);
-        } else if(smithAttrRegex && smithAttrRegex.test(key)) {
-            // modifications for smith
-
-            var smith = layout[key];
-            cleanTitle(smith.realaxis);
         } else if(ternaryAttrRegex && ternaryAttrRegex.test(key)) {
             // modifications for ternary
 

@@ -31,7 +31,6 @@ var helpers = require('./helpers');
 
 var smithHelpers = require('../smith/helpers');
 var smith = smithHelpers.smith;
-// var smithInvert = smithHelpers.smithInvert;
 var reactanceArc = smithHelpers.reactanceArc;
 var resistanceArc = smithHelpers.resistanceArc;
 var smithTransform = smithHelpers.smithTransform;
