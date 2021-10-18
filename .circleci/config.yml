@@ -163,6 +163,43 @@ jobs:
           name: Test MathJax on firefox-81
           command: .circleci/test.sh mathjax-firefox
 
+  mathjax-firefox82:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          firefox-version: '82.0'
+          install-chrome: false
+          install-chromedriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test MathJax on firefox-81
+          command: .circleci/test.sh mathjax-firefox
+
+  mathjax-firefoxLatest:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          install-chrome: false
+          install-chromedriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test MathJax on firefox-81
+          command: .circleci/test.sh mathjax-firefox
+
   make-baselines:
     parallelism: 4
     docker:
@@ -341,6 +378,12 @@ workflows:
           requires:
             - install-and-cibuild
       - mathjax-firefox81:
+          requires:
+            - install-and-cibuild
+      - mathjax-firefox82:
+          requires:
+            - install-and-cibuild
+      - mathjax-firefoxLatest:
           requires:
             - install-and-cibuild
       - no-gl-jasmine:
