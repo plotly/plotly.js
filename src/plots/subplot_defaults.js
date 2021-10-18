@@ -58,10 +58,6 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
 
         subplotLayoutOut = Template.newContainer(layoutOut, id, baseId);
 
-        // All subplot containers get a `uirevision` inheriting from the base.
-        // Currently all subplots containers have some user interaction
-        // attributes, but if we ever add one that doesn't, we would need an
-        // option to skip this step.
         if(!opts.noUirevision) coerce('uirevision', layoutOut.uirevision);
 
         var dfltDomains = {};
