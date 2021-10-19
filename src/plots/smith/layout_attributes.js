@@ -35,10 +35,7 @@ var realAxisAttrs = extendFlat({
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
     tickvals: {
-        dflt: [
-            0.2, 0.4, 0.6, 0.8,
-            1, 1.5, 2, 3, 4, 5, 10, 20
-        ],
+        dflt: [0.2, 0.5, 1, 2, 5],
         valType: 'data_array',
         editType: 'plot',
         description: 'Sets the values at which ticks on this axis appear.'
@@ -76,15 +73,12 @@ var imaginaryAxisAttrs = extendFlat({
     visible: extendFlat({}, axesAttrs.visible, {dflt: true}),
 
     tickvals: {
-        dflt: [
-            -20, -10, -5, -4, -3, -2, -1.5, -1,
-            -0.8, -0.6, -0.4, -0.2,
-            0, 0.2, 0.4, 0.6, 0.8,
-            1, 1.5, 2, 3, 4, 5, 10, 20
-        ],
         valType: 'data_array',
         editType: 'plot',
-        description: 'Sets the values at which ticks on this axis appear.'
+        description: [
+            'Sets the values at which ticks on this axis appear.',
+            'Defaults to `realaxis.tickvals` plus the same as negatives and zero.'
+        ].join(' ')
     },
 
     ticks: axesAttrs.ticks,

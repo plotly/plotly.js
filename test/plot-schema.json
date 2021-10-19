@@ -7510,34 +7510,7 @@
       "valType": "string"
      },
      "tickvals": {
-      "description": "Sets the values at which ticks on this axis appear.",
-      "dflt": [
-       -20,
-       -10,
-       -5,
-       -4,
-       -3,
-       -2,
-       -1.5,
-       -1,
-       -0.8,
-       -0.6,
-       -0.4,
-       -0.2,
-       0,
-       0.2,
-       0.4,
-       0.6,
-       0.8,
-       1,
-       1.5,
-       2,
-       3,
-       4,
-       5,
-       10,
-       20
-      ],
+      "description": "Sets the values at which ticks on this axis appear. Defaults to `realaxis.tickvals` plus the same as negatives and zero.",
       "editType": "plot",
       "valType": "data_array"
      },
@@ -7735,17 +7708,10 @@
       "description": "Sets the values at which ticks on this axis appear.",
       "dflt": [
        0.2,
-       0.4,
-       0.6,
-       0.8,
+       0.5,
        1,
-       1.5,
        2,
-       3,
-       4,
-       5,
-       10,
-       20
+       5
       ],
       "editType": "plot",
       "valType": "data_array"
@@ -56451,7 +56417,7 @@
      "valType": "string"
     },
     "imag": {
-     "description": "Sets the imaginary coordinates",
+     "description": "Sets the imaginary component of the data, in units of normalized impedance such that real=1, imag=0 is the center of the chart.",
      "editType": "calc+clearAxisTypes",
      "valType": "data_array"
     },
@@ -57806,7 +57772,7 @@
      "valType": "number"
     },
     "real": {
-     "description": "Sets the real coordinates",
+     "description": "Sets the real component of the data, in units of normalized impedance such that real=1, imag=0 is the center of the chart.",
      "editType": "calc+clearAxisTypes",
      "valType": "data_array"
     },

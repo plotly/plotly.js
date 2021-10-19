@@ -141,11 +141,11 @@ describe('Test relayout on smith subplots:', function() {
             return Plotly.relayout(gd, 'smith.realaxis', {ticks: 'top'});
         })
         .then(function() {
-            check(12, 'M0,-0.5v-5');
+            check(5, 'M0,-0.5v-5');
             return Plotly.relayout(gd, 'smith.realaxis', {ticks: 'bottom'});
         })
         .then(function() {
-            check(12, 'M0,0.5v5');
+            check(5, 'M0,0.5v5');
             return Plotly.relayout(gd, 'smith.realaxis', {ticks: ''});
         })
         .then(function() {
@@ -153,7 +153,7 @@ describe('Test relayout on smith subplots:', function() {
             return Plotly.relayout(gd, 'smith.realaxis', {ticks: 'top'});
         })
         .then(function() {
-            check(12, 'M0,-0.5v-5');
+            check(5, 'M0,-0.5v-5');
         })
         .then(done, done.fail);
     });
