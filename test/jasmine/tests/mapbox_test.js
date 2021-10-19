@@ -1550,8 +1550,8 @@ describe('mapbox plots', function() {
                 expect(s.text()).toEqual('© Mapbox © OpenStreetMap Improve this map');
                 assertLinks(s, [
                     'https://www.mapbox.com/about/maps/',
-                    'http://www.openstreetmap.org/about/',
-                    'https://www.mapbox.com/map-feedback/' // Improve this map
+                    'https://www.openstreetmap.org/about/',
+                    'https://apps.mapbox.com/feedback/?owner=mapbox&id=basic-v9&access_token=' + MAPBOX_ACCESS_TOKEN // Improve this map
                 ]);
             })
             .then(done, done.fail);

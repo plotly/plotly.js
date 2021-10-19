@@ -449,6 +449,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         if(ax.type === 'date') dflt = Lib.dfltRange(ax.calendar);
         else if(axLetter === 'y') dflt = constants.DFLTRANGEY;
+        else if(ax._name === 'realaxis') dflt = [0, 1];
         else dflt = opts.dfltRange || constants.DFLTRANGEX;
 
         // make sure we don't later mutate the defaults

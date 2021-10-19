@@ -1,0 +1,75 @@
+{
+  "data": [
+    {
+      "real": [0, 0, 1, 1],
+      "imag": [0, 1, 1, 0],
+      "type": "scattersmith"
+    }
+  ],
+  "layout": {
+    "width": 400,
+    "height": 400,
+    "template": {
+      "data": {
+        "scattersmith": [
+          {
+            "marker": {
+              "opacity": 0.5,
+              "color": "hotpink",
+              "size": 20
+            },
+            "line": {
+              "color": "cyan"
+            }
+          }
+        ]
+      },
+      "layout": {
+        "margin": {
+          "t": 40,
+          "b": 40,
+          "l": 40,
+          "r": 40
+        },
+        "paper_bgcolor": "lightblue",
+        "smith": {
+          "bgcolor": "darkred",
+          "realaxis": {
+            "tickvals": [0.125, 0.25, 0.5, 1, 2, 4],
+            "tickfont": {
+              "family": "Gravitas One",
+              "size": 14,
+              "color": "orange"
+            },
+            "tickangle": -90,
+            "tickprefix": "[",
+            "ticksuffix": "]",
+            "side": "bottom",
+            "ticks": "bottom",
+            "ticklen": 10,
+            "tickwidth": 5,
+            "tickcolor": "yellow",
+            "gridcolor": "white",
+            "linecolor": "white"
+          },
+          "imaginaryaxis": {
+            "tickvals": [-4, -2, -1, -0.5, 0, 0.5, 1, 2, 4],
+            "tickfont": {
+              "family": "Times New Roman",
+              "size": 16,
+              "color": "darkblue"
+            },
+            "tickprefix": "i ",
+            "ticksuffix": " j",
+            "ticks": "inside",
+            "ticklen": 10,
+            "tickwidth": 5,
+            "tickcolor": "darkblue",
+            "gridcolor": "white",
+            "linecolor": "white"
+          }
+        }
+      }
+    }
+  }
+}

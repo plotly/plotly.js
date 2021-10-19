@@ -27,7 +27,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             size: font.size,
             color: dfltFontColor
         });
-        coerce('tickangle');
+
+        if(!options.noAng) coerce('tickangle');
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
@@ -41,7 +42,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
                 delete containerOut.tickformatstops;
             }
 
-            if(!tickFormat && axType !== 'date') {
+            if(!options.noExp && !tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');
                 coerce('minexponent');

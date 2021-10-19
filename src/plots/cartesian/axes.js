@@ -1462,7 +1462,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 dateStr += '<br>' + headStr;
             } else {
                 var isInside = insideTicklabelposition(ax);
-                var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
+                var side = ax._trueSide || ax.side; // polar mocks the side of the radial axis
                 if(
                     (!isInside && side === 'top') ||
                     (isInside && side === 'bottom')
@@ -3278,7 +3278,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var pad = !isAligned ? 0 :
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
-                var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory';
+                var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis';
 
                 // any overlap at all - set 30 degrees or 90 degrees
                 for(i = 0; i < lbbArray.length - 1; i++) {
