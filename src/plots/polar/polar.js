@@ -693,7 +693,7 @@ proto.updateAngularAxis = function(fullLayout, polarLayout) {
 
     if(isSmith) {
         vals[0].text = '∞';
-        vals[0].fontSize *= 1.5;
+        vals[0].fontSize *= 1.75;
     }
 
     // angle of polygon vertices in geometric radians (null means circles)
