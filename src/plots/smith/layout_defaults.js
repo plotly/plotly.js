@@ -52,17 +52,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             var isRealAxis = axName === 'realaxis';
             if(isRealAxis) coerceAxis('side');
 
-            if(isRealAxis) {
-                coerceAxis('tickvals');
-            } else {
-                var realTickvals = contOut.realaxis.tickvals || layoutAttributes.realaxis.tickvals.dflt;
-                var imagTickvalsDflt =
-                    realTickvals.slice().reverse().map(function(x) { return -x; })
-                    .concat([0])
-                    .concat(realTickvals);
-
-                coerceAxis('tickvals', imagTickvalsDflt);
-            }
+            coerceAxis('tickvals');
 
             var dfltColor;
             var dfltFontColor;
