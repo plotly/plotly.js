@@ -13,13 +13,19 @@ module.exports = {
     real: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: 'Sets the real coordinates'
+        description: [
+            'Sets the real component of the data, in units of normalized impedance',
+            'such that real=1, imag=0 is the center of the chart.'
+        ].join(' ')
     },
 
     imag: {
         valType: 'data_array',
         editType: 'calc+clearAxisTypes',
-        description: 'Sets the imaginary coordinates'
+        description: [
+            'Sets the imaginary component of the data, in units of normalized impedance',
+            'such that real=1, imag=0 is the center of the chart.'
+        ].join(' ')
     },
 
     text: scatterAttrs.text,
