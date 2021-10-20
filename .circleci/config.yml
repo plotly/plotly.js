@@ -179,7 +179,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Test MathJax on firefox-81
+          name: Test MathJax on firefox-82
           command: .circleci/test.sh mathjax-firefox82+
 
   mathjax-firefoxLatest:
@@ -197,7 +197,7 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Test MathJax on firefox-81
+          name: Test MathJax on firefox-latest
           command: .circleci/test.sh mathjax-firefox82+
 
   make-baselines:
