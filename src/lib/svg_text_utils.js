@@ -94,9 +94,12 @@ exports.convertToTspans = function(_context, gd, _callback) {
                                                newSvg.node().firstChild);
                 }
 
+                var w0 = _svgBBox.width;
+                var h0 = _svgBBox.height;
+
                 newSvg.attr({
                     'class': svgClass,
-                    height: _svgBBox.height,
+                    height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
                 .style({overflow: 'visible', 'pointer-events': 'none'});
@@ -105,9 +108,18 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var g = newSvg.select('g');
                 g.attr({fill: fill, stroke: fill});
 
-                var gBB = g.node().getBoundingClientRect();
-                var newSvgW = gBB.width;
-                var newSvgH = gBB.height;
+                var bb = g.node().getBoundingClientRect();
+                var w = bb.width;
+                var h = bb.height;
+
+                if(w > w0 || h > h0) {
+                    // this happen in firefox v82+ | see https://bugzilla.mozilla.org/show_bug.cgi?id=1709251 addressed
+                    // temporary fix:
+                    newSvg.style('overflow', 'hidden');
+                    bb = newSvg.node().getBoundingClientRect();
+                    w = bb.width;
+                    h = bb.height;
+                }
 
                 var x = +_context.attr('x');
                 var y = +_context.attr('y');
@@ -119,21 +131,21 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 if(svgClass[0] === 'y') {
                     mathjaxGroup.attr({
                         transform: 'rotate(' + [-90, x, y] +
-                        ')' + strTranslate(-newSvgW / 2, dy - newSvgH / 2)
+                        ')' + strTranslate(-w / 2, dy - h / 2)
                     });
                 } else if(svgClass[0] === 'l') {
-                    y = dy - newSvgH / 2;
+                    y = dy - h / 2;
                 } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
                     x = 0;
                     y = dy;
                 } else {
                     var anchor = _context.attr('text-anchor');
 
-                    x = x - newSvgW * (
+                    x = x - w * (
                         anchor === 'middle' ? 0.5 :
                         anchor === 'end' ? 1 : 0
                     );
-                    y = y + dy - newSvgH / 2;
+                    y = y + dy - h / 2;
                 }
 
                 newSvg.attr({
