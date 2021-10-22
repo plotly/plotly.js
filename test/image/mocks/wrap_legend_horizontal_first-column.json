@@ -1,0 +1,52 @@
+{
+  "data": [
+    {
+      "legendgroup": "A",
+      "name": "trace A1",
+      "x": [
+        0,
+        10
+      ],
+      "y": [
+        1,
+        1
+      ]
+    },
+    {
+      "legendgroup": "A",
+      "name": "trace A2",
+      "x": [
+        10,
+        20
+      ],
+      "y": [
+        2,
+        2
+      ]
+    },
+    {
+      "legendgroup": "B",
+      "name": "trace B1",
+      "x": [
+        20,
+        30
+      ],
+      "y": [
+        3,
+        3
+      ]
+    }
+  ],
+  "layout": {
+    "showlegend": true,
+    "legend": {
+      "orientation": "h",
+      "xanchor": "left",
+      "yanchor": "top",
+      "bgcolor": "yellow"
+    },
+    "paper_bgcolor": "lightblue",
+    "width": 250,
+    "height": 250
+  }
+}
