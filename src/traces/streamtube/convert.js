@@ -1,6 +1,6 @@
 'use strict';
 
-var tube2mesh = require('gl-streamtube3d');
+var tube2mesh = require('../../../stackgl_modules').gl_streamtube3d;
 var createTubeMesh = tube2mesh.createTubeMesh;
 
 var Lib = require('../../lib');

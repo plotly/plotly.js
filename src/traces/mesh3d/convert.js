@@ -1,9 +1,9 @@
 'use strict';
 
-var createMesh = require('gl-mesh3d');
-var triangulate = require('delaunay-triangulate');
-var alphaShape = require('alpha-shape');
-var convexHull = require('convex-hull');
+var createMesh = require('../../../stackgl_modules').gl_mesh3d;
+var triangulate = require('../../../stackgl_modules').delaunay_triangulate;
+var alphaShape = require('../../../stackgl_modules').alpha_shape;
+var convexHull = require('../../../stackgl_modules').convex_hull;
 
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');

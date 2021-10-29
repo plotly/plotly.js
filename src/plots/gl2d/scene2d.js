@@ -4,9 +4,9 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../components/fx');
 
-var createPlot2D = require('gl-plot2d');
-var createSpikes = require('gl-spikes2d');
-var createSelectBox = require('gl-select-box');
+var createPlot2D = require('../../../stackgl_modules').gl_plot2d;
+var createSpikes = require('../../../stackgl_modules').gl_spikes2d;
+var createSelectBox = require('../../../stackgl_modules').gl_select_box;
 var getContext = require('webgl-context');
 
 var createOptions = require('./convert');
