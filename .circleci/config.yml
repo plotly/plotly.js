@@ -10,7 +10,23 @@ orbs:
 # https://hub.docker.com/r/cimg/node/tags/
 
 jobs:
-  install-and-cibuild:
+  install-and-cibuild-node12: # cibuild using node 12 & npm 6
+    docker:
+      - image: cimg/node:12.22.7
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - run:
+          name: Set up build environment
+          command: .circleci/env_build.sh
+      - run:
+          name: Pretest
+          command: npm run pretest
+      - run:
+          name: CI-Build
+          command: npm run cibuild
+
+  install-and-cibuild: # main cibuild using node 16 & npm 7
     docker:
       - image: cimg/node:16.8.0
     working_directory: ~/plotly.js
@@ -162,6 +178,43 @@ jobs:
       - run:
           name: Test MathJax on firefox-81
           command: .circleci/test.sh mathjax-firefox
+
+  mathjax-firefox82:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          firefox-version: '82.0'
+          install-chrome: false
+          install-chromedriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test MathJax on firefox-82
+          command: .circleci/test.sh mathjax-firefox82+
+
+  mathjax-firefoxLatest:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          install-chrome: false
+          install-chromedriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test MathJax on firefox-latest
+          command: .circleci/test.sh mathjax-firefox82+
 
   make-baselines:
     parallelism: 4
@@ -333,6 +386,8 @@ workflows:
   version: 2
   build-and-test:
     jobs:
+      - install-and-cibuild-node12
+
       - install-and-cibuild
       - timezone-jasmine:
           requires:
@@ -341,6 +396,12 @@ workflows:
           requires:
             - install-and-cibuild
       - mathjax-firefox81:
+          requires:
+            - install-and-cibuild
+      - mathjax-firefox82:
+          requires:
+            - install-and-cibuild
+      - mathjax-firefoxLatest:
           requires:
             - install-and-cibuild
       - no-gl-jasmine:

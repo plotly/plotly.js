@@ -1,6 +1,6 @@
 'use strict';
 
-var createHeatmap2D = require('gl-heatmap2d');
+var createHeatmap2D = require('../../../stackgl_modules').gl_heatmap2d;
 var Axes = require('../../plots/cartesian/axes');
 var str2RGBArray = require('../../lib/str2rgbarray');
 

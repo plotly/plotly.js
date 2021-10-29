@@ -1,6 +1,6 @@
 'use strict';
 
-var createMesh = require('gl-mesh3d');
+var createMesh = require('../../../stackgl_modules').gl_mesh3d;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var extractOpts = require('../../components/colorscale').extractOpts;

@@ -1,6 +1,6 @@
 'use strict';
 
-var glPlot3d = require('gl-plot3d');
+var glPlot3d = require('../../../stackgl_modules').gl_plot3d;
 var createCamera = glPlot3d.createCamera;
 var createPlot = glPlot3d.createScene;
 
