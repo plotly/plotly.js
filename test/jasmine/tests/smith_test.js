@@ -106,11 +106,11 @@ describe('Test relayout on smith subplots:', function() {
             return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: 'inside'});
         })
         .then(function() {
-            check(12, 'M-0.5,0h-5');
+            check(26, 'M-0.5,0h-5');
             return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: 'outside'});
         })
         .then(function() {
-            check(12, 'M0.5,0h5');
+            check(26, 'M0.5,0h5');
             return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: ''});
         })
         .then(function() {
@@ -118,7 +118,7 @@ describe('Test relayout on smith subplots:', function() {
             return Plotly.relayout(gd, 'smith.imaginaryaxis', {ticks: 'inside'});
         })
         .then(function() {
-            check(12, 'M-0.5,0h-5');
+            check(26, 'M-0.5,0h-5');
         })
         .then(done, done.fail);
     });
