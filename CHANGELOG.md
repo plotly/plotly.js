@@ -9,6 +9,31 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.6.0] -- 2021-10-29
+
+### Added
+ - Add `smith` subplots and the `scattersmith` trace type for displaying Smith charts [[#5956](https://github.com/plotly/plotly.js/pull/5956), [#5992](https://github.com/plotly/plotly.js/pull/5992)],
+   with thanks to Kitware and @waxlamp for kicking off this effort.
+
+### Changed
+ - Improve drawing the contour lines in non-linear space e.g. on log axes [[#5985](https://github.com/plotly/plotly.js/pull/5985)], with thanks to @andrew-matteson for the contribution!
+ - Bump eslint to v8 release candidate including fixes for `no-new-func` test [[#5969](https://github.com/plotly/plotly.js/pull/5969)]
+
+### Fixed
+ - Fix `npm install` problem for `npm v6` users (regression introduced in 2.5.0) [[#6004](https://github.com/plotly/plotly.js/pull/6004)]
+ - Fix unhover event data for gl3d subplots [[#5954](https://github.com/plotly/plotly.js/pull/5954)],
+   with thanks to @dwoznicki for the contribution!
+ - Fix scatter3d opacity restyle bug [[#5958](https://github.com/plotly/plotly.js/pull/5958)],
+   with thanks to @dwoznicki for the contribution!
+ - Skip `"hoverinfo": "none"` trace display for hover modes [[#5854](https://github.com/plotly/plotly.js/pull/5854)],
+   with thanks to @Domino987 for the contribution!
+ - Display prefix and suffix of invisible polar axes in hover [[#5964](https://github.com/plotly/plotly.js/pull/5964)]
+ - Reduce calls to `getBoundingClientRect` in `convertToTspans` [[#5976](https://github.com/plotly/plotly.js/pull/5976)]
+ - Avoid wrapping legend items if already on the first column [[#5996](https://github.com/plotly/plotly.js/pull/5996)]
+ - Fix horizontal alignment of colorbar in editable mode when `xanchor` is set to "center" [[#6002](https://github.com/plotly/plotly.js/pull/6002)]
+ - Fix to improve rendering of graphs with Mathjax on Firefox v82 and higher [[#5993](https://github.com/plotly/plotly.js/pull/5993)]
+
+
 ## [2.5.1] -- 2021-09-16
 
 ### Fixed
