@@ -6,6 +6,7 @@ stackgl_modules/node_modules
 
 devtools
 test
+draftlogs
 dist/extras
 
 circle.yml
