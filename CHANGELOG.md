@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.6.1] -- 2021-11-03
+
+### Fixed
+ - Fix to avoid including local stackgl_modules/node_modules in the package (regression introduced in 2.6.0) [[#6008](https://github.com/plotly/plotly.js/pull/6008)]
+
+
 ## [2.6.0] -- 2021-10-29
 
 ### Added
