@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.6.2] -- 2021-11-05
+
+### Fixed
+ - Fix loading issue in [orca](https://github.com/plotly/orca) (regression introduced in 2.6.0) [[#6011](https://github.com/plotly/plotly.js/pull/6011)]
+
+
 ## [2.6.1] -- 2021-11-03
 
 ### Fixed
