@@ -1,7 +1,7 @@
 'use strict';
 
 var c = require('./constants');
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var keyFun = require('../../lib/gup').keyFun;
 var repeat = require('../../lib/gup').repeat;
 var sortAsc = require('../../lib').sorterAsc;
@@ -199,7 +199,7 @@ function getInterval(d, y) {
     return out;
 }
 
-function dragstart(lThis, d) {
+function start(lThis, d) {
     d3.event.sourceEvent.stopPropagation();
     var y = d.height - d3.mouse(lThis)[1] - 2 * c.verticalPadding;
     var unitLocation = d.unitToPaddedPx.invert(y);
@@ -245,7 +245,7 @@ function drag(lThis, d) {
     renderHighlight(lThis.parentNode);
 }
 
-function dragend(lThis, d) {
+function end(lThis, d) {
     var brush = d.brush;
     var filter = brush.filter;
     var s = brush.svgBrush;
@@ -345,20 +345,24 @@ function attachDragBehavior(selection) {
         .on('mouseleave', function(d) {
             if(!d.parent.inBrushDrag) clearCursor();
         })
-        .call(d3.behavior.drag()
-            .on('dragstart', function(d) { dragstart(this, d); })
+        .call(d3.drag()
+            .on('start', function(d) { start(this, d); })
             .on('drag', function(d) { drag(this, d); })
-            .on('dragend', function(d) { dragend(this, d); })
+            .on('end', function(d) { end(this, d); })
         );
 }
 
 function startAsc(a, b) { return a[0] - b[0]; }
 
 function renderAxisBrush(axisBrush, paperColor) {
-    var background = axisBrush.selectAll('.background').data(repeat);
+    var background = axisBrush.selectAll('.background')
+        .data(repeat)
+        .enter()
+        .append('rect');
 
-    background.enter()
-        .append('rect')
+    background.exit().remove();
+
+    background
         .classed('background', true)
         .call(barHorizontalSetup)
         .call(backgroundBarHorizontalSetup)
@@ -371,10 +375,14 @@ function renderAxisBrush(axisBrush, paperColor) {
             return d.height - c.verticalPadding;
         });
 
-    var highlightShadow = axisBrush.selectAll('.highlight-shadow').data(repeat); // we have a set here, can't call it `extent`
+    var highlightShadow = axisBrush.selectAll('.highlight-shadow')
+        .data(repeat) // we have a set here, can't call it `extent`
+        .enter()
+        .append('line');
 
-    highlightShadow.enter()
-        .append('line')
+    highlightShadow.exit().remove();
+
+    highlightShadow
         .classed('highlight-shadow', true)
         .attr('x', -c.bar.width / 2)
         .attr('stroke-width', c.bar.width + c.bar.strokeWidth)
@@ -386,10 +394,14 @@ function renderAxisBrush(axisBrush, paperColor) {
         .attr('y1', function(d) { return d.height; })
         .call(styleHighlight);
 
-    var highlight = axisBrush.selectAll('.highlight').data(repeat); // we have a set here, can't call it `extent`
+    var highlight = axisBrush.selectAll('.highlight')
+        .data(repeat) // we have a set here, can't call it `extent`
+        .enter()
+        .append('line');
 
-    highlight.enter()
-        .append('line')
+    highlight.exit().remove();
+
+    highlight
         .classed('highlight', true)
         .attr('x', -c.bar.width / 2)
         .attr('stroke-width', c.bar.width - c.bar.strokeWidth)
@@ -404,10 +416,13 @@ function renderAxisBrush(axisBrush, paperColor) {
 
 function ensureAxisBrush(axisOverlays, paperColor) {
     var axisBrush = axisOverlays.selectAll('.' + c.cn.axisBrush)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisBrush.enter()
-        .append('g')
+    axisBrush.exit().remove();
+
+    axisBrush
         .classed(c.cn.axisBrush, true);
 
     renderAxisBrush(axisBrush, paperColor);

@@ -1,9 +1,10 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Plots = require('../plots');
 var Drawing = require('../../components/drawing');
 
@@ -147,7 +148,7 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
 
         for(var j = 0; j < calcdata.length; j++) {
             var cd = calcdata[j];
-            var trace = cd[0].trace;
+            var trace = getTraceFromCd(cd);
 
             // Skip trace if whitelist provided and it's not whitelisted:
             // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
@@ -226,14 +227,16 @@ function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback
     layerData.sort(function(a, b) { return a.i - b.i; });
 
     var layers = plotinfo.plot.selectAll('g.mlayer')
-        .data(layerData, function(d) { return d.className; });
+        .data(layerData, function(d) { return d.className; })
+        .enter()
+        .append('g');
 
-    layers.enter().append('g')
+    layers.exit().remove();
+
+    layers
         .attr('class', function(d) { return d.className; })
         .classed('mlayer', true)
         .classed('rangeplot', plotinfo.isRangePlot);
-
-    layers.exit().remove();
 
     layers.order();
 
@@ -346,28 +349,27 @@ exports.drawFramework = function(gd) {
     var subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, String);
+        .data(subplotData, String)
+        .enter()
+        .append('g');
 
-    subplotLayers.enter().append('g')
-        .attr('class', function(d) { return 'subplot ' + d[0]; });
+    subplotLayers.exit().call(purgeSubplotLayers, fullLayout);
 
-    subplotLayers.order();
+    subplotLayers
+        .attr('class', function(d) { return 'subplot ' + d[0]; })
+        .order()
+        .each(function(d) {
+            var id = d[0];
+            var plotinfo = fullLayout._plots[id];
 
-    subplotLayers.exit()
-        .call(purgeSubplotLayers, fullLayout);
+            plotinfo.plotgroup = d3.select(this);
+            makeSubplotLayer(gd, plotinfo);
 
-    subplotLayers.each(function(d) {
-        var id = d[0];
-        var plotinfo = fullLayout._plots[id];
-
-        plotinfo.plotgroup = d3.select(this);
-        makeSubplotLayer(gd, plotinfo);
-
-        // make separate drag layers for each subplot,
-        // but append them to paper rather than the plot groups,
-        // so they end up on top of the rest
-        plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
-    });
+            // make separate drag layers for each subplot,
+            // but append them to paper rather than the plot groups,
+            // so they end up on top of the rest
+            plotinfo.draglayer = ensureSingle(fullLayout._draggers, 'g', id);
+        });
 };
 
 exports.rangePlot = function(gd, plotinfo, cdSubplot) {
@@ -528,7 +530,8 @@ function makeSubplotLayer(gd, plotinfo) {
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
         plotinfo.gridlayer.selectAll('g')
-            .map(function(d) { return d[0]; })
+            .nodes()
+            .map(function(e) { return e.className.baseVal; })
             .sort(axisIds.idSort);
     }
 
@@ -590,7 +593,7 @@ exports.toSVG = function(gd) {
         var imageData = canvas.toDataURL('image/png');
         var image = imageRoot.append('svg:image');
 
-        image.attr({
+        image.attrs({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
             preserveAspectRatio: 'none',

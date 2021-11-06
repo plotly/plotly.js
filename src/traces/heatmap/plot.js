@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
@@ -317,15 +317,15 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
         gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-        var image3 = plotGroup.selectAll('image')
-            .data(cd);
+        var image3 = plotGroup.selectAll('image').data(cd)
+            .enter()
+            .append('svg:image');
 
-        image3.enter().append('svg:image').attr({
+        image3.exit().remove();
+
+        image3.attrs({
             xmlns: xmlnsNamespaces.svg,
-            preserveAspectRatio: 'none'
-        });
-
-        image3.attr({
+            preserveAspectRatio: 'none',
             height: imageHeight,
             width: imageWidth,
             x: left,

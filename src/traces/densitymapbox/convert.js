@@ -3,6 +3,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Color = require('../../components/color');
 var Colorscale = require('../../components/colorscale');
 
@@ -10,7 +11,7 @@ var BADNUM = require('../../constants/numerical').BADNUM;
 var makeBlank = require('../../lib/geojson_utils').makeBlank;
 
 module.exports = function convert(calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var isVisible = (trace.visible === true && trace._length !== 0);
 
     var heatmap = {

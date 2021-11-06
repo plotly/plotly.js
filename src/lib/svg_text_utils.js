@@ -2,7 +2,7 @@
 
 /* global MathJax:false */
 
-var d3 = require('@plotly/d3');
+var d3 = require('./d3');
 
 var Lib = require('../lib');
 var strTranslate = Lib.strTranslate;
@@ -29,7 +29,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     parent.selectAll('svg.' + svgClass).remove();
     parent.selectAll('g.' + svgClass + '-group').remove();
     _context.style('display', null)
-        .attr({
+        .attrs({
             // some callers use data-unformatted *from the <text> element* in 'cancel'
             // so we need it here even if we're going to turn it into math
             // these two (plus style and text-anchor attributes) form the key we're
@@ -80,7 +80,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
                 var mathjaxGroup = parent.append('g')
                     .classed(svgClass + '-group', true)
-                    .attr({
+                    .attrs({
                         'pointer-events': 'none',
                         'data-unformatted': str,
                         'data-math': 'Y'
@@ -97,16 +97,16 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var w0 = _svgBBox.width;
                 var h0 = _svgBBox.height;
 
-                newSvg.attr({
+                newSvg.attrs({
                     'class': svgClass,
                     height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
-                .style({overflow: 'visible', 'pointer-events': 'none'});
+                .styles({overflow: 'visible', 'pointer-events': 'none'});
 
                 var fill = _context.node().style.fill || 'black';
                 var g = newSvg.select('g');
-                g.attr({fill: fill, stroke: fill});
+                g.attrs({fill: fill, stroke: fill});
 
                 var bb = g.node().getBoundingClientRect();
                 var w = bb.width;
@@ -129,7 +129,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var dy = -textHeight / 4;
 
                 if(svgClass[0] === 'y') {
-                    mathjaxGroup.attr({
+                    mathjaxGroup.attrs({
                         transform: 'rotate(' + [-90, x, y] +
                         ')' + strTranslate(-w / 2, dy - h / 2)
                     });
@@ -148,7 +148,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                     y = y + dy - h / 2;
                 }
 
-                newSvg.attr({
+                newSvg.attrs({
                     x: x,
                     y: y
                 });
@@ -207,9 +207,9 @@ function texToSVG(_texString, _config, _callback) {
     function() {
         var randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
-            .attr({id: randomID})
-            .style({visibility: 'hidden', position: 'absolute'})
-            .style({'font-size': _config.fontSize + 'px'})
+            .attrs({id: randomID})
+            .styles({visibility: 'hidden', position: 'absolute'})
+            .styles({'font-size': _config.fontSize + 'px'})
             .text(cleanEscapesForTex(_texString));
 
         return MathJax.Hub.Typeset(tmpDiv.node());
@@ -483,7 +483,7 @@ function buildSVGText(containerNode, str) {
         currentLine++;
 
         var lineNode = document.createElementNS(xmlnsNamespaces.svg, 'tspan');
-        d3.select(lineNode).attr({
+        d3.select(lineNode).attrs({
             class: 'line',
             dy: (currentLine * LINE_SPACING) + 'em'
         });
@@ -545,7 +545,7 @@ function buildSVGText(containerNode, str) {
             currentNode.appendChild(newNode);
         }
 
-        d3.select(newNode).attr(nodeAttrs);
+        d3.select(newNode).attrs(nodeAttrs);
 
         currentNode = nodeSpec.node = newNode;
         nodeStack.push(nodeSpec);
@@ -702,7 +702,7 @@ exports.sanitizeHTML = function sanitizeHTML(str) {
 
                 var newNode = document.createElement(tagType);
                 currentNode.appendChild(newNode);
-                d3.select(newNode).attr(nodeAttrs);
+                d3.select(newNode).attrs(nodeAttrs);
 
                 currentNode = newNode;
                 nodeStack.push(newNode);
@@ -740,7 +740,7 @@ exports.positionText = function positionText(s, x, y) {
         var thisY = setOrGet('y', y);
 
         if(this.nodeName === 'text') {
-            text.selectAll('tspan.line').attr({x: thisX, y: thisY});
+            text.selectAll('tspan.line').attrs({x: thisX, y: thisY});
         }
     });
 };
@@ -783,7 +783,7 @@ function alignHTMLWith(_base, container, options) {
             y0 = transformedCoords[1];
         }
 
-        this.style({
+        this.styles({
             top: y0 + 'px',
             left: x0 + 'px',
             'z-index': 1000
@@ -825,20 +825,20 @@ exports.makeEditable = function(context, options) {
     var dispatch = d3.dispatch('edit', 'input', 'cancel');
     var handlerElement = _delegate || context;
 
-    context.style({'pointer-events': _delegate ? 'none' : 'all'});
+    context.styles({'pointer-events': _delegate ? 'none' : 'all'});
 
     if(context.size() !== 1) throw new Error('boo');
 
     function handleClick() {
         appendEditable();
-        context.style({opacity: 0});
+        context.styles({opacity: 0});
         // also hide any mathjax svg
         var svgClass = handlerElement.attr('class');
         var mathjaxClass;
         if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
         else mathjaxClass = '[class*=-math-group]';
         if(mathjaxClass) {
-            d3.select(context.node().parentNode).select(mathjaxClass).style({opacity: 0});
+            d3.select(context.node().parentNode).select(mathjaxClass).styles({opacity: 0});
         }
     }
 
@@ -863,7 +863,7 @@ exports.makeEditable = function(context, options) {
         if(initialText === undefined) initialText = context.attr('data-unformatted');
 
         div.classed('plugin-editable editable', true)
-            .style({
+            .styles({
                 position: 'absolute',
                 'font-family': cStyle.fontFamily || 'Arial',
                 'font-size': fontSize,
@@ -875,19 +875,19 @@ exports.makeEditable = function(context, options) {
                 padding: '0',
                 'box-sizing': 'border-box'
             })
-            .attr({contenteditable: true})
+            .attrs({contenteditable: true})
             .text(initialText)
             .call(alignHTMLWith(context, container, options))
             .on('blur', function() {
                 gd._editing = false;
                 context.text(this.textContent)
-                    .style({opacity: 1});
+                    .styles({opacity: 1});
                 var svgClass = d3.select(this).attr('class');
                 var mathjaxClass;
                 if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
                 else mathjaxClass = '[class*=-math-group]';
                 if(mathjaxClass) {
-                    d3.select(context.node().parentNode).select(mathjaxClass).style({opacity: 0});
+                    d3.select(context.node().parentNode).select(mathjaxClass).styles({opacity: 0});
                 }
                 var text = this.textContent;
                 d3.select(this).transition().duration(0).remove();
@@ -905,9 +905,9 @@ exports.makeEditable = function(context, options) {
             .on('keyup', function() {
                 if(d3.event.which === 27) {
                     gd._editing = false;
-                    context.style({opacity: 1});
+                    context.styles({opacity: 1});
                     d3.select(this)
-                        .style({opacity: 0})
+                        .styles({opacity: 0})
                         .on('blur', function() { return false; })
                         .transition().remove();
                     dispatch.cancel.call(context, this.textContent);

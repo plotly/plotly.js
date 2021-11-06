@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var tinycolor = require('tinycolor2');
 
 var Plots = require('../../plots/plots');
@@ -8,6 +8,7 @@ var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var dragElement = require('../dragelement');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var extendFlat = require('../../lib/extend').extendFlat;
 var setCursor = require('../../lib/setcursor');
@@ -33,11 +34,19 @@ function draw(gd) {
 
     var colorBars = fullLayout._infolayer
         .selectAll('g.' + cn.colorbar)
-        .data(makeColorBarData(gd), function(opts) { return opts._id; });
+        .data(makeColorBarData(gd), function(opts) { return opts._id; })
+        .enter()
+        .append('g');
 
-    colorBars.enter().append('g')
+    colorBars.exit()
+        .each(function(opts) { Plots.autoMargin(gd, opts._id); })
+        .remove();
+
+    colorBars
         .attr('class', function(opts) { return opts._id; })
         .classed(cn.colorbar, true);
+
+    colorBars.order();
 
     colorBars.each(function(opts) {
         var g = d3.select(this);
@@ -56,12 +65,6 @@ function draw(gd) {
             makeEditable(g, opts, gd);
         }
     });
-
-    colorBars.exit()
-        .each(function(opts) { Plots.autoMargin(gd, opts._id); })
-        .remove();
-
-    colorBars.order();
 }
 
 function makeColorBarData(gd) {
@@ -116,7 +119,7 @@ function makeColorBarData(gd) {
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
-        trace = cd[0].trace;
+        trace = getTraceFromCd(cd);
         var moduleOpts = trace._module.colorbar;
 
         if(trace.visible === true && moduleOpts) {
@@ -391,11 +394,15 @@ function drawColorBar(g, opts, gd) {
         var fills = g.select('.' + cn.cbfills)
             .selectAll('rect.' + cn.cbfill)
             .attr('style', '')
-            .data(fillLevels);
-        fills.enter().append('rect')
+            .data(fillLevels)
+            .enter()
+            .append('rect');
+
+        fills.exit().remove();
+
+        fills
             .classed(cn.cbfill, true)
             .style('stroke', 'none');
-        fills.exit().remove();
 
         var zBounds = zrange
             .map(ax.c2p)
@@ -417,7 +424,7 @@ function drawColorBar(g, opts, gd) {
 
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
-            var fillEl = d3.select(this).attr({
+            var fillEl = d3.select(this).attrs({
                 x: xLeft,
                 width: Math.max(thickPx, 2),
                 y: d3.min(z),
@@ -436,10 +443,15 @@ function drawColorBar(g, opts, gd) {
 
         var lines = g.select('.' + cn.cblines)
             .selectAll('path.' + cn.cbline)
-            .data(line.color && line.width ? lineLevels : []);
-        lines.enter().append('path')
-            .classed(cn.cbline, true);
+            .data(line.color && line.width ? lineLevels : [])
+            .enter()
+            .append('path');
+
         lines.exit().remove();
+
+        lines
+            .classed(cn.cbline, true);
+
         lines.each(function(d) {
             d3.select(this)
                 .attr('d', 'M' + xLeft + ',' +
@@ -501,7 +513,7 @@ function drawColorBar(g, opts, gd) {
         var outerwidth = 2 * opts.xpad + innerWidth + opts.borderwidth + opts.outlinewidth / 2;
         var outerheight = yBottomPx - yTopPx;
 
-        g.select('.' + cn.cbbg).attr({
+        g.select('.' + cn.cbbg).attrs({
             x: xLeft - opts.xpad - (opts.borderwidth + opts.outlinewidth) / 2,
             y: yTopPx - yExtraPx,
             width: Math.max(outerwidth, 2),
@@ -511,14 +523,14 @@ function drawColorBar(g, opts, gd) {
         .call(Color.stroke, opts.bordercolor)
         .style('stroke-width', opts.borderwidth);
 
-        g.selectAll('.' + cn.cboutline).attr({
+        g.selectAll('.' + cn.cboutline).attrs({
             x: xLeft,
             y: yTopPx + opts.ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
             height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
         })
         .call(Color.stroke, opts.outlinecolor)
-        .style({
+        .styles({
             fill: 'none',
             'stroke-width': opts.outlinewidth
         });

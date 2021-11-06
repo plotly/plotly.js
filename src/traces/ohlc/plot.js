@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Lib = require('../../lib');
 
@@ -22,9 +22,10 @@ module.exports = function plot(gd, plotinfo, cdOHLC, ohlcLayer) {
 
         var tickLen = t.tickLen;
 
-        var paths = plotGroup.selectAll('path').data(Lib.identity);
-
-        paths.enter().append('path');
+        var paths = plotGroup.selectAll('path')
+            .data(Lib.identity)
+            .enter()
+            .append('path');
 
         paths.exit().remove();
 

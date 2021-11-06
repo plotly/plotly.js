@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Axes = require('../../plots/cartesian/axes');
 var boxHoverPoints = require('../box/hover');
 var helpers = require('./helpers');
@@ -10,7 +11,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
     var hoverLayer = opts.hoverLayer;
 
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var hoveron = trace.hoveron;
     var hasHoveronViolins = hoveron.indexOf('violins') !== -1;
     var hasHoveronKDE = hoveron.indexOf('kde') !== -1;
@@ -85,12 +86,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
     // update violin line (if any)
     var violinLine = hoverLayer.selectAll('.violinline-' + trace.uid)
-        .data(violinLineAttrs ? [0] : []);
-    violinLine.enter().append('line')
-        .classed('violinline-' + trace.uid, true)
-        .attr('stroke-width', 1.5);
+        .data(violinLineAttrs ? [0] : [])
+        .enter()
+        .append('line');
+
     violinLine.exit().remove();
-    violinLine.attr(violinLineAttrs);
+
+    violinLine
+        .classed('violinline-' + trace.uid, true)
+        .attr('stroke-width', 1.5)
+        .attrs(violinLineAttrs);
 
     // same combine logic as box hoverPoints
     if(hovermode === 'closest') {

@@ -1,12 +1,16 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var Lib = require('../../lib');
+var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var isNumeric = require('fast-isnumeric');
 
 var Drawing = require('../drawing');
 var subTypes = require('../../traces/scatter/subtypes');
 
 module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
+
     var isNew;
 
     var xa = plotinfo.xaxis;
@@ -15,7 +19,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
     var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
     traces.each(function(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         // || {} is in case the trace (specifically scatterternary)
         // doesn't support error bars at all, but does go through
         // the scatter.plot mechanics, which calls ErrorBars.plot
@@ -37,7 +41,9 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
         if(!yObj.visible && !xObj.visible) d = [];
 
         var errorbars = d3.select(this).selectAll('g.errorbar')
-            .data(d, keyFunc);
+            .data(d, keyFunc)
+            .enter()
+            .append('g');
 
         errorbars.exit().remove();
 
@@ -48,11 +54,12 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
 
         errorbars.style('opacity', 1);
 
-        var enter = errorbars.enter().append('g')
+        errorbars
             .classed('errorbar', true);
 
         if(hasAnimation) {
-            enter.style('opacity', 0).transition()
+            errorbars
+                .style('opacity', 0).transition()
                 .duration(transitionOpts.duration)
                 .style('opacity', 1);
         }
@@ -90,7 +97,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
                     yerror = yerror
                         .transition()
                             .duration(transitionOpts.duration)
-                            .ease(transitionOpts.easing);
+                            .ease(d3EaseFn);
                 }
 
                 yerror.attr('d', path);
@@ -118,7 +125,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
                     xerror = xerror
                         .transition()
                             .duration(transitionOpts.duration)
-                            .ease(transitionOpts.easing);
+                            .ease(d3EaseFn);
                 }
 
                 xerror.attr('d', path);

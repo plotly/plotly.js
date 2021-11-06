@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
@@ -129,11 +129,15 @@ proto.updateLayers = function(ternaryLayout) {
     }
 
     var toplevel = _this.plotContainer.selectAll('g.toplevel')
-        .data(plotLayers, String);
+        .data(plotLayers, String)
+        .enter()
+        .append('g');
+
+    toplevel.exit().remove();
 
     var grids = ['agrid', 'bgrid', 'cgrid'];
 
-    toplevel.enter().append('g')
+    toplevel
         .attr('class', function(d) { return 'toplevel ' + d; })
         .each(function(d) {
             var s = d3.select(this);
@@ -593,7 +597,7 @@ proto.initInteractions = function() {
         zb = zoomLayer.append('path')
             .attr('class', 'zoombox')
             .attr('transform', strTranslate(_this.x0, _this.y0))
-            .style({
+            .styles({
                 'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
@@ -602,7 +606,7 @@ proto.initInteractions = function() {
         corners = zoomLayer.append('path')
             .attr('class', 'zoombox-corners')
             .attr('transform', strTranslate(_this.x0, _this.y0))
-            .style({
+            .styles({
                 fill: Color.background,
                 stroke: Color.defaultLine,
                 'stroke-width': 1,

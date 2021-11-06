@@ -2,13 +2,14 @@
 
 var Fx = require('../../components/fx');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var getTraceColor = require('../scatter/get_trace_color');
 var fillText = Lib.fillText;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var xa = pointData.xa;
     var ya = pointData.ya;
     var subplot = pointData.subplot;

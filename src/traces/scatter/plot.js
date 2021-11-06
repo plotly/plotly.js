@@ -1,9 +1,10 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var ensureSingle = Lib.ensureSingle;
 var identity = Lib.identity;
 var Drawing = require('../../components/drawing');
@@ -14,6 +15,7 @@ var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
 module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transitionOpts, makeOnCompleteCallback) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var join, onComplete;
 
     // If transition config is provided, then it is only a partial replot and traces not
@@ -25,14 +27,16 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
     var cdscatterSorted = linkTraces(gd, plotinfo, cdscatter);
 
     join = scatterLayer.selectAll('g.trace')
-        .data(cdscatterSorted, function(d) { return d[0].trace.uid; });
+        .data(cdscatterSorted, function(d) { return getTraceFromCd(d).uid; })
+        .enter()
+        .append('g');
 
-    // Append new traces:
-    join.enter().append('g')
+    join
         .attr('class', function(d) {
-            return 'trace scatter trace' + d[0].trace.uid;
+            return 'trace scatter trace' + getTraceFromCd(d).uid;
         })
         .style('stroke-miterlimit', 2);
+
     join.order();
 
     createFills(gd, join, plotinfo);
@@ -47,7 +51,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, scatterLayer, transition
 
         var transition = d3.transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() {
                 onComplete && onComplete();
             })
@@ -81,19 +85,16 @@ function createFills(gd, traceJoin, plotinfo) {
         var fills = ensureSingle(d3.select(this), 'g', 'fills');
         Drawing.setClipUrl(fills, plotinfo.layerClipId, gd);
 
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
 
         var fillData = [];
         if(trace._ownfill) fillData.push('_ownFill');
         if(trace._nexttrace) fillData.push('_nextFill');
 
-        var fillJoin = fills.selectAll('g').data(fillData, identity);
-
-        fillJoin.enter().append('g');
-
-        fillJoin.exit()
-            .each(function(d) { trace[d] = null; })
-            .remove();
+        var fillJoin = fills.selectAll('g')
+            .data(fillData, identity)
+            .enter()
+            .append('g');
 
         fillJoin.order().each(function(d) {
             // make a path element inside the fill group, just so
@@ -101,6 +102,10 @@ function createFills(gd, traceJoin, plotinfo) {
             // keep its simple '_*Fill' data
             trace[d] = ensureSingle(d3.select(this), 'path', 'js-fill');
         });
+
+        fillJoin.exit()
+            .each(function(d) { trace[d] = null; })
+            .remove();
     });
 }
 
@@ -121,7 +126,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var trace = cdscatter[0].trace;
+    var trace = getTraceFromCd(cdscatter);
     var line = trace.line;
     var tr = d3.select(element);
 
@@ -267,19 +272,22 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         };
     }
 
-    var lineJoin = lines.selectAll('.js-line').data(segments);
+    var lineJoin = lines.selectAll('.js-line')
+        .data(segments)
+        .enter()
+        .append('path');
+
+    lineJoin
+        .classed('js-line', true)
+        .style('vector-effect', 'non-scaling-stroke')
+        .call(Drawing.lineGroupStyle);
+        // .each(makeUpdate(true));
 
     transition(lineJoin.exit())
         .style('opacity', 0)
         .remove();
 
     lineJoin.each(makeUpdate(false));
-
-    lineJoin.enter().append('path')
-        .classed('js-line', true)
-        .style('vector-effect', 'non-scaling-stroke')
-        .call(Drawing.lineGroupStyle)
-        .each(makeUpdate(true));
 
     Drawing.setClipUrl(lineJoin, plotinfo.layerClipId, gd);
 
@@ -375,7 +383,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     function makePoints(points, text, cdscatter) {
         var join, selection, hasNode;
 
-        var trace = cdscatter[0].trace;
+        var trace = getTraceFromCd(cdscatter);
         var showMarkers = subTypes.hasMarkers(trace);
         var showText = subTypes.hasText(trace);
 
@@ -406,13 +414,23 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         selection = points.selectAll('path.point');
 
-        join = selection.data(markerFilter, keyFunc);
+        join = selection.data(markerFilter, keyFunc)
+            .enter()
+            .append('path');
 
-        var enter = join.enter().append('path')
+        if(hasTransition) {
+            join.exit().transition()
+                .style('opacity', 0)
+                .remove();
+        } else {
+            join.exit().remove();
+        }
+
+        join
             .classed('point', true);
 
         if(hasTransition) {
-            enter
+            join
                 .call(Drawing.pointStyle, trace, gd)
                 .call(Drawing.translatePoints, xa, ya)
                 .style('opacity', 0)
@@ -447,21 +465,19 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             }
         });
 
-        if(hasTransition) {
-            join.exit().transition()
-                .style('opacity', 0)
-                .remove();
-        } else {
-            join.exit().remove();
-        }
-
         // text points
         selection = text.selectAll('g');
-        join = selection.data(textFilter, keyFunc);
+        join = selection.data(textFilter, keyFunc)
+            // each text needs to go in its own 'g' in case
+            // it gets converted to mathjax
+            .enter()
+            .append('g');
 
-        // each text needs to go in its own 'g' in case
-        // it gets converted to mathjax
-        join.enter().append('g').classed('textpoint', true).append('text');
+        join.exit().remove();
+
+        join
+            .classed('textpoint', true)
+            .append('text');
 
         join.order();
 
@@ -488,11 +504,9 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 var y = ya.c2p(d.y);
 
                 d3.select(this).selectAll('tspan.line').each(function() {
-                    transition(d3.select(this)).attr({x: x, y: y});
+                    transition(d3.select(this)).attrs({x: x, y: y});
                 });
             });
-
-        join.exit().remove();
     }
 
     points.datum(cdscatter);
@@ -513,7 +527,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     var xr = d3.extent(Lib.simpleMap(xa.range, xa.r2c));
     var yr = d3.extent(Lib.simpleMap(ya.range, ya.r2c));
 
-    var trace = cdscatter[0].trace;
+    var trace = getTraceFromCd(cdscatter);
     if(!subTypes.hasMarkers(trace)) return;
     // if marker.maxdisplayed is used, select a maximum of
     // mnum markers to show, from the set that are in the viewport

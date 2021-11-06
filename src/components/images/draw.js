@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
 var axisIds = require('../../plots/cartesian/axis_ids');
@@ -181,7 +181,7 @@ module.exports = function draw(gd) {
                 break;
         }
 
-        thisImage.attr({
+        thisImage.attrs({
             x: xPos,
             y: yPos,
             width: width,
@@ -204,12 +204,13 @@ module.exports = function draw(gd) {
     }
 
     var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
-        .data(imageDataBelow);
+        .data(imageDataBelow)
+        .enter()
+        .append('image');
     var imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
-        .data(imageDataAbove);
-
-    imagesBelow.enter().append('image');
-    imagesAbove.enter().append('image');
+        .data(imageDataAbove)
+        .enter()
+        .append('image');
 
     imagesBelow.exit().remove();
     imagesAbove.exit().remove();
@@ -235,9 +236,10 @@ module.exports = function draw(gd) {
         var imagesOnSubplot = subplotObj.imagelayer.selectAll('image')
             // even if there are no images on this subplot, we need to run
             // enter and exit in case there were previously
-            .data(imageDataSubplot[subplot] || []);
+            .data(imageDataSubplot[subplot] || [])
+            .enter()
+            .append('image');
 
-        imagesOnSubplot.enter().append('image');
         imagesOnSubplot.exit().remove();
 
         imagesOnSubplot.each(function(d) {

@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
@@ -122,17 +122,19 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
         }
 
         var image3 = plotGroup.selectAll('image')
-            .data([cd]);
-
-        image3.enter().append('svg:image').attr({
-            xmlns: xmlnsNamespaces.svg,
-            preserveAspectRatio: 'none'
-        });
+            .data([cd])
+            .enter()
+            .append('svg:image');
 
         image3.exit().remove();
 
-        var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
+        image3
+            .attrs({
+                xmlns: xmlnsNamespaces.svg,
+                preserveAspectRatio: 'none'
+            });
 
+        var style = (trace.zsmooth === false) ? constants.pixelatedStyle : '';
         if(realImage) {
             var xRange = Lib.simpleMap(xa.range, xa.r2l);
             var yRange = Lib.simpleMap(ya.range, ya.r2l);
@@ -207,7 +209,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 }
             }
 
-            image3.attr({
+            image3.attrs({
                 'xlink:href': href,
                 height: imageHeight,
                 width: imageWidth,

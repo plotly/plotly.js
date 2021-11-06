@@ -1,10 +1,11 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var strRotate = Lib.strRotate;
 var Events = require('../../lib/events');
@@ -342,8 +343,8 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         for(itemnum = 0; itemnum < evt.length; itemnum++) {
             cd = gd.calcdata[evt[itemnum].curveNumber || 0];
             if(cd) {
-                trace = cd[0].trace;
-                if(cd[0].trace.hoverinfo !== 'skip') {
+                trace = getTraceFromCd(cd);
+                if(getTraceFromCd(cd).hoverinfo !== 'skip') {
                     searchData.push(cd);
                     if(trace.orientation === 'h') {
                         hasOneHorizontalTrace = true;
@@ -354,7 +355,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     } else {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
-            trace = cd[0].trace;
+            trace = getTraceFromCd(cd);
             if(trace.hoverinfo !== 'skip' && helpers.isTraceInSubplots(trace, subplots)) {
                 searchData.push(cd);
                 if(trace.orientation === 'h') {
@@ -434,9 +435,9 @@ function _hover(gd, evt, subplot, noHoverEvent) {
             cd = searchData[curvenum];
 
             // filter out invisible or broken data
-            if(!cd || !cd[0] || !cd[0].trace) continue;
+            if(!cd || !cd[0] || !getTraceFromCd(cd)) continue;
 
-            trace = cd[0].trace;
+            trace = getTraceFromCd(cd);
 
             if(trace.visible !== true || trace._length === 0) continue;
 
@@ -712,7 +713,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     if(
         helpers.isXYhover(_mode) &&
         hoverData[0].length !== 0 &&
-        hoverData[0].trace.type !== 'splom' // TODO: add support for splom
+        getTraceFromCd(hoverData).type !== 'splom' // TODO: add support for splom
     ) {
         // pick winning point
         var winningPoint = hoverData[0];
@@ -931,15 +932,19 @@ function createHoverText(hoverData, opts) {
     }
 
     var commonLabel = container.selectAll('g.axistext')
-        .data(showCommonLabel ? [0] : []);
-    commonLabel.enter().append('g')
-        .classed('axistext', true);
+        .data(showCommonLabel ? [0] : [])
+        .enter()
+        .append('g');
+
     commonLabel.exit().remove();
+
+    commonLabel
+        .classed('axistext', true);
 
     commonLabel.each(function() {
         var label = d3.select(this);
         var lpath = Lib.ensureSingle(label, 'path', '', function(s) {
-            s.style({'stroke-width': '1px'});
+            s.styles({'stroke-width': '1px'});
         });
         var ltext = Lib.ensureSingle(label, 'text', '', function(s) {
             // prohibit tex interpretation until we can handle
@@ -956,7 +961,7 @@ function createHoverText(hoverData, opts) {
             color: commonLabelOpts.font.color || contrastColor
         };
 
-        lpath.style({
+        lpath.styles({
             fill: commonBgColor,
             stroke: commonStroke
         });
@@ -1073,10 +1078,18 @@ function createHoverText(hoverData, opts) {
                 clipPath = null;
             }
 
-            var textClip = fullLayout._topclips.selectAll('#' + clipId).data(clipPath ? [0] : []);
-            textClip.enter().append('clipPath').attr('id', clipId).append('path');
+            var textClip = fullLayout._topclips.selectAll('#' + clipId)
+                .data(clipPath ? [0] : [])
+                .enter()
+                .append('clipPath');
+
             textClip.exit().remove();
-            textClip.select('path').attr('d', clipPath);
+
+            textClip
+                .attr('id', clipId).append('path')
+                .select('path')
+                .attr('d', clipPath);
+
             Drawing.setClipUrl(ltext, clipPath ? clipId : null, gd);
         }
 
@@ -1143,7 +1156,7 @@ function createHoverText(hoverData, opts) {
 
             mockLegend.entries.push([pt]);
         }
-        mockLegend.entries.sort(function(a, b) { return a[0].trace.index - b[0].trace.index;});
+        mockLegend.entries.sort(function(a, b) { return getTraceFromCd(a).index - getTraceFromCd(b).index;});
         mockLegend.layer = container;
 
         // Draw unified hover label
@@ -1246,22 +1259,27 @@ function createHoverText(hoverData, opts) {
             // N.B. when multiple items have the same result key-function value,
             // only the first of those items in hoverData gets rendered
             return hoverDataKey(d);
-        });
-    hoverLabels.enter().append('g')
-        .classed('hovertext', true)
-        .each(function() {
-            var g = d3.select(this);
-            // trace name label (rect and text.name)
-            g.append('rect')
-                .call(Color.fill, Color.addOpacity(bgColor, 0.8));
-            g.append('text').classed('name', true);
-            // trace data label (path and text.nums)
-            g.append('path')
-                .style('stroke-width', '1px');
-            g.append('text').classed('nums', true)
-                .call(Drawing.font, fontFamily, fontSize);
-        });
+        })
+        .enter()
+        .append('g');
+
     hoverLabels.exit().remove();
+
+    hoverLabels
+        .classed('hovertext', true);
+
+    hoverLabels.each(function() {
+        var g = d3.select(this);
+        // trace name label (rect and text.name)
+        g.append('rect')
+            .call(Color.fill, Color.addOpacity(bgColor, 0.8));
+        g.append('text').classed('name', true);
+        // trace data label (path and text.nums)
+        g.append('path')
+            .style('stroke-width', '1px');
+        g.append('text').classed('nums', true)
+            .call(Drawing.font, fontFamily, fontSize);
+    });
 
     // then put the text in, position the pointer to the data,
     // and figure out sizes
@@ -1326,7 +1344,7 @@ function createHoverText(hoverData, opts) {
             g.select('rect').remove();
         }
 
-        g.select('path').style({
+        g.select('path').styles({
             fill: numsColor,
             stroke: contrastColor
         });
@@ -1884,7 +1902,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Foreground horizontal line (to y-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: xBase,
                     x2: xEndSpike,
                     y1: hLinePointY,
@@ -1898,7 +1916,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Background horizontal Line (to y-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: xBase,
                     x2: xEndSpike,
                     y1: hLinePointY,
@@ -1912,7 +1930,7 @@ function createSpikelines(gd, closestPoints, opts) {
         // Y axis marker
         if(yMode.indexOf('marker') !== -1) {
             container.insert('circle', ':first-child')
-                .attr({
+                .attrs({
                     cx: xEdge + (ya.side !== 'right' ? yThickness : -yThickness),
                     cy: hLinePointY,
                     r: yThickness,
@@ -1963,7 +1981,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Foreground vertical line (to x-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: vLinePointX,
                     x2: vLinePointX,
                     y1: yBase,
@@ -1977,7 +1995,7 @@ function createSpikelines(gd, closestPoints, opts) {
 
             // Background vertical line (to x-axis)
             container.insert('line', ':first-child')
-                .attr({
+                .attrs({
                     x1: vLinePointX,
                     x2: vLinePointX,
                     y1: yBase,
@@ -1992,7 +2010,7 @@ function createSpikelines(gd, closestPoints, opts) {
         // X axis marker
         if(xMode.indexOf('marker') !== -1) {
             container.insert('circle', ':first-child')
-                .attr({
+                .attrs({
                     cx: vLinePointX,
                     cy: yEdge - (xa.side !== 'top' ? xThickness : -xThickness),
                     r: xThickness,

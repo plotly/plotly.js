@@ -3,6 +3,7 @@
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Color = require('../../components/color');
 
 var extendedColorWayList = {};
@@ -122,7 +123,7 @@ function crossTraceCalc(gd, plotinfo) { // TODO: should we name the second argum
 
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
-        var traceType = cd[0].trace.type;
+        var traceType = getTraceFromCd(cd).type;
         if(traceType !== desiredType) continue;
 
         for(var j = 0; j < cd.length; j++) {

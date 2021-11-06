@@ -1,16 +1,17 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Color = require('../../components/color');
 var stylePoints = require('../scatter/style').stylePoints;
 
 module.exports = function style(gd) {
     var s = d3.select(gd).selectAll('g.trace.violins');
 
-    s.style('opacity', function(d) { return d[0].trace.opacity; });
+    s.style('opacity', function(d) { return getTraceFromCd(d).opacity; });
 
     s.each(function(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         var sel = d3.select(this);
         var box = trace.box || {};
         var boxLine = box.line || {};
@@ -33,11 +34,11 @@ module.exports = function style(gd) {
         };
 
         sel.selectAll('path.mean')
-            .style(meanLineStyle)
+            .styles(meanLineStyle)
             .call(Color.stroke, meanline.color);
 
         sel.selectAll('path.meanline')
-            .style(meanLineStyle)
+            .styles(meanLineStyle)
             .call(Color.stroke, meanline.color);
 
         stylePoints(sel, trace, gd);

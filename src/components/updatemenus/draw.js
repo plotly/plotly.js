@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Plots = require('../../plots/plots');
 var Color = require('../color');
@@ -50,13 +50,10 @@ module.exports = function draw(gd) {
     }
 
     // draw update menu container
-    var menus = fullLayout._menulayer
-        .selectAll('g.' + constants.containerClassName)
-        .data(menuData.length > 0 ? [0] : []);
-
-    menus.enter().append('g')
-        .classed(constants.containerClassName, true)
-        .style('cursor', 'pointer');
+    var menus = fullLayout._menulayer.selectAll('g.' + constants.containerClassName)
+        .data(menuData.length > 0 ? [0] : [])
+        .enter()
+        .append('g');
 
     menus.exit().each(function() {
         // Most components don't need to explicitly remove autoMargin, because
@@ -68,14 +65,20 @@ module.exports = function draw(gd) {
             .each(clearAutoMargin);
     }).remove();
 
+    menus
+        .classed(constants.containerClassName, true)
+        .style('cursor', 'pointer');
+
     // return early if no update menus are visible
     if(menuData.length === 0) return;
 
     // join header group
     var headerGroups = menus.selectAll('g.' + constants.headerGroupClassName)
-        .data(menuData, keyFunction);
+        .data(menuData, keyFunction)
+        .enter()
+        .append('g');
 
-    headerGroups.enter().append('g')
+    headerGroups
         .classed(constants.headerGroupClassName, true);
 
     // draw dropdown button container
@@ -191,7 +194,7 @@ function drawHeader(gd, gHeader, gButton, scrollBox, menuOpts) {
             .text(constants.arrowSymbol[menuOpts.direction]);
     });
 
-    arrow.attr({
+    arrow.attrs({
         x: dims.headerWidth - constants.arrowOffsetX + menuOpts.pad.l,
         y: dims.headerHeight / 2 + constants.textOffsetY + menuOpts.pad.t
     });
@@ -232,9 +235,11 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
     var klass = menuOpts.type === 'dropdown' ? constants.dropdownButtonClassName : constants.buttonClassName;
 
     var buttons = gButton.selectAll('g.' + klass)
-        .data(Lib.filterVisible(buttonData));
+        .data(Lib.filterVisible(buttonData))
+        .enter()
+        .append('g');
 
-    var enter = buttons.enter().append('g')
+    var enter = buttons
         .classed(klass, true);
 
     var exit = buttons.exit();
@@ -294,7 +299,7 @@ function drawButtons(gd, gHeader, gButton, scrollBox, menuOpts) {
             .call(setItemPosition, menuOpts, posOpts);
 
         button.on('click', function() {
-            // skip `dragend` events
+            // skip `end` events
             if(d3.event.defaultPrevented) return;
 
             if(buttonOpts.execute) {
@@ -411,7 +416,7 @@ function drawItem(item, menuOpts, itemOpts, gd) {
 
 function drawItemRect(item, menuOpts) {
     var rect = Lib.ensureSingle(item, 'rect', constants.itemRectClassName, function(s) {
-        s.attr({
+        s.attrs({
             rx: constants.rx,
             ry: constants.ry,
             'shape-rendering': 'crispEdges'
@@ -425,7 +430,7 @@ function drawItemRect(item, menuOpts) {
 
 function drawItemText(item, menuOpts, itemOpts, gd) {
     var text = Lib.ensureSingle(item, 'text', constants.itemTextClassName, function(s) {
-        s.attr({
+        s.attrs({
             'text-anchor': 'start',
             'data-notex': 1
         });
@@ -479,9 +484,11 @@ function findDimensions(gd, menuOpts) {
     };
 
     var fakeButtons = Drawing.tester.selectAll('g.' + constants.dropdownButtonClassName)
-        .data(Lib.filterVisible(menuOpts.buttons));
+        .data(Lib.filterVisible(menuOpts.buttons))
+        .enter()
+        .append('g');
 
-    fakeButtons.enter().append('g')
+    fakeButtons
         .classed(constants.dropdownButtonClassName, true);
 
     var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
@@ -610,7 +617,7 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
     var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
     var finalHeight = overrideOpts.height || (isVertical ? dims.heights[index] : dims.height1);
 
-    rect.attr({
+    rect.attrs({
         x: 0,
         y: 0,
         width: overrideOpts.width || (isVertical ? dims.width1 : dims.widths[index]),

@@ -2,6 +2,7 @@
 
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Fx = require('../../components/fx');
 var Color = require('../../components/color');
 var fillText = require('../../lib').fillText;
@@ -14,7 +15,7 @@ var DIRSYMBOL = {
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
 
     if(trace.hoverlabel.split) {
         return hoverSplit(pointData, xval, yval, hovermode);
@@ -26,7 +27,7 @@ function hoverPoints(pointData, xval, yval, hovermode) {
 function _getClosestPoint(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var xa = pointData.xa;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var t = cd[0].t;
 
     var type = trace.type;
@@ -91,7 +92,7 @@ function _getClosestPoint(pointData, xval, yval, hovermode) {
 function hoverSplit(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var ya = pointData.ya;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var t = cd[0].t;
     var closeBoxData = [];
 
@@ -147,7 +148,7 @@ function hoverSplit(pointData, xval, yval, hovermode) {
 function hoverOnPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var ya = pointData.ya;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var t = cd[0].t;
 
     var closestPoint = _getClosestPoint(pointData, xval, yval, hovermode);

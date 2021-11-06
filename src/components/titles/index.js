@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var isNumeric = require('fast-isnumeric');
 
 var Plots = require('../../plots/plots');
@@ -101,18 +101,22 @@ function draw(gd, titleClass, options) {
     }
 
     var el = group.selectAll('text')
-        .data(elShouldExist ? [0] : []);
-    el.enter().append('text');
-    el.text(txt)
+        .data(elShouldExist ? [0] : [])
+        .enter()
+        .append('text');
+
+    el.exit().remove();
+
+    if(!elShouldExist) return group;
+
+    el
+        .text(txt)
         // this is hacky, but convertToTspans uses the class
         // to determine whether to rotate mathJax...
         // so we need to clear out any old class and put the
         // correct one (only relevant for colorbars, at least
         // for now) - ie don't use .classed
         .attr('class', titleClass);
-    el.exit().remove();
-
-    if(!elShouldExist) return group;
 
     function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
@@ -135,23 +139,23 @@ function draw(gd, titleClass, options) {
 
         titleEl.attr('transform', transformVal);
 
-        titleEl.style({
+        titleEl.styles({
             'font-family': fontFamily,
             'font-size': d3.round(fontSize, 2) + 'px',
             fill: Color.rgb(fontColor),
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': Plots.fontWeight
         })
-        .attr(attributes)
-        .call(svgTextUtils.convertToTspans, gd);
+        .attrs(attributes)
+        .each(function() { svgTextUtils.convertToTspans(d3.select(this), gd); });
 
         return Plots.previousPromises(gd);
     }
 
     function scootTitle(titleElIn) {
-        var titleGroup = d3.select(titleElIn.node().parentNode);
-
         if(avoid && avoid.selection && avoid.side && txt) {
+            var titleGroup = d3.select(titleElIn.node().parentNode);
+
             titleGroup.attr('transform', null);
 
             // move toward avoid.side (= left, right, top, bottom) if needed

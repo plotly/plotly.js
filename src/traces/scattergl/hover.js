@@ -2,12 +2,13 @@
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var getTraceColor = require('../scatter/get_trace_color');
 
 function hoverPoints(pointData, xval, yval, hovermode) {
     var cd = pointData.cd;
     var stash = cd[0].t;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var xa = pointData.xa;
     var ya = pointData.ya;
     var x = stash.x;

@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var Lib = require('../../lib');
 var numberFormat = Lib.numberFormat;
 var rgba = require('color-rgba');
@@ -79,7 +79,7 @@ function toText(formatter, texts) {
 function domainScale(height, padding, dimension, tickvals, ticktext) {
     var extent = dimensionExtent(dimension);
     if(tickvals) {
-        return d3.scale.ordinal()
+        return d3.scaleOrdinal()
             .domain(tickvals.map(toText(numberFormat(dimension.tickformat), ticktext)))
             .range(tickvals
                 .map(function(d) {
@@ -88,17 +88,17 @@ function domainScale(height, padding, dimension, tickvals, ticktext) {
                 })
             );
     }
-    return d3.scale.linear()
+    return d3.scaleLinear()
         .domain(extent)
         .range([height - padding, padding]);
 }
 
 function unitToPaddedPx(height, padding) {
-    return d3.scale.linear().range([padding, height - padding]);
+    return d3.scaleLinear().range([padding, height - padding]);
 }
 
 function domainToPaddedUnitScale(dimension, padFraction) {
-    return d3.scale.linear()
+    return d3.scaleLinear()
         .domain(dimensionExtent(dimension))
         .range([padFraction, 1 - padFraction]);
 }
@@ -107,7 +107,7 @@ function ordinalScale(dimension) {
     if(!dimension.tickvals) return;
 
     var extent = dimensionExtent(dimension);
-    return d3.scale.ordinal()
+    return d3.scaleOrdinal()
         .domain(dimension.tickvals)
         .range(dimension.tickvals.map(function(d) {
             return (d - extent[0]) / (extent[1] - extent[0]);
@@ -125,7 +125,7 @@ function unitToColorScale(cscale) {
     // We can't use d3 color interpolation as we may have non-uniform color palette raster
     // (various color stop distances).
     var polylinearUnitScales = 'rgb'.split('').map(function(key) {
-        return d3.scale.linear()
+        return d3.scaleLinear()
             .clamp(true)
             .domain(colorStops)
             .range(colorTuples.map(prop(key)));
@@ -162,7 +162,7 @@ function model(layout, d, i) {
     var rangeFont = trace.rangefont;
 
     var lines = Lib.extendDeepNoArrays({}, line, {
-        color: lineColor.map(d3.scale.linear().domain(
+        color: lineColor.map(d3.scaleLinear().domain(
             dimensionExtent({
                 values: lineColor,
                 range: [cOpts.min, cOpts.max],
@@ -507,12 +507,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
     svg.style('background', 'rgba(255, 255, 255, 0)');
     var controlOverlay = svg.selectAll('.' + c.cn.parcoords)
-        .data(vm, keyFun);
+        .data(vm, keyFun)
+        .enter()
+        .append('g');
 
     controlOverlay.exit().remove();
 
-    controlOverlay.enter()
-        .append('g')
+    controlOverlay
         .classed(c.cn.parcoords, true)
         .style('shape-rendering', 'crispEdges')
         .style('pointer-events', 'none');
@@ -522,10 +523,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     });
 
     var parcoordsControlView = controlOverlay.selectAll('.' + c.cn.parcoordsControlView)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    parcoordsControlView.enter()
-        .append('g')
+    parcoordsControlView.exit().remove();
+
+    parcoordsControlView
         .classed(c.cn.parcoordsControlView, true);
 
     parcoordsControlView.attr('transform', function(d) {
@@ -533,10 +537,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     });
 
     var yAxis = parcoordsControlView.selectAll('.' + c.cn.yAxis)
-        .data(function(p) { return p.dimensions; }, keyFun);
+        .data(function(p) { return p.dimensions; }, keyFun)
+        .enter()
+        .append('g');
 
-    yAxis.enter()
-        .append('g')
+    yAxis.exit().remove();
+
+    yAxis
         .classed(c.cn.yAxis, true);
 
     parcoordsControlView.each(function(p) {
@@ -564,8 +571,8 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
     });
 
     // drag column for reordering columns
-    yAxis.call(d3.behavior.drag()
-        .origin(function(d) { return d; })
+    yAxis.call(d3.drag()
+        .subject(function(d) { return d; })
         .on('drag', function(d) {
             var p = d.parent;
             state.linePickActive(false);
@@ -588,7 +595,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             p.contextLayer && p.contextLayer.render(p.panels, false, !someFiltersActive(p));
             p.focusLayer.render && p.focusLayer.render(p.panels);
         })
-        .on('dragend', function(d) {
+        .on('end', function(d) {
             var p = d.parent;
             d.x = d.xScale(d.xIndex);
             d.canvasX = d.x * d.model.canvasPixelRatio;
@@ -606,23 +613,26 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         })
     );
 
-    yAxis.exit()
-        .remove();
-
     var axisOverlays = yAxis.selectAll('.' + c.cn.axisOverlays)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisOverlays.enter()
-        .append('g')
+    axisOverlays.exit().remove();
+
+    axisOverlays
         .classed(c.cn.axisOverlays, true);
 
     axisOverlays.selectAll('.' + c.cn.axis).remove();
 
     var axis = axisOverlays.selectAll('.' + c.cn.axis)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axis.enter()
-        .append('g')
+    axis.exit().remove();
+
+    axis
         .classed(c.cn.axis, true);
 
     axis
@@ -631,10 +641,9 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
             var scale = d.domainScale;
             var sdom = scale.domain();
             d3.select(this)
-                .call(d3.svg.axis()
-                    .orient('left')
+                .call(d3.axisLeft()
                     .tickSize(4)
-                    .outerTickSize(2)
+                    .tickSizeOuter(2)
                     .ticks(wantedTickCount, d.tickFormat) // works for continuous scales only...
                     .tickValues(d.ordinal ? // and this works for ordinal scales
                         sdom :
@@ -657,17 +666,23 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .style('cursor', 'default');
 
     var axisHeading = axisOverlays.selectAll('.' + c.cn.axisHeading)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisHeading.enter()
-        .append('g')
+    axisHeading.exit().remove();
+
+    axisHeading
         .classed(c.cn.axisHeading, true);
 
     var axisTitle = axisHeading.selectAll('.' + c.cn.axisTitle)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('text');
 
-    axisTitle.enter()
-        .append('text')
+    axisTitle.exit().remove();
+
+    axisTitle
         .classed(c.cn.axisTitle, true)
         .attr('text-anchor', 'middle')
         .style('cursor', 'ew-resize')
@@ -702,27 +717,36 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         });
 
     var axisExtent = axisOverlays.selectAll('.' + c.cn.axisExtent)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisExtent.enter()
-        .append('g')
+    axisExtent.exit().remove();
+
+    axisExtent
         .classed(c.cn.axisExtent, true);
 
     var axisExtentTop = axisExtent.selectAll('.' + c.cn.axisExtentTop)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisExtentTop.enter()
-        .append('g')
+    axisExtentTop.exit().remove();
+
+    axisExtentTop
         .classed(c.cn.axisExtentTop, true);
 
     axisExtentTop
         .attr('transform', strTranslate(0, -c.axisExtentOffset));
 
     var axisExtentTopText = axisExtentTop.selectAll('.' + c.cn.axisExtentTopText)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('text');
 
-    axisExtentTopText.enter()
-        .append('text')
+    axisExtentTopText.exit().remove();
+
+    axisExtentTopText
         .classed(c.cn.axisExtentTopText, true)
         .call(styleExtentTexts);
 
@@ -731,10 +755,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
     var axisExtentBottom = axisExtent.selectAll('.' + c.cn.axisExtentBottom)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('g');
 
-    axisExtentBottom.enter()
-        .append('g')
+    axisExtentBottom.exit().remove();
+
+    axisExtentBottom
         .classed(c.cn.axisExtentBottom, true);
 
     axisExtentBottom
@@ -743,10 +770,13 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         });
 
     var axisExtentBottomText = axisExtentBottom.selectAll('.' + c.cn.axisExtentBottomText)
-        .data(repeat, keyFun);
+        .data(repeat, keyFun)
+        .enter()
+        .append('text');
 
-    axisExtentBottomText.enter()
-        .append('text')
+    axisExtentBottomText.exit().remove();
+
+    axisExtentBottomText
         .classed(c.cn.axisExtentBottomText, true)
         .attr('dy', '0.75em')
         .call(styleExtentTexts);

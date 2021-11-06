@@ -1,8 +1,9 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var geoJsonUtils = require('../../lib/geojson_utils');
 var geoUtils = require('../../lib/geo_location_utils');
@@ -28,7 +29,7 @@ function plot(gd, geo, calcData) {
 
     gTraces.each(function(calcTrace) {
         var s = d3.select(this);
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(subTypes.hasLines(trace) || trace.fill !== 'none') {
             var lineCoords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
@@ -39,7 +40,8 @@ function plot(gd, geo, calcData) {
 
             s.selectAll('path.js-line')
                 .data([{geojson: lineData, trace: trace}])
-              .enter().append('path')
+                .enter()
+                .append('path')
                 .classed('js-line', true)
                 .style('stroke-miterlimit', 2);
         }
@@ -47,7 +49,8 @@ function plot(gd, geo, calcData) {
         if(subTypes.hasMarkers(trace)) {
             s.selectAll('path.point')
                 .data(Lib.identity)
-             .enter().append('path')
+                .enter()
+                .append('path')
                 .classed('point', true)
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
@@ -55,7 +58,8 @@ function plot(gd, geo, calcData) {
         if(subTypes.hasText(trace)) {
             s.selectAll('g')
                 .data(Lib.identity)
-              .enter().append('g')
+                .enter()
+                .append('g')
                 .append('text')
                 .each(function(calcPt) { removeBADNUM(calcPt, this); });
         }
@@ -66,7 +70,7 @@ function plot(gd, geo, calcData) {
 }
 
 function calcGeoJSON(calcTrace, fullLayout) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var geoLayout = fullLayout[trace.geo];
     var geo = geoLayout._subplot;
     var len = trace._length;

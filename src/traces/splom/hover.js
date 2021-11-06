@@ -1,11 +1,12 @@
 'use strict';
 
 var helpers = require('./helpers');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var calcHover = require('../scattergl/hover').calcHover;
 
 function hoverPoints(pointData, xval, yval) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var scene = pointData.scene;
     var cdata = scene.matrixOptions.cdata;
     var xa = pointData.xa;

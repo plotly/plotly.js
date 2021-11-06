@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
@@ -146,11 +146,14 @@ proto.updateLayers = function(fullLayout, polarLayout) {
     if(!isRadialAxisBelowTraces) layerData.push('radial-axis');
 
     var subLayer = (isSmith ? 'smith' : 'polar') + 'sublayer';
-
     var join = _this.framework.selectAll('.' + subLayer)
-        .data(layerData, String);
+        .data(layerData, String)
+        .enter()
+        .append('g');
 
-    join.enter().append('g')
+    join.exit().remove();
+
+    join
         .attr('class', function(d) { return subLayer + ' ' + d;})
         .each(function(d) {
             var sel = layers[d] = d3.select(this);
@@ -1556,7 +1559,7 @@ function snapToVertexAngle(a, vangles) {
 function updateElement(sel, showAttr, attrs) {
     if(showAttr) {
         sel.attr('display', null);
-        sel.attr(attrs);
+        sel.attrs(attrs);
     } else if(sel) {
         sel.attr('display', 'none');
     }

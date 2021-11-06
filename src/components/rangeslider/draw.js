@@ -1,11 +1,12 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var Drawing = require('../drawing');
 var Color = require('../color');
@@ -49,9 +50,10 @@ module.exports = function(gd) {
         return axisOpts._name;
     }
 
-    var rangeSliders = fullLayout._infolayer
-        .selectAll('g.' + constants.containerClassName)
-        .data(rangeSliderData, keyFunction);
+    var rangeSliders = fullLayout._infolayer.selectAll('g.' + constants.containerClassName)
+        .data(rangeSliderData, keyFunction)
+        .enter()
+        .append('g');
 
     // remove exiting sliders and their corresponding clip paths
     rangeSliders.exit().each(function(axisOpts) {
@@ -62,7 +64,7 @@ module.exports = function(gd) {
     // return early if no range slider is visible
     if(rangeSliderData.length === 0) return;
 
-    rangeSliders.enter().append('g')
+    rangeSliders
         .classed(constants.containerClassName, true)
         .attr('pointer-events', 'all');
 
@@ -381,7 +383,7 @@ function setPixelRange(rangeSlider, gd, axisOpts, opts, oppAxisOpts, oppAxisRang
 
 function drawBg(rangeSlider, gd, axisOpts, opts) {
     var bg = Lib.ensureSingle(rangeSlider, 'rect', constants.bgClassName, function(s) {
-        s.attr({
+        s.attrs({
             x: 0,
             y: 0,
             'shape-rendering': 'crispEdges'
@@ -395,7 +397,7 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
     var offsetShift = -opts._offsetShift;
     var lw = Drawing.crispRound(gd, opts.borderwidth);
 
-    bg.attr({
+    bg.attrs({
         width: opts._width + borderCorrect,
         height: opts._height + borderCorrect,
         transform: strTranslate(offsetShift, offsetShift),
@@ -409,10 +411,10 @@ function addClipPath(rangeSlider, gd, axisOpts, opts) {
     var fullLayout = gd._fullLayout;
 
     var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', opts._clipId, function(s) {
-        s.append('rect').attr({ x: 0, y: 0 });
+        s.append('rect').attrs({ x: 0, y: 0 });
     });
 
-    clipPath.select('rect').attr({
+    clipPath.select('rect').attrs({
         width: opts._width,
         height: opts._height
     });
@@ -422,15 +424,17 @@ function drawRangePlot(rangeSlider, gd, axisOpts, opts) {
     var calcData = gd.calcdata;
 
     var rangePlots = rangeSlider.selectAll('g.' + constants.rangePlotClassName)
-        .data(axisOpts._subplotsWith, Lib.identity);
+        .data(axisOpts._subplotsWith, Lib.identity)
+        .enter()
+        .append('g');
 
-    rangePlots.enter().append('g')
+    rangePlots.exit().remove();
+
+    rangePlots
         .attr('class', function(id) { return constants.rangePlotClassName + ' ' + id; })
         .call(Drawing.setClipUrl, opts._clipId, gd);
 
     rangePlots.order();
-
-    rangePlots.exit().remove();
 
     var mainplotinfo;
 
@@ -506,7 +510,7 @@ function filterRangePlotCalcData(calcData, subplotId) {
 
     for(var i = 0; i < calcData.length; i++) {
         var calcTrace = calcData[i];
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(trace.xaxis + trace.yaxis === subplotId) {
             out.push(calcTrace);
@@ -518,7 +522,7 @@ function filterRangePlotCalcData(calcData, subplotId) {
 
 function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
     var maskMin = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinClassName, function(s) {
-        s.attr({
+        s.attrs({
             x: 0,
             y: 0,
             'shape-rendering': 'crispEdges'
@@ -530,7 +534,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
         .call(Color.fill, constants.maskColor);
 
     var maskMax = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxClassName, function(s) {
-        s.attr({
+        s.attrs({
             y: 0,
             'shape-rendering': 'crispEdges'
         });
@@ -543,7 +547,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
     // masks used for oppAxis zoom
     if(oppAxisRangeOpts.rangemode !== 'match') {
         var maskMinOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMinOppAxisClassName, function(s) {
-            s.attr({
+            s.attrs({
                 y: 0,
                 'shape-rendering': 'crispEdges'
             });
@@ -554,7 +558,7 @@ function drawMasks(rangeSlider, gd, axisOpts, opts, oppAxisRangeOpts) {
             .call(Color.fill, constants.maskOppAxisColor);
 
         var maskMaxOppAxis = Lib.ensureSingle(rangeSlider, 'rect', constants.maskMaxOppAxisClassName, function(s) {
-            s.attr({
+            s.attrs({
                 y: 0,
                 'shape-rendering': 'crispEdges'
             });
@@ -571,14 +575,14 @@ function drawSlideBox(rangeSlider, gd, axisOpts, opts) {
     if(gd._context.staticPlot) return;
 
     var slideBox = Lib.ensureSingle(rangeSlider, 'rect', constants.slideBoxClassName, function(s) {
-        s.attr({
+        s.attrs({
             y: 0,
             cursor: constants.slideBoxCursor,
             'shape-rendering': 'crispEdges'
         });
     });
 
-    slideBox.attr({
+    slideBox.attrs({
         height: opts._height,
         fill: constants.slideBoxFill
     });
@@ -604,14 +608,14 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
         height: Math.round(opts._height / 2),
     };
     var handleMin = Lib.ensureSingle(grabberMin, 'rect', constants.handleMinClassName, function(s) {
-        s.attr(handleFixAttrs);
+        s.attrs(handleFixAttrs);
     });
-    handleMin.attr(handleDynamicAttrs);
+    handleMin.attrs(handleDynamicAttrs);
 
     var handleMax = Lib.ensureSingle(grabberMax, 'rect', constants.handleMaxClassName, function(s) {
-        s.attr(handleFixAttrs);
+        s.attrs(handleFixAttrs);
     });
-    handleMax.attr(handleDynamicAttrs);
+    handleMax.attrs(handleDynamicAttrs);
 
     // <g grabarea />
     var grabAreaFixAttrs = {
@@ -623,12 +627,12 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     };
 
     var grabAreaMin = Lib.ensureSingle(grabberMin, 'rect', constants.grabAreaMinClassName, function(s) {
-        s.attr(grabAreaFixAttrs);
+        s.attrs(grabAreaFixAttrs);
     });
     grabAreaMin.attr('height', opts._height);
 
     var grabAreaMax = Lib.ensureSingle(grabberMax, 'rect', constants.grabAreaMaxClassName, function(s) {
-        s.attr(grabAreaFixAttrs);
+        s.attrs(grabAreaFixAttrs);
     });
     grabAreaMax.attr('height', opts._height);
 }

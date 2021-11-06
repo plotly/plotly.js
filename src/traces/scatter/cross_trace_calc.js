@@ -1,5 +1,6 @@
 'use strict';
 
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var calc = require('./calc');
 
 /*
@@ -103,7 +104,7 @@ module.exports = function crossTraceCalc(gd, plotinfo) {
         // autorange
         for(i = 0; i < indices.length; i++) {
             cd = calcTraces[indices[i]];
-            var trace = cd[0].trace;
+            var trace = getTraceFromCd(cd);
             var ppad = calc.calcMarkerSize(trace, trace._rawLength);
             var arrayPad = Array.isArray(ppad);
             if((ppad && hasAnyBlanks[i]) || arrayPad) {

@@ -1,8 +1,9 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Plots = require('../../plots/plots');
 var Registry = require('../../registry');
 var Events = require('../../lib/events');
@@ -95,29 +96,44 @@ function _draw(gd, legendObj) {
     }
 
     var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function(s) {
-        s.attr(constants.scrollBarEnterAttrs)
+        s.attrs(constants.scrollBarEnterAttrs)
          .call(Color.fill, constants.scrollBarColor);
     });
 
-    var groups = scrollBox.selectAll('g.groups').data(legendData);
-    groups.enter().append('g').attr('class', 'groups');
+    var groups = scrollBox.selectAll('g.groups')
+        .data(legendData)
+        .enter()
+        .append('g');
+
     groups.exit().remove();
 
-    var traces = groups.selectAll('g.traces').data(Lib.identity);
-    traces.enter().append('g').attr('class', 'traces');
+    groups
+        .attr('class', 'groups');
+
+    var traces = groups.selectAll('g.traces')
+        .data(Lib.identity)
+        .enter()
+        .append('g');
+
     traces.exit().remove();
 
+    traces
+        .attr('class', 'traces');
+
     traces.style('opacity', function(d) {
-        var trace = d[0].trace;
+        var trace = getTraceFromCd(d);
         if(Registry.traceIs(trace, 'pie-like')) {
             return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
         } else {
             return trace.visible === 'legendonly' ? 0.5 : 1;
         }
-    })
-    .each(function() { d3.select(this).call(drawTexts, gd, legendObj); })
-    .call(style, gd, legendObj)
-    .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
+    });
+
+    traces.each(function() { d3.select(this).call(drawTexts, gd, legendObj); });
+
+    traces
+        .call(style, gd, legendObj)
+        .each(function() { if(!inHover) d3.select(this).call(setupTraceToggle, gd); });
 
     Lib.syncOrAsync([
         Plots.previousPromises,
@@ -168,7 +184,7 @@ function _draw(gd, legendObj) {
                 // if unified hover, let it be its full size
                 if(inHover) height = legendObj._height;
 
-                bg.attr({
+                bg.attrs({
                     width: legendObj._width - bw,
                     height: height - bw,
                     x: bw / 2,
@@ -177,7 +193,7 @@ function _draw(gd, legendObj) {
 
                 Drawing.setTranslate(scrollBox, 0, 0);
 
-                clipPath.select('rect').attr({
+                clipPath.select('rect').attrs({
                     width: legendObj._width - 2 * bw,
                     height: height - 2 * bw,
                     x: bw,
@@ -201,7 +217,7 @@ function _draw(gd, legendObj) {
 
                 // increase the background and clip-path width
                 // by the scrollbar width and margin
-                bg.attr({
+                bg.attrs({
                     width: legendObj._width -
                         2 * bw +
                         constants.scrollBarWidth +
@@ -211,7 +227,7 @@ function _draw(gd, legendObj) {
                     y: bw / 2
                 });
 
-                clipPath.select('rect').attr({
+                clipPath.select('rect').attrs({
                     width: legendObj._width -
                         2 * bw +
                         constants.scrollBarWidth +
@@ -250,8 +266,8 @@ function _draw(gd, legendObj) {
                 };
 
                 // scroll legend by dragging scrollBAR
-                var scrollBarDrag = d3.behavior.drag()
-                .on('dragstart', function() {
+                var scrollBarDrag = d3.drag()
+                .on('start', function() {
                     var e = d3.event.sourceEvent;
                     if(e.type === 'touchstart') {
                         eventY0 = e.changedTouches[0].clientY;
@@ -274,8 +290,8 @@ function _draw(gd, legendObj) {
                 scrollBar.call(scrollBarDrag);
 
                 // scroll legend by touch-dragging scrollBOX
-                var scrollBoxTouchDrag = d3.behavior.drag()
-                .on('dragstart', function() {
+                var scrollBoxTouchDrag = d3.drag()
+                .on('start', function() {
                     var e = d3.event.sourceEvent;
                     if(e.type === 'touchstart') {
                         eventY0 = e.changedTouches[0].clientY;

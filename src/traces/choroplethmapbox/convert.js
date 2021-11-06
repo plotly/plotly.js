@@ -3,6 +3,7 @@
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Colorscale = require('../../components/colorscale');
 var Drawing = require('../../components/drawing');
 
@@ -21,7 +22,7 @@ var geoUtils = require('../../lib/geo_location_utils');
  */
 
 function convert(calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var isVisible = trace.visible === true && trace._length !== 0;
 
     var fill = {
@@ -113,7 +114,7 @@ function convert(calcTrace) {
 }
 
 function convertOnSelect(calcTrace) {
-    var trace = calcTrace[0].trace;
+    var trace = getTraceFromCd(calcTrace);
     var opts = trace._opts;
     var opacitySetting;
 

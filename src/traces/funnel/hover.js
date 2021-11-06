@@ -2,14 +2,16 @@
 
 var opacity = require('../../components/color').opacity;
 var hoverOnBars = require('../bar/hover').hoverOnBars;
-var formatPercent = require('../../lib').formatPercent;
+var Lib = require('../../lib');
+var formatPercent = Lib.formatPercent;
+var getTraceFromCd = require('../../lib/trace_from_cd');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
     var point = hoverOnBars(pointData, xval, yval, hovermode, opts);
     if(!point) return;
 
     var cd = point.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var isHorizontal = (trace.orientation === 'h');
 
     // the closest data point

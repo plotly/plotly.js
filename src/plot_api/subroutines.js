@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../lib/d3');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
 
@@ -49,7 +49,7 @@ function lsInner(gd) {
     var axList = Axes.list(gd, '', true);
     var i, subplot, plotinfo, ax, xa, ya;
 
-    fullLayout._paperdiv.style({
+    fullLayout._paperdiv.styles({
         width: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroWidth && !gd.layout.width) ? '100%' : fullLayout.width + 'px',
         height: (gd._context.responsive && fullLayout.autosize && !gd._context._hasZeroHeight && !gd.layout.height) ? '100%' : fullLayout.height + 'px'
     })
@@ -153,32 +153,32 @@ function lsInner(gd) {
     // now create all the lower-layer backgrounds at once now that
     // we have the list of subplots that need them
     var lowerBackgrounds = fullLayout._bgLayer.selectAll('.bg')
-        .data(lowerBackgroundIDs);
-
-    lowerBackgrounds.enter().append('rect')
-        .classed('bg', true);
+        .data(lowerBackgroundIDs)
+        .enter()
+        .append('rect');
 
     lowerBackgrounds.exit().remove();
 
-    lowerBackgrounds.each(function(subplot) {
-        fullLayout._plots[subplot].bg = d3.select(this);
-    });
+    lowerBackgrounds
+        .classed('bg', true);
 
-    // style all backgrounds
-    for(i = 0; i < backgroundIds.length; i++) {
+    lowerBackgrounds.each(function(subplot, i) {
+        var s = d3.select(this);
+
+        fullLayout._plots[subplot].bg = s;
+
+        // style all backgrounds
         plotinfo = fullLayout._plots[backgroundIds[i]];
         xa = plotinfo.xaxis;
         ya = plotinfo.yaxis;
 
-        if(plotinfo.bg && xa._offset !== undefined && ya._offset !== undefined) {
-            plotinfo.bg
-                .call(Drawing.setRect,
-                    xa._offset - pad, ya._offset - pad,
-                    xa._length + 2 * pad, ya._length + 2 * pad)
-                .call(Color.fill, fullLayout.plot_bgcolor)
-                .style('stroke-width', 0);
-        }
-    }
+        Drawing.setRect(s,
+                xa._offset - pad, ya._offset - pad,
+                xa._length + 2 * pad, ya._length + 2 * pad);
+
+        Color.fill(s, fullLayout.plot_bgcolor);
+    })
+    .style('stroke-width', 0);
 
     if(!fullLayout._hasOnlyLargeSploms) {
         for(subplot in fullLayout._plots) {
@@ -194,7 +194,7 @@ function lsInner(gd) {
                     .append('rect');
             });
 
-            plotinfo.clipRect = plotClip.select('rect').attr({
+            plotinfo.clipRect = plotClip.select('rect').attrs({
                 width: xa._length,
                 height: ya._length
             });

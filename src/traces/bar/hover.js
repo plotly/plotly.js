@@ -4,7 +4,9 @@ var Fx = require('../../components/fx');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
 
-var fillText = require('../../lib').fillText;
+var Lib = require('../../lib');
+var fillText = Lib.fillText;
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var getLineWidth = require('./helpers').getLineWidth;
 var hoverLabelText = require('../../plots/cartesian/axes').hoverLabelText;
 var BADNUM = require('../../constants/numerical').BADNUM;
@@ -14,7 +16,7 @@ function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
     if(barPointData) {
         var cd = barPointData.cd;
-        var trace = cd[0].trace;
+        var trace = getTraceFromCd(cd);
         var di = cd[barPointData.index];
 
         barPointData.color = getTraceColor(trace, di);
@@ -26,7 +28,7 @@ function hoverPoints(pointData, xval, yval, hovermode, opts) {
 
 function hoverOnBars(pointData, xval, yval, hovermode, opts) {
     var cd = pointData.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var t = cd[0].t;
     var isClosest = (hovermode === 'closest');
     var isWaterfall = (trace.type === 'waterfall');

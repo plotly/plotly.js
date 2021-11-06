@@ -5,7 +5,7 @@ var isNumeric = require('fast-isnumeric');
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
-
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var makeComputeError = require('./compute_error');
 
 module.exports = function calc(gd) {
@@ -13,7 +13,7 @@ module.exports = function calc(gd) {
 
     for(var i = 0; i < calcdata.length; i++) {
         var calcTrace = calcdata[i];
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(trace.visible === true && Registry.traceIs(trace, 'errorBarsOK')) {
             var xa = Axes.getFromId(gd, trace.xaxis);

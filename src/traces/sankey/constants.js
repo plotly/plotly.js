@@ -8,7 +8,7 @@ module.exports = {
     forceIterations: 5,
     forceTicksPerFrame: 10,
     duration: 500,
-    ease: 'linear',
+    easing: 'linear',
     cn: {
         sankey: 'sankey',
         sankeyLinks: 'sankey-links',

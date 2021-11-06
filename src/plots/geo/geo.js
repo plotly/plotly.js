@@ -2,7 +2,7 @@
 
 /* global PlotlyGeoAssets:false */
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var geo = require('d3-geo');
 var geoPath = geo.geoPath;
 var geoDistance = geo.geoDistance;
@@ -10,6 +10,7 @@ var geoProjection = require('d3-geo-projection');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var strTranslate = Lib.strTranslate;
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
@@ -145,7 +146,7 @@ proto.update = function(geoCalcData, fullLayout) {
 
     for(var i = 0; i < geoCalcData.length; i++) {
         var calcTrace = geoCalcData[i];
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         if(trace.type === 'choropleth') {
             this.hasChoropleth = true;
@@ -319,7 +320,9 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
     });
 
     var join = _this.framework.selectAll('.layer')
-        .data(layerData, String);
+        .data(layerData, String)
+        .enter()
+        .append('g');
 
     join.exit().each(function(d) {
         delete layers[d];
@@ -327,7 +330,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         d3.select(this).remove();
     });
 
-    join.enter().append('g')
+    join
         .attr('class', function(d) { return 'layer ' + d; })
         .each(function(d) {
             var layer = layers[d] = d3.select(this);

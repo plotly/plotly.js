@@ -1,12 +1,13 @@
 'use strict';
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var subTypes = require('../scatter/subtypes');
 var helpers = require('./helpers');
 
 module.exports = function select(searchInfo, selectionTester) {
     var cd = searchInfo.cd;
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var stash = cd[0].t;
     var scene = searchInfo.scene;
     var cdata = scene.matrixOptions.cdata;

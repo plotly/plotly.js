@@ -1,11 +1,12 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var d3Hierarchy = require('d3-hierarchy');
 var interpolate = require('d3-interpolate').interpolate;
 
 var Drawing = require('../../components/drawing');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var uniformText = require('../bar/uniform_text');
 var recordMinTextSize = uniformText.recordMinTextSize;
@@ -21,6 +22,7 @@ var constants = require('./constants');
 var helpers = require('./helpers');
 
 exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var fullLayout = gd._fullLayout;
     var layer = fullLayout._sunburstlayer;
     var join, onComplete;
@@ -33,13 +35,14 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
     clearMinTextSize('sunburst', fullLayout);
 
     join = layer.selectAll('g.trace.sunburst')
-        .data(cdmodule, function(cd) { return cd[0].trace.uid; });
+        .data(cdmodule, function(cd) { return getTraceFromCd(cd).uid; })
+        .enter()
+        .append('g');
 
-    // using same 'stroke-linejoin' as pie traces
-    join.enter().append('g')
+    join
         .classed('trace', true)
         .classed('sunburst', true)
-        .attr('stroke-linejoin', 'round');
+        .attr('stroke-linejoin', 'round'); // using same 'stroke-linejoin' as pie traces
 
     join.order();
 
@@ -53,7 +56,7 @@ exports.plot = function(gd, cdmodule, transitionOpts, makeOnCompleteCallback) {
 
         var transition = d3.transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); });
 
@@ -164,10 +167,10 @@ function plotOne(gd, cd, element, transitionOpts) {
     var getTargetX = function(d) { return cx + getTextXY(d)[0] * (d.transform.rCenter || 0) + (d.transform.x || 0); };
     var getTargetY = function(d) { return cy + getTextXY(d)[1] * (d.transform.rCenter || 0) + (d.transform.y || 0); };
 
-    slices = slices.data(sliceData, helpers.getPtId);
-
-    slices.enter().append('g')
-        .classed('slice', true);
+    slices = slices
+        .data(sliceData, helpers.getPtId)
+        .enter()
+        .append('g');
 
     if(hasTransition) {
         slices.exit().transition()
@@ -187,6 +190,9 @@ function plotOne(gd, cd, element, transitionOpts) {
     } else {
         slices.exit().remove();
     }
+
+    slices
+        .classed('slice', true);
 
     slices.order();
 

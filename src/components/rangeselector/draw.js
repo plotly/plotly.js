@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Registry = require('../../registry');
 var Plots = require('../../plots/plots');
@@ -23,17 +23,18 @@ module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
 
     var selectors = fullLayout._infolayer.selectAll('.rangeselector')
-        .data(makeSelectorData(gd), selectorKeyFunc);
-
-    selectors.enter().append('g')
-        .classed('rangeselector', true);
+        .data(makeSelectorData(gd), selectorKeyFunc)
+        .enter()
+        .append('g');
 
     selectors.exit().remove();
 
-    selectors.style({
-        cursor: 'pointer',
-        'pointer-events': 'all'
-    });
+    selectors
+        .classed('rangeselector', true)
+        .styles({
+            cursor: 'pointer',
+            'pointer-events': 'all'
+        });
 
     selectors.each(function(d) {
         var selector = d3.select(this);
@@ -41,12 +42,14 @@ module.exports = function draw(gd) {
         var selectorLayout = axisLayout.rangeselector;
 
         var buttons = selector.selectAll('g.button')
-            .data(Lib.filterVisible(selectorLayout.buttons));
-
-        buttons.enter().append('g')
-            .classed('button', true);
+            .data(Lib.filterVisible(selectorLayout.buttons))
+            .enter()
+            .append('g');
 
         buttons.exit().remove();
+
+        buttons
+            .classed('button', true);
 
         buttons.each(function(d) {
             var button = d3.select(this);
@@ -115,7 +118,7 @@ function drawButtonRect(button, selectorLayout, d) {
         s.attr('shape-rendering', 'crispEdges');
     });
 
-    rect.attr({
+    rect.attrs({
         'rx': constants.rx,
         'ry': constants.ry
     });
@@ -190,7 +193,7 @@ function reposition(gd, buttons, opts, axName, selector) {
 
         button.attr('transform', strTranslate(borderWidth + width, borderWidth));
 
-        rect.attr({
+        rect.attrs({
             x: 0,
             y: 0,
             width: wEff,

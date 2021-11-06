@@ -19,6 +19,7 @@ var handleEllipse = require('../../components/shapes/draw_newshape/helpers').han
 var newShapes = require('../../components/shapes/draw_newshape/newshapes');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var getFromId = require('./axis_ids').getFromId;
@@ -84,13 +85,17 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
-    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data(isDrawMode ? [0] : [1, 2]);
     var drwStyle = fullLayout.newshape;
+    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id)
+        .data(isDrawMode ? [0] : [1, 2])
+        .enter()
+        .append('path');
 
-    outlines.enter()
-        .append('path')
+    outlines.exit().remove();
+
+    outlines
         .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
-        .style(isDrawMode ? {
+        .styles(isDrawMode ? {
             opacity: drwStyle.opacity / 2,
             fill: isOpenMode ? undefined : drwStyle.fillcolor,
             stroke: drwStyle.line.color,
@@ -104,7 +109,7 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
 
     var corners = zoomLayer.append('path')
         .attr('class', 'zoombox-corners')
-        .style({
+        .styles({
             fill: Color.background,
             stroke: Color.defaultLine,
             'stroke-width': 1
@@ -491,8 +496,8 @@ function newPointNumTester(pointSelectionDef) {
         ymax: 0,
         pts: [],
         contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
-            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace._expandedIndex;
-            var idxActualTrace = searchInfo.cd[0].trace._expandedIndex;
+            var idxWantedTrace = getTraceFromCd(pointSelectionDef.searchInfo.cd)._expandedIndex;
+            var idxActualTrace = getTraceFromCd(searchInfo.cd)._expandedIndex;
             return idxActualTrace === idxWantedTrace &&
               pointNumber === pointSelectionDef.pointNumber;
         },
@@ -637,7 +642,7 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
 
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
-        trace = cd[0].trace;
+        trace = getTraceFromCd(cd);
 
         if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
@@ -691,7 +696,7 @@ function extractClickedPtInfo(hoverData, searchTraces) {
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+        if(hoverDatum.fullData._expandedIndex === getTraceFromCd(searchInfo.cd)._expandedIndex) {
             // Special case for box (and violin)
             if(hoverDatum.hoverOnBox === true) {
                 break;
@@ -720,7 +725,7 @@ function extractClickedPtInfo(hoverData, searchTraces) {
 }
 
 function isPointOrBinSelected(clickedPtInfo) {
-    var trace = clickedPtInfo.searchInfo.cd[0].trace;
+    var trace = getTraceFromCd(clickedPtInfo.searchInfo.cd);
     var ptNum = clickedPtInfo.pointNumber;
     var ptNums = clickedPtInfo.pointNumbers;
     var ptNumsSet = ptNums.length > 0;
@@ -744,7 +749,7 @@ function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        if(searchInfo.cd[0].trace.selectedpoints && searchInfo.cd[0].trace.selectedpoints.length > 0) {
+        if(getTraceFromCd(searchInfo.cd).selectedpoints && getTraceFromCd(searchInfo.cd).selectedpoints.length > 0) {
             tracesWithSelectedPts.push(searchInfo);
         }
     }
@@ -752,7 +757,7 @@ function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
     if(tracesWithSelectedPts.length === 1) {
         isSameTrace = tracesWithSelectedPts[0] === clickedPtInfo.searchInfo;
         if(isSameTrace) {
-            trace = clickedPtInfo.searchInfo.cd[0].trace;
+            trace = getTraceFromCd(clickedPtInfo.searchInfo.cd);
             if(trace.selectedpoints.length === clickedPtInfo.pointNumbers.length) {
                 for(i = 0; i < clickedPtInfo.pointNumbers.length; i++) {
                     if(trace.selectedpoints.indexOf(clickedPtInfo.pointNumbers[i]) < 0) {
@@ -773,7 +778,7 @@ function isOnlyOnePointSelected(searchTraces) {
 
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
-        trace = searchInfo.cd[0].trace;
+        trace = getTraceFromCd(searchInfo.cd);
         if(trace.selectedpoints) {
             if(trace.selectedpoints.length > 1) return false;
 
@@ -790,7 +795,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
 
     // before anything else, update preGUI if necessary
     for(i = 0; i < searchTraces.length; i++) {
-        var fullInputTrace = searchTraces[i].cd[0].trace._fullInput;
+        var fullInputTrace = getTraceFromCd(searchTraces[i].cd)._fullInput;
         var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid] || {};
         if(tracePreGUI.selectedpoints === undefined) {
             tracePreGUI.selectedpoints = fullInputTrace._input.selectedpoints || null;
@@ -801,7 +806,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
         var pts = eventData.points || [];
 
         for(i = 0; i < searchTraces.length; i++) {
-            trace = searchTraces[i].cd[0].trace;
+            trace = getTraceFromCd(searchTraces[i].cd);
             trace._input.selectedpoints = trace._fullInput.selectedpoints = [];
             if(trace._fullInput !== trace) trace.selectedpoints = [];
         }
@@ -825,7 +830,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
         }
     } else {
         for(i = 0; i < searchTraces.length; i++) {
-            trace = searchTraces[i].cd[0].trace;
+            trace = getTraceFromCd(searchTraces[i].cd);
             delete trace.selectedpoints;
             delete trace._input.selectedpoints;
             if(trace._fullInput !== trace) {
@@ -839,7 +844,7 @@ function updateSelectedState(gd, searchTraces, eventData) {
     for(i = 0; i < searchTraces.length; i++) {
         searchInfo = searchTraces[i];
         cd = searchInfo.cd;
-        trace = cd[0].trace;
+        trace = getTraceFromCd(cd);
 
         if(Registry.traceIs(trace, 'regl')) {
             hasRegl = true;
@@ -888,7 +893,7 @@ function mergePolygons(list, poly, subtract) {
 function fillSelectionItem(selection, searchInfo) {
     if(Array.isArray(selection)) {
         var cd = searchInfo.cd;
-        var trace = searchInfo.cd[0].trace;
+        var trace = getTraceFromCd(searchInfo.cd);
 
         for(var i = 0; i < selection.length; i++) {
             selection[i] = makeEventData(selection[i], trace, cd);

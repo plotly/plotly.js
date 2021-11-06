@@ -2,7 +2,7 @@
 
 module.exports = ScrollBox;
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 
 var Color = require('../color');
 var Drawing = require('../drawing');
@@ -30,17 +30,20 @@ function ScrollBox(gd, container, id) {
     this.vbar = null;  // vertical scrollbar D3 selection
 
     // <rect> element to capture pointer events
-    this.bg = this.container.selectAll('rect.scrollbox-bg').data([0]);
+    this.bg = this.container.selectAll('rect.scrollbox-bg')
+        .data([0])
+        .enter()
+        .append('rect');
 
     this.bg.exit()
         .on('.drag', null)
         .on('wheel', null)
         .remove();
 
-    this.bg.enter().append('rect')
+    this.bg
         .classed('scrollbox-bg', true)
         .style('pointer-events', 'all')
-        .attr({
+        .attrs({
             opacity: 0,
             x: 0,
             y: 0,
@@ -147,19 +150,21 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     if(hbarT + hbarH > fullHeight) hbarT = fullHeight - hbarH;
 
-    var hbar = this.container.selectAll('rect.scrollbar-horizontal').data(
-            (needsHorizontalScrollBar) ? [0] : []);
+    var hbar = this.container.selectAll('rect.scrollbar-horizontal')
+        .data((needsHorizontalScrollBar) ? [0] : [])
+        .enter()
+        .append('rect');
 
     hbar.exit()
         .on('.drag', null)
         .remove();
 
-    hbar.enter().append('rect')
+    hbar
         .classed('scrollbar-horizontal', true)
         .call(Color.fill, ScrollBox.barColor);
 
     if(needsHorizontalScrollBar) {
-        this.hbar = hbar.attr({
+        this.hbar = hbar.attrs({
             'rx': ScrollBox.barRadius,
             'ry': ScrollBox.barRadius,
             'x': hbarL,
@@ -187,19 +192,21 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     if(vbarL + vbarW > fullWidth) vbarL = fullWidth - vbarW;
 
-    var vbar = this.container.selectAll('rect.scrollbar-vertical').data(
-            (needsVerticalScrollBar) ? [0] : []);
+    var vbar = this.container.selectAll('rect.scrollbar-vertical')
+        .data((needsVerticalScrollBar) ? [0] : [])
+        .enter()
+        .append('rect');
 
     vbar.exit()
         .on('.drag', null)
         .remove();
 
-    vbar.enter().append('rect')
+    vbar
         .classed('scrollbar-vertical', true)
         .call(Color.fill, ScrollBox.barColor);
 
     if(needsVerticalScrollBar) {
-        this.vbar = vbar.attr({
+        this.vbar = vbar.attrs({
             'rx': ScrollBox.barRadius,
             'ry': ScrollBox.barRadius,
             'x': vbarL,
@@ -225,16 +232,18 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
     var clipB = (needsHorizontalScrollBar) ? boxB + hbarH + 0.5 : boxB + 0.5;
 
     var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data((needsHorizontalScrollBar || needsVerticalScrollBar) ? [0] : []);
+        .data((needsHorizontalScrollBar || needsVerticalScrollBar) ? [0] : [])
+        .enter()
+        .append('clipPath');
 
     clipPath.exit().remove();
 
-    clipPath.enter()
-        .append('clipPath').attr('id', clipId)
+    clipPath
+        .attr('id', clipId)
         .append('rect');
 
     if(needsHorizontalScrollBar || needsVerticalScrollBar) {
-        this._clipRect = clipPath.select('rect').attr({
+        this._clipRect = clipPath.select('rect').attrs({
             x: Math.floor(clipL),
             y: Math.floor(clipT),
             width: Math.ceil(clipR) - Math.floor(clipL),
@@ -243,14 +252,14 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
         this.container.call(Drawing.setClipUrl, clipId, this.gd);
 
-        this.bg.attr({
+        this.bg.attrs({
             x: l,
             y: t,
             width: w,
             height: h
         });
     } else {
-        this.bg.attr({
+        this.bg.attrs({
             width: 0,
             height: 0
         });
@@ -263,8 +272,8 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
 
     // set up drag listeners (if scroll bars are needed)
     if(needsHorizontalScrollBar || needsVerticalScrollBar) {
-        var onBoxDrag = d3.behavior.drag()
-            .on('dragstart', function() {
+        var onBoxDrag = d3.drag()
+            .on('start', function() {
                 d3.event.sourceEvent.preventDefault();
             })
             .on('drag', this._onBoxDrag.bind(this));
@@ -275,8 +284,8 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
             .on('.drag', null)
             .call(onBoxDrag);
 
-        var onBarDrag = d3.behavior.drag()
-            .on('dragstart', function() {
+        var onBarDrag = d3.drag()
+            .on('start', function() {
                 d3.event.sourceEvent.preventDefault();
                 d3.event.sourceEvent.stopPropagation();
             })
@@ -306,7 +315,7 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
  */
 ScrollBox.prototype.disable = function disable() {
     if(this.hbar || this.vbar) {
-        this.bg.attr({
+        this.bg.attrs({
             width: 0,
             height: 0
         });
@@ -431,7 +440,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
         this._box.t - this.position.t - translateY);
 
     if(this._clipRect) {
-        this._clipRect.attr({
+        this._clipRect.attrs({
             x: Math.floor(this.position.l + translateX - 0.5),
             y: Math.floor(this.position.t + translateY - 0.5)
         });

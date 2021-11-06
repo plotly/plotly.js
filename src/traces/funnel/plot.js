@@ -1,7 +1,8 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var Drawing = require('../../components/drawing');
 var BADNUM = require('../../constants/numerical').BADNUM;
 var barPlot = require('../bar/plot');
@@ -29,7 +30,7 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
     Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
-        var trace = cd[0].trace;
+        var trace = getTraceFromCd(cd);
 
         var group = Lib.ensureSingle(plotGroup, 'g', 'regions');
 
@@ -40,12 +41,14 @@ function plotConnectorRegions(gd, plotinfo, cdModule, traceLayer) {
 
         var isHorizontal = (trace.orientation === 'h');
 
-        var connectors = group.selectAll('g.region').data(Lib.identity);
-
-        connectors.enter().append('g')
-            .classed('region', true);
+        var connectors = group.selectAll('g.region').data(Lib.identity)
+            .enter()
+            .append('g');
 
         connectors.exit().remove();
+
+        connectors
+            .classed('region', true);
 
         var len = connectors.size();
 
@@ -87,7 +90,7 @@ function plotConnectorLines(gd, plotinfo, cdModule, traceLayer) {
 
     Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
-        var trace = cd[0].trace;
+        var trace = getTraceFromCd(cd);
 
         var group = Lib.ensureSingle(plotGroup, 'g', 'lines');
 
@@ -98,12 +101,14 @@ function plotConnectorLines(gd, plotinfo, cdModule, traceLayer) {
 
         var isHorizontal = (trace.orientation === 'h');
 
-        var connectors = group.selectAll('g.line').data(Lib.identity);
-
-        connectors.enter().append('g')
-            .classed('line', true);
+        var connectors = group.selectAll('g.line').data(Lib.identity)
+            .enter()
+            .append('g');
 
         connectors.exit().remove();
+
+        connectors
+            .classed('line', true);
 
         var len = connectors.size();
 

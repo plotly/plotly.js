@@ -1,9 +1,10 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var svgTextUtils = require('../../lib/svg_text_utils');
 
 var Color = require('../../components/color');
@@ -94,7 +95,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
 
     var bartraces = Lib.makeTraceGroups(traceLayer, cdModule, 'trace bars').each(function(cd) {
         var plotGroup = d3.select(this);
-        var trace = cd[0].trace;
+        var trace = getTraceFromCd(cd);
         var isWaterfall = (trace.type === 'waterfall');
         var isFunnel = (trace.type === 'funnel');
         var isBar = (trace.type === 'bar');
@@ -111,12 +112,13 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         var pointGroup = Lib.ensureSingle(plotGroup, 'g', 'points');
 
         var keyFunc = getKeyFunc(trace);
-        var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc);
-
-        bars.enter().append('g')
-            .classed('point', true);
+        var bars = pointGroup.selectAll('g.point').data(Lib.identity, keyFunc)
+            .enter()
+            .append('g');
 
         bars.exit().remove();
+
+        bars.classed('point', true);
 
         bars.each(function(di, i) {
             var bar = d3.select(this);
@@ -269,7 +271,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     function appendTextNode(bar, text, font) {
         var textSelection = Lib.ensureSingle(bar, 'text')
             .text(text)
-            .attr({
+            .attrs({
                 'class': 'bartext bartext-' + textPosition,
                 'text-anchor': 'middle',
                 // prohibit tex interpretation until we can handle
@@ -283,7 +285,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     }
 
     // get trace attributes
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var isHorizontal = (trace.orientation === 'h');
 
     var text = getText(fullLayout, cd, i, xa, ya);
@@ -605,7 +607,7 @@ function toMoveOutsideBar(x0, x1, y0, y1, textBB, opts) {
 }
 
 function getText(fullLayout, cd, index, xa, ya) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var texttemplate = trace.texttemplate;
 
     var value;
@@ -626,7 +628,7 @@ function getTextPosition(trace, index) {
 }
 
 function calcTexttemplate(fullLayout, cd, index, xa, ya) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var texttemplate = Lib.castOption(trace, index, 'texttemplate');
     if(!texttemplate) return '';
     var isWaterfall = (trace.type === 'waterfall');
@@ -696,7 +698,7 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
 }
 
 function calcTextinfo(cd, index, xa, ya) {
-    var trace = cd[0].trace;
+    var trace = getTraceFromCd(cd);
     var isHorizontal = (trace.orientation === 'h');
     var isWaterfall = (trace.type === 'waterfall');
     var isFunnel = (trace.type === 'funnel');

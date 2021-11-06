@@ -1,6 +1,6 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
+var d3 = require('../../lib/d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
@@ -169,7 +169,7 @@ function makeColorScaleFunc(specs, opts) {
         _range[i] = [rgba.r, rgba.g, rgba.b, rgba.a];
     }
 
-    var _sclFunc = d3.scale.linear()
+    var _sclFunc = d3.scaleLinear()
         .domain(domain)
         .range(_range)
         .clamp(true);

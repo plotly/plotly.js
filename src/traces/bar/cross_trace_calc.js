@@ -1,7 +1,10 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
+
+var Lib = require('../../lib');
+var getTraceFromCd = require('../../lib/trace_from_cd');
+var isArrayOrTypedArray = Lib.isArrayOrTypedArray;
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var Registry = require('../../registry');
@@ -84,7 +87,7 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             included = [];
             for(i = 0; i < calcTraces.length; i++) {
                 calcTrace = calcTraces[i];
-                fullTrace = calcTrace[0].trace;
+                fullTrace = getTraceFromCd(calcTrace);
 
                 if(fullTrace.offset === undefined) included.push(calcTrace);
                 else excluded.push(calcTrace);
@@ -105,7 +108,7 @@ function setGroupPositions(gd, pa, sa, calcTraces, opts) {
             included = [];
             for(i = 0; i < calcTraces.length; i++) {
                 calcTrace = calcTraces[i];
-                fullTrace = calcTrace[0].trace;
+                fullTrace = getTraceFromCd(calcTrace);
 
                 if(fullTrace.base === undefined) included.push(calcTrace);
                 else excluded.push(calcTrace);
@@ -128,7 +131,7 @@ function initBase(sa, calcTraces) {
 
     for(i = 0; i < calcTraces.length; i++) {
         var cd = calcTraces[i];
-        var trace = cd[0].trace;
+        var trace = getTraceFromCd(cd);
         var base = (trace.type === 'funnel') ? trace._base : trace.base;
         var b;
 
@@ -303,7 +306,7 @@ function setOffsetAndWidthInGroupMode(gd, pa, sieve, opts) {
 
     for(var i = 0; i < nTraces; i++) {
         var calcTrace = calcTraces[i];
-        var trace = calcTrace[0].trace;
+        var trace = getTraceFromCd(calcTrace);
 
         var alignmentGroupOpts = alignmentGroups[trace.alignmentgroup] || {};
         var nOffsetGroups = Object.keys(alignmentGroupOpts.offsetGroups || {}).length;
@@ -497,7 +500,7 @@ function setBaseAndTop(sa, sieve) {
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-        var fullTrace = calcTrace[0].trace;
+        var fullTrace = getTraceFromCd(calcTrace);
         var pts = [];
         var tozero = false;
 
@@ -533,7 +536,7 @@ function stackBars(sa, sieve, opts) {
 
     for(i = 0; i < calcTraces.length; i++) {
         calcTrace = calcTraces[i];
-        fullTrace = calcTrace[0].trace;
+        fullTrace = getTraceFromCd(calcTrace);
 
         if(fullTrace.type === 'funnel') {
             for(j = 0; j < calcTrace.length; j++) {
@@ -549,7 +552,7 @@ function stackBars(sa, sieve, opts) {
 
     for(i = 0; i < calcTraces.length; i++) {
         calcTrace = calcTraces[i];
-        fullTrace = calcTrace[0].trace;
+        fullTrace = getTraceFromCd(calcTrace);
 
         isFunnel = (fullTrace.type === 'funnel');
 
@@ -617,7 +620,7 @@ function unhideBarsWithinTrace(sieve, pa) {
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-        var fullTrace = calcTrace[0].trace;
+        var fullTrace = getTraceFromCd(calcTrace);
 
         if(fullTrace.base === undefined) {
             var inTraceSieve = new Sieve([calcTrace], {
@@ -664,7 +667,7 @@ function normalizeBars(sa, sieve, opts) {
 
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
-        var fullTrace = calcTrace[0].trace;
+        var fullTrace = getTraceFromCd(calcTrace);
         var pts = [];
         var tozero = false;
         var padded = false;

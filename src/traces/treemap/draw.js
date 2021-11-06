@@ -1,7 +1,8 @@
 'use strict';
 
-var d3 = require('@plotly/d3');
-
+var Lib = require('../../lib');
+var d3 = require('../../lib/d3');
+var getTraceFromCd = require('../../lib/trace_from_cd');
 var helpers = require('../sunburst/helpers');
 var uniformText = require('../bar/uniform_text');
 var clearMinTextSize = uniformText.clearMinTextSize;
@@ -10,6 +11,7 @@ var resizeText = require('../bar/style').resizeText;
 var plotOne = require('./plot_one');
 
 module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCallback, opts) {
+    var d3EaseFn = Lib.whichD3EaseFn(transitionOpts);
     var type = opts.type;
     var drawDescendants = opts.drawDescendants;
 
@@ -24,9 +26,11 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
     clearMinTextSize(type, fullLayout);
 
     join = layer.selectAll('g.trace.' + type)
-        .data(cdmodule, function(cd) { return cd[0].trace.uid; });
+        .data(cdmodule, function(cd) { return getTraceFromCd(cd).uid; })
+        .enter()
+        .append('g');
 
-    join.enter().append('g')
+    join
         .classed('trace', true)
         .classed(type, true);
 
@@ -42,7 +46,7 @@ module.exports = function _plot(gd, cdmodule, transitionOpts, makeOnCompleteCall
 
         var transition = d3.transition()
             .duration(transitionOpts.duration)
-            .ease(transitionOpts.easing)
+            .ease(d3EaseFn)
             .each('end', function() { onComplete && onComplete(); })
             .each('interrupt', function() { onComplete && onComplete(); });
 
