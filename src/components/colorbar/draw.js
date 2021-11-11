@@ -510,12 +510,12 @@ function drawColorBar(g, opts, gd) {
             innerWidth = Math.max(innerWidth, titleWidth);
         }
 
-        var outerwidth = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
+        var outerThickness = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
 
         g.select('.' + cn.cbbg).attr({
             x: uPx - xpad - (borderwidth + outlinewidth) / 2,
             y: vPx - lenPx - yExtraPx,
-            width: Math.max(outerwidth, 2),
+            width: Math.max(outerThickness, 2),
             height: Math.max(lenPx + 2 * yExtraPx, 2)
         })
         .call(Color.fill, opts.bgcolor)
@@ -535,7 +535,7 @@ function drawColorBar(g, opts, gd) {
         });
 
         // fix positioning for xanchor!='left'
-        var xoffset = ({center: 0.5, right: 1}[xanchor] || 0) * outerwidth;
+        var xoffset = ({center: 0.5, right: 1}[xanchor] || 0) * outerThickness;
         g.attr('transform', strTranslate(gs.l - xoffset, gs.t));
 
         // auto margin adjustment
@@ -556,10 +556,10 @@ function drawColorBar(g, opts, gd) {
         var rFrac = FROM_BR[xanchor];
         if(thicknessmode === 'pixels') {
             marginOpts.x = optsX;
-            marginOpts.l = outerwidth * lFrac;
-            marginOpts.r = outerwidth * rFrac;
+            marginOpts.l = outerThickness * lFrac;
+            marginOpts.r = outerThickness * rFrac;
         } else {
-            var extraThickness = outerwidth - thickPx;
+            var extraThickness = outerThickness - thickPx;
             marginOpts.l = extraThickness * lFrac;
             marginOpts.r = extraThickness * rFrac;
             marginOpts.xl = optsX - thickness * lFrac;
