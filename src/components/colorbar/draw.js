@@ -226,7 +226,6 @@ function drawColorBar(g, opts, gd) {
     // y positioning we can do correctly from the start
     var vFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
     var vPx = Math.round(gs.h * (1 - vFrac));
-    var yTopPx = vPx - lenPx;
 
     // stash a few things for makeEditable
     opts._lenFrac = lenFrac;
@@ -252,7 +251,7 @@ function drawColorBar(g, opts, gd) {
         ax.tick0 = levelsIn.start;
         var dtick = levelsIn.size;
         // expand if too many contours, so we don't get too many ticks
-        var autoNtick = Lib.constrain((vPx - yTopPx) / 50, 4, 15) + 1;
+        var autoNtick = Lib.constrain((vPx - (vPx - lenPx)) / 50, 4, 15) + 1;
         var dtFactor = (zrange[1] - zrange[0]) / ((opts.nticks || autoNtick) * dtick);
         if(dtFactor > 1) {
             var dtexp = Math.pow(10, Math.floor(Math.log(dtFactor) / Math.LN10));
@@ -512,11 +511,11 @@ function drawColorBar(g, opts, gd) {
         }
 
         var outerwidth = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
-        var outerheight = vPx - yTopPx;
+        var outerheight = vPx - (vPx - lenPx);
 
         g.select('.' + cn.cbbg).attr({
             x: uPx - xpad - (borderwidth + outlinewidth) / 2,
-            y: yTopPx - yExtraPx,
+            y: (vPx - lenPx) - yExtraPx,
             width: Math.max(outerwidth, 2),
             height: Math.max(outerheight + 2 * yExtraPx, 2)
         })
@@ -526,7 +525,7 @@ function drawColorBar(g, opts, gd) {
 
         g.selectAll('.' + cn.cboutline).attr({
             x: uPx,
-            y: yTopPx + ypad + (titleSide === 'top' ? titleHeight : 0),
+            y: (vPx - lenPx) + ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
             height: Math.max(outerheight - 2 * ypad - titleHeight, 2)
         })
