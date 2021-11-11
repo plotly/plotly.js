@@ -219,7 +219,7 @@ function drawColorBar(g, opts, gd) {
 
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
-    var u = Math.round(optsX * gs.w + xpad);
+    var uPx = Math.round(optsX * gs.w + xpad);
     // for dragging... this is getting a little muddled...
     var uFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
 
@@ -431,7 +431,7 @@ function drawColorBar(g, opts, gd) {
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
             var fillEl = d3.select(this).attr({
-                x: u,
+                x: uPx,
                 width: Math.max(thickPx, 2),
                 y: d3.min(z),
                 height: Math.max(d3.max(z) - d3.min(z), 2),
@@ -455,7 +455,7 @@ function drawColorBar(g, opts, gd) {
         lines.exit().remove();
         lines.each(function(d) {
             d3.select(this)
-                .attr('d', 'M' + u + ',' +
+                .attr('d', 'M' + uPx + ',' +
                     (Math.round(ax.c2p(d)) + (line.width / 2) % 1) + 'h' + thickPx)
                 .call(Drawing.lineGroupStyle, line.width, lineColormap(d), line.dash);
         });
@@ -463,7 +463,7 @@ function drawColorBar(g, opts, gd) {
         // force full redraw of labels and ticks
         axLayer.selectAll('g.' + ax._id + 'tick,path').remove();
 
-        var shift = u + thickPx +
+        var shift = uPx + thickPx +
             (outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
@@ -506,7 +506,7 @@ function drawColorBar(g, opts, gd) {
                 // (except for top/bottom mathjax, above)
                 // but the weird gs.l is because the titleunshift
                 // transform gets removed by Drawing.bBox
-                titleWidth = Drawing.bBox(titleCont.node()).right - u - gs.l;
+                titleWidth = Drawing.bBox(titleCont.node()).right - uPx - gs.l;
             }
             innerWidth = Math.max(innerWidth, titleWidth);
         }
@@ -515,7 +515,7 @@ function drawColorBar(g, opts, gd) {
         var outerheight = vPx - yTopPx;
 
         g.select('.' + cn.cbbg).attr({
-            x: u - xpad - (borderwidth + outlinewidth) / 2,
+            x: uPx - xpad - (borderwidth + outlinewidth) / 2,
             y: yTopPx - yExtraPx,
             width: Math.max(outerwidth, 2),
             height: Math.max(outerheight + 2 * yExtraPx, 2)
@@ -525,7 +525,7 @@ function drawColorBar(g, opts, gd) {
         .style('stroke-width', borderwidth);
 
         g.selectAll('.' + cn.cboutline).attr({
-            x: u,
+            x: uPx,
             y: yTopPx + ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
             height: Math.max(outerheight - 2 * ypad - titleHeight, 2)
