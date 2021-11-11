@@ -511,13 +511,12 @@ function drawColorBar(g, opts, gd) {
         }
 
         var outerwidth = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
-        var outerheight = lenPx;
 
         g.select('.' + cn.cbbg).attr({
             x: uPx - xpad - (borderwidth + outlinewidth) / 2,
             y: vPx - lenPx - yExtraPx,
             width: Math.max(outerwidth, 2),
-            height: Math.max(outerheight + 2 * yExtraPx, 2)
+            height: Math.max(lenPx + 2 * yExtraPx, 2)
         })
         .call(Color.fill, opts.bgcolor)
         .call(Color.stroke, opts.bordercolor)
@@ -527,7 +526,7 @@ function drawColorBar(g, opts, gd) {
             x: uPx,
             y: vPx - lenPx + ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
-            height: Math.max(outerheight - 2 * ypad - titleHeight, 2)
+            height: Math.max(lenPx - 2 * ypad - titleHeight, 2)
         })
         .call(Color.stroke, opts.outlinecolor)
         .style({
@@ -545,8 +544,8 @@ function drawColorBar(g, opts, gd) {
         var bFrac = FROM_BR[yanchor];
         if(lenmode === 'pixels') {
             marginOpts.y = optsY;
-            marginOpts.t = outerheight * tFrac;
-            marginOpts.b = outerheight * bFrac;
+            marginOpts.t = lenPx * tFrac;
+            marginOpts.b = lenPx * bFrac;
         } else {
             marginOpts.t = marginOpts.b = 0;
             marginOpts.yt = optsY + len * tFrac;
