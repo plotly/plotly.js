@@ -488,9 +488,9 @@ function drawColorBar(g, opts, gd) {
     // TODO: why are we redrawing multiple times now with this?
     // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
-        var innerWidth = thickPx + outlinewidth / 2;
+        var innerThickness = thickPx + outlinewidth / 2;
         if(ax.ticklabelposition.indexOf('inside') === -1) {
-            innerWidth += Drawing.bBox(axLayer.node()).width;
+            innerThickness += Drawing.bBox(axLayer.node()).width;
         }
 
         titleEl = titleCont.select('text');
@@ -507,10 +507,10 @@ function drawColorBar(g, opts, gd) {
                 // transform gets removed by Drawing.bBox
                 titleWidth = Drawing.bBox(titleCont.node()).right - uPx - gs.l;
             }
-            innerWidth = Math.max(innerWidth, titleWidth);
+            innerThickness = Math.max(innerThickness, titleWidth);
         }
 
-        var outerThickness = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
+        var outerThickness = 2 * xpad + innerThickness + borderwidth + outlinewidth / 2;
 
         g.select('.' + cn.cbbg).attr({
             x: uPx - xpad - (borderwidth + outlinewidth) / 2,
