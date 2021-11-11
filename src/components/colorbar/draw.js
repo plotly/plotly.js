@@ -224,15 +224,15 @@ function drawColorBar(g, opts, gd) {
     var uFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
 
     // y positioning we can do correctly from the start
-    var yBottomFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
-    var yBottomPx = Math.round(gs.h * (1 - yBottomFrac));
-    var yTopPx = yBottomPx - lenPx;
+    var vFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
+    var vPx = Math.round(gs.h * (1 - vFrac));
+    var yTopPx = vPx - lenPx;
 
     // stash a few things for makeEditable
     opts._lenFrac = lenFrac;
     opts._thickFrac = thickFrac;
     opts._uFrac = uFrac;
-    opts._yBottomFrac = yBottomFrac;
+    opts._vFrac = vFrac;
 
     // stash mocked axis for contour label formatting
     var ax = opts._axis = mockColorBarAxis(gd, opts, zrange);
@@ -244,7 +244,7 @@ function drawColorBar(g, opts, gd) {
     if(['top', 'bottom'].indexOf(titleSide) !== -1) {
         ax.title.side = titleSide;
         ax.titlex = optsX + xpadFrac;
-        ax.titley = yBottomFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
+        ax.titley = vFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
     }
 
     if(line.color && opts.tickmode === 'auto') {
@@ -252,7 +252,7 @@ function drawColorBar(g, opts, gd) {
         ax.tick0 = levelsIn.start;
         var dtick = levelsIn.size;
         // expand if too many contours, so we don't get too many ticks
-        var autoNtick = Lib.constrain((yBottomPx - yTopPx) / 50, 4, 15) + 1;
+        var autoNtick = Lib.constrain((vPx - yTopPx) / 50, 4, 15) + 1;
         var dtFactor = (zrange[1] - zrange[0]) / ((opts.nticks || autoNtick) * dtick);
         if(dtFactor > 1) {
             var dtexp = Math.pow(10, Math.floor(Math.log(dtFactor) / Math.LN10));
@@ -270,8 +270,8 @@ function drawColorBar(g, opts, gd) {
     // set domain after init, because we may want to
     // allow it outside [0,1]
     ax.domain = [
-        yBottomFrac + ypadFrac,
-        yBottomFrac + lenFrac - ypadFrac
+        vFrac + ypadFrac,
+        vFrac + lenFrac - ypadFrac
     ];
 
     ax.setScale();
@@ -317,10 +317,10 @@ function drawColorBar(g, opts, gd) {
             var y;
 
             if(titleSide === 'top') {
-                y = (1 - (yBottomFrac + lenFrac - ypadFrac)) * gs.h +
+                y = (1 - (vFrac + lenFrac - ypadFrac)) * gs.h +
                     gs.t + 3 + fontSize * 0.75;
             } else {
-                y = (1 - (yBottomFrac + ypadFrac)) * gs.h +
+                y = (1 - (vFrac + ypadFrac)) * gs.h +
                     gs.t - 3 - fontSize * 0.25;
             }
             drawTitle(ax._id + 'title', {
@@ -512,7 +512,7 @@ function drawColorBar(g, opts, gd) {
         }
 
         var outerwidth = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
-        var outerheight = yBottomPx - yTopPx;
+        var outerheight = vPx - yTopPx;
 
         g.select('.' + cn.cbbg).attr({
             x: u - xpad - (borderwidth + outlinewidth) / 2,
@@ -598,7 +598,7 @@ function makeEditable(g, opts, gd) {
 
             xf = dragElement.align(opts._uFrac + (dx / gs.w), opts._thickFrac,
                 0, 1, opts.xanchor);
-            yf = dragElement.align(opts._yBottomFrac - (dy / gs.h), opts._lenFrac,
+            yf = dragElement.align(opts._vFrac - (dy / gs.h), opts._lenFrac,
                 0, 1, opts.yanchor);
 
             var csr = dragElement.getCursor(xf, yf, opts.xanchor, opts.yanchor);
