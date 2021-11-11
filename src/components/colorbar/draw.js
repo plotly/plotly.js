@@ -167,6 +167,19 @@ function makeColorBarData(gd) {
 }
 
 function drawColorBar(g, opts, gd) {
+    var len = opts.len;
+    var lenmode = opts.lenmode;
+    var thickness = opts.thickness;
+    var thicknessmode = opts.thicknessmode;
+    var outlinewidth = opts.outlinewidth;
+    var borderwidth = opts.borderwidth;
+    var xanchor = opts.xanchor;
+    var yanchor = opts.yanchor;
+    var xpad = opts.xpad;
+    var ypad = opts.ypad;
+    var optsX = opts.x;
+    var optsY = opts.y;
+
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
 
@@ -196,22 +209,22 @@ function drawColorBar(g, opts, gd) {
     // when the colorbar itself is pushing the margins.
     // but then the fractional size is calculated based on the
     // actual graph size, so that the axes will size correctly.
-    var thickPx = Math.round(opts.thickness * (opts.thicknessmode === 'fraction' ? gs.w : 1));
+    var thickPx = Math.round(thickness * (thicknessmode === 'fraction' ? gs.w : 1));
     var thickFrac = thickPx / gs.w;
-    var lenPx = Math.round(opts.len * (opts.lenmode === 'fraction' ? gs.h : 1));
+    var lenPx = Math.round(len * (lenmode === 'fraction' ? gs.h : 1));
     var lenFrac = lenPx / gs.h;
-    var xpadFrac = opts.xpad / gs.w;
-    var yExtraPx = (opts.borderwidth + opts.outlinewidth) / 2;
-    var ypadFrac = opts.ypad / gs.h;
+    var xpadFrac = xpad / gs.w;
+    var yExtraPx = (borderwidth + outlinewidth) / 2;
+    var ypadFrac = ypad / gs.h;
 
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
-    var xLeft = Math.round(opts.x * gs.w + opts.xpad);
+    var xLeft = Math.round(optsX * gs.w + xpad);
     // for dragging... this is getting a little muddled...
-    var xLeftFrac = opts.x - thickFrac * ({center: 0.5, right: 1}[opts.xanchor] || 0);
+    var xLeftFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
 
     // y positioning we can do correctly from the start
-    var yBottomFrac = opts.y + lenFrac * (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5);
+    var yBottomFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
     var yBottomPx = Math.round(gs.h * (1 - yBottomFrac));
     var yTopPx = yBottomPx - lenPx;
 
@@ -226,11 +239,11 @@ function drawColorBar(g, opts, gd) {
 
     // position can't go in through supplyDefaults
     // because that restricts it to [0,1]
-    ax.position = opts.x + xpadFrac + thickFrac;
+    ax.position = optsX + xpadFrac + thickFrac;
 
     if(['top', 'bottom'].indexOf(titleSide) !== -1) {
         ax.title.side = titleSide;
-        ax.titlex = opts.x + xpadFrac;
+        ax.titlex = optsX + xpadFrac;
         ax.titley = yBottomFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
     }
 
@@ -299,7 +312,7 @@ function drawColorBar(g, opts, gd) {
             // draw the title so we know how much room it needs
             // when we squish the axis. This one only applies to
             // top or bottom titles, not right side.
-            var x = gs.l + (opts.x + xpadFrac) * gs.w;
+            var x = gs.l + (optsX + xpadFrac) * gs.w;
             var fontSize = ax.title.font.size;
             var y;
 
@@ -346,7 +359,7 @@ function drawColorBar(g, opts, gd) {
             // squish the axis top to make room for the title
             var titleGroup = g.select('.' + cn.cbtitle);
             var titleText = titleGroup.select('text');
-            var titleTrans = [-opts.outlinewidth / 2, opts.outlinewidth / 2];
+            var titleTrans = [-outlinewidth / 2, outlinewidth / 2];
             var mathJaxNode = titleGroup
                 .select('.h' + ax._id + 'title-math-group')
                 .node();
@@ -451,7 +464,7 @@ function drawColorBar(g, opts, gd) {
         axLayer.selectAll('g.' + ax._id + 'tick,path').remove();
 
         var shift = xLeft + thickPx +
-            (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
+            (outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
         var tickSign = Axes.getTickSigns(ax)[2];
@@ -476,7 +489,7 @@ function drawColorBar(g, opts, gd) {
     // TODO: why are we redrawing multiple times now with this?
     // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
-        var innerWidth = thickPx + opts.outlinewidth / 2;
+        var innerWidth = thickPx + outlinewidth / 2;
         if(ax.ticklabelposition.indexOf('inside') === -1) {
             innerWidth += Drawing.bBox(axLayer.node()).width;
         }
@@ -498,61 +511,61 @@ function drawColorBar(g, opts, gd) {
             innerWidth = Math.max(innerWidth, titleWidth);
         }
 
-        var outerwidth = 2 * opts.xpad + innerWidth + opts.borderwidth + opts.outlinewidth / 2;
+        var outerwidth = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
         var outerheight = yBottomPx - yTopPx;
 
         g.select('.' + cn.cbbg).attr({
-            x: xLeft - opts.xpad - (opts.borderwidth + opts.outlinewidth) / 2,
+            x: xLeft - xpad - (borderwidth + outlinewidth) / 2,
             y: yTopPx - yExtraPx,
             width: Math.max(outerwidth, 2),
             height: Math.max(outerheight + 2 * yExtraPx, 2)
         })
         .call(Color.fill, opts.bgcolor)
         .call(Color.stroke, opts.bordercolor)
-        .style('stroke-width', opts.borderwidth);
+        .style('stroke-width', borderwidth);
 
         g.selectAll('.' + cn.cboutline).attr({
             x: xLeft,
-            y: yTopPx + opts.ypad + (titleSide === 'top' ? titleHeight : 0),
+            y: yTopPx + ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
-            height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
+            height: Math.max(outerheight - 2 * ypad - titleHeight, 2)
         })
         .call(Color.stroke, opts.outlinecolor)
         .style({
             fill: 'none',
-            'stroke-width': opts.outlinewidth
+            'stroke-width': outlinewidth
         });
 
         // fix positioning for xanchor!='left'
-        var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) * outerwidth;
+        var xoffset = ({center: 0.5, right: 1}[xanchor] || 0) * outerwidth;
         g.attr('transform', strTranslate(gs.l - xoffset, gs.t));
 
         // auto margin adjustment
         var marginOpts = {};
-        var tFrac = FROM_TL[opts.yanchor];
-        var bFrac = FROM_BR[opts.yanchor];
-        if(opts.lenmode === 'pixels') {
-            marginOpts.y = opts.y;
+        var tFrac = FROM_TL[yanchor];
+        var bFrac = FROM_BR[yanchor];
+        if(lenmode === 'pixels') {
+            marginOpts.y = optsY;
             marginOpts.t = outerheight * tFrac;
             marginOpts.b = outerheight * bFrac;
         } else {
             marginOpts.t = marginOpts.b = 0;
-            marginOpts.yt = opts.y + opts.len * tFrac;
-            marginOpts.yb = opts.y - opts.len * bFrac;
+            marginOpts.yt = optsY + len * tFrac;
+            marginOpts.yb = optsY - len * bFrac;
         }
 
-        var lFrac = FROM_TL[opts.xanchor];
-        var rFrac = FROM_BR[opts.xanchor];
-        if(opts.thicknessmode === 'pixels') {
-            marginOpts.x = opts.x;
+        var lFrac = FROM_TL[xanchor];
+        var rFrac = FROM_BR[xanchor];
+        if(thicknessmode === 'pixels') {
+            marginOpts.x = optsX;
             marginOpts.l = outerwidth * lFrac;
             marginOpts.r = outerwidth * rFrac;
         } else {
             var extraThickness = outerwidth - thickPx;
             marginOpts.l = extraThickness * lFrac;
             marginOpts.r = extraThickness * rFrac;
-            marginOpts.xl = opts.x - opts.thickness * lFrac;
-            marginOpts.xr = opts.x + opts.thickness * rFrac;
+            marginOpts.xl = optsX - thickness * lFrac;
+            marginOpts.xr = optsX + thickness * rFrac;
         }
 
         Plots.autoMargin(gd, opts._id, marginOpts);
