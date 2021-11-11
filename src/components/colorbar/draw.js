@@ -219,9 +219,9 @@ function drawColorBar(g, opts, gd) {
 
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
-    var xLeft = Math.round(optsX * gs.w + xpad);
+    var u = Math.round(optsX * gs.w + xpad);
     // for dragging... this is getting a little muddled...
-    var xLeftFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
+    var uFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
 
     // y positioning we can do correctly from the start
     var yBottomFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
@@ -231,7 +231,7 @@ function drawColorBar(g, opts, gd) {
     // stash a few things for makeEditable
     opts._lenFrac = lenFrac;
     opts._thickFrac = thickFrac;
-    opts._xLeftFrac = xLeftFrac;
+    opts._uFrac = uFrac;
     opts._yBottomFrac = yBottomFrac;
 
     // stash mocked axis for contour label formatting
@@ -431,7 +431,7 @@ function drawColorBar(g, opts, gd) {
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
             var fillEl = d3.select(this).attr({
-                x: xLeft,
+                x: u,
                 width: Math.max(thickPx, 2),
                 y: d3.min(z),
                 height: Math.max(d3.max(z) - d3.min(z), 2),
@@ -455,7 +455,7 @@ function drawColorBar(g, opts, gd) {
         lines.exit().remove();
         lines.each(function(d) {
             d3.select(this)
-                .attr('d', 'M' + xLeft + ',' +
+                .attr('d', 'M' + u + ',' +
                     (Math.round(ax.c2p(d)) + (line.width / 2) % 1) + 'h' + thickPx)
                 .call(Drawing.lineGroupStyle, line.width, lineColormap(d), line.dash);
         });
@@ -463,7 +463,7 @@ function drawColorBar(g, opts, gd) {
         // force full redraw of labels and ticks
         axLayer.selectAll('g.' + ax._id + 'tick,path').remove();
 
-        var shift = xLeft + thickPx +
+        var shift = u + thickPx +
             (outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
@@ -506,7 +506,7 @@ function drawColorBar(g, opts, gd) {
                 // (except for top/bottom mathjax, above)
                 // but the weird gs.l is because the titleunshift
                 // transform gets removed by Drawing.bBox
-                titleWidth = Drawing.bBox(titleCont.node()).right - xLeft - gs.l;
+                titleWidth = Drawing.bBox(titleCont.node()).right - u - gs.l;
             }
             innerWidth = Math.max(innerWidth, titleWidth);
         }
@@ -515,7 +515,7 @@ function drawColorBar(g, opts, gd) {
         var outerheight = yBottomPx - yTopPx;
 
         g.select('.' + cn.cbbg).attr({
-            x: xLeft - xpad - (borderwidth + outlinewidth) / 2,
+            x: u - xpad - (borderwidth + outlinewidth) / 2,
             y: yTopPx - yExtraPx,
             width: Math.max(outerwidth, 2),
             height: Math.max(outerheight + 2 * yExtraPx, 2)
@@ -525,7 +525,7 @@ function drawColorBar(g, opts, gd) {
         .style('stroke-width', borderwidth);
 
         g.selectAll('.' + cn.cboutline).attr({
-            x: xLeft,
+            x: u,
             y: yTopPx + ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
             height: Math.max(outerheight - 2 * ypad - titleHeight, 2)
@@ -596,7 +596,7 @@ function makeEditable(g, opts, gd) {
         moveFn: function(dx, dy) {
             g.attr('transform', t0 + strTranslate(dx, dy));
 
-            xf = dragElement.align(opts._xLeftFrac + (dx / gs.w), opts._thickFrac,
+            xf = dragElement.align(opts._uFrac + (dx / gs.w), opts._thickFrac,
                 0, 1, opts.xanchor);
             yf = dragElement.align(opts._yBottomFrac - (dy / gs.h), opts._lenFrac,
                 0, 1, opts.yanchor);
