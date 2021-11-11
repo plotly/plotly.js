@@ -219,20 +219,19 @@ function drawColorBar(g, opts, gd) {
 
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
-    var xLeft = Math.round(optsX * gs.w + xpad);
+    var uPx = Math.round(optsX * gs.w + xpad);
     // for dragging... this is getting a little muddled...
-    var xLeftFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
+    var uFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
 
     // y positioning we can do correctly from the start
-    var yBottomFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
-    var yBottomPx = Math.round(gs.h * (1 - yBottomFrac));
-    var yTopPx = yBottomPx - lenPx;
+    var vFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
+    var vPx = Math.round(gs.h * (1 - vFrac));
 
     // stash a few things for makeEditable
     opts._lenFrac = lenFrac;
     opts._thickFrac = thickFrac;
-    opts._xLeftFrac = xLeftFrac;
-    opts._yBottomFrac = yBottomFrac;
+    opts._uFrac = uFrac;
+    opts._vFrac = vFrac;
 
     // stash mocked axis for contour label formatting
     var ax = opts._axis = mockColorBarAxis(gd, opts, zrange);
@@ -244,7 +243,7 @@ function drawColorBar(g, opts, gd) {
     if(['top', 'bottom'].indexOf(titleSide) !== -1) {
         ax.title.side = titleSide;
         ax.titlex = optsX + xpadFrac;
-        ax.titley = yBottomFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
+        ax.titley = vFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
     }
 
     if(line.color && opts.tickmode === 'auto') {
@@ -252,7 +251,7 @@ function drawColorBar(g, opts, gd) {
         ax.tick0 = levelsIn.start;
         var dtick = levelsIn.size;
         // expand if too many contours, so we don't get too many ticks
-        var autoNtick = Lib.constrain((yBottomPx - yTopPx) / 50, 4, 15) + 1;
+        var autoNtick = Lib.constrain(lenPx / 50, 4, 15) + 1;
         var dtFactor = (zrange[1] - zrange[0]) / ((opts.nticks || autoNtick) * dtick);
         if(dtFactor > 1) {
             var dtexp = Math.pow(10, Math.floor(Math.log(dtFactor) / Math.LN10));
@@ -270,8 +269,8 @@ function drawColorBar(g, opts, gd) {
     // set domain after init, because we may want to
     // allow it outside [0,1]
     ax.domain = [
-        yBottomFrac + ypadFrac,
-        yBottomFrac + lenFrac - ypadFrac
+        vFrac + ypadFrac,
+        vFrac + lenFrac - ypadFrac
     ];
 
     ax.setScale();
@@ -317,10 +316,10 @@ function drawColorBar(g, opts, gd) {
             var y;
 
             if(titleSide === 'top') {
-                y = (1 - (yBottomFrac + lenFrac - ypadFrac)) * gs.h +
+                y = (1 - (vFrac + lenFrac - ypadFrac)) * gs.h +
                     gs.t + 3 + fontSize * 0.75;
             } else {
-                y = (1 - (yBottomFrac + ypadFrac)) * gs.h +
+                y = (1 - (vFrac + ypadFrac)) * gs.h +
                     gs.t - 3 - fontSize * 0.25;
             }
             drawTitle(ax._id + 'title', {
@@ -431,7 +430,7 @@ function drawColorBar(g, opts, gd) {
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
             var fillEl = d3.select(this).attr({
-                x: xLeft,
+                x: uPx,
                 width: Math.max(thickPx, 2),
                 y: d3.min(z),
                 height: Math.max(d3.max(z) - d3.min(z), 2),
@@ -455,7 +454,7 @@ function drawColorBar(g, opts, gd) {
         lines.exit().remove();
         lines.each(function(d) {
             d3.select(this)
-                .attr('d', 'M' + xLeft + ',' +
+                .attr('d', 'M' + uPx + ',' +
                     (Math.round(ax.c2p(d)) + (line.width / 2) % 1) + 'h' + thickPx)
                 .call(Drawing.lineGroupStyle, line.width, lineColormap(d), line.dash);
         });
@@ -463,7 +462,7 @@ function drawColorBar(g, opts, gd) {
         // force full redraw of labels and ticks
         axLayer.selectAll('g.' + ax._id + 'tick,path').remove();
 
-        var shift = xLeft + thickPx +
+        var shift = uPx + thickPx +
             (outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
@@ -489,9 +488,9 @@ function drawColorBar(g, opts, gd) {
     // TODO: why are we redrawing multiple times now with this?
     // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
-        var innerWidth = thickPx + outlinewidth / 2;
+        var innerThickness = thickPx + outlinewidth / 2;
         if(ax.ticklabelposition.indexOf('inside') === -1) {
-            innerWidth += Drawing.bBox(axLayer.node()).width;
+            innerThickness += Drawing.bBox(axLayer.node()).width;
         }
 
         titleEl = titleCont.select('text');
@@ -506,29 +505,28 @@ function drawColorBar(g, opts, gd) {
                 // (except for top/bottom mathjax, above)
                 // but the weird gs.l is because the titleunshift
                 // transform gets removed by Drawing.bBox
-                titleWidth = Drawing.bBox(titleCont.node()).right - xLeft - gs.l;
+                titleWidth = Drawing.bBox(titleCont.node()).right - uPx - gs.l;
             }
-            innerWidth = Math.max(innerWidth, titleWidth);
+            innerThickness = Math.max(innerThickness, titleWidth);
         }
 
-        var outerwidth = 2 * xpad + innerWidth + borderwidth + outlinewidth / 2;
-        var outerheight = yBottomPx - yTopPx;
+        var outerThickness = 2 * xpad + innerThickness + borderwidth + outlinewidth / 2;
 
         g.select('.' + cn.cbbg).attr({
-            x: xLeft - xpad - (borderwidth + outlinewidth) / 2,
-            y: yTopPx - yExtraPx,
-            width: Math.max(outerwidth, 2),
-            height: Math.max(outerheight + 2 * yExtraPx, 2)
+            x: uPx - xpad - (borderwidth + outlinewidth) / 2,
+            y: vPx - lenPx - yExtraPx,
+            width: Math.max(outerThickness, 2),
+            height: Math.max(lenPx + 2 * yExtraPx, 2)
         })
         .call(Color.fill, opts.bgcolor)
         .call(Color.stroke, opts.bordercolor)
         .style('stroke-width', borderwidth);
 
         g.selectAll('.' + cn.cboutline).attr({
-            x: xLeft,
-            y: yTopPx + ypad + (titleSide === 'top' ? titleHeight : 0),
+            x: uPx,
+            y: vPx - lenPx + ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
-            height: Math.max(outerheight - 2 * ypad - titleHeight, 2)
+            height: Math.max(lenPx - 2 * ypad - titleHeight, 2)
         })
         .call(Color.stroke, opts.outlinecolor)
         .style({
@@ -537,7 +535,7 @@ function drawColorBar(g, opts, gd) {
         });
 
         // fix positioning for xanchor!='left'
-        var xoffset = ({center: 0.5, right: 1}[xanchor] || 0) * outerwidth;
+        var xoffset = ({center: 0.5, right: 1}[xanchor] || 0) * outerThickness;
         g.attr('transform', strTranslate(gs.l - xoffset, gs.t));
 
         // auto margin adjustment
@@ -546,8 +544,8 @@ function drawColorBar(g, opts, gd) {
         var bFrac = FROM_BR[yanchor];
         if(lenmode === 'pixels') {
             marginOpts.y = optsY;
-            marginOpts.t = outerheight * tFrac;
-            marginOpts.b = outerheight * bFrac;
+            marginOpts.t = lenPx * tFrac;
+            marginOpts.b = lenPx * bFrac;
         } else {
             marginOpts.t = marginOpts.b = 0;
             marginOpts.yt = optsY + len * tFrac;
@@ -558,10 +556,10 @@ function drawColorBar(g, opts, gd) {
         var rFrac = FROM_BR[xanchor];
         if(thicknessmode === 'pixels') {
             marginOpts.x = optsX;
-            marginOpts.l = outerwidth * lFrac;
-            marginOpts.r = outerwidth * rFrac;
+            marginOpts.l = outerThickness * lFrac;
+            marginOpts.r = outerThickness * rFrac;
         } else {
-            var extraThickness = outerwidth - thickPx;
+            var extraThickness = outerThickness - thickPx;
             marginOpts.l = extraThickness * lFrac;
             marginOpts.r = extraThickness * rFrac;
             marginOpts.xl = optsX - thickness * lFrac;
@@ -596,9 +594,9 @@ function makeEditable(g, opts, gd) {
         moveFn: function(dx, dy) {
             g.attr('transform', t0 + strTranslate(dx, dy));
 
-            xf = dragElement.align(opts._xLeftFrac + (dx / gs.w), opts._thickFrac,
+            xf = dragElement.align(opts._uFrac + (dx / gs.w), opts._thickFrac,
                 0, 1, opts.xanchor);
-            yf = dragElement.align(opts._yBottomFrac - (dy / gs.h), opts._lenFrac,
+            yf = dragElement.align(opts._vFrac - (dy / gs.h), opts._lenFrac,
                 0, 1, opts.yanchor);
 
             var csr = dragElement.getCursor(xf, yf, opts.xanchor, opts.yanchor);
