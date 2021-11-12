@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.6.3] -- 2021-11-12
+
+### Fixed
+ - Fix hover events in Shadow DOM [[#6021](https://github.com/plotly/plotly.js/pull/6021)],
+   with thanks to @SabineWren for the contribution!
+
+
 ## [2.6.2] -- 2021-11-05
 
 ### Fixed
