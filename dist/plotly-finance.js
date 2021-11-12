@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.6.2
+* plotly.js (finance) v2.6.3
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -23183,6 +23183,19 @@ function makeColorBarData(gd) {
 }
 
 function drawColorBar(g, opts, gd) {
+    var len = opts.len;
+    var lenmode = opts.lenmode;
+    var thickness = opts.thickness;
+    var thicknessmode = opts.thicknessmode;
+    var outlinewidth = opts.outlinewidth;
+    var borderwidth = opts.borderwidth;
+    var xanchor = opts.xanchor;
+    var yanchor = opts.yanchor;
+    var xpad = opts.xpad;
+    var ypad = opts.ypad;
+    var optsX = opts.x;
+    var optsY = opts.y;
+
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
 
@@ -23212,42 +23225,41 @@ function drawColorBar(g, opts, gd) {
     // when the colorbar itself is pushing the margins.
     // but then the fractional size is calculated based on the
     // actual graph size, so that the axes will size correctly.
-    var thickPx = Math.round(opts.thickness * (opts.thicknessmode === 'fraction' ? gs.w : 1));
+    var thickPx = Math.round(thickness * (thicknessmode === 'fraction' ? gs.w : 1));
     var thickFrac = thickPx / gs.w;
-    var lenPx = Math.round(opts.len * (opts.lenmode === 'fraction' ? gs.h : 1));
+    var lenPx = Math.round(len * (lenmode === 'fraction' ? gs.h : 1));
     var lenFrac = lenPx / gs.h;
-    var xpadFrac = opts.xpad / gs.w;
-    var yExtraPx = (opts.borderwidth + opts.outlinewidth) / 2;
-    var ypadFrac = opts.ypad / gs.h;
+    var xpadFrac = xpad / gs.w;
+    var yExtraPx = (borderwidth + outlinewidth) / 2;
+    var ypadFrac = ypad / gs.h;
 
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
-    var xLeft = Math.round(opts.x * gs.w + opts.xpad);
+    var uPx = Math.round(optsX * gs.w + xpad);
     // for dragging... this is getting a little muddled...
-    var xLeftFrac = opts.x - thickFrac * ({center: 0.5, right: 1}[opts.xanchor] || 0);
+    var uFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
 
     // y positioning we can do correctly from the start
-    var yBottomFrac = opts.y + lenFrac * (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5);
-    var yBottomPx = Math.round(gs.h * (1 - yBottomFrac));
-    var yTopPx = yBottomPx - lenPx;
+    var vFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
+    var vPx = Math.round(gs.h * (1 - vFrac));
 
     // stash a few things for makeEditable
     opts._lenFrac = lenFrac;
     opts._thickFrac = thickFrac;
-    opts._xLeftFrac = xLeftFrac;
-    opts._yBottomFrac = yBottomFrac;
+    opts._uFrac = uFrac;
+    opts._vFrac = vFrac;
 
     // stash mocked axis for contour label formatting
     var ax = opts._axis = mockColorBarAxis(gd, opts, zrange);
 
     // position can't go in through supplyDefaults
     // because that restricts it to [0,1]
-    ax.position = opts.x + xpadFrac + thickFrac;
+    ax.position = optsX + xpadFrac + thickFrac;
 
     if(['top', 'bottom'].indexOf(titleSide) !== -1) {
         ax.title.side = titleSide;
-        ax.titlex = opts.x + xpadFrac;
-        ax.titley = yBottomFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
+        ax.titlex = optsX + xpadFrac;
+        ax.titley = vFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
     }
 
     if(line.color && opts.tickmode === 'auto') {
@@ -23255,7 +23267,7 @@ function drawColorBar(g, opts, gd) {
         ax.tick0 = levelsIn.start;
         var dtick = levelsIn.size;
         // expand if too many contours, so we don't get too many ticks
-        var autoNtick = Lib.constrain((yBottomPx - yTopPx) / 50, 4, 15) + 1;
+        var autoNtick = Lib.constrain(lenPx / 50, 4, 15) + 1;
         var dtFactor = (zrange[1] - zrange[0]) / ((opts.nticks || autoNtick) * dtick);
         if(dtFactor > 1) {
             var dtexp = Math.pow(10, Math.floor(Math.log(dtFactor) / Math.LN10));
@@ -23273,8 +23285,8 @@ function drawColorBar(g, opts, gd) {
     // set domain after init, because we may want to
     // allow it outside [0,1]
     ax.domain = [
-        yBottomFrac + ypadFrac,
-        yBottomFrac + lenFrac - ypadFrac
+        vFrac + ypadFrac,
+        vFrac + lenFrac - ypadFrac
     ];
 
     ax.setScale();
@@ -23315,15 +23327,15 @@ function drawColorBar(g, opts, gd) {
             // draw the title so we know how much room it needs
             // when we squish the axis. This one only applies to
             // top or bottom titles, not right side.
-            var x = gs.l + (opts.x + xpadFrac) * gs.w;
+            var x = gs.l + (optsX + xpadFrac) * gs.w;
             var fontSize = ax.title.font.size;
             var y;
 
             if(titleSide === 'top') {
-                y = (1 - (yBottomFrac + lenFrac - ypadFrac)) * gs.h +
+                y = (1 - (vFrac + lenFrac - ypadFrac)) * gs.h +
                     gs.t + 3 + fontSize * 0.75;
             } else {
-                y = (1 - (yBottomFrac + ypadFrac)) * gs.h +
+                y = (1 - (vFrac + ypadFrac)) * gs.h +
                     gs.t - 3 - fontSize * 0.25;
             }
             drawTitle(ax._id + 'title', {
@@ -23362,7 +23374,7 @@ function drawColorBar(g, opts, gd) {
             // squish the axis top to make room for the title
             var titleGroup = g.select('.' + cn.cbtitle);
             var titleText = titleGroup.select('text');
-            var titleTrans = [-opts.outlinewidth / 2, opts.outlinewidth / 2];
+            var titleTrans = [-outlinewidth / 2, outlinewidth / 2];
             var mathJaxNode = titleGroup
                 .select('.h' + ax._id + 'title-math-group')
                 .node();
@@ -23434,7 +23446,7 @@ function drawColorBar(g, opts, gd) {
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
             var fillEl = d3.select(this).attr({
-                x: xLeft,
+                x: uPx,
                 width: Math.max(thickPx, 2),
                 y: d3.min(z),
                 height: Math.max(d3.max(z) - d3.min(z), 2),
@@ -23458,7 +23470,7 @@ function drawColorBar(g, opts, gd) {
         lines.exit().remove();
         lines.each(function(d) {
             d3.select(this)
-                .attr('d', 'M' + xLeft + ',' +
+                .attr('d', 'M' + uPx + ',' +
                     (Math.round(ax.c2p(d)) + (line.width / 2) % 1) + 'h' + thickPx)
                 .call(Drawing.lineGroupStyle, line.width, lineColormap(d), line.dash);
         });
@@ -23466,8 +23478,8 @@ function drawColorBar(g, opts, gd) {
         // force full redraw of labels and ticks
         axLayer.selectAll('g.' + ax._id + 'tick,path').remove();
 
-        var shift = xLeft + thickPx +
-            (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
+        var shift = uPx + thickPx +
+            (outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
         var tickSign = Axes.getTickSigns(ax)[2];
@@ -23492,9 +23504,9 @@ function drawColorBar(g, opts, gd) {
     // TODO: why are we redrawing multiple times now with this?
     // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
-        var innerWidth = thickPx + opts.outlinewidth / 2;
+        var innerThickness = thickPx + outlinewidth / 2;
         if(ax.ticklabelposition.indexOf('inside') === -1) {
-            innerWidth += Drawing.bBox(axLayer.node()).width;
+            innerThickness += Drawing.bBox(axLayer.node()).width;
         }
 
         titleEl = titleCont.select('text');
@@ -23509,66 +23521,65 @@ function drawColorBar(g, opts, gd) {
                 // (except for top/bottom mathjax, above)
                 // but the weird gs.l is because the titleunshift
                 // transform gets removed by Drawing.bBox
-                titleWidth = Drawing.bBox(titleCont.node()).right - xLeft - gs.l;
+                titleWidth = Drawing.bBox(titleCont.node()).right - uPx - gs.l;
             }
-            innerWidth = Math.max(innerWidth, titleWidth);
+            innerThickness = Math.max(innerThickness, titleWidth);
         }
 
-        var outerwidth = 2 * opts.xpad + innerWidth + opts.borderwidth + opts.outlinewidth / 2;
-        var outerheight = yBottomPx - yTopPx;
+        var outerThickness = 2 * xpad + innerThickness + borderwidth + outlinewidth / 2;
 
         g.select('.' + cn.cbbg).attr({
-            x: xLeft - opts.xpad - (opts.borderwidth + opts.outlinewidth) / 2,
-            y: yTopPx - yExtraPx,
-            width: Math.max(outerwidth, 2),
-            height: Math.max(outerheight + 2 * yExtraPx, 2)
+            x: uPx - xpad - (borderwidth + outlinewidth) / 2,
+            y: vPx - lenPx - yExtraPx,
+            width: Math.max(outerThickness, 2),
+            height: Math.max(lenPx + 2 * yExtraPx, 2)
         })
         .call(Color.fill, opts.bgcolor)
         .call(Color.stroke, opts.bordercolor)
-        .style('stroke-width', opts.borderwidth);
+        .style('stroke-width', borderwidth);
 
         g.selectAll('.' + cn.cboutline).attr({
-            x: xLeft,
-            y: yTopPx + opts.ypad + (titleSide === 'top' ? titleHeight : 0),
+            x: uPx,
+            y: vPx - lenPx + ypad + (titleSide === 'top' ? titleHeight : 0),
             width: Math.max(thickPx, 2),
-            height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
+            height: Math.max(lenPx - 2 * ypad - titleHeight, 2)
         })
         .call(Color.stroke, opts.outlinecolor)
         .style({
             fill: 'none',
-            'stroke-width': opts.outlinewidth
+            'stroke-width': outlinewidth
         });
 
         // fix positioning for xanchor!='left'
-        var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) * outerwidth;
+        var xoffset = ({center: 0.5, right: 1}[xanchor] || 0) * outerThickness;
         g.attr('transform', strTranslate(gs.l - xoffset, gs.t));
 
         // auto margin adjustment
         var marginOpts = {};
-        var tFrac = FROM_TL[opts.yanchor];
-        var bFrac = FROM_BR[opts.yanchor];
-        if(opts.lenmode === 'pixels') {
-            marginOpts.y = opts.y;
-            marginOpts.t = outerheight * tFrac;
-            marginOpts.b = outerheight * bFrac;
+        var tFrac = FROM_TL[yanchor];
+        var bFrac = FROM_BR[yanchor];
+        if(lenmode === 'pixels') {
+            marginOpts.y = optsY;
+            marginOpts.t = lenPx * tFrac;
+            marginOpts.b = lenPx * bFrac;
         } else {
             marginOpts.t = marginOpts.b = 0;
-            marginOpts.yt = opts.y + opts.len * tFrac;
-            marginOpts.yb = opts.y - opts.len * bFrac;
+            marginOpts.yt = optsY + len * tFrac;
+            marginOpts.yb = optsY - len * bFrac;
         }
 
-        var lFrac = FROM_TL[opts.xanchor];
-        var rFrac = FROM_BR[opts.xanchor];
-        if(opts.thicknessmode === 'pixels') {
-            marginOpts.x = opts.x;
-            marginOpts.l = outerwidth * lFrac;
-            marginOpts.r = outerwidth * rFrac;
+        var lFrac = FROM_TL[xanchor];
+        var rFrac = FROM_BR[xanchor];
+        if(thicknessmode === 'pixels') {
+            marginOpts.x = optsX;
+            marginOpts.l = outerThickness * lFrac;
+            marginOpts.r = outerThickness * rFrac;
         } else {
-            var extraThickness = outerwidth - thickPx;
+            var extraThickness = outerThickness - thickPx;
             marginOpts.l = extraThickness * lFrac;
             marginOpts.r = extraThickness * rFrac;
-            marginOpts.xl = opts.x - opts.thickness * lFrac;
-            marginOpts.xr = opts.x + opts.thickness * rFrac;
+            marginOpts.xl = optsX - thickness * lFrac;
+            marginOpts.xr = optsX + thickness * rFrac;
         }
 
         Plots.autoMargin(gd, opts._id, marginOpts);
@@ -23599,9 +23610,9 @@ function makeEditable(g, opts, gd) {
         moveFn: function(dx, dy) {
             g.attr('transform', t0 + strTranslate(dx, dy));
 
-            xf = dragElement.align(opts._xLeftFrac + (dx / gs.w), opts._thickFrac,
+            xf = dragElement.align(opts._uFrac + (dx / gs.w), opts._thickFrac,
                 0, 1, opts.xanchor);
-            yf = dragElement.align(opts._yBottomFrac - (dy / gs.h), opts._lenFrac,
+            yf = dragElement.align(opts._vFrac - (dy / gs.h), opts._lenFrac,
                 0, 1, opts.yanchor);
 
             var csr = dragElement.getCursor(xf, yf, opts.xanchor, opts.yanchor);
@@ -28303,11 +28314,13 @@ var cartesianScatterPoints = {
 // The actual rendering is done by private function _hover.
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
-
+    // The 'target' property changes when bubbling out of Shadow DOM.
+    // Throttling can delay reading the target, so we save the current value.
+    var eventTarget = evt.target;
     Lib.throttle(
         gd._fullLayout._uid + constants.HOVERID,
         constants.HOVERMINTIME,
-        function() { _hover(gd, evt, subplot, noHoverEvent); }
+        function() { _hover(gd, evt, subplot, noHoverEvent, eventTarget); }
     );
 };
 
@@ -28472,7 +28485,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 };
 
 // The actual implementation is here:
-function _hover(gd, evt, subplot, noHoverEvent) {
+function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if(!subplot) subplot = 'xy';
 
     // if the user passed in an array of subplots,
@@ -28591,7 +28604,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // [x|y]px: the pixels (from top left) of the mouse location
         // on the currently selected plot area
         // add pointerX|Y property for drawing the spikes in spikesnap 'cursor' situation
-        var hasUserCalledHover = !evt.target;
+        var hasUserCalledHover = !eventTarget;
         var xpx, ypx;
 
         if(hasUserCalledHover) {
@@ -28608,13 +28621,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 return;
             }
 
-            // Discover event target, traversing open shadow roots.
-            var target = evt.composedPath && evt.composedPath()[0];
-            if(!target) {
-                // Fallback for browsers not supporting composedPath
-                target = evt.target;
-            }
-            var dbb = target.getBoundingClientRect();
+            var dbb = eventTarget.getBoundingClientRect();
 
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
@@ -29062,15 +29069,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
-    }    // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
+    }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
-    if(evt.target && evt.target.tagName) {
+    if(eventTarget && eventTarget.tagName) {
         var hasClickToShow = Registry.getComponentMethod('annotations', 'hasClickToShow')(gd, newhoverdata);
-        overrideCursor(d3.select(evt.target), hasClickToShow ? 'pointer' : '');
+        overrideCursor(d3.select(eventTarget), hasClickToShow ? 'pointer' : '');
     }
 
     // don't emit events if called manually
-    if(!evt.target || noHoverEvent || !hoverChanged(gd, evt, oldhoverdata)) return;
+    if(!eventTarget || noHoverEvent || !hoverChanged(gd, evt, oldhoverdata)) return;
 
     if(oldhoverdata) {
         gd.emit('plotly_unhover', {
@@ -90219,7 +90226,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.6.2';
+exports.version = '2.6.3';
 
 },{}]},{},[12])(12)
 });
