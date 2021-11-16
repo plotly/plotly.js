@@ -114,6 +114,7 @@ function notBlackListed(name) {
         'cheater_contour',
         'cheater_fully_filled',
         'cheater_smooth',
+        'z_h-colorbar_airfoil',
 
         // other
         '1',
