@@ -96,8 +96,10 @@ function draw(gd, titleClass, options) {
 
     var elShouldExist = txt || editable;
 
+    var gapTitleHColorbar;
     if(!group) {
         group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
+        gapTitleHColorbar = fullLayout._gapTitleHColorbar;
     }
 
     var el = group.selectAll('text')
@@ -121,13 +123,17 @@ function draw(gd, titleClass, options) {
     function drawTitle(titleEl) {
         var transformVal;
 
+        if(!transform && gapTitleHColorbar) {
+            transform = {};
+        }
+
         if(transform) {
             transformVal = '';
             if(transform.rotate) {
                 transformVal += 'rotate(' + [transform.rotate, attributes.x, attributes.y] + ')';
             }
-            if(transform.offset) {
-                transformVal += strTranslate(0, transform.offset);
+            if(transform.offset || gapTitleHColorbar) {
+                transformVal += strTranslate(0, (transform.offset || 0) - (gapTitleHColorbar || 0));
             }
         } else {
             transformVal = null;
