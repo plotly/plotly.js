@@ -401,7 +401,7 @@ function drawColorBar(g, opts, gd) {
 
                 if(titleSide === 'top') {
                     var nlines = title.text.split('<br>').length;
-                    y = gs.t + gs.h * pos - 15 - LINE_SPACING * titleFontSize * nlines;
+                    y = gs.t + gs.h * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
                 }
             }
 
