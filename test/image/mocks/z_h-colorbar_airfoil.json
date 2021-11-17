@@ -218,7 +218,7 @@
       "colorbar":{
         "orientation": "h",
         "x":0.75,
-        "y":1.1,
+        "y":-0.1,
         "yanchor":"top",
         "len":0.5,
         "title":{

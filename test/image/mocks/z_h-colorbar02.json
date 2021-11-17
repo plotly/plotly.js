@@ -11,7 +11,7 @@
         "showscale": true,
         "colorbar": {
           "orientation": "h",
-          "y": 1.1,
+          "y": -0.1,
           "yanchor": "top",
           "thickness": 20,
           "ticks": "inside",

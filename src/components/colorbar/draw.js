@@ -167,6 +167,7 @@ function makeColorBarData(gd) {
 }
 
 function drawColorBar(g, opts, gd) {
+    var isVertical = opts.orientation === 'v';
     var len = opts.len;
     var lenmode = opts.lenmode;
     var thickness = opts.thickness;
@@ -178,7 +179,7 @@ function drawColorBar(g, opts, gd) {
     var xpad = opts.xpad;
     var ypad = opts.ypad;
     var optsX = opts.x;
-    var optsY = opts.y;
+    var optsY = isVertical ? opts.y : 1 - opts.y;
 
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
@@ -209,7 +210,6 @@ function drawColorBar(g, opts, gd) {
     // when the colorbar itself is pushing the margins.
     // but then the fractional size is calculated based on the
     // actual graph size, so that the axes will size correctly.
-    var isVertical = opts.orientation === 'v';
     var thickPx = Math.round(thickness * (thicknessmode === 'fraction' ? (isVertical ? gs.w : gs.h) : 1));
     var thickFrac = thickPx / (isVertical ? gs.w : gs.h);
     var lenPx = Math.round(len * (lenmode === 'fraction' ? (isVertical ? gs.h : gs.w) : 1));

@@ -12,7 +12,7 @@
         "colorbar": {
           "orientation": "h",
           "yanchor": "top",
-          "y": 1.5,
+          "y": -0.5,
           "xanchor": "right",
           "x": 1,
           "thickness": 10,

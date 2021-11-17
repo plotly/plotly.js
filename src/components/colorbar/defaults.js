@@ -40,7 +40,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('x', isVertical ? 1.02 : 0.5);
     coerce('xanchor', isVertical ? 'left' : 'center');
     coerce('xpad');
-    coerce('y', isVertical ? 0.5 : -0.02);
+    coerce('y', isVertical ? 0.5 : 1.02);
     coerce('yanchor', isVertical ? 'middle' : 'bottom');
     coerce('ypad');
     Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
