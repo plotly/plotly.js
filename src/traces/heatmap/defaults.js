@@ -27,6 +27,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
+    coerce('texttemplate');
+
+    var fontDflt = Lib.extendFlat({}, layout.font, {color: 'white'});
+    Lib.coerceFont(coerce, 'textfont', fontDflt);
 
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 

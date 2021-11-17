@@ -4,9 +4,26 @@ var d3 = require('@plotly/d3');
 var tinycolor = require('tinycolor2');
 
 var Registry = require('../../registry');
+var Drawing = require('../../components/drawing');
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var formatLabels = require('../scatter/format_labels');
+var extractOpts = require('../../components/colorscale').extractOpts;
 var makeColorScaleFuncFromTrace = require('../../components/colorscale').makeColorScaleFuncFromTrace;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
+var alignmentConstants = require('../../constants/alignment');
+var LINE_SPACING = alignmentConstants.LINE_SPACING;
+
+var labelClass = 'label';
+
+function selectLabels(plotGroup) {
+    return plotGroup.selectAll('g.' + labelClass);
+}
+
+function removeLabels(plotGroup) {
+    selectLabels(plotGroup).remove();
+}
 
 module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
     var xa = plotinfo.xaxis;
@@ -31,7 +48,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var xrev = false;
         var yrev = false;
 
-        var left, right, temp, top, bottom, i;
+        var left, right, temp, top, bottom, i, j;
 
         // TODO: if there are multiple overlapping categorical heatmaps,
         // or if we allow category sorting, then the categories may not be
@@ -112,6 +129,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         if(isOffScreen) {
             var noImage = plotGroup.selectAll('image').data([]);
             noImage.exit().remove();
+
+            removeLabels(plotGroup);
             return;
         }
 
@@ -167,7 +186,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var gcount = 0;
         var bcount = 0;
 
-        var xb, j, xi, v, row, c;
+        var xb, xi, v, row, c;
 
         function setColor(v, pixsize) {
             if(v !== undefined) {
@@ -332,6 +351,106 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             y: top,
             'xlink:href': canvas.toDataURL('image/png')
         });
+
+        removeLabels(plotGroup);
+
+        var texttemplate = trace.texttemplate;
+        if(texttemplate) {
+            // dummy axis for formatting the z value
+            var cOpts = extractOpts(trace);
+            var dummyAx = {
+                type: 'linear',
+                range: [cOpts.min, cOpts.max],
+                _separators: xa._separators,
+                _numFormat: xa._numFormat
+            };
+
+            var xOff = 0;
+            var yOff = 0;
+
+            var allX = cd0.xCenter;
+            if(!allX) {
+                allX = cd0.x;
+                xOff = (allX[1] - allX[0]) / 2 || 0;
+            }
+
+            var allY = cd0.yCenter;
+            if(!allY) {
+                allY = cd0.y;
+                yOff = (allY[1] - allY[0]) / 2 || 0;
+            }
+
+            var allZ = cd0.z;
+
+            var textData = [];
+            for(i = 0; i < m; i++) {
+                var yVal = allY[i] + xOff;
+                var _y = Math.round(ya.c2p(yVal));
+                if(0 > _y || _y > ya._length) continue;
+
+                for(j = 0; j < n; j++) {
+                    var xVal = allX[j] + yOff;
+                    var _x = Math.round(xa.c2p(xVal));
+                    if(0 > _x || _x > xa._length) continue;
+
+                    var obj = formatLabels({
+                        x: xVal,
+                        y: yVal
+                    }, trace, gd._fullLayout);
+
+                    obj.x = xVal;
+                    obj.y = yVal;
+
+                    var zVal = allZ[i][j];
+                    if(zVal === undefined) {
+                        obj.z = '';
+                        obj.zLabel = '';
+                    } else {
+                        obj.z = zVal;
+                        obj.zLabel = Axes.tickText(dummyAx, zVal, 'hover').text;
+                    }
+
+                    var theText = cd0.text && cd0.text[i] && cd0.text[i][j];
+                    if(theText === undefined || theText === false) theText = '';
+                    obj.text = theText;
+
+                    var _t = Lib.texttemplateString(texttemplate, obj, gd._fullLayout._d3locale, obj, trace._meta || {});
+                    if(!_t) continue;
+
+                    textData.push({
+                        t: _t,
+                        x: _x,
+                        y: _y
+                    });
+                }
+            }
+
+            var font = trace.textfont;
+            var xFn = function(d) { return d.x; };
+            var yFn = function(d) {
+                var nlines = d.t.split('<br>').length;
+                return d.y - font.size * ((nlines * LINE_SPACING) / 2 - 1);
+            };
+
+            var labels = selectLabels(plotGroup).data(textData);
+
+            labels
+                .enter()
+                .append('g')
+                .classed(labelClass, 1)
+                .append('text')
+                .attr('text-anchor', 'middle')
+                .each(function(d) {
+                    var thisLabel = d3.select(this);
+
+                    thisLabel
+                        .attr('data-notex', 1)
+                        .call(svgTextUtils.positionText, xFn(d), yFn(d))
+                        .call(Drawing.font, font.family, font.size, font.color)
+                        .text(d.t)
+                        .call(svgTextUtils.convertToTspans, gd);
+                });
+        }
     });
 };
 
