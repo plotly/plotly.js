@@ -651,21 +651,22 @@ function drawColorBar(g, opts, gd) {
             ypad
         ) * 2 + innerThickness + borderwidth + outlinewidth / 2;
 
-        var gapTitleHColorbar = 0;
+        var hColorbarMoveTitle = 0;
         if(!isVertical && title.text && optsY <= 0) {
-            gapTitleHColorbar = outerThickness / 2;
+            hColorbarMoveTitle = outerThickness / 2;
 
-            outerThickness += gapTitleHColorbar;
-            moveY += gapTitleHColorbar;
+            outerThickness += hColorbarMoveTitle;
+            moveY += hColorbarMoveTitle;
         }
-        gd._fullLayout._gapTitleHColorbar = gapTitleHColorbar;
+        fullLayout._hColorbarMoveTitle = hColorbarMoveTitle;
+        fullLayout._hColorbarMoveCBTitle = moveY;
 
         var extraW = borderwidth + outlinewidth;
 
         g.select('.' + cn.cbbg)
         .attr('x', (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0))
-        .attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - gapTitleHColorbar))
-        .attr(isVertical ? 'width' : 'height', Math.max(outerThickness - gapTitleHColorbar, 2))
+        .attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle))
+        .attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2))
         .attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2))
         .call(Color.fill, opts.bgcolor)
         .call(Color.stroke, opts.bordercolor)
