@@ -652,7 +652,7 @@ function drawColorBar(g, opts, gd) {
         ) * 2 + innerThickness + borderwidth + outlinewidth / 2;
 
         var hColorbarMoveTitle = 0;
-        if(!isVertical && title.text && optsY <= 0) {
+        if(!isVertical && title.text && yanchor === 'bottom' && optsY <= 0) {
             hColorbarMoveTitle = outerThickness / 2;
 
             outerThickness += hColorbarMoveTitle;
