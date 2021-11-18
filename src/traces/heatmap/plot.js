@@ -9,6 +9,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var formatLabels = require('../scatter/format_labels');
+var Color = require('../../components/color');
 var extractOpts = require('../../components/colorscale').extractOpts;
 var makeColorScaleFuncFromTrace = require('../../components/colorscale').makeColorScaleFuncFromTrace;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
@@ -420,7 +421,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     textData.push({
                         t: _t,
                         x: _x,
-                        y: _y
+                        y: _y,
+                        z: zVal
                     });
                 }
             }
@@ -443,10 +445,19 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                 .each(function(d) {
                     var thisLabel = d3.select(this);
 
+                    var fontColor = font.color;
+                    if(!fontColor) {
+                        fontColor = Color.contrast(
+                            'rgba(' +
+                                sclFunc(d.z).join() +
+                            ')'
+                        );
+                    }
+
                     thisLabel
                         .attr('data-notex', 1)
                         .call(svgTextUtils.positionText, xFn(d), yFn(d))
-                        .call(Drawing.font, font.family, font.size, font.color)
+                        .call(Drawing.font, font.family, font.size, fontColor)
                         .text(d.t)
                         .call(svgTextUtils.convertToTspans, gd);
                 });

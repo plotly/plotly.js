@@ -29,7 +29,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertemplate');
     coerce('texttemplate');
 
-    var fontDflt = Lib.extendFlat({}, layout.font, {color: 'white'});
+    var fontDflt = Lib.extendFlat({}, layout.font);
+    fontDflt.color = undefined; // color contrast by default
     Lib.coerceFont(coerce, 'textfont', fontDflt);
 
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
