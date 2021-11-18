@@ -13,6 +13,11 @@
   },
   "data": [{
     "type": "heatmap",
+    "texttemplate": "x: %{x}<br>y: %{y}<br>z: %{z}",
+    "textfont": {
+      "family": "Raleway",
+      "size": 14
+    },
 
     "x": ["z", "y", "x", "w"],
     "y": ["d", "c", "b", "a"],
