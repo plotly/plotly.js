@@ -31,8 +31,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('hovertext');
-    coerce('hovertemplate');
     coerce('hoverongaps');
+    coerce('hovertemplate');
+    coerce('texttemplate');
+
+    var fontDflt = Lib.extendFlat({}, layout.font);
+    fontDflt.color = undefined; // color contrast by default
+    Lib.coerceFont(coerce, 'textfont', fontDflt);
 
     var isConstraint = (coerce('contours.type') === 'constraint');
     coerce('connectgaps', Lib.isArray1D(traceOut.z));

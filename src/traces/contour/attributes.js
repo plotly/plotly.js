@@ -42,6 +42,8 @@ module.exports = extendFlat({
     yhoverformat: axisHoverFormat('y'),
     zhoverformat: axisHoverFormat('z', 1),
     hovertemplate: heatmapAttrs.hovertemplate,
+    texttemplate: heatmapAttrs.texttemplate,
+    textfont: heatmapAttrs.textfont,
     hoverongaps: heatmapAttrs.hoverongaps,
     connectgaps: extendFlat({}, heatmapAttrs.connectgaps, {
         description: [
