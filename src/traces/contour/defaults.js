@@ -33,11 +33,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hovertext');
     coerce('hoverongaps');
     coerce('hovertemplate');
-    coerce('texttemplate');
-
-    var fontDflt = Lib.extendFlat({}, layout.font);
-    fontDflt.color = undefined; // color contrast by default
-    Lib.coerceFont(coerce, 'textfont', fontDflt);
 
     var isConstraint = (coerce('contours.type') === 'constraint');
     coerce('connectgaps', Lib.isArray1D(traceOut.z));
@@ -47,5 +42,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     } else {
         handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
         handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    }
+
+    if(
+        traceOut.contours &&
+        traceOut.contours.coloring === 'heatmap'
+    ) {
+        coerce('texttemplate');
+
+        var fontDflt = Lib.extendFlat({}, layout.font);
+        fontDflt.color = undefined; // color contrast by default
+        Lib.coerceFont(coerce, 'textfont', fontDflt);
     }
 };

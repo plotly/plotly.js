@@ -366,10 +366,15 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                 _numFormat: xa._numFormat
             };
 
+            var isHistogram2dContour = trace.type === 'histogram2dcontour';
+
             var textData = [];
             for(i = 0; i < m; i++) {
                 var yVal;
-                if(cd0.yCenter) {
+                if(isHistogram2dContour) {
+                    if(i === 0 || i === m - 1) continue;
+                    yVal = cd0.y[i];
+                } else if(cd0.yCenter) {
                     yVal = cd0.yCenter[i];
                 } else {
                     if(i + 1 === m && cd0.y[i + 1] === undefined) continue;
@@ -381,7 +386,10 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
 
                 for(j = 0; j < n; j++) {
                     var xVal;
-                    if(cd0.xCenter) {
+                    if(isHistogram2dContour) {
+                        if(j === 0 || j === n - 1) continue;
+                        xVal = cd0.x[j];
+                    } else if(cd0.xCenter) {
                         xVal = cd0.xCenter[j];
                     } else {
                         if(j + 1 === n && cd0.x[j + 1] === undefined) continue;

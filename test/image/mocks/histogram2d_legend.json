@@ -98,6 +98,7 @@
             "showlegend": true,
             "showscale": false,
             "texttemplate": "%{z}",
+            "contours": {"coloring": "heatmap"},
             "type": "histogram2dcontour",
             "name": "histogram2dcontour"
         },
@@ -133,6 +134,7 @@
             "showscale": false,
             "reversescale": true,
             "texttemplate": "%{z}",
+            "contours": {"coloring": "heatmap"},
             "type": "histogram2dcontour",
             "name": "histogram2dcontour reversed scale"
         }
