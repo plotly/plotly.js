@@ -366,31 +366,28 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                 _numFormat: xa._numFormat
             };
 
-            var xOff = 0;
-            var yOff = 0;
-
-            var allX = cd0.xCenter;
-            if(!allX) {
-                allX = cd0.x;
-                xOff = (allX[1] - allX[0]) / 2 || 0;
-            }
-
-            var allY = cd0.yCenter;
-            if(!allY) {
-                allY = cd0.y;
-                yOff = (allY[1] - allY[0]) / 2 || 0;
-            }
-
-            var allZ = cd0.z;
-
             var textData = [];
             for(i = 0; i < m; i++) {
-                var yVal = allY[i] + xOff;
+                var yVal;
+                if(cd0.yCenter) {
+                    yVal = cd0.yCenter[i];
+                } else {
+                    if(i + 1 === m && cd0.y[i + 1] === undefined) continue;
+                    yVal = (cd0.y[i] + cd0.y[i + 1]) / 2;
+                }
+
                 var _y = Math.round(ya.c2p(yVal));
                 if(0 > _y || _y > ya._length) continue;
 
                 for(j = 0; j < n; j++) {
-                    var xVal = allX[j] + yOff;
+                    var xVal;
+                    if(cd0.xCenter) {
+                        xVal = cd0.xCenter[j];
+                    } else {
+                        if(j + 1 === n && cd0.x[j + 1] === undefined) continue;
+                        xVal = (cd0.x[j] + cd0.x[j + 1]) / 2;
+                    }
+
                     var _x = Math.round(xa.c2p(xVal));
                     if(0 > _x || _x > xa._length) continue;
 
@@ -402,7 +399,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     obj.x = xVal;
                     obj.y = yVal;
 
-                    var zVal = allZ[i][j];
+                    var zVal = cd0.z[i][j];
                     if(zVal === undefined) {
                         obj.z = '';
                         obj.zLabel = '';
