@@ -21559,43 +21559,24 @@
      "valType": "data_array"
     },
     "textfont": {
-     "arrayOk": false,
      "color": {
-      "arrayOk": true,
       "editType": "style",
       "valType": "color"
      },
-     "colorsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "description": "Sets the text font.",
-     "editType": "calc",
+     "editType": "plot",
      "family": {
-      "arrayOk": true,
       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
-      "editType": "calc",
+      "editType": "plot",
       "noBlank": true,
       "strict": true,
       "valType": "string"
      },
-     "familysrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "role": "object",
      "size": {
-      "arrayOk": true,
-      "editType": "calc",
+      "editType": "plot",
       "min": 1,
       "valType": "number"
-     },
-     "sizesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
-      "editType": "none",
-      "valType": "string"
      }
     },
     "textsrc": {
@@ -26683,43 +26664,24 @@
      "valType": "data_array"
     },
     "textfont": {
-     "arrayOk": false,
      "color": {
-      "arrayOk": true,
       "editType": "style",
       "valType": "color"
      },
-     "colorsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "description": "Sets the text font.",
-     "editType": "calc",
+     "editType": "plot",
      "family": {
-      "arrayOk": true,
       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
-      "editType": "calc",
+      "editType": "plot",
       "noBlank": true,
       "strict": true,
       "valType": "string"
      },
-     "familysrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "role": "object",
      "size": {
-      "arrayOk": true,
-      "editType": "calc",
+      "editType": "plot",
       "min": 1,
       "valType": "number"
-     },
-     "sizesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
-      "editType": "none",
-      "valType": "string"
      }
     },
     "textsrc": {
@@ -30428,43 +30390,24 @@
      }
     },
     "textfont": {
-     "arrayOk": false,
      "color": {
-      "arrayOk": true,
       "editType": "style",
       "valType": "color"
      },
-     "colorsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "description": "Sets the text font.",
-     "editType": "calc",
+     "editType": "plot",
      "family": {
-      "arrayOk": true,
       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
-      "editType": "calc",
+      "editType": "plot",
       "noBlank": true,
       "strict": true,
       "valType": "string"
      },
-     "familysrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "role": "object",
      "size": {
-      "arrayOk": true,
-      "editType": "calc",
+      "editType": "plot",
       "min": 1,
       "valType": "number"
-     },
-     "sizesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
-      "editType": "none",
-      "valType": "string"
      }
     },
     "texttemplate": {
@@ -31740,43 +31683,24 @@
      }
     },
     "textfont": {
-     "arrayOk": false,
      "color": {
-      "arrayOk": true,
       "editType": "style",
       "valType": "color"
      },
-     "colorsrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "description": "Sets the text font.",
-     "editType": "calc",
+     "editType": "plot",
      "family": {
-      "arrayOk": true,
       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
-      "editType": "calc",
+      "editType": "plot",
       "noBlank": true,
       "strict": true,
       "valType": "string"
      },
-     "familysrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `family`.",
-      "editType": "none",
-      "valType": "string"
-     },
      "role": "object",
      "size": {
-      "arrayOk": true,
-      "editType": "calc",
+      "editType": "plot",
       "min": 1,
       "valType": "number"
-     },
-     "sizesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
-      "editType": "none",
-      "valType": "string"
      }
     },
     "texttemplate": {

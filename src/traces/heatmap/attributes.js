@@ -2,6 +2,7 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var baseAttrs = require('../../plots/attributes');
+var fontAttrs = require('../../plots/font_attributes');
 var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
@@ -120,7 +121,11 @@ module.exports = extendFlat({
     texttemplate: texttemplateAttrs({editType: 'plot'}, {
         keys: ['x', 'y', 'z', 'text']
     }),
-    textfont: extendFlat({}, scatterAttrs.textfont, {arrayOk: false}),
+    textfont: fontAttrs({
+        editType: 'plot',
+        colorEditType: 'style',
+        description: 'Sets the text font.'
+    }),
 
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 }, {
