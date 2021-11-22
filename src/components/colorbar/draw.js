@@ -779,7 +779,7 @@ function makeEditable(g, opts, gd) {
                 isVertical ? opts._thickFrac : opts._lenFrac,
                 0, 1, opts.xanchor);
             yf = dragElement.align(
-                (isVertical ? opts._vFrac : opts._uFrac) + (dy / gs.h) * (isVertical ? -1 : 1),
+                (isVertical ? opts._vFrac : (1 - opts._uFrac)) - (dy / gs.h),
                 isVertical ? opts._lenFrac : opts._thickFrac,
                 0, 1, opts.yanchor);
 
