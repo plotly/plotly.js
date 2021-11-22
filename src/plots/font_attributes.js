@@ -53,6 +53,9 @@ module.exports = function(opts) {
         description: '' + (opts.description || '') + ''
     };
 
+    if(opts.autoSize) attrs.size.dflt = 'auto';
+    if(opts.autoColor) attrs.color.dflt = 'auto';
+
     if(opts.arrayOk) {
         attrs.family.arrayOk = true;
         attrs.size.arrayOk = true;

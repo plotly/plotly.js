@@ -126,6 +126,8 @@ module.exports = extendFlat({
     }),
     textfont: fontAttrs({
         editType: 'plot',
+        autoSize: true,
+        autoColor: true,
         colorEditType: 'style',
         description: 'Sets the text font.'
     }),

@@ -21560,6 +21560,7 @@
     },
     "textfont": {
      "color": {
+      "dflt": "auto",
       "editType": "style",
       "valType": "color"
      },
@@ -21574,6 +21575,7 @@
      },
      "role": "object",
      "size": {
+      "dflt": "auto",
       "editType": "plot",
       "min": 1,
       "valType": "number"
@@ -26659,6 +26661,7 @@
     },
     "textfont": {
      "color": {
+      "dflt": "auto",
       "editType": "style",
       "valType": "color"
      },
@@ -26673,6 +26676,7 @@
      },
      "role": "object",
      "size": {
+      "dflt": "auto",
       "editType": "plot",
       "min": 1,
       "valType": "number"
@@ -30379,6 +30383,7 @@
     },
     "textfont": {
      "color": {
+      "dflt": "auto",
       "editType": "style",
       "valType": "color"
      },
@@ -30393,6 +30398,7 @@
      },
      "role": "object",
      "size": {
+      "dflt": "auto",
       "editType": "plot",
       "min": 1,
       "valType": "number"
@@ -31666,6 +31672,7 @@
     },
     "textfont": {
      "color": {
+      "dflt": "auto",
       "editType": "style",
       "valType": "color"
      },
@@ -31680,6 +31687,7 @@
      },
      "role": "object",
      "size": {
+      "dflt": "auto",
       "editType": "plot",
       "min": 1,
       "valType": "number"

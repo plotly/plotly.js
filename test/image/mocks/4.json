@@ -2,6 +2,7 @@
     "data": [
         {
             "texttemplate": "%{z}",
+            "textfont": { "family": "Times New Roman" },
             "z": [
                 [
                     1,

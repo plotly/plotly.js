@@ -7,7 +7,6 @@
     "text": ["zero", "fifty", "one hundred", "fifty", "zero", "two hundred<br>and fifty-five", "one hundred", "five hundred<br>and ten", "one thousand ten"],
     "texttemplate": "%{text}",
     "textfont": {
-      "size": 20,
       "color": "rgba(255,255,255,0.5)"
     }
   }],

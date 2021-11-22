@@ -34,6 +34,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
+        var xGap = trace.xgap || 0;
+        var yGap = trace.ygap || 0;
 
         var z = cd0.z;
         var x = cd0.x;
@@ -49,7 +51,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var xrev = false;
         var yrev = false;
 
-        var left, right, temp, top, bottom, i, j;
+        var left, right, temp, top, bottom, i, j, k;
 
         // TODO: if there are multiple overlapping categorical heatmaps,
         // or if we allow category sorting, then the categories may not be
@@ -298,8 +300,6 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
             // gaps do not need to be exact integers, but if they *are* we will get
             // cleaner edges by rounding at least one edge
-            var xGap = trace.xgap;
-            var yGap = trace.ygap;
             var xGapLeft = Math.floor(xGap / 2);
             var yGapTop = Math.floor(yGap / 2);
 
@@ -432,8 +432,17 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     var _t = Lib.texttemplateString(texttemplate, obj, gd._fullLayout._d3locale, obj, trace._meta || {});
                     if(!_t) continue;
 
+                    var lines = _t.split('<br>');
+                    var nL = lines.length;
+                    var nC = 0;
+                    for(k = 0; k < nL; k++) {
+                        nC = Math.max(nC, lines[k].length);
+                    }
+
                     textData.push({
-                        t: _t,
+                        l: nL, // number of lines
+                        c: nC, // maximum number of chars in a line
+                        t: _t, // text
                         x: _x,
                         y: _y,
                         z: zVal
@@ -444,10 +453,54 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             var font = trace.textfont;
             var fontFamily = font.family;
             var fontSize = font.size;
+
+            if(!fontSize || fontSize === 'auto') {
+                var minW = Infinity;
+                var minH = Infinity;
+                var maxL = 0;
+                var maxC = 0;
+
+                for(k = 0; k < textData.length; k++) {
+                    var d = textData[k];
+                    maxL = Math.max(maxL, d.l);
+                    maxC = Math.max(maxC, d.c);
+
+                    if(k < textData.length - 1) {
+                        var nextD = textData[k + 1];
+                        var dx = Math.abs(nextD.x - d.x);
+                        var dy = Math.abs(nextD.y - d.y);
+
+                        if(dx) minW = Math.min(minW, dx);
+                        if(dy) minH = Math.min(minH, dy);
+                    }
+                }
+
+                if(
+                    !isFinite(minW) ||
+                    !isFinite(minH)
+                ) {
+                    fontSize = 12;
+                } else {
+                    minW -= xGap;
+                    minH -= yGap;
+
+                    minW /= maxC;
+                    minH /= maxL;
+
+                    minW /= LINE_SPACING / 2;
+                    minH /= LINE_SPACING;
+
+                    fontSize = Math.min(
+                        Math.floor(minW),
+                        Math.floor(minH)
+                    );
+                }
+            }
+            if(fontSize <= 0 || !isFinite(fontSize)) return;
+
             var xFn = function(d) { return d.x; };
             var yFn = function(d) {
-                var nlines = d.t.split('<br>').length;
-                return d.y - fontSize * ((nlines * LINE_SPACING) / 2 - 1);
+                return d.y - fontSize * ((d.l * LINE_SPACING) / 2 - 1);
             };
 
             var labels = selectLabels(plotGroup).data(textData);
@@ -462,7 +515,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     var thisLabel = d3.select(this);
 
                     var fontColor = font.color;
-                    if(!fontColor) {
+                    if(!fontColor || fontColor === 'auto') {
                         fontColor = Color.contrast(
                             'rgba(' +
                                 sclFunc(d.z).join() +
