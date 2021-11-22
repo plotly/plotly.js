@@ -16,7 +16,7 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var alignmentConstants = require('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
 
-var labelClass = 'label';
+var labelClass = 'heatmap-label';
 
 function selectLabels(plotGroup) {
     return plotGroup.selectAll('g.' + labelClass);
