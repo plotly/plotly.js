@@ -155,7 +155,7 @@
     "mathjax": "2.7.5",
     "minify-stream": "^2.1.0",
     "npm-link-check": "^4.0.0",
-    "open": "^8.3.0",
+    "open": "^8.4.0",
     "pixelmatch": "^5.2.1",
     "prepend-file": "^2.0.0",
     "prettysize": "^2.0.0",
