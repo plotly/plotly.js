@@ -442,10 +442,12 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             }
 
             var font = trace.textfont;
+            var fontFamily = font.family;
+            var fontSize = font.size;
             var xFn = function(d) { return d.x; };
             var yFn = function(d) {
                 var nlines = d.t.split('<br>').length;
-                return d.y - font.size * ((nlines * LINE_SPACING) / 2 - 1);
+                return d.y - fontSize * ((nlines * LINE_SPACING) / 2 - 1);
             };
 
             var labels = selectLabels(plotGroup).data(textData);
@@ -471,7 +473,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     thisLabel
                         .attr('data-notex', 1)
                         .call(svgTextUtils.positionText, xFn(d), yFn(d))
-                        .call(Drawing.font, font.family, font.size, fontColor)
+                        .call(Drawing.font, fontFamily, fontSize, fontColor)
                         .text(d.t)
                         .call(svgTextUtils.convertToTspans, gd);
                 });
