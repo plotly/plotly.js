@@ -125,7 +125,7 @@
     "browserify-transform-tools": "^1.7.0",
     "bubleify": "^2.0.0",
     "canvas": "^2.8.0",
-    "check-node-version": "^4.1.0",
+    "check-node-version": "^4.2.1",
     "chttps": "^1.0.6",
     "deep-equal": "^2.0.5",
     "derequire": "^2.1.1",
