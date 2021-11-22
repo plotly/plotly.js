@@ -139,7 +139,7 @@
     "gzip-size": "^6.0.0",
     "into-stream": "^6.0.0",
     "jasmine-core": "^3.5.0",
-    "jsdom": "^18.0.0",
+    "jsdom": "^18.1.1",
     "karma": "^6.3.6",
     "karma-browserify": "^8.1.0",
     "karma-chrome-launcher": "^3.1.0",
