@@ -70,7 +70,12 @@ module.exports = extendFlat(
         yhoverformat: axisHoverFormat('y'),
         zhoverformat: axisHoverFormat('z', 1),
         hovertemplate: hovertemplateAttrs({}, {keys: 'z'}),
-        texttemplate: texttemplateAttrs({editType: 'plot'}, {keys: 'z'}),
+        texttemplate: texttemplateAttrs({
+            arrayOk: false,
+            editType: 'plot'
+        }, {
+            keys: 'z'
+        }),
         textfont: heatmapAttrs.textfont,
         showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
     },

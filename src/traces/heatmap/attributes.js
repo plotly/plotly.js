@@ -118,7 +118,10 @@ module.exports = extendFlat({
     zhoverformat: axisHoverFormat('z', 1),
 
     hovertemplate: hovertemplateAttrs(),
-    texttemplate: texttemplateAttrs({editType: 'plot'}, {
+    texttemplate: texttemplateAttrs({
+        arrayOk: false,
+        editType: 'plot'
+    }, {
         keys: ['x', 'y', 'z', 'text']
     }),
     textfont: fontAttrs({
