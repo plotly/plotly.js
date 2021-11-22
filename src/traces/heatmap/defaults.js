@@ -3,6 +3,7 @@
 var Lib = require('../../lib');
 
 var handleXYZDefaults = require('./xyz_defaults');
+var handleHeatmapLabelDefaults = require('./label_defaults');
 var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleStyleDefaults = require('./style_defaults');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
@@ -27,12 +28,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('hovertext');
     coerce('hovertemplate');
-    coerce('texttemplate');
 
-    var fontDflt = Lib.extendFlat({}, layout.font);
-    fontDflt.color = undefined; // color contrast by default
-    Lib.coerceFont(coerce, 'textfont', fontDflt);
-
+    handleHeatmapLabelDefaults(coerce, layout);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 
     coerce('hoverongaps');

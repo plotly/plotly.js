@@ -5,6 +5,7 @@ var Lib = require('../../lib');
 var handleSampleDefaults = require('./sample_defaults');
 var handleStyleDefaults = require('../heatmap/style_defaults');
 var colorscaleDefaults = require('../../components/colorscale/defaults');
+var handleHeatmapLabelDefaults = require('../heatmap/label_defaults');
 var attributes = require('./attributes');
 
 
@@ -19,11 +20,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
     coerce('hovertemplate');
-    coerce('texttemplate');
 
-    var fontDflt = Lib.extendFlat({}, layout.font);
-    fontDflt.color = undefined; // color contrast by default
-    Lib.coerceFont(coerce, 'textfont', fontDflt);
+    handleHeatmapLabelDefaults(coerce, layout);
 
     coerce('xhoverformat');
     coerce('yhoverformat');

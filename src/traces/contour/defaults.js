@@ -7,6 +7,7 @@ var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleConstraintDefaults = require('./constraint_defaults');
 var handleContoursDefaults = require('./contours_defaults');
 var handleStyleDefaults = require('./style_defaults');
+var handleHeatmapLabelDefaults = require('../heatmap/label_defaults');
 var attributes = require('./attributes');
 
 
@@ -48,10 +49,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         traceOut.contours &&
         traceOut.contours.coloring === 'heatmap'
     ) {
-        coerce('texttemplate');
-
-        var fontDflt = Lib.extendFlat({}, layout.font);
-        fontDflt.color = undefined; // color contrast by default
-        Lib.coerceFont(coerce, 'textfont', fontDflt);
+        handleHeatmapLabelDefaults(coerce, layout);
     }
 };
