@@ -722,11 +722,29 @@ proto.project = function(v) {
 proto.getView = function() {
     var map = this.map;
     var mapCenter = map.getCenter();
-    var center = { lon: mapCenter.lng, lat: mapCenter.lat };
+    var lon = mapCenter.lng;
+    var lat = mapCenter.lat;
+    var center = { lon: lon, lat: lat };
 
     var canvas = map.getCanvas();
-    var w = canvas.width;
-    var h = canvas.height;
+    var width = canvas.width;
+    var height = canvas.height;
+
+    var p00, p10, p11, p01;
+
+    // attempt finding correct scale for Retina display
+    for(var scale = 2; scale > 0; scale--) {
+        var w = width / scale;
+        var h = height / scale;
+
+        p00 = map.unproject([0, 0]).toArray();
+        p10 = map.unproject([w, 0]).toArray();
+        p11 = map.unproject([w, h]).toArray();
+        p01 = map.unproject([0, h]).toArray();
+
+        if(Math.abs(lon - (p00[0] + p11[0]) / 2) < 0.0001) break;
+    }
+
     return {
         center: center,
         zoom: map.getZoom(),
@@ -734,10 +752,10 @@ proto.getView = function() {
         pitch: map.getPitch(),
         _derived: {
             coordinates: [
-                map.unproject([0, 0]).toArray(),
-                map.unproject([w, 0]).toArray(),
-                map.unproject([w, h]).toArray(),
-                map.unproject([0, h]).toArray()
+                p00,
+                p10,
+                p11,
+                p01
             ]
         }
     };
