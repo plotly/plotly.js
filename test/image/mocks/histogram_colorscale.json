@@ -13,6 +13,11 @@
                 "cmax": 5
             },
             "x": [ 0, 1, 1, 2, 2, 2, 3, 3, 4 ],
+            "texttemplate": "%{value}",
+            "textposition": "inside",
+            "textfont": {
+                "size": 64
+            },
             "type": "histogram"
         }
     ],

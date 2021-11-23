@@ -27922,6 +27922,24 @@
      "editType": "calc",
      "valType": "string"
     },
+    "cliponaxis": {
+     "description": "Determines whether the text nodes are clipped about the subplot axes. To show the text nodes above axis lines and tick labels, make sure to set `xaxis.layer` and `yaxis.layer` to *below traces*.",
+     "dflt": true,
+     "editType": "plot",
+     "valType": "boolean"
+    },
+    "constraintext": {
+     "description": "Constrain the size of text inside or outside a bar to be no larger than the bar itself.",
+     "dflt": "both",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "inside",
+      "outside",
+      "both",
+      "none"
+     ]
+    },
     "cumulative": {
      "currentbin": {
       "description": "Only applies if cumulative is enabled. Sets whether the current bin is included, excluded, or has half of its value included in the current cumulative value. *include* is the default for compatibility with various other tools, however it introduces a half-bin bias to the results. *exclude* makes the opposite half-bin bias, and *half* removes it.",
@@ -28337,6 +28355,38 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "insidetextanchor": {
+     "description": "Determines if texts are kept at center or start/end points in `textposition` *inside* mode.",
+     "dflt": "end",
+     "editType": "plot",
+     "valType": "enumerated",
+     "values": [
+      "end",
+      "middle",
+      "start"
+     ]
+    },
+    "insidetextfont": {
+     "color": {
+      "editType": "style",
+      "valType": "color"
+     },
+     "description": "Sets the font used for `text` lying inside the bar.",
+     "editType": "plot",
+     "family": {
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "plot",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "editType": "plot",
+      "min": 1,
+      "valType": "number"
+     }
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -29182,6 +29232,27 @@
       "h"
      ]
     },
+    "outsidetextfont": {
+     "color": {
+      "editType": "style",
+      "valType": "color"
+     },
+     "description": "Sets the font used for `text` lying outside the bar.",
+     "editType": "plot",
+     "family": {
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "plot",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "editType": "plot",
+      "min": 1,
+      "valType": "number"
+     }
+    },
     "selected": {
      "editType": "style",
      "marker": {
@@ -29248,9 +29319,55 @@
      "editType": "calc",
      "valType": "string"
     },
+    "textangle": {
+     "description": "Sets the angle of the tick labels with respect to the bar. For example, a `tickangle` of -90 draws the tick labels vertically. With *auto* the texts may automatically be rotated to fit with the maximum size in bars.",
+     "dflt": "auto",
+     "editType": "plot",
+     "valType": "angle"
+    },
+    "textfont": {
+     "color": {
+      "editType": "style",
+      "valType": "color"
+     },
+     "description": "Sets the text font.",
+     "editType": "plot",
+     "family": {
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "plot",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "editType": "plot",
+      "min": 1,
+      "valType": "number"
+     }
+    },
+    "textposition": {
+     "arrayOk": false,
+     "description": "Specifies the location of the `text`. *inside* positions `text` inside, next to the bar end (rotated and scaled if needed). *outside* positions `text` outside, next to the bar end (scaled if needed), unless there is another bar stacked on this one, then the text gets pushed inside. *auto* tries to position `text` inside the bar, but if the bar is too small and no bar is stacked on this one the text is moved outside. If *none*, no text appears.",
+     "dflt": "auto",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "inside",
+      "outside",
+      "auto",
+      "none"
+     ]
+    },
     "textsrc": {
      "description": "Sets the source reference on Chart Studio Cloud for `text`.",
      "editType": "none",
+     "valType": "string"
+    },
+    "texttemplate": {
+     "description": "Template string used for rendering the information text that appear on points. Note that this will override `textinfo`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. Every attributes that can be specified per-point (the ones that are `arrayOk: true`) are available. variables `label` and `value`.",
+     "dflt": "",
+     "editType": "plot",
      "valType": "string"
     },
     "transforms": {
