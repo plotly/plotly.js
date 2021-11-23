@@ -85,6 +85,7 @@ function notBlackListed(name) {
 
         // has contourcarpet See https://github.com/plotly/plotly.js/issues/5669
         'airfoil',
+        'h-colorbar_airfoil',
         'cheater',
         'cheater_constraint_greater_than',
         'cheater_constraint_greater_than_with_hill',
@@ -114,7 +115,6 @@ function notBlackListed(name) {
         'cheater_contour',
         'cheater_fully_filled',
         'cheater_smooth',
-        'z_h-colorbar_airfoil',
 
         // other
         '1',
