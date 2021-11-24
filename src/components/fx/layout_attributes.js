@@ -2,12 +2,14 @@
 
 var constants = require('./constants');
 
-var fontAttrs = require('../../plots/font_attributes')({
+var fontAttrs = require('../../plots/font_attributes');
+
+var font = fontAttrs({
     editType: 'none',
     description: 'Sets the default hover label font used by all traces on the graph.'
 });
-fontAttrs.family.dflt = constants.HOVERFONT;
-fontAttrs.size.dflt = constants.HOVERFONTSIZE;
+font.family.dflt = constants.HOVERFONT;
+font.size.dflt = constants.HOVERFONTSIZE;
 
 module.exports = {
     clickmode: {
@@ -118,7 +120,7 @@ module.exports = {
                 'Sets the border color of all hover labels on graph.'
             ].join(' ')
         },
-        font: fontAttrs,
+        font: font,
         align: {
             valType: 'enumerated',
             values: ['left', 'right', 'auto'],
@@ -143,6 +145,14 @@ module.exports = {
                 '`namelength - 3` characters and add an ellipsis.'
             ].join(' ')
         },
+        grouptitlesfont: fontAttrs({
+            editType: 'none',
+            description: [
+                'Sets the font for group titles in hover (unified modes).',
+                'Defaults to `hoverlabel.font`.'
+            ].join(' ')
+        }),
+
         editType: 'none'
     },
     selectdirection: {

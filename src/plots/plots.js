@@ -1323,9 +1323,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             coerce('legendgroup');
             var titleText = coerce('legendgrouptitle.text');
             if(titleText) {
-                Lib.coerceFont(coerce, 'legendgrouptitle.font', Lib.extendFlat({}, layout.font, {
-                    size: Math.round(layout.font.size * 1.1) // default to larger font size
-                }));
+                Lib.coerceFont(coerce, 'legendgrouptitle.font', layout.legendgrouptitlesfont);
             }
 
             coerce('legendrank');
@@ -1475,16 +1473,18 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('autotypenumbers');
 
-    var globalFont = Lib.coerceFont(coerce, 'font');
+    var font = Lib.coerceFont(coerce, 'font');
+    var fontSize = font.size;
+
+    Lib.coerceFont(coerce, 'legendgrouptitlesfont', Lib.extendFlat({}, font, {
+        size: Math.round(fontSize * 1.1)
+    }));
+
+    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+        size: Math.round(fontSize * 1.4)
+    }));
 
     coerce('title.text', layoutOut._dfltTitle.plot);
-
-    Lib.coerceFont(coerce, 'title.font', {
-        family: globalFont.family,
-        size: Math.round(globalFont.size * 1.4),
-        color: globalFont.color
-    });
-
     coerce('title.xref');
     coerce('title.yref');
     coerce('title.x');

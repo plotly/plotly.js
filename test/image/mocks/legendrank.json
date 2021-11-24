@@ -37,6 +37,18 @@
       "text": "legendrank"
     },
     "hovermode": "x unified",
+    "hoverlabel": {
+      "grouptitlesfont": {
+        "family": "Raleway",
+        "color": "red",
+        "size": 16
+      }
+    },
+    "legendgrouptitlesfont": {
+      "family": "Times New Roman",
+      "color": "orange",
+      "size": 14
+    },
     "margin": {
       "t": 50,
       "b": 25
