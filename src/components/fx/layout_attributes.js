@@ -121,6 +121,13 @@ module.exports = {
             ].join(' ')
         },
         font: font,
+        grouptitlesfont: fontAttrs({
+            editType: 'none',
+            description: [
+                'Sets the font for group titles in hover (unified modes).',
+                'Defaults to `hoverlabel.font`.'
+            ].join(' ')
+        }),
         align: {
             valType: 'enumerated',
             values: ['left', 'right', 'auto'],
@@ -145,13 +152,6 @@ module.exports = {
                 '`namelength - 3` characters and add an ellipsis.'
             ].join(' ')
         },
-        grouptitlesfont: fontAttrs({
-            editType: 'none',
-            description: [
-                'Sets the font for group titles in hover (unified modes).',
-                'Defaults to `hoverlabel.font`.'
-            ].join(' ')
-        }),
 
         editType: 'none'
     },
