@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.6.3
+* plotly.js (geo) v2.6.4
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38724,7 +38724,7 @@ var TEXTOFFSETSIGN = {
     start: 1, end: -1, middle: 0, bottom: 1, top: -1
 };
 
-function textPointPosition(s, textPosition, fontSize, markerRadius) {
+function textPointPosition(s, textPosition, fontSize, markerRadius, dontTouchParent) {
     var group = d3.select(s.node().parentNode);
 
     var v = textPosition.indexOf('top') !== -1 ?
@@ -38746,7 +38746,9 @@ function textPointPosition(s, textPosition, fontSize, markerRadius) {
 
     // fix the overall text group position
     s.attr('text-anchor', h);
-    group.attr('transform', strTranslate(dx, dy));
+    if(!dontTouchParent) {
+        group.attr('transform', strTranslate(dx, dy));
+    }
 }
 
 function extracTextFontSize(d, trace) {
@@ -38816,7 +38818,8 @@ drawing.selectedTextStyle = function(s, trace) {
         var fontSize = extracTextFontSize(d, trace);
 
         Color.fill(tx, tc);
-        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc);
+        var dontTouchParent = Registry.traceIs(trace, 'bar-like');
+        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc, dontTouchParent);
     });
 };
 
@@ -95044,7 +95047,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.6.3';
+exports.version = '2.6.4';
 
 },{}]},{},[8])(8)
 });
