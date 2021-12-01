@@ -4,6 +4,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Color = require('../../components/color');
 
+var handleText = require('../bar/defaults').handleText;
 var handleStyleDefaults = require('../bar/style_defaults');
 var attributes = require('./attributes');
 
@@ -22,6 +23,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    var textposition = coerce('textposition');
+    handleText(traceIn, traceOut, layout, coerce, textposition, {
+        moduleHasSelected: true,
+        moduleHasUnselected: true,
+        moduleHasConstrain: true,
+        moduleHasCliponaxis: true,
+        moduleHasTextangle: true,
+        moduleHasInsideanchor: true
+    });
+
     coerce('hovertext');
     coerce('hovertemplate');
     coerce('xhoverformat');
