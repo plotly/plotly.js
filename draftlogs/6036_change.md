@@ -1,0 +1,1 @@
+ - Bump `probe-image-size` module to v7.2.2 [[#6036](https://github.com/plotly/plotly.js/pull/6036)]
