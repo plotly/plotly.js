@@ -156,7 +156,11 @@ module.exports = overrideAll({
             'outside bottom', 'inside bottom'
         ],
         dflt: 'outside',
-        description: 'Determines where tick labels are drawn.'
+        description: [
+            'Determines where tick labels are drawn relative to the ticks.',
+            'Left and right options are used when `orientation` is *h*,',
+            'top and bottom when `orientation` is *v*.'
+        ].join(' ')
     },
 
     ticklen: axesAttrs.ticklen,
