@@ -61,8 +61,8 @@ module.exports = overrideAll({
         max: 3,
         description: [
             'Sets the x position of the color bar (in plot fraction).',
-            'Defaults to 1.02 when `orientation` if *v* and ',
-            'defaults to 0.5 when `orientation` if *h*.'
+            'Defaults to 1.02 when `orientation` is *v* and',
+            '0.5 when `orientation` is *h*.'
         ].join(' ')
     },
     xanchor: {
