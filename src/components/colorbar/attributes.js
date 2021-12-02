@@ -72,8 +72,8 @@ module.exports = overrideAll({
             'Sets this color bar\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
             'or *right* of the color bar.',
-            'Defaults to *left* when `orientation` if *v* and ',
-            'defaults to *center* when `orientation` if *h*.'
+            'Defaults to *left* when `orientation` is *v* and',
+            '*center* when `orientation` is *h*.'
         ].join(' ')
     },
     xpad: {
