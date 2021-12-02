@@ -99,8 +99,8 @@ module.exports = overrideAll({
             'Sets this color bar\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
             'or *bottom* of the color bar.',
-            'Defaults to *middle* when `orientation` if *v* and ',
-            'defaults to *bottom* when `orientation` if *h*.'
+            'Defaults to *middle* when `orientation` is *v* and',
+            '*bottom* when `orientation` is *h*.'
         ].join(' ')
     },
     ypad: {
