@@ -88,8 +88,8 @@ module.exports = overrideAll({
         max: 3,
         description: [
             'Sets the y position of the color bar (in plot fraction).',
-            'Defaults to 1.02 when `orientation` if *v* and ',
-            'defaults to 0.5 when `orientation` if *h*.'
+            'Defaults to 0.5 when `orientation` is *v* and',
+            '1.02 when `orientation` is *h*.'
         ].join(' ')
     },
     yanchor: {
