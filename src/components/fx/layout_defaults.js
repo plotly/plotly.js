@@ -35,5 +35,5 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 
-    Lib.coerceFont(coerce, 'hoverlabel.grouptitlesfont', layoutOut.hoverlabel.font);
+    Lib.coerceFont(coerce, 'hoverlabel.grouptitlefont', layoutOut.hoverlabel.font);
 };

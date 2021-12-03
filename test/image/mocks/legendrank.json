@@ -38,13 +38,13 @@
     },
     "hovermode": "x unified",
     "hoverlabel": {
-      "grouptitlesfont": {
+      "grouptitlefont": {
         "family": "Raleway",
         "color": "red",
         "size": 16
       }
     },
-    "legendgrouptitlesfont": {
+    "legendgrouptitlefont": {
       "family": "Times New Roman",
       "color": "orange",
       "size": 14

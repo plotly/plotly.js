@@ -2494,7 +2494,7 @@
       "valType": "number"
      }
     },
-    "grouptitlesfont": {
+    "grouptitlefont": {
      "color": {
       "editType": "none",
       "valType": "color"
@@ -2878,7 +2878,7 @@
      ]
     }
    },
-   "legendgrouptitlesfont": {
+   "legendgrouptitlefont": {
     "color": {
      "editType": "legend",
      "valType": "color"

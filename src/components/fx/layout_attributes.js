@@ -121,7 +121,7 @@ module.exports = {
             ].join(' ')
         },
         font: font,
-        grouptitlesfont: fontAttrs({
+        grouptitlefont: fontAttrs({
             editType: 'none',
             description: [
                 'Sets the font for group titles in hover (unified modes).',

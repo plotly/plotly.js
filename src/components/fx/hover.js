@@ -1144,7 +1144,7 @@ function createHoverText(hoverData, opts) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
-        mockLegend._groupTitleFont = hoverlabel.grouptitlesfont;
+        mockLegend._groupTitleFont = hoverlabel.grouptitlefont;
 
         legendDraw(gd, mockLegend);
 
