@@ -9,6 +9,23 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.7.0] -- 2021-12-02
+
+### Added
+ - Add `texttemplate`, `textposition`, `textfont`, `textangle`,
+   `outsidetextfont`, `insidetextfont`, `insidetextanchor`,
+   `constraintext` and `cliponaxis` to `histogram` trace [[#6038](https://github.com/plotly/plotly.js/pull/6038)]
+
+### Changed
+ - Bump `probe-image-size` module to v7.2.2 [[#6036](https://github.com/plotly/plotly.js/pull/6036)]
+
+### Fixed
+ - Fix mapbox derived coordinate for Retina displays [[#6039](https://github.com/plotly/plotly.js/pull/6039)]
+ - Fix interaction between `uirevision` and `autorange`. Because we push `autorange` and `range` back into `layout`,
+   there can be times it looks like we're applying GUI-driven changes on top of explicit autorange and other times
+   it's an implicit autorange, even though the user's intent was always implicit. This fix treats them as equivalent. [[#6046](https://github.com/plotly/plotly.js/pull/6046)]
+
+
 ## [2.6.4] -- 2021-11-26
 
 ### Fixed
