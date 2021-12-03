@@ -1395,7 +1395,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -1521,14 +1521,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -1545,14 +1545,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -12300,7 +12300,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -12426,14 +12426,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -12450,14 +12450,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -13808,7 +13808,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -13934,14 +13934,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -13958,14 +13958,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -17932,7 +17932,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -18058,14 +18058,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -18082,14 +18082,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -18918,7 +18918,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -19044,14 +19044,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -19068,14 +19068,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -19933,7 +19933,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -20059,14 +20059,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -20083,14 +20083,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -20966,7 +20966,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -21092,14 +21092,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -21116,14 +21116,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -22311,7 +22311,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -22437,14 +22437,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -22461,14 +22461,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -23256,7 +23256,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -23382,14 +23382,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -23406,14 +23406,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -24544,7 +24544,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -24670,14 +24670,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -24694,14 +24694,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -26247,7 +26247,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -26373,14 +26373,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -26397,14 +26397,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -27375,7 +27375,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "calc",
       "valType": "enumerated",
@@ -27501,14 +27501,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
@@ -27525,14 +27525,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
@@ -28847,7 +28847,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -28973,14 +28973,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -28997,14 +28997,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -29957,7 +29957,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -30083,14 +30083,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -30107,14 +30107,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -31057,7 +31057,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -31183,14 +31183,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -31207,14 +31207,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -32664,7 +32664,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -32790,14 +32790,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -32814,14 +32814,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -34939,7 +34939,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "calc",
       "valType": "enumerated",
@@ -35065,14 +35065,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
@@ -35089,14 +35089,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
@@ -36148,7 +36148,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -36274,14 +36274,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -36298,14 +36298,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -38111,7 +38111,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -38237,14 +38237,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -38261,14 +38261,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -39061,7 +39061,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -39187,14 +39187,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -39211,14 +39211,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -42434,7 +42434,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -42560,14 +42560,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -42584,14 +42584,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -44623,7 +44623,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "calc",
        "valType": "enumerated",
@@ -44749,14 +44749,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -44773,14 +44773,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -45205,7 +45205,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "calc",
        "valType": "enumerated",
@@ -45331,14 +45331,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -45355,14 +45355,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -46640,7 +46640,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -46766,14 +46766,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -46790,14 +46790,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -48468,7 +48468,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "calc",
        "valType": "enumerated",
@@ -48594,14 +48594,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -48618,14 +48618,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -50442,7 +50442,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "calc",
        "valType": "enumerated",
@@ -50568,14 +50568,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -50592,14 +50592,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -52335,7 +52335,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "calc",
        "valType": "enumerated",
@@ -52461,14 +52461,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -52485,14 +52485,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -53497,7 +53497,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -53623,14 +53623,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -53647,14 +53647,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -55328,7 +55328,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "calc",
        "valType": "enumerated",
@@ -55454,14 +55454,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -55478,14 +55478,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "calc",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -57136,7 +57136,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -57262,14 +57262,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -57286,14 +57286,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -58970,7 +58970,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -59096,14 +59096,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -59120,14 +59120,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -60758,7 +60758,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -60884,14 +60884,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -60908,14 +60908,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -62150,7 +62150,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "colorbars",
       "valType": "enumerated",
@@ -62276,14 +62276,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -62300,14 +62300,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "colorbars",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "colorbars",
       "valType": "enumerated",
       "values": [
@@ -63596,7 +63596,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -63722,14 +63722,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -63746,14 +63746,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -64462,7 +64462,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "calc",
       "valType": "enumerated",
@@ -64588,14 +64588,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
@@ -64612,14 +64612,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
@@ -66797,7 +66797,7 @@
        ]
       },
       "ticklabelposition": {
-       "description": "Determines where tick labels are drawn.",
+       "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
        "dflt": "outside",
        "editType": "colorbars",
        "valType": "enumerated",
@@ -66923,14 +66923,14 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "xanchor": {
-       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+       "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -66947,14 +66947,14 @@
        "valType": "number"
       },
       "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
        "editType": "colorbars",
        "max": 3,
        "min": -2,
        "valType": "number"
       },
       "yanchor": {
-       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+       "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
        "editType": "colorbars",
        "valType": "enumerated",
        "values": [
@@ -69086,7 +69086,7 @@
       ]
      },
      "ticklabelposition": {
-      "description": "Determines where tick labels are drawn.",
+      "description": "Determines where tick labels are drawn relative to the ticks. Left and right options are used when `orientation` is *h*, top and bottom when `orientation` is *v*.",
       "dflt": "outside",
       "editType": "calc",
       "valType": "enumerated",
@@ -69212,14 +69212,14 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "xanchor": {
-      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` if *v* and  defaults to *center* when `orientation` if *h*.",
+      "description": "Sets this color bar's horizontal position anchor. This anchor binds the `x` position to the *left*, *center* or *right* of the color bar. Defaults to *left* when `orientation` is *v* and *center* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
@@ -69236,14 +69236,14 @@
       "valType": "number"
      },
      "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` if *v* and  defaults to 0.5 when `orientation` if *h*.",
+      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
       "editType": "calc",
       "max": 3,
       "min": -2,
       "valType": "number"
      },
      "yanchor": {
-      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` if *v* and  defaults to *bottom* when `orientation` if *h*.",
+      "description": "Sets this color bar's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the color bar. Defaults to *middle* when `orientation` is *v* and *bottom* when `orientation` is *h*.",
       "editType": "calc",
       "valType": "enumerated",
       "values": [
