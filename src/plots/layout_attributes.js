@@ -309,13 +309,6 @@ module.exports = {
             'c) One trace is explicitly given with `showlegend: true`.'
         ].join(' ')
     },
-    legendgrouptitlefont: fontAttrs({
-        editType: 'legend',
-        description: [
-            'Sets the font for group titles in legend.',
-            'Defaults to `legend.font` with its size increased about 10%.'
-        ].join(' ')
-    }),
 
     colorway: {
         valType: 'colorlist',

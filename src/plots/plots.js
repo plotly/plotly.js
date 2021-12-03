@@ -1321,11 +1321,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
-            var titleText = coerce('legendgrouptitle.text');
-            if(titleText) {
-                Lib.coerceFont(coerce, 'legendgrouptitle.font', layout.legendgrouptitlefont);
-            }
-
+            coerce('legendgrouptitle.text');
             coerce('legendrank');
 
             traceOut._dfltShowLegend = true;
@@ -1475,10 +1471,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     var font = Lib.coerceFont(coerce, 'font');
     var fontSize = font.size;
-
-    Lib.coerceFont(coerce, 'legendgrouptitlefont', Lib.extendFlat({}, font, {
-        size: Math.round(fontSize * 1.1)
-    }));
 
     Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
         size: Math.round(fontSize * 1.4)
