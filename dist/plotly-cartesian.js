@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.6.4
+* plotly.js (cartesian) v2.7.0
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -16525,15 +16525,18 @@ var SIG_EXIF  = str2arr('Exif\0\0');
 module.exports = function (data) {
   if (data.length < 2) return;
 
-  // first marker of the file MUST be 0xFFD8
-  if (data[0] !== 0xFF || data[1] !== 0xD8) return;
+  // first marker of the file MUST be 0xFFD8,
+  // following by either 0xFFE0, 0xFFE2 or 0xFFE3
+  if (data[0] !== 0xFF || data[1] !== 0xD8 || data[2] !== 0xFF) return;
 
   var offset = 2;
 
   for (;;) {
-    if (data.length - offset < 2) return;
-    // not a JPEG marker
-    if (data[offset++] !== 0xFF) return;
+    // skip until we see 0xFF, see https://github.com/nodeca/probe-image-size/issues/68
+    for (;;) {
+      if (data.length - offset < 2) return;
+      if (data[offset++] === 0xFF) break;
+    }
 
     var code = data[offset++];
     var length;
@@ -60316,7 +60319,8 @@ function findUIPattern(key, patternSpecs) {
         var spec = patternSpecs[i];
         var match = key.match(spec.pattern);
         if(match) {
-            return {head: match[1], attr: spec.attr};
+            var head = match[1] || '';
+            return {head: head, tail: key.substr(head.length + 1), attr: spec.attr};
         }
     }
 }
@@ -60368,26 +60372,54 @@ function valsMatch(v1, v2) {
 
 function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
     var layoutPreGUI = oldFullLayout._preGUI;
-    var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal;
+    var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal, head, tail;
     var bothInheritAutorange = [];
+    var newAutorangeIn = {};
     var newRangeAccepted = {};
     for(key in layoutPreGUI) {
         match = findUIPattern(key, layoutUIControlPatterns);
         if(match) {
-            revAttr = match.attr || (match.head + '.uirevision');
+            head = match.head;
+            tail = match.tail;
+            revAttr = match.attr || (head + '.uirevision');
             oldRev = nestedProperty(oldFullLayout, revAttr).get();
             newRev = oldRev && getNewRev(revAttr, layout);
+
             if(newRev && (newRev === oldRev)) {
                 preGUIVal = layoutPreGUI[key];
                 if(preGUIVal === null) preGUIVal = undefined;
                 newNP = nestedProperty(layout, key);
                 newVal = newNP.get();
+
                 if(valsMatch(newVal, preGUIVal)) {
-                    if(newVal === undefined && key.substr(key.length - 9) === 'autorange') {
-                        bothInheritAutorange.push(key.substr(0, key.length - 10));
+                    if(newVal === undefined && tail === 'autorange') {
+                        bothInheritAutorange.push(head);
                     }
                     newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
                     continue;
+                } else if(tail === 'autorange' || tail.substr(0, 6) === 'range[') {
+                    // Special case for (auto)range since we push it back into the layout
+                    // so all null should be treated equivalently to autorange: true with any range
+                    var pre0 = layoutPreGUI[head + '.range[0]'];
+                    var pre1 = layoutPreGUI[head + '.range[1]'];
+                    var preAuto = layoutPreGUI[head + '.autorange'];
+                    if(preAuto || (preAuto === null && pre0 === null && pre1 === null)) {
+                        // Only read the input layout once and stash the result,
+                        // so we get it before we start modifying it
+                        if(!(head in newAutorangeIn)) {
+                            var newContainer = nestedProperty(layout, head).get();
+                            newAutorangeIn[head] = newContainer && (
+                                newContainer.autorange ||
+                                (newContainer.autorange !== false && (
+                                    !newContainer.range || newContainer.range.length !== 2)
+                                )
+                            );
+                        }
+                        if(newAutorangeIn[head]) {
+                            newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
+                            continue;
+                        }
+                    }
                 }
             }
         } else {
@@ -60398,12 +60430,12 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
         // so remove it from _preGUI for next time.
         delete layoutPreGUI[key];
 
-        if(key.substr(key.length - 8, 6) === 'range[') {
-            newRangeAccepted[key.substr(0, key.length - 9)] = 1;
+        if(match && match.tail.substr(0, 6) === 'range[') {
+            newRangeAccepted[match.head] = 1;
         }
     }
 
-    // Special logic for `autorange`, since it interacts with `range`:
+    // More special logic for `autorange`, since it interacts with `range`:
     // If the new figure's matching `range` was kept, and `autorange`
     // wasn't supplied explicitly in either the original or the new figure,
     // we shouldn't alter that - but we may just have done that, so fix it.
@@ -85882,7 +85914,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     }
 
     transform.fontSize = font.size;
-    recordMinTextSize(trace.type, transform, fullLayout);
+    recordMinTextSize(trace.type === 'histogram' ? 'bar' : trace.type, transform, fullLayout);
     calcBar.transform = transform;
 
     transition(textSelection, fullLayout, opts, makeOnCompleteCallback)
@@ -92389,6 +92421,8 @@ function isValidZ(z) {
 var barAttrs = _dereq_('../bar/attributes');
 var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
+var texttemplateAttrs = _dereq_('../../plots/template_attributes').texttemplateAttrs;
+var fontAttrs = _dereq_('../../plots/font_attributes');
 var makeBinAttrs = _dereq_('./bin_attributes');
 var constants = _dereq_('./constants');
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
@@ -92483,6 +92517,41 @@ module.exports = {
         keys: constants.eventDataKeys
     }),
 
+    texttemplate: texttemplateAttrs({
+        arrayOk: false,
+        editType: 'plot'
+    }, {
+        keys: ['label', 'value']
+    }),
+
+    textposition: extendFlat({}, barAttrs.textposition, {
+        arrayOk: false
+    }),
+
+    textfont: fontAttrs({
+        arrayOk: false,
+        editType: 'plot',
+        colorEditType: 'style',
+    }),
+
+    outsidetextfont: fontAttrs({
+        arrayOk: false,
+        editType: 'plot',
+        colorEditType: 'style',
+    }),
+
+    insidetextfont: fontAttrs({
+        arrayOk: false,
+        editType: 'plot',
+        colorEditType: 'style',
+    }),
+
+    insidetextanchor: barAttrs.insidetextanchor,
+
+    textangle: barAttrs.textangle,
+    cliponaxis: barAttrs.cliponaxis,
+    constraintext: barAttrs.constraintext,
+
     marker: barAttrs.marker,
 
     offsetgroup: barAttrs.offsetgroup,
@@ -92496,7 +92565,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":281,"../../plots/cartesian/axis_format_attributes":337,"../../plots/template_attributes":373,"../bar/attributes":388,"./bin_attributes":456,"./constants":460}],455:[function(_dereq_,module,exports){
+},{"../../lib/extend":281,"../../plots/cartesian/axis_format_attributes":337,"../../plots/font_attributes":365,"../../plots/template_attributes":373,"../bar/attributes":388,"./bin_attributes":456,"./constants":460}],455:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -93619,6 +93688,7 @@ var Registry = _dereq_('../../registry');
 var Lib = _dereq_('../../lib');
 var Color = _dereq_('../../components/color');
 
+var handleText = _dereq_('../bar/defaults').handleText;
 var handleStyleDefaults = _dereq_('../bar/style_defaults');
 var attributes = _dereq_('./attributes');
 
@@ -93637,6 +93707,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    var textposition = coerce('textposition');
+    handleText(traceIn, traceOut, layout, coerce, textposition, {
+        moduleHasSelected: true,
+        moduleHasUnselected: true,
+        moduleHasConstrain: true,
+        moduleHasCliponaxis: true,
+        moduleHasTextangle: true,
+        moduleHasInsideanchor: true
+    });
+
     coerce('hovertext');
     coerce('hovertemplate');
     coerce('xhoverformat');
@@ -93680,7 +93760,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, lineColor || Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":157,"../../lib":287,"../../registry":378,"../bar/style_defaults":403,"./attributes":454}],463:[function(_dereq_,module,exports){
+},{"../../components/color":157,"../../lib":287,"../../registry":378,"../bar/defaults":392,"../bar/style_defaults":403,"./attributes":454}],463:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function eventData(out, pt, trace, cd, pointNumber) {
@@ -102159,7 +102239,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.6.4';
+exports.version = '2.7.0';
 
 },{}]},{},[15])(15)
 });
