@@ -365,7 +365,7 @@ function drawColorBar(g, opts, gd) {
             }
 
             drawTitle(ax._id + 'title', {
-                attributes: {x: x, y: y, 'text-anchor': 'start'}
+                attributes: {x: x, y: y, 'text-anchor': isVertical ? 'start' : 'middle'}
             });
         }
     }
@@ -639,7 +639,11 @@ function drawColorBar(g, opts, gd) {
                 }
             }
 
-            if(rightSideHorizontal) titleWidth += titleFontSize / 2;
+            if(rightSideHorizontal) {
+                titleEl.attr('transform', strTranslate(titleWidth / 2 + titleFontSize / 2, 0));
+
+                titleWidth *= 2;
+            }
 
             innerThickness = Math.max(innerThickness,
                 isVertical ? titleWidth : _titleHeight
