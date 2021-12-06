@@ -13,6 +13,7 @@
   },
   "data": [{
     "type": "heatmap",
+    "texttemplate": "x: %{x}<br>y: %{y}<br>z: %{z}",
 
     "x": ["z", "y", "x", "w"],
     "y": ["d", "c", "b", "a"],

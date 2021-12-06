@@ -58,6 +58,13 @@
         }
     ],
     "layout": {
+        "template": {
+            "data": {
+                "contour": [{
+                    "texttemplate": "%{z:.2s}"
+                }]
+            }
+        },
         "title": {"text": "<b>contour legends with heatmap coloring</b><br>red-blue should be equal to reversed blue-red.<br>i.e. display identical legends for identical graphs"},
         "margin": {
             "t": 125,

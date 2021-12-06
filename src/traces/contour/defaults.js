@@ -7,6 +7,7 @@ var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleConstraintDefaults = require('./constraint_defaults');
 var handleContoursDefaults = require('./contours_defaults');
 var handleStyleDefaults = require('./style_defaults');
+var handleHeatmapLabelDefaults = require('../heatmap/label_defaults');
 var attributes = require('./attributes');
 
 
@@ -31,8 +32,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('text');
     coerce('hovertext');
-    coerce('hovertemplate');
     coerce('hoverongaps');
+    coerce('hovertemplate');
 
     var isConstraint = (coerce('contours.type') === 'constraint');
     coerce('connectgaps', Lib.isArray1D(traceOut.z));
@@ -42,5 +43,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     } else {
         handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
         handleStyleDefaults(traceIn, traceOut, coerce, layout);
+    }
+
+    if(
+        traceOut.contours &&
+        traceOut.contours.coloring === 'heatmap'
+    ) {
+        handleHeatmapLabelDefaults(coerce, layout);
     }
 };

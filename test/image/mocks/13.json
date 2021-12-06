@@ -1,6 +1,8 @@
 {
     "data": [
         {
+            "texttemplate": "%{z:.1f}",
+            "textfont": {"size": 8},
             "z": [
                 [
                     1,
