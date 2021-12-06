@@ -7,9 +7,7 @@ var isUnifiedHover = require('./helpers').isUnifiedHover;
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
 
-    var hasLegend =
-        contOut.legend &&
-        contOut.legend.font;
+    var hasLegend = contOut.legend;
 
     function inheritFontAttr(attr) {
         if(!opts.font[attr]) {

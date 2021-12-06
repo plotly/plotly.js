@@ -19,12 +19,11 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 
     var trace;
-
-    function traceCoerce(attr, dflt) {
+    var traceCoerce = function(attr, dflt) {
         var traceIn = trace._input;
         var traceOut = trace;
         return Lib.coerce(traceIn, traceOut, plotsAttrs, attr, dflt);
-    }
+    };
 
     var globalFont = layoutOut.font || {};
     var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', Lib.extendFlat({}, globalFont, {
@@ -82,6 +81,9 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var showLegend = Lib.coerce(layoutIn, layoutOut,
         basePlotLayoutAttributes, 'showlegend',
         legendReallyHasATrace && legendTraceCount > 1);
+
+    // delete legend
+    if(showLegend === false) layoutOut.legend = undefined;
 
     if(showLegend === false && !containerIn.uirevision) return;
 
