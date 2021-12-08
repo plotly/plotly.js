@@ -76,7 +76,7 @@ function calc(gd, trace) {
     }
 
     // Drop aggregate sums of value 0 or less
-    cd = cd.filter(function(elem) { return elem.v > 0; });
+    cd = cd.filter(function(elem) { return elem.v >= 0; });
 
     var shouldSort = (trace.type === 'funnelarea') ? isAggregated : trace.sort;
     if(shouldSort) cd.sort(function(a, b) { return b.v - a.v; });
