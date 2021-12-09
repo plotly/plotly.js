@@ -174,6 +174,7 @@ function drawColorBar(g, opts, gd) {
     var thicknessmode = opts.thicknessmode;
     var outlinewidth = opts.outlinewidth;
     var borderwidth = opts.borderwidth;
+    var bgcolor = opts.bgcolor;
     var xanchor = opts.xanchor;
     var yanchor = opts.yanchor;
     var xpad = opts.xpad;
@@ -672,7 +673,7 @@ function drawColorBar(g, opts, gd) {
         .attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle))
         .attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2))
         .attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2))
-        .call(Color.fill, opts.bgcolor)
+        .call(Color.fill, bgcolor)
         .call(Color.stroke, opts.bordercolor)
         .style('stroke-width', borderwidth);
 
@@ -696,6 +697,55 @@ function drawColorBar(g, opts, gd) {
             gs.l - (isVertical ? xRatio * outerThickness : 0),
             gs.t - (isVertical ? 0 : (1 - yRatio) * outerThickness - moveY)
         ));
+
+        if(!isVertical && (
+            borderwidth || (
+                tinycolor(bgcolor).getAlpha() &&
+                !tinycolor.equals(fullLayout.plot_bgcolor, bgcolor)
+            )
+        )) {
+            // for horizontal colorbars when there is a border line or having different background color
+            // adjust x positioning for the first/last tick labels if they go outside the border
+            var border = g.select('.' + cn.cbbg).node();
+            var oBb = Drawing.bBox(border);
+            var oTr = Drawing.getTranslate(g);
+
+            var TEXTPAD = 2;
+
+            var tickLabels = axLayer.selectAll('text');
+            tickLabels.each(function(d, i) {
+                var first = 0;
+                var last = tickLabels[0].length - 1;
+                if(i === first || i === last) {
+                    var iBb = Drawing.bBox(this);
+                    var iTr = Drawing.getTranslate(this);
+                    var deltaX;
+
+                    if(i === last) {
+                        var iRight = iBb.right + iTr.x;
+                        var oRight = oBb.right + oTr.x + vPx - borderwidth - TEXTPAD + optsX;
+
+                        deltaX = oRight - iRight;
+                        if(deltaX > 0) deltaX = 0;
+                    }
+
+                    if(i === first) {
+                        var iLeft = iBb.left + iTr.x;
+                        var oLeft = oBb.left + oTr.x + vPx + borderwidth + TEXTPAD;
+
+                        deltaX = oLeft - iLeft;
+                        if(deltaX < 0) deltaX = 0;
+                    }
+
+                    if(deltaX) {
+                        this.setAttribute('transform',
+                            'translate(' + deltaX + ',0) ' +
+                            this.getAttribute('transform')
+                        );
+                    }
+                }
+            });
+        }
 
         // auto margin adjustment
         var marginOpts = {};
