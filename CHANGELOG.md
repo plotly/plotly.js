@@ -9,6 +9,19 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.8.0] -- 2021-12-10
+
+### Added
+ - Introduce horizontal colorbars [[#6024](https://github.com/plotly/plotly.js/pull/6024)]
+ - Implement `legend.grouptitlefont` and `hoverlabel.grouptitlefont` [[#6040](https://github.com/plotly/plotly.js/pull/6040)]
+ - Add `texttemplate` and `textfont` to `heatmap` and `histogram2d` traces as well as
+   `histogram2dcontour` and `contour` traces when `coloring` is set "heatmap" [[#6028](https://github.com/plotly/plotly.js/pull/6028)]
+
+### Fixed
+ - Fix to discard negative values from `pie` chart post-aggregation instead of during summation [[#6051](https://github.com/plotly/plotly.js/pull/6051)],
+   with thanks to @destiny-wu for the contribution!
+
+
 ## [2.7.0] -- 2021-12-02
 
 ### Added
