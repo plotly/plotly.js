@@ -2494,6 +2494,27 @@
       "valType": "number"
      }
     },
+    "grouptitlefont": {
+     "color": {
+      "editType": "none",
+      "valType": "color"
+     },
+     "description": "Sets the font for group titles in hover (unified modes). Defaults to `hoverlabel.font`.",
+     "editType": "none",
+     "family": {
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "none",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "editType": "none",
+      "min": 1,
+      "valType": "number"
+     }
+    },
     "namelength": {
      "description": "Sets the default length (in number of characters) of the trace name in the hover labels for all traces. -1 shows the whole name regardless of length. 0-3 shows the first 0-3 characters, and an integer >3 will show the whole name if it is less than that many characters, but if it is longer, will truncate to `namelength - 3` characters and add an ellipsis.",
      "dflt": 15,
@@ -2692,6 +2713,27 @@
       "toggleitem",
       "togglegroup"
      ]
+    },
+    "grouptitlefont": {
+     "color": {
+      "editType": "legend",
+      "valType": "color"
+     },
+     "description": "Sets the font for group titles in legend. Defaults to `legend.font` with its size increased about 10%.",
+     "editType": "legend",
+     "family": {
+      "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+      "editType": "legend",
+      "noBlank": true,
+      "strict": true,
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "editType": "legend",
+      "min": 1,
+      "valType": "number"
+     }
     },
     "itemclick": {
      "description": "Determines the behavior on legend item click. *toggle* toggles the visibility of the item clicked on the graph. *toggleothers* makes the clicked item the sole visible item on the graph. *false* disables legend item click interactions.",

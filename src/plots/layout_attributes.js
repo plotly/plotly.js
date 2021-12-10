@@ -309,6 +309,7 @@ module.exports = {
             'c) One trace is explicitly given with `showlegend: true`.'
         ].join(' ')
     },
+
     colorway: {
         valType: 'colorlist',
         dflt: colorAttrs.defaults,
