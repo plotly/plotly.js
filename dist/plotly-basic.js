@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.7.0
+* plotly.js (basic) v2.8.0
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -21564,13 +21564,11 @@ var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 
 
 module.exports = overrideAll({
-// TODO: only right is supported currently
-//     orient: {
-//         valType: 'enumerated',
-//         values: ['left', 'right', 'top', 'bottom'],
-//         dflt: 'right',
-//
-//     },
+    orientation: {
+        valType: 'enumerated',
+        values: ['h', 'v'],
+        dflt: 'v',
+    },
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
@@ -21593,14 +21591,12 @@ module.exports = overrideAll({
     },
     x: {
         valType: 'number',
-        dflt: 1.02,
         min: -2,
         max: 3,
     },
     xanchor: {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
-        dflt: 'left',
     },
     xpad: {
         valType: 'number',
@@ -21609,14 +21605,12 @@ module.exports = overrideAll({
     },
     y: {
         valType: 'number',
-        dflt: 0.5,
         min: -2,
         max: 3,
     },
     yanchor: {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
-        dflt: 'middle',
     },
     ypad: {
         valType: 'number',
@@ -21648,15 +21642,21 @@ module.exports = overrideAll({
     ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
     ticklabeloverflow: extendFlat({}, axesAttrs.ticklabeloverflow, {
     }),
+
+    // ticklabelposition: not used directly, as values depend on orientation
+    // left/right options are for x axes, and top/bottom options are for y axes
     ticklabelposition: {
         valType: 'enumerated',
         values: [
             'outside', 'inside',
             'outside top', 'inside top',
+            'outside left', 'inside left',
+            'outside right', 'inside right',
             'outside bottom', 'inside bottom'
         ],
         dflt: 'outside',
     },
+
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
@@ -21683,7 +21683,6 @@ module.exports = overrideAll({
         side: {
             valType: 'enumerated',
             values: ['right', 'top', 'bottom'],
-            dflt: 'top',
         }
     },
 
@@ -21742,23 +21741,30 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);
     }
 
+    var margin = layout.margin || {t: 0, b: 0, l: 0, r: 0};
+    var w = layout.width - margin.l - margin.r;
+    var h = layout.height - margin.t - margin.b;
+
+    var orientation = coerce('orientation');
+    var isVertical = orientation === 'v';
+
     var thicknessmode = coerce('thicknessmode');
     coerce('thickness', (thicknessmode === 'fraction') ?
-        30 / (layout.width - layout.margin.l - layout.margin.r) :
+        30 / (isVertical ? w : h) :
         30
     );
 
     var lenmode = coerce('lenmode');
     coerce('len', (lenmode === 'fraction') ?
         1 :
-        layout.height - layout.margin.t - layout.margin.b
+        isVertical ? h : w
     );
 
-    coerce('x');
-    coerce('xanchor');
+    coerce('x', isVertical ? 1.02 : 0.5);
+    coerce('xanchor', isVertical ? 'left' : 'center');
     coerce('xpad');
-    coerce('y');
-    coerce('yanchor');
+    coerce('y', isVertical ? 0.5 : 1.02);
+    coerce('yanchor', isVertical ? 'middle' : 'bottom');
     coerce('ypad');
     Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
@@ -21768,7 +21774,22 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    var ticklabelposition = coerce('ticklabelposition');
+    var ticklabelposition = Lib.coerce(colorbarIn, colorbarOut, {
+        ticklabelposition: {
+            valType: 'enumerated',
+            dflt: 'outside',
+            values: isVertical ? [
+                'outside', 'inside',
+                'outside top', 'inside top',
+                'outside bottom', 'inside bottom'
+            ] : [
+                'outside', 'inside',
+                'outside left', 'inside left',
+                'outside right', 'inside right'
+            ]
+        }
+    }, 'ticklabelposition');
+
     coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : 'hide past div');
 
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
@@ -21790,7 +21811,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         size: Lib.bigFont(tickFont.size)
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
-    coerce('title.side');
+    coerce('title.side', isVertical ? 'top' : 'right');
 };
 
 },{"../../lib":232,"../../plot_api/plot_template":268,"../../plots/cartesian/prefix_suffix_defaults":298,"../../plots/cartesian/tick_label_defaults":303,"../../plots/cartesian/tick_mark_defaults":304,"../../plots/cartesian/tick_value_defaults":305,"./attributes":103}],106:[function(_dereq_,module,exports){
@@ -21963,18 +21984,20 @@ function makeColorBarData(gd) {
 }
 
 function drawColorBar(g, opts, gd) {
+    var isVertical = opts.orientation === 'v';
     var len = opts.len;
     var lenmode = opts.lenmode;
     var thickness = opts.thickness;
     var thicknessmode = opts.thicknessmode;
     var outlinewidth = opts.outlinewidth;
     var borderwidth = opts.borderwidth;
+    var bgcolor = opts.bgcolor;
     var xanchor = opts.xanchor;
     var yanchor = opts.yanchor;
     var xpad = opts.xpad;
     var ypad = opts.ypad;
     var optsX = opts.x;
-    var optsY = opts.y;
+    var optsY = isVertical ? opts.y : 1 - opts.y;
 
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
@@ -22005,23 +22028,35 @@ function drawColorBar(g, opts, gd) {
     // when the colorbar itself is pushing the margins.
     // but then the fractional size is calculated based on the
     // actual graph size, so that the axes will size correctly.
-    var thickPx = Math.round(thickness * (thicknessmode === 'fraction' ? gs.w : 1));
-    var thickFrac = thickPx / gs.w;
-    var lenPx = Math.round(len * (lenmode === 'fraction' ? gs.h : 1));
-    var lenFrac = lenPx / gs.h;
-    var xpadFrac = xpad / gs.w;
-    var yExtraPx = (borderwidth + outlinewidth) / 2;
-    var ypadFrac = ypad / gs.h;
+    var thickPx = Math.round(thickness * (thicknessmode === 'fraction' ? (isVertical ? gs.w : gs.h) : 1));
+    var thickFrac = thickPx / (isVertical ? gs.w : gs.h);
+    var lenPx = Math.round(len * (lenmode === 'fraction' ? (isVertical ? gs.h : gs.w) : 1));
+    var lenFrac = lenPx / (isVertical ? gs.h : gs.w);
 
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
-    var uPx = Math.round(optsX * gs.w + xpad);
-    // for dragging... this is getting a little muddled...
-    var uFrac = optsX - thickFrac * ({center: 0.5, right: 1}[xanchor] || 0);
+    var uPx = Math.round(isVertical ?
+        optsX * gs.w + xpad :
+        optsY * gs.h + ypad
+    );
 
-    // y positioning we can do correctly from the start
-    var vFrac = optsY + lenFrac * (({top: -0.5, bottom: 0.5}[yanchor] || 0) - 0.5);
-    var vPx = Math.round(gs.h * (1 - vFrac));
+    var xRatio = {center: 0.5, right: 1}[xanchor] || 0;
+    var yRatio = {top: 1, middle: 0.5}[yanchor] || 0;
+
+    // for dragging... this is getting a little muddled...
+    var uFrac = isVertical ?
+        optsX - xRatio * thickFrac :
+        optsY - yRatio * thickFrac;
+
+    // y/x positioning (for v/h) we can do correctly from the start
+    var vFrac = isVertical ?
+        optsY - yRatio * lenFrac :
+        optsX - xRatio * lenFrac;
+
+    var vPx = Math.round(isVertical ?
+        gs.h * (1 - vFrac) :
+        gs.w * vFrac
+    );
 
     // stash a few things for makeEditable
     opts._lenFrac = lenFrac;
@@ -22034,12 +22069,23 @@ function drawColorBar(g, opts, gd) {
 
     // position can't go in through supplyDefaults
     // because that restricts it to [0,1]
-    ax.position = optsX + xpadFrac + thickFrac;
+    ax.position = thickFrac + (isVertical ?
+        optsX + xpad / gs.w :
+        optsY + ypad / gs.h
+    );
 
-    if(['top', 'bottom'].indexOf(titleSide) !== -1) {
+    var topOrBottom = ['top', 'bottom'].indexOf(titleSide) !== -1;
+
+    if(isVertical && topOrBottom) {
         ax.title.side = titleSide;
-        ax.titlex = optsX + xpadFrac;
-        ax.titley = vFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
+        ax.titlex = optsX + xpad / gs.w;
+        ax.titley = vFrac + (title.side === 'top' ? lenFrac - ypad / gs.h : ypad / gs.h);
+    }
+
+    if(!isVertical && !topOrBottom) {
+        ax.title.side = titleSide;
+        ax.titley = optsY + ypad / gs.h;
+        ax.titlex = vFrac + xpad / gs.w; // right side
     }
 
     if(line.color && opts.tickmode === 'auto') {
@@ -22064,9 +22110,12 @@ function drawColorBar(g, opts, gd) {
 
     // set domain after init, because we may want to
     // allow it outside [0,1]
-    ax.domain = [
-        vFrac + ypadFrac,
-        vFrac + lenFrac - ypadFrac
+    ax.domain = isVertical ? [
+        vFrac + ypad / gs.h,
+        vFrac + lenFrac - ypad / gs.h
+    ] : [
+        vFrac + xpad / gs.w,
+        vFrac + lenFrac - xpad / gs.w
     ];
 
     ax.setScale();
@@ -22076,9 +22125,13 @@ function drawColorBar(g, opts, gd) {
     var titleCont = g.select('.' + cn.cbtitleunshift)
         .attr('transform', strTranslate(-Math.round(gs.l), -Math.round(gs.t)));
 
+    var ticklabelposition = ax.ticklabelposition;
+    var titleFontSize = ax.title.font.size;
+
     var axLayer = g.select('.' + cn.cbaxis);
     var titleEl;
     var titleHeight = 0;
+    var titleWidth = 0;
 
     function drawTitle(titleClass, titleOpts) {
         var dfltTitleOpts = {
@@ -22103,54 +22156,98 @@ function drawColorBar(g, opts, gd) {
     }
 
     function drawDummyTitle() {
-        if(['top', 'bottom'].indexOf(titleSide) !== -1) {
-            // draw the title so we know how much room it needs
-            // when we squish the axis. This one only applies to
-            // top or bottom titles, not right side.
-            var x = gs.l + (optsX + xpadFrac) * gs.w;
-            var fontSize = ax.title.font.size;
-            var y;
+        // draw the title so we know how much room it needs
+        // when we squish the axis.
+        // On vertical colorbars this only applies to top or bottom titles, not right side.
+        // On horizontal colorbars this only applies to right, etc.
+
+        if(
+            (isVertical && topOrBottom) ||
+            (!isVertical && !topOrBottom)
+        ) {
+            var x, y;
 
             if(titleSide === 'top') {
-                y = (1 - (vFrac + lenFrac - ypadFrac)) * gs.h +
-                    gs.t + 3 + fontSize * 0.75;
-            } else {
-                y = (1 - (vFrac + ypadFrac)) * gs.h +
-                    gs.t - 3 - fontSize * 0.25;
+                x = xpad + gs.l + gs.w * optsX;
+                y = ypad + gs.t + gs.h * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
             }
+
+            if(titleSide === 'bottom') {
+                x = xpad + gs.l + gs.w * optsX;
+                y = ypad + gs.t + gs.h * (1 - vFrac) - 3 - titleFontSize * 0.25;
+            }
+
+            if(titleSide === 'right') {
+                y = ypad + gs.t + gs.h * optsY + 3 + titleFontSize * 0.75;
+                x = xpad + gs.l + gs.w * vFrac;
+            }
+
             drawTitle(ax._id + 'title', {
-                attributes: {x: x, y: y, 'text-anchor': 'start'}
+                attributes: {x: x, y: y, 'text-anchor': isVertical ? 'start' : 'middle'}
             });
         }
     }
 
     function drawCbTitle() {
-        if(['top', 'bottom'].indexOf(titleSide) === -1) {
-            var fontSize = ax.title.font.size;
-            var y = ax._offset + ax._length / 2;
-            var x = gs.l + (ax.position || 0) * gs.w + ((ax.side === 'right') ?
-                10 + fontSize * ((ax.showticklabels ? 1 : 0.5)) :
-                -10 - fontSize * ((ax.showticklabels ? 0.5 : 0)));
+        if(
+            (isVertical && !topOrBottom) ||
+            (!isVertical && topOrBottom)
+        ) {
+            var pos = ax.position || 0;
+            var mid = ax._offset + ax._length / 2;
+            var x, y;
 
-            // the 'h' + is a hack to get around the fact that
-            // convertToTspans rotates any 'y...' class by 90 degrees.
-            // TODO: find a better way to control this.
-            drawTitle('h' + ax._id + 'title', {
+            if(titleSide === 'right') {
+                y = mid;
+                x = gs.l + gs.w * pos + 10 + titleFontSize * (
+                    ax.showticklabels ? 1 : 0.5
+                );
+            } else {
+                x = mid;
+
+                if(titleSide === 'bottom') {
+                    y = gs.t + gs.h * pos + 10 + (
+                        ticklabelposition.indexOf('inside') === -1 ?
+                            ax.tickfont.size :
+                            0
+                    ) + (
+                        ax.ticks !== 'intside' ?
+                            opts.ticklen || 0 :
+                            0
+                    );
+                }
+
+                if(titleSide === 'top') {
+                    var nlines = title.text.split('<br>').length;
+                    y = gs.t + gs.h * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
+                }
+            }
+
+            drawTitle((isVertical ?
+                // the 'h' + is a hack to get around the fact that
+                // convertToTspans rotates any 'y...' class by 90 degrees.
+                // TODO: find a better way to control this.
+                'h' :
+                'v'
+            ) + ax._id + 'title', {
                 avoid: {
                     selection: d3.select(gd).selectAll('g.' + ax._id + 'tick'),
                     side: titleSide,
-                    offsetLeft: gs.l,
-                    offsetTop: 0,
-                    maxShift: fullLayout.width
+                    offsetTop: isVertical ? 0 : gs.t,
+                    offsetLeft: isVertical ? gs.l : 0,
+                    maxShift: isVertical ? fullLayout.width : fullLayout.height
                 },
                 attributes: {x: x, y: y, 'text-anchor': 'middle'},
-                transform: {rotate: '-90', offset: 0}
+                transform: {rotate: isVertical ? -90 : 0, offset: 0}
             });
         }
     }
 
     function drawAxis() {
-        if(['top', 'bottom'].indexOf(titleSide) !== -1) {
+        if(
+            (!isVertical && !topOrBottom) ||
+            (isVertical && topOrBottom)
+        ) {
             // squish the axis top to make room for the title
             var titleGroup = g.select('.' + cn.cbtitle);
             var titleText = titleGroup.select('text');
@@ -22162,39 +22259,63 @@ function drawColorBar(g, opts, gd) {
             if(titleText.node()) {
                 lineSize = parseInt(titleText.node().style.fontSize, 10) * LINE_SPACING;
             }
+
+            var bb;
             if(mathJaxNode) {
-                titleHeight = Drawing.bBox(mathJaxNode).height;
+                bb = Drawing.bBox(mathJaxNode);
+                titleWidth = bb.width;
+                titleHeight = bb.height;
                 if(titleHeight > lineSize) {
                     // not entirely sure how mathjax is doing
                     // vertical alignment, but this seems to work.
                     titleTrans[1] -= (titleHeight - lineSize) / 2;
                 }
             } else if(titleText.node() && !titleText.classed(cn.jsPlaceholder)) {
-                titleHeight = Drawing.bBox(titleText.node()).height;
+                bb = Drawing.bBox(titleText.node());
+                titleWidth = bb.width;
+                titleHeight = bb.height;
             }
-            if(titleHeight) {
-                // buffer btwn colorbar and title
-                // TODO: configurable
-                titleHeight += 5;
 
-                if(titleSide === 'top') {
-                    ax.domain[1] -= titleHeight / gs.h;
-                    titleTrans[1] *= -1;
-                } else {
-                    ax.domain[0] += titleHeight / gs.h;
-                    var nlines = svgTextUtils.lineCount(titleText);
-                    titleTrans[1] += (1 - nlines) * lineSize;
+            if(isVertical) {
+                if(titleHeight) {
+                    // buffer btwn colorbar and title
+                    // TODO: configurable
+                    titleHeight += 5;
+
+                    if(titleSide === 'top') {
+                        ax.domain[1] -= titleHeight / gs.h;
+                        titleTrans[1] *= -1;
+                    } else {
+                        ax.domain[0] += titleHeight / gs.h;
+                        var nlines = svgTextUtils.lineCount(titleText);
+                        titleTrans[1] += (1 - nlines) * lineSize;
+                    }
+
+                    titleGroup.attr('transform', strTranslate(titleTrans[0], titleTrans[1]));
+                    ax.setScale();
                 }
+            } else { // horizontal colorbars
+                if(titleWidth) {
+                    if(titleSide === 'right') {
+                        ax.domain[0] += (titleWidth + titleFontSize / 2) / gs.w;
+                    }
 
-                titleGroup.attr('transform', strTranslate(titleTrans[0], titleTrans[1]));
-                ax.setScale();
+                    titleGroup.attr('transform', strTranslate(titleTrans[0], titleTrans[1]));
+                    ax.setScale();
+                }
             }
         }
 
         g.selectAll('.' + cn.cbfills + ',.' + cn.cblines)
-            .attr('transform', strTranslate(0, Math.round(gs.h * (1 - ax.domain[1]))));
+            .attr('transform', isVertical ?
+                strTranslate(0, Math.round(gs.h * (1 - ax.domain[1]))) :
+                strTranslate(Math.round(gs.w * ax.domain[0]), 0)
+            );
 
-        axLayer.attr('transform', strTranslate(0, Math.round(-gs.t)));
+        axLayer.attr('transform', isVertical ?
+            strTranslate(0, Math.round(-gs.t)) :
+            strTranslate(Math.round(-gs.l), 0)
+        );
 
         var fills = g.select('.' + cn.cbfills)
             .selectAll('rect.' + cn.cbfill)
@@ -22220,20 +22341,22 @@ function drawColorBar(g, opts, gd) {
 
             // offset the side adjoining the next rectangle so they
             // overlap, to prevent antialiasing gaps
-            z[1] = Lib.constrain(z[1] + (z[1] > z[0]) ? 1 : -1, zBounds[0], zBounds[1]);
-
+            if(isVertical) {
+                z[1] = Lib.constrain(z[1] + (z[1] > z[0]) ? 1 : -1, zBounds[0], zBounds[1]);
+            } /* else {
+                // TODO: horizontal case
+            } */
 
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
-            var fillEl = d3.select(this).attr({
-                x: uPx,
-                width: Math.max(thickPx, 2),
-                y: d3.min(z),
-                height: Math.max(d3.max(z) - d3.min(z), 2),
-            });
+            var fillEl = d3.select(this)
+            .attr(isVertical ? 'x' : 'y', uPx)
+            .attr(isVertical ? 'y' : 'x', d3.min(z))
+            .attr(isVertical ? 'width' : 'height', Math.max(thickPx, 2))
+            .attr(isVertical ? 'height' : 'width', Math.max(d3.max(z) - d3.min(z), 2));
 
             if(opts._fillgradient) {
-                Drawing.gradient(fillEl, gd, opts._id, 'vertical', opts._fillgradient, 'fill');
+                Drawing.gradient(fillEl, gd, opts._id, isVertical ? 'vertical' : 'horizontalreversed', opts._fillgradient, 'fill');
             } else {
                 // tinycolor can't handle exponents and
                 // at this scale, removing it makes no difference.
@@ -22249,9 +22372,15 @@ function drawColorBar(g, opts, gd) {
             .classed(cn.cbline, true);
         lines.exit().remove();
         lines.each(function(d) {
+            var a = uPx;
+            var b = (Math.round(ax.c2p(d)) + (line.width / 2) % 1);
+
             d3.select(this)
-                .attr('d', 'M' + uPx + ',' +
-                    (Math.round(ax.c2p(d)) + (line.width / 2) % 1) + 'h' + thickPx)
+                .attr('d', 'M' +
+                    (isVertical ? a + ',' + b : b + ',' + a) +
+                    (isVertical ? 'h' : 'v') +
+                    thickPx
+                )
                 .call(Drawing.lineGroupStyle, line.width, lineColormap(d), line.dash);
         });
 
@@ -22284,82 +22413,211 @@ function drawColorBar(g, opts, gd) {
     // TODO: why are we redrawing multiple times now with this?
     // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
+        var bb;
         var innerThickness = thickPx + outlinewidth / 2;
-        if(ax.ticklabelposition.indexOf('inside') === -1) {
-            innerThickness += Drawing.bBox(axLayer.node()).width;
+        if(ticklabelposition.indexOf('inside') === -1) {
+            bb = Drawing.bBox(axLayer.node());
+            innerThickness += isVertical ? bb.width : bb.height;
         }
 
         titleEl = titleCont.select('text');
 
+        var titleWidth = 0;
+
+        var topSideVertical = isVertical && titleSide === 'top';
+        var rightSideHorizontal = !isVertical && titleSide === 'right';
+
+        var moveY = 0;
+
         if(titleEl.node() && !titleEl.classed(cn.jsPlaceholder)) {
+            var _titleHeight;
+
             var mathJaxNode = titleCont.select('.h' + ax._id + 'title-math-group').node();
-            var titleWidth;
-            if(mathJaxNode && ['top', 'bottom'].indexOf(titleSide) !== -1) {
-                titleWidth = Drawing.bBox(mathJaxNode).width;
+            if(mathJaxNode && (
+                (isVertical && topOrBottom) ||
+                (!isVertical && !topOrBottom)
+            )) {
+                bb = Drawing.bBox(mathJaxNode);
+                titleWidth = bb.width;
+                _titleHeight = bb.height;
             } else {
                 // note: the formula below works for all title sides,
                 // (except for top/bottom mathjax, above)
                 // but the weird gs.l is because the titleunshift
                 // transform gets removed by Drawing.bBox
-                titleWidth = Drawing.bBox(titleCont.node()).right - uPx - gs.l;
+                bb = Drawing.bBox(titleCont.node());
+                titleWidth = bb.right - gs.l - (isVertical ? uPx : vPx);
+                _titleHeight = bb.bottom - gs.t - (isVertical ? vPx : uPx);
+
+                if(
+                    !isVertical && titleSide === 'top'
+                ) {
+                    innerThickness += bb.height;
+                    moveY = bb.height;
+                }
             }
-            innerThickness = Math.max(innerThickness, titleWidth);
+
+            if(rightSideHorizontal) {
+                titleEl.attr('transform', strTranslate(titleWidth / 2 + titleFontSize / 2, 0));
+
+                titleWidth *= 2;
+            }
+
+            innerThickness = Math.max(innerThickness,
+                isVertical ? titleWidth : _titleHeight
+            );
         }
 
-        var outerThickness = 2 * xpad + innerThickness + borderwidth + outlinewidth / 2;
+        var outerThickness = (isVertical ?
+            xpad :
+            ypad
+        ) * 2 + innerThickness + borderwidth + outlinewidth / 2;
 
-        g.select('.' + cn.cbbg).attr({
-            x: uPx - xpad - (borderwidth + outlinewidth) / 2,
-            y: vPx - lenPx - yExtraPx,
-            width: Math.max(outerThickness, 2),
-            height: Math.max(lenPx + 2 * yExtraPx, 2)
-        })
-        .call(Color.fill, opts.bgcolor)
+        var hColorbarMoveTitle = 0;
+        if(!isVertical && title.text && yanchor === 'bottom' && optsY <= 0) {
+            hColorbarMoveTitle = outerThickness / 2;
+
+            outerThickness += hColorbarMoveTitle;
+            moveY += hColorbarMoveTitle;
+        }
+        fullLayout._hColorbarMoveTitle = hColorbarMoveTitle;
+        fullLayout._hColorbarMoveCBTitle = moveY;
+
+        var extraW = borderwidth + outlinewidth;
+
+        g.select('.' + cn.cbbg)
+        .attr('x', (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0))
+        .attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle))
+        .attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2))
+        .attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2))
+        .call(Color.fill, bgcolor)
         .call(Color.stroke, opts.bordercolor)
         .style('stroke-width', borderwidth);
 
-        g.selectAll('.' + cn.cboutline).attr({
-            x: uPx,
-            y: vPx - lenPx + ypad + (titleSide === 'top' ? titleHeight : 0),
-            width: Math.max(thickPx, 2),
-            height: Math.max(lenPx - 2 * ypad - titleHeight, 2)
-        })
+        var moveX = rightSideHorizontal ? Math.max(titleWidth - 10, 0) : 0;
+
+        g.selectAll('.' + cn.cboutline)
+        .attr('x', (isVertical ? uPx : vPx + xpad) + moveX)
+        .attr('y', (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0))
+        .attr(isVertical ? 'width' : 'height', Math.max(thickPx, 2))
+        .attr(isVertical ? 'height' : 'width', Math.max(lenPx - (isVertical ?
+            2 * ypad + titleHeight :
+            2 * xpad + moveX
+        ), 2))
         .call(Color.stroke, opts.outlinecolor)
         .style({
             fill: 'none',
             'stroke-width': outlinewidth
         });
 
-        // fix positioning for xanchor!='left'
-        var xoffset = ({center: 0.5, right: 1}[xanchor] || 0) * outerThickness;
-        g.attr('transform', strTranslate(gs.l - xoffset, gs.t));
+        g.attr('transform', strTranslate(
+            gs.l - (isVertical ? xRatio * outerThickness : 0),
+            gs.t - (isVertical ? 0 : (1 - yRatio) * outerThickness - moveY)
+        ));
+
+        if(!isVertical && (
+            borderwidth || (
+                tinycolor(bgcolor).getAlpha() &&
+                !tinycolor.equals(fullLayout.paper_bgcolor, bgcolor)
+            )
+        )) {
+            // for horizontal colorbars when there is a border line or having different background color
+            // hide/adjust x positioning for the first/last tick labels if they go outside the border
+            var tickLabels = axLayer.selectAll('text');
+            var numTicks = tickLabels[0].length;
+
+            var border = g.select('.' + cn.cbbg).node();
+            var oBb = Drawing.bBox(border);
+            var oTr = Drawing.getTranslate(g);
+
+            var TEXTPAD = 2;
+
+            tickLabels.each(function(d, i) {
+                var first = 0;
+                var last = numTicks - 1;
+                if(i === first || i === last) {
+                    var iBb = Drawing.bBox(this);
+                    var iTr = Drawing.getTranslate(this);
+                    var deltaX;
+
+                    if(i === last) {
+                        var iRight = iBb.right + iTr.x;
+                        var oRight = oBb.right + oTr.x + vPx - borderwidth - TEXTPAD + optsX;
+
+                        deltaX = oRight - iRight;
+                        if(deltaX > 0) deltaX = 0;
+                    } else if(i === first) {
+                        var iLeft = iBb.left + iTr.x;
+                        var oLeft = oBb.left + oTr.x + vPx + borderwidth + TEXTPAD;
+
+                        deltaX = oLeft - iLeft;
+                        if(deltaX < 0) deltaX = 0;
+                    }
+
+                    if(deltaX) {
+                        if(numTicks < 3) { // adjust position
+                            this.setAttribute('transform',
+                                'translate(' + deltaX + ',0) ' +
+                                this.getAttribute('transform')
+                            );
+                        } else { // hide
+                            this.setAttribute('visibility', 'hidden');
+                        }
+                    }
+                }
+            });
+        }
 
         // auto margin adjustment
         var marginOpts = {};
-        var tFrac = FROM_TL[yanchor];
-        var bFrac = FROM_BR[yanchor];
-        if(lenmode === 'pixels') {
-            marginOpts.y = optsY;
-            marginOpts.t = lenPx * tFrac;
-            marginOpts.b = lenPx * bFrac;
-        } else {
-            marginOpts.t = marginOpts.b = 0;
-            marginOpts.yt = optsY + len * tFrac;
-            marginOpts.yb = optsY - len * bFrac;
-        }
-
         var lFrac = FROM_TL[xanchor];
         var rFrac = FROM_BR[xanchor];
-        if(thicknessmode === 'pixels') {
-            marginOpts.x = optsX;
-            marginOpts.l = outerThickness * lFrac;
-            marginOpts.r = outerThickness * rFrac;
-        } else {
-            var extraThickness = outerThickness - thickPx;
-            marginOpts.l = extraThickness * lFrac;
-            marginOpts.r = extraThickness * rFrac;
-            marginOpts.xl = optsX - thickness * lFrac;
-            marginOpts.xr = optsX + thickness * rFrac;
+        var tFrac = FROM_TL[yanchor];
+        var bFrac = FROM_BR[yanchor];
+
+        var extraThickness = outerThickness - thickPx;
+        if(isVertical) {
+            if(lenmode === 'pixels') {
+                marginOpts.y = optsY;
+                marginOpts.t = lenPx * tFrac;
+                marginOpts.b = lenPx * bFrac;
+            } else {
+                marginOpts.t = marginOpts.b = 0;
+                marginOpts.yt = optsY + len * tFrac;
+                marginOpts.yb = optsY - len * bFrac;
+            }
+
+            if(thicknessmode === 'pixels') {
+                marginOpts.x = optsX;
+                marginOpts.l = outerThickness * lFrac;
+                marginOpts.r = outerThickness * rFrac;
+            } else {
+                marginOpts.l = extraThickness * lFrac;
+                marginOpts.r = extraThickness * rFrac;
+                marginOpts.xl = optsX - thickness * lFrac;
+                marginOpts.xr = optsX + thickness * rFrac;
+            }
+        } else { // horizontal colorbars
+            if(lenmode === 'pixels') {
+                marginOpts.x = optsX;
+                marginOpts.l = lenPx * lFrac;
+                marginOpts.r = lenPx * rFrac;
+            } else {
+                marginOpts.l = marginOpts.r = 0;
+                marginOpts.xl = optsX + len * lFrac;
+                marginOpts.xr = optsX - len * rFrac;
+            }
+
+            if(thicknessmode === 'pixels') {
+                marginOpts.y = 1 - optsY;
+                marginOpts.t = outerThickness * tFrac;
+                marginOpts.b = outerThickness * bFrac;
+            } else {
+                marginOpts.t = extraThickness * tFrac;
+                marginOpts.b = extraThickness * bFrac;
+                marginOpts.yt = optsY - thickness * tFrac;
+                marginOpts.yb = optsY + thickness * bFrac;
+            }
         }
 
         Plots.autoMargin(gd, opts._id, marginOpts);
@@ -22376,6 +22634,7 @@ function drawColorBar(g, opts, gd) {
 }
 
 function makeEditable(g, opts, gd) {
+    var isVertical = opts.orientation === 'v';
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var t0, xf, yf;
@@ -22390,9 +22649,13 @@ function makeEditable(g, opts, gd) {
         moveFn: function(dx, dy) {
             g.attr('transform', t0 + strTranslate(dx, dy));
 
-            xf = dragElement.align(opts._uFrac + (dx / gs.w), opts._thickFrac,
+            xf = dragElement.align(
+                (isVertical ? opts._uFrac : opts._vFrac) + (dx / gs.w),
+                isVertical ? opts._thickFrac : opts._lenFrac,
                 0, 1, opts.xanchor);
-            yf = dragElement.align(opts._vFrac - (dy / gs.h), opts._lenFrac,
+            yf = dragElement.align(
+                (isVertical ? opts._vFrac : (1 - opts._uFrac)) - (dy / gs.h),
+                isVertical ? opts._lenFrac : opts._thickFrac,
                 0, 1, opts.yanchor);
 
             var csr = dragElement.getCursor(xf, yf, opts.xanchor, opts.yanchor);
@@ -22469,6 +22732,8 @@ function calcLevels(gd, opts, zrange) {
 function mockColorBarAxis(gd, opts, zrange) {
     var fullLayout = gd._fullLayout;
 
+    var isVertical = opts.orientation === 'v';
+
     var cbAxisIn = {
         type: 'linear',
         range: zrange,
@@ -22499,17 +22764,19 @@ function mockColorBarAxis(gd, opts, zrange) {
         title: opts.title,
         showline: true,
         anchor: 'free',
-        side: 'right',
+        side: isVertical ? 'right' : 'bottom',
         position: 1
     };
 
+    var letter = isVertical ? 'y' : 'x';
+
     var cbAxisOut = {
         type: 'linear',
-        _id: 'y' + opts._id
+        _id: letter + opts._id
     };
 
     var axisOptions = {
-        letter: 'y',
+        letter: letter,
         font: fullLayout.font,
         noHover: true,
         noTickson: true,
@@ -28122,7 +28389,9 @@ function createHoverText(hoverData, opts) {
                 orientation: 'v'
             }
         };
-        var mockLayoutOut = {};
+        var mockLayoutOut = {
+            font: font
+        };
         legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
         var mockLegend = mockLayoutOut.legend;
 
@@ -28163,7 +28432,8 @@ function createHoverText(hoverData, opts) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
-        mockLegend._groupTitleFont = font;
+        mockLegend._groupTitleFont = hoverlabel.grouptitlefont;
+
         legendDraw(gd, mockLegend);
 
         // Position the hover
@@ -29165,9 +29435,11 @@ var isUnifiedHover = _dereq_('./helpers').isUnifiedHover;
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
 
+    var hasLegend = contOut.legend;
+
     function inheritFontAttr(attr) {
         if(!opts.font[attr]) {
-            opts.font[attr] = contOut.legend ? contOut.legend.font[attr] : contOut.font[attr];
+            opts.font[attr] = hasLegend ? contOut.legend.font[attr] : contOut.font[attr];
         }
     }
 
@@ -29178,7 +29450,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
         inheritFontAttr('family');
         inheritFontAttr('color');
 
-        if(contOut.legend) {
+        if(hasLegend) {
             if(!opts.bgcolor) opts.bgcolor = Color.combine(contOut.legend.bgcolor, contOut.paper_bgcolor);
             if(!opts.bordercolor) opts.bordercolor = contOut.legend.bordercolor;
         } else {
@@ -29287,11 +29559,13 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
 
 var constants = _dereq_('./constants');
 
-var fontAttrs = _dereq_('../../plots/font_attributes')({
+var fontAttrs = _dereq_('../../plots/font_attributes');
+
+var font = fontAttrs({
     editType: 'none',
 });
-fontAttrs.family.dflt = constants.HOVERFONT;
-fontAttrs.size.dflt = constants.HOVERFONTSIZE;
+font.family.dflt = constants.HOVERFONT;
+font.size.dflt = constants.HOVERFONTSIZE;
 
 module.exports = {
     clickmode: {
@@ -29347,7 +29621,10 @@ module.exports = {
             valType: 'color',
             editType: 'none',
         },
-        font: fontAttrs,
+        font: font,
+        grouptitlefont: fontAttrs({
+            editType: 'none',
+        }),
         align: {
             valType: 'enumerated',
             values: ['left', 'right', 'auto'],
@@ -29360,6 +29637,7 @@ module.exports = {
             dflt: 15,
             editType: 'none',
         },
+
         editType: 'none'
     },
     selectdirection: {
@@ -29407,6 +29685,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
+
+    Lib.coerceFont(coerce, 'hoverlabel.grouptitlefont', layoutOut.hoverlabel.font);
 };
 
 },{"../../lib":232,"./hoverlabel_defaults":140,"./hovermode_defaults":141,"./layout_attributes":143}],145:[function(_dereq_,module,exports){
@@ -30290,6 +30570,9 @@ module.exports = {
     font: fontAttrs({
         editType: 'legend',
     }),
+    grouptitlefont: fontAttrs({
+        editType: 'legend',
+    }),
     orientation: {
         valType: 'enumerated',
         values: ['v', 'h'],
@@ -30413,6 +30696,7 @@ var Registry = _dereq_('../../registry');
 var Lib = _dereq_('../../lib');
 var Template = _dereq_('../../plot_api/plot_template');
 
+var plotsAttrs = _dereq_('../../plots/attributes');
 var attributes = _dereq_('./attributes');
 var basePlotLayoutAttributes = _dereq_('../../plots/layout_attributes');
 var helpers = _dereq_('./helpers');
@@ -30420,13 +30704,30 @@ var helpers = _dereq_('./helpers');
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {};
+    var containerOut = Template.newContainer(layoutOut, 'legend');
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
+    }
+
+    var trace;
+    var traceCoerce = function(attr, dflt) {
+        var traceIn = trace._input;
+        var traceOut = trace;
+        return Lib.coerce(traceIn, traceOut, plotsAttrs, attr, dflt);
+    };
+
+    var globalFont = layoutOut.font || {};
+    var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', Lib.extendFlat({}, globalFont, {
+        size: Math.round(globalFont.size * 1.1)
+    }));
 
     var legendTraceCount = 0;
     var legendReallyHasATrace = false;
     var defaultOrder = 'normal';
 
     for(var i = 0; i < fullData.length; i++) {
-        var trace = fullData[i];
+        trace = fullData[i];
 
         if(!trace.visible) continue;
 
@@ -30453,6 +30754,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
                     legendTraceCount++;
                 }
             }
+
+            Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
         }
 
         if((Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
@@ -30471,13 +30774,10 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         basePlotLayoutAttributes, 'showlegend',
         legendReallyHasATrace && legendTraceCount > 1);
 
+    // delete legend
+    if(showLegend === false) layoutOut.legend = undefined;
+
     if(showLegend === false && !containerIn.uirevision) return;
-
-    var containerOut = Template.newContainer(layoutOut, 'legend');
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
-    }
 
     coerce('uirevision', layoutOut.uirevision);
 
@@ -30539,7 +30839,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../lib":232,"../../plot_api/plot_template":268,"../../plots/layout_attributes":314,"../../registry":318,"./attributes":152,"./helpers":158}],155:[function(_dereq_,module,exports){
+},{"../../lib":232,"../../plot_api/plot_template":268,"../../plots/attributes":275,"../../plots/layout_attributes":314,"../../registry":318,"./attributes":152,"./helpers":158}],155:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -38991,8 +39291,10 @@ function draw(gd, titleClass, options) {
 
     var elShouldExist = txt || editable;
 
+    var hColorbarMoveTitle;
     if(!group) {
         group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
+        hColorbarMoveTitle = fullLayout._hColorbarMoveTitle;
     }
 
     var el = group.selectAll('text')
@@ -39016,13 +39318,17 @@ function draw(gd, titleClass, options) {
     function drawTitle(titleEl) {
         var transformVal;
 
+        if(!transform && hColorbarMoveTitle) {
+            transform = {};
+        }
+
         if(transform) {
             transformVal = '';
             if(transform.rotate) {
                 transformVal += 'rotate(' + [transform.rotate, attributes.x, attributes.y] + ')';
             }
-            if(transform.offset) {
-                transformVal += strTranslate(0, transform.offset);
+            if(transform.offset || hColorbarMoveTitle) {
+                transformVal += strTranslate(0, (transform.offset || 0) - (hColorbarMoveTitle || 0));
             }
         } else {
             transformVal = null;
@@ -50480,7 +50786,7 @@ function cleanDeprecatedAttributeKeys(aobj) {
         if((key === 'title' || oldAxisTitleRegex.test(key) || colorbarRegex.test(key)) &&
           (typeof value === 'string' || typeof value === 'number')) {
             replace(key, key.replace('title', 'title.text'));
-        } else if(key.indexOf('titlefont') > -1) {
+        } else if(key.indexOf('titlefont') > -1 && key.indexOf('grouptitlefont') === -1) {
             replace(key, key.replace('titlefont', 'title.font'));
         } else if(key.indexOf('titleposition') > -1) {
             replace(key, key.replace('titleposition', 'title.position'));
@@ -68348,6 +68654,9 @@ module.exports = function(opts) {
         // TODO - that's uber hacky... better solution?
     };
 
+    if(opts.autoSize) attrs.size.dflt = 'auto';
+    if(opts.autoColor) attrs.color.dflt = 'auto';
+
     if(opts.arrayOk) {
         attrs.family.arrayOk = true;
         attrs.size.arrayOk = true;
@@ -68707,6 +69016,7 @@ module.exports = {
         valType: 'boolean',
         editType: 'legend',
     },
+
     colorway: {
         valType: 'colorlist',
         dflt: colorAttrs.defaults,
@@ -70119,13 +70429,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
-            var titleText = coerce('legendgrouptitle.text');
-            if(titleText) {
-                Lib.coerceFont(coerce, 'legendgrouptitle.font', Lib.extendFlat({}, layout.font, {
-                    size: Math.round(layout.font.size * 1.1) // default to larger font size
-                }));
-            }
-
+            coerce('legendgrouptitle.text');
             coerce('legendrank');
 
             traceOut._dfltShowLegend = true;
@@ -70273,16 +70577,14 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('autotypenumbers');
 
-    var globalFont = Lib.coerceFont(coerce, 'font');
+    var font = Lib.coerceFont(coerce, 'font');
+    var fontSize = font.size;
+
+    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+        size: Math.round(fontSize * 1.4)
+    }));
 
     coerce('title.text', layoutOut._dfltTitle.plot);
-
-    Lib.coerceFont(coerce, 'title.font', {
-        family: globalFont.family,
-        size: Math.round(globalFont.size * 1.4),
-        color: globalFont.color
-    });
-
     coerce('title.xref');
     coerce('title.yref');
     coerce('title.x');
@@ -76687,7 +76989,6 @@ function calc(gd, trace) {
             v = vals[i];
             if(!isNumeric(v)) continue;
             v = +v;
-            if(v < 0) continue;
         } else v = 1;
 
         label = labels[i];
@@ -76723,6 +77024,9 @@ function calc(gd, trace) {
             }
         }
     }
+
+    // Drop aggregate sums of value 0 or less
+    cd = cd.filter(function(elem) { return elem.v >= 0; });
 
     var shouldSort = (trace.type === 'funnelarea') ? isAggregated : trace.sort;
     if(shouldSort) cd.sort(function(a, b) { return b.v - a.v; });
@@ -82320,7 +82624,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.7.0';
+exports.version = '2.8.0';
 
 },{}]},{},[8])(8)
 });
