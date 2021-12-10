@@ -34,9 +34,12 @@
                 "TN"
             ],
             "colorbar": {
-                "orientation": "h", "xanchor": "left",
+                "orientation": "h",
+                "borderwidth": 1,
+                "xanchor": "left",
+                "yanchor": "top",
                 "tick0": 0,
-                "y": 0.2,
+                "y": 0.25,
                 "dtick": 10,
                 "len": 0.15, "thickness": 10,
                 "x": 1
@@ -118,9 +121,12 @@
                 "FL"
             ],
             "colorbar": {
-                "orientation": "h", "xanchor": "left",
+                "orientation": "h",
+                "borderwidth": 1,
+                "xanchor": "left",
+                "yanchor": "top",
                 "tick0": 10,
-                "y": 0.4,
+                "y": 0.5,
                 "dtick": 90,
                 "len": 0.15, "thickness": 10,
                 "x": 1
@@ -177,9 +183,12 @@
                 "CT"
             ],
             "colorbar": {
-                "orientation": "h", "xanchor": "left",
+                "orientation": "h",
+                "borderwidth": 1,
+                "xanchor": "left",
+                "yanchor": "top",
                 "tick0": 100,
-                "y": 0.6,
+                "y": 0.75,
                 "dtick": 900,
                 "len": 0.15, "thickness": 10,
                 "x": 1
@@ -212,9 +221,12 @@
                 "TX"
             ],
             "colorbar": {
-                "orientation": "h", "xanchor": "left",
+                "orientation": "h",
+                "borderwidth": 1,
+                "xanchor": "left",
+                "yanchor": "top",
                 "tick0": 1000,
-                "y": 0.8,
+                "y": 1,
                 "dtick": 500,
                 "len": 0.15, "thickness": 10,
                 "x": 1
