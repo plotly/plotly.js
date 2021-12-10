@@ -705,17 +705,19 @@ function drawColorBar(g, opts, gd) {
             )
         )) {
             // for horizontal colorbars when there is a border line or having different background color
-            // adjust x positioning for the first/last tick labels if they go outside the border
+            // hide/adjust x positioning for the first/last tick labels if they go outside the border
+            var tickLabels = axLayer.selectAll('text');
+            var numTicks = tickLabels[0].length;
+
             var border = g.select('.' + cn.cbbg).node();
             var oBb = Drawing.bBox(border);
             var oTr = Drawing.getTranslate(g);
 
             var TEXTPAD = 2;
 
-            var tickLabels = axLayer.selectAll('text');
             tickLabels.each(function(d, i) {
                 var first = 0;
-                var last = tickLabels[0].length - 1;
+                var last = numTicks - 1;
                 if(i === first || i === last) {
                     var iBb = Drawing.bBox(this);
                     var iTr = Drawing.getTranslate(this);
@@ -727,9 +729,7 @@ function drawColorBar(g, opts, gd) {
 
                         deltaX = oRight - iRight;
                         if(deltaX > 0) deltaX = 0;
-                    }
-
-                    if(i === first) {
+                    } else if(i === first) {
                         var iLeft = iBb.left + iTr.x;
                         var oLeft = oBb.left + oTr.x + vPx + borderwidth + TEXTPAD;
 
@@ -738,10 +738,14 @@ function drawColorBar(g, opts, gd) {
                     }
 
                     if(deltaX) {
-                        this.setAttribute('transform',
-                            'translate(' + deltaX + ',0) ' +
-                            this.getAttribute('transform')
-                        );
+                        if(numTicks < 3) { // adjust position
+                            this.setAttribute('transform',
+                                'translate(' + deltaX + ',0) ' +
+                                this.getAttribute('transform')
+                            );
+                        } else { // hide
+                            this.setAttribute('visibility', 'hidden');
+                        }
                     }
                 }
             });
