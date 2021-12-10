@@ -35,6 +35,7 @@
             ],
             "colorbar": {
                 "orientation": "h",
+                "borderwidth": 1,
                 "xanchor": "left",
                 "yanchor": "top",
                 "tick0": 0,
@@ -121,6 +122,7 @@
             ],
             "colorbar": {
                 "orientation": "h",
+                "borderwidth": 1,
                 "xanchor": "left",
                 "yanchor": "top",
                 "tick0": 10,
@@ -182,6 +184,7 @@
             ],
             "colorbar": {
                 "orientation": "h",
+                "borderwidth": 1,
                 "xanchor": "left",
                 "yanchor": "top",
                 "tick0": 100,
@@ -219,6 +222,7 @@
             ],
             "colorbar": {
                 "orientation": "h",
+                "borderwidth": 1,
                 "xanchor": "left",
                 "yanchor": "top",
                 "tick0": 1000,
