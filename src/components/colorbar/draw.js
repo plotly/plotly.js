@@ -701,7 +701,7 @@ function drawColorBar(g, opts, gd) {
         if(!isVertical && (
             borderwidth || (
                 tinycolor(bgcolor).getAlpha() &&
-                !tinycolor.equals(fullLayout.plot_bgcolor, bgcolor)
+                !tinycolor.equals(fullLayout.paper_bgcolor, bgcolor)
             )
         )) {
             // for horizontal colorbars when there is a border line or having different background color
