@@ -160,7 +160,7 @@ jobs:
           name: Run jasmine tests (part D)
           command: .circleci/test.sh bundle-jasmine
 
-  mathjax-firefox81:
+  mathjax-v2-firefox81:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: cimg/node:16.8.0-browsers
@@ -176,10 +176,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Test MathJax on firefox-81
-          command: .circleci/test.sh mathjax-firefox
+          name: Test MathJax v2 on firefox-81
+          command: .circleci/test.sh mathjax-v2-firefox
 
-  mathjax-firefox82:
+  mathjax-v2-firefox82:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: cimg/node:16.8.0-browsers
@@ -195,10 +195,10 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Test MathJax on firefox-82
-          command: .circleci/test.sh mathjax-firefox82+
+          name: Test MathJax v2 on firefox-82
+          command: .circleci/test.sh mathjax-v2-firefox82+
 
-  mathjax-firefoxLatest:
+  mathjax-v2-firefoxLatest:
     docker:
       # need '-browsers' version to test in real (xvfb-wrapped) browsers
       - image: cimg/node:16.8.0-browsers
@@ -213,8 +213,26 @@ jobs:
       - attach_workspace:
           at: ~/
       - run:
-          name: Test MathJax on firefox-latest
-          command: .circleci/test.sh mathjax-firefox82+
+          name: Test MathJax v2 on firefox-latest
+          command: .circleci/test.sh mathjax-v2-firefox82+
+
+  mathjax-v3-firefoxLatest:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          install-chrome: false
+          install-chromedriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test MathJax v3 on firefox-latest
+          command: .circleci/test.sh mathjax-v3-firefox82+
 
   make-baselines:
     parallelism: 4
@@ -395,13 +413,16 @@ workflows:
       - bundle-jasmine:
           requires:
             - install-and-cibuild
-      - mathjax-firefox81:
+      - mathjax-v2-firefox81:
           requires:
             - install-and-cibuild
-      - mathjax-firefox82:
+      - mathjax-v2-firefox82:
           requires:
             - install-and-cibuild
-      - mathjax-firefoxLatest:
+      - mathjax-v2-firefoxLatest:
+          requires:
+            - install-and-cibuild
+      - mathjax-v3-firefoxLatest:
           requires:
             - install-and-cibuild
       - no-gl-jasmine:

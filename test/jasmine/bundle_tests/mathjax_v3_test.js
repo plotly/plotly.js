@@ -5,7 +5,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-describe('Test MathJax:', function() {
+describe('Test MathJax v2:', function() {
     var mathJaxScriptTag;
 
     // N.B. we have to load MathJax "dynamically" as Karam
@@ -22,9 +22,15 @@ describe('Test MathJax:', function() {
             done();
         };
         mathJaxScriptTag.onerror = function() {
-            fail('MathJax failed to load');
+            fail('MathJax v3 failed to load');
         };
-        mathJaxScriptTag.src = '/base/node_modules/mathjax/MathJax.js?config=TeX-AMS-MML_SVG';
+
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+        mathJaxScriptTag.src = '/base/node_modules/mathjax-v3/es5/tex-mml-svg.js';
         document.body.appendChild(mathJaxScriptTag);
     });
 

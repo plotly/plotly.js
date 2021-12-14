@@ -20,7 +20,14 @@
   </div>
   <div id="snapshot"></div>
 
-  <script src="../../node_modules/mathjax-v2/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+  <script>
+    window.MathJax = window.MathJax || {
+      tex: {
+        inlineMath: [['$', '$'], ['\\(', '\\)']]
+      }
+    };
+  </script>
+  <script src="../../node_modules/mathjax-v3/es5/tex-mml-svg.js"></script>
   <script charset="utf-8" id="source"  type="module">import "../../build/plotly.js"</script>
   <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
 </body>

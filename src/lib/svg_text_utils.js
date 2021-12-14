@@ -174,18 +174,25 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
+    var MathJaxVersion = parseInt(
+        (MathJax.version || '').split('.')[0]
+    ) || -1;
+
+    if(!MathJaxVersion) {
+        Lib.log('No MathJax version:', MathJax.version);
+    }
+
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
         tmpDiv;
 
-    MathJax.Hub.Queue(
-    function() {
+    var v2SetConfig = function() {
         originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
 
         originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
         if(MathJax.Hub.processSectionDelay !== undefined) {
-            // MathJax 2.5+
+            // MathJax 2.5+ but not 3+
             MathJax.Hub.processSectionDelay = 0;
         }
 
@@ -196,15 +203,17 @@ function texToSVG(_texString, _config, _callback) {
             },
             displayAlign: 'left',
         });
-    },
-    function() {
+    };
+
+    var v2SetRenderer = function() {
         // Get original renderer
         originalRenderer = MathJax.Hub.config.menuSettings.renderer;
         if(originalRenderer !== 'SVG') {
             return MathJax.Hub.setRenderer('SVG');
         }
-    },
-    function() {
+    };
+
+    var initiateMathJax = function() {
         var randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
@@ -212,31 +221,65 @@ function texToSVG(_texString, _config, _callback) {
             .style({'font-size': _config.fontSize + 'px'})
             .text(cleanEscapesForTex(_texString));
 
-        return MathJax.Hub.Typeset(tmpDiv.node());
-    },
-    function() {
+        var tmpNode = tmpDiv.node();
+
+        if(MathJaxVersion < 3) {
+            return MathJax.Hub.Typeset(tmpNode);
+        } {
+            return MathJax.typeset([tmpNode]);
+        }
+    };
+
+    var finalizeMathJax = function() {
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
-        if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
+        var q;
+        if(MathJaxVersion < 3) {
+            q = tmpDiv.select('.MathJax_SVG');
+        } else {
+            q = tmpDiv;
+        }
+
+        if(q.empty() || !tmpDiv.select('svg').node()) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         } else {
             var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
-            _callback(tmpDiv.select('.MathJax_SVG'), glyphDefs, svgBBox);
+            _callback(q, glyphDefs, svgBBox);
         }
 
         tmpDiv.remove();
+    };
 
+    var v2ResetRenderer = function() {
         if(originalRenderer !== 'SVG') {
             return MathJax.Hub.setRenderer(originalRenderer);
         }
-    },
-    function() {
+    };
+
+    var v2ResetConfig = function() {
         if(originalProcessSectionDelay !== undefined) {
             MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
         }
         return MathJax.Hub.Config(originalConfig);
-    });
+    };
+
+    if(MathJaxVersion < 3) {
+        MathJax.Hub.Queue(
+            v2SetConfig,
+            v2SetRenderer,
+            initiateMathJax,
+            finalizeMathJax,
+            v2ResetRenderer,
+            v2ResetConfig
+        );
+    } else {
+        MathJax.startup.defaultReady();
+        MathJax.startup.promise.then(function() {
+            initiateMathJax();
+            finalizeMathJax();
+        });
+    }
 }
 
 var TAG_STYLES = {
