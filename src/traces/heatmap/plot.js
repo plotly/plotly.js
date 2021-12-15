@@ -453,6 +453,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             var font = trace.textfont;
             var fontFamily = font.family;
             var fontSize = font.size;
+            var globalFontSize = gd._fullLayout.font.size;
 
             if(!fontSize || fontSize === 'auto') {
                 var minW = Infinity;
@@ -479,7 +480,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     !isFinite(minW) ||
                     !isFinite(minH)
                 ) {
-                    fontSize = 12;
+                    fontSize = globalFontSize;
                 } else {
                     minW -= xGap;
                     minH -= yGap;
@@ -492,7 +493,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
 
                     fontSize = Math.min(
                         Math.floor(minW),
-                        Math.floor(minH)
+                        Math.floor(minH),
+                        globalFontSize
                     );
                 }
             }
