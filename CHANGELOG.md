@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.8.1] -- 2021-12-15
+
+### Fixed
+ - Do not exceed layout font size when `textfont` is set to "auto" for `heatmap`, `histogram2d`, `contour` and
+   `histogram2dcontour` traces [[#6061](https://github.com/plotly/plotly.js/pull/6061)]
+
+
 ## [2.8.0] -- 2021-12-10
 
 ### Added
