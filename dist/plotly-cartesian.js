@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.8.0
+* plotly.js (cartesian) v2.8.1
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -92704,6 +92704,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             var font = trace.textfont;
             var fontFamily = font.family;
             var fontSize = font.size;
+            var globalFontSize = gd._fullLayout.font.size;
 
             if(!fontSize || fontSize === 'auto') {
                 var minW = Infinity;
@@ -92730,7 +92731,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                     !isFinite(minW) ||
                     !isFinite(minH)
                 ) {
-                    fontSize = 12;
+                    fontSize = globalFontSize;
                 } else {
                     minW -= xGap;
                     minH -= yGap;
@@ -92743,7 +92744,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
 
                     fontSize = Math.min(
                         Math.floor(minW),
-                        Math.floor(minH)
+                        Math.floor(minH),
+                        globalFontSize
                     );
                 }
             }
@@ -102807,7 +102809,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.8.0';
+exports.version = '2.8.1';
 
 },{}]},{},[15])(15)
 });
