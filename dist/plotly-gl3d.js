@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.8.1
+* plotly.js (gl3d) v2.8.2
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -86285,7 +86285,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.8.1';
+exports.version = '2.8.2';
 
 },{}],435:[function(_dereq_,module,exports){
 (function (global){(function (){

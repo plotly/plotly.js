@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.8.1
+* plotly.js (finance) v2.8.2
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -77358,10 +77358,11 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     if(!texttemplate) return '';
     var isWaterfall = (trace.type === 'waterfall');
     var isFunnel = (trace.type === 'funnel');
+    var isHorizontal = trace.orientation === 'h';
 
     var pLetter, pAxis;
     var vLetter, vAxis;
-    if(trace.orientation === 'h') {
+    if(isHorizontal) {
         pLetter = 'y';
         pAxis = ya;
         vLetter = 'x';
@@ -77395,6 +77396,11 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
 
     var pt = {};
     appendArrayPointValue(pt, trace, cdi.i);
+
+    if(pt.x === undefined) pt.x = isHorizontal ? obj.value : obj.label;
+    if(pt.y === undefined) pt.y = isHorizontal ? obj.label : obj.value;
+    if(pt.xLabel === undefined) pt.xLabel = isHorizontal ? obj.valueLabel : obj.labelLabel;
+    if(pt.yLabel === undefined) pt.yLabel = isHorizontal ? obj.labelLabel : obj.valueLabel;
 
     if(isWaterfall) {
         obj.delta = +cdi.rawS || cdi.s;
@@ -80830,8 +80836,9 @@ var getBinSpanLabelRound = _dereq_('./bin_label_vals');
 function calc(gd, trace) {
     var pos = [];
     var size = [];
-    var pa = Axes.getFromId(gd, trace.orientation === 'h' ? trace.yaxis : trace.xaxis);
-    var mainData = trace.orientation === 'h' ? 'y' : 'x';
+    var isHorizontal = trace.orientation === 'h';
+    var pa = Axes.getFromId(gd, isHorizontal ? trace.yaxis : trace.xaxis);
+    var mainData = isHorizontal ? 'y' : 'x';
     var counterData = {x: 'y', y: 'x'}[mainData];
     var calendar = trace[mainData + 'calendar'];
     var cumulativeSpec = trace.cumulative;
@@ -90610,7 +90617,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.8.1';
+exports.version = '2.8.2';
 
 },{}]},{},[12])(12)
 });
