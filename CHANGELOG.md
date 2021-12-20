@@ -9,10 +9,16 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.8.3] -- 2021-12-20
+
+### Fixed
+ - Correct formatted x/y `texttempate` for `histogram` trace [[#6070](https://github.com/plotly/plotly.js/pull/6070)]
+
+
 ## [2.8.2] -- 2021-12-20
 
 ### Fixed
- - Fix x/y `texttemplate` for `histogram`, `bar`, `funnel` and `waterfall` traces [[#6069](https://github.com/plotly/plotly.js/pull/6069)]
+ - Fix missing x/y `texttemplate` for `histogram`, `bar`, `funnel` and `waterfall` traces [[#6069](https://github.com/plotly/plotly.js/pull/6069)]
 
 
 ## [2.8.1] -- 2021-12-15
