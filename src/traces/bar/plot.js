@@ -629,6 +629,7 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     var trace = cd[0].trace;
     var texttemplate = Lib.castOption(trace, index, 'texttemplate');
     if(!texttemplate) return '';
+    var isHistogram = (trace.type === 'histogram');
     var isWaterfall = (trace.type === 'waterfall');
     var isFunnel = (trace.type === 'funnel');
     var isHorizontal = trace.orientation === 'h';
@@ -670,10 +671,10 @@ function calcTexttemplate(fullLayout, cd, index, xa, ya) {
     var pt = {};
     appendArrayPointValue(pt, trace, cdi.i);
 
-    if(pt.x === undefined) pt.x = isHorizontal ? obj.value : obj.label;
-    if(pt.y === undefined) pt.y = isHorizontal ? obj.label : obj.value;
-    if(pt.xLabel === undefined) pt.xLabel = isHorizontal ? obj.valueLabel : obj.labelLabel;
-    if(pt.yLabel === undefined) pt.yLabel = isHorizontal ? obj.labelLabel : obj.valueLabel;
+    if(isHistogram || pt.x === undefined) pt.x = isHorizontal ? obj.value : obj.label;
+    if(isHistogram || pt.y === undefined) pt.y = isHorizontal ? obj.label : obj.value;
+    if(isHistogram || pt.xLabel === undefined) pt.xLabel = isHorizontal ? obj.valueLabel : obj.labelLabel;
+    if(isHistogram || pt.yLabel === undefined) pt.yLabel = isHorizontal ? obj.labelLabel : obj.valueLabel;
 
     if(isWaterfall) {
         obj.delta = +cdi.rawS || cdi.s;
