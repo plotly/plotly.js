@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.8.2
+* plotly.js (geo) v2.8.3
 * Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -95378,7 +95378,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.8.2';
+exports.version = '2.8.3';
 
 },{}]},{},[8])(8)
 });
