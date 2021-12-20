@@ -13,7 +13,7 @@
                 "cmax": 5
             },
             "x": [ 0, 1, 1, 2, 2, 2, 3, 3, 4 ],
-            "texttemplate": "%{value}",
+            "texttemplate": "%{y}",
             "textposition": "inside",
             "textfont": {
                 "size": 64
