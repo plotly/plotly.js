@@ -5,4 +5,4 @@ sudo python3 .circleci/download_google_fonts.py && \
 sudo cp -r .circleci/fonts/ /usr/share/ && \
 sudo fc-cache -f && \
 # install kaleido & plotly
-sudo python3 -m pip install kaleido==0.2.1 plotly==5.2.1 --progress-bar off
+sudo python3 -m pip install kaleido==0.2.1 plotly==5.5.0 --progress-bar off
