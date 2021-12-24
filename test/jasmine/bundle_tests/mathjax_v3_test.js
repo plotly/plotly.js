@@ -5,11 +5,10 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-describe('Test MathJax v2:', function() {
+describe('Test MathJax v3:', function() {
     var mathJaxScriptTag;
 
-    // N.B. we have to load MathJax "dynamically" as Karam
-    // does not undefined the MathJax's `?config=` parameter.
+    // TODO: find a better way reuse the code from mathjav v2 tests
     //
     // Now with the mathjax_config no longer needed,
     // it might be nice to move these tests in the "regular" test
