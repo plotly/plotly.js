@@ -236,7 +236,7 @@ function texToSVG(_texString, _config, _callback) {
         if(MathJaxVersion < 3) {
             q = tmpDiv.select('.MathJax_SVG');
         } else {
-            q = tmpDiv;
+            q = tmpDiv.select('.MathJax');
         }
 
         if(q.empty() || !tmpDiv.select('svg').node()) {
