@@ -230,20 +230,17 @@ function texToSVG(_texString, _config, _callback) {
     };
 
     var finalizeMathJax = function() {
-        var q;
-        if(MathJaxVersion < 3) {
-            q = tmpDiv.select('.MathJax_SVG');
-        } else {
-            q = tmpDiv.select('.MathJax');
-        }
+        var sel = tmpDiv.select(
+            MathJaxVersion < 3 ? '.MathJax_SVG' : '.MathJax'
+        );
 
-        if(q.empty() || !tmpDiv.select('svg').node()) {
+        if(sel.empty() || !tmpDiv.select('svg').node()) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         } else {
             var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
             var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
-            _callback(q, glyphDefs, svgBBox);
+            _callback(sel, glyphDefs, svgBBox);
         }
 
         tmpDiv.remove();
