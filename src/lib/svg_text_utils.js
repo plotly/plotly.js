@@ -230,8 +230,6 @@ function texToSVG(_texString, _config, _callback) {
     };
 
     var finalizeMathJax = function() {
-        var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
-
         var q;
         if(MathJaxVersion < 3) {
             q = tmpDiv.select('.MathJax_SVG');
@@ -244,6 +242,7 @@ function texToSVG(_texString, _config, _callback) {
             _callback();
         } else {
             var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
+            var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
             _callback(q, glyphDefs, svgBBox);
         }
 
