@@ -223,10 +223,9 @@ function texToSVG(_texString, _config, _callback) {
 
         var tmpNode = tmpDiv.node();
 
-        if(MathJaxVersion < 3) {
-            return MathJax.Hub.Typeset(tmpNode);
-        }
-        return MathJax.typeset([tmpNode]);
+        return MathJaxVersion < 3 ?
+            MathJax.Hub.Typeset(tmpNode) :
+            MathJax.typeset([tmpNode]);
     };
 
     var finalizeMathJax = function() {
