@@ -178,8 +178,17 @@ function texToSVG(_texString, _config, _callback) {
         (MathJax.version || '').split('.')[0]
     ) || -1;
 
+    if(MathJax._mockedV2API) {
+        MathJaxVersion = 2;
+    } else if(
+        MathJaxVersion === 3 &&
+        MathJax.config.startup.output === 'chtml'
+    ) {
+        Lib.warn('To use both chtml and svg outputs on the page you may consider mocking MathJax-v2 API as illustrated in devtools/test_dashboard/index-mathjax3chtml.html');
+    }
+
     if(!MathJaxVersion) {
-        Lib.log('No MathJax version:', MathJax.version);
+        Lib.warn('No MathJax version:', MathJax.version);
     }
 
     var originalRenderer,

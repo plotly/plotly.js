@@ -14,6 +14,7 @@ var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
 var strict = args.strict;
 var mathjax3 = args.mathjax3;
+var mathjax3chtml = args.mathjax3chtml;
 
 // Create server
 var server = http.createServer(ecstatic({
@@ -28,7 +29,8 @@ var bundlePlotly = makeWatchifiedBundle(strict, function() {
     // open up browser window on first bundle callback
     open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
         strict ? '-strict' :
-        mathjax3 ? '-mathjax3' : ''
+        mathjax3 ? '-mathjax3' :
+        mathjax3chtml ? '-mathjax3chtml' : ''
     ) + '.html');
 });
 
