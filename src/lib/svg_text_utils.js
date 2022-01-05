@@ -217,8 +217,11 @@ function texToSVG(_texString, _config, _callback) {
         var randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
-            .style({visibility: 'hidden', position: 'absolute'})
-            .style({'font-size': _config.fontSize + 'px'})
+            .style({
+                visibility: 'hidden',
+                position: 'absolute',
+                'font-size': _config.fontSize + 'px'
+            })
             .text(cleanEscapesForTex(_texString));
 
         var tmpNode = tmpDiv.node();
@@ -233,11 +236,12 @@ function texToSVG(_texString, _config, _callback) {
             MathJaxVersion < 3 ? '.MathJax_SVG' : '.MathJax'
         );
 
-        if(sel.empty() || !tmpDiv.select('svg').node()) {
+        var node = !sel.empty() && tmpDiv.select('svg').node();
+        if(!node) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         } else {
-            var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
+            var svgBBox = node.getBoundingClientRect();
             var glyphDefs = d3.select('body').select(
                 MathJaxVersion < 3 ? '#MathJax_SVG_glyphs' : 'defs'
             );
