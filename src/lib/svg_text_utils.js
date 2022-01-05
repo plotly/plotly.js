@@ -71,11 +71,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 parent.selectAll('svg.' + svgClass).remove();
                 parent.selectAll('g.' + svgClass + '-group').remove();
 
-                var newSvg = _svgEl && _svgEl.select(
-                    v3Chtml() ?
-                        'mjx-math' :
-                        'svg'
-                );
+                var newSvg = _svgEl && _svgEl.select('svg');
                 if(!newSvg || !newSvg.node()) {
                     showText();
                     resolve();
@@ -169,15 +165,6 @@ exports.convertToTspans = function(_context, gd, _callback) {
 
 // MathJax
 
-function v3Chtml() {
-    return (
-        MathJax &&
-        MathJax.config &&
-        MathJax.config.startup &&
-        MathJax.config.startup.output === 'chtml'
-    );
-}
-
 var LT_MATCH = /(<|&lt;|&#60;)/g;
 var GT_MATCH = /(>|&gt;|&#62;)/g;
 
@@ -249,12 +236,7 @@ function texToSVG(_texString, _config, _callback) {
             MathJaxVersion < 3 ? '.MathJax_SVG' : '.MathJax'
         );
 
-        var node = !sel.empty() && (
-            v3Chtml() ?
-                tmpDiv.select('mjx-math').node() : // TODO: handle non-svg element in texToSVG callback!
-                tmpDiv.select('svg').node()
-        );
-
+        var node = !sel.empty() && tmpDiv.select('svg').node();
         if(!node) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
