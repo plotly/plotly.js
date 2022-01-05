@@ -178,15 +178,6 @@ function texToSVG(_texString, _config, _callback) {
         (MathJax.version || '').split('.')[0]
     ) || -1;
 
-    if(MathJax._mockedV2API) {
-        MathJaxVersion = 2;
-    } else if(
-        MathJaxVersion === 3 &&
-        MathJax.config.startup.output === 'chtml'
-    ) {
-        Lib.warn('To use both chtml and svg outputs on the page you may consider mocking MathJax-v2 API as illustrated in devtools/test_dashboard/index-mathjax3chtml.html');
-    }
-
     if(!MathJaxVersion) {
         Lib.warn('No MathJax version:', MathJax.version);
     }
@@ -214,11 +205,16 @@ function texToSVG(_texString, _config, _callback) {
         });
     };
 
-    var v2SetRenderer = function() {
+    var setRenderer = function() {
         // Get original renderer
-        originalRenderer = MathJax.Hub.config.menuSettings.renderer;
-        if(originalRenderer !== 'SVG') {
-            return MathJax.Hub.setRenderer('SVG');
+        if(MathJaxVersion < 3) {
+            originalRenderer = MathJax.Hub.config.menuSettings.renderer;
+            if(originalRenderer !== 'SVG') {
+                return MathJax.Hub.setRenderer('SVG');
+            }
+        } else {
+            originalRenderer = MathJax.config.startup.output;
+            MathJax.config.startup.output = 'svg';
         }
     };
 
@@ -260,9 +256,15 @@ function texToSVG(_texString, _config, _callback) {
         tmpDiv.remove();
     };
 
-    var v2ResetRenderer = function() {
-        if(originalRenderer !== 'SVG') {
-            return MathJax.Hub.setRenderer(originalRenderer);
+    var resetRenderer = function() {
+        if(MathJaxVersion < 3) {
+            if(originalRenderer !== 'SVG') {
+                return MathJax.Hub.setRenderer(originalRenderer);
+            }
+        } else {
+            if(originalRenderer !== 'svg') {
+                MathJax.config.startup.output = originalRenderer;
+            }
         }
     };
 
@@ -276,18 +278,20 @@ function texToSVG(_texString, _config, _callback) {
     if(MathJaxVersion < 3) {
         MathJax.Hub.Queue(
             v2SetConfig,
-            v2SetRenderer,
+            setRenderer,
             initiateMathJax,
             finalizeMathJax,
-            v2ResetRenderer,
+            resetRenderer,
             v2ResetConfig
         );
     } else {
+        setRenderer();
         MathJax.startup.defaultReady();
         MathJax.startup.promise.then(function() {
             initiateMathJax();
             finalizeMathJax();
         });
+        resetRenderer();
     }
 }
 
