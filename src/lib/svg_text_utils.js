@@ -186,7 +186,6 @@ function texToSVG(_texString, _config, _callback) {
 
     var originalRenderer,
         originalConfig,
-        originalConfigTex,
         originalProcessSectionDelay,
         tmpDiv;
 
@@ -208,10 +207,11 @@ function texToSVG(_texString, _config, _callback) {
                 displayAlign: 'left',
             });
         } else {
-            if(MathJax.config.tex) {
-                originalConfigTex = Lib.extendDeepAll({}, MathJax.config.tex);
-                MathJax.config.tex.inlineMath = inlineMath;
+            if(!MathJax.config.tex) {
+                MathJax.config.tex = {};
             }
+            originalConfig = Lib.extendDeepAll({}, MathJax.config);
+            MathJax.config.tex.inlineMath = inlineMath;
         }
     };
 
@@ -287,11 +287,7 @@ function texToSVG(_texString, _config, _callback) {
             }
             return MathJax.Hub.Config(originalConfig);
         } else {
-            if(originalConfigTex) {
-                MathJax.config.tex.inlineMath = originalConfigTex.inlineMath;
-            } else {
-                MathJax.config.tex = undefined;
-            }
+            MathJax.config.tex.inlineMath = originalConfig.tex.inlineMath;
         }
     };
 
