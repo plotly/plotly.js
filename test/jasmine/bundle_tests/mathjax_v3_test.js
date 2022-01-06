@@ -23,7 +23,7 @@ describe('Test MathJax v3:', function() {
         mathJaxScriptTag.onerror = function() {
             fail('MathJax v3 failed to load');
         };
-        mathJaxScriptTag.src = '/base/node_modules/mathjax-v3/es5/tex-mml-svg.js';
+        mathJaxScriptTag.src = '/base/node_modules/mathjax-v3/es5/tex-svg.js';
         document.body.appendChild(mathJaxScriptTag);
     });
 

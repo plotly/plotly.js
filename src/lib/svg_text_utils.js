@@ -224,7 +224,9 @@ function texToSVG(_texString, _config, _callback) {
             }
         } else {
             originalRenderer = MathJax.config.startup.output;
-            MathJax.config.startup.output = 'svg';
+            if(originalRenderer !== 'svg') {
+                MathJax.config.startup.output = 'svg';
+            }
         }
     };
 
@@ -306,10 +308,8 @@ function texToSVG(_texString, _config, _callback) {
         setConfig();
         setRenderer();
         MathJax.startup.defaultReady();
-        MathJax.startup.promise.then(function() {
-            initiateMathJax();
-            finalizeMathJax();
-        });
+        initiateMathJax();
+        finalizeMathJax();
         resetRenderer();
         resetConfig();
     }

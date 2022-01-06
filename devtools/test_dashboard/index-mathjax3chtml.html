@@ -23,44 +23,43 @@
 
   <script>
     window.MathJax = window.MathJax || {
+      // see https://github.com/mathjax/MathJax/issues/2705#issuecomment-859742446
       loader: {load: ['output/svg']},
       startup: {
         ready() {
-          //
-          //  Get the MathJax modules that we need.
-          //
+          // Get the MathJax modules that we need.
           const {mathjax} = MathJax._.mathjax;
           const {SVG} = MathJax._.output.svg_ts;
-          //
+
           // Do the normal setup
-          //
           MathJax.startup.defaultReady();
-          //
-          //  Create an SVG output jax and a new MathDocument that uses it.
-          //
+
+          // Create an SVG output jax and a new MathDocument that uses it.
           const svgOutput = new SVG(MathJax.config.svg);
           const svgDocument = mathjax.document(document, {
             ...MathJax.config.options,
             InputJax: MathJax.startup.input,
             OutputJax: svgOutput
           });
-          //
-          //  Define the SVG-based conversion methods
-          //
+
+          // Define the SVG-based conversion methods
           MathJax.tex2svg = (math, options = {}) => {
             options.format = svgDocument.inputJax[0].name;
             return svgDocument.convert(math, options);
           };
+          /*
           MathJax.tex2svgPromise = (math, options = {}) => {
             options.format = svgDocument.inputJax[0].name;
             return mathjax.handleRetriesFor(() => svgDocument.convert(math, options));
           };
+          */
           MathJax.svgStylesheet = () => svgOutput.styleSheet(svgDocument);
         }
       }
     };
   </script>
-  <script src="../../node_modules/mathjax-v3/es5/tex-mml-chtml.js"></script>
+  <script src="../../node_modules/mathjax-v3/es5/tex-chtml.js"></script>
+
   <script charset="utf-8" id="source"  type="module">import "../../build/plotly.js"</script>
   <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
 </body>
