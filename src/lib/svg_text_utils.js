@@ -305,12 +305,13 @@ function texToSVG(_texString, _config, _callback) {
         setRenderer();
         MathJax.startup.defaultReady();
 
-        initiateMathJax();
-        finalizeMathJax();
+        MathJax.startup.promise.then(function() {
+            initiateMathJax();
+            finalizeMathJax();
 
-        resetRenderer();
-        resetConfig();
-        MathJax.startup.defaultReady();
+            resetRenderer();
+            resetConfig();
+        });
     }
 }
 
