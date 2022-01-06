@@ -23,6 +23,7 @@
 
   <script>
     window.MathJax = window.MathJax || {
+      loader: {load: ['output/svg']},
       startup: {
         ready() {
           //
@@ -56,10 +57,6 @@
           };
           MathJax.svgStylesheet = () => svgOutput.styleSheet(svgDocument);
         }
-      },
-      loader: {load: ["output/svg"]},
-      tex: {
-        inlineMath: [["\\(", "\\)"], ["$", "$"]],
       }
     };
   </script>

@@ -173,6 +173,8 @@ function cleanEscapesForTex(s) {
         .replace(GT_MATCH, '\\gt ');
 }
 
+var inlineMath = [['$', '$'], ['\\(', '\\)']];
+
 function texToSVG(_texString, _config, _callback) {
     var MathJaxVersion = parseInt(
         (MathJax.version || '').split('.')[0]
@@ -184,25 +186,33 @@ function texToSVG(_texString, _config, _callback) {
 
     var originalRenderer,
         originalConfig,
+        originalConfigTex,
         originalProcessSectionDelay,
         tmpDiv;
 
-    var v2SetConfig = function() {
-        originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
+    var setConfig = function() {
+        if(MathJaxVersion < 3) {
+            originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
 
-        originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
-        if(MathJax.Hub.processSectionDelay !== undefined) {
-            // MathJax 2.5+ but not 3+
-            MathJax.Hub.processSectionDelay = 0;
+            originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
+            if(MathJax.Hub.processSectionDelay !== undefined) {
+                // MathJax 2.5+ but not 3+
+                MathJax.Hub.processSectionDelay = 0;
+            }
+
+            return MathJax.Hub.Config({
+                messageStyle: 'none',
+                tex2jax: {
+                    inlineMath: inlineMath
+                },
+                displayAlign: 'left',
+            });
+        } else {
+            if(MathJax.config.tex) {
+                originalConfigTex = Lib.extendDeepAll({}, MathJax.config.tex);
+                MathJax.config.tex.inlineMath = inlineMath;
+            }
         }
-
-        return MathJax.Hub.Config({
-            messageStyle: 'none',
-            tex2jax: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
-            },
-            displayAlign: 'left',
-        });
     };
 
     var setRenderer = function() {
@@ -268,23 +278,32 @@ function texToSVG(_texString, _config, _callback) {
         }
     };
 
-    var v2ResetConfig = function() {
-        if(originalProcessSectionDelay !== undefined) {
-            MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
+    var resetConfig = function() {
+        if(MathJaxVersion < 3) {
+            if(originalProcessSectionDelay !== undefined) {
+                MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
+            }
+            return MathJax.Hub.Config(originalConfig);
+        } else {
+            if(originalConfigTex) {
+                MathJax.config.tex.inlineMath = originalConfigTex.inlineMath;
+            } else {
+                MathJax.config.tex = undefined;
+            }
         }
-        return MathJax.Hub.Config(originalConfig);
     };
 
     if(MathJaxVersion < 3) {
         MathJax.Hub.Queue(
-            v2SetConfig,
+            setConfig,
             setRenderer,
             initiateMathJax,
             finalizeMathJax,
             resetRenderer,
-            v2ResetConfig
+            resetConfig
         );
     } else {
+        setConfig();
         setRenderer();
         MathJax.startup.defaultReady();
         MathJax.startup.promise.then(function() {
@@ -292,6 +311,7 @@ function texToSVG(_texString, _config, _callback) {
             finalizeMathJax();
         });
         resetRenderer();
+        resetConfig();
     }
 }
 
