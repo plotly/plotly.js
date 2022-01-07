@@ -69,23 +69,14 @@ case $1 in
         exit $EXIT_STATE
         ;;
 
-    mathjax-v2-firefox)
+    mathjax-firefox)
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_v2 --nowatch || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
-    mathjax-v2-firefox82+)
-        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --skip-tags=noFF82 --bundleTest=mathjax_v2 --nowatch || EXIT_STATE=$?
-        exit $EXIT_STATE
-        ;;
-
-    mathjax-v3-firefox82+)
+    mathjax-firefox82+)
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --skip-tags=noFF82 --bundleTest=mathjax_v2 --nowatch &&
         ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --skip-tags=noFF82 --bundleTest=mathjax_v3 --nowatch || EXIT_STATE=$?
-        exit $EXIT_STATE
-        ;;
-
-    mathjax-v3-firefox)
-        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_v3 --nowatch || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
