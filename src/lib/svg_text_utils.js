@@ -259,9 +259,12 @@ function texToSVG(_texString, _config, _callback) {
             _callback();
         } else {
             var nodeBBox = node.getBoundingClientRect();
-            var glyphDefs = d3.select('body').select(
-                MathJaxVersion < 3 ? '#MathJax_SVG_glyphs' : 'defs'
-            );
+            var glyphDefs;
+            if(MathJaxVersion < 3) {
+                glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
+            } else {
+                glyphDefs = sel.select('defs');
+            }
             _callback(sel, glyphDefs, nodeBBox);
         }
 
