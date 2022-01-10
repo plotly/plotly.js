@@ -207,11 +207,11 @@ function texToSVG(_texString, _config, _callback) {
                 displayAlign: 'left',
             });
         } else {
-            if(!MathJax.config.tex) {
-                MathJax.config.tex = {};
-            }
             originalConfig = Lib.extendDeepAll({}, MathJax.config);
-            MathJax.config.tex.inlineMath = inlineMath;
+
+            if(!MathJax.config.tex.inlineMath) {
+                MathJax.config.tex.inlineMath = inlineMath;
+            }
         }
     };
 
