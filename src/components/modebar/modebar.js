@@ -5,6 +5,8 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Icons = require('../../fonts/ploticon');
+var version = require('../../version').version;
+
 var Parser = new DOMParser();
 
 /**
@@ -292,7 +294,7 @@ proto.getLogo = function() {
 
     a.href = 'https://plotly.com/';
     a.target = '_blank';
-    a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly'));
+    a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly') + '.js ' + version);
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(Icons.newplotlylogo));
