@@ -286,7 +286,7 @@ proto.hasButtons = function(buttons) {
 };
 
 function jsVersion(str) {
-    return str.replace('Plotly', 'Plotly.js') + ' (v' + version + ')';
+    return str + ' (v' + version + ')';
 }
 
 /**
