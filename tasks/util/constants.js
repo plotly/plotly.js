@@ -201,6 +201,10 @@ module.exports = {
 
     partialBundleNames: partialBundleNames,
 
+    reglCodegenSubdir: path.join('generated', 'regl-codegen'),
+    pathToReglCodegenSrc: path.join(pathToSrc, 'generated', 'regl-codegen'),
+    
+
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
@@ -210,6 +214,7 @@ module.exports = {
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
+    pathToReglCodegenBundle: path.join(pathToBuild, 'regl_codegen-bundle.js'),
 
     pathToImageTest: pathToImageTest,
     pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),

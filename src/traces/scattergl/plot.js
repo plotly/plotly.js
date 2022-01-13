@@ -14,6 +14,7 @@ var linkTraces = require('../scatter/link_traces');
 
 var styleTextSelection = require('./edit_style').styleTextSelection;
 
+var reglPrecompiled = require('./regl_precompiled');
 
 function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var gs = fullLayout._size;
@@ -46,7 +47,7 @@ module.exports = function plot(gd, subplot, cdata) {
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
 
-    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint'], reglPrecompiled);
     if(!success) {
         scene.init();
         return;

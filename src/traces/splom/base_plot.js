@@ -8,6 +8,7 @@ var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
 var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
 var shouldShowZeroLine = require('../../plots/cartesian/axes').shouldShowZeroLine;
+var reglPrecompiled = require ('./regl_precompiled');
 
 var SPLOM = 'splom';
 
@@ -16,7 +17,7 @@ function plot(gd) {
     var _module = Registry.getModule(SPLOM);
     var splomCalcData = getModuleCalcData(gd.calcdata, _module)[0];
 
-    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint'], reglPrecompiled);
     if(!success) return;
 
     if(fullLayout._hasOnlyLargeSploms) {

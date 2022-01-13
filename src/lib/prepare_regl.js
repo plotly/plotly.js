@@ -8,6 +8,14 @@ var showNoWebGlMsg = require('./show_no_webgl_msg');
 // regl and all its bytes.
 var createRegl = require('regl');
 
+
+function loadCodegenCache(generated) {
+    window.__regl_codegen_cache = window.__regl_codegen_cache || {};
+    Object.entries(generated).forEach(function([key, value]) {
+        window.__regl_codegen_cache[key] = window.__regl_codegen_cache[key] || value;
+    });
+}
+
 /**
  * Idempotent version of createRegl. Create regl instances
  * in the correct canvases with the correct attributes and
@@ -18,9 +26,13 @@ var createRegl = require('regl');
  *
  * @return {boolean} true if all createRegl calls succeeded, false otherwise
  */
-module.exports = function prepareRegl(gd, extensions) {
+module.exports = function prepareRegl(gd, extensions, reglPrecompiled) {
     var fullLayout = gd._fullLayout;
     var success = true;
+
+    if (reglPrecompiled) {
+        loadCodegenCache(reglPrecompiled);
+    }
 
     fullLayout._glcanvas.each(function(d) {
         if(d.regl) return;
