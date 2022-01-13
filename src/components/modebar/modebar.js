@@ -285,6 +285,10 @@ proto.hasButtons = function(buttons) {
     return true;
 };
 
+function jsVersion(str) {
+    return str.replace('Plotly', 'Plotly.js') + ' (v' + version + ')';
+}
+
 /**
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
@@ -294,7 +298,7 @@ proto.getLogo = function() {
 
     a.href = 'https://plotly.com/';
     a.target = '_blank';
-    a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly') + '.js ' + version);
+    a.setAttribute('data-title', jsVersion(Lib._(this.graphInfo, 'Produced with Plotly')));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(Icons.newplotlylogo));
