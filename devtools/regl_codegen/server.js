@@ -206,7 +206,7 @@ function handleCodegen(data) {
 
     Object.entries(generated).forEach(function ([key, value], i) {
         var filePath = path.join(pathToReglCodegenSrc, key);
-        fs.writeFileSync(filePath, value);
+        fs.writeFileSync(filePath, 'module.exports = ' + value);
 
         imports += "var v" + varId + " = require('../../" + path.join(constants.reglCodegenSubdir, key) + "');\n";
         exports += '  "' + key + '": v' + varId + ',\n';

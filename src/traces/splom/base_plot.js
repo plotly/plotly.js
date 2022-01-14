@@ -8,9 +8,10 @@ var getModuleCalcData = require('../../plots/get_data').getModuleCalcData;
 var Cartesian = require('../../plots/cartesian');
 var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
 var shouldShowZeroLine = require('../../plots/cartesian/axes').shouldShowZeroLine;
-var reglPrecompiled = require ('./regl_precompiled');
 
 var SPLOM = 'splom';
+
+var reglPrecompiled = {};
 
 function plot(gd) {
     var fullLayout = gd._fullLayout;
@@ -220,5 +221,6 @@ module.exports = {
     updateGrid: updateGrid,
     clean: clean,
     updateFx: Cartesian.updateFx,
-    toSVG: Cartesian.toSVG
+    toSVG: Cartesian.toSVG,
+    reglPrecompiled
 };

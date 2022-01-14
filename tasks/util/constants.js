@@ -16,11 +16,19 @@ function startsWithLowerCase(v) {
     return v.charAt(0) !== v.charAt(0).toUpperCase();
 }
 
+
 var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
 var pathToPlotlyStrict = path.join(pathToLib, 'index-strict.js');
 var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
+
+// traces that exist which are not part of the main bundle.
+var excludedTraces = [
+    'parcoords-strict',
+    'scattergl-strict',
+    'splom-strict',
+]
 var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
     .filter(function(v) {
         return startsWithLowerCase(v) && v !== 'helpers.js';
@@ -133,17 +141,20 @@ var partialBundleTraces = {
         'mesh3d',
         'ohlc',
         'parcats',
+        'parcoords-strict',
         'pie',
         'pointcloud',
         'sankey',
         'scatter',
-        'scatter',
+        'scattergl-strict',
         'scatter3d',
         'scattercarpet',
         'scattergeo',
         'scattermapbox',
         'scatterpolar',
+        'scatterpolargl',
         'scatterternary',
+        'splom-strict',
         'streamtube',
         'sunburst',
         'surface',
@@ -184,6 +195,7 @@ module.exports = {
 
     allTransforms: allTransforms,
     allTraces: allTraces,
+    excludedTraces: excludedTraces,
     mainIndex: mainIndex,
     pathToPlotlyIndex: pathToPlotlyIndex,
     pathToPlotlyStrict: pathToPlotlyStrict,

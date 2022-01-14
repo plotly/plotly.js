@@ -8,6 +8,7 @@ var header = constants.licenseDist + '\n';
 var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;
 var mainIndex = constants.mainIndex;
+var excludedTraces = constants.excludedTraces;
 
 // Browserify the plotly.js partial bundles
 module.exports = function partialBundle(tasks, opts) {
@@ -25,7 +26,8 @@ module.exports = function partialBundle(tasks, opts) {
 
         var all = ['calendars'].concat(allTransforms).concat(allTraces);
         var includes = (calendars ? ['calendars'] : []).concat(transformList).concat(traceList);
-        var excludes = all.filter(function(e) { return includes.indexOf(e) === -1; });
+        var excludes = all.filter(function(e) { return includes.indexOf(e) === -1 && excludedTraces.indexOf(e) === -1; });
+        var missing = includes.filter(function(e) { return excludedTraces.indexOf(e) !== -1; });
 
         excludes.forEach(function(t) {
             var WHITESPACE_BEFORE = '\\s*';
@@ -44,6 +46,18 @@ module.exports = function partialBundle(tasks, opts) {
             }
 
             partialIndex = newCode;
+        });
+
+        missing.forEach(function(t) {
+            // find 'Plotly.register([' and add require('./<trace>')
+            var REGEX_BEFORE = new RegExp(
+                'Plotly\\.register\\(\\[\n',
+            'g');
+            partialIndex = partialIndex.replace(
+                REGEX_BEFORE,
+                'Plotly.register([\n' +
+                '    require(\'./' + t + '\'),\n'
+            );
         });
 
         common.writeFile(index, partialIndex, done);

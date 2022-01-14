@@ -14,7 +14,7 @@ var linkTraces = require('../scatter/link_traces');
 
 var styleTextSelection = require('./edit_style').styleTextSelection;
 
-var reglPrecompiled = require('./regl_precompiled');
+var reglPrecompiled = {};
 
 function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var gs = fullLayout._size;
@@ -35,7 +35,7 @@ function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     ];
 }
 
-module.exports = function plot(gd, subplot, cdata) {
+var exports = module.exports = function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
     var fullLayout = gd._fullLayout;
@@ -370,3 +370,5 @@ module.exports = function plot(gd, subplot, cdata) {
         scene.glText.forEach(function(text) { text.update(vpRange0); });
     }
 };
+
+exports.reglPrecompiled = reglPrecompiled;
