@@ -1084,7 +1084,7 @@ proto.toImage = function(format) {
     var canvas = document.createElement('canvas');
     canvas.width = w;
     canvas.height = h;
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext('2d', {willReadFrequently: true});
     var imageData = context.createImageData(w, h);
     imageData.data.set(pixels);
     context.putImageData(imageData, 0, 0);

@@ -92,7 +92,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
             var canvas = document.createElement('canvas');
             canvas.width = imageWidth;
             canvas.height = imageHeight;
-            var context = canvas.getContext('2d');
+            var context = canvas.getContext('2d', {willReadFrequently: true});
 
             var ipx = function(i) {return Lib.constrain(Math.round(xa.c2p(x0 + i * dx) - left), 0, imageWidth);};
             var jpx = function(j) {return Lib.constrain(Math.round(ya.c2p(y0 + j * dy) - top), 0, imageHeight);};
@@ -167,7 +167,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                     var canvas = document.createElement('canvas');
                     canvas.width = w;
                     canvas.height = h;
-                    var context = canvas.getContext('2d');
+                    var context = canvas.getContext('2d', {willReadFrequently: true});
 
                     trace._image = trace._image || new Image();
                     var image = trace._image;
@@ -192,7 +192,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 if(realImage) {
                     href = trace.source;
                 } else {
-                    var context = trace._canvas.el.getContext('2d');
+                    var context = trace._canvas.el.getContext('2d', {willReadFrequently:true});
                     var data = context.getImageData(0, 0, w, h).data;
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
                         var index = 4 * (j * w + i);
