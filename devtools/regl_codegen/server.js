@@ -9,6 +9,7 @@ var minimist = require('minimist');
 var constants = require('../../tasks/util/constants');
 var makeWatchifiedBundle = require('../../tasks/util/watchified_bundle');
 var shortcutPaths = require('../../tasks/util/shortcut_paths');
+const { exit } = require('process');
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -21,6 +22,9 @@ var static = ecstatic({
     gzip: true,
     cors: true
 })
+
+var tracesReceived = [];
+
 var server = http.createServer(function (req, res) {
     if (req.method === 'POST' && req.url === '/api/submit-code') {
         var body = '';
@@ -30,10 +34,18 @@ var server = http.createServer(function (req, res) {
         req.on('end', function () {
             var data = JSON.parse(body);
 
+            tracesReceived.push(data.trace);
             handleCodegen(data);
             res.statusCode = 200;
             res.end();
         })
+    } else if (req.method === 'GET' && req.url === '/api/codegen-done') {
+        console.log('Codegen complete');
+        console.log('Traces received:', tracesReceived);
+
+        res.statusCode = 200;
+        res.end();
+        setTimeout(() => exit(), 1000);
     } else {
         static(req, res);
     }

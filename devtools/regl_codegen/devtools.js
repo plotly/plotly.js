@@ -2,30 +2,12 @@
 
 /* global Plotly:false */
 
-var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var reglTraces = require('../../build/regl_traces.json');
-var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
 
 // Our gracious testing object
 var Tabs = {
-
-    // Set plot config options
-    setPlotConfig: function() {
-        Plotly.setPlotConfig({
-
-            // use local topojson files
-            topojsonURL: '../../node_modules/sane-topojson/dist/',
-
-            // register mapbox access token
-            // run `npm run preset` if you haven't yet
-            mapboxAccessToken: credentials.MAPBOX_ACCESS_TOKEN,
-
-            // show all logs in console
-            logging: 2
-        });
-    },
 
     // Return the specified plot container (or default one)
     getGraph: function(id) {
@@ -86,74 +68,6 @@ var Tabs = {
             };
         })
     },
-
-    // Save a png snapshot and display it below the plot
-    snapshot: function(id) {
-        var gd = Tabs.getGraph(id);
-
-        if(!gd._fullLayout || !gd._fullData) {
-            console.error('no graph with id ' + id + ' found.');
-            return;
-        }
-
-        var image = new Image();
-
-        Plotly.Snapshot.toImage(gd, { format: 'png' }).on('success', function(img) {
-            image.src = img;
-
-            var imageDiv = document.getElementById('snapshot');
-            imageDiv.appendChild(image);
-
-            console.warn('Snapshot complete!');
-        });
-    },
-
-    // Remove all plots and snapshots from the page
-    purge: function() {
-        var plots = document.getElementsByClassName('dashboard-plot');
-        var images = document.getElementById('snapshot');
-
-        while(images.firstChild) {
-            images.removeChild(images.firstChild);
-        }
-
-        for(var i = 0; i < plots.length; i++) {
-            Plotly.purge(plots[i]);
-        }
-    },
-
-    // Specify what to do after each plotly.js script reload
-    onReload: function() {
-        return;
-    },
-
-    // Refreshes the plotly.js source without needing to refresh the page
-    reload: function() {
-        var source = document.getElementById('source');
-        var reloaded = document.getElementById('reload-time');
-
-        source.remove();
-
-        window.Plotly = null;
-
-        source = document.createElement('script');
-        source.id = 'source';
-        source.src = '../../build/plotly.js';
-
-        document.body.appendChild(source);
-
-        var reloadTime = new Date().toLocaleTimeString();
-        console.warn('plotly.js reloaded at ' + reloadTime);
-        reloaded.textContent = 'last reload at ' + reloadTime;
-
-        var interval = setInterval(function() {
-            if(window.Plotly) {
-                clearInterval(interval);
-                handleOnLoad();
-                Tabs.onReload();
-            }
-        }, 100);
-    }
 };
 
 
@@ -167,43 +81,7 @@ setInterval(function() {
     window.fullData = window.gd._fullData;
 }, 1000);
 
-// Mocks search and plotting
-var fuse = new Fuse(mocks, {
-    // isCaseSensitive: false,
-    // includeScore: false,
-    // shouldSort: true,
-    // includeMatches: false,
-    // findAllMatches: false,
-    // minMatchCharLength: 1,
-    // location: 0,
-    // threshold: 0.6,
-    // distance: 100,
-    // useExtendedSearch: false,
-    keys: [{
-        name: 'name',
-        weight: 0.7
-    }, {
-        name: 'keywords',
-        weight: 0.3
-    }]
-});
-
-var transformInput = document.getElementById('css-transform');
-var mockInput = document.getElementById('mocks-search');
 var mocksList = document.getElementById('mocks-list');
-var plotArea = document.getElementById('plots');
-
-function getNameFromHash() {
-    return window.location.hash.replace(/^#/, '');
-}
-
-function plotFromHash() {
-    var initialMock = getNameFromHash();
-
-    if(initialMock.length > 0) {
-        Tabs.plotMock(initialMock);
-    }
-}
 
 async function handleOnLoad() {
     var mocksByReglTrace = {};
@@ -260,4 +138,8 @@ async function handleOnLoad() {
             body
         });
     }
+
+    // close
+    await fetch("/api/codegen-done");
+    window.close();
 }
