@@ -1,6 +1,6 @@
 /**
 * plotly.js (gl3d) v2.8.3
-* Copyright 2012-2022, Plotly, Inc.
+* Copyright 2012-2021, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -72,37 +72,37 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":251}],2:[function(_dereq_,module,exports){
+},{"../src/lib":252}],2:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/aggregate');
 
-},{"../src/transforms/aggregate":428}],3:[function(_dereq_,module,exports){
+},{"../src/transforms/aggregate":429}],3:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/components/calendars');
 
-},{"../src/components/calendars":116}],4:[function(_dereq_,module,exports){
+},{"../src/components/calendars":117}],4:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/cone');
 
-},{"../src/traces/cone":364}],5:[function(_dereq_,module,exports){
+},{"../src/traces/cone":365}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/core');
 
-},{"../src/core":232}],6:[function(_dereq_,module,exports){
+},{"../src/core":233}],6:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/filter');
 
-},{"../src/transforms/filter":429}],7:[function(_dereq_,module,exports){
+},{"../src/transforms/filter":430}],7:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/groupby');
 
-},{"../src/transforms/groupby":430}],8:[function(_dereq_,module,exports){
+},{"../src/transforms/groupby":431}],8:[function(_dereq_,module,exports){
 'use strict';
 
 var Plotly = _dereq_('./core');
@@ -134,37 +134,37 @@ module.exports = Plotly;
 
 module.exports = _dereq_('../src/traces/isosurface');
 
-},{"../src/traces/isosurface":371}],10:[function(_dereq_,module,exports){
+},{"../src/traces/isosurface":372}],10:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/mesh3d');
 
-},{"../src/traces/mesh3d":376}],11:[function(_dereq_,module,exports){
+},{"../src/traces/mesh3d":377}],11:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/scatter3d');
 
-},{"../src/traces/scatter3d":413}],12:[function(_dereq_,module,exports){
+},{"../src/traces/scatter3d":414}],12:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/sort');
 
-},{"../src/transforms/sort":432}],13:[function(_dereq_,module,exports){
+},{"../src/transforms/sort":433}],13:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/streamtube');
 
-},{"../src/traces/streamtube":418}],14:[function(_dereq_,module,exports){
+},{"../src/traces/streamtube":419}],14:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/surface');
 
-},{"../src/traces/surface":423}],15:[function(_dereq_,module,exports){
+},{"../src/traces/surface":424}],15:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/volume');
 
-},{"../src/traces/volume":427}],16:[function(_dereq_,module,exports){
+},{"../src/traces/volume":428}],16:[function(_dereq_,module,exports){
 !function() {
   var d3 = {
     version: "3.8.0"
@@ -6993,2077 +6993,6 @@ module.exports = _dereq_('../src/traces/volume');
   if (typeof define === "function" && define.amd) this.d3 = d3, define(d3); else if (typeof module === "object" && module.exports) module.exports = d3; else this.d3 = d3;
 }.apply(self);
 },{}],17:[function(_dereq_,module,exports){
-module.exports = clamp
-
-function clamp(value, min, max) {
-  return min < max
-    ? (value < min ? min : value > max ? max : value)
-    : (value < max ? max : value > min ? min : value)
-}
-
-},{}],18:[function(_dereq_,module,exports){
-'use strict'
-
-module.exports = {
-	"aliceblue": [240, 248, 255],
-	"antiquewhite": [250, 235, 215],
-	"aqua": [0, 255, 255],
-	"aquamarine": [127, 255, 212],
-	"azure": [240, 255, 255],
-	"beige": [245, 245, 220],
-	"bisque": [255, 228, 196],
-	"black": [0, 0, 0],
-	"blanchedalmond": [255, 235, 205],
-	"blue": [0, 0, 255],
-	"blueviolet": [138, 43, 226],
-	"brown": [165, 42, 42],
-	"burlywood": [222, 184, 135],
-	"cadetblue": [95, 158, 160],
-	"chartreuse": [127, 255, 0],
-	"chocolate": [210, 105, 30],
-	"coral": [255, 127, 80],
-	"cornflowerblue": [100, 149, 237],
-	"cornsilk": [255, 248, 220],
-	"crimson": [220, 20, 60],
-	"cyan": [0, 255, 255],
-	"darkblue": [0, 0, 139],
-	"darkcyan": [0, 139, 139],
-	"darkgoldenrod": [184, 134, 11],
-	"darkgray": [169, 169, 169],
-	"darkgreen": [0, 100, 0],
-	"darkgrey": [169, 169, 169],
-	"darkkhaki": [189, 183, 107],
-	"darkmagenta": [139, 0, 139],
-	"darkolivegreen": [85, 107, 47],
-	"darkorange": [255, 140, 0],
-	"darkorchid": [153, 50, 204],
-	"darkred": [139, 0, 0],
-	"darksalmon": [233, 150, 122],
-	"darkseagreen": [143, 188, 143],
-	"darkslateblue": [72, 61, 139],
-	"darkslategray": [47, 79, 79],
-	"darkslategrey": [47, 79, 79],
-	"darkturquoise": [0, 206, 209],
-	"darkviolet": [148, 0, 211],
-	"deeppink": [255, 20, 147],
-	"deepskyblue": [0, 191, 255],
-	"dimgray": [105, 105, 105],
-	"dimgrey": [105, 105, 105],
-	"dodgerblue": [30, 144, 255],
-	"firebrick": [178, 34, 34],
-	"floralwhite": [255, 250, 240],
-	"forestgreen": [34, 139, 34],
-	"fuchsia": [255, 0, 255],
-	"gainsboro": [220, 220, 220],
-	"ghostwhite": [248, 248, 255],
-	"gold": [255, 215, 0],
-	"goldenrod": [218, 165, 32],
-	"gray": [128, 128, 128],
-	"green": [0, 128, 0],
-	"greenyellow": [173, 255, 47],
-	"grey": [128, 128, 128],
-	"honeydew": [240, 255, 240],
-	"hotpink": [255, 105, 180],
-	"indianred": [205, 92, 92],
-	"indigo": [75, 0, 130],
-	"ivory": [255, 255, 240],
-	"khaki": [240, 230, 140],
-	"lavender": [230, 230, 250],
-	"lavenderblush": [255, 240, 245],
-	"lawngreen": [124, 252, 0],
-	"lemonchiffon": [255, 250, 205],
-	"lightblue": [173, 216, 230],
-	"lightcoral": [240, 128, 128],
-	"lightcyan": [224, 255, 255],
-	"lightgoldenrodyellow": [250, 250, 210],
-	"lightgray": [211, 211, 211],
-	"lightgreen": [144, 238, 144],
-	"lightgrey": [211, 211, 211],
-	"lightpink": [255, 182, 193],
-	"lightsalmon": [255, 160, 122],
-	"lightseagreen": [32, 178, 170],
-	"lightskyblue": [135, 206, 250],
-	"lightslategray": [119, 136, 153],
-	"lightslategrey": [119, 136, 153],
-	"lightsteelblue": [176, 196, 222],
-	"lightyellow": [255, 255, 224],
-	"lime": [0, 255, 0],
-	"limegreen": [50, 205, 50],
-	"linen": [250, 240, 230],
-	"magenta": [255, 0, 255],
-	"maroon": [128, 0, 0],
-	"mediumaquamarine": [102, 205, 170],
-	"mediumblue": [0, 0, 205],
-	"mediumorchid": [186, 85, 211],
-	"mediumpurple": [147, 112, 219],
-	"mediumseagreen": [60, 179, 113],
-	"mediumslateblue": [123, 104, 238],
-	"mediumspringgreen": [0, 250, 154],
-	"mediumturquoise": [72, 209, 204],
-	"mediumvioletred": [199, 21, 133],
-	"midnightblue": [25, 25, 112],
-	"mintcream": [245, 255, 250],
-	"mistyrose": [255, 228, 225],
-	"moccasin": [255, 228, 181],
-	"navajowhite": [255, 222, 173],
-	"navy": [0, 0, 128],
-	"oldlace": [253, 245, 230],
-	"olive": [128, 128, 0],
-	"olivedrab": [107, 142, 35],
-	"orange": [255, 165, 0],
-	"orangered": [255, 69, 0],
-	"orchid": [218, 112, 214],
-	"palegoldenrod": [238, 232, 170],
-	"palegreen": [152, 251, 152],
-	"paleturquoise": [175, 238, 238],
-	"palevioletred": [219, 112, 147],
-	"papayawhip": [255, 239, 213],
-	"peachpuff": [255, 218, 185],
-	"peru": [205, 133, 63],
-	"pink": [255, 192, 203],
-	"plum": [221, 160, 221],
-	"powderblue": [176, 224, 230],
-	"purple": [128, 0, 128],
-	"rebeccapurple": [102, 51, 153],
-	"red": [255, 0, 0],
-	"rosybrown": [188, 143, 143],
-	"royalblue": [65, 105, 225],
-	"saddlebrown": [139, 69, 19],
-	"salmon": [250, 128, 114],
-	"sandybrown": [244, 164, 96],
-	"seagreen": [46, 139, 87],
-	"seashell": [255, 245, 238],
-	"sienna": [160, 82, 45],
-	"silver": [192, 192, 192],
-	"skyblue": [135, 206, 235],
-	"slateblue": [106, 90, 205],
-	"slategray": [112, 128, 144],
-	"slategrey": [112, 128, 144],
-	"snow": [255, 250, 250],
-	"springgreen": [0, 255, 127],
-	"steelblue": [70, 130, 180],
-	"tan": [210, 180, 140],
-	"teal": [0, 128, 128],
-	"thistle": [216, 191, 216],
-	"tomato": [255, 99, 71],
-	"turquoise": [64, 224, 208],
-	"violet": [238, 130, 238],
-	"wheat": [245, 222, 179],
-	"white": [255, 255, 255],
-	"whitesmoke": [245, 245, 245],
-	"yellow": [255, 255, 0],
-	"yellowgreen": [154, 205, 50]
-};
-
-},{}],19:[function(_dereq_,module,exports){
-/** @module  color-normalize */
-
-'use strict'
-
-var rgba = _dereq_('color-rgba')
-var clamp = _dereq_('clamp')
-var dtype = _dereq_('dtype')
-
-module.exports = function normalize (color, type) {
-	if (type === 'float' || !type) type = 'array'
-	if (type === 'uint') type = 'uint8'
-	if (type === 'uint_clamped') type = 'uint8_clamped'
-	var Ctor = dtype(type)
-	var output = new Ctor(4)
-
-	var normalize = type !== 'uint8' && type !== 'uint8_clamped'
-
-	// attempt to parse non-array arguments
-	if (!color.length || typeof color === 'string') {
-		color = rgba(color)
-		color[0] /= 255
-		color[1] /= 255
-		color[2] /= 255
-	}
-
-	// 0, 1 are possible contradictory values for Arrays:
-	// [1,1,1] input gives [1,1,1] output instead of [1/255,1/255,1/255], which may be collision if input is meant to be uint.
-	// converting [1,1,1] to [1/255,1/255,1/255] in case of float input gives larger mistake since [1,1,1] float is frequent edge value, whereas [0,1,1], [1,1,1] etc. uint inputs are relatively rare
-	if (isInt(color)) {
-		output[0] = color[0]
-		output[1] = color[1]
-		output[2] = color[2]
-		output[3] = color[3] != null ? color[3] : 255
-
-		if (normalize) {
-			output[0] /= 255
-			output[1] /= 255
-			output[2] /= 255
-			output[3] /= 255
-		}
-
-		return output
-	}
-
-	if (!normalize) {
-		output[0] = clamp(Math.floor(color[0] * 255), 0, 255)
-		output[1] = clamp(Math.floor(color[1] * 255), 0, 255)
-		output[2] = clamp(Math.floor(color[2] * 255), 0, 255)
-		output[3] = color[3] == null ? 255 : clamp(Math.floor(color[3] * 255), 0, 255)
-	} else {
-		output[0] = color[0]
-		output[1] = color[1]
-		output[2] = color[2]
-		output[3] = color[3] != null ? color[3] : 1
-	}
-
-	return output
-}
-
-function isInt(color) {
-	if (color instanceof Uint8Array || color instanceof Uint8ClampedArray) return true
-
-	if (Array.isArray(color) &&
-		(color[0] > 1 || color[0] === 0) &&
-		(color[1] > 1 || color[1] === 0) &&
-		(color[2] > 1 || color[2] === 0) &&
-		(!color[3] || color[3] > 1)
-	) return true
-
-	return false
-}
-
-},{"clamp":17,"color-rgba":21,"dtype":28}],20:[function(_dereq_,module,exports){
-(function (global){(function (){
-/**
- * @module color-parse
- */
-
-'use strict'
-
-var names = _dereq_('color-name')
-var isObject = _dereq_('is-plain-obj')
-var defined = _dereq_('defined')
-
-module.exports = parse
-
-/**
- * Base hues
- * http://dev.w3.org/csswg/css-color/#typedef-named-hue
- */
-//FIXME: use external hue detector
-var baseHues = {
-	red: 0,
-	orange: 60,
-	yellow: 120,
-	green: 180,
-	blue: 240,
-	purple: 300
-}
-
-/**
- * Parse color from the string passed
- *
- * @return {Object} A space indicator `space`, an array `values` and `alpha`
- */
-function parse (cstr) {
-	var m, parts = [], alpha = 1, space
-
-	if (typeof cstr === 'string') {
-		//keyword
-		if (names[cstr]) {
-			parts = names[cstr].slice()
-			space = 'rgb'
-		}
-
-		//reserved words
-		else if (cstr === 'transparent') {
-			alpha = 0
-			space = 'rgb'
-			parts = [0,0,0]
-		}
-
-		//hex
-		else if (/^#[A-Fa-f0-9]+$/.test(cstr)) {
-			var base = cstr.slice(1)
-			var size = base.length
-			var isShort = size <= 4
-			alpha = 1
-
-			if (isShort) {
-				parts = [
-					parseInt(base[0] + base[0], 16),
-					parseInt(base[1] + base[1], 16),
-					parseInt(base[2] + base[2], 16)
-				]
-				if (size === 4) {
-					alpha = parseInt(base[3] + base[3], 16) / 255
-				}
-			}
-			else {
-				parts = [
-					parseInt(base[0] + base[1], 16),
-					parseInt(base[2] + base[3], 16),
-					parseInt(base[4] + base[5], 16)
-				]
-				if (size === 8) {
-					alpha = parseInt(base[6] + base[7], 16) / 255
-				}
-			}
-
-			if (!parts[0]) parts[0] = 0
-			if (!parts[1]) parts[1] = 0
-			if (!parts[2]) parts[2] = 0
-
-			space = 'rgb'
-		}
-
-		//color space
-		else if (m = /^((?:rgb|hs[lvb]|hwb|cmyk?|xy[zy]|gray|lab|lchu?v?|[ly]uv|lms)a?)\s*\(([^\)]*)\)/.exec(cstr)) {
-			var name = m[1]
-			var isRGB = name === 'rgb'
-			var base = name.replace(/a$/, '')
-			space = base
-			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3
-			parts = m[2].trim()
-				.split(/\s*,\s*/)
-				.map(function (x, i) {
-					//<percentage>
-					if (/%$/.test(x)) {
-						//alpha
-						if (i === size)	return parseFloat(x) / 100
-						//rgb
-						if (base === 'rgb') return parseFloat(x) * 255 / 100
-						return parseFloat(x)
-					}
-					//hue
-					else if (base[i] === 'h') {
-						//<deg>
-						if (/deg$/.test(x)) {
-							return parseFloat(x)
-						}
-						//<base-hue>
-						else if (baseHues[x] !== undefined) {
-							return baseHues[x]
-						}
-					}
-					return parseFloat(x)
-				})
-
-			if (name === base) parts.push(1)
-			alpha = (isRGB) ? 1 : (parts[size] === undefined) ? 1 : parts[size]
-			parts = parts.slice(0, size)
-		}
-
-		//named channels case
-		else if (cstr.length > 10 && /[0-9](?:\s|\/)/.test(cstr)) {
-			parts = cstr.match(/([0-9]+)/g).map(function (value) {
-				return parseFloat(value)
-			})
-
-			space = cstr.match(/([a-z])/ig).join('').toLowerCase()
-		}
-	}
-
-	//numeric case
-	else if (!isNaN(cstr)) {
-		space = 'rgb'
-		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff]
-	}
-
-	//object case - detects css cases of rgb and hsl
-	else if (isObject(cstr)) {
-		var r = defined(cstr.r, cstr.red, cstr.R, null)
-
-		if (r !== null) {
-			space = 'rgb'
-			parts = [
-				r,
-				defined(cstr.g, cstr.green, cstr.G),
-				defined(cstr.b, cstr.blue, cstr.B)
-			]
-		}
-		else {
-			space = 'hsl'
-			parts = [
-				defined(cstr.h, cstr.hue, cstr.H),
-				defined(cstr.s, cstr.saturation, cstr.S),
-				defined(cstr.l, cstr.lightness, cstr.L, cstr.b, cstr.brightness)
-			]
-		}
-
-		alpha = defined(cstr.a, cstr.alpha, cstr.opacity, 1)
-
-		if (cstr.opacity != null) alpha /= 100
-	}
-
-	//array
-	else if (Array.isArray(cstr) || global.ArrayBuffer && ArrayBuffer.isView && ArrayBuffer.isView(cstr)) {
-		parts = [cstr[0], cstr[1], cstr[2]]
-		space = 'rgb'
-		alpha = cstr.length === 4 ? cstr[3] : 1
-	}
-
-	return {
-		space: space,
-		values: parts,
-		alpha: alpha
-	}
-}
-
-}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"color-name":18,"defined":27,"is-plain-obj":66}],21:[function(_dereq_,module,exports){
-/** @module  color-rgba */
-
-'use strict'
-
-var parse = _dereq_('color-parse')
-var hsl = _dereq_('color-space/hsl')
-var clamp = _dereq_('clamp')
-
-module.exports = function rgba (color) {
-	var values, i, l
-
-	//attempt to parse non-array arguments
-	var parsed = parse(color)
-
-	if (!parsed.space) return []
-
-	values = Array(3)
-	values[0] = clamp(parsed.values[0], 0, 255)
-	values[1] = clamp(parsed.values[1], 0, 255)
-	values[2] = clamp(parsed.values[2], 0, 255)
-
-	if (parsed.space[0] === 'h') {
-		values = hsl.rgb(values)
-	}
-
-	values.push(clamp(parsed.alpha, 0, 1))
-
-	return values
-}
-
-},{"clamp":17,"color-parse":20,"color-space/hsl":22}],22:[function(_dereq_,module,exports){
-/**
- * @module color-space/hsl
- */
-'use strict'
-
-var rgb = _dereq_('./rgb');
-
-module.exports = {
-	name: 'hsl',
-	min: [0,0,0],
-	max: [360,100,100],
-	channel: ['hue', 'saturation', 'lightness'],
-	alias: ['HSL'],
-
-	rgb: function(hsl) {
-		var h = hsl[0] / 360,
-				s = hsl[1] / 100,
-				l = hsl[2] / 100,
-				t1, t2, t3, rgb, val;
-
-		if (s === 0) {
-			val = l * 255;
-			return [val, val, val];
-		}
-
-		if (l < 0.5) {
-			t2 = l * (1 + s);
-		}
-		else {
-			t2 = l + s - l * s;
-		}
-		t1 = 2 * l - t2;
-
-		rgb = [0, 0, 0];
-		for (var i = 0; i < 3; i++) {
-			t3 = h + 1 / 3 * - (i - 1);
-			if (t3 < 0) {
-				t3++;
-			}
-			else if (t3 > 1) {
-				t3--;
-			}
-
-			if (6 * t3 < 1) {
-				val = t1 + (t2 - t1) * 6 * t3;
-			}
-			else if (2 * t3 < 1) {
-				val = t2;
-			}
-			else if (3 * t3 < 2) {
-				val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
-			}
-			else {
-				val = t1;
-			}
-
-			rgb[i] = val * 255;
-		}
-
-		return rgb;
-	}
-};
-
-
-//extend rgb
-rgb.hsl = function(rgb) {
-	var r = rgb[0]/255,
-			g = rgb[1]/255,
-			b = rgb[2]/255,
-			min = Math.min(r, g, b),
-			max = Math.max(r, g, b),
-			delta = max - min,
-			h, s, l;
-
-	if (max === min) {
-		h = 0;
-	}
-	else if (r === max) {
-		h = (g - b) / delta;
-	}
-	else if (g === max) {
-		h = 2 + (b - r) / delta;
-	}
-	else if (b === max) {
-		h = 4 + (r - g)/ delta;
-	}
-
-	h = Math.min(h * 60, 360);
-
-	if (h < 0) {
-		h += 360;
-	}
-
-	l = (min + max) / 2;
-
-	if (max === min) {
-		s = 0;
-	}
-	else if (l <= 0.5) {
-		s = delta / (max + min);
-	}
-	else {
-		s = delta / (2 - max - min);
-	}
-
-	return [h, s * 100, l * 100];
-};
-
-},{"./rgb":23}],23:[function(_dereq_,module,exports){
-/**
- * RGB space.
- *
- * @module  color-space/rgb
- */
-'use strict'
-
-module.exports = {
-	name: 'rgb',
-	min: [0,0,0],
-	max: [255,255,255],
-	channel: ['red', 'green', 'blue'],
-	alias: ['RGB']
-};
-
-},{}],24:[function(_dereq_,module,exports){
-// https://d3js.org/d3-format/ v1.4.5 Copyright 2020 Mike Bostock
-(function (global, factory) {
-typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-typeof define === 'function' && define.amd ? define(['exports'], factory) :
-(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.d3 = global.d3 || {}));
-}(this, (function (exports) { 'use strict';
-
-function formatDecimal(x) {
-  return Math.abs(x = Math.round(x)) >= 1e21
-      ? x.toLocaleString("en").replace(/,/g, "")
-      : x.toString(10);
-}
-
-// Computes the decimal coefficient and exponent of the specified number x with
-// significant digits p, where x is positive and p is in [1, 21] or undefined.
-// For example, formatDecimalParts(1.23) returns ["123", 0].
-function formatDecimalParts(x, p) {
-  if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
-  var i, coefficient = x.slice(0, i);
-
-  // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
-  // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
-  return [
-    coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient,
-    +x.slice(i + 1)
-  ];
-}
-
-function exponent(x) {
-  return x = formatDecimalParts(Math.abs(x)), x ? x[1] : NaN;
-}
-
-function formatGroup(grouping, thousands) {
-  return function(value, width) {
-    var i = value.length,
-        t = [],
-        j = 0,
-        g = grouping[0],
-        length = 0;
-
-    while (i > 0 && g > 0) {
-      if (length + g + 1 > width) g = Math.max(1, width - length);
-      t.push(value.substring(i -= g, i + g));
-      if ((length += g + 1) > width) break;
-      g = grouping[j = (j + 1) % grouping.length];
-    }
-
-    return t.reverse().join(thousands);
-  };
-}
-
-function formatNumerals(numerals) {
-  return function(value) {
-    return value.replace(/[0-9]/g, function(i) {
-      return numerals[+i];
-    });
-  };
-}
-
-// [[fill]align][sign][symbol][0][width][,][.precision][~][type]
-var re = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
-
-function formatSpecifier(specifier) {
-  if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
-  var match;
-  return new FormatSpecifier({
-    fill: match[1],
-    align: match[2],
-    sign: match[3],
-    symbol: match[4],
-    zero: match[5],
-    width: match[6],
-    comma: match[7],
-    precision: match[8] && match[8].slice(1),
-    trim: match[9],
-    type: match[10]
-  });
-}
-
-formatSpecifier.prototype = FormatSpecifier.prototype; // instanceof
-
-function FormatSpecifier(specifier) {
-  this.fill = specifier.fill === undefined ? " " : specifier.fill + "";
-  this.align = specifier.align === undefined ? ">" : specifier.align + "";
-  this.sign = specifier.sign === undefined ? "-" : specifier.sign + "";
-  this.symbol = specifier.symbol === undefined ? "" : specifier.symbol + "";
-  this.zero = !!specifier.zero;
-  this.width = specifier.width === undefined ? undefined : +specifier.width;
-  this.comma = !!specifier.comma;
-  this.precision = specifier.precision === undefined ? undefined : +specifier.precision;
-  this.trim = !!specifier.trim;
-  this.type = specifier.type === undefined ? "" : specifier.type + "";
-}
-
-FormatSpecifier.prototype.toString = function() {
-  return this.fill
-      + this.align
-      + this.sign
-      + this.symbol
-      + (this.zero ? "0" : "")
-      + (this.width === undefined ? "" : Math.max(1, this.width | 0))
-      + (this.comma ? "," : "")
-      + (this.precision === undefined ? "" : "." + Math.max(0, this.precision | 0))
-      + (this.trim ? "~" : "")
-      + this.type;
-};
-
-// Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
-function formatTrim(s) {
-  out: for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
-    switch (s[i]) {
-      case ".": i0 = i1 = i; break;
-      case "0": if (i0 === 0) i0 = i; i1 = i; break;
-      default: if (!+s[i]) break out; if (i0 > 0) i0 = 0; break;
-    }
-  }
-  return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
-}
-
-var prefixExponent;
-
-function formatPrefixAuto(x, p) {
-  var d = formatDecimalParts(x, p);
-  if (!d) return x + "";
-  var coefficient = d[0],
-      exponent = d[1],
-      i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
-      n = coefficient.length;
-  return i === n ? coefficient
-      : i > n ? coefficient + new Array(i - n + 1).join("0")
-      : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
-      : "0." + new Array(1 - i).join("0") + formatDecimalParts(x, Math.max(0, p + i - 1))[0]; // less than 1y!
-}
-
-function formatRounded(x, p) {
-  var d = formatDecimalParts(x, p);
-  if (!d) return x + "";
-  var coefficient = d[0],
-      exponent = d[1];
-  return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
-      : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
-      : coefficient + new Array(exponent - coefficient.length + 2).join("0");
-}
-
-var formatTypes = {
-  "%": function(x, p) { return (x * 100).toFixed(p); },
-  "b": function(x) { return Math.round(x).toString(2); },
-  "c": function(x) { return x + ""; },
-  "d": formatDecimal,
-  "e": function(x, p) { return x.toExponential(p); },
-  "f": function(x, p) { return x.toFixed(p); },
-  "g": function(x, p) { return x.toPrecision(p); },
-  "o": function(x) { return Math.round(x).toString(8); },
-  "p": function(x, p) { return formatRounded(x * 100, p); },
-  "r": formatRounded,
-  "s": formatPrefixAuto,
-  "X": function(x) { return Math.round(x).toString(16).toUpperCase(); },
-  "x": function(x) { return Math.round(x).toString(16); }
-};
-
-function identity(x) {
-  return x;
-}
-
-var map = Array.prototype.map,
-    prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
-
-function formatLocale(locale) {
-  var group = locale.grouping === undefined || locale.thousands === undefined ? identity : formatGroup(map.call(locale.grouping, Number), locale.thousands + ""),
-      currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
-      currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
-      decimal = locale.decimal === undefined ? "." : locale.decimal + "",
-      numerals = locale.numerals === undefined ? identity : formatNumerals(map.call(locale.numerals, String)),
-      percent = locale.percent === undefined ? "%" : locale.percent + "",
-      minus = locale.minus === undefined ? "-" : locale.minus + "",
-      nan = locale.nan === undefined ? "NaN" : locale.nan + "";
-
-  function newFormat(specifier) {
-    specifier = formatSpecifier(specifier);
-
-    var fill = specifier.fill,
-        align = specifier.align,
-        sign = specifier.sign,
-        symbol = specifier.symbol,
-        zero = specifier.zero,
-        width = specifier.width,
-        comma = specifier.comma,
-        precision = specifier.precision,
-        trim = specifier.trim,
-        type = specifier.type;
-
-    // The "n" type is an alias for ",g".
-    if (type === "n") comma = true, type = "g";
-
-    // The "" type, and any invalid type, is an alias for ".12~g".
-    else if (!formatTypes[type]) precision === undefined && (precision = 12), trim = true, type = "g";
-
-    // If zero fill is specified, padding goes after sign and before digits.
-    if (zero || (fill === "0" && align === "=")) zero = true, fill = "0", align = "=";
-
-    // Compute the prefix and suffix.
-    // For SI-prefix, the suffix is lazily computed.
-    var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
-        suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
-
-    // What format function should we use?
-    // Is this an integer type?
-    // Can this type generate exponential notation?
-    var formatType = formatTypes[type],
-        maybeSuffix = /[defgprs%]/.test(type);
-
-    // Set the default precision if not specified,
-    // or clamp the specified precision to the supported range.
-    // For significant precision, it must be in [1, 21].
-    // For fixed precision, it must be in [0, 20].
-    precision = precision === undefined ? 6
-        : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision))
-        : Math.max(0, Math.min(20, precision));
-
-    function format(value) {
-      var valuePrefix = prefix,
-          valueSuffix = suffix,
-          i, n, c;
-
-      if (type === "c") {
-        valueSuffix = formatType(value) + valueSuffix;
-        value = "";
-      } else {
-        value = +value;
-
-        // Determine the sign. -0 is not less than 0, but 1 / -0 is!
-        var valueNegative = value < 0 || 1 / value < 0;
-
-        // Perform the initial formatting.
-        value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
-
-        // Trim insignificant zeros.
-        if (trim) value = formatTrim(value);
-
-        // If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
-        if (valueNegative && +value === 0 && sign !== "+") valueNegative = false;
-
-        // Compute the prefix and suffix.
-        valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
-        valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
-
-        // Break the formatted value into the integer “value” part that can be
-        // grouped, and fractional or exponential “suffix” part that is not.
-        if (maybeSuffix) {
-          i = -1, n = value.length;
-          while (++i < n) {
-            if (c = value.charCodeAt(i), 48 > c || c > 57) {
-              valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
-              value = value.slice(0, i);
-              break;
-            }
-          }
-        }
-      }
-
-      // If the fill character is not "0", grouping is applied before padding.
-      if (comma && !zero) value = group(value, Infinity);
-
-      // Compute the padding.
-      var length = valuePrefix.length + value.length + valueSuffix.length,
-          padding = length < width ? new Array(width - length + 1).join(fill) : "";
-
-      // If the fill character is "0", grouping is applied after padding.
-      if (comma && zero) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
-
-      // Reconstruct the final output based on the desired alignment.
-      switch (align) {
-        case "<": value = valuePrefix + value + valueSuffix + padding; break;
-        case "=": value = valuePrefix + padding + value + valueSuffix; break;
-        case "^": value = padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length); break;
-        default: value = padding + valuePrefix + value + valueSuffix; break;
-      }
-
-      return numerals(value);
-    }
-
-    format.toString = function() {
-      return specifier + "";
-    };
-
-    return format;
-  }
-
-  function formatPrefix(specifier, value) {
-    var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)),
-        e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
-        k = Math.pow(10, -e),
-        prefix = prefixes[8 + e / 3];
-    return function(value) {
-      return f(k * value) + prefix;
-    };
-  }
-
-  return {
-    format: newFormat,
-    formatPrefix: formatPrefix
-  };
-}
-
-var locale;
-
-defaultLocale({
-  decimal: ".",
-  thousands: ",",
-  grouping: [3],
-  currency: ["$", ""],
-  minus: "-"
-});
-
-function defaultLocale(definition) {
-  locale = formatLocale(definition);
-  exports.format = locale.format;
-  exports.formatPrefix = locale.formatPrefix;
-  return locale;
-}
-
-function precisionFixed(step) {
-  return Math.max(0, -exponent(Math.abs(step)));
-}
-
-function precisionPrefix(step, value) {
-  return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3 - exponent(Math.abs(step)));
-}
-
-function precisionRound(step, max) {
-  step = Math.abs(step), max = Math.abs(max) - step;
-  return Math.max(0, exponent(max) - exponent(step)) + 1;
-}
-
-exports.FormatSpecifier = FormatSpecifier;
-exports.formatDefaultLocale = defaultLocale;
-exports.formatLocale = formatLocale;
-exports.formatSpecifier = formatSpecifier;
-exports.precisionFixed = precisionFixed;
-exports.precisionPrefix = precisionPrefix;
-exports.precisionRound = precisionRound;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
-
-},{}],25:[function(_dereq_,module,exports){
-// https://d3js.org/d3-time-format/ v2.3.0 Copyright 2020 Mike Bostock
-(function (global, factory) {
-typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, _dereq_('d3-time')) :
-typeof define === 'function' && define.amd ? define(['exports', 'd3-time'], factory) :
-(global = global || self, factory(global.d3 = global.d3 || {}, global.d3));
-}(this, function (exports, d3Time) { 'use strict';
-
-function localDate(d) {
-  if (0 <= d.y && d.y < 100) {
-    var date = new Date(-1, d.m, d.d, d.H, d.M, d.S, d.L);
-    date.setFullYear(d.y);
-    return date;
-  }
-  return new Date(d.y, d.m, d.d, d.H, d.M, d.S, d.L);
-}
-
-function utcDate(d) {
-  if (0 <= d.y && d.y < 100) {
-    var date = new Date(Date.UTC(-1, d.m, d.d, d.H, d.M, d.S, d.L));
-    date.setUTCFullYear(d.y);
-    return date;
-  }
-  return new Date(Date.UTC(d.y, d.m, d.d, d.H, d.M, d.S, d.L));
-}
-
-function newDate(y, m, d) {
-  return {y: y, m: m, d: d, H: 0, M: 0, S: 0, L: 0};
-}
-
-function formatLocale(locale) {
-  var locale_dateTime = locale.dateTime,
-      locale_date = locale.date,
-      locale_time = locale.time,
-      locale_periods = locale.periods,
-      locale_weekdays = locale.days,
-      locale_shortWeekdays = locale.shortDays,
-      locale_months = locale.months,
-      locale_shortMonths = locale.shortMonths;
-
-  var periodRe = formatRe(locale_periods),
-      periodLookup = formatLookup(locale_periods),
-      weekdayRe = formatRe(locale_weekdays),
-      weekdayLookup = formatLookup(locale_weekdays),
-      shortWeekdayRe = formatRe(locale_shortWeekdays),
-      shortWeekdayLookup = formatLookup(locale_shortWeekdays),
-      monthRe = formatRe(locale_months),
-      monthLookup = formatLookup(locale_months),
-      shortMonthRe = formatRe(locale_shortMonths),
-      shortMonthLookup = formatLookup(locale_shortMonths);
-
-  var formats = {
-    "a": formatShortWeekday,
-    "A": formatWeekday,
-    "b": formatShortMonth,
-    "B": formatMonth,
-    "c": null,
-    "d": formatDayOfMonth,
-    "e": formatDayOfMonth,
-    "f": formatMicroseconds,
-    "g": formatYearISO,
-    "G": formatFullYearISO,
-    "H": formatHour24,
-    "I": formatHour12,
-    "j": formatDayOfYear,
-    "L": formatMilliseconds,
-    "m": formatMonthNumber,
-    "M": formatMinutes,
-    "p": formatPeriod,
-    "q": formatQuarter,
-    "Q": formatUnixTimestamp,
-    "s": formatUnixTimestampSeconds,
-    "S": formatSeconds,
-    "u": formatWeekdayNumberMonday,
-    "U": formatWeekNumberSunday,
-    "V": formatWeekNumberISO,
-    "w": formatWeekdayNumberSunday,
-    "W": formatWeekNumberMonday,
-    "x": null,
-    "X": null,
-    "y": formatYear,
-    "Y": formatFullYear,
-    "Z": formatZone,
-    "%": formatLiteralPercent
-  };
-
-  var utcFormats = {
-    "a": formatUTCShortWeekday,
-    "A": formatUTCWeekday,
-    "b": formatUTCShortMonth,
-    "B": formatUTCMonth,
-    "c": null,
-    "d": formatUTCDayOfMonth,
-    "e": formatUTCDayOfMonth,
-    "f": formatUTCMicroseconds,
-    "g": formatUTCYearISO,
-    "G": formatUTCFullYearISO,
-    "H": formatUTCHour24,
-    "I": formatUTCHour12,
-    "j": formatUTCDayOfYear,
-    "L": formatUTCMilliseconds,
-    "m": formatUTCMonthNumber,
-    "M": formatUTCMinutes,
-    "p": formatUTCPeriod,
-    "q": formatUTCQuarter,
-    "Q": formatUnixTimestamp,
-    "s": formatUnixTimestampSeconds,
-    "S": formatUTCSeconds,
-    "u": formatUTCWeekdayNumberMonday,
-    "U": formatUTCWeekNumberSunday,
-    "V": formatUTCWeekNumberISO,
-    "w": formatUTCWeekdayNumberSunday,
-    "W": formatUTCWeekNumberMonday,
-    "x": null,
-    "X": null,
-    "y": formatUTCYear,
-    "Y": formatUTCFullYear,
-    "Z": formatUTCZone,
-    "%": formatLiteralPercent
-  };
-
-  var parses = {
-    "a": parseShortWeekday,
-    "A": parseWeekday,
-    "b": parseShortMonth,
-    "B": parseMonth,
-    "c": parseLocaleDateTime,
-    "d": parseDayOfMonth,
-    "e": parseDayOfMonth,
-    "f": parseMicroseconds,
-    "g": parseYear,
-    "G": parseFullYear,
-    "H": parseHour24,
-    "I": parseHour24,
-    "j": parseDayOfYear,
-    "L": parseMilliseconds,
-    "m": parseMonthNumber,
-    "M": parseMinutes,
-    "p": parsePeriod,
-    "q": parseQuarter,
-    "Q": parseUnixTimestamp,
-    "s": parseUnixTimestampSeconds,
-    "S": parseSeconds,
-    "u": parseWeekdayNumberMonday,
-    "U": parseWeekNumberSunday,
-    "V": parseWeekNumberISO,
-    "w": parseWeekdayNumberSunday,
-    "W": parseWeekNumberMonday,
-    "x": parseLocaleDate,
-    "X": parseLocaleTime,
-    "y": parseYear,
-    "Y": parseFullYear,
-    "Z": parseZone,
-    "%": parseLiteralPercent
-  };
-
-  // These recursive directive definitions must be deferred.
-  formats.x = newFormat(locale_date, formats);
-  formats.X = newFormat(locale_time, formats);
-  formats.c = newFormat(locale_dateTime, formats);
-  utcFormats.x = newFormat(locale_date, utcFormats);
-  utcFormats.X = newFormat(locale_time, utcFormats);
-  utcFormats.c = newFormat(locale_dateTime, utcFormats);
-
-  function newFormat(specifier, formats) {
-    return function(date) {
-      var string = [],
-          i = -1,
-          j = 0,
-          n = specifier.length,
-          c,
-          pad,
-          format;
-
-      if (!(date instanceof Date)) date = new Date(+date);
-
-      while (++i < n) {
-        if (specifier.charCodeAt(i) === 37) {
-          string.push(specifier.slice(j, i));
-          if ((pad = pads[c = specifier.charAt(++i)]) != null) c = specifier.charAt(++i);
-          else pad = c === "e" ? " " : "0";
-          if (format = formats[c]) c = format(date, pad);
-          string.push(c);
-          j = i + 1;
-        }
-      }
-
-      string.push(specifier.slice(j, i));
-      return string.join("");
-    };
-  }
-
-  function newParse(specifier, Z) {
-    return function(string) {
-      var d = newDate(1900, undefined, 1),
-          i = parseSpecifier(d, specifier, string += "", 0),
-          week, day;
-      if (i != string.length) return null;
-
-      // If a UNIX timestamp is specified, return it.
-      if ("Q" in d) return new Date(d.Q);
-      if ("s" in d) return new Date(d.s * 1000 + ("L" in d ? d.L : 0));
-
-      // If this is utcParse, never use the local timezone.
-      if (Z && !("Z" in d)) d.Z = 0;
-
-      // The am-pm flag is 0 for AM, and 1 for PM.
-      if ("p" in d) d.H = d.H % 12 + d.p * 12;
-
-      // If the month was not specified, inherit from the quarter.
-      if (d.m === undefined) d.m = "q" in d ? d.q : 0;
-
-      // Convert day-of-week and week-of-year to day-of-year.
-      if ("V" in d) {
-        if (d.V < 1 || d.V > 53) return null;
-        if (!("w" in d)) d.w = 1;
-        if ("Z" in d) {
-          week = utcDate(newDate(d.y, 0, 1)), day = week.getUTCDay();
-          week = day > 4 || day === 0 ? d3Time.utcMonday.ceil(week) : d3Time.utcMonday(week);
-          week = d3Time.utcDay.offset(week, (d.V - 1) * 7);
-          d.y = week.getUTCFullYear();
-          d.m = week.getUTCMonth();
-          d.d = week.getUTCDate() + (d.w + 6) % 7;
-        } else {
-          week = localDate(newDate(d.y, 0, 1)), day = week.getDay();
-          week = day > 4 || day === 0 ? d3Time.timeMonday.ceil(week) : d3Time.timeMonday(week);
-          week = d3Time.timeDay.offset(week, (d.V - 1) * 7);
-          d.y = week.getFullYear();
-          d.m = week.getMonth();
-          d.d = week.getDate() + (d.w + 6) % 7;
-        }
-      } else if ("W" in d || "U" in d) {
-        if (!("w" in d)) d.w = "u" in d ? d.u % 7 : "W" in d ? 1 : 0;
-        day = "Z" in d ? utcDate(newDate(d.y, 0, 1)).getUTCDay() : localDate(newDate(d.y, 0, 1)).getDay();
-        d.m = 0;
-        d.d = "W" in d ? (d.w + 6) % 7 + d.W * 7 - (day + 5) % 7 : d.w + d.U * 7 - (day + 6) % 7;
-      }
-
-      // If a time zone is specified, all fields are interpreted as UTC and then
-      // offset according to the specified time zone.
-      if ("Z" in d) {
-        d.H += d.Z / 100 | 0;
-        d.M += d.Z % 100;
-        return utcDate(d);
-      }
-
-      // Otherwise, all fields are in local time.
-      return localDate(d);
-    };
-  }
-
-  function parseSpecifier(d, specifier, string, j) {
-    var i = 0,
-        n = specifier.length,
-        m = string.length,
-        c,
-        parse;
-
-    while (i < n) {
-      if (j >= m) return -1;
-      c = specifier.charCodeAt(i++);
-      if (c === 37) {
-        c = specifier.charAt(i++);
-        parse = parses[c in pads ? specifier.charAt(i++) : c];
-        if (!parse || ((j = parse(d, string, j)) < 0)) return -1;
-      } else if (c != string.charCodeAt(j++)) {
-        return -1;
-      }
-    }
-
-    return j;
-  }
-
-  function parsePeriod(d, string, i) {
-    var n = periodRe.exec(string.slice(i));
-    return n ? (d.p = periodLookup[n[0].toLowerCase()], i + n[0].length) : -1;
-  }
-
-  function parseShortWeekday(d, string, i) {
-    var n = shortWeekdayRe.exec(string.slice(i));
-    return n ? (d.w = shortWeekdayLookup[n[0].toLowerCase()], i + n[0].length) : -1;
-  }
-
-  function parseWeekday(d, string, i) {
-    var n = weekdayRe.exec(string.slice(i));
-    return n ? (d.w = weekdayLookup[n[0].toLowerCase()], i + n[0].length) : -1;
-  }
-
-  function parseShortMonth(d, string, i) {
-    var n = shortMonthRe.exec(string.slice(i));
-    return n ? (d.m = shortMonthLookup[n[0].toLowerCase()], i + n[0].length) : -1;
-  }
-
-  function parseMonth(d, string, i) {
-    var n = monthRe.exec(string.slice(i));
-    return n ? (d.m = monthLookup[n[0].toLowerCase()], i + n[0].length) : -1;
-  }
-
-  function parseLocaleDateTime(d, string, i) {
-    return parseSpecifier(d, locale_dateTime, string, i);
-  }
-
-  function parseLocaleDate(d, string, i) {
-    return parseSpecifier(d, locale_date, string, i);
-  }
-
-  function parseLocaleTime(d, string, i) {
-    return parseSpecifier(d, locale_time, string, i);
-  }
-
-  function formatShortWeekday(d) {
-    return locale_shortWeekdays[d.getDay()];
-  }
-
-  function formatWeekday(d) {
-    return locale_weekdays[d.getDay()];
-  }
-
-  function formatShortMonth(d) {
-    return locale_shortMonths[d.getMonth()];
-  }
-
-  function formatMonth(d) {
-    return locale_months[d.getMonth()];
-  }
-
-  function formatPeriod(d) {
-    return locale_periods[+(d.getHours() >= 12)];
-  }
-
-  function formatQuarter(d) {
-    return 1 + ~~(d.getMonth() / 3);
-  }
-
-  function formatUTCShortWeekday(d) {
-    return locale_shortWeekdays[d.getUTCDay()];
-  }
-
-  function formatUTCWeekday(d) {
-    return locale_weekdays[d.getUTCDay()];
-  }
-
-  function formatUTCShortMonth(d) {
-    return locale_shortMonths[d.getUTCMonth()];
-  }
-
-  function formatUTCMonth(d) {
-    return locale_months[d.getUTCMonth()];
-  }
-
-  function formatUTCPeriod(d) {
-    return locale_periods[+(d.getUTCHours() >= 12)];
-  }
-
-  function formatUTCQuarter(d) {
-    return 1 + ~~(d.getUTCMonth() / 3);
-  }
-
-  return {
-    format: function(specifier) {
-      var f = newFormat(specifier += "", formats);
-      f.toString = function() { return specifier; };
-      return f;
-    },
-    parse: function(specifier) {
-      var p = newParse(specifier += "", false);
-      p.toString = function() { return specifier; };
-      return p;
-    },
-    utcFormat: function(specifier) {
-      var f = newFormat(specifier += "", utcFormats);
-      f.toString = function() { return specifier; };
-      return f;
-    },
-    utcParse: function(specifier) {
-      var p = newParse(specifier += "", true);
-      p.toString = function() { return specifier; };
-      return p;
-    }
-  };
-}
-
-var pads = {"-": "", "_": " ", "0": "0"},
-    numberRe = /^\s*\d+/, // note: ignores next directive
-    percentRe = /^%/,
-    requoteRe = /[\\^$*+?|[\]().{}]/g;
-
-function pad(value, fill, width) {
-  var sign = value < 0 ? "-" : "",
-      string = (sign ? -value : value) + "",
-      length = string.length;
-  return sign + (length < width ? new Array(width - length + 1).join(fill) + string : string);
-}
-
-function requote(s) {
-  return s.replace(requoteRe, "\\$&");
-}
-
-function formatRe(names) {
-  return new RegExp("^(?:" + names.map(requote).join("|") + ")", "i");
-}
-
-function formatLookup(names) {
-  var map = {}, i = -1, n = names.length;
-  while (++i < n) map[names[i].toLowerCase()] = i;
-  return map;
-}
-
-function parseWeekdayNumberSunday(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 1));
-  return n ? (d.w = +n[0], i + n[0].length) : -1;
-}
-
-function parseWeekdayNumberMonday(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 1));
-  return n ? (d.u = +n[0], i + n[0].length) : -1;
-}
-
-function parseWeekNumberSunday(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.U = +n[0], i + n[0].length) : -1;
-}
-
-function parseWeekNumberISO(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.V = +n[0], i + n[0].length) : -1;
-}
-
-function parseWeekNumberMonday(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.W = +n[0], i + n[0].length) : -1;
-}
-
-function parseFullYear(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 4));
-  return n ? (d.y = +n[0], i + n[0].length) : -1;
-}
-
-function parseYear(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.y = +n[0] + (+n[0] > 68 ? 1900 : 2000), i + n[0].length) : -1;
-}
-
-function parseZone(d, string, i) {
-  var n = /^(Z)|([+-]\d\d)(?::?(\d\d))?/.exec(string.slice(i, i + 6));
-  return n ? (d.Z = n[1] ? 0 : -(n[2] + (n[3] || "00")), i + n[0].length) : -1;
-}
-
-function parseQuarter(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 1));
-  return n ? (d.q = n[0] * 3 - 3, i + n[0].length) : -1;
-}
-
-function parseMonthNumber(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.m = n[0] - 1, i + n[0].length) : -1;
-}
-
-function parseDayOfMonth(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.d = +n[0], i + n[0].length) : -1;
-}
-
-function parseDayOfYear(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 3));
-  return n ? (d.m = 0, d.d = +n[0], i + n[0].length) : -1;
-}
-
-function parseHour24(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.H = +n[0], i + n[0].length) : -1;
-}
-
-function parseMinutes(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.M = +n[0], i + n[0].length) : -1;
-}
-
-function parseSeconds(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 2));
-  return n ? (d.S = +n[0], i + n[0].length) : -1;
-}
-
-function parseMilliseconds(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 3));
-  return n ? (d.L = +n[0], i + n[0].length) : -1;
-}
-
-function parseMicroseconds(d, string, i) {
-  var n = numberRe.exec(string.slice(i, i + 6));
-  return n ? (d.L = Math.floor(n[0] / 1000), i + n[0].length) : -1;
-}
-
-function parseLiteralPercent(d, string, i) {
-  var n = percentRe.exec(string.slice(i, i + 1));
-  return n ? i + n[0].length : -1;
-}
-
-function parseUnixTimestamp(d, string, i) {
-  var n = numberRe.exec(string.slice(i));
-  return n ? (d.Q = +n[0], i + n[0].length) : -1;
-}
-
-function parseUnixTimestampSeconds(d, string, i) {
-  var n = numberRe.exec(string.slice(i));
-  return n ? (d.s = +n[0], i + n[0].length) : -1;
-}
-
-function formatDayOfMonth(d, p) {
-  return pad(d.getDate(), p, 2);
-}
-
-function formatHour24(d, p) {
-  return pad(d.getHours(), p, 2);
-}
-
-function formatHour12(d, p) {
-  return pad(d.getHours() % 12 || 12, p, 2);
-}
-
-function formatDayOfYear(d, p) {
-  return pad(1 + d3Time.timeDay.count(d3Time.timeYear(d), d), p, 3);
-}
-
-function formatMilliseconds(d, p) {
-  return pad(d.getMilliseconds(), p, 3);
-}
-
-function formatMicroseconds(d, p) {
-  return formatMilliseconds(d, p) + "000";
-}
-
-function formatMonthNumber(d, p) {
-  return pad(d.getMonth() + 1, p, 2);
-}
-
-function formatMinutes(d, p) {
-  return pad(d.getMinutes(), p, 2);
-}
-
-function formatSeconds(d, p) {
-  return pad(d.getSeconds(), p, 2);
-}
-
-function formatWeekdayNumberMonday(d) {
-  var day = d.getDay();
-  return day === 0 ? 7 : day;
-}
-
-function formatWeekNumberSunday(d, p) {
-  return pad(d3Time.timeSunday.count(d3Time.timeYear(d) - 1, d), p, 2);
-}
-
-function dISO(d) {
-  var day = d.getDay();
-  return (day >= 4 || day === 0) ? d3Time.timeThursday(d) : d3Time.timeThursday.ceil(d);
-}
-
-function formatWeekNumberISO(d, p) {
-  d = dISO(d);
-  return pad(d3Time.timeThursday.count(d3Time.timeYear(d), d) + (d3Time.timeYear(d).getDay() === 4), p, 2);
-}
-
-function formatWeekdayNumberSunday(d) {
-  return d.getDay();
-}
-
-function formatWeekNumberMonday(d, p) {
-  return pad(d3Time.timeMonday.count(d3Time.timeYear(d) - 1, d), p, 2);
-}
-
-function formatYear(d, p) {
-  return pad(d.getFullYear() % 100, p, 2);
-}
-
-function formatYearISO(d, p) {
-  d = dISO(d);
-  return pad(d.getFullYear() % 100, p, 2);
-}
-
-function formatFullYear(d, p) {
-  return pad(d.getFullYear() % 10000, p, 4);
-}
-
-function formatFullYearISO(d, p) {
-  var day = d.getDay();
-  d = (day >= 4 || day === 0) ? d3Time.timeThursday(d) : d3Time.timeThursday.ceil(d);
-  return pad(d.getFullYear() % 10000, p, 4);
-}
-
-function formatZone(d) {
-  var z = d.getTimezoneOffset();
-  return (z > 0 ? "-" : (z *= -1, "+"))
-      + pad(z / 60 | 0, "0", 2)
-      + pad(z % 60, "0", 2);
-}
-
-function formatUTCDayOfMonth(d, p) {
-  return pad(d.getUTCDate(), p, 2);
-}
-
-function formatUTCHour24(d, p) {
-  return pad(d.getUTCHours(), p, 2);
-}
-
-function formatUTCHour12(d, p) {
-  return pad(d.getUTCHours() % 12 || 12, p, 2);
-}
-
-function formatUTCDayOfYear(d, p) {
-  return pad(1 + d3Time.utcDay.count(d3Time.utcYear(d), d), p, 3);
-}
-
-function formatUTCMilliseconds(d, p) {
-  return pad(d.getUTCMilliseconds(), p, 3);
-}
-
-function formatUTCMicroseconds(d, p) {
-  return formatUTCMilliseconds(d, p) + "000";
-}
-
-function formatUTCMonthNumber(d, p) {
-  return pad(d.getUTCMonth() + 1, p, 2);
-}
-
-function formatUTCMinutes(d, p) {
-  return pad(d.getUTCMinutes(), p, 2);
-}
-
-function formatUTCSeconds(d, p) {
-  return pad(d.getUTCSeconds(), p, 2);
-}
-
-function formatUTCWeekdayNumberMonday(d) {
-  var dow = d.getUTCDay();
-  return dow === 0 ? 7 : dow;
-}
-
-function formatUTCWeekNumberSunday(d, p) {
-  return pad(d3Time.utcSunday.count(d3Time.utcYear(d) - 1, d), p, 2);
-}
-
-function UTCdISO(d) {
-  var day = d.getUTCDay();
-  return (day >= 4 || day === 0) ? d3Time.utcThursday(d) : d3Time.utcThursday.ceil(d);
-}
-
-function formatUTCWeekNumberISO(d, p) {
-  d = UTCdISO(d);
-  return pad(d3Time.utcThursday.count(d3Time.utcYear(d), d) + (d3Time.utcYear(d).getUTCDay() === 4), p, 2);
-}
-
-function formatUTCWeekdayNumberSunday(d) {
-  return d.getUTCDay();
-}
-
-function formatUTCWeekNumberMonday(d, p) {
-  return pad(d3Time.utcMonday.count(d3Time.utcYear(d) - 1, d), p, 2);
-}
-
-function formatUTCYear(d, p) {
-  return pad(d.getUTCFullYear() % 100, p, 2);
-}
-
-function formatUTCYearISO(d, p) {
-  d = UTCdISO(d);
-  return pad(d.getUTCFullYear() % 100, p, 2);
-}
-
-function formatUTCFullYear(d, p) {
-  return pad(d.getUTCFullYear() % 10000, p, 4);
-}
-
-function formatUTCFullYearISO(d, p) {
-  var day = d.getUTCDay();
-  d = (day >= 4 || day === 0) ? d3Time.utcThursday(d) : d3Time.utcThursday.ceil(d);
-  return pad(d.getUTCFullYear() % 10000, p, 4);
-}
-
-function formatUTCZone() {
-  return "+0000";
-}
-
-function formatLiteralPercent() {
-  return "%";
-}
-
-function formatUnixTimestamp(d) {
-  return +d;
-}
-
-function formatUnixTimestampSeconds(d) {
-  return Math.floor(+d / 1000);
-}
-
-var locale;
-
-defaultLocale({
-  dateTime: "%x, %X",
-  date: "%-m/%-d/%Y",
-  time: "%-I:%M:%S %p",
-  periods: ["AM", "PM"],
-  days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-  shortDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
-  months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-  shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-});
-
-function defaultLocale(definition) {
-  locale = formatLocale(definition);
-  exports.timeFormat = locale.format;
-  exports.timeParse = locale.parse;
-  exports.utcFormat = locale.utcFormat;
-  exports.utcParse = locale.utcParse;
-  return locale;
-}
-
-var isoSpecifier = "%Y-%m-%dT%H:%M:%S.%LZ";
-
-function formatIsoNative(date) {
-  return date.toISOString();
-}
-
-var formatIso = Date.prototype.toISOString
-    ? formatIsoNative
-    : exports.utcFormat(isoSpecifier);
-
-function parseIsoNative(string) {
-  var date = new Date(string);
-  return isNaN(date) ? null : date;
-}
-
-var parseIso = +new Date("2000-01-01T00:00:00.000Z")
-    ? parseIsoNative
-    : exports.utcParse(isoSpecifier);
-
-exports.isoFormat = formatIso;
-exports.isoParse = parseIso;
-exports.timeFormatDefaultLocale = defaultLocale;
-exports.timeFormatLocale = formatLocale;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
-
-},{"d3-time":26}],26:[function(_dereq_,module,exports){
-// https://d3js.org/d3-time/ v1.1.0 Copyright 2019 Mike Bostock
-(function (global, factory) {
-typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-typeof define === 'function' && define.amd ? define(['exports'], factory) :
-(global = global || self, factory(global.d3 = global.d3 || {}));
-}(this, function (exports) { 'use strict';
-
-var t0 = new Date,
-    t1 = new Date;
-
-function newInterval(floori, offseti, count, field) {
-
-  function interval(date) {
-    return floori(date = arguments.length === 0 ? new Date : new Date(+date)), date;
-  }
-
-  interval.floor = function(date) {
-    return floori(date = new Date(+date)), date;
-  };
-
-  interval.ceil = function(date) {
-    return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
-  };
-
-  interval.round = function(date) {
-    var d0 = interval(date),
-        d1 = interval.ceil(date);
-    return date - d0 < d1 - date ? d0 : d1;
-  };
-
-  interval.offset = function(date, step) {
-    return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
-  };
-
-  interval.range = function(start, stop, step) {
-    var range = [], previous;
-    start = interval.ceil(start);
-    step = step == null ? 1 : Math.floor(step);
-    if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
-    do range.push(previous = new Date(+start)), offseti(start, step), floori(start);
-    while (previous < start && start < stop);
-    return range;
-  };
-
-  interval.filter = function(test) {
-    return newInterval(function(date) {
-      if (date >= date) while (floori(date), !test(date)) date.setTime(date - 1);
-    }, function(date, step) {
-      if (date >= date) {
-        if (step < 0) while (++step <= 0) {
-          while (offseti(date, -1), !test(date)) {} // eslint-disable-line no-empty
-        } else while (--step >= 0) {
-          while (offseti(date, +1), !test(date)) {} // eslint-disable-line no-empty
-        }
-      }
-    });
-  };
-
-  if (count) {
-    interval.count = function(start, end) {
-      t0.setTime(+start), t1.setTime(+end);
-      floori(t0), floori(t1);
-      return Math.floor(count(t0, t1));
-    };
-
-    interval.every = function(step) {
-      step = Math.floor(step);
-      return !isFinite(step) || !(step > 0) ? null
-          : !(step > 1) ? interval
-          : interval.filter(field
-              ? function(d) { return field(d) % step === 0; }
-              : function(d) { return interval.count(0, d) % step === 0; });
-    };
-  }
-
-  return interval;
-}
-
-var millisecond = newInterval(function() {
-  // noop
-}, function(date, step) {
-  date.setTime(+date + step);
-}, function(start, end) {
-  return end - start;
-});
-
-// An optimized implementation for this simple case.
-millisecond.every = function(k) {
-  k = Math.floor(k);
-  if (!isFinite(k) || !(k > 0)) return null;
-  if (!(k > 1)) return millisecond;
-  return newInterval(function(date) {
-    date.setTime(Math.floor(date / k) * k);
-  }, function(date, step) {
-    date.setTime(+date + step * k);
-  }, function(start, end) {
-    return (end - start) / k;
-  });
-};
-var milliseconds = millisecond.range;
-
-var durationSecond = 1e3;
-var durationMinute = 6e4;
-var durationHour = 36e5;
-var durationDay = 864e5;
-var durationWeek = 6048e5;
-
-var second = newInterval(function(date) {
-  date.setTime(date - date.getMilliseconds());
-}, function(date, step) {
-  date.setTime(+date + step * durationSecond);
-}, function(start, end) {
-  return (end - start) / durationSecond;
-}, function(date) {
-  return date.getUTCSeconds();
-});
-var seconds = second.range;
-
-var minute = newInterval(function(date) {
-  date.setTime(date - date.getMilliseconds() - date.getSeconds() * durationSecond);
-}, function(date, step) {
-  date.setTime(+date + step * durationMinute);
-}, function(start, end) {
-  return (end - start) / durationMinute;
-}, function(date) {
-  return date.getMinutes();
-});
-var minutes = minute.range;
-
-var hour = newInterval(function(date) {
-  date.setTime(date - date.getMilliseconds() - date.getSeconds() * durationSecond - date.getMinutes() * durationMinute);
-}, function(date, step) {
-  date.setTime(+date + step * durationHour);
-}, function(start, end) {
-  return (end - start) / durationHour;
-}, function(date) {
-  return date.getHours();
-});
-var hours = hour.range;
-
-var day = newInterval(function(date) {
-  date.setHours(0, 0, 0, 0);
-}, function(date, step) {
-  date.setDate(date.getDate() + step);
-}, function(start, end) {
-  return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
-}, function(date) {
-  return date.getDate() - 1;
-});
-var days = day.range;
-
-function weekday(i) {
-  return newInterval(function(date) {
-    date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
-    date.setHours(0, 0, 0, 0);
-  }, function(date, step) {
-    date.setDate(date.getDate() + step * 7);
-  }, function(start, end) {
-    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
-  });
-}
-
-var sunday = weekday(0);
-var monday = weekday(1);
-var tuesday = weekday(2);
-var wednesday = weekday(3);
-var thursday = weekday(4);
-var friday = weekday(5);
-var saturday = weekday(6);
-
-var sundays = sunday.range;
-var mondays = monday.range;
-var tuesdays = tuesday.range;
-var wednesdays = wednesday.range;
-var thursdays = thursday.range;
-var fridays = friday.range;
-var saturdays = saturday.range;
-
-var month = newInterval(function(date) {
-  date.setDate(1);
-  date.setHours(0, 0, 0, 0);
-}, function(date, step) {
-  date.setMonth(date.getMonth() + step);
-}, function(start, end) {
-  return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
-}, function(date) {
-  return date.getMonth();
-});
-var months = month.range;
-
-var year = newInterval(function(date) {
-  date.setMonth(0, 1);
-  date.setHours(0, 0, 0, 0);
-}, function(date, step) {
-  date.setFullYear(date.getFullYear() + step);
-}, function(start, end) {
-  return end.getFullYear() - start.getFullYear();
-}, function(date) {
-  return date.getFullYear();
-});
-
-// An optimized implementation for this simple case.
-year.every = function(k) {
-  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-    date.setFullYear(Math.floor(date.getFullYear() / k) * k);
-    date.setMonth(0, 1);
-    date.setHours(0, 0, 0, 0);
-  }, function(date, step) {
-    date.setFullYear(date.getFullYear() + step * k);
-  });
-};
-var years = year.range;
-
-var utcMinute = newInterval(function(date) {
-  date.setUTCSeconds(0, 0);
-}, function(date, step) {
-  date.setTime(+date + step * durationMinute);
-}, function(start, end) {
-  return (end - start) / durationMinute;
-}, function(date) {
-  return date.getUTCMinutes();
-});
-var utcMinutes = utcMinute.range;
-
-var utcHour = newInterval(function(date) {
-  date.setUTCMinutes(0, 0, 0);
-}, function(date, step) {
-  date.setTime(+date + step * durationHour);
-}, function(start, end) {
-  return (end - start) / durationHour;
-}, function(date) {
-  return date.getUTCHours();
-});
-var utcHours = utcHour.range;
-
-var utcDay = newInterval(function(date) {
-  date.setUTCHours(0, 0, 0, 0);
-}, function(date, step) {
-  date.setUTCDate(date.getUTCDate() + step);
-}, function(start, end) {
-  return (end - start) / durationDay;
-}, function(date) {
-  return date.getUTCDate() - 1;
-});
-var utcDays = utcDay.range;
-
-function utcWeekday(i) {
-  return newInterval(function(date) {
-    date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
-    date.setUTCHours(0, 0, 0, 0);
-  }, function(date, step) {
-    date.setUTCDate(date.getUTCDate() + step * 7);
-  }, function(start, end) {
-    return (end - start) / durationWeek;
-  });
-}
-
-var utcSunday = utcWeekday(0);
-var utcMonday = utcWeekday(1);
-var utcTuesday = utcWeekday(2);
-var utcWednesday = utcWeekday(3);
-var utcThursday = utcWeekday(4);
-var utcFriday = utcWeekday(5);
-var utcSaturday = utcWeekday(6);
-
-var utcSundays = utcSunday.range;
-var utcMondays = utcMonday.range;
-var utcTuesdays = utcTuesday.range;
-var utcWednesdays = utcWednesday.range;
-var utcThursdays = utcThursday.range;
-var utcFridays = utcFriday.range;
-var utcSaturdays = utcSaturday.range;
-
-var utcMonth = newInterval(function(date) {
-  date.setUTCDate(1);
-  date.setUTCHours(0, 0, 0, 0);
-}, function(date, step) {
-  date.setUTCMonth(date.getUTCMonth() + step);
-}, function(start, end) {
-  return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
-}, function(date) {
-  return date.getUTCMonth();
-});
-var utcMonths = utcMonth.range;
-
-var utcYear = newInterval(function(date) {
-  date.setUTCMonth(0, 1);
-  date.setUTCHours(0, 0, 0, 0);
-}, function(date, step) {
-  date.setUTCFullYear(date.getUTCFullYear() + step);
-}, function(start, end) {
-  return end.getUTCFullYear() - start.getUTCFullYear();
-}, function(date) {
-  return date.getUTCFullYear();
-});
-
-// An optimized implementation for this simple case.
-utcYear.every = function(k) {
-  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
-    date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
-    date.setUTCMonth(0, 1);
-    date.setUTCHours(0, 0, 0, 0);
-  }, function(date, step) {
-    date.setUTCFullYear(date.getUTCFullYear() + step * k);
-  });
-};
-var utcYears = utcYear.range;
-
-exports.timeDay = day;
-exports.timeDays = days;
-exports.timeFriday = friday;
-exports.timeFridays = fridays;
-exports.timeHour = hour;
-exports.timeHours = hours;
-exports.timeInterval = newInterval;
-exports.timeMillisecond = millisecond;
-exports.timeMilliseconds = milliseconds;
-exports.timeMinute = minute;
-exports.timeMinutes = minutes;
-exports.timeMonday = monday;
-exports.timeMondays = mondays;
-exports.timeMonth = month;
-exports.timeMonths = months;
-exports.timeSaturday = saturday;
-exports.timeSaturdays = saturdays;
-exports.timeSecond = second;
-exports.timeSeconds = seconds;
-exports.timeSunday = sunday;
-exports.timeSundays = sundays;
-exports.timeThursday = thursday;
-exports.timeThursdays = thursdays;
-exports.timeTuesday = tuesday;
-exports.timeTuesdays = tuesdays;
-exports.timeWednesday = wednesday;
-exports.timeWednesdays = wednesdays;
-exports.timeWeek = sunday;
-exports.timeWeeks = sundays;
-exports.timeYear = year;
-exports.timeYears = years;
-exports.utcDay = utcDay;
-exports.utcDays = utcDays;
-exports.utcFriday = utcFriday;
-exports.utcFridays = utcFridays;
-exports.utcHour = utcHour;
-exports.utcHours = utcHours;
-exports.utcMillisecond = millisecond;
-exports.utcMilliseconds = milliseconds;
-exports.utcMinute = utcMinute;
-exports.utcMinutes = utcMinutes;
-exports.utcMonday = utcMonday;
-exports.utcMondays = utcMondays;
-exports.utcMonth = utcMonth;
-exports.utcMonths = utcMonths;
-exports.utcSaturday = utcSaturday;
-exports.utcSaturdays = utcSaturdays;
-exports.utcSecond = second;
-exports.utcSeconds = seconds;
-exports.utcSunday = utcSunday;
-exports.utcSundays = utcSundays;
-exports.utcThursday = utcThursday;
-exports.utcThursdays = utcThursdays;
-exports.utcTuesday = utcTuesday;
-exports.utcTuesdays = utcTuesdays;
-exports.utcWednesday = utcWednesday;
-exports.utcWednesdays = utcWednesdays;
-exports.utcWeek = utcSunday;
-exports.utcWeeks = utcSundays;
-exports.utcYear = utcYear;
-exports.utcYears = utcYears;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-}));
-
-},{}],27:[function(_dereq_,module,exports){
-module.exports = function () {
-    for (var i = 0; i < arguments.length; i++) {
-        if (arguments[i] !== undefined) return arguments[i];
-    }
-};
-
-},{}],28:[function(_dereq_,module,exports){
-module.exports = function(dtype) {
-  switch (dtype) {
-    case 'int8':
-      return Int8Array
-    case 'int16':
-      return Int16Array
-    case 'int32':
-      return Int32Array
-    case 'uint8':
-      return Uint8Array
-    case 'uint16':
-      return Uint16Array
-    case 'uint32':
-      return Uint32Array
-    case 'float32':
-      return Float32Array
-    case 'float64':
-      return Float64Array
-    case 'array':
-      return Array
-    case 'uint8_clamped':
-      return Uint8ClampedArray
-  }
-}
-
-},{}],29:[function(_dereq_,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -9514,55 +7443,2071 @@ function unwrapListeners(arr) {
 
 function once(emitter, name) {
   return new Promise(function (resolve, reject) {
-    function errorListener(err) {
-      emitter.removeListener(name, resolver);
-      reject(err);
-    }
-
-    function resolver() {
-      if (typeof emitter.removeListener === 'function') {
+    function eventListener() {
+      if (errorListener !== undefined) {
         emitter.removeListener('error', errorListener);
       }
       resolve([].slice.call(arguments));
     };
+    var errorListener;
 
-    eventTargetAgnosticAddListener(emitter, name, resolver, { once: true });
+    // Adding an error listener is not optional because
+    // if an error is thrown on an event emitter we cannot
+    // guarantee that the actual event we are waiting will
+    // be fired. The result could be a silent way to create
+    // memory or file descriptor leaks, which is something
+    // we should avoid.
     if (name !== 'error') {
-      addErrorHandlerIfEventEmitter(emitter, errorListener, { once: true });
+      errorListener = function errorListener(err) {
+        emitter.removeListener(name, eventListener);
+        reject(err);
+      };
+
+      emitter.once('error', errorListener);
     }
+
+    emitter.once(name, eventListener);
   });
 }
 
-function addErrorHandlerIfEventEmitter(emitter, handler, flags) {
-  if (typeof emitter.on === 'function') {
-    eventTargetAgnosticAddListener(emitter, 'error', handler, flags);
-  }
+},{}],18:[function(_dereq_,module,exports){
+module.exports = clamp
+
+function clamp(value, min, max) {
+  return min < max
+    ? (value < min ? min : value > max ? max : value)
+    : (value < max ? max : value > min ? min : value)
 }
 
-function eventTargetAgnosticAddListener(emitter, name, listener, flags) {
-  if (typeof emitter.on === 'function') {
-    if (flags.once) {
-      emitter.once(name, listener);
-    } else {
-      emitter.on(name, listener);
-    }
-  } else if (typeof emitter.addEventListener === 'function') {
-    // EventTarget does not have `error` event semantics like Node
-    // EventEmitters, we do not listen for `error` events here.
-    emitter.addEventListener(name, function wrapListener(arg) {
-      // IE does not have builtin `{ once: true }` support so we
-      // have to do it manually.
-      if (flags.once) {
-        emitter.removeEventListener(name, wrapListener);
-      }
-      listener(arg);
-    });
-  } else {
-    throw new TypeError('The "emitter" argument must be of type EventEmitter. Received type ' + typeof emitter);
-  }
+},{}],19:[function(_dereq_,module,exports){
+'use strict'
+
+module.exports = {
+	"aliceblue": [240, 248, 255],
+	"antiquewhite": [250, 235, 215],
+	"aqua": [0, 255, 255],
+	"aquamarine": [127, 255, 212],
+	"azure": [240, 255, 255],
+	"beige": [245, 245, 220],
+	"bisque": [255, 228, 196],
+	"black": [0, 0, 0],
+	"blanchedalmond": [255, 235, 205],
+	"blue": [0, 0, 255],
+	"blueviolet": [138, 43, 226],
+	"brown": [165, 42, 42],
+	"burlywood": [222, 184, 135],
+	"cadetblue": [95, 158, 160],
+	"chartreuse": [127, 255, 0],
+	"chocolate": [210, 105, 30],
+	"coral": [255, 127, 80],
+	"cornflowerblue": [100, 149, 237],
+	"cornsilk": [255, 248, 220],
+	"crimson": [220, 20, 60],
+	"cyan": [0, 255, 255],
+	"darkblue": [0, 0, 139],
+	"darkcyan": [0, 139, 139],
+	"darkgoldenrod": [184, 134, 11],
+	"darkgray": [169, 169, 169],
+	"darkgreen": [0, 100, 0],
+	"darkgrey": [169, 169, 169],
+	"darkkhaki": [189, 183, 107],
+	"darkmagenta": [139, 0, 139],
+	"darkolivegreen": [85, 107, 47],
+	"darkorange": [255, 140, 0],
+	"darkorchid": [153, 50, 204],
+	"darkred": [139, 0, 0],
+	"darksalmon": [233, 150, 122],
+	"darkseagreen": [143, 188, 143],
+	"darkslateblue": [72, 61, 139],
+	"darkslategray": [47, 79, 79],
+	"darkslategrey": [47, 79, 79],
+	"darkturquoise": [0, 206, 209],
+	"darkviolet": [148, 0, 211],
+	"deeppink": [255, 20, 147],
+	"deepskyblue": [0, 191, 255],
+	"dimgray": [105, 105, 105],
+	"dimgrey": [105, 105, 105],
+	"dodgerblue": [30, 144, 255],
+	"firebrick": [178, 34, 34],
+	"floralwhite": [255, 250, 240],
+	"forestgreen": [34, 139, 34],
+	"fuchsia": [255, 0, 255],
+	"gainsboro": [220, 220, 220],
+	"ghostwhite": [248, 248, 255],
+	"gold": [255, 215, 0],
+	"goldenrod": [218, 165, 32],
+	"gray": [128, 128, 128],
+	"green": [0, 128, 0],
+	"greenyellow": [173, 255, 47],
+	"grey": [128, 128, 128],
+	"honeydew": [240, 255, 240],
+	"hotpink": [255, 105, 180],
+	"indianred": [205, 92, 92],
+	"indigo": [75, 0, 130],
+	"ivory": [255, 255, 240],
+	"khaki": [240, 230, 140],
+	"lavender": [230, 230, 250],
+	"lavenderblush": [255, 240, 245],
+	"lawngreen": [124, 252, 0],
+	"lemonchiffon": [255, 250, 205],
+	"lightblue": [173, 216, 230],
+	"lightcoral": [240, 128, 128],
+	"lightcyan": [224, 255, 255],
+	"lightgoldenrodyellow": [250, 250, 210],
+	"lightgray": [211, 211, 211],
+	"lightgreen": [144, 238, 144],
+	"lightgrey": [211, 211, 211],
+	"lightpink": [255, 182, 193],
+	"lightsalmon": [255, 160, 122],
+	"lightseagreen": [32, 178, 170],
+	"lightskyblue": [135, 206, 250],
+	"lightslategray": [119, 136, 153],
+	"lightslategrey": [119, 136, 153],
+	"lightsteelblue": [176, 196, 222],
+	"lightyellow": [255, 255, 224],
+	"lime": [0, 255, 0],
+	"limegreen": [50, 205, 50],
+	"linen": [250, 240, 230],
+	"magenta": [255, 0, 255],
+	"maroon": [128, 0, 0],
+	"mediumaquamarine": [102, 205, 170],
+	"mediumblue": [0, 0, 205],
+	"mediumorchid": [186, 85, 211],
+	"mediumpurple": [147, 112, 219],
+	"mediumseagreen": [60, 179, 113],
+	"mediumslateblue": [123, 104, 238],
+	"mediumspringgreen": [0, 250, 154],
+	"mediumturquoise": [72, 209, 204],
+	"mediumvioletred": [199, 21, 133],
+	"midnightblue": [25, 25, 112],
+	"mintcream": [245, 255, 250],
+	"mistyrose": [255, 228, 225],
+	"moccasin": [255, 228, 181],
+	"navajowhite": [255, 222, 173],
+	"navy": [0, 0, 128],
+	"oldlace": [253, 245, 230],
+	"olive": [128, 128, 0],
+	"olivedrab": [107, 142, 35],
+	"orange": [255, 165, 0],
+	"orangered": [255, 69, 0],
+	"orchid": [218, 112, 214],
+	"palegoldenrod": [238, 232, 170],
+	"palegreen": [152, 251, 152],
+	"paleturquoise": [175, 238, 238],
+	"palevioletred": [219, 112, 147],
+	"papayawhip": [255, 239, 213],
+	"peachpuff": [255, 218, 185],
+	"peru": [205, 133, 63],
+	"pink": [255, 192, 203],
+	"plum": [221, 160, 221],
+	"powderblue": [176, 224, 230],
+	"purple": [128, 0, 128],
+	"rebeccapurple": [102, 51, 153],
+	"red": [255, 0, 0],
+	"rosybrown": [188, 143, 143],
+	"royalblue": [65, 105, 225],
+	"saddlebrown": [139, 69, 19],
+	"salmon": [250, 128, 114],
+	"sandybrown": [244, 164, 96],
+	"seagreen": [46, 139, 87],
+	"seashell": [255, 245, 238],
+	"sienna": [160, 82, 45],
+	"silver": [192, 192, 192],
+	"skyblue": [135, 206, 235],
+	"slateblue": [106, 90, 205],
+	"slategray": [112, 128, 144],
+	"slategrey": [112, 128, 144],
+	"snow": [255, 250, 250],
+	"springgreen": [0, 255, 127],
+	"steelblue": [70, 130, 180],
+	"tan": [210, 180, 140],
+	"teal": [0, 128, 128],
+	"thistle": [216, 191, 216],
+	"tomato": [255, 99, 71],
+	"turquoise": [64, 224, 208],
+	"violet": [238, 130, 238],
+	"wheat": [245, 222, 179],
+	"white": [255, 255, 255],
+	"whitesmoke": [245, 245, 245],
+	"yellow": [255, 255, 0],
+	"yellowgreen": [154, 205, 50]
+};
+
+},{}],20:[function(_dereq_,module,exports){
+/** @module  color-normalize */
+
+'use strict'
+
+var rgba = _dereq_('color-rgba')
+var clamp = _dereq_('clamp')
+var dtype = _dereq_('dtype')
+
+module.exports = function normalize (color, type) {
+	if (type === 'float' || !type) type = 'array'
+	if (type === 'uint') type = 'uint8'
+	if (type === 'uint_clamped') type = 'uint8_clamped'
+	var Ctor = dtype(type)
+	var output = new Ctor(4)
+
+	var normalize = type !== 'uint8' && type !== 'uint8_clamped'
+
+	// attempt to parse non-array arguments
+	if (!color.length || typeof color === 'string') {
+		color = rgba(color)
+		color[0] /= 255
+		color[1] /= 255
+		color[2] /= 255
+	}
+
+	// 0, 1 are possible contradictory values for Arrays:
+	// [1,1,1] input gives [1,1,1] output instead of [1/255,1/255,1/255], which may be collision if input is meant to be uint.
+	// converting [1,1,1] to [1/255,1/255,1/255] in case of float input gives larger mistake since [1,1,1] float is frequent edge value, whereas [0,1,1], [1,1,1] etc. uint inputs are relatively rare
+	if (isInt(color)) {
+		output[0] = color[0]
+		output[1] = color[1]
+		output[2] = color[2]
+		output[3] = color[3] != null ? color[3] : 255
+
+		if (normalize) {
+			output[0] /= 255
+			output[1] /= 255
+			output[2] /= 255
+			output[3] /= 255
+		}
+
+		return output
+	}
+
+	if (!normalize) {
+		output[0] = clamp(Math.floor(color[0] * 255), 0, 255)
+		output[1] = clamp(Math.floor(color[1] * 255), 0, 255)
+		output[2] = clamp(Math.floor(color[2] * 255), 0, 255)
+		output[3] = color[3] == null ? 255 : clamp(Math.floor(color[3] * 255), 0, 255)
+	} else {
+		output[0] = color[0]
+		output[1] = color[1]
+		output[2] = color[2]
+		output[3] = color[3] != null ? color[3] : 1
+	}
+
+	return output
 }
+
+function isInt(color) {
+	if (color instanceof Uint8Array || color instanceof Uint8ClampedArray) return true
+
+	if (Array.isArray(color) &&
+		(color[0] > 1 || color[0] === 0) &&
+		(color[1] > 1 || color[1] === 0) &&
+		(color[2] > 1 || color[2] === 0) &&
+		(!color[3] || color[3] > 1)
+	) return true
+
+	return false
+}
+
+},{"clamp":18,"color-rgba":22,"dtype":30}],21:[function(_dereq_,module,exports){
+(function (global){(function (){
+/**
+ * @module color-parse
+ */
+
+'use strict'
+
+var names = _dereq_('color-name')
+var isObject = _dereq_('is-plain-obj')
+var defined = _dereq_('defined')
+
+module.exports = parse
+
+/**
+ * Base hues
+ * http://dev.w3.org/csswg/css-color/#typedef-named-hue
+ */
+//FIXME: use external hue detector
+var baseHues = {
+	red: 0,
+	orange: 60,
+	yellow: 120,
+	green: 180,
+	blue: 240,
+	purple: 300
+}
+
+/**
+ * Parse color from the string passed
+ *
+ * @return {Object} A space indicator `space`, an array `values` and `alpha`
+ */
+function parse (cstr) {
+	var m, parts = [], alpha = 1, space
+
+	if (typeof cstr === 'string') {
+		//keyword
+		if (names[cstr]) {
+			parts = names[cstr].slice()
+			space = 'rgb'
+		}
+
+		//reserved words
+		else if (cstr === 'transparent') {
+			alpha = 0
+			space = 'rgb'
+			parts = [0,0,0]
+		}
+
+		//hex
+		else if (/^#[A-Fa-f0-9]+$/.test(cstr)) {
+			var base = cstr.slice(1)
+			var size = base.length
+			var isShort = size <= 4
+			alpha = 1
+
+			if (isShort) {
+				parts = [
+					parseInt(base[0] + base[0], 16),
+					parseInt(base[1] + base[1], 16),
+					parseInt(base[2] + base[2], 16)
+				]
+				if (size === 4) {
+					alpha = parseInt(base[3] + base[3], 16) / 255
+				}
+			}
+			else {
+				parts = [
+					parseInt(base[0] + base[1], 16),
+					parseInt(base[2] + base[3], 16),
+					parseInt(base[4] + base[5], 16)
+				]
+				if (size === 8) {
+					alpha = parseInt(base[6] + base[7], 16) / 255
+				}
+			}
+
+			if (!parts[0]) parts[0] = 0
+			if (!parts[1]) parts[1] = 0
+			if (!parts[2]) parts[2] = 0
+
+			space = 'rgb'
+		}
+
+		//color space
+		else if (m = /^((?:rgb|hs[lvb]|hwb|cmyk?|xy[zy]|gray|lab|lchu?v?|[ly]uv|lms)a?)\s*\(([^\)]*)\)/.exec(cstr)) {
+			var name = m[1]
+			var isRGB = name === 'rgb'
+			var base = name.replace(/a$/, '')
+			space = base
+			var size = base === 'cmyk' ? 4 : base === 'gray' ? 1 : 3
+			parts = m[2].trim()
+				.split(/\s*,\s*/)
+				.map(function (x, i) {
+					//<percentage>
+					if (/%$/.test(x)) {
+						//alpha
+						if (i === size)	return parseFloat(x) / 100
+						//rgb
+						if (base === 'rgb') return parseFloat(x) * 255 / 100
+						return parseFloat(x)
+					}
+					//hue
+					else if (base[i] === 'h') {
+						//<deg>
+						if (/deg$/.test(x)) {
+							return parseFloat(x)
+						}
+						//<base-hue>
+						else if (baseHues[x] !== undefined) {
+							return baseHues[x]
+						}
+					}
+					return parseFloat(x)
+				})
+
+			if (name === base) parts.push(1)
+			alpha = (isRGB) ? 1 : (parts[size] === undefined) ? 1 : parts[size]
+			parts = parts.slice(0, size)
+		}
+
+		//named channels case
+		else if (cstr.length > 10 && /[0-9](?:\s|\/)/.test(cstr)) {
+			parts = cstr.match(/([0-9]+)/g).map(function (value) {
+				return parseFloat(value)
+			})
+
+			space = cstr.match(/([a-z])/ig).join('').toLowerCase()
+		}
+	}
+
+	//numeric case
+	else if (!isNaN(cstr)) {
+		space = 'rgb'
+		parts = [cstr >>> 16, (cstr & 0x00ff00) >>> 8, cstr & 0x0000ff]
+	}
+
+	//object case - detects css cases of rgb and hsl
+	else if (isObject(cstr)) {
+		var r = defined(cstr.r, cstr.red, cstr.R, null)
+
+		if (r !== null) {
+			space = 'rgb'
+			parts = [
+				r,
+				defined(cstr.g, cstr.green, cstr.G),
+				defined(cstr.b, cstr.blue, cstr.B)
+			]
+		}
+		else {
+			space = 'hsl'
+			parts = [
+				defined(cstr.h, cstr.hue, cstr.H),
+				defined(cstr.s, cstr.saturation, cstr.S),
+				defined(cstr.l, cstr.lightness, cstr.L, cstr.b, cstr.brightness)
+			]
+		}
+
+		alpha = defined(cstr.a, cstr.alpha, cstr.opacity, 1)
+
+		if (cstr.opacity != null) alpha /= 100
+	}
+
+	//array
+	else if (Array.isArray(cstr) || global.ArrayBuffer && ArrayBuffer.isView && ArrayBuffer.isView(cstr)) {
+		parts = [cstr[0], cstr[1], cstr[2]]
+		space = 'rgb'
+		alpha = cstr.length === 4 ? cstr[3] : 1
+	}
+
+	return {
+		space: space,
+		values: parts,
+		alpha: alpha
+	}
+}
+
+}).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
+},{"color-name":19,"defined":29,"is-plain-obj":67}],22:[function(_dereq_,module,exports){
+/** @module  color-rgba */
+
+'use strict'
+
+var parse = _dereq_('color-parse')
+var hsl = _dereq_('color-space/hsl')
+var clamp = _dereq_('clamp')
+
+module.exports = function rgba (color) {
+	var values, i, l
+
+	//attempt to parse non-array arguments
+	var parsed = parse(color)
+
+	if (!parsed.space) return []
+
+	values = Array(3)
+	values[0] = clamp(parsed.values[0], 0, 255)
+	values[1] = clamp(parsed.values[1], 0, 255)
+	values[2] = clamp(parsed.values[2], 0, 255)
+
+	if (parsed.space[0] === 'h') {
+		values = hsl.rgb(values)
+	}
+
+	values.push(clamp(parsed.alpha, 0, 1))
+
+	return values
+}
+
+},{"clamp":18,"color-parse":21,"color-space/hsl":23}],23:[function(_dereq_,module,exports){
+/**
+ * @module color-space/hsl
+ */
+'use strict'
+
+var rgb = _dereq_('./rgb');
+
+module.exports = {
+	name: 'hsl',
+	min: [0,0,0],
+	max: [360,100,100],
+	channel: ['hue', 'saturation', 'lightness'],
+	alias: ['HSL'],
+
+	rgb: function(hsl) {
+		var h = hsl[0] / 360,
+				s = hsl[1] / 100,
+				l = hsl[2] / 100,
+				t1, t2, t3, rgb, val;
+
+		if (s === 0) {
+			val = l * 255;
+			return [val, val, val];
+		}
+
+		if (l < 0.5) {
+			t2 = l * (1 + s);
+		}
+		else {
+			t2 = l + s - l * s;
+		}
+		t1 = 2 * l - t2;
+
+		rgb = [0, 0, 0];
+		for (var i = 0; i < 3; i++) {
+			t3 = h + 1 / 3 * - (i - 1);
+			if (t3 < 0) {
+				t3++;
+			}
+			else if (t3 > 1) {
+				t3--;
+			}
+
+			if (6 * t3 < 1) {
+				val = t1 + (t2 - t1) * 6 * t3;
+			}
+			else if (2 * t3 < 1) {
+				val = t2;
+			}
+			else if (3 * t3 < 2) {
+				val = t1 + (t2 - t1) * (2 / 3 - t3) * 6;
+			}
+			else {
+				val = t1;
+			}
+
+			rgb[i] = val * 255;
+		}
+
+		return rgb;
+	}
+};
+
+
+//extend rgb
+rgb.hsl = function(rgb) {
+	var r = rgb[0]/255,
+			g = rgb[1]/255,
+			b = rgb[2]/255,
+			min = Math.min(r, g, b),
+			max = Math.max(r, g, b),
+			delta = max - min,
+			h, s, l;
+
+	if (max === min) {
+		h = 0;
+	}
+	else if (r === max) {
+		h = (g - b) / delta;
+	}
+	else if (g === max) {
+		h = 2 + (b - r) / delta;
+	}
+	else if (b === max) {
+		h = 4 + (r - g)/ delta;
+	}
+
+	h = Math.min(h * 60, 360);
+
+	if (h < 0) {
+		h += 360;
+	}
+
+	l = (min + max) / 2;
+
+	if (max === min) {
+		s = 0;
+	}
+	else if (l <= 0.5) {
+		s = delta / (max + min);
+	}
+	else {
+		s = delta / (2 - max - min);
+	}
+
+	return [h, s * 100, l * 100];
+};
+
+},{"./rgb":24}],24:[function(_dereq_,module,exports){
+/**
+ * RGB space.
+ *
+ * @module  color-space/rgb
+ */
+'use strict'
+
+module.exports = {
+	name: 'rgb',
+	min: [0,0,0],
+	max: [255,255,255],
+	channel: ['red', 'green', 'blue'],
+	alias: ['RGB']
+};
+
+},{}],25:[function(_dereq_,module,exports){
+// https://d3js.org/d3-format/ v1.4.5 Copyright 2020 Mike Bostock
+(function (global, factory) {
+typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+typeof define === 'function' && define.amd ? define(['exports'], factory) :
+(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.d3 = global.d3 || {}));
+}(this, (function (exports) { 'use strict';
+
+function formatDecimal(x) {
+  return Math.abs(x = Math.round(x)) >= 1e21
+      ? x.toLocaleString("en").replace(/,/g, "")
+      : x.toString(10);
+}
+
+// Computes the decimal coefficient and exponent of the specified number x with
+// significant digits p, where x is positive and p is in [1, 21] or undefined.
+// For example, formatDecimalParts(1.23) returns ["123", 0].
+function formatDecimalParts(x, p) {
+  if ((i = (x = p ? x.toExponential(p - 1) : x.toExponential()).indexOf("e")) < 0) return null; // NaN, ±Infinity
+  var i, coefficient = x.slice(0, i);
+
+  // The string returned by toExponential either has the form \d\.\d+e[-+]\d+
+  // (e.g., 1.2e+3) or the form \de[-+]\d+ (e.g., 1e+3).
+  return [
+    coefficient.length > 1 ? coefficient[0] + coefficient.slice(2) : coefficient,
+    +x.slice(i + 1)
+  ];
+}
+
+function exponent(x) {
+  return x = formatDecimalParts(Math.abs(x)), x ? x[1] : NaN;
+}
+
+function formatGroup(grouping, thousands) {
+  return function(value, width) {
+    var i = value.length,
+        t = [],
+        j = 0,
+        g = grouping[0],
+        length = 0;
+
+    while (i > 0 && g > 0) {
+      if (length + g + 1 > width) g = Math.max(1, width - length);
+      t.push(value.substring(i -= g, i + g));
+      if ((length += g + 1) > width) break;
+      g = grouping[j = (j + 1) % grouping.length];
+    }
+
+    return t.reverse().join(thousands);
+  };
+}
+
+function formatNumerals(numerals) {
+  return function(value) {
+    return value.replace(/[0-9]/g, function(i) {
+      return numerals[+i];
+    });
+  };
+}
+
+// [[fill]align][sign][symbol][0][width][,][.precision][~][type]
+var re = /^(?:(.)?([<>=^]))?([+\-( ])?([$#])?(0)?(\d+)?(,)?(\.\d+)?(~)?([a-z%])?$/i;
+
+function formatSpecifier(specifier) {
+  if (!(match = re.exec(specifier))) throw new Error("invalid format: " + specifier);
+  var match;
+  return new FormatSpecifier({
+    fill: match[1],
+    align: match[2],
+    sign: match[3],
+    symbol: match[4],
+    zero: match[5],
+    width: match[6],
+    comma: match[7],
+    precision: match[8] && match[8].slice(1),
+    trim: match[9],
+    type: match[10]
+  });
+}
+
+formatSpecifier.prototype = FormatSpecifier.prototype; // instanceof
+
+function FormatSpecifier(specifier) {
+  this.fill = specifier.fill === undefined ? " " : specifier.fill + "";
+  this.align = specifier.align === undefined ? ">" : specifier.align + "";
+  this.sign = specifier.sign === undefined ? "-" : specifier.sign + "";
+  this.symbol = specifier.symbol === undefined ? "" : specifier.symbol + "";
+  this.zero = !!specifier.zero;
+  this.width = specifier.width === undefined ? undefined : +specifier.width;
+  this.comma = !!specifier.comma;
+  this.precision = specifier.precision === undefined ? undefined : +specifier.precision;
+  this.trim = !!specifier.trim;
+  this.type = specifier.type === undefined ? "" : specifier.type + "";
+}
+
+FormatSpecifier.prototype.toString = function() {
+  return this.fill
+      + this.align
+      + this.sign
+      + this.symbol
+      + (this.zero ? "0" : "")
+      + (this.width === undefined ? "" : Math.max(1, this.width | 0))
+      + (this.comma ? "," : "")
+      + (this.precision === undefined ? "" : "." + Math.max(0, this.precision | 0))
+      + (this.trim ? "~" : "")
+      + this.type;
+};
+
+// Trims insignificant zeros, e.g., replaces 1.2000k with 1.2k.
+function formatTrim(s) {
+  out: for (var n = s.length, i = 1, i0 = -1, i1; i < n; ++i) {
+    switch (s[i]) {
+      case ".": i0 = i1 = i; break;
+      case "0": if (i0 === 0) i0 = i; i1 = i; break;
+      default: if (!+s[i]) break out; if (i0 > 0) i0 = 0; break;
+    }
+  }
+  return i0 > 0 ? s.slice(0, i0) + s.slice(i1 + 1) : s;
+}
+
+var prefixExponent;
+
+function formatPrefixAuto(x, p) {
+  var d = formatDecimalParts(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1],
+      i = exponent - (prefixExponent = Math.max(-8, Math.min(8, Math.floor(exponent / 3))) * 3) + 1,
+      n = coefficient.length;
+  return i === n ? coefficient
+      : i > n ? coefficient + new Array(i - n + 1).join("0")
+      : i > 0 ? coefficient.slice(0, i) + "." + coefficient.slice(i)
+      : "0." + new Array(1 - i).join("0") + formatDecimalParts(x, Math.max(0, p + i - 1))[0]; // less than 1y!
+}
+
+function formatRounded(x, p) {
+  var d = formatDecimalParts(x, p);
+  if (!d) return x + "";
+  var coefficient = d[0],
+      exponent = d[1];
+  return exponent < 0 ? "0." + new Array(-exponent).join("0") + coefficient
+      : coefficient.length > exponent + 1 ? coefficient.slice(0, exponent + 1) + "." + coefficient.slice(exponent + 1)
+      : coefficient + new Array(exponent - coefficient.length + 2).join("0");
+}
+
+var formatTypes = {
+  "%": function(x, p) { return (x * 100).toFixed(p); },
+  "b": function(x) { return Math.round(x).toString(2); },
+  "c": function(x) { return x + ""; },
+  "d": formatDecimal,
+  "e": function(x, p) { return x.toExponential(p); },
+  "f": function(x, p) { return x.toFixed(p); },
+  "g": function(x, p) { return x.toPrecision(p); },
+  "o": function(x) { return Math.round(x).toString(8); },
+  "p": function(x, p) { return formatRounded(x * 100, p); },
+  "r": formatRounded,
+  "s": formatPrefixAuto,
+  "X": function(x) { return Math.round(x).toString(16).toUpperCase(); },
+  "x": function(x) { return Math.round(x).toString(16); }
+};
+
+function identity(x) {
+  return x;
+}
+
+var map = Array.prototype.map,
+    prefixes = ["y","z","a","f","p","n","µ","m","","k","M","G","T","P","E","Z","Y"];
+
+function formatLocale(locale) {
+  var group = locale.grouping === undefined || locale.thousands === undefined ? identity : formatGroup(map.call(locale.grouping, Number), locale.thousands + ""),
+      currencyPrefix = locale.currency === undefined ? "" : locale.currency[0] + "",
+      currencySuffix = locale.currency === undefined ? "" : locale.currency[1] + "",
+      decimal = locale.decimal === undefined ? "." : locale.decimal + "",
+      numerals = locale.numerals === undefined ? identity : formatNumerals(map.call(locale.numerals, String)),
+      percent = locale.percent === undefined ? "%" : locale.percent + "",
+      minus = locale.minus === undefined ? "-" : locale.minus + "",
+      nan = locale.nan === undefined ? "NaN" : locale.nan + "";
+
+  function newFormat(specifier) {
+    specifier = formatSpecifier(specifier);
+
+    var fill = specifier.fill,
+        align = specifier.align,
+        sign = specifier.sign,
+        symbol = specifier.symbol,
+        zero = specifier.zero,
+        width = specifier.width,
+        comma = specifier.comma,
+        precision = specifier.precision,
+        trim = specifier.trim,
+        type = specifier.type;
+
+    // The "n" type is an alias for ",g".
+    if (type === "n") comma = true, type = "g";
+
+    // The "" type, and any invalid type, is an alias for ".12~g".
+    else if (!formatTypes[type]) precision === undefined && (precision = 12), trim = true, type = "g";
+
+    // If zero fill is specified, padding goes after sign and before digits.
+    if (zero || (fill === "0" && align === "=")) zero = true, fill = "0", align = "=";
+
+    // Compute the prefix and suffix.
+    // For SI-prefix, the suffix is lazily computed.
+    var prefix = symbol === "$" ? currencyPrefix : symbol === "#" && /[boxX]/.test(type) ? "0" + type.toLowerCase() : "",
+        suffix = symbol === "$" ? currencySuffix : /[%p]/.test(type) ? percent : "";
+
+    // What format function should we use?
+    // Is this an integer type?
+    // Can this type generate exponential notation?
+    var formatType = formatTypes[type],
+        maybeSuffix = /[defgprs%]/.test(type);
+
+    // Set the default precision if not specified,
+    // or clamp the specified precision to the supported range.
+    // For significant precision, it must be in [1, 21].
+    // For fixed precision, it must be in [0, 20].
+    precision = precision === undefined ? 6
+        : /[gprs]/.test(type) ? Math.max(1, Math.min(21, precision))
+        : Math.max(0, Math.min(20, precision));
+
+    function format(value) {
+      var valuePrefix = prefix,
+          valueSuffix = suffix,
+          i, n, c;
+
+      if (type === "c") {
+        valueSuffix = formatType(value) + valueSuffix;
+        value = "";
+      } else {
+        value = +value;
+
+        // Determine the sign. -0 is not less than 0, but 1 / -0 is!
+        var valueNegative = value < 0 || 1 / value < 0;
+
+        // Perform the initial formatting.
+        value = isNaN(value) ? nan : formatType(Math.abs(value), precision);
+
+        // Trim insignificant zeros.
+        if (trim) value = formatTrim(value);
+
+        // If a negative value rounds to zero after formatting, and no explicit positive sign is requested, hide the sign.
+        if (valueNegative && +value === 0 && sign !== "+") valueNegative = false;
+
+        // Compute the prefix and suffix.
+        valuePrefix = (valueNegative ? (sign === "(" ? sign : minus) : sign === "-" || sign === "(" ? "" : sign) + valuePrefix;
+        valueSuffix = (type === "s" ? prefixes[8 + prefixExponent / 3] : "") + valueSuffix + (valueNegative && sign === "(" ? ")" : "");
+
+        // Break the formatted value into the integer “value” part that can be
+        // grouped, and fractional or exponential “suffix” part that is not.
+        if (maybeSuffix) {
+          i = -1, n = value.length;
+          while (++i < n) {
+            if (c = value.charCodeAt(i), 48 > c || c > 57) {
+              valueSuffix = (c === 46 ? decimal + value.slice(i + 1) : value.slice(i)) + valueSuffix;
+              value = value.slice(0, i);
+              break;
+            }
+          }
+        }
+      }
+
+      // If the fill character is not "0", grouping is applied before padding.
+      if (comma && !zero) value = group(value, Infinity);
+
+      // Compute the padding.
+      var length = valuePrefix.length + value.length + valueSuffix.length,
+          padding = length < width ? new Array(width - length + 1).join(fill) : "";
+
+      // If the fill character is "0", grouping is applied after padding.
+      if (comma && zero) value = group(padding + value, padding.length ? width - valueSuffix.length : Infinity), padding = "";
+
+      // Reconstruct the final output based on the desired alignment.
+      switch (align) {
+        case "<": value = valuePrefix + value + valueSuffix + padding; break;
+        case "=": value = valuePrefix + padding + value + valueSuffix; break;
+        case "^": value = padding.slice(0, length = padding.length >> 1) + valuePrefix + value + valueSuffix + padding.slice(length); break;
+        default: value = padding + valuePrefix + value + valueSuffix; break;
+      }
+
+      return numerals(value);
+    }
+
+    format.toString = function() {
+      return specifier + "";
+    };
+
+    return format;
+  }
+
+  function formatPrefix(specifier, value) {
+    var f = newFormat((specifier = formatSpecifier(specifier), specifier.type = "f", specifier)),
+        e = Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3,
+        k = Math.pow(10, -e),
+        prefix = prefixes[8 + e / 3];
+    return function(value) {
+      return f(k * value) + prefix;
+    };
+  }
+
+  return {
+    format: newFormat,
+    formatPrefix: formatPrefix
+  };
+}
+
+var locale;
+
+defaultLocale({
+  decimal: ".",
+  thousands: ",",
+  grouping: [3],
+  currency: ["$", ""],
+  minus: "-"
+});
+
+function defaultLocale(definition) {
+  locale = formatLocale(definition);
+  exports.format = locale.format;
+  exports.formatPrefix = locale.formatPrefix;
+  return locale;
+}
+
+function precisionFixed(step) {
+  return Math.max(0, -exponent(Math.abs(step)));
+}
+
+function precisionPrefix(step, value) {
+  return Math.max(0, Math.max(-8, Math.min(8, Math.floor(exponent(value) / 3))) * 3 - exponent(Math.abs(step)));
+}
+
+function precisionRound(step, max) {
+  step = Math.abs(step), max = Math.abs(max) - step;
+  return Math.max(0, exponent(max) - exponent(step)) + 1;
+}
+
+exports.FormatSpecifier = FormatSpecifier;
+exports.formatDefaultLocale = defaultLocale;
+exports.formatLocale = formatLocale;
+exports.formatSpecifier = formatSpecifier;
+exports.precisionFixed = precisionFixed;
+exports.precisionPrefix = precisionPrefix;
+exports.precisionRound = precisionRound;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+})));
+
+},{}],26:[function(_dereq_,module,exports){
+// https://d3js.org/d3-time-format/ v2.2.3 Copyright 2019 Mike Bostock
+(function (global, factory) {
+typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, _dereq_('d3-time')) :
+typeof define === 'function' && define.amd ? define(['exports', 'd3-time'], factory) :
+(global = global || self, factory(global.d3 = global.d3 || {}, global.d3));
+}(this, function (exports, d3Time) { 'use strict';
+
+function localDate(d) {
+  if (0 <= d.y && d.y < 100) {
+    var date = new Date(-1, d.m, d.d, d.H, d.M, d.S, d.L);
+    date.setFullYear(d.y);
+    return date;
+  }
+  return new Date(d.y, d.m, d.d, d.H, d.M, d.S, d.L);
+}
+
+function utcDate(d) {
+  if (0 <= d.y && d.y < 100) {
+    var date = new Date(Date.UTC(-1, d.m, d.d, d.H, d.M, d.S, d.L));
+    date.setUTCFullYear(d.y);
+    return date;
+  }
+  return new Date(Date.UTC(d.y, d.m, d.d, d.H, d.M, d.S, d.L));
+}
+
+function newDate(y, m, d) {
+  return {y: y, m: m, d: d, H: 0, M: 0, S: 0, L: 0};
+}
+
+function formatLocale(locale) {
+  var locale_dateTime = locale.dateTime,
+      locale_date = locale.date,
+      locale_time = locale.time,
+      locale_periods = locale.periods,
+      locale_weekdays = locale.days,
+      locale_shortWeekdays = locale.shortDays,
+      locale_months = locale.months,
+      locale_shortMonths = locale.shortMonths;
+
+  var periodRe = formatRe(locale_periods),
+      periodLookup = formatLookup(locale_periods),
+      weekdayRe = formatRe(locale_weekdays),
+      weekdayLookup = formatLookup(locale_weekdays),
+      shortWeekdayRe = formatRe(locale_shortWeekdays),
+      shortWeekdayLookup = formatLookup(locale_shortWeekdays),
+      monthRe = formatRe(locale_months),
+      monthLookup = formatLookup(locale_months),
+      shortMonthRe = formatRe(locale_shortMonths),
+      shortMonthLookup = formatLookup(locale_shortMonths);
+
+  var formats = {
+    "a": formatShortWeekday,
+    "A": formatWeekday,
+    "b": formatShortMonth,
+    "B": formatMonth,
+    "c": null,
+    "d": formatDayOfMonth,
+    "e": formatDayOfMonth,
+    "f": formatMicroseconds,
+    "H": formatHour24,
+    "I": formatHour12,
+    "j": formatDayOfYear,
+    "L": formatMilliseconds,
+    "m": formatMonthNumber,
+    "M": formatMinutes,
+    "p": formatPeriod,
+    "q": formatQuarter,
+    "Q": formatUnixTimestamp,
+    "s": formatUnixTimestampSeconds,
+    "S": formatSeconds,
+    "u": formatWeekdayNumberMonday,
+    "U": formatWeekNumberSunday,
+    "V": formatWeekNumberISO,
+    "w": formatWeekdayNumberSunday,
+    "W": formatWeekNumberMonday,
+    "x": null,
+    "X": null,
+    "y": formatYear,
+    "Y": formatFullYear,
+    "Z": formatZone,
+    "%": formatLiteralPercent
+  };
+
+  var utcFormats = {
+    "a": formatUTCShortWeekday,
+    "A": formatUTCWeekday,
+    "b": formatUTCShortMonth,
+    "B": formatUTCMonth,
+    "c": null,
+    "d": formatUTCDayOfMonth,
+    "e": formatUTCDayOfMonth,
+    "f": formatUTCMicroseconds,
+    "H": formatUTCHour24,
+    "I": formatUTCHour12,
+    "j": formatUTCDayOfYear,
+    "L": formatUTCMilliseconds,
+    "m": formatUTCMonthNumber,
+    "M": formatUTCMinutes,
+    "p": formatUTCPeriod,
+    "q": formatUTCQuarter,
+    "Q": formatUnixTimestamp,
+    "s": formatUnixTimestampSeconds,
+    "S": formatUTCSeconds,
+    "u": formatUTCWeekdayNumberMonday,
+    "U": formatUTCWeekNumberSunday,
+    "V": formatUTCWeekNumberISO,
+    "w": formatUTCWeekdayNumberSunday,
+    "W": formatUTCWeekNumberMonday,
+    "x": null,
+    "X": null,
+    "y": formatUTCYear,
+    "Y": formatUTCFullYear,
+    "Z": formatUTCZone,
+    "%": formatLiteralPercent
+  };
+
+  var parses = {
+    "a": parseShortWeekday,
+    "A": parseWeekday,
+    "b": parseShortMonth,
+    "B": parseMonth,
+    "c": parseLocaleDateTime,
+    "d": parseDayOfMonth,
+    "e": parseDayOfMonth,
+    "f": parseMicroseconds,
+    "H": parseHour24,
+    "I": parseHour24,
+    "j": parseDayOfYear,
+    "L": parseMilliseconds,
+    "m": parseMonthNumber,
+    "M": parseMinutes,
+    "p": parsePeriod,
+    "q": parseQuarter,
+    "Q": parseUnixTimestamp,
+    "s": parseUnixTimestampSeconds,
+    "S": parseSeconds,
+    "u": parseWeekdayNumberMonday,
+    "U": parseWeekNumberSunday,
+    "V": parseWeekNumberISO,
+    "w": parseWeekdayNumberSunday,
+    "W": parseWeekNumberMonday,
+    "x": parseLocaleDate,
+    "X": parseLocaleTime,
+    "y": parseYear,
+    "Y": parseFullYear,
+    "Z": parseZone,
+    "%": parseLiteralPercent
+  };
+
+  // These recursive directive definitions must be deferred.
+  formats.x = newFormat(locale_date, formats);
+  formats.X = newFormat(locale_time, formats);
+  formats.c = newFormat(locale_dateTime, formats);
+  utcFormats.x = newFormat(locale_date, utcFormats);
+  utcFormats.X = newFormat(locale_time, utcFormats);
+  utcFormats.c = newFormat(locale_dateTime, utcFormats);
+
+  function newFormat(specifier, formats) {
+    return function(date) {
+      var string = [],
+          i = -1,
+          j = 0,
+          n = specifier.length,
+          c,
+          pad,
+          format;
+
+      if (!(date instanceof Date)) date = new Date(+date);
+
+      while (++i < n) {
+        if (specifier.charCodeAt(i) === 37) {
+          string.push(specifier.slice(j, i));
+          if ((pad = pads[c = specifier.charAt(++i)]) != null) c = specifier.charAt(++i);
+          else pad = c === "e" ? " " : "0";
+          if (format = formats[c]) c = format(date, pad);
+          string.push(c);
+          j = i + 1;
+        }
+      }
+
+      string.push(specifier.slice(j, i));
+      return string.join("");
+    };
+  }
+
+  function newParse(specifier, Z) {
+    return function(string) {
+      var d = newDate(1900, undefined, 1),
+          i = parseSpecifier(d, specifier, string += "", 0),
+          week, day;
+      if (i != string.length) return null;
+
+      // If a UNIX timestamp is specified, return it.
+      if ("Q" in d) return new Date(d.Q);
+      if ("s" in d) return new Date(d.s * 1000 + ("L" in d ? d.L : 0));
+
+      // If this is utcParse, never use the local timezone.
+      if (Z && !("Z" in d)) d.Z = 0;
+
+      // The am-pm flag is 0 for AM, and 1 for PM.
+      if ("p" in d) d.H = d.H % 12 + d.p * 12;
+
+      // If the month was not specified, inherit from the quarter.
+      if (d.m === undefined) d.m = "q" in d ? d.q : 0;
+
+      // Convert day-of-week and week-of-year to day-of-year.
+      if ("V" in d) {
+        if (d.V < 1 || d.V > 53) return null;
+        if (!("w" in d)) d.w = 1;
+        if ("Z" in d) {
+          week = utcDate(newDate(d.y, 0, 1)), day = week.getUTCDay();
+          week = day > 4 || day === 0 ? d3Time.utcMonday.ceil(week) : d3Time.utcMonday(week);
+          week = d3Time.utcDay.offset(week, (d.V - 1) * 7);
+          d.y = week.getUTCFullYear();
+          d.m = week.getUTCMonth();
+          d.d = week.getUTCDate() + (d.w + 6) % 7;
+        } else {
+          week = localDate(newDate(d.y, 0, 1)), day = week.getDay();
+          week = day > 4 || day === 0 ? d3Time.timeMonday.ceil(week) : d3Time.timeMonday(week);
+          week = d3Time.timeDay.offset(week, (d.V - 1) * 7);
+          d.y = week.getFullYear();
+          d.m = week.getMonth();
+          d.d = week.getDate() + (d.w + 6) % 7;
+        }
+      } else if ("W" in d || "U" in d) {
+        if (!("w" in d)) d.w = "u" in d ? d.u % 7 : "W" in d ? 1 : 0;
+        day = "Z" in d ? utcDate(newDate(d.y, 0, 1)).getUTCDay() : localDate(newDate(d.y, 0, 1)).getDay();
+        d.m = 0;
+        d.d = "W" in d ? (d.w + 6) % 7 + d.W * 7 - (day + 5) % 7 : d.w + d.U * 7 - (day + 6) % 7;
+      }
+
+      // If a time zone is specified, all fields are interpreted as UTC and then
+      // offset according to the specified time zone.
+      if ("Z" in d) {
+        d.H += d.Z / 100 | 0;
+        d.M += d.Z % 100;
+        return utcDate(d);
+      }
+
+      // Otherwise, all fields are in local time.
+      return localDate(d);
+    };
+  }
+
+  function parseSpecifier(d, specifier, string, j) {
+    var i = 0,
+        n = specifier.length,
+        m = string.length,
+        c,
+        parse;
+
+    while (i < n) {
+      if (j >= m) return -1;
+      c = specifier.charCodeAt(i++);
+      if (c === 37) {
+        c = specifier.charAt(i++);
+        parse = parses[c in pads ? specifier.charAt(i++) : c];
+        if (!parse || ((j = parse(d, string, j)) < 0)) return -1;
+      } else if (c != string.charCodeAt(j++)) {
+        return -1;
+      }
+    }
+
+    return j;
+  }
+
+  function parsePeriod(d, string, i) {
+    var n = periodRe.exec(string.slice(i));
+    return n ? (d.p = periodLookup[n[0].toLowerCase()], i + n[0].length) : -1;
+  }
+
+  function parseShortWeekday(d, string, i) {
+    var n = shortWeekdayRe.exec(string.slice(i));
+    return n ? (d.w = shortWeekdayLookup[n[0].toLowerCase()], i + n[0].length) : -1;
+  }
+
+  function parseWeekday(d, string, i) {
+    var n = weekdayRe.exec(string.slice(i));
+    return n ? (d.w = weekdayLookup[n[0].toLowerCase()], i + n[0].length) : -1;
+  }
+
+  function parseShortMonth(d, string, i) {
+    var n = shortMonthRe.exec(string.slice(i));
+    return n ? (d.m = shortMonthLookup[n[0].toLowerCase()], i + n[0].length) : -1;
+  }
+
+  function parseMonth(d, string, i) {
+    var n = monthRe.exec(string.slice(i));
+    return n ? (d.m = monthLookup[n[0].toLowerCase()], i + n[0].length) : -1;
+  }
+
+  function parseLocaleDateTime(d, string, i) {
+    return parseSpecifier(d, locale_dateTime, string, i);
+  }
+
+  function parseLocaleDate(d, string, i) {
+    return parseSpecifier(d, locale_date, string, i);
+  }
+
+  function parseLocaleTime(d, string, i) {
+    return parseSpecifier(d, locale_time, string, i);
+  }
+
+  function formatShortWeekday(d) {
+    return locale_shortWeekdays[d.getDay()];
+  }
+
+  function formatWeekday(d) {
+    return locale_weekdays[d.getDay()];
+  }
+
+  function formatShortMonth(d) {
+    return locale_shortMonths[d.getMonth()];
+  }
+
+  function formatMonth(d) {
+    return locale_months[d.getMonth()];
+  }
+
+  function formatPeriod(d) {
+    return locale_periods[+(d.getHours() >= 12)];
+  }
+
+  function formatQuarter(d) {
+    return 1 + ~~(d.getMonth() / 3);
+  }
+
+  function formatUTCShortWeekday(d) {
+    return locale_shortWeekdays[d.getUTCDay()];
+  }
+
+  function formatUTCWeekday(d) {
+    return locale_weekdays[d.getUTCDay()];
+  }
+
+  function formatUTCShortMonth(d) {
+    return locale_shortMonths[d.getUTCMonth()];
+  }
+
+  function formatUTCMonth(d) {
+    return locale_months[d.getUTCMonth()];
+  }
+
+  function formatUTCPeriod(d) {
+    return locale_periods[+(d.getUTCHours() >= 12)];
+  }
+
+  function formatUTCQuarter(d) {
+    return 1 + ~~(d.getUTCMonth() / 3);
+  }
+
+  return {
+    format: function(specifier) {
+      var f = newFormat(specifier += "", formats);
+      f.toString = function() { return specifier; };
+      return f;
+    },
+    parse: function(specifier) {
+      var p = newParse(specifier += "", false);
+      p.toString = function() { return specifier; };
+      return p;
+    },
+    utcFormat: function(specifier) {
+      var f = newFormat(specifier += "", utcFormats);
+      f.toString = function() { return specifier; };
+      return f;
+    },
+    utcParse: function(specifier) {
+      var p = newParse(specifier += "", true);
+      p.toString = function() { return specifier; };
+      return p;
+    }
+  };
+}
+
+var pads = {"-": "", "_": " ", "0": "0"},
+    numberRe = /^\s*\d+/, // note: ignores next directive
+    percentRe = /^%/,
+    requoteRe = /[\\^$*+?|[\]().{}]/g;
+
+function pad(value, fill, width) {
+  var sign = value < 0 ? "-" : "",
+      string = (sign ? -value : value) + "",
+      length = string.length;
+  return sign + (length < width ? new Array(width - length + 1).join(fill) + string : string);
+}
+
+function requote(s) {
+  return s.replace(requoteRe, "\\$&");
+}
+
+function formatRe(names) {
+  return new RegExp("^(?:" + names.map(requote).join("|") + ")", "i");
+}
+
+function formatLookup(names) {
+  var map = {}, i = -1, n = names.length;
+  while (++i < n) map[names[i].toLowerCase()] = i;
+  return map;
+}
+
+function parseWeekdayNumberSunday(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 1));
+  return n ? (d.w = +n[0], i + n[0].length) : -1;
+}
+
+function parseWeekdayNumberMonday(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 1));
+  return n ? (d.u = +n[0], i + n[0].length) : -1;
+}
+
+function parseWeekNumberSunday(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.U = +n[0], i + n[0].length) : -1;
+}
+
+function parseWeekNumberISO(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.V = +n[0], i + n[0].length) : -1;
+}
+
+function parseWeekNumberMonday(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.W = +n[0], i + n[0].length) : -1;
+}
+
+function parseFullYear(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 4));
+  return n ? (d.y = +n[0], i + n[0].length) : -1;
+}
+
+function parseYear(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.y = +n[0] + (+n[0] > 68 ? 1900 : 2000), i + n[0].length) : -1;
+}
+
+function parseZone(d, string, i) {
+  var n = /^(Z)|([+-]\d\d)(?::?(\d\d))?/.exec(string.slice(i, i + 6));
+  return n ? (d.Z = n[1] ? 0 : -(n[2] + (n[3] || "00")), i + n[0].length) : -1;
+}
+
+function parseQuarter(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 1));
+  return n ? (d.q = n[0] * 3 - 3, i + n[0].length) : -1;
+}
+
+function parseMonthNumber(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.m = n[0] - 1, i + n[0].length) : -1;
+}
+
+function parseDayOfMonth(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.d = +n[0], i + n[0].length) : -1;
+}
+
+function parseDayOfYear(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 3));
+  return n ? (d.m = 0, d.d = +n[0], i + n[0].length) : -1;
+}
+
+function parseHour24(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.H = +n[0], i + n[0].length) : -1;
+}
+
+function parseMinutes(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.M = +n[0], i + n[0].length) : -1;
+}
+
+function parseSeconds(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 2));
+  return n ? (d.S = +n[0], i + n[0].length) : -1;
+}
+
+function parseMilliseconds(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 3));
+  return n ? (d.L = +n[0], i + n[0].length) : -1;
+}
+
+function parseMicroseconds(d, string, i) {
+  var n = numberRe.exec(string.slice(i, i + 6));
+  return n ? (d.L = Math.floor(n[0] / 1000), i + n[0].length) : -1;
+}
+
+function parseLiteralPercent(d, string, i) {
+  var n = percentRe.exec(string.slice(i, i + 1));
+  return n ? i + n[0].length : -1;
+}
+
+function parseUnixTimestamp(d, string, i) {
+  var n = numberRe.exec(string.slice(i));
+  return n ? (d.Q = +n[0], i + n[0].length) : -1;
+}
+
+function parseUnixTimestampSeconds(d, string, i) {
+  var n = numberRe.exec(string.slice(i));
+  return n ? (d.s = +n[0], i + n[0].length) : -1;
+}
+
+function formatDayOfMonth(d, p) {
+  return pad(d.getDate(), p, 2);
+}
+
+function formatHour24(d, p) {
+  return pad(d.getHours(), p, 2);
+}
+
+function formatHour12(d, p) {
+  return pad(d.getHours() % 12 || 12, p, 2);
+}
+
+function formatDayOfYear(d, p) {
+  return pad(1 + d3Time.timeDay.count(d3Time.timeYear(d), d), p, 3);
+}
+
+function formatMilliseconds(d, p) {
+  return pad(d.getMilliseconds(), p, 3);
+}
+
+function formatMicroseconds(d, p) {
+  return formatMilliseconds(d, p) + "000";
+}
+
+function formatMonthNumber(d, p) {
+  return pad(d.getMonth() + 1, p, 2);
+}
+
+function formatMinutes(d, p) {
+  return pad(d.getMinutes(), p, 2);
+}
+
+function formatSeconds(d, p) {
+  return pad(d.getSeconds(), p, 2);
+}
+
+function formatWeekdayNumberMonday(d) {
+  var day = d.getDay();
+  return day === 0 ? 7 : day;
+}
+
+function formatWeekNumberSunday(d, p) {
+  return pad(d3Time.timeSunday.count(d3Time.timeYear(d) - 1, d), p, 2);
+}
+
+function formatWeekNumberISO(d, p) {
+  var day = d.getDay();
+  d = (day >= 4 || day === 0) ? d3Time.timeThursday(d) : d3Time.timeThursday.ceil(d);
+  return pad(d3Time.timeThursday.count(d3Time.timeYear(d), d) + (d3Time.timeYear(d).getDay() === 4), p, 2);
+}
+
+function formatWeekdayNumberSunday(d) {
+  return d.getDay();
+}
+
+function formatWeekNumberMonday(d, p) {
+  return pad(d3Time.timeMonday.count(d3Time.timeYear(d) - 1, d), p, 2);
+}
+
+function formatYear(d, p) {
+  return pad(d.getFullYear() % 100, p, 2);
+}
+
+function formatFullYear(d, p) {
+  return pad(d.getFullYear() % 10000, p, 4);
+}
+
+function formatZone(d) {
+  var z = d.getTimezoneOffset();
+  return (z > 0 ? "-" : (z *= -1, "+"))
+      + pad(z / 60 | 0, "0", 2)
+      + pad(z % 60, "0", 2);
+}
+
+function formatUTCDayOfMonth(d, p) {
+  return pad(d.getUTCDate(), p, 2);
+}
+
+function formatUTCHour24(d, p) {
+  return pad(d.getUTCHours(), p, 2);
+}
+
+function formatUTCHour12(d, p) {
+  return pad(d.getUTCHours() % 12 || 12, p, 2);
+}
+
+function formatUTCDayOfYear(d, p) {
+  return pad(1 + d3Time.utcDay.count(d3Time.utcYear(d), d), p, 3);
+}
+
+function formatUTCMilliseconds(d, p) {
+  return pad(d.getUTCMilliseconds(), p, 3);
+}
+
+function formatUTCMicroseconds(d, p) {
+  return formatUTCMilliseconds(d, p) + "000";
+}
+
+function formatUTCMonthNumber(d, p) {
+  return pad(d.getUTCMonth() + 1, p, 2);
+}
+
+function formatUTCMinutes(d, p) {
+  return pad(d.getUTCMinutes(), p, 2);
+}
+
+function formatUTCSeconds(d, p) {
+  return pad(d.getUTCSeconds(), p, 2);
+}
+
+function formatUTCWeekdayNumberMonday(d) {
+  var dow = d.getUTCDay();
+  return dow === 0 ? 7 : dow;
+}
+
+function formatUTCWeekNumberSunday(d, p) {
+  return pad(d3Time.utcSunday.count(d3Time.utcYear(d) - 1, d), p, 2);
+}
+
+function formatUTCWeekNumberISO(d, p) {
+  var day = d.getUTCDay();
+  d = (day >= 4 || day === 0) ? d3Time.utcThursday(d) : d3Time.utcThursday.ceil(d);
+  return pad(d3Time.utcThursday.count(d3Time.utcYear(d), d) + (d3Time.utcYear(d).getUTCDay() === 4), p, 2);
+}
+
+function formatUTCWeekdayNumberSunday(d) {
+  return d.getUTCDay();
+}
+
+function formatUTCWeekNumberMonday(d, p) {
+  return pad(d3Time.utcMonday.count(d3Time.utcYear(d) - 1, d), p, 2);
+}
+
+function formatUTCYear(d, p) {
+  return pad(d.getUTCFullYear() % 100, p, 2);
+}
+
+function formatUTCFullYear(d, p) {
+  return pad(d.getUTCFullYear() % 10000, p, 4);
+}
+
+function formatUTCZone() {
+  return "+0000";
+}
+
+function formatLiteralPercent() {
+  return "%";
+}
+
+function formatUnixTimestamp(d) {
+  return +d;
+}
+
+function formatUnixTimestampSeconds(d) {
+  return Math.floor(+d / 1000);
+}
+
+var locale;
+
+defaultLocale({
+  dateTime: "%x, %X",
+  date: "%-m/%-d/%Y",
+  time: "%-I:%M:%S %p",
+  periods: ["AM", "PM"],
+  days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+  shortDays: ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"],
+  months: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+  shortMonths: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+});
+
+function defaultLocale(definition) {
+  locale = formatLocale(definition);
+  exports.timeFormat = locale.format;
+  exports.timeParse = locale.parse;
+  exports.utcFormat = locale.utcFormat;
+  exports.utcParse = locale.utcParse;
+  return locale;
+}
+
+var isoSpecifier = "%Y-%m-%dT%H:%M:%S.%LZ";
+
+function formatIsoNative(date) {
+  return date.toISOString();
+}
+
+var formatIso = Date.prototype.toISOString
+    ? formatIsoNative
+    : exports.utcFormat(isoSpecifier);
+
+function parseIsoNative(string) {
+  var date = new Date(string);
+  return isNaN(date) ? null : date;
+}
+
+var parseIso = +new Date("2000-01-01T00:00:00.000Z")
+    ? parseIsoNative
+    : exports.utcParse(isoSpecifier);
+
+exports.isoFormat = formatIso;
+exports.isoParse = parseIso;
+exports.timeFormatDefaultLocale = defaultLocale;
+exports.timeFormatLocale = formatLocale;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+}));
+
+},{"d3-time":27}],27:[function(_dereq_,module,exports){
+// https://d3js.org/d3-time/ v1.1.0 Copyright 2019 Mike Bostock
+(function (global, factory) {
+typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+typeof define === 'function' && define.amd ? define(['exports'], factory) :
+(global = global || self, factory(global.d3 = global.d3 || {}));
+}(this, function (exports) { 'use strict';
+
+var t0 = new Date,
+    t1 = new Date;
+
+function newInterval(floori, offseti, count, field) {
+
+  function interval(date) {
+    return floori(date = arguments.length === 0 ? new Date : new Date(+date)), date;
+  }
+
+  interval.floor = function(date) {
+    return floori(date = new Date(+date)), date;
+  };
+
+  interval.ceil = function(date) {
+    return floori(date = new Date(date - 1)), offseti(date, 1), floori(date), date;
+  };
+
+  interval.round = function(date) {
+    var d0 = interval(date),
+        d1 = interval.ceil(date);
+    return date - d0 < d1 - date ? d0 : d1;
+  };
+
+  interval.offset = function(date, step) {
+    return offseti(date = new Date(+date), step == null ? 1 : Math.floor(step)), date;
+  };
+
+  interval.range = function(start, stop, step) {
+    var range = [], previous;
+    start = interval.ceil(start);
+    step = step == null ? 1 : Math.floor(step);
+    if (!(start < stop) || !(step > 0)) return range; // also handles Invalid Date
+    do range.push(previous = new Date(+start)), offseti(start, step), floori(start);
+    while (previous < start && start < stop);
+    return range;
+  };
+
+  interval.filter = function(test) {
+    return newInterval(function(date) {
+      if (date >= date) while (floori(date), !test(date)) date.setTime(date - 1);
+    }, function(date, step) {
+      if (date >= date) {
+        if (step < 0) while (++step <= 0) {
+          while (offseti(date, -1), !test(date)) {} // eslint-disable-line no-empty
+        } else while (--step >= 0) {
+          while (offseti(date, +1), !test(date)) {} // eslint-disable-line no-empty
+        }
+      }
+    });
+  };
+
+  if (count) {
+    interval.count = function(start, end) {
+      t0.setTime(+start), t1.setTime(+end);
+      floori(t0), floori(t1);
+      return Math.floor(count(t0, t1));
+    };
+
+    interval.every = function(step) {
+      step = Math.floor(step);
+      return !isFinite(step) || !(step > 0) ? null
+          : !(step > 1) ? interval
+          : interval.filter(field
+              ? function(d) { return field(d) % step === 0; }
+              : function(d) { return interval.count(0, d) % step === 0; });
+    };
+  }
+
+  return interval;
+}
+
+var millisecond = newInterval(function() {
+  // noop
+}, function(date, step) {
+  date.setTime(+date + step);
+}, function(start, end) {
+  return end - start;
+});
+
+// An optimized implementation for this simple case.
+millisecond.every = function(k) {
+  k = Math.floor(k);
+  if (!isFinite(k) || !(k > 0)) return null;
+  if (!(k > 1)) return millisecond;
+  return newInterval(function(date) {
+    date.setTime(Math.floor(date / k) * k);
+  }, function(date, step) {
+    date.setTime(+date + step * k);
+  }, function(start, end) {
+    return (end - start) / k;
+  });
+};
+var milliseconds = millisecond.range;
+
+var durationSecond = 1e3;
+var durationMinute = 6e4;
+var durationHour = 36e5;
+var durationDay = 864e5;
+var durationWeek = 6048e5;
+
+var second = newInterval(function(date) {
+  date.setTime(date - date.getMilliseconds());
+}, function(date, step) {
+  date.setTime(+date + step * durationSecond);
+}, function(start, end) {
+  return (end - start) / durationSecond;
+}, function(date) {
+  return date.getUTCSeconds();
+});
+var seconds = second.range;
+
+var minute = newInterval(function(date) {
+  date.setTime(date - date.getMilliseconds() - date.getSeconds() * durationSecond);
+}, function(date, step) {
+  date.setTime(+date + step * durationMinute);
+}, function(start, end) {
+  return (end - start) / durationMinute;
+}, function(date) {
+  return date.getMinutes();
+});
+var minutes = minute.range;
+
+var hour = newInterval(function(date) {
+  date.setTime(date - date.getMilliseconds() - date.getSeconds() * durationSecond - date.getMinutes() * durationMinute);
+}, function(date, step) {
+  date.setTime(+date + step * durationHour);
+}, function(start, end) {
+  return (end - start) / durationHour;
+}, function(date) {
+  return date.getHours();
+});
+var hours = hour.range;
+
+var day = newInterval(function(date) {
+  date.setHours(0, 0, 0, 0);
+}, function(date, step) {
+  date.setDate(date.getDate() + step);
+}, function(start, end) {
+  return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationDay;
+}, function(date) {
+  return date.getDate() - 1;
+});
+var days = day.range;
+
+function weekday(i) {
+  return newInterval(function(date) {
+    date.setDate(date.getDate() - (date.getDay() + 7 - i) % 7);
+    date.setHours(0, 0, 0, 0);
+  }, function(date, step) {
+    date.setDate(date.getDate() + step * 7);
+  }, function(start, end) {
+    return (end - start - (end.getTimezoneOffset() - start.getTimezoneOffset()) * durationMinute) / durationWeek;
+  });
+}
+
+var sunday = weekday(0);
+var monday = weekday(1);
+var tuesday = weekday(2);
+var wednesday = weekday(3);
+var thursday = weekday(4);
+var friday = weekday(5);
+var saturday = weekday(6);
+
+var sundays = sunday.range;
+var mondays = monday.range;
+var tuesdays = tuesday.range;
+var wednesdays = wednesday.range;
+var thursdays = thursday.range;
+var fridays = friday.range;
+var saturdays = saturday.range;
+
+var month = newInterval(function(date) {
+  date.setDate(1);
+  date.setHours(0, 0, 0, 0);
+}, function(date, step) {
+  date.setMonth(date.getMonth() + step);
+}, function(start, end) {
+  return end.getMonth() - start.getMonth() + (end.getFullYear() - start.getFullYear()) * 12;
+}, function(date) {
+  return date.getMonth();
+});
+var months = month.range;
+
+var year = newInterval(function(date) {
+  date.setMonth(0, 1);
+  date.setHours(0, 0, 0, 0);
+}, function(date, step) {
+  date.setFullYear(date.getFullYear() + step);
+}, function(start, end) {
+  return end.getFullYear() - start.getFullYear();
+}, function(date) {
+  return date.getFullYear();
+});
+
+// An optimized implementation for this simple case.
+year.every = function(k) {
+  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+    date.setFullYear(Math.floor(date.getFullYear() / k) * k);
+    date.setMonth(0, 1);
+    date.setHours(0, 0, 0, 0);
+  }, function(date, step) {
+    date.setFullYear(date.getFullYear() + step * k);
+  });
+};
+var years = year.range;
+
+var utcMinute = newInterval(function(date) {
+  date.setUTCSeconds(0, 0);
+}, function(date, step) {
+  date.setTime(+date + step * durationMinute);
+}, function(start, end) {
+  return (end - start) / durationMinute;
+}, function(date) {
+  return date.getUTCMinutes();
+});
+var utcMinutes = utcMinute.range;
+
+var utcHour = newInterval(function(date) {
+  date.setUTCMinutes(0, 0, 0);
+}, function(date, step) {
+  date.setTime(+date + step * durationHour);
+}, function(start, end) {
+  return (end - start) / durationHour;
+}, function(date) {
+  return date.getUTCHours();
+});
+var utcHours = utcHour.range;
+
+var utcDay = newInterval(function(date) {
+  date.setUTCHours(0, 0, 0, 0);
+}, function(date, step) {
+  date.setUTCDate(date.getUTCDate() + step);
+}, function(start, end) {
+  return (end - start) / durationDay;
+}, function(date) {
+  return date.getUTCDate() - 1;
+});
+var utcDays = utcDay.range;
+
+function utcWeekday(i) {
+  return newInterval(function(date) {
+    date.setUTCDate(date.getUTCDate() - (date.getUTCDay() + 7 - i) % 7);
+    date.setUTCHours(0, 0, 0, 0);
+  }, function(date, step) {
+    date.setUTCDate(date.getUTCDate() + step * 7);
+  }, function(start, end) {
+    return (end - start) / durationWeek;
+  });
+}
+
+var utcSunday = utcWeekday(0);
+var utcMonday = utcWeekday(1);
+var utcTuesday = utcWeekday(2);
+var utcWednesday = utcWeekday(3);
+var utcThursday = utcWeekday(4);
+var utcFriday = utcWeekday(5);
+var utcSaturday = utcWeekday(6);
+
+var utcSundays = utcSunday.range;
+var utcMondays = utcMonday.range;
+var utcTuesdays = utcTuesday.range;
+var utcWednesdays = utcWednesday.range;
+var utcThursdays = utcThursday.range;
+var utcFridays = utcFriday.range;
+var utcSaturdays = utcSaturday.range;
+
+var utcMonth = newInterval(function(date) {
+  date.setUTCDate(1);
+  date.setUTCHours(0, 0, 0, 0);
+}, function(date, step) {
+  date.setUTCMonth(date.getUTCMonth() + step);
+}, function(start, end) {
+  return end.getUTCMonth() - start.getUTCMonth() + (end.getUTCFullYear() - start.getUTCFullYear()) * 12;
+}, function(date) {
+  return date.getUTCMonth();
+});
+var utcMonths = utcMonth.range;
+
+var utcYear = newInterval(function(date) {
+  date.setUTCMonth(0, 1);
+  date.setUTCHours(0, 0, 0, 0);
+}, function(date, step) {
+  date.setUTCFullYear(date.getUTCFullYear() + step);
+}, function(start, end) {
+  return end.getUTCFullYear() - start.getUTCFullYear();
+}, function(date) {
+  return date.getUTCFullYear();
+});
+
+// An optimized implementation for this simple case.
+utcYear.every = function(k) {
+  return !isFinite(k = Math.floor(k)) || !(k > 0) ? null : newInterval(function(date) {
+    date.setUTCFullYear(Math.floor(date.getUTCFullYear() / k) * k);
+    date.setUTCMonth(0, 1);
+    date.setUTCHours(0, 0, 0, 0);
+  }, function(date, step) {
+    date.setUTCFullYear(date.getUTCFullYear() + step * k);
+  });
+};
+var utcYears = utcYear.range;
+
+exports.timeDay = day;
+exports.timeDays = days;
+exports.timeFriday = friday;
+exports.timeFridays = fridays;
+exports.timeHour = hour;
+exports.timeHours = hours;
+exports.timeInterval = newInterval;
+exports.timeMillisecond = millisecond;
+exports.timeMilliseconds = milliseconds;
+exports.timeMinute = minute;
+exports.timeMinutes = minutes;
+exports.timeMonday = monday;
+exports.timeMondays = mondays;
+exports.timeMonth = month;
+exports.timeMonths = months;
+exports.timeSaturday = saturday;
+exports.timeSaturdays = saturdays;
+exports.timeSecond = second;
+exports.timeSeconds = seconds;
+exports.timeSunday = sunday;
+exports.timeSundays = sundays;
+exports.timeThursday = thursday;
+exports.timeThursdays = thursdays;
+exports.timeTuesday = tuesday;
+exports.timeTuesdays = tuesdays;
+exports.timeWednesday = wednesday;
+exports.timeWednesdays = wednesdays;
+exports.timeWeek = sunday;
+exports.timeWeeks = sundays;
+exports.timeYear = year;
+exports.timeYears = years;
+exports.utcDay = utcDay;
+exports.utcDays = utcDays;
+exports.utcFriday = utcFriday;
+exports.utcFridays = utcFridays;
+exports.utcHour = utcHour;
+exports.utcHours = utcHours;
+exports.utcMillisecond = millisecond;
+exports.utcMilliseconds = milliseconds;
+exports.utcMinute = utcMinute;
+exports.utcMinutes = utcMinutes;
+exports.utcMonday = utcMonday;
+exports.utcMondays = utcMondays;
+exports.utcMonth = utcMonth;
+exports.utcMonths = utcMonths;
+exports.utcSaturday = utcSaturday;
+exports.utcSaturdays = utcSaturdays;
+exports.utcSecond = second;
+exports.utcSeconds = seconds;
+exports.utcSunday = utcSunday;
+exports.utcSundays = utcSundays;
+exports.utcThursday = utcThursday;
+exports.utcThursdays = utcThursdays;
+exports.utcTuesday = utcTuesday;
+exports.utcTuesdays = utcTuesdays;
+exports.utcWednesday = utcWednesday;
+exports.utcWednesdays = utcWednesdays;
+exports.utcWeek = utcSunday;
+exports.utcWeeks = utcSundays;
+exports.utcYear = utcYear;
+exports.utcYears = utcYears;
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
+}));
+
+},{}],28:[function(_dereq_,module,exports){
+arguments[4][27][0].apply(exports,arguments)
+},{"dup":27}],29:[function(_dereq_,module,exports){
+module.exports = function () {
+    for (var i = 0; i < arguments.length; i++) {
+        if (arguments[i] !== undefined) return arguments[i];
+    }
+};
 
 },{}],30:[function(_dereq_,module,exports){
+module.exports = function(dtype) {
+  switch (dtype) {
+    case 'int8':
+      return Int8Array
+    case 'int16':
+      return Int16Array
+    case 'int32':
+      return Int32Array
+    case 'uint8':
+      return Uint8Array
+    case 'uint16':
+      return Uint16Array
+    case 'uint32':
+      return Uint32Array
+    case 'float32':
+      return Float32Array
+    case 'float64':
+      return Float64Array
+    case 'array':
+      return Array
+    case 'uint8_clamped':
+      return Uint8ClampedArray
+  }
+}
+
+},{}],31:[function(_dereq_,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -9588,7 +9533,7 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{"is-string-blank":67}],31:[function(_dereq_,module,exports){
+},{"is-string-blank":68}],32:[function(_dereq_,module,exports){
 module.exports = getCanvasContext
 function getCanvasContext (type, opts) {
   if (typeof type !== 'string') {
@@ -9628,7 +9573,7 @@ function getCanvasContext (type, opts) {
   return (gl || null) // ensure null on fail
 }
 
-},{}],32:[function(_dereq_,module,exports){
+},{}],33:[function(_dereq_,module,exports){
 module.exports = adjoint;
 
 /**
@@ -9662,7 +9607,7 @@ function adjoint(out, a) {
     out[15] =  (a00 * (a11 * a22 - a12 * a21) - a10 * (a01 * a22 - a02 * a21) + a20 * (a01 * a12 - a02 * a11));
     return out;
 };
-},{}],33:[function(_dereq_,module,exports){
+},{}],34:[function(_dereq_,module,exports){
 module.exports = clone;
 
 /**
@@ -9691,7 +9636,7 @@ function clone(a) {
     out[15] = a[15];
     return out;
 };
-},{}],34:[function(_dereq_,module,exports){
+},{}],35:[function(_dereq_,module,exports){
 module.exports = copy;
 
 /**
@@ -9720,7 +9665,7 @@ function copy(out, a) {
     out[15] = a[15];
     return out;
 };
-},{}],35:[function(_dereq_,module,exports){
+},{}],36:[function(_dereq_,module,exports){
 module.exports = create;
 
 /**
@@ -9748,7 +9693,7 @@ function create() {
     out[15] = 1;
     return out;
 };
-},{}],36:[function(_dereq_,module,exports){
+},{}],37:[function(_dereq_,module,exports){
 module.exports = determinant;
 
 /**
@@ -9779,7 +9724,7 @@ function determinant(a) {
     // Calculate the determinant
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 };
-},{}],37:[function(_dereq_,module,exports){
+},{}],38:[function(_dereq_,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -9827,7 +9772,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],38:[function(_dereq_,module,exports){
+},{}],39:[function(_dereq_,module,exports){
 module.exports = fromRotation
 
 /**
@@ -9882,7 +9827,7 @@ function fromRotation(out, rad, axis) {
   return out
 }
 
-},{}],39:[function(_dereq_,module,exports){
+},{}],40:[function(_dereq_,module,exports){
 module.exports = fromRotationTranslation;
 
 /**
@@ -9936,7 +9881,7 @@ function fromRotationTranslation(out, q, v) {
     
     return out;
 };
-},{}],40:[function(_dereq_,module,exports){
+},{}],41:[function(_dereq_,module,exports){
 module.exports = fromScaling
 
 /**
@@ -9970,7 +9915,7 @@ function fromScaling(out, v) {
   return out
 }
 
-},{}],41:[function(_dereq_,module,exports){
+},{}],42:[function(_dereq_,module,exports){
 module.exports = fromTranslation
 
 /**
@@ -10004,7 +9949,7 @@ function fromTranslation(out, v) {
   return out
 }
 
-},{}],42:[function(_dereq_,module,exports){
+},{}],43:[function(_dereq_,module,exports){
 module.exports = fromXRotation
 
 /**
@@ -10041,7 +9986,7 @@ function fromXRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],43:[function(_dereq_,module,exports){
+},{}],44:[function(_dereq_,module,exports){
 module.exports = fromYRotation
 
 /**
@@ -10078,7 +10023,7 @@ function fromYRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],44:[function(_dereq_,module,exports){
+},{}],45:[function(_dereq_,module,exports){
 module.exports = fromZRotation
 
 /**
@@ -10115,7 +10060,7 @@ function fromZRotation(out, rad) {
     out[15] = 1
     return out
 }
-},{}],45:[function(_dereq_,module,exports){
+},{}],46:[function(_dereq_,module,exports){
 module.exports = frustum;
 
 /**
@@ -10152,7 +10097,7 @@ function frustum(out, left, right, bottom, top, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],46:[function(_dereq_,module,exports){
+},{}],47:[function(_dereq_,module,exports){
 module.exports = identity;
 
 /**
@@ -10180,7 +10125,7 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],47:[function(_dereq_,module,exports){
+},{}],48:[function(_dereq_,module,exports){
 module.exports = {
   create: _dereq_('./create')
   , clone: _dereq_('./clone')
@@ -10213,7 +10158,7 @@ module.exports = {
   , str: _dereq_('./str')
 }
 
-},{"./adjoint":32,"./clone":33,"./copy":34,"./create":35,"./determinant":36,"./fromQuat":37,"./fromRotation":38,"./fromRotationTranslation":39,"./fromScaling":40,"./fromTranslation":41,"./fromXRotation":42,"./fromYRotation":43,"./fromZRotation":44,"./frustum":45,"./identity":46,"./invert":48,"./lookAt":49,"./multiply":50,"./ortho":51,"./perspective":52,"./perspectiveFromFieldOfView":53,"./rotate":54,"./rotateX":55,"./rotateY":56,"./rotateZ":57,"./scale":58,"./str":59,"./translate":60,"./transpose":61}],48:[function(_dereq_,module,exports){
+},{"./adjoint":33,"./clone":34,"./copy":35,"./create":36,"./determinant":37,"./fromQuat":38,"./fromRotation":39,"./fromRotationTranslation":40,"./fromScaling":41,"./fromTranslation":42,"./fromXRotation":43,"./fromYRotation":44,"./fromZRotation":45,"./frustum":46,"./identity":47,"./invert":49,"./lookAt":50,"./multiply":51,"./ortho":52,"./perspective":53,"./perspectiveFromFieldOfView":54,"./rotate":55,"./rotateX":56,"./rotateY":57,"./rotateZ":58,"./scale":59,"./str":60,"./translate":61,"./transpose":62}],49:[function(_dereq_,module,exports){
 module.exports = invert;
 
 /**
@@ -10269,7 +10214,7 @@ function invert(out, a) {
 
     return out;
 };
-},{}],49:[function(_dereq_,module,exports){
+},{}],50:[function(_dereq_,module,exports){
 var identity = _dereq_('./identity');
 
 module.exports = lookAt;
@@ -10360,7 +10305,7 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":46}],50:[function(_dereq_,module,exports){
+},{"./identity":47}],51:[function(_dereq_,module,exports){
 module.exports = multiply;
 
 /**
@@ -10403,7 +10348,7 @@ function multiply(out, a, b) {
     out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
     return out;
 };
-},{}],51:[function(_dereq_,module,exports){
+},{}],52:[function(_dereq_,module,exports){
 module.exports = ortho;
 
 /**
@@ -10440,7 +10385,7 @@ function ortho(out, left, right, bottom, top, near, far) {
     out[15] = 1;
     return out;
 };
-},{}],52:[function(_dereq_,module,exports){
+},{}],53:[function(_dereq_,module,exports){
 module.exports = perspective;
 
 /**
@@ -10474,7 +10419,7 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],53:[function(_dereq_,module,exports){
+},{}],54:[function(_dereq_,module,exports){
 module.exports = perspectiveFromFieldOfView;
 
 /**
@@ -10516,7 +10461,7 @@ function perspectiveFromFieldOfView(out, fov, near, far) {
 }
 
 
-},{}],54:[function(_dereq_,module,exports){
+},{}],55:[function(_dereq_,module,exports){
 module.exports = rotate;
 
 /**
@@ -10581,7 +10526,7 @@ function rotate(out, a, rad, axis) {
     }
     return out;
 };
-},{}],55:[function(_dereq_,module,exports){
+},{}],56:[function(_dereq_,module,exports){
 module.exports = rotateX;
 
 /**
@@ -10626,7 +10571,7 @@ function rotateX(out, a, rad) {
     out[11] = a23 * c - a13 * s;
     return out;
 };
-},{}],56:[function(_dereq_,module,exports){
+},{}],57:[function(_dereq_,module,exports){
 module.exports = rotateY;
 
 /**
@@ -10671,7 +10616,7 @@ function rotateY(out, a, rad) {
     out[11] = a03 * s + a23 * c;
     return out;
 };
-},{}],57:[function(_dereq_,module,exports){
+},{}],58:[function(_dereq_,module,exports){
 module.exports = rotateZ;
 
 /**
@@ -10716,7 +10661,7 @@ function rotateZ(out, a, rad) {
     out[7] = a13 * c - a03 * s;
     return out;
 };
-},{}],58:[function(_dereq_,module,exports){
+},{}],59:[function(_dereq_,module,exports){
 module.exports = scale;
 
 /**
@@ -10748,7 +10693,7 @@ function scale(out, a, v) {
     out[15] = a[15];
     return out;
 };
-},{}],59:[function(_dereq_,module,exports){
+},{}],60:[function(_dereq_,module,exports){
 module.exports = str;
 
 /**
@@ -10763,7 +10708,7 @@ function str(a) {
                     a[8] + ', ' + a[9] + ', ' + a[10] + ', ' + a[11] + ', ' + 
                     a[12] + ', ' + a[13] + ', ' + a[14] + ', ' + a[15] + ')';
 };
-},{}],60:[function(_dereq_,module,exports){
+},{}],61:[function(_dereq_,module,exports){
 module.exports = translate;
 
 /**
@@ -10802,7 +10747,7 @@ function translate(out, a, v) {
 
     return out;
 };
-},{}],61:[function(_dereq_,module,exports){
+},{}],62:[function(_dereq_,module,exports){
 module.exports = transpose;
 
 /**
@@ -10852,7 +10797,7 @@ function transpose(out, a) {
     
     return out;
 };
-},{}],62:[function(_dereq_,module,exports){
+},{}],63:[function(_dereq_,module,exports){
 (function (global){(function (){
 'use strict'
 
@@ -10869,7 +10814,7 @@ else {
 module.exports = hasHover
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"is-browser":64}],63:[function(_dereq_,module,exports){
+},{"is-browser":65}],64:[function(_dereq_,module,exports){
 'use strict'
 
 var isBrowser = _dereq_('is-browser')
@@ -10895,9 +10840,9 @@ function detect() {
 
 module.exports = isBrowser && detect()
 
-},{"is-browser":64}],64:[function(_dereq_,module,exports){
+},{"is-browser":65}],65:[function(_dereq_,module,exports){
 module.exports = true;
-},{}],65:[function(_dereq_,module,exports){
+},{}],66:[function(_dereq_,module,exports){
 'use strict'
 
 module.exports = isMobile
@@ -10934,7 +10879,7 @@ function isMobile (opts) {
   return result
 }
 
-},{}],66:[function(_dereq_,module,exports){
+},{}],67:[function(_dereq_,module,exports){
 'use strict';
 var toString = Object.prototype.toString;
 
@@ -10943,7 +10888,7 @@ module.exports = function (x) {
 	return toString.call(x) === '[object Object]' && (prototype = Object.getPrototypeOf(x), prototype === null || prototype === Object.getPrototypeOf({}));
 };
 
-},{}],67:[function(_dereq_,module,exports){
+},{}],68:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -10980,7 +10925,7 @@ module.exports = function(str){
     return true;
 }
 
-},{}],68:[function(_dereq_,module,exports){
+},{}],69:[function(_dereq_,module,exports){
 var rootPosition = { left: 0, top: 0 }
 
 module.exports = mouseEventOffset
@@ -11007,7 +10952,7 @@ function getBoundingClientOffset (element) {
   }
 }
 
-},{}],69:[function(_dereq_,module,exports){
+},{}],70:[function(_dereq_,module,exports){
 (function (global,setImmediate){(function (){
 /*! Native Promise Only
     v0.8.1 (c) Kyle Simpson
@@ -11384,7 +11329,7 @@ function getBoundingClientOffset (element) {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("timers").setImmediate)
-},{"timers":81}],70:[function(_dereq_,module,exports){
+},{"timers":82}],71:[function(_dereq_,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -11476,7 +11421,7 @@ module.exports = shouldUseNative() ? Object.assign : function (target, source) {
 	return to;
 };
 
-},{}],71:[function(_dereq_,module,exports){
+},{}],72:[function(_dereq_,module,exports){
 
 module.exports = parse
 
@@ -11535,7 +11480,7 @@ function parseValues(args) {
 	return numbers ? numbers.map(Number) : []
 }
 
-},{}],72:[function(_dereq_,module,exports){
+},{}],73:[function(_dereq_,module,exports){
 /*
  * @copyright 2016 Sean Connelly (@voidqk), http://syntheti.cc
  * @license MIT
@@ -11663,7 +11608,7 @@ if (typeof window === 'object')
 
 module.exports = PolyBool;
 
-},{"./lib/build-log":73,"./lib/epsilon":74,"./lib/geojson":75,"./lib/intersecter":76,"./lib/segment-chainer":78,"./lib/segment-selector":79}],73:[function(_dereq_,module,exports){
+},{"./lib/build-log":74,"./lib/epsilon":75,"./lib/geojson":76,"./lib/intersecter":77,"./lib/segment-chainer":79,"./lib/segment-selector":80}],74:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -11778,7 +11723,7 @@ function BuildLog(){
 
 module.exports = BuildLog;
 
-},{}],74:[function(_dereq_,module,exports){
+},{}],75:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -11950,7 +11895,7 @@ function Epsilon(eps){
 
 module.exports = Epsilon;
 
-},{}],75:[function(_dereq_,module,exports){
+},{}],76:[function(_dereq_,module,exports){
 // (c) Copyright 2017, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12140,7 +12085,7 @@ var GeoJSON = {
 
 module.exports = GeoJSON;
 
-},{}],76:[function(_dereq_,module,exports){
+},{}],77:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12647,7 +12592,7 @@ function Intersecter(selfIntersection, eps, buildLog){
 
 module.exports = Intersecter;
 
-},{"./linked-list":77}],77:[function(_dereq_,module,exports){
+},{"./linked-list":78}],78:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12730,7 +12675,7 @@ var LinkedList = {
 
 module.exports = LinkedList;
 
-},{}],78:[function(_dereq_,module,exports){
+},{}],79:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12984,7 +12929,7 @@ function SegmentChainer(segments, eps, buildLog){
 
 module.exports = SegmentChainer;
 
-},{}],79:[function(_dereq_,module,exports){
+},{}],80:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -13152,7 +13097,7 @@ var SegmentSelector = {
 
 module.exports = SegmentSelector;
 
-},{}],80:[function(_dereq_,module,exports){
+},{}],81:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -13338,7 +13283,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],81:[function(_dereq_,module,exports){
+},{}],82:[function(_dereq_,module,exports){
 (function (setImmediate,clearImmediate){(function (){
 var nextTick = _dereq_('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -13417,7 +13362,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this)}).call(this,_dereq_("timers").setImmediate,_dereq_("timers").clearImmediate)
-},{"process/browser.js":80,"timers":81}],82:[function(_dereq_,module,exports){
+},{"process/browser.js":81,"timers":82}],83:[function(_dereq_,module,exports){
 // TinyColor v1.4.2
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -14614,14 +14559,14 @@ else {
 
 })(Math);
 
-},{}],83:[function(_dereq_,module,exports){
+},{}],84:[function(_dereq_,module,exports){
 var getContext = _dereq_('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":31}],84:[function(_dereq_,module,exports){
+},{"get-canvas-context":32}],85:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15354,7 +15299,7 @@ function toSolar(yearOrDate, monthOrResult, day, isIntercalaryOrResult, result) 
 }
 
 
-},{"../main":98,"object-assign":70}],85:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],86:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15538,7 +15483,7 @@ assign(CopticCalendar.prototype, {
 main.calendars.coptic = CopticCalendar;
 
 
-},{"../main":98,"object-assign":70}],86:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],87:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15766,7 +15711,7 @@ var centuries = {
 main.calendars.discworld = DiscworldCalendar;
 
 
-},{"../main":98,"object-assign":70}],87:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],88:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15950,7 +15895,7 @@ assign(EthiopianCalendar.prototype, {
 main.calendars.ethiopian = EthiopianCalendar;
 
 
-},{"../main":98,"object-assign":70}],88:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],89:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16224,7 +16169,7 @@ function mod(a, b) {
 main.calendars.hebrew = HebrewCalendar;
 
 
-},{"../main":98,"object-assign":70}],89:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],90:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16405,7 +16350,7 @@ assign(IslamicCalendar.prototype, {
 main.calendars.islamic = IslamicCalendar;
 
 
-},{"../main":98,"object-assign":70}],90:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],91:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16588,7 +16533,7 @@ assign(JulianCalendar.prototype, {
 main.calendars.julian = JulianCalendar;
 
 
-},{"../main":98,"object-assign":70}],91:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],92:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16883,7 +16828,7 @@ function amod(a, b) {
 main.calendars.mayan = MayanCalendar;
 
 
-},{"../main":98,"object-assign":70}],92:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],93:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17063,7 +17008,7 @@ assign(NanakshahiCalendar.prototype, {
 main.calendars.nanakshahi = NanakshahiCalendar;
 
 
-},{"../main":98,"object-assign":70}],93:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],94:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17486,7 +17431,7 @@ assign(NepaliCalendar.prototype, {
 main.calendars.nepali = NepaliCalendar;
 
 
-},{"../main":98,"object-assign":70}],94:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],95:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17676,7 +17621,7 @@ main.calendars.persian = PersianCalendar;
 main.calendars.jalali = PersianCalendar;
 
 
-},{"../main":98,"object-assign":70}],95:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],96:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17862,7 +17807,7 @@ assign(TaiwanCalendar.prototype, {
 main.calendars.taiwan = TaiwanCalendar;
 
 
-},{"../main":98,"object-assign":70}],96:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],97:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -18048,7 +17993,7 @@ assign(ThaiCalendar.prototype, {
 main.calendars.thai = ThaiCalendar;
 
 
-},{"../main":98,"object-assign":70}],97:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],98:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -18413,7 +18358,7 @@ var ummalqura_dat = [
     79990];
 
 
-},{"../main":98,"object-assign":70}],98:[function(_dereq_,module,exports){
+},{"../main":99,"object-assign":71}],99:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -19318,7 +19263,7 @@ _exports.baseCalendar = BaseCalendar;
 _exports.calendars.gregorian = GregorianCalendar;
 
 
-},{"object-assign":70}],99:[function(_dereq_,module,exports){
+},{"object-assign":71}],100:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -19820,7 +19765,7 @@ assign(main.baseCalendar.prototype, {
 });
 
 
-},{"./main":98,"object-assign":70}],100:[function(_dereq_,module,exports){
+},{"./main":99,"object-assign":71}],101:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -19883,7 +19828,7 @@ module.exports = [
     }
 ];
 
-},{}],101:[function(_dereq_,module,exports){
+},{}],102:[function(_dereq_,module,exports){
 'use strict';
 
 var ARROWPATHS = _dereq_('./arrow_paths');
@@ -20171,7 +20116,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../constants/axis_placeable_objects":224,"../../plot_api/plot_template":289,"../../plots/cartesian/constants":307,"../../plots/font_attributes":331,"./arrow_paths":100}],102:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":225,"../../plot_api/plot_template":290,"../../plots/cartesian/constants":308,"../../plots/font_attributes":332,"./arrow_paths":101}],103:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20253,7 +20198,7 @@ function calcAxisExpansion(ann, ax) {
     ann._extremes[axId] = extremes;
 }
 
-},{"../../lib":251,"../../plots/cartesian/axes":300,"./draw":107}],103:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/cartesian/axes":301,"./draw":108}],104:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20383,7 +20328,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"../../registry":351}],104:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"../../registry":352}],105:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20454,7 +20399,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":251,"../color":118}],105:[function(_dereq_,module,exports){
+},{"../../lib":252,"../color":119}],106:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -20508,7 +20453,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":278,"fast-isnumeric":30}],106:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":279,"fast-isnumeric":31}],107:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20607,7 +20552,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     }
 }
 
-},{"../../lib":251,"../../plots/array_container_defaults":295,"../../plots/cartesian/axes":300,"./attributes":101,"./common_defaults":104}],107:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"./attributes":102,"./common_defaults":105}],108:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -21360,7 +21305,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     } else annText.call(textLayout);
 }
 
-},{"../../lib":251,"../../lib/setcursor":271,"../../lib/svg_text_utils":276,"../../plot_api/plot_template":289,"../../plots/cartesian/axes":300,"../../plots/plots":348,"../../registry":351,"../color":118,"../dragelement":137,"../drawing":140,"../fx":158,"./draw_arrow_head":108,"@plotly/d3":16}],108:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../lib/setcursor":272,"../../lib/svg_text_utils":277,"../../plot_api/plot_template":290,"../../plots/cartesian/axes":301,"../../plots/plots":349,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"../fx":159,"./draw_arrow_head":109,"@plotly/d3":16}],109:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -21507,7 +21452,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../../lib":251,"../color":118,"./arrow_paths":100,"@plotly/d3":16}],109:[function(_dereq_,module,exports){
+},{"../../lib":252,"../color":119,"./arrow_paths":101,"@plotly/d3":16}],110:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -21532,7 +21477,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":313,"./attributes":101,"./calc_autorange":102,"./click":103,"./convert_coords":105,"./defaults":106,"./draw":107}],110:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":314,"./attributes":102,"./calc_autorange":103,"./click":104,"./convert_coords":106,"./defaults":107,"./draw":108}],111:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -21601,7 +21546,7 @@ module.exports = overrideAll(templatedArray('annotation', {
     // zref: 'z'
 }), 'calc', 'from-root');
 
-},{"../../plot_api/edit_types":282,"../../plot_api/plot_template":289,"../annotations/attributes":101}],111:[function(_dereq_,module,exports){
+},{"../../plot_api/edit_types":283,"../../plot_api/plot_template":290,"../annotations/attributes":102}],112:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -21658,7 +21603,7 @@ function mockAnnAxes(ann, scene) {
     };
 }
 
-},{"../../lib":251,"../../plots/cartesian/axes":300}],112:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/cartesian/axes":301}],113:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -21726,7 +21671,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
     }
 }
 
-},{"../../lib":251,"../../plots/array_container_defaults":295,"../../plots/cartesian/axes":300,"../annotations/common_defaults":104,"./attributes":110}],113:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"../annotations/common_defaults":105,"./attributes":111}],114:[function(_dereq_,module,exports){
 'use strict';
 
 var drawRaw = _dereq_('../annotations/draw').drawRaw;
@@ -21770,7 +21715,7 @@ module.exports = function draw(scene) {
     }
 };
 
-},{"../../plots/gl3d/project":343,"../annotations/draw":107}],114:[function(_dereq_,module,exports){
+},{"../../plots/gl3d/project":344,"../annotations/draw":108}],115:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -21810,7 +21755,7 @@ function includeGL3D(layoutIn, layoutOut) {
     }
 }
 
-},{"../../lib":251,"../../registry":351,"./attributes":110,"./convert":111,"./defaults":112,"./draw":113}],115:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352,"./attributes":111,"./convert":112,"./defaults":113,"./draw":114}],116:[function(_dereq_,module,exports){
 'use strict';
 
 // a trimmed down version of:
@@ -21835,7 +21780,7 @@ _dereq_('world-calendars/dist/calendars/taiwan');
 _dereq_('world-calendars/dist/calendars/thai');
 _dereq_('world-calendars/dist/calendars/ummalqura');
 
-},{"world-calendars/dist/calendars/chinese":84,"world-calendars/dist/calendars/coptic":85,"world-calendars/dist/calendars/discworld":86,"world-calendars/dist/calendars/ethiopian":87,"world-calendars/dist/calendars/hebrew":88,"world-calendars/dist/calendars/islamic":89,"world-calendars/dist/calendars/julian":90,"world-calendars/dist/calendars/mayan":91,"world-calendars/dist/calendars/nanakshahi":92,"world-calendars/dist/calendars/nepali":93,"world-calendars/dist/calendars/persian":94,"world-calendars/dist/calendars/taiwan":95,"world-calendars/dist/calendars/thai":96,"world-calendars/dist/calendars/ummalqura":97,"world-calendars/dist/main":98,"world-calendars/dist/plus":99}],116:[function(_dereq_,module,exports){
+},{"world-calendars/dist/calendars/chinese":85,"world-calendars/dist/calendars/coptic":86,"world-calendars/dist/calendars/discworld":87,"world-calendars/dist/calendars/ethiopian":88,"world-calendars/dist/calendars/hebrew":89,"world-calendars/dist/calendars/islamic":90,"world-calendars/dist/calendars/julian":91,"world-calendars/dist/calendars/mayan":92,"world-calendars/dist/calendars/nanakshahi":93,"world-calendars/dist/calendars/nepali":94,"world-calendars/dist/calendars/persian":95,"world-calendars/dist/calendars/taiwan":96,"world-calendars/dist/calendars/thai":97,"world-calendars/dist/calendars/ummalqura":98,"world-calendars/dist/main":99,"world-calendars/dist/plus":100}],117:[function(_dereq_,module,exports){
 'use strict';
 
 var calendars = _dereq_('./calendars');
@@ -22101,7 +22046,7 @@ module.exports = {
     worldCalFmt: worldCalFmt
 };
 
-},{"../../constants/numerical":230,"../../lib":251,"./calendars":115}],117:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252,"./calendars":116}],118:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -22133,7 +22078,7 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],118:[function(_dereq_,module,exports){
+},{}],119:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
@@ -22299,7 +22244,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"../../lib/array":236,"./attributes":117,"fast-isnumeric":30,"tinycolor2":82}],119:[function(_dereq_,module,exports){
+},{"../../lib/array":237,"./attributes":118,"fast-isnumeric":31,"tinycolor2":83}],120:[function(_dereq_,module,exports){
 'use strict';
 
 var axesAttrs = _dereq_('../../plots/cartesian/layout_attributes');
@@ -22445,7 +22390,7 @@ module.exports = overrideAll({
     }
 }, 'colorbars', 'from-root');
 
-},{"../../lib/extend":244,"../../plot_api/edit_types":282,"../../plots/cartesian/layout_attributes":315,"../../plots/font_attributes":331}],120:[function(_dereq_,module,exports){
+},{"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/cartesian/layout_attributes":316,"../../plots/font_attributes":332}],121:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -22465,7 +22410,7 @@ module.exports = {
     }
 };
 
-},{}],121:[function(_dereq_,module,exports){
+},{}],122:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -22559,7 +22504,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('title.side', isVertical ? 'top' : 'right');
 };
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"../../plots/cartesian/prefix_suffix_defaults":319,"../../plots/cartesian/tick_label_defaults":324,"../../plots/cartesian/tick_mark_defaults":325,"../../plots/cartesian/tick_value_defaults":326,"./attributes":119}],122:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/cartesian/prefix_suffix_defaults":320,"../../plots/cartesian/tick_label_defaults":325,"../../plots/cartesian/tick_mark_defaults":326,"../../plots/cartesian/tick_value_defaults":327,"./attributes":120}],123:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -23543,7 +23488,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":223,"../../lib":251,"../../lib/extend":244,"../../lib/setcursor":271,"../../lib/svg_text_utils":276,"../../plots/cartesian/axes":300,"../../plots/cartesian/axis_defaults":302,"../../plots/cartesian/layout_attributes":315,"../../plots/cartesian/position_defaults":318,"../../plots/plots":348,"../../registry":351,"../color":118,"../colorscale/helpers":129,"../dragelement":137,"../drawing":140,"../titles":216,"./constants":120,"@plotly/d3":16,"tinycolor2":82}],123:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../lib":252,"../../lib/extend":245,"../../lib/setcursor":272,"../../lib/svg_text_utils":277,"../../plots/cartesian/axes":301,"../../plots/cartesian/axis_defaults":303,"../../plots/cartesian/layout_attributes":316,"../../plots/cartesian/position_defaults":319,"../../plots/plots":349,"../../registry":352,"../color":119,"../colorscale/helpers":130,"../dragelement":138,"../drawing":141,"../titles":217,"./constants":121,"@plotly/d3":16,"tinycolor2":83}],124:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -23553,7 +23498,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":251}],124:[function(_dereq_,module,exports){
+},{"../../lib":252}],125:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -23567,7 +23512,7 @@ module.exports = {
     hasColorbar: _dereq_('./has_colorbar')
 };
 
-},{"./attributes":119,"./defaults":121,"./draw":122,"./has_colorbar":123}],125:[function(_dereq_,module,exports){
+},{"./attributes":120,"./defaults":122,"./draw":123,"./has_colorbar":124}],126:[function(_dereq_,module,exports){
 'use strict';
 
 var colorbarAttrs = _dereq_('../colorbar/attributes');
@@ -23748,7 +23693,7 @@ module.exports = function colorScaleAttrs(context, opts) {
     return attrs;
 };
 
-},{"../../lib/regex":267,"../../lib/sort_object_keys":273,"../colorbar/attributes":119,"./scales.js":133}],126:[function(_dereq_,module,exports){
+},{"../../lib/regex":268,"../../lib/sort_object_keys":274,"../colorbar/attributes":120,"./scales.js":134}],127:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -23819,7 +23764,7 @@ module.exports = function calc(gd, trace, opts) {
     }
 };
 
-},{"../../lib":251,"./helpers":129,"fast-isnumeric":30}],127:[function(_dereq_,module,exports){
+},{"../../lib":252,"./helpers":130,"fast-isnumeric":31}],128:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -23888,7 +23833,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
     }
 };
 
-},{"../../lib":251,"./helpers":129}],128:[function(_dereq_,module,exports){
+},{"../../lib":252,"./helpers":130}],129:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -24005,7 +23950,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
     }
 };
 
-},{"../../lib":251,"../../registry":351,"../colorbar/defaults":121,"../colorbar/has_colorbar":123,"./scales":133,"fast-isnumeric":30}],129:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352,"../colorbar/defaults":122,"../colorbar/has_colorbar":124,"./scales":134,"fast-isnumeric":31}],130:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -24237,7 +24182,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: makeColorScaleFuncFromTrace
 };
 
-},{"../../lib":251,"../color":118,"./scales":133,"@plotly/d3":16,"fast-isnumeric":30,"tinycolor2":82}],130:[function(_dereq_,module,exports){
+},{"../../lib":252,"../color":119,"./scales":134,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":83}],131:[function(_dereq_,module,exports){
 'use strict';
 
 var scales = _dereq_('./scales');
@@ -24271,7 +24216,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: helpers.makeColorScaleFuncFromTrace
 };
 
-},{"./attributes":125,"./calc":126,"./cross_trace_defaults":127,"./defaults":128,"./helpers":129,"./layout_attributes":131,"./layout_defaults":132,"./scales":133}],131:[function(_dereq_,module,exports){
+},{"./attributes":126,"./calc":127,"./cross_trace_defaults":128,"./defaults":129,"./helpers":130,"./layout_attributes":132,"./layout_defaults":133,"./scales":134}],132:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
@@ -24317,7 +24262,7 @@ module.exports = {
     }))
 };
 
-},{"../../lib/extend":244,"./attributes":125,"./scales":133}],132:[function(_dereq_,module,exports){
+},{"../../lib/extend":245,"./attributes":126,"./scales":134}],133:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -24360,7 +24305,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 };
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"./defaults":128,"./layout_attributes":131}],133:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"./defaults":129,"./layout_attributes":132}],134:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
@@ -24556,7 +24501,7 @@ module.exports = {
     isValid: isValidScale
 };
 
-},{"tinycolor2":82}],134:[function(_dereq_,module,exports){
+},{"tinycolor2":83}],135:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -24580,7 +24525,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],135:[function(_dereq_,module,exports){
+},{}],136:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -24609,7 +24554,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":251}],136:[function(_dereq_,module,exports){
+},{"../../lib":252}],137:[function(_dereq_,module,exports){
 'use strict';
 
 exports.selectMode = function(dragmode) {
@@ -24660,7 +24605,7 @@ exports.selectingOrDrawing = function(dragmode) {
     );
 };
 
-},{}],137:[function(_dereq_,module,exports){
+},{}],138:[function(_dereq_,module,exports){
 'use strict';
 
 var mouseOffset = _dereq_('mouse-event-offset');
@@ -24944,7 +24889,7 @@ function pointerOffset(e) {
     );
 }
 
-},{"../../lib":251,"../../plots/cartesian/constants":307,"./align":134,"./cursor":135,"./unhover":138,"has-hover":62,"has-passive-events":63,"mouse-event-offset":68}],138:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/cartesian/constants":308,"./align":135,"./cursor":136,"./unhover":139,"has-hover":63,"has-passive-events":64,"mouse-event-offset":69}],139:[function(_dereq_,module,exports){
 'use strict';
 
 var Events = _dereq_('../../lib/events');
@@ -24991,7 +24936,7 @@ unhover.raw = function raw(gd, evt) {
     }
 };
 
-},{"../../lib/dom":242,"../../lib/events":243,"../../lib/throttle":277,"../fx/constants":152}],139:[function(_dereq_,module,exports){
+},{"../../lib/dom":243,"../../lib/events":244,"../../lib/throttle":278,"../fx/constants":153}],140:[function(_dereq_,module,exports){
 'use strict';
 
 exports.dash = {
@@ -25053,7 +24998,7 @@ exports.pattern = {
     editType: 'style',
 };
 
-},{}],140:[function(_dereq_,module,exports){
+},{}],141:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -26500,7 +26445,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../components/fx/helpers":154,"../../constants/alignment":223,"../../constants/interactions":229,"../../constants/xmlns_namespaces":231,"../../lib":251,"../../lib/svg_text_utils":276,"../../registry":351,"../../traces/scatter/make_bubble_size_func":397,"../../traces/scatter/subtypes":405,"../color":118,"../colorscale":130,"./symbol_defs":141,"@plotly/d3":16,"fast-isnumeric":30,"tinycolor2":82}],141:[function(_dereq_,module,exports){
+},{"../../components/fx/helpers":155,"../../constants/alignment":224,"../../constants/interactions":230,"../../constants/xmlns_namespaces":232,"../../lib":252,"../../lib/svg_text_utils":277,"../../registry":352,"../../traces/scatter/make_bubble_size_func":398,"../../traces/scatter/subtypes":406,"../color":119,"../colorscale":131,"./symbol_defs":142,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":83}],142:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -27055,7 +27000,7 @@ module.exports = {
     }
 };
 
-},{"@plotly/d3":16}],142:[function(_dereq_,module,exports){
+},{"@plotly/d3":16}],143:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -27138,7 +27083,7 @@ module.exports = {
     }
 };
 
-},{}],143:[function(_dereq_,module,exports){
+},{}],144:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -27216,7 +27161,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }
 
-},{"../../lib":251,"../../plots/cartesian/axes":300,"../../registry":351,"./compute_error":144,"fast-isnumeric":30}],144:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/cartesian/axes":301,"../../registry":352,"./compute_error":145,"fast-isnumeric":31}],145:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -27308,7 +27253,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],145:[function(_dereq_,module,exports){
+},{}],146:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -27375,7 +27320,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"../../registry":351,"./attributes":142,"fast-isnumeric":30}],146:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"../../registry":352,"./attributes":143,"fast-isnumeric":31}],147:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -27436,7 +27381,7 @@ function hoverInfo(calcPoint, trace, hoverPoint) {
     }
 }
 
-},{"../../lib":251,"../../plot_api/edit_types":282,"./attributes":142,"./calc":143,"./compute_error":144,"./defaults":145,"./plot":147,"./style":148}],147:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/edit_types":283,"./attributes":143,"./calc":144,"./compute_error":145,"./defaults":146,"./plot":148,"./style":149}],148:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -27599,7 +27544,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":405,"../drawing":140,"@plotly/d3":16,"fast-isnumeric":30}],148:[function(_dereq_,module,exports){
+},{"../../traces/scatter/subtypes":406,"../drawing":141,"@plotly/d3":16,"fast-isnumeric":31}],149:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -27627,7 +27572,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":118,"@plotly/d3":16}],149:[function(_dereq_,module,exports){
+},{"../color":119,"@plotly/d3":16}],150:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -27652,7 +27597,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":244,"../../plots/font_attributes":331,"./layout_attributes":159}],150:[function(_dereq_,module,exports){
+},{"../../lib/extend":245,"../../plots/font_attributes":332,"./layout_attributes":160}],151:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -27703,7 +27648,7 @@ function paste(traceAttr, cd, cdAttr, fn) {
     }
 }
 
-},{"../../lib":251,"../../registry":351}],151:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352}],152:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -27732,7 +27677,7 @@ module.exports = function click(gd, evt, subplot) {
     }
 };
 
-},{"../../registry":351,"./hover":155}],152:[function(_dereq_,module,exports){
+},{"../../registry":352,"./hover":156}],153:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -27756,7 +27701,7 @@ module.exports = {
     HOVERID: '-hover'
 };
 
-},{}],153:[function(_dereq_,module,exports){
+},{}],154:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -27774,7 +27719,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(traceIn, traceOut, coerce, opts);
 };
 
-},{"../../lib":251,"./attributes":149,"./hoverlabel_defaults":156}],154:[function(_dereq_,module,exports){
+},{"../../lib":252,"./attributes":150,"./hoverlabel_defaults":157}],155:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -28028,7 +27973,7 @@ exports.isXYhover = function(hovermode) {
     return !!xyHoverMode[hovermode];
 };
 
-},{"../../lib":251}],155:[function(_dereq_,module,exports){
+},{"../../lib":252}],156:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -30170,7 +30115,7 @@ function getBoundingClientRect(gd, node) {
     };
 }
 
-},{"../../lib":251,"../../lib/events":243,"../../lib/override_cursor":262,"../../lib/svg_text_utils":276,"../../plots/cartesian/axes":300,"../../registry":351,"../color":118,"../dragelement":137,"../drawing":140,"../legend/defaults":170,"../legend/draw":171,"./constants":152,"./helpers":154,"@plotly/d3":16,"fast-isnumeric":30,"tinycolor2":82}],156:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../lib/events":244,"../../lib/override_cursor":263,"../../lib/svg_text_utils":277,"../../plots/cartesian/axes":301,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"../legend/defaults":171,"../legend/draw":172,"./constants":153,"./helpers":155,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":83}],157:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30210,7 +30155,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     coerce('hoverlabel.align', opts.align);
 };
 
-},{"../../lib":251,"../color":118,"./helpers":154}],157:[function(_dereq_,module,exports){
+},{"../../lib":252,"../color":119,"./helpers":155}],158:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30228,7 +30173,7 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
     return coerce('hovermode');
 };
 
-},{"../../lib":251,"./layout_attributes":159}],158:[function(_dereq_,module,exports){
+},{"../../lib":252,"./layout_attributes":160}],159:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -30299,7 +30244,7 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
     return Lib.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }
 
-},{"../../lib":251,"../dragelement":137,"./attributes":149,"./calc":150,"./click":151,"./constants":152,"./defaults":153,"./helpers":154,"./hover":155,"./layout_attributes":159,"./layout_defaults":160,"./layout_global_defaults":161,"@plotly/d3":16}],159:[function(_dereq_,module,exports){
+},{"../../lib":252,"../dragelement":138,"./attributes":150,"./calc":151,"./click":152,"./constants":153,"./defaults":154,"./helpers":155,"./hover":156,"./layout_attributes":160,"./layout_defaults":161,"./layout_global_defaults":162,"@plotly/d3":16}],160:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -30393,7 +30338,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":331,"./constants":152}],160:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":332,"./constants":153}],161:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30434,7 +30379,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     Lib.coerceFont(coerce, 'hoverlabel.grouptitlefont', layoutOut.hoverlabel.font);
 };
 
-},{"../../lib":251,"./hoverlabel_defaults":156,"./hovermode_defaults":157,"./layout_attributes":159}],161:[function(_dereq_,module,exports){
+},{"../../lib":252,"./hoverlabel_defaults":157,"./hovermode_defaults":158,"./layout_attributes":160}],162:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30449,7 +30394,7 @@ module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":251,"./hoverlabel_defaults":156,"./layout_attributes":159}],162:[function(_dereq_,module,exports){
+},{"../../lib":252,"./hoverlabel_defaults":157,"./layout_attributes":160}],163:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30792,7 +30737,7 @@ module.exports = {
     contentDefaults: contentDefaults
 };
 
-},{"../../lib":251,"../../lib/regex":267,"../../plot_api/plot_template":289,"../../plots/cartesian/constants":307,"../../plots/domain":330}],163:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../lib/regex":268,"../../plot_api/plot_template":290,"../../plots/cartesian/constants":308,"../../plots/domain":331}],164:[function(_dereq_,module,exports){
 'use strict';
 
 var cartesianConstants = _dereq_('../../plots/cartesian/constants');
@@ -30894,7 +30839,7 @@ module.exports = templatedArray('image', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":224,"../../plot_api/plot_template":289,"../../plots/cartesian/constants":307}],164:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":225,"../../plot_api/plot_template":290,"../../plots/cartesian/constants":308}],165:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -30966,7 +30911,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":278,"fast-isnumeric":30}],165:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":279,"fast-isnumeric":31}],166:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -31023,7 +30968,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":251,"../../plots/array_container_defaults":295,"../../plots/cartesian/axes":300,"./attributes":163}],166:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"./attributes":164}],167:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -31273,7 +31218,7 @@ module.exports = function draw(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":231,"../../plots/cartesian/axes":300,"../../plots/cartesian/axis_ids":304,"../drawing":140,"@plotly/d3":16}],167:[function(_dereq_,module,exports){
+},{"../../constants/xmlns_namespaces":232,"../../plots/cartesian/axes":301,"../../plots/cartesian/axis_ids":305,"../drawing":141,"@plotly/d3":16}],168:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -31289,7 +31234,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":313,"./attributes":163,"./convert_coords":164,"./defaults":165,"./draw":166}],168:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":314,"./attributes":164,"./convert_coords":165,"./defaults":166,"./draw":167}],169:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -31418,7 +31363,7 @@ module.exports = {
     editType: 'legend'
 };
 
-},{"../../plots/font_attributes":331,"../color/attributes":117}],169:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":332,"../color/attributes":118}],170:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -31434,7 +31379,7 @@ module.exports = {
     itemGap: 5
 };
 
-},{}],170:[function(_dereq_,module,exports){
+},{}],171:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -31584,7 +31529,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"../../plots/attributes":296,"../../plots/layout_attributes":346,"../../registry":351,"./attributes":168,"./helpers":174}],171:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/attributes":297,"../../plots/layout_attributes":347,"../../registry":352,"./attributes":169,"./helpers":175}],172:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -32422,7 +32367,7 @@ function getYanchor(legendObj) {
         'top';
 }
 
-},{"../../constants/alignment":223,"../../lib":251,"../../lib/events":243,"../../lib/svg_text_utils":276,"../../plots/plots":348,"../../registry":351,"../color":118,"../dragelement":137,"../drawing":140,"./constants":169,"./get_legend_data":172,"./handle_click":173,"./helpers":174,"./style":176,"@plotly/d3":16}],172:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../lib":252,"../../lib/events":244,"../../lib/svg_text_utils":277,"../../plots/plots":349,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"./constants":170,"./get_legend_data":173,"./handle_click":174,"./helpers":175,"./style":177,"@plotly/d3":16}],173:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -32598,7 +32543,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":351,"./helpers":174}],173:[function(_dereq_,module,exports){
+},{"../../registry":352,"./helpers":175}],174:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -32840,7 +32785,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 };
 
-},{"../../lib":251,"../../registry":351}],174:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352}],175:[function(_dereq_,module,exports){
 'use strict';
 
 exports.isGrouped = function isGrouped(legendLayout) {
@@ -32855,7 +32800,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{}],175:[function(_dereq_,module,exports){
+},{}],176:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -32870,7 +32815,7 @@ module.exports = {
     style: _dereq_('./style')
 };
 
-},{"./attributes":168,"./defaults":170,"./draw":171,"./style":176}],176:[function(_dereq_,module,exports){
+},{"./attributes":169,"./defaults":171,"./draw":172,"./style":177}],177:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -33557,7 +33502,7 @@ function dimAttr(v, dflt, max) {
     return v;
 }
 
-},{"../../lib":251,"../../registry":351,"../../traces/pie/helpers":377,"../../traces/pie/style_one":378,"../../traces/scatter/subtypes":405,"../color":118,"../colorscale/helpers":129,"../drawing":140,"./constants":169,"@plotly/d3":16}],177:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352,"../../traces/pie/helpers":378,"../../traces/pie/style_one":379,"../../traces/scatter/subtypes":406,"../color":119,"../colorscale/helpers":130,"../drawing":141,"./constants":170,"@plotly/d3":16}],178:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -33601,7 +33546,7 @@ module.exports = {
     }
 };
 
-},{"./constants":179}],178:[function(_dereq_,module,exports){
+},{"./constants":180}],179:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -34353,7 +34298,7 @@ function resetView(gd, subplotType) {
     Registry.call('_guiRelayout', gd, aObj);
 }
 
-},{"../../fonts/ploticon":233,"../../lib":251,"../../plots/cartesian/axis_ids":304,"../../plots/plots":348,"../../registry":351,"../shapes/draw":202}],179:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":234,"../../lib":252,"../../plots/cartesian/axis_ids":305,"../../plots/plots":349,"../../registry":352,"../shapes/draw":203}],180:[function(_dereq_,module,exports){
 'use strict';
 
 var modeBarButtons = _dereq_('./buttons');
@@ -34396,7 +34341,7 @@ module.exports = {
     foreButtons: foreButtons
 };
 
-},{"./buttons":178}],180:[function(_dereq_,module,exports){
+},{"./buttons":179}],181:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -34422,7 +34367,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('remove');
 };
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"../color":118,"./attributes":177}],181:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"../color":119,"./attributes":178}],182:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -34435,7 +34380,7 @@ module.exports = {
     manage: _dereq_('./manage')
 };
 
-},{"./attributes":177,"./defaults":180,"./manage":182}],182:[function(_dereq_,module,exports){
+},{"./attributes":178,"./defaults":181,"./manage":183}],183:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIds = _dereq_('../../plots/cartesian/axis_ids');
@@ -34791,7 +34736,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":304,"../../registry":351,"../../traces/scatter/subtypes":405,"../fx/helpers":154,"./buttons":178,"./constants":179,"./modebar":183}],183:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axis_ids":305,"../../registry":352,"../../traces/scatter/subtypes":406,"../fx/helpers":155,"./buttons":179,"./constants":180,"./modebar":184}],184:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -35128,7 +35073,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../fonts/ploticon":233,"../../lib":251,"@plotly/d3":16,"fast-isnumeric":30}],184:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":234,"../../lib":252,"@plotly/d3":16,"fast-isnumeric":31}],185:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -35226,7 +35171,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{"../../plot_api/plot_template":289,"../../plots/font_attributes":331,"../color/attributes":117}],185:[function(_dereq_,module,exports){
+},{"../../plot_api/plot_template":290,"../../plots/font_attributes":332,"../color/attributes":118}],186:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -35247,7 +35192,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],186:[function(_dereq_,module,exports){
+},{}],187:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -35331,7 +35276,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"../../plots/array_container_defaults":295,"../color":118,"./attributes":184,"./constants":185}],187:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/array_container_defaults":296,"../color":119,"./attributes":185,"./constants":186}],188:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -35578,7 +35523,7 @@ function reposition(gd, buttons, opts, axName, selector) {
     selector.attr('transform', strTranslate(lx, ly));
 }
 
-},{"../../constants/alignment":223,"../../lib":251,"../../lib/svg_text_utils":276,"../../plots/cartesian/axis_ids":304,"../../plots/plots":348,"../../registry":351,"../color":118,"../drawing":140,"./constants":185,"./get_update_object":188,"@plotly/d3":16}],188:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../lib":252,"../../lib/svg_text_utils":277,"../../plots/cartesian/axis_ids":305,"../../plots/plots":349,"../../registry":352,"../color":119,"../drawing":141,"./constants":186,"./get_update_object":189,"@plotly/d3":16}],189:[function(_dereq_,module,exports){
 'use strict';
 
 var d3Time = _dereq_('d3-time');
@@ -35627,7 +35572,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"../../lib":251,"d3-time":26}],189:[function(_dereq_,module,exports){
+},{"../../lib":252,"d3-time":28}],190:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -35646,7 +35591,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":184,"./defaults":186,"./draw":187}],190:[function(_dereq_,module,exports){
+},{"./attributes":185,"./defaults":187,"./draw":188}],191:[function(_dereq_,module,exports){
 'use strict';
 
 var colorAttributes = _dereq_('../color/attributes');
@@ -35698,7 +35643,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{"../color/attributes":117}],191:[function(_dereq_,module,exports){
+},{"../color/attributes":118}],192:[function(_dereq_,module,exports){
 'use strict';
 
 var listAxes = _dereq_('../../plots/cartesian/axis_ids').list;
@@ -35724,7 +35669,7 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
-},{"../../plots/cartesian/autorange":299,"../../plots/cartesian/axis_ids":304,"./constants":192}],192:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/autorange":300,"../../plots/cartesian/axis_ids":305,"./constants":193}],193:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -35772,7 +35717,7 @@ module.exports = {
     extraPad: 15
 };
 
-},{}],193:[function(_dereq_,module,exports){
+},{}],194:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -35850,7 +35795,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":251,"../../plot_api/plot_template":289,"../../plots/cartesian/axis_ids":304,"./attributes":190,"./oppaxis_attributes":197}],194:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/cartesian/axis_ids":305,"./attributes":191,"./oppaxis_attributes":198}],195:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -36486,7 +36431,7 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     grabAreaMax.attr('height', opts._height);
 }
 
-},{"../../lib":251,"../../lib/setcursor":271,"../../plots/cartesian":314,"../../plots/cartesian/axis_ids":304,"../../plots/plots":348,"../../registry":351,"../color":118,"../dragelement":137,"../drawing":140,"../titles":216,"./constants":192,"@plotly/d3":16}],195:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../lib/setcursor":272,"../../plots/cartesian":315,"../../plots/cartesian/axis_ids":305,"../../plots/plots":349,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"../titles":217,"./constants":193,"@plotly/d3":16}],196:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIDs = _dereq_('../../plots/cartesian/axis_ids');
@@ -36553,7 +36498,7 @@ exports.autoMarginOpts = function(gd, ax) {
     };
 };
 
-},{"../../constants/alignment":223,"../../lib/svg_text_utils":276,"../../plots/cartesian/axis_ids":304,"./constants":192}],196:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../lib/svg_text_utils":277,"../../plots/cartesian/axis_ids":305,"./constants":193}],197:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -36584,7 +36529,7 @@ module.exports = {
     autoMarginOpts: helpers.autoMarginOpts
 };
 
-},{"../../lib":251,"./attributes":190,"./calc_autorange":191,"./defaults":193,"./draw":194,"./helpers":195,"./oppaxis_attributes":197}],197:[function(_dereq_,module,exports){
+},{"../../lib":252,"./attributes":191,"./calc_autorange":192,"./defaults":194,"./draw":195,"./helpers":196,"./oppaxis_attributes":198}],198:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -36610,7 +36555,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{}],198:[function(_dereq_,module,exports){
+},{}],199:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -36720,7 +36665,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":224,"../../lib/extend":244,"../../plot_api/plot_template":289,"../../traces/scatter/attributes":380,"../annotations/attributes":101,"../drawing/attributes":139}],199:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":225,"../../lib/extend":245,"../../plot_api/plot_template":290,"../../traces/scatter/attributes":381,"../annotations/attributes":102,"../drawing/attributes":140}],200:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -36832,7 +36777,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":251,"../../plots/cartesian/axes":300,"./constants":200,"./helpers":209}],200:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/cartesian/axes":301,"./constants":201,"./helpers":210}],201:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -36887,7 +36832,7 @@ module.exports = {
     }
 };
 
-},{}],201:[function(_dereq_,module,exports){
+},{}],202:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -37009,7 +36954,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     }
 }
 
-},{"../../lib":251,"../../plots/array_container_defaults":295,"../../plots/cartesian/axes":300,"./attributes":198,"./helpers":209}],202:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"./attributes":199,"./helpers":210}],203:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -37774,7 +37719,7 @@ function eraseActiveShape(gd) {
     }
 }
 
-},{"../../lib":251,"../../lib/setcursor":271,"../../plot_api/plot_template":289,"../../plots/cartesian/axes":300,"../../plots/cartesian/handle_outline":311,"../../registry":351,"../color":118,"../dragelement":137,"../drawing":140,"./constants":200,"./draw_newshape/display_outlines":206,"./draw_newshape/helpers":207,"./helpers":209}],203:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../lib/setcursor":272,"../../plot_api/plot_template":290,"../../plots/cartesian/axes":301,"../../plots/cartesian/handle_outline":312,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"./constants":201,"./draw_newshape/display_outlines":207,"./draw_newshape/helpers":208,"./helpers":210}],204:[function(_dereq_,module,exports){
 'use strict';
 
 var dash = _dereq_('../../drawing/attributes').dash;
@@ -37850,7 +37795,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":244,"../../drawing/attributes":139}],204:[function(_dereq_,module,exports){
+},{"../../../lib/extend":245,"../../drawing/attributes":140}],205:[function(_dereq_,module,exports){
 'use strict';
 
 var CIRCLE_SIDES = 32;  // should be divisible by 4
@@ -37866,7 +37811,7 @@ module.exports = {
     SQRT2: Math.sqrt(2)
 };
 
-},{}],205:[function(_dereq_,module,exports){
+},{}],206:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../color');
@@ -37889,7 +37834,7 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
     coerce('activeshape.opacity');
 };
 
-},{"../../color":118}],206:[function(_dereq_,module,exports){
+},{"../../color":119}],207:[function(_dereq_,module,exports){
 'use strict';
 
 var dragElement = _dereq_('../../dragelement');
@@ -38175,7 +38120,7 @@ function recordPositions(polygonsOut, polygonsIn) {
     return polygonsOut;
 }
 
-},{"../../../plots/cartesian/handle_outline":311,"../../../registry":351,"../../dragelement":137,"../../dragelement/helpers":136,"./constants":204,"./helpers":207,"./newshapes":208}],207:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/handle_outline":312,"../../../registry":352,"../../dragelement":138,"../../dragelement/helpers":137,"./constants":205,"./helpers":208,"./newshapes":209}],208:[function(_dereq_,module,exports){
 'use strict';
 
 var parseSvgPath = _dereq_('parse-svg-path');
@@ -38504,7 +38449,7 @@ exports.ellipseOver = function(pos) {
     };
 };
 
-},{"../../../plots/cartesian/helpers":312,"./constants":204,"parse-svg-path":71}],208:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/helpers":313,"./constants":205,"parse-svg-path":72}],209:[function(_dereq_,module,exports){
 'use strict';
 
 var dragHelpers = _dereq_('../../dragelement/helpers');
@@ -38754,7 +38699,7 @@ function fixDatesForPaths(polygons, xaxis, yaxis) {
     return polygons;
 }
 
-},{"../../../plots/cartesian/handle_outline":311,"../../../plots/cartesian/helpers":312,"../../dragelement/helpers":136,"./constants":204,"./helpers":207}],209:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/handle_outline":312,"../../../plots/cartesian/helpers":313,"../../dragelement/helpers":137,"./constants":205,"./helpers":208}],210:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -38903,7 +38848,7 @@ exports.makeOptionsAndPlotinfo = function(gd, index) {
     };
 };
 
-},{"../../lib":251,"./constants":200}],210:[function(_dereq_,module,exports){
+},{"../../lib":252,"./constants":201}],211:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -38922,7 +38867,7 @@ module.exports = {
     drawOne: drawModule.drawOne
 };
 
-},{"../../plots/cartesian/include_components":313,"./attributes":198,"./calc_autorange":199,"./defaults":201,"./draw":202,"./draw_newshape/defaults":205}],211:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":314,"./attributes":199,"./calc_autorange":200,"./defaults":202,"./draw":203,"./draw_newshape/defaults":206}],212:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -39096,7 +39041,7 @@ module.exports = overrideAll(templatedArray('slider', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":244,"../../plot_api/edit_types":282,"../../plot_api/plot_template":289,"../../plots/animation_attributes":294,"../../plots/font_attributes":331,"../../plots/pad_attributes":347,"./constants":212}],212:[function(_dereq_,module,exports){
+},{"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plot_api/plot_template":290,"../../plots/animation_attributes":295,"../../plots/font_attributes":332,"../../plots/pad_attributes":348,"./constants":213}],213:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -39181,7 +39126,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],213:[function(_dereq_,module,exports){
+},{}],214:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -39288,7 +39233,7 @@ function stepDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../lib":251,"../../plots/array_container_defaults":295,"./attributes":211,"./constants":212}],214:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/array_container_defaults":296,"./attributes":212,"./constants":213}],215:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -39922,7 +39867,7 @@ function drawRail(sliderGroup, sliderOpts) {
     );
 }
 
-},{"../../constants/alignment":223,"../../lib":251,"../../lib/svg_text_utils":276,"../../plot_api/plot_template":289,"../../plots/plots":348,"../color":118,"../drawing":140,"./constants":212,"@plotly/d3":16}],215:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../lib":252,"../../lib/svg_text_utils":277,"../../plot_api/plot_template":290,"../../plots/plots":349,"../color":119,"../drawing":141,"./constants":213,"@plotly/d3":16}],216:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -39937,7 +39882,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":211,"./constants":212,"./defaults":213,"./draw":214}],216:[function(_dereq_,module,exports){
+},{"./attributes":212,"./constants":213,"./defaults":214,"./draw":215}],217:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -40202,7 +40147,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":223,"../../constants/interactions":229,"../../lib":251,"../../lib/svg_text_utils":276,"../../plots/plots":348,"../../registry":351,"../color":118,"../drawing":140,"@plotly/d3":16,"fast-isnumeric":30}],217:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../constants/interactions":230,"../../lib":252,"../../lib/svg_text_utils":277,"../../plots/plots":349,"../../registry":352,"../color":119,"../drawing":141,"@plotly/d3":16,"fast-isnumeric":31}],218:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -40325,7 +40270,7 @@ module.exports = overrideAll(templatedArray('updatemenu', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":244,"../../plot_api/edit_types":282,"../../plot_api/plot_template":289,"../../plots/font_attributes":331,"../../plots/pad_attributes":347,"../color/attributes":117}],218:[function(_dereq_,module,exports){
+},{"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plot_api/plot_template":290,"../../plots/font_attributes":332,"../../plots/pad_attributes":348,"../color/attributes":118}],219:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -40397,7 +40342,7 @@ module.exports = {
     }
 };
 
-},{}],219:[function(_dereq_,module,exports){
+},{}],220:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -40472,7 +40417,7 @@ function buttonDefaults(buttonIn, buttonOut) {
     }
 }
 
-},{"../../lib":251,"../../plots/array_container_defaults":295,"./attributes":217,"./constants":218}],220:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../plots/array_container_defaults":296,"./attributes":218,"./constants":219}],221:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -41114,9 +41059,9 @@ function removeAllButtons(gButton, newMenuIndexAttr) {
         .selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
 
-},{"../../constants/alignment":223,"../../lib":251,"../../lib/svg_text_utils":276,"../../plot_api/plot_template":289,"../../plots/plots":348,"../color":118,"../drawing":140,"./constants":218,"./scrollbox":222,"@plotly/d3":16}],221:[function(_dereq_,module,exports){
-arguments[4][215][0].apply(exports,arguments)
-},{"./attributes":217,"./constants":218,"./defaults":219,"./draw":220,"dup":215}],222:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../lib":252,"../../lib/svg_text_utils":277,"../../plot_api/plot_template":290,"../../plots/plots":349,"../color":119,"../drawing":141,"./constants":219,"./scrollbox":223,"@plotly/d3":16}],222:[function(_dereq_,module,exports){
+arguments[4][216][0].apply(exports,arguments)
+},{"./attributes":218,"./constants":219,"./defaults":220,"./draw":221,"dup":216}],223:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = ScrollBox;
@@ -41573,7 +41518,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     }
 };
 
-},{"../../lib":251,"../color":118,"../drawing":140,"@plotly/d3":16}],223:[function(_dereq_,module,exports){
+},{"../../lib":252,"../color":119,"../drawing":141,"@plotly/d3":16}],224:[function(_dereq_,module,exports){
 'use strict';
 
 // fraction of some size to get to a named position
@@ -41630,7 +41575,7 @@ module.exports = {
     }
 };
 
-},{}],224:[function(_dereq_,module,exports){
+},{}],225:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41653,7 +41598,7 @@ module.exports = {
     }
 };
 
-},{}],225:[function(_dereq_,module,exports){
+},{}],226:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41661,7 +41606,7 @@ module.exports = {
     DATE_FORMAT_LINK: 'https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format'
 };
 
-},{}],226:[function(_dereq_,module,exports){
+},{}],227:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41691,7 +41636,7 @@ module.exports = {
     }
 };
 
-},{}],227:[function(_dereq_,module,exports){
+},{}],228:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41703,7 +41648,7 @@ module.exports = {
     longdashdot: [[0.5, 0.7, 0.8, 1], 10]
 };
 
-},{}],228:[function(_dereq_,module,exports){
+},{}],229:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41717,7 +41662,7 @@ module.exports = {
     x: '❌'
 };
 
-},{}],229:[function(_dereq_,module,exports){
+},{}],230:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -41732,7 +41677,7 @@ module.exports = {
     DESELECTDIM: 0.2
 };
 
-},{}],230:[function(_dereq_,module,exports){
+},{}],231:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -41797,7 +41742,7 @@ module.exports = {
     MINUS_SIGN: '\u2212'
 };
 
-},{}],231:[function(_dereq_,module,exports){
+},{}],232:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -41812,7 +41757,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],232:[function(_dereq_,module,exports){
+},{}],233:[function(_dereq_,module,exports){
 'use strict';
 
 exports.version = _dereq_('./version').version;
@@ -41896,7 +41841,7 @@ exports.Fx = {
 exports.Snapshot = _dereq_('./snapshot');
 exports.PlotSchema = _dereq_('./plot_api/plot_schema');
 
-},{"../build/plotcss":1,"./components/annotations":109,"./components/annotations3d":114,"./components/colorbar":124,"./components/colorscale":130,"./components/errorbars":146,"./components/fx":158,"./components/grid":162,"./components/images":167,"./components/legend":175,"./components/modebar":181,"./components/rangeselector":189,"./components/rangeslider":196,"./components/shapes":210,"./components/sliders":215,"./components/updatemenus":221,"./fonts/ploticon":233,"./locale-en":280,"./locale-en-us":279,"./plot_api":284,"./plot_api/plot_schema":288,"./plots/plots":348,"./registry":351,"./snapshot":356,"./traces/scatter":392,"./version":433,"native-promise-only":69}],233:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"./components/annotations":110,"./components/annotations3d":115,"./components/colorbar":125,"./components/colorscale":131,"./components/errorbars":147,"./components/fx":159,"./components/grid":163,"./components/images":168,"./components/legend":176,"./components/modebar":182,"./components/rangeselector":190,"./components/rangeslider":197,"./components/shapes":211,"./components/sliders":216,"./components/updatemenus":222,"./fonts/ploticon":234,"./locale-en":281,"./locale-en-us":280,"./plot_api":285,"./plot_api/plot_schema":289,"./plots/plots":349,"./registry":352,"./snapshot":357,"./traces/scatter":393,"./version":434,"native-promise-only":70}],234:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -42068,7 +42013,7 @@ module.exports = {
     }
 };
 
-},{}],234:[function(_dereq_,module,exports){
+},{}],235:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -42123,7 +42068,7 @@ exports.isBottomAnchor = function isBottomAnchor(opts) {
     );
 };
 
-},{}],235:[function(_dereq_,module,exports){
+},{}],236:[function(_dereq_,module,exports){
 'use strict';
 
 var modModule = _dereq_('./mod');
@@ -42356,7 +42301,7 @@ module.exports = {
     pathAnnulus: pathAnnulus
 };
 
-},{"./mod":258}],236:[function(_dereq_,module,exports){
+},{"./mod":259}],237:[function(_dereq_,module,exports){
 'use strict';
 
 var isArray = Array.isArray;
@@ -42498,7 +42443,7 @@ function _rowLength(z, fn, len0) {
     return 0;
 }
 
-},{}],237:[function(_dereq_,module,exports){
+},{}],238:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -42522,7 +42467,7 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":230,"fast-isnumeric":30}],238:[function(_dereq_,module,exports){
+},{"../constants/numerical":231,"fast-isnumeric":31}],239:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -42542,7 +42487,7 @@ module.exports = function clearGlCanvases(gd) {
     }
 };
 
-},{}],239:[function(_dereq_,module,exports){
+},{}],240:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -42557,7 +42502,7 @@ module.exports = function clearResponsive(gd) {
     }
 };
 
-},{}],240:[function(_dereq_,module,exports){
+},{}],241:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -43002,7 +42947,7 @@ function validate(value, opts) {
 }
 exports.validate = validate;
 
-},{"../components/color":118,"../components/colorscale/scales":133,"../constants/interactions":229,"../plots/attributes":296,"./array":236,"./mod":258,"./nested_property":259,"./regex":267,"fast-isnumeric":30,"tinycolor2":82}],241:[function(_dereq_,module,exports){
+},{"../components/color":119,"../components/colorscale/scales":134,"../constants/interactions":230,"../plots/attributes":297,"./array":237,"./mod":259,"./nested_property":260,"./regex":268,"fast-isnumeric":31,"tinycolor2":83}],242:[function(_dereq_,module,exports){
 'use strict';
 
 var timeFormat = _dereq_('d3-time-format').timeFormat;
@@ -43606,7 +43551,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":230,"../registry":351,"./loggers":255,"./mod":258,"d3-time-format":25,"fast-isnumeric":30}],242:[function(_dereq_,module,exports){
+},{"../constants/numerical":231,"../registry":352,"./loggers":256,"./mod":259,"d3-time-format":26,"fast-isnumeric":31}],243:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -43776,7 +43721,7 @@ module.exports = {
     equalDomRects: equalDomRects
 };
 
-},{"./loggers":255,"./matrix":257,"@plotly/d3":16,"gl-mat4":47}],243:[function(_dereq_,module,exports){
+},{"./loggers":256,"./matrix":258,"@plotly/d3":16,"gl-mat4":48}],244:[function(_dereq_,module,exports){
 'use strict';
 
 /* global jQuery:false */
@@ -43940,7 +43885,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":29}],244:[function(_dereq_,module,exports){
+},{"events":17}],245:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('./is_plain_object.js');
@@ -44045,7 +43990,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":252}],245:[function(_dereq_,module,exports){
+},{"./is_plain_object.js":253}],246:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -44087,7 +44032,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],246:[function(_dereq_,module,exports){
+},{}],247:[function(_dereq_,module,exports){
 'use strict';
 
 /** Filter out object items with visible !== true
@@ -44127,7 +44072,7 @@ function isCalcData(cont) {
     );
 }
 
-},{}],247:[function(_dereq_,module,exports){
+},{}],248:[function(_dereq_,module,exports){
 'use strict';
 
 var mod = _dereq_('./mod').mod;
@@ -44363,7 +44308,7 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     return pt;
 };
 
-},{"./mod":258}],248:[function(_dereq_,module,exports){
+},{"./mod":259}],249:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -44456,7 +44401,7 @@ module.exports = {
     parseColorScale: parseColorScale
 };
 
-},{"../components/color/attributes":117,"../components/colorscale":130,"./array":236,"color-normalize":19,"fast-isnumeric":30,"tinycolor2":82}],249:[function(_dereq_,module,exports){
+},{"../components/color/attributes":118,"../components/colorscale":131,"./array":237,"color-normalize":20,"fast-isnumeric":31,"tinycolor2":83}],250:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -44464,7 +44409,7 @@ module.exports = {
 
 module.exports = function identity(d) { return d; };
 
-},{}],250:[function(_dereq_,module,exports){
+},{}],251:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function incrementNumeric(x, delta) {
@@ -44497,7 +44442,7 @@ module.exports = function incrementNumeric(x, delta) {
     return newX;
 };
 
-},{}],251:[function(_dereq_,module,exports){
+},{}],252:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -45885,7 +45830,7 @@ lib.getPositionFromD3Event = function() {
     }
 };
 
-},{"../constants/numerical":230,"./anchor_utils":234,"./angles":235,"./array":236,"./clean_number":237,"./clear_responsive":239,"./coerce":240,"./dates":241,"./dom":242,"./extend":244,"./filter_unique":245,"./filter_visible":246,"./geometry2d":247,"./identity":249,"./increment":250,"./is_plain_object":252,"./keyed_container":253,"./localize":254,"./loggers":255,"./make_trace_groups":256,"./matrix":257,"./mod":258,"./nested_property":259,"./noop":260,"./notifier":261,"./preserve_drawing_buffer":264,"./push_unique":265,"./regex":267,"./relative_attr":268,"./relink_private":269,"./search":270,"./sort_object_keys":273,"./stats":274,"./throttle":277,"./to_log_range":278,"@plotly/d3":16,"d3-format":24,"d3-time-format":25,"fast-isnumeric":30}],252:[function(_dereq_,module,exports){
+},{"../constants/numerical":231,"./anchor_utils":235,"./angles":236,"./array":237,"./clean_number":238,"./clear_responsive":240,"./coerce":241,"./dates":242,"./dom":243,"./extend":245,"./filter_unique":246,"./filter_visible":247,"./geometry2d":248,"./identity":250,"./increment":251,"./is_plain_object":253,"./keyed_container":254,"./localize":255,"./loggers":256,"./make_trace_groups":257,"./matrix":258,"./mod":259,"./nested_property":260,"./noop":261,"./notifier":262,"./preserve_drawing_buffer":265,"./push_unique":266,"./regex":268,"./relative_attr":269,"./relink_private":270,"./search":271,"./sort_object_keys":274,"./stats":275,"./throttle":278,"./to_log_range":279,"@plotly/d3":16,"d3-format":25,"d3-time-format":26,"fast-isnumeric":31}],253:[function(_dereq_,module,exports){
 'use strict';
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
@@ -45904,7 +45849,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],253:[function(_dereq_,module,exports){
+},{}],254:[function(_dereq_,module,exports){
 'use strict';
 
 var nestedProperty = _dereq_('./nested_property');
@@ -46089,7 +46034,7 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     return obj;
 };
 
-},{"./nested_property":259}],254:[function(_dereq_,module,exports){
+},{"./nested_property":260}],255:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -46136,7 +46081,7 @@ module.exports = function localize(gd, s) {
     return s;
 };
 
-},{"../registry":351}],255:[function(_dereq_,module,exports){
+},{"../registry":352}],256:[function(_dereq_,module,exports){
 'use strict';
 
 /* eslint-disable no-console */
@@ -46213,7 +46158,7 @@ loggers.error = function() {
     }
 };
 
-},{"../plot_api/plot_config":287,"./notifier":261}],256:[function(_dereq_,module,exports){
+},{"../plot_api/plot_config":288,"./notifier":262}],257:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -46248,7 +46193,7 @@ module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
     return traces;
 };
 
-},{"@plotly/d3":16}],257:[function(_dereq_,module,exports){
+},{"@plotly/d3":16}],258:[function(_dereq_,module,exports){
 'use strict';
 
 var mat4X4 = _dereq_('gl-mat4');
@@ -46391,7 +46336,7 @@ exports.inverseTransformMatrix = function(m) {
     ];
 };
 
-},{"gl-mat4":47}],258:[function(_dereq_,module,exports){
+},{"gl-mat4":48}],259:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -46418,7 +46363,7 @@ module.exports = {
     modHalf: modHalf
 };
 
-},{}],259:[function(_dereq_,module,exports){
+},{}],260:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -46655,7 +46600,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./array":236,"fast-isnumeric":30}],260:[function(_dereq_,module,exports){
+},{"./array":237,"fast-isnumeric":31}],261:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -46663,7 +46608,7 @@ function badContainer(container, propStr, propParts) {
 
 module.exports = function noop() {};
 
-},{}],261:[function(_dereq_,module,exports){
+},{}],262:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -46742,7 +46687,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"@plotly/d3":16,"fast-isnumeric":30}],262:[function(_dereq_,module,exports){
+},{"@plotly/d3":16,"fast-isnumeric":31}],263:[function(_dereq_,module,exports){
 'use strict';
 
 var setCursor = _dereq_('./setcursor');
@@ -46781,7 +46726,7 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":271}],263:[function(_dereq_,module,exports){
+},{"./setcursor":272}],264:[function(_dereq_,module,exports){
 'use strict';
 
 var dot = _dereq_('./matrix').dot;
@@ -47024,7 +46969,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"../constants/numerical":230,"./matrix":257}],264:[function(_dereq_,module,exports){
+},{"../constants/numerical":231,"./matrix":258}],265:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -47086,7 +47031,7 @@ function getUserAgent() {
     return ua;
 }
 
-},{"fast-isnumeric":30,"is-mobile":65}],265:[function(_dereq_,module,exports){
+},{"fast-isnumeric":31,"is-mobile":66}],266:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -47116,7 +47061,7 @@ module.exports = function pushUnique(array, item) {
     return array;
 };
 
-},{}],266:[function(_dereq_,module,exports){
+},{}],267:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -47308,7 +47253,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":251,"../plot_api/plot_config":287}],267:[function(_dereq_,module,exports){
+},{"../lib":252,"../plot_api/plot_config":288}],268:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -47330,7 +47275,7 @@ exports.counter = function(head, tail, openEnded, matchBeginning) {
     return new RegExp(startWithPrefix + head + '([2-9]|[1-9][0-9]+)?' + fullTail);
 };
 
-},{}],268:[function(_dereq_,module,exports){
+},{}],269:[function(_dereq_,module,exports){
 'use strict';
 
 // ASCEND: chop off the last nesting level - either [<n>] or .<key> - to ascend
@@ -47374,7 +47319,7 @@ module.exports = function(baseAttr, relativeAttr) {
     return baseAttr + relativeAttr;
 };
 
-},{}],269:[function(_dereq_,module,exports){
+},{}],270:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('./array').isArrayOrTypedArray;
@@ -47422,7 +47367,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     }
 };
 
-},{"./array":236,"./is_plain_object":252}],270:[function(_dereq_,module,exports){
+},{"./array":237,"./is_plain_object":253}],271:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -47614,7 +47559,7 @@ exports.findIndexOfMin = function(arr, fn) {
     return ind;
 };
 
-},{"../constants/numerical":230,"./identity":249,"./loggers":255,"fast-isnumeric":30}],271:[function(_dereq_,module,exports){
+},{"../constants/numerical":231,"./identity":250,"./loggers":256,"fast-isnumeric":31}],272:[function(_dereq_,module,exports){
 'use strict';
 
 // works with our CSS cursor classes (see css/_cursor.scss)
@@ -47628,7 +47573,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],272:[function(_dereq_,module,exports){
+},{}],273:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../components/color');
@@ -47683,14 +47628,14 @@ module.exports = function showNoWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":118}],273:[function(_dereq_,module,exports){
+},{"../components/color":119}],274:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function sortObjectKeys(obj) {
     return Object.keys(obj).sort();
 };
 
-},{}],274:[function(_dereq_,module,exports){
+},{}],275:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -47791,7 +47736,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"./array":236,"fast-isnumeric":30}],275:[function(_dereq_,module,exports){
+},{"./array":237,"fast-isnumeric":31}],276:[function(_dereq_,module,exports){
 'use strict';
 
 var rgba = _dereq_('color-normalize');
@@ -47803,7 +47748,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"color-normalize":19}],276:[function(_dereq_,module,exports){
+},{"color-normalize":20}],277:[function(_dereq_,module,exports){
 'use strict';
 
 /* global MathJax:false */
@@ -48734,7 +48679,7 @@ exports.makeEditable = function(context, options) {
     return d3.rebind(context, dispatch, 'on');
 };
 
-},{"../constants/alignment":223,"../constants/xmlns_namespaces":231,"../lib":251,"@plotly/d3":16}],277:[function(_dereq_,module,exports){
+},{"../constants/alignment":224,"../constants/xmlns_namespaces":232,"../lib":252,"@plotly/d3":16}],278:[function(_dereq_,module,exports){
 'use strict';
 
 var timerCache = {};
@@ -48829,7 +48774,7 @@ function _clearTimeout(cache) {
     }
 }
 
-},{}],278:[function(_dereq_,module,exports){
+},{}],279:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -48849,7 +48794,7 @@ module.exports = function toLogRange(val, range) {
     return newVal;
 };
 
-},{"fast-isnumeric":30}],279:[function(_dereq_,module,exports){
+},{"fast-isnumeric":31}],280:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -48863,7 +48808,7 @@ module.exports = {
     }
 };
 
-},{}],280:[function(_dereq_,module,exports){
+},{}],281:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -48898,7 +48843,7 @@ module.exports = {
     }
 };
 
-},{}],281:[function(_dereq_,module,exports){
+},{}],282:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -48947,7 +48892,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":351}],282:[function(_dereq_,module,exports){
+},{"../registry":352}],283:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -49062,7 +49007,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     }
 }
 
-},{"../lib":251}],283:[function(_dereq_,module,exports){
+},{"../lib":252}],284:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -49756,7 +49701,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     }
 };
 
-},{"../components/color":118,"../lib":251,"../plots/cartesian/axis_ids":304,"../plots/plots":348,"../registry":351,"fast-isnumeric":30,"gl-mat4/fromQuat":37}],284:[function(_dereq_,module,exports){
+},{"../components/color":119,"../lib":252,"../plots/cartesian/axis_ids":305,"../plots/plots":349,"../registry":352,"fast-isnumeric":31,"gl-mat4/fromQuat":38}],285:[function(_dereq_,module,exports){
 'use strict';
 
 var main = _dereq_('./plot_api');
@@ -49791,7 +49736,7 @@ var templateApi = _dereq_('./template_api');
 exports.makeTemplate = templateApi.makeTemplate;
 exports.validateTemplate = templateApi.validateTemplate;
 
-},{"../snapshot/download":353,"./plot_api":286,"./template_api":291,"./to_image":292,"./validate":293}],285:[function(_dereq_,module,exports){
+},{"../snapshot/download":354,"./plot_api":287,"./template_api":292,"./to_image":293,"./validate":294}],286:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('../lib/is_plain_object');
@@ -49995,7 +49940,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":252,"../lib/loggers":255,"../lib/noop":260,"../lib/search":270,"../registry":351,"./container_array_match":281}],286:[function(_dereq_,module,exports){
+},{"../lib/is_plain_object":253,"../lib/loggers":256,"../lib/noop":261,"../lib/search":271,"../registry":352,"./container_array_match":282}],287:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -53841,7 +53786,7 @@ exports._guiUpdate = guiEdit(update);
 
 exports._storeDirectGUIEdit = _storeDirectGUIEdit;
 
-},{"../components/color":118,"../components/drawing":140,"../constants/xmlns_namespaces":231,"../lib":251,"../lib/events":243,"../lib/queue":266,"../plots/cartesian/axes":300,"../plots/cartesian/constants":307,"../plots/cartesian/graph_interact":310,"../plots/cartesian/select":321,"../plots/plots":348,"../registry":351,"./edit_types":282,"./helpers":283,"./manage_arrays":285,"./plot_config":287,"./plot_schema":288,"./subroutines":290,"@plotly/d3":16,"fast-isnumeric":30,"has-hover":62}],287:[function(_dereq_,module,exports){
+},{"../components/color":119,"../components/drawing":141,"../constants/xmlns_namespaces":232,"../lib":252,"../lib/events":244,"../lib/queue":267,"../plots/cartesian/axes":301,"../plots/cartesian/constants":308,"../plots/cartesian/graph_interact":311,"../plots/cartesian/select":322,"../plots/plots":349,"../registry":352,"./edit_types":283,"./helpers":284,"./manage_arrays":286,"./plot_config":288,"./plot_schema":289,"./subroutines":291,"@plotly/d3":16,"fast-isnumeric":31,"has-hover":63}],288:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -54102,7 +54047,7 @@ module.exports = {
     dfltConfig: dfltConfig
 };
 
-},{}],288:[function(_dereq_,module,exports){
+},{}],289:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -54767,7 +54712,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":251,"../plots/animation_attributes":294,"../plots/attributes":296,"../plots/frame_attributes":332,"../plots/layout_attributes":346,"../registry":351,"./edit_types":282,"./plot_config":287}],289:[function(_dereq_,module,exports){
+},{"../lib":252,"../plots/animation_attributes":295,"../plots/attributes":297,"../plots/frame_attributes":333,"../plots/layout_attributes":347,"../registry":352,"./edit_types":283,"./plot_config":288}],290:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -55066,7 +55011,7 @@ exports.arrayEditor = function(parentIn, containerStr, itemOut) {
     };
 };
 
-},{"../lib":251,"../plots/attributes":296}],290:[function(_dereq_,module,exports){
+},{"../lib":252,"../plots/attributes":297}],291:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -55782,7 +55727,7 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('colorbar', 'draw')(gd);
 };
 
-},{"../components/color":118,"../components/drawing":140,"../components/modebar":181,"../components/titles":216,"../constants/alignment":223,"../lib":251,"../lib/clear_gl_canvases":238,"../plots/cartesian/autorange":299,"../plots/cartesian/axes":300,"../plots/cartesian/constraints":308,"../plots/plots":348,"../registry":351,"@plotly/d3":16}],291:[function(_dereq_,module,exports){
+},{"../components/color":119,"../components/drawing":141,"../components/modebar":182,"../components/titles":217,"../constants/alignment":224,"../lib":252,"../lib/clear_gl_canvases":239,"../plots/cartesian/autorange":300,"../plots/cartesian/axes":301,"../plots/cartesian/constraints":309,"../plots/plots":349,"../registry":352,"@plotly/d3":16}],292:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -56235,7 +56180,7 @@ function format(opts) {
     return opts;
 }
 
-},{"../lib":251,"../plots/attributes":296,"../plots/plots":348,"./plot_config":287,"./plot_schema":288,"./plot_template":289}],292:[function(_dereq_,module,exports){
+},{"../lib":252,"../plots/attributes":297,"../plots/plots":349,"./plot_config":288,"./plot_schema":289,"./plot_template":290}],293:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -56442,7 +56387,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":251,"../plots/plots":348,"../snapshot/helpers":355,"../snapshot/svgtoimg":357,"../snapshot/tosvg":359,"../version":433,"./plot_api":286,"fast-isnumeric":30}],293:[function(_dereq_,module,exports){
+},{"../lib":252,"../plots/plots":349,"../snapshot/helpers":356,"../snapshot/svgtoimg":358,"../snapshot/tosvg":360,"../version":434,"./plot_api":287,"fast-isnumeric":31}],294:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -56865,7 +56810,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":251,"../plots/plots":348,"./plot_config":287,"./plot_schema":288}],294:[function(_dereq_,module,exports){
+},{"../lib":252,"../plots/plots":349,"./plot_config":288,"./plot_schema":289}],295:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -56953,7 +56898,7 @@ module.exports = {
     }
 };
 
-},{}],295:[function(_dereq_,module,exports){
+},{}],296:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -57040,7 +56985,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     return contOut;
 };
 
-},{"../lib":251,"../plot_api/plot_template":289}],296:[function(_dereq_,module,exports){
+},{"../lib":252,"../plot_api/plot_template":290}],297:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
@@ -57162,7 +57107,7 @@ module.exports = {
     }
 };
 
-},{"../components/fx/attributes":149,"./font_attributes":331}],297:[function(_dereq_,module,exports){
+},{"../components/fx/attributes":150,"./font_attributes":332}],298:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -57257,7 +57202,7 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     };
 };
 
-},{"../../constants/numerical":230,"../../lib":251,"fast-isnumeric":30}],298:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252,"fast-isnumeric":31}],299:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -57274,7 +57219,7 @@ module.exports = {
     }
 };
 
-},{}],299:[function(_dereq_,module,exports){
+},{}],300:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -57901,7 +57846,7 @@ function goodNumber(v) {
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
-},{"../../components/drawing":140,"../../constants/numerical":230,"../../lib":251,"../../registry":351,"./axis_ids":304,"@plotly/d3":16,"fast-isnumeric":30}],300:[function(_dereq_,module,exports){
+},{"../../components/drawing":141,"../../constants/numerical":231,"../../lib":252,"../../registry":352,"./axis_ids":305,"@plotly/d3":16,"fast-isnumeric":31}],301:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -61743,7 +61688,7 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
     }
 }
 
-},{"../../components/color":118,"../../components/drawing":140,"../../components/titles":216,"../../constants/alignment":223,"../../constants/numerical":230,"../../lib":251,"../../lib/svg_text_utils":276,"../../plots/plots":348,"../../registry":351,"./autorange":299,"./axis_autotype":301,"./axis_ids":304,"./clean_ticks":306,"./layout_attributes":315,"./set_convert":322,"@plotly/d3":16,"fast-isnumeric":30}],301:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../components/drawing":141,"../../components/titles":217,"../../constants/alignment":224,"../../constants/numerical":231,"../../lib":252,"../../lib/svg_text_utils":277,"../../plots/plots":349,"../../registry":352,"./autorange":300,"./axis_autotype":302,"./axis_ids":305,"./clean_ticks":307,"./layout_attributes":316,"./set_convert":323,"@plotly/d3":16,"fast-isnumeric":31}],302:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -61865,7 +61810,7 @@ function multiCategory(a) {
     return isArrayOrTypedArray(a[0]) && isArrayOrTypedArray(a[1]);
 }
 
-},{"../../constants/numerical":230,"../../lib":251,"fast-isnumeric":30}],302:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252,"fast-isnumeric":31}],303:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -62178,7 +62123,7 @@ function indexOfDay(v) {
     ];
 }
 
-},{"../../lib":251,"../../registry":351,"../array_container_defaults":295,"./category_order_defaults":305,"./constants":307,"./layout_attributes":315,"./line_grid_defaults":317,"./prefix_suffix_defaults":319,"./set_convert":322,"./tick_label_defaults":324,"./tick_mark_defaults":325,"./tick_value_defaults":326,"fast-isnumeric":30}],303:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352,"../array_container_defaults":296,"./category_order_defaults":306,"./constants":308,"./layout_attributes":316,"./line_grid_defaults":318,"./prefix_suffix_defaults":320,"./set_convert":323,"./tick_label_defaults":325,"./tick_mark_defaults":326,"./tick_value_defaults":327,"fast-isnumeric":31}],304:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../../constants/docs');
@@ -62227,7 +62172,7 @@ module.exports = {
     descriptionWithDates: descriptionWithDates
 };
 
-},{"../../constants/docs":225}],304:[function(_dereq_,module,exports){
+},{"../../constants/docs":226}],305:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -62375,7 +62320,7 @@ exports.isLinked = function(fullLayout, axId) {
     );
 };
 
-},{"../../registry":351,"./constants":307}],305:[function(_dereq_,module,exports){
+},{"../../registry":352,"./constants":308}],306:[function(_dereq_,module,exports){
 'use strict';
 
 function findCategories(ax, opts) {
@@ -62461,7 +62406,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],306:[function(_dereq_,module,exports){
+},{}],307:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -62545,7 +62490,7 @@ exports.tick0 = function(tick0, axType, calendar, dtick) {
     return isNumeric(tick0) ? Number(tick0) : 0;
 };
 
-},{"../../constants/numerical":230,"../../lib":251,"fast-isnumeric":30}],307:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252,"fast-isnumeric":31}],308:[function(_dereq_,module,exports){
 'use strict';
 
 var counterRegex = _dereq_('../../lib/regex').counter;
@@ -62629,7 +62574,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/regex":267}],308:[function(_dereq_,module,exports){
+},{"../../lib/regex":268}],309:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -63272,7 +63217,7 @@ function updateDomain(ax, factor) {
     ax.setScale();
 }
 
-},{"../../constants/alignment":223,"../../constants/numerical":230,"../../lib":251,"./autorange":299,"./axis_ids":304,"./layout_attributes":315,"./scale_zoom":320,"./set_convert":322}],309:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224,"../../constants/numerical":231,"../../lib":252,"./autorange":300,"./axis_ids":305,"./layout_attributes":316,"./scale_zoom":321,"./set_convert":323}],310:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -64604,7 +64549,7 @@ module.exports = {
     attachWheelEventHandler: attachWheelEventHandler
 };
 
-},{"../../components/color":118,"../../components/dragelement":137,"../../components/dragelement/helpers":136,"../../components/drawing":140,"../../components/fx":158,"../../constants/alignment":223,"../../lib":251,"../../lib/clear_gl_canvases":238,"../../lib/setcursor":271,"../../lib/svg_text_utils":276,"../../plot_api/subroutines":290,"../../registry":351,"../plots":348,"./axes":300,"./axis_ids":304,"./constants":307,"./scale_zoom":320,"./select":321,"@plotly/d3":16,"has-passive-events":63,"tinycolor2":82}],310:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../components/dragelement":138,"../../components/dragelement/helpers":137,"../../components/drawing":141,"../../components/fx":159,"../../constants/alignment":224,"../../lib":252,"../../lib/clear_gl_canvases":239,"../../lib/setcursor":272,"../../lib/svg_text_utils":277,"../../plot_api/subroutines":291,"../../registry":352,"../plots":349,"./axes":301,"./axis_ids":305,"./constants":308,"./scale_zoom":321,"./select":322,"@plotly/d3":16,"has-passive-events":64,"tinycolor2":83}],311:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -64763,7 +64708,7 @@ exports.updateFx = function(gd) {
     setCursor(fullLayout._draggers, cursor);
 };
 
-},{"../../components/dragelement":137,"../../components/fx":158,"../../lib/setcursor":271,"./constants":307,"./dragbox":309,"@plotly/d3":16}],311:[function(_dereq_,module,exports){
+},{"../../components/dragelement":138,"../../components/fx":159,"../../lib/setcursor":272,"./constants":308,"./dragbox":310,"@plotly/d3":16}],312:[function(_dereq_,module,exports){
 'use strict';
 
 function clearOutlineControllers(gd) {
@@ -64790,7 +64735,7 @@ module.exports = {
     clearSelect: clearSelect
 };
 
-},{}],312:[function(_dereq_,module,exports){
+},{}],313:[function(_dereq_,module,exports){
 'use strict';
 
 var strTranslate = _dereq_('../../lib').strTranslate;
@@ -64838,7 +64783,7 @@ module.exports = {
     getTransform: getTransform
 };
 
-},{"../../lib":251}],313:[function(_dereq_,module,exports){
+},{"../../lib":252}],314:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -64907,7 +64852,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
     };
 };
 
-},{"../../lib":251,"../../registry":351,"./axis_ids":304}],314:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352,"./axis_ids":305}],315:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -65516,7 +65461,7 @@ exports.toSVG = function(gd) {
 
 exports.updateFx = _dereq_('./graph_interact').updateFx;
 
-},{"../../components/drawing":140,"../../constants/xmlns_namespaces":231,"../../lib":251,"../../registry":351,"../get_data":333,"../plots":348,"./attributes":298,"./axis_ids":304,"./constants":307,"./graph_interact":310,"./layout_attributes":315,"./layout_defaults":316,"./transition_axes":327,"@plotly/d3":16}],315:[function(_dereq_,module,exports){
+},{"../../components/drawing":141,"../../constants/xmlns_namespaces":232,"../../lib":252,"../../registry":352,"../get_data":334,"../plots":349,"./attributes":299,"./axis_ids":305,"./constants":308,"./graph_interact":311,"./layout_attributes":316,"./layout_defaults":317,"./transition_axes":328,"@plotly/d3":16}],316:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../font_attributes');
@@ -66077,7 +66022,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":117,"../../components/drawing/attributes":139,"../../constants/numerical":230,"../../lib/extend":244,"../../plot_api/plot_template":289,"../../plots/cartesian/axis_format_attributes":303,"../font_attributes":331,"./constants":307}],316:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":118,"../../components/drawing/attributes":140,"../../constants/numerical":231,"../../lib/extend":245,"../../plot_api/plot_template":290,"../../plots/cartesian/axis_format_attributes":304,"../font_attributes":332,"./constants":308}],317:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -66455,7 +66400,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":118,"../../components/fx/helpers":154,"../../components/fx/hovermode_defaults":157,"../../lib":251,"../../plot_api/plot_template":289,"../../registry":351,"../layout_attributes":346,"./axis_defaults":302,"./axis_ids":304,"./constants":307,"./constraints":308,"./layout_attributes":315,"./position_defaults":318,"./type_defaults":328}],317:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../components/fx/helpers":155,"../../components/fx/hovermode_defaults":158,"../../lib":252,"../../plot_api/plot_template":290,"../../registry":352,"../layout_attributes":347,"./axis_defaults":303,"./axis_ids":305,"./constants":308,"./constraints":309,"./layout_attributes":316,"./position_defaults":319,"./type_defaults":329}],318:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
@@ -66512,7 +66457,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     }
 };
 
-},{"../../components/color/attributes":117,"../../lib":251,"tinycolor2":82}],318:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":118,"../../lib":252,"tinycolor2":83}],319:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -66591,7 +66536,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":251,"fast-isnumeric":30}],319:[function(_dereq_,module,exports){
+},{"../../lib":252,"fast-isnumeric":31}],320:[function(_dereq_,module,exports){
 'use strict';
 
 var getShowAttrDflt = _dereq_('./show_dflt');
@@ -66609,7 +66554,7 @@ module.exports = function handlePrefixSuffixDefaults(containerIn, containerOut, 
     if(tickSuffix) coerce('showticksuffix', showAttrDflt);
 };
 
-},{"./show_dflt":323}],320:[function(_dereq_,module,exports){
+},{"./show_dflt":324}],321:[function(_dereq_,module,exports){
 'use strict';
 
 var FROM_BL = _dereq_('../../constants/alignment').FROM_BL;
@@ -66629,7 +66574,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     ax.setScale();
 };
 
-},{"../../constants/alignment":223}],321:[function(_dereq_,module,exports){
+},{"../../constants/alignment":224}],322:[function(_dereq_,module,exports){
 'use strict';
 
 var polybool = _dereq_('polybooljs');
@@ -67563,7 +67508,7 @@ module.exports = {
     selectOnClick: selectOnClick
 };
 
-},{"../../components/color":118,"../../components/dragelement/helpers":136,"../../components/drawing":140,"../../components/fx":158,"../../components/fx/helpers":154,"../../components/shapes/draw_newshape/display_outlines":206,"../../components/shapes/draw_newshape/helpers":207,"../../components/shapes/draw_newshape/newshapes":208,"../../lib":251,"../../lib/clear_gl_canvases":238,"../../lib/polygon":263,"../../lib/throttle":277,"../../plot_api/subroutines":290,"../../registry":351,"./axis_ids":304,"./constants":307,"./handle_outline":311,"./helpers":312,"polybooljs":72}],322:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../components/dragelement/helpers":137,"../../components/drawing":141,"../../components/fx":159,"../../components/fx/helpers":155,"../../components/shapes/draw_newshape/display_outlines":207,"../../components/shapes/draw_newshape/helpers":208,"../../components/shapes/draw_newshape/newshapes":209,"../../lib":252,"../../lib/clear_gl_canvases":239,"../../lib/polygon":264,"../../lib/throttle":278,"../../plot_api/subroutines":291,"../../registry":352,"./axis_ids":305,"./constants":308,"./handle_outline":312,"./helpers":313,"polybooljs":73}],323:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -68528,7 +68473,7 @@ module.exports = function setConvert(ax, fullLayout) {
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":230,"../../lib":251,"./axis_ids":304,"./constants":307,"@plotly/d3":16,"d3-time-format":25,"fast-isnumeric":30}],323:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252,"./axis_ids":305,"./constants":308,"@plotly/d3":16,"d3-time-format":26,"fast-isnumeric":31}],324:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -68559,7 +68504,7 @@ module.exports = function getShowAttrDflt(containerIn) {
     }
 };
 
-},{}],324:[function(_dereq_,module,exports){
+},{}],325:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -68626,7 +68571,7 @@ function tickformatstopDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../components/color":118,"../../lib":251,"../array_container_defaults":295,"./layout_attributes":315,"./show_dflt":323}],325:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../lib":252,"../array_container_defaults":296,"./layout_attributes":316,"./show_dflt":324}],326:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -68650,7 +68595,7 @@ module.exports = function handleTickMarkDefaults(containerIn, containerOut, coer
     }
 };
 
-},{"../../lib":251,"./layout_attributes":315}],326:[function(_dereq_,module,exports){
+},{"../../lib":252,"./layout_attributes":316}],327:[function(_dereq_,module,exports){
 'use strict';
 
 var cleanTicks = _dereq_('./clean_ticks');
@@ -68689,7 +68634,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../lib":251,"./clean_ticks":306}],327:[function(_dereq_,module,exports){
+},{"../../lib":252,"./clean_ticks":307}],328:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -68894,7 +68839,7 @@ module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnComple
     return Promise.resolve();
 };
 
-},{"../../components/drawing":140,"../../lib":251,"../../registry":351,"./axes":300,"@plotly/d3":16}],328:[function(_dereq_,module,exports){
+},{"../../components/drawing":141,"../../lib":252,"../../registry":352,"./axes":301,"@plotly/d3":16}],329:[function(_dereq_,module,exports){
 'use strict';
 
 var traceIs = _dereq_('../../registry').traceIs;
@@ -69026,7 +68971,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-},{"../../registry":351,"./axis_autotype":301}],329:[function(_dereq_,module,exports){
+},{"../../registry":352,"./axis_autotype":302}],330:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -69445,7 +69390,7 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":251,"../registry":351}],330:[function(_dereq_,module,exports){
+},{"../lib":252,"../registry":352}],331:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../lib/extend').extendFlat;
@@ -69542,7 +69487,7 @@ exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
     if(!(y[0] < y[1])) containerOut.domain.y = dfltY.slice();
 };
 
-},{"../lib/extend":244}],331:[function(_dereq_,module,exports){
+},{"../lib/extend":245}],332:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -69597,7 +69542,7 @@ module.exports = function(opts) {
     return attrs;
 };
 
-},{}],332:[function(_dereq_,module,exports){
+},{}],333:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -69623,7 +69568,7 @@ module.exports = {
     }
 };
 
-},{}],333:[function(_dereq_,module,exports){
+},{}],334:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -69744,7 +69689,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-},{"../registry":351,"./cartesian/constants":307}],334:[function(_dereq_,module,exports){
+},{"../registry":352,"./cartesian/constants":308}],335:[function(_dereq_,module,exports){
 'use strict';
 
 var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
@@ -69895,7 +69840,7 @@ exports.updateFx = function(gd) {
     }
 };
 
-},{"../../components/fx/layout_attributes":159,"../../constants/xmlns_namespaces":231,"../../lib":251,"../../plot_api/edit_types":282,"../get_data":333,"./layout/attributes":335,"./layout/defaults":339,"./layout/layout_attributes":340,"./scene":344}],335:[function(_dereq_,module,exports){
+},{"../../components/fx/layout_attributes":160,"../../constants/xmlns_namespaces":232,"../../lib":252,"../../plot_api/edit_types":283,"../get_data":334,"./layout/attributes":336,"./layout/defaults":340,"./layout/layout_attributes":341,"./scene":345}],336:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -69907,7 +69852,7 @@ module.exports = {
     }
 };
 
-},{}],336:[function(_dereq_,module,exports){
+},{}],337:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../../components/color');
@@ -70009,7 +69954,7 @@ module.exports = overrideAll({
     }
 }, 'plot', 'from-root');
 
-},{"../../../components/color":118,"../../../lib/extend":244,"../../../plot_api/edit_types":282,"../../cartesian/layout_attributes":315}],337:[function(_dereq_,module,exports){
+},{"../../../components/color":119,"../../../lib/extend":245,"../../../plot_api/edit_types":283,"../../cartesian/layout_attributes":316}],338:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
@@ -70078,7 +70023,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../lib":251,"../../../plot_api/plot_template":289,"../../cartesian/axis_defaults":302,"../../cartesian/type_defaults":328,"./axis_attributes":336,"tinycolor2":82}],338:[function(_dereq_,module,exports){
+},{"../../../lib":252,"../../../plot_api/plot_template":290,"../../cartesian/axis_defaults":303,"../../cartesian/type_defaults":329,"./axis_attributes":337,"tinycolor2":83}],339:[function(_dereq_,module,exports){
 'use strict';
 
 var str2RgbaArray = _dereq_('../../../lib/str2rgbarray');
@@ -70235,7 +70180,7 @@ function createAxesOptions(fullLayout, sceneLayout) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib":251,"../../../lib/str2rgbarray":275}],339:[function(_dereq_,module,exports){
+},{"../../../lib":252,"../../../lib/str2rgbarray":276}],340:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../../lib');
@@ -70376,7 +70321,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     coerce('hovermode', opts.getDfltFromLayout('hovermode'));
 }
 
-},{"../../../components/color":118,"../../../lib":251,"../../../registry":351,"../../get_data":333,"../../subplot_defaults":349,"./axis_defaults":337,"./layout_attributes":340}],340:[function(_dereq_,module,exports){
+},{"../../../components/color":119,"../../../lib":252,"../../../registry":352,"../../get_data":334,"../../subplot_defaults":350,"./axis_defaults":338,"./layout_attributes":341}],341:[function(_dereq_,module,exports){
 'use strict';
 
 var gl3dAxisAttrs = _dereq_('./axis_attributes');
@@ -70495,7 +70440,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib":251,"../../../lib/extend":244,"../../domain":330,"./axis_attributes":336}],341:[function(_dereq_,module,exports){
+},{"../../../lib":252,"../../../lib/extend":245,"../../domain":331,"./axis_attributes":337}],342:[function(_dereq_,module,exports){
 'use strict';
 
 var str2RGBArray = _dereq_('../../../lib/str2rgbarray');
@@ -70538,7 +70483,7 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":275}],342:[function(_dereq_,module,exports){
+},{"../../../lib/str2rgbarray":276}],343:[function(_dereq_,module,exports){
 /* eslint block-scoped-var: 0*/
 /* eslint no-redeclare: 0*/
 
@@ -70631,7 +70576,7 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib":251,"../../cartesian/axes":300}],343:[function(_dereq_,module,exports){
+},{"../../../lib":252,"../../cartesian/axes":301}],344:[function(_dereq_,module,exports){
 'use strict';
 
 function xformMatrix(m, v) {
@@ -70656,7 +70601,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],344:[function(_dereq_,module,exports){
+},{}],345:[function(_dereq_,module,exports){
 'use strict';
 
 var glPlot3d = _dereq_('../../../stackgl_modules').gl_plot3d;
@@ -71791,7 +71736,7 @@ proto.make4thDimension = function() {
 
 module.exports = Scene;
 
-},{"../../../stackgl_modules":434,"../../components/fx":158,"../../lib":251,"../../lib/show_no_webgl_msg":272,"../../lib/str2rgbarray":275,"../../plots/cartesian/axes":300,"../../registry":351,"./layout/convert":338,"./layout/spikes":341,"./layout/tick_marks":342,"./project":343,"has-passive-events":63,"webgl-context":83}],345:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/fx":159,"../../lib":252,"../../lib/show_no_webgl_msg":273,"../../lib/str2rgbarray":276,"../../plots/cartesian/axes":301,"../../registry":352,"./layout/convert":339,"./layout/spikes":342,"./layout/tick_marks":343,"./project":344,"has-passive-events":64,"webgl-context":84}],346:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function zip3(x, y, z, len) {
@@ -71804,7 +71749,7 @@ module.exports = function zip3(x, y, z, len) {
     return result;
 };
 
-},{}],346:[function(_dereq_,module,exports){
+},{}],347:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
@@ -72032,7 +71977,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":117,"../components/shapes/draw_newshape/attributes":203,"../lib/extend":244,"./animation_attributes":294,"./font_attributes":331,"./pad_attributes":347}],347:[function(_dereq_,module,exports){
+},{"../components/color/attributes":118,"../components/shapes/draw_newshape/attributes":204,"../lib/extend":245,"./animation_attributes":295,"./font_attributes":332,"./pad_attributes":348}],348:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -72071,7 +72016,7 @@ module.exports = function(opts) {
     };
 };
 
-},{}],348:[function(_dereq_,module,exports){
+},{}],349:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -75489,7 +75434,7 @@ plots.cleanBasePlot = function(desiredType, newFullData, newFullLayout, oldFullD
     }
 };
 
-},{"../components/color":118,"../constants/numerical":230,"../lib":251,"../plot_api/plot_schema":288,"../plot_api/plot_template":289,"../plots/get_data":333,"../registry":351,"./animation_attributes":294,"./attributes":296,"./cartesian/axis_ids":304,"./cartesian/handle_outline":311,"./command":329,"./font_attributes":331,"./frame_attributes":332,"./layout_attributes":346,"@plotly/d3":16,"d3-format":24,"d3-time-format":25,"fast-isnumeric":30}],349:[function(_dereq_,module,exports){
+},{"../components/color":119,"../constants/numerical":231,"../lib":252,"../plot_api/plot_schema":289,"../plot_api/plot_template":290,"../plots/get_data":334,"../registry":352,"./animation_attributes":295,"./attributes":297,"./cartesian/axis_ids":305,"./cartesian/handle_outline":312,"./command":330,"./font_attributes":332,"./frame_attributes":333,"./layout_attributes":347,"@plotly/d3":16,"d3-format":25,"d3-time-format":26,"fast-isnumeric":31}],350:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -75561,7 +75506,7 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     }
 };
 
-},{"../lib":251,"../plot_api/plot_template":289,"./domain":330}],350:[function(_dereq_,module,exports){
+},{"../lib":252,"../plot_api/plot_template":290,"./domain":331}],351:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../constants/docs');
@@ -75642,7 +75587,7 @@ exports.texttemplateAttrs = function(opts, extra) {
     return texttemplate;
 };
 
-},{"../constants/docs":225}],351:[function(_dereq_,module,exports){
+},{"../constants/docs":226}],352:[function(_dereq_,module,exports){
 'use strict';
 
 var Loggers = _dereq_('./lib/loggers');
@@ -76100,7 +76045,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib/dom":242,"./lib/extend":244,"./lib/is_plain_object":252,"./lib/loggers":255,"./lib/noop":260,"./lib/push_unique":265,"./plots/attributes":296,"./plots/layout_attributes":346}],352:[function(_dereq_,module,exports){
+},{"./lib/dom":243,"./lib/extend":245,"./lib/is_plain_object":253,"./lib/loggers":256,"./lib/noop":261,"./lib/push_unique":266,"./plots/attributes":297,"./plots/layout_attributes":347}],353:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -76260,7 +76205,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":251,"../registry":351}],353:[function(_dereq_,module,exports){
+},{"../lib":252,"../registry":352}],354:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -76324,7 +76269,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":251,"../plot_api/to_image":292,"./filesaver":354,"./helpers":355}],354:[function(_dereq_,module,exports){
+},{"../lib":252,"../plot_api/to_image":293,"./filesaver":355,"./helpers":356}],355:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -76392,7 +76337,7 @@ function fileSaver(url, name, format) {
 
 module.exports = fileSaver;
 
-},{"../lib":251,"./helpers":355}],355:[function(_dereq_,module,exports){
+},{"../lib":252,"./helpers":356}],356:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -76461,7 +76406,7 @@ exports.IMAGE_URL_PREFIX = /^data:image\/\w+;base64,/;
 
 exports.MSG_IE_BAD_FORMAT = 'Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.';
 
-},{"../registry":351}],356:[function(_dereq_,module,exports){
+},{"../registry":352}],357:[function(_dereq_,module,exports){
 'use strict';
 
 var helpers = _dereq_('./helpers');
@@ -76478,7 +76423,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":352,"./download":353,"./helpers":355,"./svgtoimg":357,"./toimage":358,"./tosvg":359}],357:[function(_dereq_,module,exports){
+},{"./cloneplot":353,"./download":354,"./helpers":356,"./svgtoimg":358,"./toimage":359,"./tosvg":360}],358:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -76597,7 +76542,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":251,"./helpers":355,"events":29}],358:[function(_dereq_,module,exports){
+},{"../lib":252,"./helpers":356,"events":17}],359:[function(_dereq_,module,exports){
 'use strict';
 
 var EventEmitter = _dereq_('events').EventEmitter;
@@ -76666,7 +76611,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":251,"../registry":351,"./cloneplot":352,"./helpers":355,"./svgtoimg":357,"./tosvg":359,"events":29}],359:[function(_dereq_,module,exports){
+},{"../lib":252,"../registry":352,"./cloneplot":353,"./helpers":356,"./svgtoimg":358,"./tosvg":360,"events":17}],360:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -76851,7 +76796,7 @@ module.exports = function toSVG(gd, format, scale) {
     return s;
 };
 
-},{"../components/color":118,"../components/drawing":140,"../constants/xmlns_namespaces":231,"../lib":251,"@plotly/d3":16}],360:[function(_dereq_,module,exports){
+},{"../components/color":119,"../components/drawing":141,"../constants/xmlns_namespaces":232,"../lib":252,"@plotly/d3":16}],361:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -76995,7 +76940,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorscale/attributes":125,"../../lib/extend":244,"../../plots/attributes":296,"../../plots/cartesian/axis_format_attributes":303,"../../plots/template_attributes":350,"../mesh3d/attributes":372}],361:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../mesh3d/attributes":373}],362:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -77031,7 +76976,7 @@ module.exports = function calc(gd, trace) {
     });
 };
 
-},{"../../components/colorscale/calc":126}],362:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":127}],363:[function(_dereq_,module,exports){
 'use strict';
 
 var conePlot = _dereq_('../../../stackgl_modules').gl_cone3d;
@@ -77170,7 +77115,7 @@ function createConeTrace(scene, data) {
 
 module.exports = createConeTrace;
 
-},{"../../../stackgl_modules":434,"../../components/colorscale":130,"../../lib":251,"../../lib/gl_format_color":248,"../../plots/gl3d/zip3":345}],363:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib":252,"../../lib/gl_format_color":249,"../../plots/gl3d/zip3":346}],364:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -77229,7 +77174,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":128,"../../lib":251,"./attributes":360}],364:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":129,"../../lib":252,"./attributes":361}],365:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -77255,7 +77200,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":334,"./attributes":360,"./calc":361,"./convert":362,"./defaults":363}],365:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":335,"./attributes":361,"./calc":362,"./convert":363,"./defaults":364}],366:[function(_dereq_,module,exports){
 'use strict';
 
 var maxRowLength = _dereq_('../../lib').maxRowLength;
@@ -77352,7 +77297,7 @@ module.exports = function findEmpties(z) {
     return empties.sort(function(a, b) { return b[2] - a[2]; });
 };
 
-},{"../../lib":251}],366:[function(_dereq_,module,exports){
+},{"../../lib":252}],367:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -77477,7 +77422,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../lib":251}],367:[function(_dereq_,module,exports){
+},{"../../lib":252}],368:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -77631,7 +77576,7 @@ attrs.flatshading.dflt = true; attrs.lighting.facenormalsepsilon.dflt = 0;
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/colorscale/attributes":125,"../../lib/extend":244,"../../plot_api/edit_types":282,"../../plots/attributes":296,"../../plots/cartesian/axis_format_attributes":303,"../../plots/template_attributes":350,"../mesh3d/attributes":372}],368:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../mesh3d/attributes":373}],369:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -77678,7 +77623,7 @@ module.exports = function calc(gd, trace) {
     });
 };
 
-},{"../../components/colorscale/calc":126,"../streamtube/calc":415}],369:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":127,"../streamtube/calc":416}],370:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('../../../stackgl_modules').gl_mesh3d;
@@ -78726,7 +78671,7 @@ module.exports = {
     createIsosurfaceTrace: createIsosurfaceTrace,
 };
 
-},{"../../../stackgl_modules":434,"../../components/colorscale":130,"../../lib/gl_format_color":248,"../../lib/str2rgbarray":275,"../../plots/gl3d/zip3":345}],370:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/gl3d/zip3":346}],371:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -78838,7 +78783,7 @@ module.exports = {
     supplyIsoDefaults: supplyIsoDefaults
 };
 
-},{"../../components/colorscale/defaults":128,"../../lib":251,"../../registry":351,"./attributes":367}],371:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":129,"../../lib":252,"../../registry":352,"./attributes":368}],372:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -78859,7 +78804,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":334,"./attributes":367,"./calc":368,"./convert":369,"./defaults":370}],372:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":335,"./attributes":368,"./calc":369,"./convert":370,"./defaults":371}],373:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -79007,7 +78952,7 @@ colorScaleAttrs('', {
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 });
 
-},{"../../components/colorscale/attributes":125,"../../lib/extend":244,"../../plots/attributes":296,"../../plots/cartesian/axis_format_attributes":303,"../../plots/template_attributes":350,"../surface/attributes":419}],373:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../surface/attributes":420}],374:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -79022,7 +78967,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":126}],374:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":127}],375:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('../../../stackgl_modules').gl_mesh3d;
@@ -79217,7 +79162,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../../stackgl_modules":434,"../../components/colorscale":130,"../../lib/gl_format_color":248,"../../lib/str2rgbarray":275,"../../plots/gl3d/zip3":345}],375:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/gl3d/zip3":346}],376:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -79313,7 +79258,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":128,"../../lib":251,"../../registry":351,"./attributes":372}],376:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":129,"../../lib":252,"../../registry":352,"./attributes":373}],377:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -79334,7 +79279,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":334,"./attributes":372,"./calc":373,"./convert":374,"./defaults":375}],377:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":335,"./attributes":373,"./calc":374,"./convert":375,"./defaults":376}],378:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -79374,7 +79319,7 @@ exports.getRotationAngle = function(rotation) {
     return (rotation === 'auto' ? 0 : rotation) * Math.PI / 180;
 };
 
-},{"../../lib":251}],378:[function(_dereq_,module,exports){
+},{"../../lib":252}],379:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -79390,7 +79335,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":118,"./helpers":377}],379:[function(_dereq_,module,exports){
+},{"../../components/color":119,"./helpers":378}],380:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -79433,7 +79378,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":251}],380:[function(_dereq_,module,exports){
+},{"../../lib":252}],381:[function(_dereq_,module,exports){
 'use strict';
 
 var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
@@ -79783,7 +79728,7 @@ module.exports = {
     }),
 };
 
-},{"../../components/colorscale/attributes":125,"../../components/drawing":140,"../../components/drawing/attributes":139,"../../lib/extend":244,"../../plots/cartesian/axis_format_attributes":303,"../../plots/font_attributes":331,"../../plots/template_attributes":350,"./constants":384}],381:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":126,"../../components/drawing":141,"../../components/drawing/attributes":140,"../../lib/extend":245,"../../plots/cartesian/axis_format_attributes":304,"../../plots/font_attributes":332,"../../plots/template_attributes":351,"./constants":385}],382:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -80080,7 +80025,7 @@ module.exports = {
     getStackOpts: getStackOpts
 };
 
-},{"../../constants/numerical":230,"../../lib":251,"../../plots/cartesian/align_period":297,"../../plots/cartesian/axes":300,"./arrays_to_calcdata":379,"./calc_selection":382,"./colorscale_calc":383,"./subtypes":405,"fast-isnumeric":30}],382:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252,"../../plots/cartesian/align_period":298,"../../plots/cartesian/axes":301,"./arrays_to_calcdata":380,"./calc_selection":383,"./colorscale_calc":384,"./subtypes":406,"fast-isnumeric":31}],383:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -80091,7 +80036,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":251}],383:[function(_dereq_,module,exports){
+},{"../../lib":252}],384:[function(_dereq_,module,exports){
 'use strict';
 
 var hasColorscale = _dereq_('../../components/colorscale/helpers').hasColorscale;
@@ -80126,7 +80071,7 @@ module.exports = function calcMarkerColorscale(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":126,"../../components/colorscale/helpers":129,"./subtypes":405}],384:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":127,"../../components/colorscale/helpers":130,"./subtypes":406}],385:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -80146,7 +80091,7 @@ module.exports = {
     eventDataKeys: []
 };
 
-},{}],385:[function(_dereq_,module,exports){
+},{}],386:[function(_dereq_,module,exports){
 'use strict';
 
 var calc = _dereq_('./calc');
@@ -80318,7 +80263,7 @@ function getInterp(calcTrace, index, position, posAttr) {
     return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
 }
 
-},{"./calc":381}],386:[function(_dereq_,module,exports){
+},{"./calc":382}],387:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -80348,7 +80293,7 @@ module.exports = function crossTraceDefaults(fullData) {
     }
 };
 
-},{}],387:[function(_dereq_,module,exports){
+},{}],388:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -80435,7 +80380,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":251,"../../registry":351,"./attributes":380,"./constants":384,"./fillcolor_defaults":388,"./line_defaults":393,"./line_shape_defaults":395,"./marker_defaults":399,"./period_defaults":400,"./stack_defaults":403,"./subtypes":405,"./text_defaults":406,"./xy_defaults":407}],388:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352,"./attributes":381,"./constants":385,"./fillcolor_defaults":389,"./line_defaults":394,"./line_shape_defaults":396,"./marker_defaults":400,"./period_defaults":401,"./stack_defaults":404,"./subtypes":406,"./text_defaults":407,"./xy_defaults":408}],389:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -80463,7 +80408,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":118,"../../lib":251}],389:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../lib":252}],390:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../../plots/cartesian/axes');
@@ -80481,7 +80426,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     return labels;
 };
 
-},{"../../plots/cartesian/axes":300}],390:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axes":301}],391:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -80521,7 +80466,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":118,"./subtypes":405}],391:[function(_dereq_,module,exports){
+},{"../../components/color":119,"./subtypes":406}],392:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -80732,7 +80677,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":118,"../../components/fx":158,"../../lib":251,"../../registry":351,"./get_trace_color":390}],392:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../components/fx":159,"../../lib":252,"../../registry":352,"./get_trace_color":391}],393:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -80769,7 +80714,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian":314,"./arrays_to_calcdata":379,"./attributes":380,"./calc":381,"./cross_trace_calc":385,"./cross_trace_defaults":386,"./defaults":387,"./format_labels":389,"./hover":391,"./marker_colorbar":398,"./plot":401,"./select":402,"./style":404,"./subtypes":405}],393:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":315,"./arrays_to_calcdata":380,"./attributes":381,"./calc":382,"./cross_trace_calc":386,"./cross_trace_defaults":387,"./defaults":388,"./format_labels":390,"./hover":392,"./marker_colorbar":399,"./plot":402,"./select":403,"./style":405,"./subtypes":406}],394:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
@@ -80792,7 +80737,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":128,"../../components/colorscale/helpers":129,"../../lib":251}],394:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":129,"../../components/colorscale/helpers":130,"../../lib":252}],395:[function(_dereq_,module,exports){
 'use strict';
 
 var numConstants = _dereq_('../../constants/numerical');
@@ -81244,7 +81189,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":230,"../../lib":251,"./constants":384}],395:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252,"./constants":385}],396:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -81254,7 +81199,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],396:[function(_dereq_,module,exports){
+},{}],397:[function(_dereq_,module,exports){
 'use strict';
 
 var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
@@ -81336,7 +81281,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     return cdscatterSorted;
 };
 
-},{}],397:[function(_dereq_,module,exports){
+},{}],398:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -81372,7 +81317,7 @@ module.exports = function makeBubbleSizeFn(trace, factor) {
     };
 };
 
-},{"fast-isnumeric":30}],398:[function(_dereq_,module,exports){
+},{"fast-isnumeric":31}],399:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -81381,7 +81326,7 @@ module.exports = {
     max: 'cmax'
 };
 
-},{}],399:[function(_dereq_,module,exports){
+},{}],400:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -81454,7 +81399,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":118,"../../components/colorscale/defaults":128,"../../components/colorscale/helpers":129,"./subtypes":405}],400:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../components/colorscale/defaults":129,"../../components/colorscale/helpers":130,"./subtypes":406}],401:[function(_dereq_,module,exports){
 'use strict';
 
 var dateTick0 = _dereq_('../../lib').dateTick0;
@@ -81493,7 +81438,7 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     }
 };
 
-},{"../../constants/numerical":230,"../../lib":251}],401:[function(_dereq_,module,exports){
+},{"../../constants/numerical":231,"../../lib":252}],402:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -82045,7 +81990,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":140,"../../lib":251,"../../lib/polygon":263,"../../registry":351,"./line_points":394,"./link_traces":396,"./subtypes":405,"@plotly/d3":16}],402:[function(_dereq_,module,exports){
+},{"../../components/drawing":141,"../../lib":252,"../../lib/polygon":264,"../../registry":352,"./line_points":395,"./link_traces":397,"./subtypes":406,"@plotly/d3":16}],403:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -82090,7 +82035,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"./subtypes":405}],403:[function(_dereq_,module,exports){
+},{"./subtypes":406}],404:[function(_dereq_,module,exports){
 'use strict';
 
 var perStackAttrs = ['orientation', 'groupnorm', 'stackgaps'];
@@ -82187,7 +82132,7 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
     }
 };
 
-},{}],404:[function(_dereq_,module,exports){
+},{}],405:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -82249,7 +82194,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/drawing":140,"../../registry":351,"@plotly/d3":16}],405:[function(_dereq_,module,exports){
+},{"../../components/drawing":141,"../../registry":352,"@plotly/d3":16}],406:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -82279,7 +82224,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":251}],406:[function(_dereq_,module,exports){
+},{"../../lib":252}],407:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -82300,7 +82245,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":251}],407:[function(_dereq_,module,exports){
+},{"../../lib":252}],408:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -82336,7 +82281,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../lib":251,"../../registry":351}],408:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352}],409:[function(_dereq_,module,exports){
 'use strict';
 
 var scatterAttrs = _dereq_('../scatter/attributes');
@@ -82464,7 +82409,7 @@ var attrs = module.exports = overrideAll({
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 
-},{"../../components/colorscale/attributes":125,"../../constants/gl3d_dashes":227,"../../constants/gl3d_markers":228,"../../lib/extend":244,"../../lib/sort_object_keys":273,"../../plot_api/edit_types":282,"../../plots/attributes":296,"../../plots/cartesian/axis_format_attributes":303,"../../plots/template_attributes":350,"../scatter/attributes":380}],409:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":126,"../../constants/gl3d_dashes":228,"../../constants/gl3d_markers":229,"../../lib/extend":245,"../../lib/sort_object_keys":274,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../scatter/attributes":381}],410:[function(_dereq_,module,exports){
 'use strict';
 
 var arraysToCalcdata = _dereq_('../scatter/arrays_to_calcdata');
@@ -82484,7 +82429,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":379,"../scatter/colorscale_calc":383}],410:[function(_dereq_,module,exports){
+},{"../scatter/arrays_to_calcdata":380,"../scatter/colorscale_calc":384}],411:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -82563,7 +82508,7 @@ function calculateErrors(data, scaleFactor, sceneLayout) {
 
 module.exports = calculateErrors;
 
-},{"../../registry":351}],411:[function(_dereq_,module,exports){
+},{"../../registry":352}],412:[function(_dereq_,module,exports){
 'use strict';
 
 var createLinePlot = _dereq_('../../../stackgl_modules').gl_line3d;
@@ -83108,7 +83053,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../../stackgl_modules":434,"../../components/fx/helpers":154,"../../constants/gl3d_dashes":227,"../../constants/gl3d_markers":228,"../../lib":251,"../../lib/gl_format_color":248,"../../lib/str2rgbarray":275,"../../plots/cartesian/axes":300,"../scatter/make_bubble_size_func":397,"./calc_errors":410}],412:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/fx/helpers":155,"../../constants/gl3d_dashes":228,"../../constants/gl3d_markers":229,"../../lib":252,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/cartesian/axes":301,"../scatter/make_bubble_size_func":398,"./calc_errors":411}],413:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -83192,7 +83137,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     return len;
 }
 
-},{"../../lib":251,"../../registry":351,"../scatter/line_defaults":393,"../scatter/marker_defaults":399,"../scatter/subtypes":405,"../scatter/text_defaults":406,"./attributes":408}],413:[function(_dereq_,module,exports){
+},{"../../lib":252,"../../registry":352,"../scatter/line_defaults":394,"../scatter/marker_defaults":400,"../scatter/subtypes":406,"../scatter/text_defaults":407,"./attributes":409}],414:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -83221,7 +83166,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl3d_markers":228,"../../plots/gl3d":334,"./attributes":408,"./calc":409,"./convert":411,"./defaults":412}],414:[function(_dereq_,module,exports){
+},{"../../constants/gl3d_markers":229,"../../plots/gl3d":335,"./attributes":409,"./calc":410,"./convert":412,"./defaults":413}],415:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -83353,7 +83298,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorscale/attributes":125,"../../lib/extend":244,"../../plots/attributes":296,"../../plots/cartesian/axis_format_attributes":303,"../../plots/template_attributes":350,"../mesh3d/attributes":372}],415:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../mesh3d/attributes":373}],416:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -83601,7 +83546,7 @@ module.exports = {
     processGrid: processGrid
 };
 
-},{"../../components/colorscale/calc":126,"../../lib":251}],416:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":127,"../../lib":252}],417:[function(_dereq_,module,exports){
 'use strict';
 
 var tube2mesh = _dereq_('../../../stackgl_modules').gl_streamtube3d;
@@ -83819,7 +83764,7 @@ function createStreamtubeTrace(scene, data) {
 
 module.exports = createStreamtubeTrace;
 
-},{"../../../stackgl_modules":434,"../../components/colorscale":130,"../../lib":251,"../../lib/gl_format_color":248,"../../plots/gl3d/zip3":345}],417:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib":252,"../../lib/gl_format_color":249,"../../plots/gl3d/zip3":346}],418:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -83882,7 +83827,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":128,"../../lib":251,"./attributes":414}],418:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":129,"../../lib":252,"./attributes":415}],419:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -83923,7 +83868,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":334,"./attributes":414,"./calc":415,"./convert":416,"./defaults":417}],419:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":335,"./attributes":415,"./calc":416,"./convert":417,"./defaults":418}],420:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -84139,7 +84084,7 @@ colorScaleAttrs('', {
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/color":118,"../../components/colorscale/attributes":125,"../../lib/extend":244,"../../plot_api/edit_types":282,"../../plots/attributes":296,"../../plots/cartesian/axis_format_attributes":303,"../../plots/template_attributes":350}],420:[function(_dereq_,module,exports){
+},{"../../components/color":119,"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351}],421:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -84162,7 +84107,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":126}],421:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":127}],422:[function(_dereq_,module,exports){
 'use strict';
 
 var createSurface = _dereq_('../../../stackgl_modules').gl_surface3d;
@@ -84853,7 +84798,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../../stackgl_modules":434,"../../components/colorscale":130,"../../lib":251,"../../lib/gl_format_color":248,"../../lib/str2rgbarray":275,"../heatmap/find_empties":365,"../heatmap/interp2d":366}],422:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib":252,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../heatmap/find_empties":366,"../heatmap/interp2d":367}],423:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -85022,7 +84967,7 @@ module.exports = {
     opacityscaleDefaults: opacityscaleDefaults
 };
 
-},{"../../components/colorscale/defaults":128,"../../lib":251,"../../registry":351,"./attributes":419}],423:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":129,"../../lib":252,"../../registry":352,"./attributes":420}],424:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -85043,7 +84988,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":334,"./attributes":419,"./calc":420,"./convert":421,"./defaults":422}],424:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":335,"./attributes":420,"./calc":421,"./convert":422,"./defaults":423}],425:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -85108,7 +85053,7 @@ colorScaleAttrs('', {
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/colorscale/attributes":125,"../../lib/extend":244,"../../plot_api/edit_types":282,"../../plots/attributes":296,"../isosurface/attributes":367,"../surface/attributes":419}],425:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../isosurface/attributes":368,"../surface/attributes":420}],426:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('../../../stackgl_modules').gl_mesh3d;
@@ -85233,7 +85178,7 @@ function createVolumeTrace(scene, data) {
 
 module.exports = createVolumeTrace;
 
-},{"../../../stackgl_modules":434,"../../components/colorscale":130,"../../lib/gl_format_color":248,"../../lib/str2rgbarray":275,"../../plots/gl3d/zip3":345,"../isosurface/convert":369}],426:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/gl3d/zip3":346,"../isosurface/convert":370}],427:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -85251,7 +85196,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     opacityscaleDefaults(traceIn, traceOut, layout, coerce);
 };
 
-},{"../../lib":251,"../isosurface/defaults":370,"../surface/defaults":422,"./attributes":424}],427:[function(_dereq_,module,exports){
+},{"../../lib":252,"../isosurface/defaults":371,"../surface/defaults":423,"./attributes":425}],428:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -85272,7 +85217,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":334,"../isosurface/calc":368,"./attributes":424,"./convert":425,"./defaults":426}],428:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":335,"../isosurface/calc":369,"./attributes":425,"./convert":426,"./defaults":427}],429:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../plots/cartesian/axes');
@@ -85676,7 +85621,7 @@ function last(array, indices) {
     return array[indices[indices.length - 1]];
 }
 
-},{"../constants/numerical":230,"../lib":251,"../plot_api/plot_schema":288,"../plots/cartesian/axes":300,"./helpers":431}],429:[function(_dereq_,module,exports){
+},{"../constants/numerical":231,"../lib":252,"../plot_api/plot_schema":289,"../plots/cartesian/axes":301,"./helpers":432}],430:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -85936,7 +85881,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
     }
 }
 
-},{"../constants/filter_ops":226,"../lib":251,"../plots/cartesian/axes":300,"../registry":351,"./helpers":431}],430:[function(_dereq_,module,exports){
+},{"../constants/filter_ops":227,"../lib":252,"../plots/cartesian/axes":301,"../registry":352,"./helpers":432}],431:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -86180,7 +86125,7 @@ function transformOne(trace, state) {
     return newData;
 }
 
-},{"../lib":251,"../plot_api/plot_schema":288,"../plots/plots":348,"./helpers":431}],431:[function(_dereq_,module,exports){
+},{"../lib":252,"../plot_api/plot_schema":289,"../plots/plots":349,"./helpers":432}],432:[function(_dereq_,module,exports){
 'use strict';
 
 exports.pointsAccessorFunction = function(transforms, opts) {
@@ -86198,7 +86143,7 @@ exports.pointsAccessorFunction = function(transforms, opts) {
     return originalPointsAccessor;
 };
 
-},{}],432:[function(_dereq_,module,exports){
+},{}],433:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -86336,13 +86281,13 @@ function getSortFunc(opts, d2c) {
     }
 }
 
-},{"../constants/numerical":230,"../lib":251,"../plots/cartesian/axes":300,"./helpers":431}],433:[function(_dereq_,module,exports){
+},{"../constants/numerical":231,"../lib":252,"../plots/cartesian/axes":301,"./helpers":432}],434:[function(_dereq_,module,exports){
 'use strict';
 
 // package version injected by `npm run preprocess`
 exports.version = '2.8.3';
 
-},{}],434:[function(_dereq_,module,exports){
+},{}],435:[function(_dereq_,module,exports){
 (function (global){(function (){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.stackgl = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof _dereq_&&_dereq_;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof _dereq_&&_dereq_,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_glvis_,module,exports){
 'use strict'
