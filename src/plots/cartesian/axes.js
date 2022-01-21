@@ -829,10 +829,15 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
+    var id = -1;
+
     if(isPeriod) {
         // add one item to label period before tick0
         x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
+        id--;
     }
+
+    var ticklabeljump = ax.ticklabeljump;
 
     var maxTicks = Math.max(1000, ax._length || 0);
     var tickVals = [];
@@ -841,6 +846,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
         (axrev) ? (x >= endTick) : (x <= endTick);
         x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
     ) {
+        id++;
+
         if(ax.rangebreaks) {
             if(!axrev) {
                 if(x < startTick) continue;
@@ -858,10 +865,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
             minor = true;
         }
 
-        tickVals.push({
+        var obj = {
             minor: minor,
             value: x
-        });
+        };
+
+        if(ticklabeljump && (id % (ticklabeljump + 1))) {
+            obj.jumpLabel = true;
+        }
+
+        tickVals.push(obj);
     }
 
     if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
@@ -926,6 +939,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
             false, // hover
             _minor // noSuffixPrefix
         );
+
+        if(tickVals[i].jumpLabel) {
+            t.jumpLabel = true;
+        }
 
         p = tickVals[i].periodX;
         if(p !== undefined) {
@@ -2967,9 +2984,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
 
-    var jump = ax.ticklabeljump;
-    var vals = jump ?
-        opts.vals.filter(function(_, i) { return i % (jump + 1) === 0; }) :
+    var vals = ax.ticklabeljump ?
+        opts.vals.filter(function(d) { return !d.jumpLabel; }) :
         opts.vals;
 
     var labelFns = opts.labelFns;
