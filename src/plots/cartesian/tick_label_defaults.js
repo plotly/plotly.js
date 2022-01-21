@@ -28,6 +28,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             color: dfltFontColor
         });
 
+        if(!options.noTicklabeljump) coerce('ticklabeljump');
+
         if(!options.noAng) coerce('tickangle');
 
         if(axType !== 'category') {

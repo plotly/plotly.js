@@ -412,6 +412,16 @@ module.exports = {
             'To set ticks every 4 years, set `dtick` to *M48*'
         ].join(' ')
     },
+    ticklabeljump: {
+        valType: 'integer',
+        min: 0,
+        dflt: 0,
+        editType: 'ticks',
+        description: [
+            'Sets the step between ticklabels.',
+            'Could be used to hide labels between every n-th ticks.'
+        ].join(' ')
+    },
     tickvals: {
         valType: 'data_array',
         editType: 'ticks',

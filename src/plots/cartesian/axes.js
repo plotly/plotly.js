@@ -2966,7 +2966,11 @@ axes.drawLabels = function(gd, ax, opts) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
-    var vals = opts.vals;
+
+    var jump = ax.ticklabeljump;
+    var vals = jump ?
+        opts.vals.filter(function(_, i) { return i % (jump + 1) === 0; }) :
+        opts.vals;
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;

@@ -1384,6 +1384,13 @@
       },
       "role": "object"
      },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
       "editType": "colorbars",
@@ -3790,6 +3797,13 @@
       },
       "role": "object"
      },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
+     },
      "ticklen": {
       "description": "Sets the tick length (in px).",
       "dflt": 5,
@@ -4367,6 +4381,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -8076,6 +8097,13 @@
       },
       "role": "object"
      },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
+     },
      "ticklen": {
       "description": "Sets the tick length (in px).",
       "dflt": 5,
@@ -8452,6 +8480,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -8835,6 +8870,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -10413,6 +10455,13 @@
      },
      "role": "object"
     },
+    "ticklabeljump": {
+     "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+     "dflt": 0,
+     "editType": "ticks",
+     "min": 0,
+     "valType": "integer"
+    },
     "ticklabelmode": {
      "description": "Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.",
      "dflt": "instant",
@@ -11269,6 +11318,13 @@
       }
      },
      "role": "object"
+    },
+    "ticklabeljump": {
+     "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+     "dflt": 0,
+     "editType": "ticks",
+     "min": 0,
+     "valType": "integer"
     },
     "ticklabelmode": {
      "description": "Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.",
@@ -12330,6 +12386,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -13838,6 +13901,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -17963,6 +18033,13 @@
       },
       "role": "object"
      },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
       "editType": "colorbars",
@@ -18948,6 +19025,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -19963,6 +20047,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -20996,6 +21087,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -22371,6 +22469,13 @@
       },
       "role": "object"
      },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
       "editType": "colorbars",
@@ -23315,6 +23420,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -24603,6 +24715,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -26307,6 +26426,13 @@
       },
       "role": "object"
      },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
       "editType": "colorbars",
@@ -27463,6 +27589,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -28986,6 +29119,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -30163,6 +30303,13 @@
       },
       "role": "object"
      },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
       "editType": "colorbars",
@@ -31291,6 +31438,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -32928,6 +33082,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -34333,6 +34494,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "plot",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklen": {
        "description": "Sets the tick length (in px).",
        "dflt": 5,
@@ -35202,6 +35370,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -36411,6 +36586,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -38375,6 +38557,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -39324,6 +39513,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -42698,6 +42894,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -44887,6 +45090,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "calc",
@@ -45468,6 +45678,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -46903,6 +47120,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -48731,6 +48955,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -50706,6 +50937,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "calc",
@@ -52599,6 +52837,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "calc",
@@ -53760,6 +54005,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -55592,6 +55844,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "calc",
@@ -57399,6 +57658,13 @@
         }
        },
        "role": "object"
+      },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -59234,6 +59500,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -61022,6 +61295,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -62413,6 +62693,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -63860,6 +64147,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -64725,6 +65019,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -67061,6 +67362,13 @@
        },
        "role": "object"
       },
+      "ticklabeljump": {
+       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
        "editType": "colorbars",
@@ -69349,6 +69657,13 @@
        }
       },
       "role": "object"
+     },
+     "ticklabeljump": {
+      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
