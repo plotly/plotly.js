@@ -803,7 +803,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
 
-    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
+    var numDtick = isNumeric(ax.dtick);
+    var isDLog = (ax.type === 'log') && !(numDtick || ax.dtick.charAt(0) === 'L');
     var isPeriod = ax.ticklabelmode === 'period';
 
     // find the first tick
@@ -829,12 +830,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
         }
     }
 
-    var id = -1;
-
     if(isPeriod) {
         // add one item to label period before tick0
         x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
-        id--;
     }
 
     var ticklabeljump = ax.ticklabeljump;
@@ -842,6 +840,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var maxTicks = Math.max(1000, ax._length || 0);
     var tickVals = [];
     var xPrevious = null;
+
+    var dTick = numDtick ? ax.dtick : ax._roughDTick;
+
+    var id = Math.round((
+        ax.r2l(x) -
+        ax.r2l(ax.tick0)
+    ) / dTick) - 1;
+
     for(;
         (axrev) ? (x >= endTick) : (x <= endTick);
         x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
