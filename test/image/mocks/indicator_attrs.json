@@ -108,7 +108,7 @@
                     "tickwidth": 5,
                     "tickcolor": "blue",
                     "showticklabels": true,
-                    "ticklabeljump": 1,
+                    "skipticklabels": 1,
                     "tickfont": {
                         "family": "Arial",
                         "size": 16,

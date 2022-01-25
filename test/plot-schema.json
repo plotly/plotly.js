@@ -1274,6 +1274,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -1383,13 +1390,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -3694,6 +3694,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
+     },
      "thetaunit": {
       "description": "Sets the format unit of the formatted *theta* values. Has an effect only when `angularaxis.type` is *linear*.",
       "dflt": "degrees",
@@ -3796,13 +3803,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "plot",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -4289,6 +4289,13 @@
        "counterclockwise"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
+     },
      "tick0": {
       "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
       "editType": "plot",
@@ -4381,13 +4388,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "plot",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -8004,6 +8004,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
+     },
      "tick0": {
       "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
       "editType": "plot",
@@ -8096,13 +8103,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "plot",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -8388,6 +8388,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
+     },
      "tick0": {
       "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
       "editType": "plot",
@@ -8480,13 +8487,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "plot",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -8778,6 +8778,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "integer"
+     },
      "tick0": {
       "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
       "editType": "plot",
@@ -8870,13 +8877,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "plot",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
@@ -10314,6 +10314,13 @@
       "right"
      ]
     },
+    "skipticklabels": {
+     "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+     "dflt": 0,
+     "editType": "ticks",
+     "min": 0,
+     "valType": "integer"
+    },
     "spikecolor": {
      "description": "Sets the spike color. If undefined, will use the series color",
      "dflt": null,
@@ -10454,13 +10461,6 @@
       }
      },
      "role": "object"
-    },
-    "ticklabeljump": {
-     "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-     "dflt": 0,
-     "editType": "ticks",
-     "min": 0,
-     "valType": "integer"
     },
     "ticklabelmode": {
      "description": "Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.",
@@ -11178,6 +11178,13 @@
       "right"
      ]
     },
+    "skipticklabels": {
+     "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+     "dflt": 0,
+     "editType": "ticks",
+     "min": 0,
+     "valType": "integer"
+    },
     "spikecolor": {
      "description": "Sets the spike color. If undefined, will use the series color",
      "dflt": null,
@@ -11318,13 +11325,6 @@
       }
      },
      "role": "object"
-    },
-    "ticklabeljump": {
-     "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-     "dflt": 0,
-     "editType": "ticks",
-     "min": 0,
-     "valType": "integer"
     },
     "ticklabelmode": {
      "description": "Determines where tick labels are drawn with respect to their corresponding ticks and grid lines. Only has an effect for axes of `type` *date* When set to *period*, tick labels are drawn in the middle of the period between ticks.",
@@ -12277,6 +12277,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -12386,13 +12393,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -13792,6 +13792,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -13901,13 +13908,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -17923,6 +17923,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -18032,13 +18039,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -18916,6 +18916,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -19025,13 +19032,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -19938,6 +19938,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -20047,13 +20054,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -20978,6 +20978,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -21087,13 +21094,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -22359,6 +22359,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -22468,13 +22475,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -23311,6 +23311,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -23420,13 +23427,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -24606,6 +24606,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -24715,13 +24722,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -26316,6 +26316,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -26425,13 +26432,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -27480,6 +27480,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -27589,13 +27596,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "calc",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -29009,6 +29009,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -29118,13 +29125,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -30193,6 +30193,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -30302,13 +30309,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -31329,6 +31329,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -31438,13 +31445,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -32972,6 +32972,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -33081,13 +33088,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -34401,6 +34401,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "plot",
+       "min": 0,
+       "valType": "integer"
+      },
       "tick0": {
        "description": "Sets the placement of the first tick on this axis. Use with `dtick`. If the axis `type` is *log*, then you must take the log of your starting tick (e.g. to set the starting tick to 100, set the `tick0` to 2) except when `dtick`=*L<f>* (see `dtick` for more info). If the axis `type` is *date*, it should be a date string, like date data. If the axis `type` is *category*, it should be a number, using the scale where each category is assigned a serial number from zero in the order it appears.",
        "editType": "plot",
@@ -34493,13 +34500,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "plot",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklen": {
        "description": "Sets the tick length (in px).",
@@ -35261,6 +35261,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -35370,13 +35377,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "calc",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -36477,6 +36477,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -36586,13 +36593,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -38447,6 +38447,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -38556,13 +38563,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -39404,6 +39404,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -39513,13 +39520,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -42784,6 +42784,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -42893,13 +42900,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -44980,6 +44980,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -45089,13 +45096,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "calc",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -45569,6 +45569,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -45678,13 +45685,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "calc",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -47011,6 +47011,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -47120,13 +47127,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -48846,6 +48846,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -48955,13 +48962,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "calc",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -50827,6 +50827,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -50936,13 +50943,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "calc",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -52727,6 +52727,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -52836,13 +52843,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "calc",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -53896,6 +53896,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -54005,13 +54012,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -55734,6 +55734,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "calc",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -55843,13 +55850,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "calc",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -57549,6 +57549,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -57658,13 +57665,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -59390,6 +59390,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -59499,13 +59506,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -61185,6 +61185,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -61294,13 +61301,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -62584,6 +62584,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "colorbars",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -62693,13 +62700,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "colorbars",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -64037,6 +64037,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -64146,13 +64153,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -64910,6 +64910,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -65019,13 +65026,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "calc",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -67252,6 +67252,13 @@
         "none"
        ]
       },
+      "skipticklabels": {
+       "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+       "dflt": 0,
+       "editType": "colorbars",
+       "min": 0,
+       "valType": "integer"
+      },
       "thickness": {
        "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
        "dflt": 30,
@@ -67361,13 +67368,6 @@
         }
        },
        "role": "object"
-      },
-      "ticklabeljump": {
-       "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-       "dflt": 0,
-       "editType": "colorbars",
-       "min": 0,
-       "valType": "integer"
       },
       "ticklabeloverflow": {
        "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",
@@ -69548,6 +69548,13 @@
        "none"
       ]
      },
+     "skipticklabels": {
+      "description": "Sets the spacing between tick labels as compared to the spacing between ticks. A value of 0 (default) means each tick gets a label. A value of 1 means shows every 2nd level. A larger value n means only every (n+1)th tick is labeled. `tick0` determines which labels are shown.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "integer"
+     },
      "thickness": {
       "description": "Sets the thickness of the color bar This measure excludes the size of the padding, ticks and labels.",
       "dflt": 30,
@@ -69657,13 +69664,6 @@
        }
       },
       "role": "object"
-     },
-     "ticklabeljump": {
-      "description": "Sets the step between ticklabels. Could be used to hide labels between every n-th ticks.",
-      "dflt": 0,
-      "editType": "calc",
-      "min": 0,
-      "valType": "integer"
      },
      "ticklabeloverflow": {
       "description": "Determines how we handle tick labels that would overflow either the graph div or the domain of the axis. The default value for inside tick labels is *hide past domain*. In other cases the default is *hide past div*.",

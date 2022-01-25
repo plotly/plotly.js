@@ -166,7 +166,7 @@ module.exports = overrideAll({
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
-    ticklabeljump: axesAttrs.ticklabeljump,
+    skipticklabels: axesAttrs.skipticklabels,
     showticklabels: axesAttrs.showticklabels,
     tickfont: fontAttrs({
         description: 'Sets the color bar\'s tick label font'

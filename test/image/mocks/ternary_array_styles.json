@@ -111,7 +111,7 @@
     "layout": {
         "ternary": {
             "aaxis": {
-                "ticklabeljump": 3,
+                "skipticklabels": 3,
                 "dtick": 0.05,
                 "showline": true,
                 "ticks": "inside",
@@ -119,7 +119,7 @@
                 "color": "#ccc"
             },
             "baxis": {
-                "ticklabeljump": 1,
+                "skipticklabels": 1,
                 "dtick": 0.1,
                 "showline": true,
                 "ticks": "inside",
