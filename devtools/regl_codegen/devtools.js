@@ -5,6 +5,7 @@
 var mocks = require('../../build/test_dashboard_mocks.json');
 var reglTraces = require('../../build/regl_traces.json');
 var Lib = require('@src/lib');
+const { fillGroupStyle } = require('../../src/components/drawing');
 
 // Our gracious testing object
 var Tabs = {
@@ -59,7 +60,6 @@ var Tabs = {
                         graphDiv.on('plotly_afterplot', function() {
                             res(graphDiv);
                         });
-
                     
                     } else {
                         console.error(this.statusText);
@@ -107,7 +107,7 @@ async function handleOnLoad() {
             a.innerHTML = mock.name;
             a.href = '#' + mock.name;
             a.onclick = function() {
-                Tabs.plotMock(this.innerHTML);
+                Tabs.plotMock(this.innerHTML)
             };
             div.appendChild(a);
             div.appendChild(document.createElement('br'));
@@ -117,16 +117,25 @@ async function handleOnLoad() {
     // visit the mocks one by one.
     for (var trace of Object.keys(mocksByReglTrace)) {
         var thisMocks = mocksByReglTrace[trace];
+        var generated = {}
         for (var mock of thisMocks) {
-            await Tabs.plotMock(mock.name);
+            var gd = await Tabs.plotMock(mock.name);
+            var fullLayout = gd._fullLayout;
+            fullLayout._glcanvas.each(function (d) {
+                if (d.regl) {
+                    console.log("found regl", d.regl);
+                    var cachedCode = d.regl.getCachedCode();
+                    Object.entries(cachedCode).forEach(([hash, code]) => {
+                        generated[hash] = code.toString();
+                    });
+                    console.log("merging entries", Object.keys(cachedCode));
+                }
+            })
         }
 
         console.log(window.__regl_codegen_cache);
         var body = JSON.stringify({
-            generated: Object.entries(window.__regl_codegen_cache).reduce((acc, [key, value]) => {
-                acc[key] = value.toString();
-                return acc;
-            }, {}),
+            generated,
             trace: trace
         });
         window.__regl_codegen_cache = {};

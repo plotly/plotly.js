@@ -8,14 +8,6 @@ var showNoWebGlMsg = require('./show_no_webgl_msg');
 // regl and all its bytes.
 var createRegl = require('regl');
 
-
-function loadCodegenCache(generated) {
-    window.__regl_codegen_cache = window.__regl_codegen_cache || {};
-    Object.entries(generated).forEach(function([key, value]) {
-        window.__regl_codegen_cache[key] = window.__regl_codegen_cache[key] || value;
-    });
-}
-
 /**
  * Idempotent version of createRegl. Create regl instances
  * in the correct canvases with the correct attributes and
@@ -27,15 +19,16 @@ function loadCodegenCache(generated) {
  * @return {boolean} true if all createRegl calls succeeded, false otherwise
  */
 module.exports = function prepareRegl(gd, extensions, reglPrecompiled) {
+    console.log("Somethign is happeneing");
     var fullLayout = gd._fullLayout;
     var success = true;
 
-    if (reglPrecompiled) {
-        loadCodegenCache(reglPrecompiled);
-    }
-
     fullLayout._glcanvas.each(function(d) {
-        if(d.regl) return;
+        if(d.regl) {
+            console.log("Preloading existing regl", Object.keys(reglPrecompiled));
+            d.regl.preloadCachedCode(reglPrecompiled);
+            return;
+        }
         // only parcoords needs pick layer
         if(d.pick && !fullLayout._has('parcoords')) return;
 
@@ -47,9 +40,11 @@ module.exports = function prepareRegl(gd, extensions, reglPrecompiled) {
                     preserveDrawingBuffer: true
                 },
                 pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio,
-                extensions: extensions || []
+                extensions: extensions || [],
+                cachedCode: reglPrecompiled || {}
             });
         } catch(e) {
+            throw e;
             success = false;
         }
 
