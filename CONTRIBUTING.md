@@ -177,7 +177,7 @@ traces with 'regl' in the tags, and stores the captured code into
 if there are changes, you would need to commit them.
 
 This is needed because regl performs codegen in runtime which breaks CSP
-compliance, and so for strict builds we pre-compile regl codegen now.
+compliance, and so for strict builds we pre-generate regl shader code here.
 
 #### Other npm scripts that may be of interest in development
 
