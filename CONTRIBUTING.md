@@ -173,7 +173,7 @@ npm run regl-codegen
 
 to regenerate the regl code. This opens a browser window, runs through all
 traces with 'regl' in the tags, and stores the captured code into 
-src/generated/regl-codegen. If no updates are necessary, it would be a no-op, but
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it would be a no-op, but
 if there are changes, you would need to commit them.
 
 This is needed because regl performs codegen in runtime which breaks CSP
