@@ -1,0 +1,1 @@
+ - Display the version of plotly.js when hovering over the modebar [[#6077](https://github.com/plotly/plotly.js/pull/6077)]
