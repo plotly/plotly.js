@@ -841,7 +841,18 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var tickVals = [];
     var xPrevious = null;
 
-    var dTick = numDtick ? ax.dtick : ax._roughDTick;
+    var dTick;
+    if(numDtick) {
+        dTick = ax.dtick;
+    } else {
+        if(ax.type === 'date') {
+            if(typeof ax.dtick === 'string' && ax.dtick.charAt(0) === 'M') {
+                dTick = ONEAVGMONTH * ax.dtick.substring(1);
+            }
+        } else {
+            dTick = ax._roughDTick;
+        }
+    }
 
     var id = Math.round((
         ax.r2l(x) -
