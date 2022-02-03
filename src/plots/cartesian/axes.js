@@ -877,7 +877,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         };
 
         if(skipticklabels && (id % (skipticklabels + 1))) {
-            obj.jumpLabel = true;
+            obj.skipLabel = true;
         }
 
         tickVals.push(obj);
@@ -946,8 +946,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
             _minor // noSuffixPrefix
         );
 
-        if(tickVals[i].jumpLabel) {
-            t.jumpLabel = true;
+        if(tickVals[i].skipLabel) {
+            t.skipLabel = true;
         }
 
         p = tickVals[i].periodX;
@@ -2991,7 +2991,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var cls = opts.cls || axId + 'tick';
 
     var vals = ax.skipticklabels ?
-        opts.vals.filter(function(d) { return !d.jumpLabel; }) :
+        opts.vals.filter(function(d) { return !d.skipLabel; }) :
         opts.vals;
 
     var labelFns = opts.labelFns;
