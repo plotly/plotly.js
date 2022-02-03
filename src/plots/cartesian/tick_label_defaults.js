@@ -28,7 +28,13 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             color: dfltFontColor
         });
 
-        if(!options.noTicklabelstep) coerce('ticklabelstep');
+        if(
+            !options.noTicklabelstep &&
+            axType !== 'multicategory' &&
+            axType !== 'log'
+        ) {
+            coerce('ticklabelstep');
+        }
 
         if(!options.noAng) coerce('tickangle');
 
