@@ -412,7 +412,7 @@ module.exports = {
             'To set ticks every 4 years, set `dtick` to *M48*'
         ].join(' ')
     },
-    skipticklabels: {
+    ticklabelstep: {
         valType: 'integer',
         min: 0,
         dflt: 0,

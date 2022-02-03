@@ -835,7 +835,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
     }
 
-    var skipticklabels = ax.skipticklabels;
+    var ticklabelstep = ax.ticklabelstep;
 
     var maxTicks = Math.max(1000, ax._length || 0);
     var tickVals = [];
@@ -887,7 +887,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             value: x
         };
 
-        if(skipticklabels && (id % (skipticklabels + 1))) {
+        if(ticklabelstep && (id % (ticklabelstep + 1))) {
             obj.skipLabel = true;
         }
 
@@ -3007,7 +3007,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
 
-    var vals = ax.skipticklabels ?
+    var vals = ax.ticklabelstep ?
         opts.vals.filter(function(d) { return !d.skipLabel; }) :
         opts.vals;
 

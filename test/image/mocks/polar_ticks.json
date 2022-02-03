@@ -1854,7 +1854,7 @@
       },
       "radialaxis": {},
       "angularaxis": {
-        "skipticklabels": 2,
+        "ticklabelstep": 2,
         "dtick": 10,
         "tickfont": {
           "size": 10,

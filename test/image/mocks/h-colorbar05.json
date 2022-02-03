@@ -19,7 +19,7 @@
           "len": 0.5,
           "ticks": "inside",
           "dtick": 20,
-          "skipticklabels": 1,
+          "ticklabelstep": 1,
           "ticklabelposition": "inside right",
           "ticklen": 5,
           "bgcolor": "rgba(255,255,0,0.5)",
@@ -47,7 +47,7 @@
       }
     },
     "xaxis": {
-        "skipticklabels": 1,
+        "ticklabelstep": 1,
         "side": "top"
     }
   }

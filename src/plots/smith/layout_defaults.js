@@ -83,7 +83,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             }
 
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
-                noSkipticklabels: true,
+                noTicklabelstep: true,
                 noAng: !isRealAxis,
                 noExp: true,
                 font: {
