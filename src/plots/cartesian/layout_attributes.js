@@ -423,7 +423,7 @@ module.exports = {
             'A value of 2 means shows every 2nd level.',
             'A larger value n means only every nth tick is labeled.',
             '`tick0` determines which labels are shown.',
-            'Not implemented for an axis with `type` of *log* or *multicategory*.'
+            'Not implemented for an axis with `type` of *log* or *multicategory* and when `tickmode` is *array*.'
         ].join(' ')
     },
     tickvals: {
