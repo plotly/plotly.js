@@ -887,7 +887,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             value: x
         };
 
-        if(ticklabelstep && (id % (ticklabelstep + 1))) {
+        if(ticklabelstep > 1 && (id % ticklabelstep)) {
             obj.skipLabel = true;
         }
 
@@ -3007,7 +3007,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
 
-    var vals = ax.ticklabelstep ?
+    var vals = ax.ticklabelstep > 1 ?
         opts.vals.filter(function(d) { return !d.skipLabel; }) :
         opts.vals;
 

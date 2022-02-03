@@ -414,14 +414,14 @@ module.exports = {
     },
     ticklabelstep: {
         valType: 'integer',
-        min: 0,
-        dflt: 0,
+        min: 1,
+        dflt: 1,
         editType: 'ticks',
         description: [
             'Sets the spacing between tick labels as compared to the spacing between ticks.',
-            'A value of 0 (default) means each tick gets a label.',
-            'A value of 1 means shows every 2nd level.',
-            'A larger value n means only every (n+1)th tick is labeled.',
+            'A value of 1 (default) means each tick gets a label.',
+            'A value of 2 means shows every 2nd level.',
+            'A larger value n means only every nth tick is labeled.',
             '`tick0` determines which labels are shown.'
         ].join(' ')
     },
