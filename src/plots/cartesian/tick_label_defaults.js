@@ -28,7 +28,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             color: dfltFontColor
         });
 
-        if(!options.noskipticklabels) coerce('skipticklabels');
+        if(!options.noSkipticklabels) coerce('skipticklabels');
 
         if(!options.noAng) coerce('tickangle');
 
