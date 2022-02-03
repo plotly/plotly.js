@@ -944,11 +944,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var firstLabelCreated = false;
     var ticksOut = [];
     var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
+        var _skipLabel = tickVals[i].skipLabel;
 
         t = axes.tickText(
             ax,
@@ -958,7 +960,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
         );
 
         if(tickVals[i].skipLabel) {
-            t.skipLabel = true;
+            t.skipLabel = _skipLabel;
+
+            if(!firstLabelCreated) ax._prevDateHead = '';
+        } else {
+            firstLabelCreated = true;
         }
 
         p = tickVals[i].periodX;
