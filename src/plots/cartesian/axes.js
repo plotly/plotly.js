@@ -945,7 +945,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._inCalcTicks = true;
 
     var lastVisibleHead;
-    var hideLabe = function(tick) {
+    var hideLabel = function(tick) {
         tick.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
         ax._prevDateHead = lastVisibleHead;
     };
@@ -972,12 +972,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 if(p > maxRange) t.periodX = maxRange;
                 if(p < minRange) t.periodX = minRange;
 
-                hideLabe(t);
+                hideLabel(t);
             }
         }
 
         if(tickVals[i].skipLabel) {
-            hideLabe(t);
+            hideLabel(t);
         }
 
         ticksOut.push(t);
