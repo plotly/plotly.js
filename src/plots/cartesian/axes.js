@@ -887,7 +887,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             value: x
         };
 
-        if(ticklabelstep > 1 && (id % ticklabelstep)) {
+        if(ticklabelstep > 1 && id % ticklabelstep) {
             obj.skipLabel = true;
         }
 
@@ -944,13 +944,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
-    var firstLabelCreated = false;
     var ticksOut = [];
     var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
-        var _skipLabel = tickVals[i].skipLabel;
 
         t = axes.tickText(
             ax,
@@ -958,14 +956,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
             false, // hover
             _minor // noSuffixPrefix
         );
-
-        if(tickVals[i].skipLabel) {
-            t.skipLabel = _skipLabel;
-
-            if(!firstLabelCreated) ax._prevDateHead = '';
-        } else {
-            firstLabelCreated = true;
-        }
 
         p = tickVals[i].periodX;
         if(p !== undefined) {
@@ -977,6 +967,10 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 t.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
                 ax._prevDateHead = '';
             }
+        }
+
+        if(tickVals[i].skipLabel) {
+            t.text = ' ';
         }
 
         ticksOut.push(t);
@@ -3007,9 +3001,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
 
-    var vals = ax.ticklabelstep > 1 ?
-        opts.vals.filter(function(d) { return !d.skipLabel; }) :
-        opts.vals;
+    var vals = opts.vals;
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
