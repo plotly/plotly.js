@@ -134,7 +134,7 @@
     "extra-iterable": "^2.5.22",
     "falafel": "^2.2.4",
     "fs-extra": "^10.0.0",
-    "fuse.js": "^6.4.6",
+    "fuse.js": "^6.5.3",
     "glob": "^7.2.0",
     "gzip-size": "^6.0.0",
     "into-stream": "^6.0.0",
