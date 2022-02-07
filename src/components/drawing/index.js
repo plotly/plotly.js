@@ -586,6 +586,8 @@ drawing.initGradients = function(gd) {
 
     var gradientsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'gradients');
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
+
+    d3.select(gd).selectAll('.gradient_filled').classed('gradient_filled', false);
 };
 
 drawing.initPatterns = function(gd) {
@@ -593,6 +595,8 @@ drawing.initPatterns = function(gd) {
 
     var patternsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'patterns');
     patternsGroup.selectAll('pattern').remove();
+
+    d3.select(gd).selectAll('.pattern_filled').classed('pattern_filled', false);
 };
 
 drawing.getPatternAttr = function(mp, i, dflt) {
