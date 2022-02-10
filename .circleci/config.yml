@@ -386,7 +386,7 @@ workflows:
   version: 2
   build-and-test:
     jobs:
-      - install-and-cibuild-node12
+      - install-and-cibuild-node16
 
       - install-and-cibuild
       - timezone-jasmine:
