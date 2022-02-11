@@ -237,7 +237,7 @@ jobs:
 
   test-baselines:
     docker:
-      - image: circleci/node:16.8.0
+      - image: circleci/node:12.22.7
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -272,7 +272,7 @@ jobs:
 
   test-exports:
     docker:
-      - image: circleci/node:16.8.0
+      - image: circleci/node:12.22.7
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -286,7 +286,7 @@ jobs:
 
   mock-validation:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:12.22.7
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -300,7 +300,7 @@ jobs:
 
   source-syntax:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:12.22.7
     working_directory: ~/plotly.js
     steps:
       - attach_workspace:
@@ -311,7 +311,7 @@ jobs:
 
   publish-dist:
     docker:
-      - image: cimg/node:16.8.0
+      - image: cimg/node:12.22.7
     working_directory: ~/plotly.js
     steps:
       - checkout
