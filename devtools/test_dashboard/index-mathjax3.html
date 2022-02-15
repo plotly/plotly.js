@@ -16,12 +16,26 @@
 
   <section id="mocks-list"></section>
 
-  <p>MathJax $V^3$ with $svg$ output on the page as well as plotly graphs</p>
+  <p id="pWithMathJax">MathJax $V^3$ with $svg$ output on the page as well as plotly graphs</p>
+  <h4>no MathJax: Apple: $2, Orange: $3</h4>
+
   <div id="plots">
     <div id="graph"></div>
   </div>
   <div id="snapshot"></div>
 
+  <script>
+    window.MathJax = {
+      startup: {
+        elements: [
+          document.getElementById('pWithMathJax')
+        ],
+        // typeset: false,
+        // in case the elements array is empty one could disable startup typeset
+        // https://docs.mathjax.org/en/latest/options/startup/startup.html#the-configuration-block
+      }
+    };
+  </script>
   <script src="../../node_modules/mathjax-v3/es5/tex-svg.js"></script>
   <script charset="utf-8" id="source" src="../../build/plotly.js" type="module"></script>
   <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
