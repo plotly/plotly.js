@@ -557,7 +557,7 @@ axes.prepTicks = function(ax, opts) {
                 minPx = ax.tickfont ? Lib.bigFont(ax.tickfont.size || 12) : 15;
                 nt = ax._length / minPx;
             } else {
-                minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
+                minPx = ax._id.charAt(0) === 'y' ? 40 : 100;
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
 
@@ -951,6 +951,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
     };
 
     var ticksOut = [];
+    var skipText1 = /^[346789]/; // for x-axis and tick length >= 3
+    var skipText2 = /^[4689]/;   // for tick length < 3
     var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
@@ -974,6 +976,14 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
                 hideLabel(t);
             }
+        }
+
+        if(ax.type == 'log' && ax.dtick == 'D1' && (
+            (ax._attr[0] == 'y' && t.text.match(skipText2))
+             || (ax._attr[0] == 'x' && t.text.length < 3 && t.text.match(skipText2))
+             || (ax._attr[0] == 'x' && t.text.length >=3 && t.text.match(skipText1))
+        )) {
+            hideLabel(t);
         }
 
         if(tickVals[i].skipLabel) {
@@ -1129,11 +1139,14 @@ axes.autoTicks = function(ax, roughDTick) {
                 Math.pow(10, rng[0])) / nt;
             base = getBase(10);
             ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
+            ax.tickformat = '';
         } else {
             // include intermediates between powers of 10,
             // labeled with small digits
             // ax.dtick = "D2" (show 2 and 5) or "D1" (show all digits)
-            ax.dtick = (roughDTick > 0.3) ? 'D2' : 'D1';
+            ax.dtick = (roughDTick > 0.4) ? 'D2' : 'D1';
+            ax.tickformat = '0.1s';
+            ax.hoverformat = '0.2s'; // workaround to fix hoverinfo label formatting
         }
     } else if(ax.type === 'category' || ax.type === 'multicategory') {
         ax.tick0 = 0;
