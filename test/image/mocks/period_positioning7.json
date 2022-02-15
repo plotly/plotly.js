@@ -381,6 +381,7 @@
             "dtick": 604800000,
             "tickformat": "%W",
             "ticklabelmode": "period",
+            "ticklabelstep": 4,
             "tickcolor": "black"
         }
     }

@@ -803,7 +803,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
 
-    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
+    var numDtick = isNumeric(ax.dtick);
+    var isDLog = (ax.type === 'log') && !(numDtick || ax.dtick.charAt(0) === 'L');
     var isPeriod = ax.ticklabelmode === 'period';
 
     // find the first tick
@@ -834,13 +835,36 @@ axes.calcTicks = function calcTicks(ax, opts) {
         x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
     }
 
+    var ticklabelstep = ax.ticklabelstep;
+
     var maxTicks = Math.max(1000, ax._length || 0);
     var tickVals = [];
     var xPrevious = null;
+
+    var dTick;
+    if(numDtick) {
+        dTick = ax.dtick;
+    } else {
+        if(ax.type === 'date') {
+            if(typeof ax.dtick === 'string' && ax.dtick.charAt(0) === 'M') {
+                dTick = ONEAVGMONTH * ax.dtick.substring(1);
+            }
+        } else {
+            dTick = ax._roughDTick;
+        }
+    }
+
+    var id = Math.round((
+        ax.r2l(x) -
+        ax.r2l(ax.tick0)
+    ) / dTick) - 1;
+
     for(;
         (axrev) ? (x >= endTick) : (x <= endTick);
         x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
     ) {
+        id++;
+
         if(ax.rangebreaks) {
             if(!axrev) {
                 if(x < startTick) continue;
@@ -858,10 +882,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
             minor = true;
         }
 
-        tickVals.push({
+        var obj = {
             minor: minor,
             value: x
-        });
+        };
+
+        if(ticklabelstep > 1 && id % ticklabelstep) {
+            obj.skipLabel = true;
+        }
+
+        tickVals.push(obj);
     }
 
     if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
@@ -914,11 +944,19 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var lastVisibleHead;
+    var hideLabel = function(tick) {
+        tick.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
+        ax._prevDateHead = lastVisibleHead;
+    };
+
     var ticksOut = [];
     var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
+
+        lastVisibleHead = ax._prevDateHead;
 
         t = axes.tickText(
             ax,
@@ -934,9 +972,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 if(p > maxRange) t.periodX = maxRange;
                 if(p < minRange) t.periodX = minRange;
 
-                t.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
-                ax._prevDateHead = '';
+                hideLabel(t);
             }
+        }
+
+        if(tickVals[i].skipLabel) {
+            hideLabel(t);
         }
 
         ticksOut.push(t);
@@ -2966,6 +3007,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
+
     var vals = opts.vals;
 
     var labelFns = opts.labelFns;

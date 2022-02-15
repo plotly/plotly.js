@@ -1,6 +1,6 @@
 /**
-* plotly.js (basic) v2.8.3
-* Copyright 2012-2021, Plotly, Inc.
+* plotly.js (basic) v2.9.0
+* Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -21660,6 +21660,7 @@ module.exports = overrideAll({
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
+    ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     tickfont: fontAttrs({
     }),
@@ -22750,6 +22751,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         showticklabels: opts.showticklabels,
         ticklabelposition: opts.ticklabelposition,
         ticklabeloverflow: opts.ticklabeloverflow,
+        ticklabelstep: opts.ticklabelstep,
         tickfont: opts.tickfont,
         tickangle: opts.tickangle,
         tickformat: opts.tickformat,
@@ -31556,7 +31558,6 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                     offsetY += h;
                     maxWidthInGroup = Math.max(maxWidthInGroup, textGap + w);
                 });
-                maxGroupHeightInRow = Math.max(maxGroupHeightInRow, offsetY);
 
                 var next = maxWidthInGroup + itemGap;
 
@@ -31572,6 +31573,8 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                     groupOffsetX = 0;
                     groupOffsetY += maxGroupHeightInRow + traceGroupGap;
                     maxGroupHeightInRow = offsetY;
+                } else {
+                    maxGroupHeightInRow = Math.max(maxGroupHeightInRow, offsetY);
                 }
 
                 Drawing.setTranslate(this, groupOffsetX, groupOffsetY);
@@ -34054,6 +34057,8 @@ var isNumeric = _dereq_('fast-isnumeric');
 
 var Lib = _dereq_('../../lib');
 var Icons = _dereq_('../../fonts/ploticon');
+var version = _dereq_('../../version').version;
+
 var Parser = new DOMParser();
 
 /**
@@ -34332,6 +34337,10 @@ proto.hasButtons = function(buttons) {
     return true;
 };
 
+function jsVersion(str) {
+    return str + ' (v' + version + ')';
+}
+
 /**
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
@@ -34341,7 +34350,7 @@ proto.getLogo = function() {
 
     a.href = 'https://plotly.com/';
     a.target = '_blank';
-    a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly'));
+    a.setAttribute('data-title', jsVersion(Lib._(this.graphInfo, 'Produced with Plotly.js')));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(Icons.newplotlylogo));
@@ -34383,7 +34392,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../fonts/ploticon":215,"../../lib":232,"@plotly/d3":11,"fast-isnumeric":17}],168:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":215,"../../lib":232,"../../version":391,"@plotly/d3":11,"fast-isnumeric":17}],168:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -57776,7 +57785,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
 
-    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
+    var numDtick = isNumeric(ax.dtick);
+    var isDLog = (ax.type === 'log') && !(numDtick || ax.dtick.charAt(0) === 'L');
     var isPeriod = ax.ticklabelmode === 'period';
 
     // find the first tick
@@ -57807,13 +57817,36 @@ axes.calcTicks = function calcTicks(ax, opts) {
         x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
     }
 
+    var ticklabelstep = ax.ticklabelstep;
+
     var maxTicks = Math.max(1000, ax._length || 0);
     var tickVals = [];
     var xPrevious = null;
+
+    var dTick;
+    if(numDtick) {
+        dTick = ax.dtick;
+    } else {
+        if(ax.type === 'date') {
+            if(typeof ax.dtick === 'string' && ax.dtick.charAt(0) === 'M') {
+                dTick = ONEAVGMONTH * ax.dtick.substring(1);
+            }
+        } else {
+            dTick = ax._roughDTick;
+        }
+    }
+
+    var id = Math.round((
+        ax.r2l(x) -
+        ax.r2l(ax.tick0)
+    ) / dTick) - 1;
+
     for(;
         (axrev) ? (x >= endTick) : (x <= endTick);
         x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
     ) {
+        id++;
+
         if(ax.rangebreaks) {
             if(!axrev) {
                 if(x < startTick) continue;
@@ -57831,10 +57864,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
             minor = true;
         }
 
-        tickVals.push({
+        var obj = {
             minor: minor,
             value: x
-        });
+        };
+
+        if(ticklabelstep > 1 && id % ticklabelstep) {
+            obj.skipLabel = true;
+        }
+
+        tickVals.push(obj);
     }
 
     if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
@@ -57887,11 +57926,19 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
+    var lastVisibleHead;
+    var hideLabel = function(tick) {
+        tick.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
+        ax._prevDateHead = lastVisibleHead;
+    };
+
     var ticksOut = [];
     var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
+
+        lastVisibleHead = ax._prevDateHead;
 
         t = axes.tickText(
             ax,
@@ -57907,9 +57954,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 if(p > maxRange) t.periodX = maxRange;
                 if(p < minRange) t.periodX = minRange;
 
-                t.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
-                ax._prevDateHead = '';
+                hideLabel(t);
             }
+        }
+
+        if(tickVals[i].skipLabel) {
+            hideLabel(t);
         }
 
         ticksOut.push(t);
@@ -59939,6 +59989,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
+
     var vals = opts.vals;
 
     var labelFns = opts.labelFns;
@@ -64795,6 +64846,12 @@ module.exports = {
         editType: 'ticks',
         impliedEdits: {tickmode: 'linear'},
     },
+    ticklabelstep: {
+        valType: 'integer',
+        min: 1,
+        dflt: 1,
+        editType: 'ticks',
+    },
     tickvals: {
         valType: 'data_array',
         editType: 'ticks',
@@ -67658,6 +67715,14 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             size: font.size,
             color: dfltFontColor
         });
+
+        if(
+            !options.noTicklabelstep &&
+            axType !== 'multicategory' &&
+            axType !== 'log'
+        ) {
+            coerce('ticklabelstep');
+        }
 
         if(!options.noAng) coerce('tickangle');
 
@@ -82631,7 +82696,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.8.3';
+exports.version = '2.9.0';
 
 },{}]},{},[8])(8)
 });
