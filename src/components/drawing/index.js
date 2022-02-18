@@ -177,24 +177,42 @@ drawing.dashStyle = function(dash, lineWidth) {
     return dash;
 };
 
+function setFillStyle(sel, trace, gd) {
+    var markerPattern = trace.fillpattern;
+    var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, '');
+    if(patternShape) {
+        var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
+        var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+        var patternFGOpacity = markerPattern.fgopacity;
+        var patternSize = drawing.getPatternAttr(markerPattern.size, 0, 8);
+        var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
+        var patternID = trace.uid;
+        drawing.pattern(sel, 'point', gd, patternID,
+            patternShape, patternSize, patternSolidity,
+            undefined, markerPattern.fillmode,
+            patternBGColor, patternFGColor, patternFGOpacity
+        );
+    } else if(trace.fillcolor) {
+        sel.call(Color.fill, trace.fillcolor);
+    }
+}
+
 // Same as fillGroupStyle, except in this case the selection may be a transition
-drawing.singleFillStyle = function(sel) {
+drawing.singleFillStyle = function(sel, gd) {
     var node = d3.select(sel.node());
     var data = node.data();
-    var fillcolor = (((data[0] || [])[0] || {}).trace || {}).fillcolor;
-    if(fillcolor) {
-        sel.call(Color.fill, fillcolor);
-    }
+    var trace = ((data[0] || [])[0] || {}).trace || {};
+    setFillStyle(sel, trace, gd);
 };
 
-drawing.fillGroupStyle = function(s) {
+drawing.fillGroupStyle = function(s, gd) {
     s.style('stroke-width', 0)
     .each(function(d) {
         var shape = d3.select(this);
         // N.B. 'd' won't be a calcdata item when
         // fill !== 'none' on a segment-less and marker-less trace
         if(d[0].trace) {
-            shape.call(Color.fill, d[0].trace.fillcolor);
+            setFillStyle(shape, d[0].trace, gd);
         }
     });
 };
@@ -347,12 +365,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
     sel.style(prop, getFullUrl(fullID, gd))
         .style(prop + '-opacity', null);
 
-    var className2query = function(s) {
-        return '.' + s.attr('class').replace(/\s/g, '.');
-    };
-    var k = className2query(d3.select(sel.node().parentNode)) +
-        '>' + className2query(sel);
-    fullLayout._gradientUrlQueryParts[k] = 1;
+    sel.classed('gradient_filled', true);
 };
 
 /**
@@ -559,11 +572,6 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
         .style('fill-opacity', null);
 
     sel.classed('pattern_filled', true);
-    var className2query = function(s) {
-        return '.' + s.attr('class').replace(/\s/g, '.');
-    };
-    var k = className2query(d3.select(sel.node().parentNode)) + '>.pattern_filled';
-    fullLayout._patternUrlQueryParts[k] = 1;
 };
 
 /*
@@ -579,9 +587,7 @@ drawing.initGradients = function(gd) {
     var gradientsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'gradients');
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
 
-    // initialize stash of query parts filled in Drawing.gradient,
-    // used to fix URL strings during image exports
-    fullLayout._gradientUrlQueryParts = {};
+    d3.select(gd).selectAll('.gradient_filled').classed('gradient_filled', false);
 };
 
 drawing.initPatterns = function(gd) {
@@ -590,9 +596,7 @@ drawing.initPatterns = function(gd) {
     var patternsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'patterns');
     patternsGroup.selectAll('pattern').remove();
 
-    // initialize stash of query parts filled in Drawing.pattern,
-    // used to fix URL strings during image exports
-    fullLayout._patternUrlQueryParts = {};
+    d3.select(gd).selectAll('.pattern_filled').classed('pattern_filled', false);
 };
 
 drawing.getPatternAttr = function(mp, i, dflt) {
