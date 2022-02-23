@@ -22,6 +22,12 @@ var configAttributes = {
         ].join(' ')
     },
 
+    typesetMath: {
+        valType: 'boolean',
+        dflt: true,
+        description: 'Determines whether the math should be typeset or not.'
+    },
+
     plotlyServerURL: {
         valType: 'string',
         dflt: '',

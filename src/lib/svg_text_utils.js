@@ -62,7 +62,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     }
 
     if(tex) {
-        ((gd && gd._promises) || []).push(new Promise(function(resolve) {
+        ((gd && gd._context && gd._context.typesetMath && gd._promises) || []).push(new Promise(function(resolve) {
             _context.style('display', 'none');
             var fontSize = parseInt(_context.node().style.fontSize, 10);
             var config = {fontSize: fontSize};

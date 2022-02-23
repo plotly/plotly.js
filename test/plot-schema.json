@@ -365,6 +365,11 @@
    "noBlank": true,
    "valType": "string"
   },
+  "typesetMath": {
+   "description": "Determines whether the math should be typeset or not.",
+   "dflt": true,
+   "valType": "boolean"
+  },
   "watermark": {
    "description": "watermark the images with the company's logo",
    "dflt": false,
