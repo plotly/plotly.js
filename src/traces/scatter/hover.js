@@ -185,8 +185,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 color = trace.line.color;
             }
             var hovertemplate = false;
-            if (trace.mode === 'lines') {
-                hovertemplate = trace.hovertemplate
+            if(trace.mode === 'lines') {
+                hovertemplate = trace.hovertemplate;
             }
             Lib.extendFlat(pointData, {
                 // never let a 2D override 1D type as closest point
