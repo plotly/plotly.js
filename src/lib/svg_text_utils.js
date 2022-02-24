@@ -19,6 +19,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!_context.attr('data-notex')) &&
+        gd._context.typesetMath &&
         (typeof MathJax !== 'undefined') &&
         str.match(FIND_TEX);
 
@@ -62,7 +63,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     }
 
     if(tex) {
-        ((gd && gd._context && gd._context.typesetMath && gd._promises) || []).push(new Promise(function(resolve) {
+        ((gd && gd._promises) || []).push(new Promise(function(resolve) {
             _context.style('display', 'none');
             var fontSize = parseInt(_context.node().style.fontSize, 10);
             var config = {fontSize: fontSize};
