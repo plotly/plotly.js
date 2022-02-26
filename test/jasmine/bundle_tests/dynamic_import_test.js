@@ -1,11 +1,15 @@
 var Plotly = require('@lib/core');
+var Scatter = require('@lib/scatter');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-
 describe('Dynamic @lib/ module imports', function() {
+    'use strict';
+
+    Plotly.register(Scatter);
+
     var gd;
 
     afterEach(destroyGraphDiv);

@@ -1,13 +1,15 @@
-var d3SelectAll = require('../../strict-d3').selectAll;
-
 var Plotly = require('@lib/core');
+var Scatter = require('@lib/scatter');
 
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-
-describe('Bundle with core only', function() {
+describe('Bundle with core and scatter only', function() {
     'use strict';
+
+    Plotly.register(Scatter);
+
     var gd;
 
     var mock = require('@mocks/bar_line.json');

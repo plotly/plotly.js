@@ -397,6 +397,8 @@ describe('plot schema', function() {
 });
 
 describe('getTraceValObject', function() {
+    'use strict';
+
     var getTraceValObject = Plotly.PlotSchema.getTraceValObject;
 
     it('finds base attributes', function() {
@@ -486,6 +488,8 @@ describe('getTraceValObject', function() {
 });
 
 describe('getLayoutValObject', function() {
+    'use strict';
+
     var getLayoutValObject = Plotly.PlotSchema.getLayoutValObject;
     var blankLayout = {};
 
@@ -606,6 +610,8 @@ describe('getLayoutValObject', function() {
 });
 
 describe('component schemas', function() {
+    'use strict';
+
     it('does not have yaxis-only attributes or mismatched x/yaxis attributes', function() {
         // in principle either of these should be allowable, but we don't currently
         // support them so lets simply test that we haven't added them accidentally!

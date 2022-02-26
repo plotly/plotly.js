@@ -26,9 +26,6 @@ for(var i = 0; i < methodNames.length; i++) {
     });
 }
 
-// scatter is the only trace included by default
-register(require('./traces/scatter'));
-
 // register all registrable components modules
 register([
     require('./components/legend'),

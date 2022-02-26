@@ -9,12 +9,13 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
  * but the test is that they may have been registered in any order
  */
 module.exports = function checkComponent(Plotly) {
-    describe('core (svg 2d, scatter) and registered (bar) traces and transforms', function() {
+    describe('core and registered (bar) traces and transforms', function() {
         var gd;
 
         var mock = {
             data: [
                 {
+                    type: 'bar',
                     // x data is date so we coerce a calendar
                     x: ['2001-01-01', '2002-01-01', '2003-01-01'],
                     y: [1, 3, 5]
@@ -43,21 +44,14 @@ module.exports = function checkComponent(Plotly) {
 
         afterEach(destroyGraphDiv);
 
-        it('should graph scatter traces with calendar attributes', function() {
-            var nodes = d3SelectAll('g.trace.scatter');
-
-            expect(nodes.size()).toEqual(1);
-
-            // compare to core_test
-            expect(gd._fullLayout.calendar).toBe('gregorian');
-            expect(gd._fullLayout.xaxis.calendar).toBe('gregorian');
-            expect(gd._fullData[0].xcalendar).toBe('gregorian');
-        });
-
         it('should graph bar traces with calendar attributes', function() {
             var nodes = d3SelectAll('g.trace.bars');
 
-            expect(nodes.size()).toEqual(1);
+            expect(gd._fullLayout.calendar).toBe('gregorian');
+            expect(gd._fullLayout.xaxis.calendar).toBe('gregorian');
+            expect(gd._fullData[0].xcalendar).toBe('gregorian');
+
+            expect(nodes.size()).toEqual(2);
             expect(gd._fullData[1].xcalendar).toBe('gregorian');
             expect(gd._fullData[1].transforms[0].valuecalendar).toBe('nepali');
         });

@@ -1,7 +1,7 @@
 var Plots = require('@src/plots/plots');
 var Plotly = require('@lib/core');
-var ohlc = require('@lib/ohlc');
-var candlestick = require('@lib/candlestick');
+var Ohlc = require('@lib/ohlc');
+var Candlestick = require('@lib/candlestick');
 
 var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -10,7 +10,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Bundle with finance trace type', function() {
     'use strict';
 
-    Plotly.register([ohlc, candlestick]);
+    Plotly.register([Ohlc, Candlestick]);
 
     var mock = require('@mocks/finance_style.json');
 
@@ -25,7 +25,7 @@ describe('Bundle with finance trace type', function() {
 
         // scatter is registered no matter what
         // ohlc uses some parts of box by direct require but does not need to register it.
-        expect(traceModules).toEqual(['scatter', 'ohlc', 'candlestick']);
+        expect(traceModules).toEqual(['ohlc', 'candlestick']);
     });
 
     it('should graph ohlc and candlestick traces', function(done) {
