@@ -19,7 +19,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!_context.attr('data-notex')) &&
-        gd._context.typesetMath &&
+        gd && gd._context.typesetMath &&
         (typeof MathJax !== 'undefined') &&
         str.match(FIND_TEX);
 
@@ -188,6 +188,7 @@ function texToSVG(_texString, _config, _callback) {
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
+        noOriginalInlineMath,
         tmpDiv;
 
     var setConfig = function() {
@@ -212,6 +213,7 @@ function texToSVG(_texString, _config, _callback) {
 
             if(!MathJax.config.tex.inlineMath) {
                 MathJax.config.tex.inlineMath = inlineMath;
+                noOriginalInlineMath = true;
             }
         }
     };
@@ -291,7 +293,11 @@ function texToSVG(_texString, _config, _callback) {
             }
             return MathJax.Hub.Config(originalConfig);
         } else {
-            MathJax.config.tex.inlineMath = originalConfig.tex.inlineMath;
+            if(noOriginalInlineMath) {
+                delete MathJax.config.tex.inlineMath;
+            } else {
+                MathJax.config.tex.inlineMath = originalConfig.tex.inlineMath;
+            }
         }
     };
 
