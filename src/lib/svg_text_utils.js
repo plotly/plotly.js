@@ -179,10 +179,14 @@ var inlineMath = [['$', '$'], ['\\(', '\\)']];
 function texToSVG(_texString, _config, _callback) {
     var MathJaxVersion = parseInt(
         (MathJax.version || '').split('.')[0]
-    ) || -1;
+    );
 
-    if(!MathJaxVersion) {
+    if(
+        MathJaxVersion !== 2 &&
+        MathJaxVersion !== 3
+    ) {
         Lib.warn('No MathJax version:', MathJax.version);
+        return;
     }
 
     var originalRenderer,
@@ -191,45 +195,44 @@ function texToSVG(_texString, _config, _callback) {
         noOriginalInlineMath,
         tmpDiv;
 
-    var setConfig = function() {
-        if(MathJaxVersion < 3) {
-            originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
+    var setConfig2 = function() {
+        originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
 
-            originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
-            if(MathJax.Hub.processSectionDelay !== undefined) {
-                // MathJax 2.5+ but not 3+
-                MathJax.Hub.processSectionDelay = 0;
-            }
+        originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
+        if(MathJax.Hub.processSectionDelay !== undefined) {
+            // MathJax 2.5+ but not 3+
+            MathJax.Hub.processSectionDelay = 0;
+        }
 
-            return MathJax.Hub.Config({
-                messageStyle: 'none',
-                tex2jax: {
-                    inlineMath: inlineMath
-                },
-                displayAlign: 'left',
-            });
-        } else {
-            originalConfig = Lib.extendDeepAll({}, MathJax.config);
+        return MathJax.Hub.Config({
+            messageStyle: 'none',
+            tex2jax: {
+                inlineMath: inlineMath
+            },
+            displayAlign: 'left',
+        });
+    };
 
-            if(!MathJax.config.tex.inlineMath) {
-                MathJax.config.tex.inlineMath = inlineMath;
-                noOriginalInlineMath = true;
-            }
+    var setConfig3 = function() {
+        originalConfig = Lib.extendDeepAll({}, MathJax.config);
+
+        if(!MathJax.config.tex.inlineMath) {
+            MathJax.config.tex.inlineMath = inlineMath;
+            noOriginalInlineMath = true;
         }
     };
 
-    var setRenderer = function() {
-        // Get original renderer
-        if(MathJaxVersion < 3) {
-            originalRenderer = MathJax.Hub.config.menuSettings.renderer;
-            if(originalRenderer !== 'SVG') {
-                return MathJax.Hub.setRenderer('SVG');
-            }
-        } else {
-            originalRenderer = MathJax.config.startup.output;
-            if(originalRenderer !== 'svg') {
-                MathJax.config.startup.output = 'svg';
-            }
+    var setRenderer2 = function() {
+        originalRenderer = MathJax.Hub.config.menuSettings.renderer;
+        if(originalRenderer !== 'SVG') {
+            return MathJax.Hub.setRenderer('SVG');
+        }
+    };
+
+    var setRenderer3 = function() {
+        originalRenderer = MathJax.config.startup.output;
+        if(originalRenderer !== 'svg') {
+            MathJax.config.startup.output = 'svg';
         }
     };
 
@@ -246,14 +249,14 @@ function texToSVG(_texString, _config, _callback) {
 
         var tmpNode = tmpDiv.node();
 
-        return MathJaxVersion < 3 ?
+        return MathJaxVersion === 2 ?
             MathJax.Hub.Typeset(tmpNode) :
             MathJax.typeset([tmpNode]);
     };
 
     var finalizeMathJax = function() {
         var sel = tmpDiv.select(
-            MathJaxVersion < 3 ? '.MathJax_SVG' : '.MathJax'
+            MathJaxVersion === 2 ? '.MathJax_SVG' : '.MathJax'
         );
 
         var node = !sel.empty() && tmpDiv.select('svg').node();
@@ -263,7 +266,7 @@ function texToSVG(_texString, _config, _callback) {
         } else {
             var nodeBBox = node.getBoundingClientRect();
             var glyphDefs;
-            if(MathJaxVersion < 3) {
+            if(MathJaxVersion === 2) {
                 glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
             } else {
                 glyphDefs = sel.select('defs');
@@ -274,53 +277,53 @@ function texToSVG(_texString, _config, _callback) {
         tmpDiv.remove();
     };
 
-    var resetRenderer = function() {
-        if(MathJaxVersion < 3) {
-            if(originalRenderer !== 'SVG') {
-                return MathJax.Hub.setRenderer(originalRenderer);
-            }
-        } else {
-            if(originalRenderer !== 'svg') {
-                MathJax.config.startup.output = originalRenderer;
-            }
+    var resetRenderer2 = function() {
+        if(originalRenderer !== 'SVG') {
+            return MathJax.Hub.setRenderer(originalRenderer);
         }
     };
 
-    var resetConfig = function() {
-        if(MathJaxVersion < 3) {
-            if(originalProcessSectionDelay !== undefined) {
-                MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
-            }
-            return MathJax.Hub.Config(originalConfig);
-        } else {
-            if(noOriginalInlineMath) {
-                delete MathJax.config.tex.inlineMath;
-            } else {
-                MathJax.config.tex.inlineMath = originalConfig.tex.inlineMath;
-            }
+    var resetRenderer3 = function() {
+        if(originalRenderer !== 'svg') {
+            MathJax.config.startup.output = originalRenderer;
         }
     };
 
-    if(MathJaxVersion < 3) {
+    var resetConfig2 = function() {
+        if(originalProcessSectionDelay !== undefined) {
+            MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
+        }
+        return MathJax.Hub.Config(originalConfig);
+    };
+
+    var resetConfig3 = function() {
+        if(noOriginalInlineMath) {
+            delete MathJax.config.tex.inlineMath;
+        } else {
+            MathJax.config.tex.inlineMath = originalConfig.tex.inlineMath;
+        }
+    };
+
+    if(MathJaxVersion === 2) {
         MathJax.Hub.Queue(
-            setConfig,
-            setRenderer,
+            setConfig2,
+            setRenderer2,
             initiateMathJax,
             finalizeMathJax,
-            resetRenderer,
-            resetConfig
+            resetRenderer2,
+            resetConfig2
         );
-    } else {
-        setConfig();
-        setRenderer();
+    } else if(MathJaxVersion === 3) {
+        setConfig3();
+        setRenderer3();
         MathJax.startup.defaultReady();
 
         MathJax.startup.promise.then(function() {
             initiateMathJax();
             finalizeMathJax();
 
-            resetRenderer();
-            resetConfig();
+            resetRenderer3();
+            resetConfig3();
         });
     }
 }
