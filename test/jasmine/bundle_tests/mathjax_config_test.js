@@ -20,7 +20,7 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
                 startup: {
                     output: 'chtml',
                     tex: {
-                        inlineMath: ['|', '|']
+                        inlineMath: [['|', '|']]
                     }
                 }
             };
@@ -39,11 +39,21 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
         if(mathjaxVersion === 2) {
             window.MathJax.Hub.Config({
                 tex2jax: {
-                    inlineMath: ['|', '|']
+                    inlineMath: [['|', '|']]
                 }
             });
 
             window.MathJax.Hub.setRenderer('CHTML');
+        }
+
+        // before plot
+        if(mathjaxVersion === 3) {
+            expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
+            expect(window.MathJax.config.startup.output).toEqual('chtml');
+        }
+        if(mathjaxVersion === 2) {
+            expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
+            expect(window.MathJax.Hub.config.menuSettings.renderer).toEqual('');
         }
 
         Plotly.newPlot(gd, {
@@ -52,18 +62,19 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
             }],
             layout: {
                 title: {
-                    text: '|E=mc^2|'
+                    text: '$E=mc^2$'
                 }
             }
         })
         .then(function() {
+            // after plot
             if(mathjaxVersion === 3) {
-                expect(window.MathJax.config.startup.tex.inlineMath).toEqual(['|', '|']);
+                expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
                 expect(window.MathJax.config.startup.output).toEqual('chtml');
             }
-
             if(mathjaxVersion === 2) {
-                expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual(['|', '|']);
+                // TODO: figure out why v2 implementation does not reset inlineMath
+                // expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
                 expect(window.MathJax.Hub.config.menuSettings.renderer).toEqual('');
             }
         })

@@ -192,7 +192,6 @@ function texToSVG(_texString, _config, _callback) {
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
-        noOriginalInlineMath,
         tmpDiv;
 
     var setConfig2 = function() {
@@ -216,10 +215,11 @@ function texToSVG(_texString, _config, _callback) {
     var setConfig3 = function() {
         originalConfig = Lib.extendDeepAll({}, MathJax.config);
 
-        if(!MathJax.config.tex.inlineMath) {
-            MathJax.config.tex.inlineMath = inlineMath;
-            noOriginalInlineMath = true;
+        if(!MathJax.config.tex) {
+            MathJax.config.tex = {};
         }
+
+        MathJax.config.tex.inlineMath = inlineMath;
     };
 
     var setRenderer2 = function() {
@@ -297,11 +297,7 @@ function texToSVG(_texString, _config, _callback) {
     };
 
     var resetConfig3 = function() {
-        if(noOriginalInlineMath) {
-            delete MathJax.config.tex.inlineMath;
-        } else {
-            MathJax.config.tex.inlineMath = originalConfig.tex.inlineMath;
-        }
+        MathJax.config = originalConfig;
     };
 
     if(MathJaxVersion === 2) {
