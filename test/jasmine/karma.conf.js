@@ -9,6 +9,7 @@ var isCI = Boolean(process.env.CI);
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
     'boolean': [
+        'mathjax3',
         'info',
         'nowatch', 'randomize',
         'failFast', 'doNotFailOnEmptyTestSuite',
@@ -60,6 +61,7 @@ if(argv.info) {
         '',
         'Other options:',
         '  - `--info`: show this info message',
+        '  - `--mathjax3`: to load mathjax v3 in relevant test',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
@@ -286,6 +288,8 @@ func.defaultConfig = {
         // - $ npm run test-jasmine -- --tags=gl
         tagPrefix: '@',
         skipTags: isCI ? 'noCI' : null,
+
+        mathjaxVersion: argv.mathjax3 ? 3 : 2,
 
         // See https://jasmine.github.io/api/3.4/Configuration.html
         jasmine: {
