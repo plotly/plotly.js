@@ -2,6 +2,7 @@
 
 var Plotly = require('@lib/index');
 
+var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var loadScript = require('../assets/load_script');
@@ -48,12 +49,12 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
 
         // before plot
         if(mathjaxVersion === 3) {
-            expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
             expect(window.MathJax.config.startup.output).toEqual('chtml');
+            expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
         }
         if(mathjaxVersion === 2) {
-            expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
             expect(window.MathJax.Hub.config.menuSettings.renderer).toEqual('');
+            expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
         }
 
         Plotly.newPlot(gd, {
@@ -69,13 +70,17 @@ describe('Test MathJax v' + mathjaxVersion + ' config test:', function() {
         .then(function() {
             // after plot
             if(mathjaxVersion === 3) {
-                expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
                 expect(window.MathJax.config.startup.output).toEqual('chtml');
+                expect(window.MathJax.config.startup.tex.inlineMath).toEqual([['|', '|']]);
             }
             if(mathjaxVersion === 2) {
-                // TODO: figure out why v2 implementation does not reset inlineMath
-                // expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
                 expect(window.MathJax.Hub.config.menuSettings.renderer).toEqual('');
+            }
+        })
+        .then(delay(1000)) // TODO: why we need this delay for mathjax v2 here?
+        .then(function() {
+            if(mathjaxVersion === 2) {
+                expect(window.MathJax.Hub.config.tex2jax.inlineMath).toEqual([['|', '|']]);
             }
         })
         .then(done, done.fail);
