@@ -3,6 +3,7 @@ var d3Select = require('../../strict-d3').select;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var loadScript = require('../assets/load_script');
 
 // TODO: find a better way reuse the code from mathjav v2 tests
 //
@@ -11,16 +12,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 // it might be nice to move these tests in the "regular" test
 // suites, but to do that we'll need to find a way to remove MathJax from
 // page without breaking things downstream.
-
-function loadScript(src, done) {
-    var newScript;
-    newScript = document.createElement('script');
-    newScript.src = src;
-    newScript.type = 'text/javascript';
-    newScript.onload = done;
-    newScript.onerror = done.fail;
-    document.body.appendChild(newScript);
-}
 
 describe('Test MathJax v3:', function() {
     beforeAll(function(done) {
