@@ -25,29 +25,49 @@ var getMockList = require('./assets/get_mock_list');
  *
  *      npm run baseline -- gl3d_*
  *
+ *  Generate or (re-generate) baselines using mathjax3:
+ *
+ *      npm run baseline mathjax3
+ *
  */
 
 var argv = minimist(process.argv.slice(2), {});
 
 var allMockList = [];
+var mathjax3;
 argv._.forEach(function(pattern) {
-    var mockList = getMockList(pattern);
+    if(pattern === 'mathjax3') {
+        mathjax3 = true;
+    } else {
+        var mockList = getMockList(pattern);
 
-    if(mockList.length === 0) {
-        throw new Error('No mocks found with pattern ' + pattern);
+        if(mockList.length === 0) {
+            throw new Error('No mocks found with pattern ' + pattern);
+        }
+
+        allMockList = allMockList.concat(mockList);
     }
-
-    allMockList = allMockList.concat(mockList);
 });
+
+if(mathjax3) {
+    allMockList = [
+        'legend_mathjax_title_and_items',
+        'mathjax',
+        'parcats_grid_subplots',
+        'table_latex_multitrace_scatter',
+        'table_plain_birds',
+        'table_wrapped_birds',
+        'ternary-mathjax'
+    ];
+}
 
 if(allMockList.length) console.log(allMockList);
 console.log('Please wait for the process to complete.');
 
 var p = spawn(
-    'python3',
-    [
+    'python3', [
         path.join('test', 'image', 'make_baseline.py'),
-        '= ' + allMockList.join(' ')
+        (mathjax3 ? 'mathjax3' : '') + '= ' + allMockList.join(' ')
     ]
 );
 try {

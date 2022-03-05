@@ -365,6 +365,11 @@
    "noBlank": true,
    "valType": "string"
   },
+  "typesetMath": {
+   "description": "Determines whether math should be typeset or not, when MathJax (either v2 or v3) is present on the page.",
+   "dflt": true,
+   "valType": "boolean"
+  },
   "watermark": {
    "description": "watermark the images with the company's logo",
    "dflt": false,
