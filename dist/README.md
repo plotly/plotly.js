@@ -46,9 +46,9 @@ The main plotly.js bundles weight in at:
 | 8.3 MB | 3.5 MB | 1 MB | 8.6 MB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-2.9.0.js
+> https://cdn.plot.ly/plotly-2.10.0.js
 
-> https://cdn.plot.ly/plotly-2.9.0.min.js
+> https://cdn.plot.ly/plotly-2.10.0.min.js
 
 
 #### npm packages
@@ -91,12 +91,12 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.7 MB | 977.2 kB | 318.3 kB |
+| 2.7 MB | 977.9 kB | 318.5 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-basic-2.9.0.js
+> https://cdn.plot.ly/plotly-basic-2.10.0.js
 
-> https://cdn.plot.ly/plotly-basic-2.9.0.min.js
+> https://cdn.plot.ly/plotly-basic-2.10.0.min.js
 
 
 #### npm packages
@@ -114,12 +114,12 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.3 MB | 1.2 MB | 391.3 kB |
+| 3.3 MB | 1.2 MB | 391.5 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-cartesian-2.9.0.js
+> https://cdn.plot.ly/plotly-cartesian-2.10.0.js
 
-> https://cdn.plot.ly/plotly-cartesian-2.9.0.min.js
+> https://cdn.plot.ly/plotly-cartesian-2.10.0.min.js
 
 
 #### npm packages
@@ -137,12 +137,12 @@ The `geo` partial bundle contains trace modules `choropleth`, `scatter` and `sca
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3 MB | 1.1 MB | 360.9 kB |
+| 3.1 MB | 1.1 MB | 361.2 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-geo-2.9.0.js
+> https://cdn.plot.ly/plotly-geo-2.10.0.js
 
-> https://cdn.plot.ly/plotly-geo-2.9.0.min.js
+> https://cdn.plot.ly/plotly-geo-2.10.0.min.js
 
 
 #### npm packages
@@ -160,12 +160,12 @@ The `gl3d` partial bundle contains trace modules `cone`, `isosurface`, `mesh3d`,
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.9 MB | 1.5 MB | 481.1 kB |
+| 3.9 MB | 1.5 MB | 481.3 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl3d-2.9.0.js
+> https://cdn.plot.ly/plotly-gl3d-2.10.0.js
 
-> https://cdn.plot.ly/plotly-gl3d-2.9.0.min.js
+> https://cdn.plot.ly/plotly-gl3d-2.10.0.min.js
 
 
 #### npm packages
@@ -183,12 +183,12 @@ The `gl2d` partial bundle contains trace modules `heatmapgl`, `parcoords`, `poin
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.4 MB | 1.8 MB | 571.7 kB |
+| 4.4 MB | 1.8 MB | 571.9 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-gl2d-2.9.0.js
+> https://cdn.plot.ly/plotly-gl2d-2.10.0.js
 
-> https://cdn.plot.ly/plotly-gl2d-2.9.0.min.js
+> https://cdn.plot.ly/plotly-gl2d-2.10.0.min.js
 
 
 #### npm packages
@@ -206,12 +206,12 @@ The `mapbox` partial bundle contains trace modules `choroplethmapbox`, `densitym
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 4.3 MB | 1.7 MB | 515.1 kB |
+| 4.3 MB | 1.7 MB | 515.4 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-mapbox-2.9.0.js
+> https://cdn.plot.ly/plotly-mapbox-2.10.0.js
 
-> https://cdn.plot.ly/plotly-mapbox-2.9.0.min.js
+> https://cdn.plot.ly/plotly-mapbox-2.10.0.min.js
 
 
 #### npm packages
@@ -229,12 +229,12 @@ The `finance` partial bundle contains trace modules `bar`, `candlestick`, `funne
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.9 MB | 1.1 MB | 351 kB |
+| 2.9 MB | 1.1 MB | 351.2 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-finance-2.9.0.js
+> https://cdn.plot.ly/plotly-finance-2.10.0.js
 
-> https://cdn.plot.ly/plotly-finance-2.9.0.min.js
+> https://cdn.plot.ly/plotly-finance-2.10.0.min.js
 
 
 #### npm packages
@@ -252,12 +252,12 @@ The `strict` partial bundle contains trace modules `bar`, `barpolar`, `box`, `ca
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 7.7 MB | 3.2 MB | 958.9 kB |
+| 7.7 MB | 3.2 MB | 959.2 kB |
 
 #### CDN links
-> https://cdn.plot.ly/plotly-strict-2.9.0.js
+> https://cdn.plot.ly/plotly-strict-2.10.0.js
 
-> https://cdn.plot.ly/plotly-strict-2.9.0.min.js
+> https://cdn.plot.ly/plotly-strict-2.10.0.min.js
 
 
 #### npm packages
