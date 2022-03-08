@@ -1586,7 +1586,7 @@ describe('Test splom select:', function() {
 
             var to = setTimeout(function() {
                 reject('fail: plotly_selected not emitter');
-            }, 300);
+            }, 700);
 
             gd.once('plotly_selected', function(d) {
                 clearTimeout(to);
