@@ -9,6 +9,35 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.10.1] -- 2022-03-08
+
+### Fixed
+ - Fix `mesh3d` generation when `alphahull` is a positive number (regression introduced in 2.5.1) [[#6133](https://github.com/plotly/plotly.js/pull/6133)]
+
+
+## [2.10.0] -- 2022-03-04
+
+### Added
+ - Add support to use version 3 of MathJax and add `typesetMath` attribute to config [[#6073](https://github.com/plotly/plotly.js/pull/6073)],
+   with thanks to [Equinor](https://www.equinor.com) for sponsoring the related development!
+ - Add `fillpattern` options to `scatter` trace [[#6101](https://github.com/plotly/plotly.js/pull/6101)],
+   with thanks to @s417-lama for the contribution!
+
+
+## [2.9.0] -- 2022-02-04
+
+### Added
+ - Implement `ticklabelstep` to reduce labels on 2D axes and colorbars [[#6088](https://github.com/plotly/plotly.js/pull/6088)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Changed
+ - Display the version of plotly.js when hovering over the modebar [[#6077](https://github.com/plotly/plotly.js/pull/6077)]
+ - Various dependency updates as listed under [the v2.9.0 milestone](https://github.com/plotly/plotly.js/milestone/69?closed=1)
+
+### Fixed
+ - Fix vertical spacing of legend items in horizontal mode [[#6094](https://github.com/plotly/plotly.js/pull/6094)]
+
+
 ## [2.8.3] -- 2021-12-20
 
 ### Fixed

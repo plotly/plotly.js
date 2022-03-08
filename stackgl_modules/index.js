@@ -35174,7 +35174,7 @@ var robustSum = _glvis_("robust-sum")
 var robustScale = _glvis_("robust-scale")
 var compress = _glvis_("robust-compress")
 
-var NUM_EXPANDED = 4
+var NUM_EXPANDED = 6
 
 function determinant_2(sum, scale, prod, compress) {
   return function robustDeterminant2(m) {
@@ -35188,10 +35188,24 @@ function determinant_3(sum, scale, prod, compress) {
   }
 }
 
+function determinant_4(sum, scale, prod, compress) {
+  return function robustDeterminant4(m) {
+    return compress(sum(sum(scale(sum(scale(sum(prod(m[2][2], m[3][3]), prod(-m[2][3], m[3][2])), m[1][1]), sum(scale(sum(prod(m[2][1], m[3][3]), prod(-m[2][3], m[3][1])), -m[1][2]), scale(sum(prod(m[2][1], m[3][2]), prod(-m[2][2], m[3][1])), m[1][3]))), m[0][0]), scale(sum(scale(sum(prod(m[2][2], m[3][3]), prod(-m[2][3], m[3][2])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][3]), prod(-m[2][3], m[3][0])), -m[1][2]), scale(sum(prod(m[2][0], m[3][2]), prod(-m[2][2], m[3][0])), m[1][3]))), -m[0][1])), sum(scale(sum(scale(sum(prod(m[2][1], m[3][3]), prod(-m[2][3], m[3][1])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][3]), prod(-m[2][3], m[3][0])), -m[1][1]), scale(sum(prod(m[2][0], m[3][1]), prod(-m[2][1], m[3][0])), m[1][3]))), m[0][2]), scale(sum(scale(sum(prod(m[2][1], m[3][2]), prod(-m[2][2], m[3][1])), m[1][0]), sum(scale(sum(prod(m[2][0], m[3][2]), prod(-m[2][2], m[3][0])), -m[1][1]), scale(sum(prod(m[2][0], m[3][1]), prod(-m[2][1], m[3][0])), m[1][2]))), -m[0][3]))))
+  }
+}
+
+function determinant_5(sum, scale, prod, compress) {
+  return function robustDeterminant5(m) {
+    return compress(sum(sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][2]), sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), -m[2][3]), scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][4]))), m[1][1]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][3]), scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][4]))), -m[1][2])), sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][3]))), -m[1][4]))), m[0][0]), scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][2]), sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), -m[2][3]), scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][3]), scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), m[2][4]))), -m[1][2])), sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][3]))), -m[1][4]))), -m[0][1])), sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][3]), scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][3], m[4][4]), prod(-m[3][4], m[4][3])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][3]), scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), m[2][4]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][4]))), m[1][3]), scale(sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][3]))), -m[1][4]))), m[0][2]), sum(scale(sum(sum(scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][4]))), m[1][0]), scale(sum(scale(sum(prod(m[3][2], m[4][4]), prod(-m[3][4], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][4]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][4]), prod(-m[3][4], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][4]), prod(-m[3][4], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][4]))), m[1][2]), scale(sum(scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][2]))), -m[1][4]))), -m[0][3]), scale(sum(sum(scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][1]), sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), -m[2][2]), scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][3]))), m[1][0]), scale(sum(scale(sum(prod(m[3][2], m[4][3]), prod(-m[3][3], m[4][2])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][2]), scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), m[2][3]))), -m[1][1])), sum(scale(sum(scale(sum(prod(m[3][1], m[4][3]), prod(-m[3][3], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][3]), prod(-m[3][3], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][3]))), m[1][2]), scale(sum(scale(sum(prod(m[3][1], m[4][2]), prod(-m[3][2], m[4][1])), m[2][0]), sum(scale(sum(prod(m[3][0], m[4][2]), prod(-m[3][2], m[4][0])), -m[2][1]), scale(sum(prod(m[3][0], m[4][1]), prod(-m[3][1], m[4][0])), m[2][2]))), -m[1][3]))), m[0][4])))))
+  }
+}
+
 function compileDeterminant(n) {
   var fn =
     n === 2 ? determinant_2 :
-    n === 3 ? determinant_3 : undefined
+    n === 3 ? determinant_3 :
+    n === 4 ? determinant_4 :
+    n === 5 ? determinant_5 : undefined
   return fn(robustSum, robustScale, twoProduct, compress)
 }
 
@@ -35200,7 +35214,7 @@ var CACHE = [
   function robustDeterminant1(m) { return [m[0][0]] }
 ]
 
-function proc(det0, det1, det2, det3, CACHE, gen) {
+function proc(det0, det1, det2, det3, det4, det5, CACHE, gen) {
   return function robustDeterminant(m) {
     switch (m.length) {
       case 0:
@@ -35211,6 +35225,10 @@ function proc(det0, det1, det2, det3, CACHE, gen) {
         return det2(m)
       case 3:
         return det3(m)
+      case 4:
+        return det4(m)
+      case 5:
+        return det5(m)
     }
     var det = CACHE[m.length]
     if (!det) det = CACHE[m.length] = gen(m.length)
@@ -35454,13 +35472,16 @@ generateInSphereTest()
 
 var determinant = _glvis_("robust-determinant")
 
-var NUM_EXPAND = 3
+var NUM_EXPAND = 6
 
 function generateSolver(n) {
   var fn =
-    n === 2 ? solve2d : solve3d
+    n === 2 ? solve2d :
+    n === 3 ? solve3d :
+    n === 4 ? solve4d :
+    n === 5 ? solve5d : solve6d
 
-  if(n < NUM_EXPAND) {
+  if(n < 6) {
     return fn(determinant[n])
   }
   return fn(determinant)
@@ -35486,18 +35507,38 @@ function solve3d(det) {
   }
 }
 
+function solve4d(det) {
+  return function robustLinearSolve4d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3]], [+b[1], +A[1][1], +A[1][2], +A[1][3]], [+b[2], +A[2][1], +A[2][2], +A[2][3]], [+b[3], +A[3][1], +A[3][2], +A[3][3]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3]], [+A[1][0], +b[1], +A[1][2], +A[1][3]], [+A[2][0], +b[2], +A[2][2], +A[2][3]], [+A[3][0], +b[3], +A[3][2], +A[3][3]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3]], [+A[1][0], +A[1][1], +b[1], +A[1][3]], [+A[2][0], +A[2][1], +b[2], +A[2][3]], [+A[3][0], +A[3][1], +b[3], +A[3][3]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +b[3]]]), det(A)]
+  }
+}
+
+function solve5d(det) {
+  return function robustLinearSolve5d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3], +A[0][4]], [+b[1], +A[1][1], +A[1][2], +A[1][3], +A[1][4]], [+b[2], +A[2][1], +A[2][2], +A[2][3], +A[2][4]], [+b[3], +A[3][1], +A[3][2], +A[3][3], +A[3][4]], [+b[4], +A[4][1], +A[4][2], +A[4][3], +A[4][4]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3], +A[0][4]], [+A[1][0], +b[1], +A[1][2], +A[1][3], +A[1][4]], [+A[2][0], +b[2], +A[2][2], +A[2][3], +A[2][4]], [+A[3][0], +b[3], +A[3][2], +A[3][3], +A[3][4]], [+A[4][0], +b[4], +A[4][2], +A[4][3], +A[4][4]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3], +A[0][4]], [+A[1][0], +A[1][1], +b[1], +A[1][3], +A[1][4]], [+A[2][0], +A[2][1], +b[2], +A[2][3], +A[2][4]], [+A[3][0], +A[3][1], +b[3], +A[3][3], +A[3][4]], [+A[4][0], +A[4][1], +b[4], +A[4][3], +A[4][4]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0], +A[0][4]], [+A[1][0], +A[1][1], +A[1][2], +b[1], +A[1][4]], [+A[2][0], +A[2][1], +A[2][2], +b[2], +A[2][4]], [+A[3][0], +A[3][1], +A[3][2], +b[3], +A[3][4]], [+A[4][0], +A[4][1], +A[4][2], +b[4], +A[4][4]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +b[3]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +b[4]]]), det(A)]
+  }
+}
+
+function solve6d(det) {
+  return function robustLinearSolve6d(A, b) {
+    return [det([[+b[0], +A[0][1], +A[0][2], +A[0][3], +A[0][4], +A[0][5]], [+b[1], +A[1][1], +A[1][2], +A[1][3], +A[1][4], +A[1][5]], [+b[2], +A[2][1], +A[2][2], +A[2][3], +A[2][4], +A[2][5]], [+b[3], +A[3][1], +A[3][2], +A[3][3], +A[3][4], +A[3][5]], [+b[4], +A[4][1], +A[4][2], +A[4][3], +A[4][4], +A[4][5]], [+b[5], +A[5][1], +A[5][2], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +b[0], +A[0][2], +A[0][3], +A[0][4], +A[0][5]], [+A[1][0], +b[1], +A[1][2], +A[1][3], +A[1][4], +A[1][5]], [+A[2][0], +b[2], +A[2][2], +A[2][3], +A[2][4], +A[2][5]], [+A[3][0], +b[3], +A[3][2], +A[3][3], +A[3][4], +A[3][5]], [+A[4][0], +b[4], +A[4][2], +A[4][3], +A[4][4], +A[4][5]], [+A[5][0], +b[5], +A[5][2], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +b[0], +A[0][3], +A[0][4], +A[0][5]], [+A[1][0], +A[1][1], +b[1], +A[1][3], +A[1][4], +A[1][5]], [+A[2][0], +A[2][1], +b[2], +A[2][3], +A[2][4], +A[2][5]], [+A[3][0], +A[3][1], +b[3], +A[3][3], +A[3][4], +A[3][5]], [+A[4][0], +A[4][1], +b[4], +A[4][3], +A[4][4], +A[4][5]], [+A[5][0], +A[5][1], +b[5], +A[5][3], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +b[0], +A[0][4], +A[0][5]], [+A[1][0], +A[1][1], +A[1][2], +b[1], +A[1][4], +A[1][5]], [+A[2][0], +A[2][1], +A[2][2], +b[2], +A[2][4], +A[2][5]], [+A[3][0], +A[3][1], +A[3][2], +b[3], +A[3][4], +A[3][5]], [+A[4][0], +A[4][1], +A[4][2], +b[4], +A[4][4], +A[4][5]], [+A[5][0], +A[5][1], +A[5][2], +b[5], +A[5][4], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +b[0], +A[0][5]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +b[1], +A[1][5]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +b[2], +A[2][5]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +b[3], +A[3][5]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +b[4], +A[4][5]], [+A[5][0], +A[5][1], +A[5][2], +A[5][3], +b[5], +A[5][5]]]), det([[+A[0][0], +A[0][1], +A[0][2], +A[0][3], +A[0][4], +b[0]], [+A[1][0], +A[1][1], +A[1][2], +A[1][3], +A[1][4], +b[1]], [+A[2][0], +A[2][1], +A[2][2], +A[2][3], +A[2][4], +b[2]], [+A[3][0], +A[3][1], +A[3][2], +A[3][3], +A[3][4], +b[3]], [+A[4][0], +A[4][1], +A[4][2], +A[4][3], +A[4][4], +b[4]], [+A[5][0], +A[5][1], +A[5][2], +A[5][3], +A[5][4], +b[5]]]), det(A)]
+  }
+}
+
 var CACHE = [
   robustLinearSolve0d,
   robustLinearSolve1d
 ]
 
-function proc(s0, s1, s2, s3, CACHE, g) {
+function proc(s0, s1, s2, s3, s4, s5, CACHE, g) {
   return function dispatchLinearSolve(A, b) {
     switch (A.length) {
       case 0: return s0(A, b);
       case 1: return s1(A, b);
       case 2: return s2(A, b);
       case 3: return s3(A, b);
+      case 4: return s4(A, b);
+      case 5: return s5(A, b);
     }
     var s = CACHE[A.length];
     if (!s) s = CACHE[A.length] = g(A.length);
@@ -35506,7 +35547,7 @@ function proc(s0, s1, s2, s3, CACHE, g) {
 }
 
 function generateDispatch() {
-  while(CACHE.length <= NUM_EXPAND) {
+  while(CACHE.length < NUM_EXPAND) {
     CACHE.push(generateSolver(CACHE.length))
   }
   module.exports = proc.apply(undefined, CACHE.concat([CACHE, generateSolver]))

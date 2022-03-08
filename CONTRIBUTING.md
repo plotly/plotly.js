@@ -118,7 +118,7 @@ npm start
 
 This command bundles up the source files with source maps using
 [browserify](https://github.com/substack/node-browserify), starts a
-[watchify](https://github.com/substack/watchify) file watcher (making the your
+[watchify](https://github.com/substack/watchify) file watcher (making your
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 

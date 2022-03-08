@@ -75,7 +75,15 @@ case $1 in
         ;;
 
     mathjax-firefox82+)
-        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --skip-tags=noFF82 --bundleTest=mathjax --nowatch || EXIT_STATE=$?
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --skip-tags=noFF82 --nowatch &&
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax --mathjax3 --skip-tags=noFF82 --nowatch &&
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_config --mathjax3 --nowatch &&
+        ./node_modules/karma/bin/karma start test/jasmine/karma.conf.js --FF --bundleTest=mathjax_config --nowatch || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
+    make-baselines-mathjax3)
+        python3 test/image/make_baseline.py mathjax3    legend_mathjax_title_and_items mathjax parcats_grid_subplots table_latex_multitrace_scatter table_plain_birds table_wrapped_birds ternary-mathjax || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 
@@ -87,6 +95,11 @@ case $1 in
 
     test-image)
         node test/image/compare_pixels_test.js || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
+        exit $EXIT_STATE
+        ;;
+
+    test-image-mathjax3)
+        node test/image/compare_pixels_test.js mathjax3 || { tar -cvf build/baselines.tar build/test_images/*.png ; exit 1 ; } || EXIT_STATE=$?
         exit $EXIT_STATE
         ;;
 

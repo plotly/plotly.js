@@ -30,6 +30,7 @@ function mimickAxisDefaults(traceIn, traceOut, fullLayout, dfltColor) {
         var axOut = Template.newContainer(traceOut, axName);
 
         var defaultOptions = {
+            noTicklabelstep: true,
             tickfont: 'x',
             id: axLetter + 'axis',
             letter: axLetter,

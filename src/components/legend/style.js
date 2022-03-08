@@ -111,12 +111,16 @@ module.exports = function style(s, gd, legend) {
         var colorscale = cOpts.colorscale;
         var reversescale = cOpts.reversescale;
 
-        var fillGradient = function(s) {
+        var fillStyle = function(s) {
             if(s.size()) {
-                var gradientID = 'legendfill-' + trace.uid;
-                Drawing.gradient(s, gd, gradientID,
-                    getGradientDirection(reversescale),
-                    colorscale, 'fill');
+                if(showFill) {
+                    Drawing.fillGroupStyle(s, gd);
+                } else {
+                    var gradientID = 'legendfill-' + trace.uid;
+                    Drawing.gradient(s, gd, gradientID,
+                        getGradientDirection(reversescale),
+                        colorscale, 'fill');
+                }
             }
         };
 
@@ -145,7 +149,7 @@ module.exports = function style(s, gd, legend) {
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
         fill.attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z')
-            .call(showFill ? Drawing.fillGroupStyle : fillGradient);
+            .call(fillStyle);
 
         if(showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);

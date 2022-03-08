@@ -73,7 +73,7 @@ jobs:
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
-    parallelism: 8
+    parallelism: 12
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
@@ -200,6 +200,24 @@ jobs:
           name: Test MathJax on firefox-latest
           command: .circleci/test.sh mathjax-firefox82+
 
+  make-baselines-mathjax3:
+    docker:
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
+      - run:
+          name: Create mathjax v3 png files
+          command: .circleci/test.sh make-baselines-mathjax3
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
   make-baselines:
     parallelism: 4
     docker:
@@ -229,6 +247,20 @@ jobs:
       - run:
           name: Compare pixels
           command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
+      - store_artifacts:
+          path: build
+          destination: /
+
+  test-baselines-mathjax3:
+    docker:
+      - image: circleci/node:16.8.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Compare pixels of mathjax v3 baselines
+          command: .circleci/test.sh test-image-mathjax3
       - store_artifacts:
           path: build
           destination: /
@@ -395,6 +427,12 @@ workflows:
       - flaky-no-gl-jasmine:
           requires:
             - install-and-cibuild
+      - make-baselines-mathjax3:
+          requires:
+            - install-and-cibuild
+      - test-baselines-mathjax3:
+          requires:
+            - make-baselines-mathjax3
       - make-baselines:
           requires:
             - install-and-cibuild
