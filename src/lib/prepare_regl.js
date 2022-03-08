@@ -19,34 +19,27 @@ var createRegl = require('regl');
  * @return {boolean} true if all createRegl calls succeeded, false otherwise
  */
 module.exports = function prepareRegl(gd, extensions, reglPrecompiled) {
-    console.log("Somethign is happeneing");
     var fullLayout = gd._fullLayout;
     var success = true;
 
     fullLayout._glcanvas.each(function(d) {
         if(d.regl) {
-            console.log("Preloading existing regl", Object.keys(reglPrecompiled));
             d.regl.preloadCachedCode(reglPrecompiled);
             return;
         }
         // only parcoords needs pick layer
         if(d.pick && !fullLayout._has('parcoords')) return;
 
-        try {
-            d.regl = createRegl({
-                canvas: this,
-                attributes: {
-                    antialias: !d.pick,
-                    preserveDrawingBuffer: true
-                },
-                pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio,
-                extensions: extensions || [],
-                cachedCode: reglPrecompiled || {}
-            });
-        } catch(e) {
-            throw e;
-            success = false;
-        }
+        d.regl = createRegl({
+            canvas: this,
+            attributes: {
+                antialias: !d.pick,
+                preserveDrawingBuffer: true
+            },
+            pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio,
+            extensions: extensions || [],
+            cachedCode: reglPrecompiled || {}
+        });
 
         if(!d.regl) success = false;
 

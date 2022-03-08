@@ -221,7 +221,7 @@ function handleCodegen(data) {
         fs.writeFileSync(filePath, 'module.exports = ' + value);
 
         imports += "var v" + varId + " = require('../../" + path.join(constants.reglCodegenSubdir, key) + "');\n";
-        exports += '  "' + key + '": v' + varId + ',\n';
+        exports += '    "' + key + '": v' + varId + ',\n';
         varId++;
     });
 

@@ -5,7 +5,6 @@
 var mocks = require('../../build/test_dashboard_mocks.json');
 var reglTraces = require('../../build/regl_traces.json');
 var Lib = require('@src/lib');
-const { fillGroupStyle } = require('../../src/components/drawing');
 
 // Our gracious testing object
 var Tabs = {

@@ -222,5 +222,5 @@ module.exports = {
     clean: clean,
     updateFx: Cartesian.updateFx,
     toSVG: Cartesian.toSVG,
-    reglPrecompiled
+    reglPrecompiled: reglPrecompiled
 };

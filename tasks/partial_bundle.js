@@ -51,7 +51,7 @@ module.exports = function partialBundle(tasks, opts) {
         missing.forEach(function(t) {
             // find 'Plotly.register([' and add require('./<trace>')
             var REGEX_BEFORE = new RegExp(
-                'Plotly\\.register\\(\\[\n',
+                'Plotly\\.register\\(\\[\\n',
             'g');
             partialIndex = partialIndex.replace(
                 REGEX_BEFORE,

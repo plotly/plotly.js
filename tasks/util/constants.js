@@ -28,7 +28,8 @@ var excludedTraces = [
     'parcoords-strict',
     'scattergl-strict',
     'splom-strict',
-]
+];
+
 var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
     .filter(function(v) {
         return startsWithLowerCase(v) && v !== 'helpers.js';
@@ -215,7 +216,6 @@ module.exports = {
 
     reglCodegenSubdir: path.join('generated', 'regl-codegen'),
     pathToReglCodegenSrc: path.join(pathToSrc, 'generated', 'regl-codegen'),
-    
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
