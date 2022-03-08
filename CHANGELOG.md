@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.10.1] -- 2022-03-08
+
+### Fixed
+ - Fix `mesh3d` generation when `alphahull` is a positive number (regression introduced in 2.5.1) [[#6133](https://github.com/plotly/plotly.js/pull/6133)]
+
+
 ## [2.10.0] -- 2022-03-04
 
 ### Added
