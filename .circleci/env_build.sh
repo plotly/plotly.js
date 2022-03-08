@@ -4,4 +4,4 @@ echo "node version: $(node --version)" && \
 echo "npm version: $(npm --version)" && \
 npm ci && \
 echo "temporarily not do `npm ls`"
-# npm ls --prod --all
+npm ls --prod --all
