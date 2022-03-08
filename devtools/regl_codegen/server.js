@@ -9,7 +9,7 @@ var minimist = require('minimist');
 var constants = require('../../tasks/util/constants');
 var makeWatchifiedBundle = require('../../tasks/util/watchified_bundle');
 var shortcutPaths = require('../../tasks/util/shortcut_paths');
-const { exit } = require('process');
+var { exit } = require('process');
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -67,7 +67,7 @@ var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {
 // Start the server up!
 server.listen(PORT);
 
-const reglTraceList = getReglTraces();
+var reglTraceList = getReglTraces();
 purgeGeneratedCode(reglTraceList);
 
 // Build and bundle all the things!
@@ -94,7 +94,7 @@ function getMockFiles() {
 
 function getReglTraces() {
     return constants.allTraces.filter(function (trace) {
-        var indexPath = constants.pathToSrc + "/traces/" + trace + "/index.js";
+        var indexPath = constants.pathToSrc + '/traces/' + trace + '/index.js';
 
         // get categories
         var indexContents = fs.readFileSync(indexPath, 'utf8');
@@ -212,16 +212,17 @@ function handleCodegen(data) {
     var pathToReglCodegenSrc = constants.pathToReglCodegenSrc;
     var pathToReglPrecompiledSrc = path.join(constants.pathToSrc, 'traces', trace, 'regl_precompiled.js');
 
-    var imports = "";
-    var exports = "\nmodule.exports = {\n";
+    var header = "'use strict';\n";
+    var imports = '';
+    var exports = '\nmodule.exports = {\n';
     var varId = 0;
 
     Object.entries(generated).forEach(function ([key, value], i) {
         var filePath = path.join(pathToReglCodegenSrc, key);
         fs.writeFileSync(filePath, 'module.exports = ' + value);
 
-        imports += "var v" + varId + " = require('../../" + path.join(constants.reglCodegenSubdir, key) + "');\n";
-        exports += '    "' + key + '": v' + varId + ',\n';
+        imports += 'var v' + varId + " = require('../../" + path.join(constants.reglCodegenSubdir, key) + "');\n";
+        exports += "    '" + key + "': v" + varId + ',\n';
         varId++;
     });
 
@@ -231,7 +232,7 @@ function handleCodegen(data) {
         exports = 'module.exports = {};\n';
     }
 
-    var precompiled = imports + exports;
+    var precompiled = header + imports + exports;
     fs.writeFileSync(pathToReglPrecompiledSrc, precompiled);
 }
 

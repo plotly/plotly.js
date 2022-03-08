@@ -30,16 +30,20 @@ module.exports = function prepareRegl(gd, extensions, reglPrecompiled) {
         // only parcoords needs pick layer
         if(d.pick && !fullLayout._has('parcoords')) return;
 
-        d.regl = createRegl({
-            canvas: this,
-            attributes: {
-                antialias: !d.pick,
-                preserveDrawingBuffer: true
-            },
-            pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio,
-            extensions: extensions || [],
-            cachedCode: reglPrecompiled || {}
-        });
+        try {
+            d.regl = createRegl({
+                canvas: this,
+                attributes: {
+                    antialias: !d.pick,
+                    preserveDrawingBuffer: true
+                },
+                pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio,
+                extensions: extensions || [],
+                cachedCode: reglPrecompiled || {}
+            });
+        } catch(e) {
+            success = false;
+        }
 
         if(!d.regl) success = false;
 

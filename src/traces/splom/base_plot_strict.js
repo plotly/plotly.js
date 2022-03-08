@@ -1,9 +1,9 @@
 'use strict';
 
-var base_plot = require('./base_plot');
+var basePlot = require('./base_plot');
 var reglPrecompiled = require('./regl_precompiled');
 
-Object.assign(base_plot.reglPrecompiled, reglPrecompiled);
+Object.assign(basePlot.reglPrecompiled, reglPrecompiled);
 
 
-module.exports = base_plot;
+module.exports = basePlot;
