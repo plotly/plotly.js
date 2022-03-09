@@ -1,4 +1,4 @@
-module.exports = function anonymous(g0,g18,g19,g54
+module.exports = function anonymous(g0,g18,g19,g56
 ) {
 "use strict";
 var v1,v2,v3,v4,v5,v6,v7,v8,v9,v10,v11,v12,v13,v14,v15,v16,v17,v20,v21,v22,v23,v24,v25,v26,v27,v28,v29,v30,v31,v32,v33,v34,v35,v36,v37,v38,v39,v40,v41,v42,v43,v44,v45,v46,v47,v48,v49,v50,v51,v66,v67,v68,v69,v70,v71,v74,v75,v78,v79,v86,v87,v88,v89,v92,v93,v94,v95,v96,v97,v98,v99,v100,v101;
@@ -289,7 +289,7 @@ v101[3]=v100[3];
 }
 }
 ,"refresh":function(){
-var v53,v55,v56;
+var v53,v54,v55;
 var v57,v58,v59,v60,v61,v62,v63,v64,v65,v72,v73,v76,v77,v80,v81,v82,v83,v84,v85,v90,v91;
 v5.dirty=false;
 v57=v4.dither;
@@ -321,27 +321,22 @@ else{
 v1.bindFramebuffer(36160,null);
 }
 v13.cur=v53;
-v55=v10;
-v56=0;
+v54=v10;
+v55=0;
 for(var i=0;
-i<16;
+i<g56;
 ++i){
-v56=v55[i];
-if(v56.buffer){
+v55=v54[i];
+if(v55.buffer){
 v1.enableVertexAttribArray(i);
-v1.bindBuffer(34962,v56.buffer.buffer);
-v1.vertexAttribPointer(i,v56.size,v56.type,v56.normalized,v56.stride,v56.offset);
+v1.bindBuffer(34962,v55.buffer.buffer);
+v1.vertexAttribPointer(i,v55.size,v55.type,v55.normalized,v55.stride,v55.offset);
 }
 else{
 v1.disableVertexAttribArray(i);
-v1.vertexAttrib4f(i,v56.x,v56.y,v56.z,v56.w);
-v56.buffer=null;
+v1.vertexAttrib4f(i,v55.x,v55.y,v55.z,v55.w);
+v55.buffer=null;
 }
-}
-for(var i=0;
-i<16;
-++i){
-g54.vertexAttribDivisorANGLE(i,v55[i].divisor);
 }
 v11.currentVAO=null;
 v11.setVAO(v11.targetVAO);
