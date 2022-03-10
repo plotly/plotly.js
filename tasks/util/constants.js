@@ -143,6 +143,7 @@ var partialBundleTraces = {
         'scattergeo',
         'scattermapbox',
         'scatterpolar',
+        'scattersmith',
         'scatterternary',
         'streamtube',
         'sunburst',
