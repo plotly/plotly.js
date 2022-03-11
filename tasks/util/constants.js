@@ -23,14 +23,6 @@ var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
 
-// traces that exist which are not part of the main bundle.
-var excludedTraces = [
-    'parcoords-strict',
-    'scattergl-strict',
-    'scatterpolargl-strict',
-    'splom-strict',
-];
-
 var allTransforms = fs.readdirSync(path.join(pathToSrc, 'transforms'))
     .filter(function(v) {
         return startsWithLowerCase(v) && v !== 'helpers.js';
@@ -198,7 +190,6 @@ module.exports = {
 
     allTransforms: allTransforms,
     allTraces: allTraces,
-    excludedTraces: excludedTraces,
     mainIndex: mainIndex,
     pathToPlotlyIndex: pathToPlotlyIndex,
     pathToPlotlyStrict: pathToPlotlyStrict,
