@@ -10,6 +10,11 @@ var pathToPlotlyDist = constants.pathToPlotlyDist;
 var pathToPlotlyIndex = constants.pathToPlotlyIndex;
 var pathToPlotlyDistMin = constants.pathToPlotlyDistMin;
 var pathToPlotlyDistWithMeta = constants.pathToPlotlyDistWithMeta;
+
+var pathToPlotlyStrict = constants.pathToPlotlyStrict;
+var pathToPlotlyStrictDist = constants.pathToPlotlyStrictDist;
+var pathToPlotlyStrictDistMin = constants.pathToPlotlyStrictDistMin;
+
 var pathToPlotlyGeoAssetsSrc = constants.pathToPlotlyGeoAssetsSrc;
 var pathToPlotlyGeoAssetsDist = constants.pathToPlotlyGeoAssetsDist;
 
@@ -34,6 +39,19 @@ tasks.push(function(done) {
     }, function() {
         prependFile(pathToPlotlyDist, header, common.throwOnError);
         prependFile(pathToPlotlyDistMin, header, common.throwOnError);
+
+        done();
+    });
+});
+
+// Browserify plotly.js-strict
+tasks.push(function(done) {
+    _bundle(pathToPlotlyStrict, pathToPlotlyStrictDist, {
+        standalone: 'Plotly',
+        pathToMinBundle: pathToPlotlyStrictDistMin
+    }, function() {
+        prependFile(pathToPlotlyStrictDist, header, common.throwOnError);
+        prependFile(pathToPlotlyStrictDistMin, header, common.throwOnError);
 
         done();
     });

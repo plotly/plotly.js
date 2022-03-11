@@ -200,6 +200,8 @@ module.exports = {
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
+    pathToPlotlyStrictDist: path.join(pathToDist, 'plotly-strict.js'),
+    pathToPlotlyStrictDistMin: path.join(pathToDist, 'plotly-strict.min.js'),
 
     pathToSchemaDiff: path.join(pathToTest, 'plot-schema.json'),
     pathToSchemaDist: path.join(pathToDist, 'plot-schema.json'),
