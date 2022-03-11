@@ -27,6 +27,7 @@ var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
 var excludedTraces = [
     'parcoords-strict',
     'scattergl-strict',
+    'scatterpolargl-strict',
     'splom-strict',
 ];
 
@@ -153,7 +154,7 @@ var partialBundleTraces = {
         'scattergeo',
         'scattermapbox',
         'scatterpolar',
-        'scatterpolargl',
+        'scatterpolargl-strict',
         'scattersmith',
         'scatterternary',
         'splom-strict',

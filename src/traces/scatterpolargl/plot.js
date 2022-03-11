@@ -11,6 +11,8 @@ var Lib = require('../../lib');
 
 var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
 
+var reglPrecompiled = {};
+
 module.exports = function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
@@ -126,3 +128,5 @@ module.exports = function plot(gd, subplot, cdata) {
 
     return scatterglPlot(gd, subplot, cdata);
 };
+
+module.exports.reglPrecompiled = reglPrecompiled;
