@@ -1,7 +1,7 @@
 'use strict';
 
-var index = require('../parcoords/index');
+var index = require('./base_index');
 
-index.plot = require('../parcoords/plot-strict');
+index.plot = require('./plot-strict');
 
 module.exports = index;

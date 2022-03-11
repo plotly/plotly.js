@@ -1,7 +1,7 @@
 'use strict';
 
-var index = require('../scattergl/index');
+var index = require('./base_index');
 
-index.plot = require('../scattergl/plot-strict');
+index.plot = require('./plot_strict');
 
 module.exports = index;

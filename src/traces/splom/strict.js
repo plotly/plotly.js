@@ -1,7 +1,7 @@
 'use strict';
 
-var index = require('../splom/index');
+var index = require('./base_index');
 
-index.basePlotModule = require('../splom/base_plot_strict'),
+index.basePlotModule = require('./base_plot_strict'),
 
 module.exports = index;
