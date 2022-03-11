@@ -154,6 +154,7 @@ var partialBundleTraces = {
         'scattermapbox',
         'scatterpolar',
         'scatterpolargl',
+        'scattersmith',
         'scatterternary',
         'splom-strict',
         'streamtube',
