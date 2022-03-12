@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.11.0] -- 2022-03-11
+
+### Added
+ - Add a CSP complaint variation of regl-based traces i.e. `parcoords`, `splom`, `scattergl`, `scatterpolargl` to the "strict" bundle [[#6083](https://github.com/plotly/plotly.js/pull/6083)]
+ - Add `scattersmith` trace to the "strict" bundle [[#6135](https://github.com/plotly/plotly.js/pull/6135)]
+
+
 ## [2.10.1] -- 2022-03-08
 
 ### Fixed
