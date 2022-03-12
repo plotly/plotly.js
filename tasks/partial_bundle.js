@@ -20,34 +20,37 @@ module.exports = function partialBundle(tasks, opts) {
     var transformList = opts.transformList;
     var calendars = opts.calendars;
 
-    tasks.push(function(done) {
-        var partialIndex = mainIndex;
+    // skip strict bundle which is no longer a partial bundle and has a special index file for regl traces
+    if(name !== 'strict') {
+        tasks.push(function(done) {
+            var partialIndex = mainIndex;
 
-        var all = ['calendars'].concat(allTransforms).concat(allTraces);
-        var includes = (calendars ? ['calendars'] : []).concat(transformList).concat(traceList);
-        var excludes = all.filter(function(e) { return includes.indexOf(e) === -1; });
+            var all = ['calendars'].concat(allTransforms).concat(allTraces);
+            var includes = (calendars ? ['calendars'] : []).concat(transformList).concat(traceList);
+            var excludes = all.filter(function(e) { return includes.indexOf(e) === -1; });
 
-        excludes.forEach(function(t) {
-            var WHITESPACE_BEFORE = '\\s*';
-            // remove require
-            var newCode = partialIndex.replace(
-                new RegExp(
-                    WHITESPACE_BEFORE +
-                    'require\\(\'\\./' + t + '\'\\),',
-                'g'), ''
-            );
+            excludes.forEach(function(t) {
+                var WHITESPACE_BEFORE = '\\s*';
+                // remove require
+                var newCode = partialIndex.replace(
+                    new RegExp(
+                        WHITESPACE_BEFORE +
+                        'require\\(\'\\./' + t + '\'\\),',
+                    'g'), ''
+                );
 
-            // test removal
-            if(newCode === partialIndex) {
-                console.error('Unable to find and drop require for ' + t);
-                throw 'Error generating index for partial bundle!';
-            }
+                // test removal
+                if(newCode === partialIndex) {
+                    console.error('Unable to find and drop require for ' + t);
+                    throw 'Error generating index for partial bundle!';
+                }
 
-            partialIndex = newCode;
+                partialIndex = newCode;
+            });
+
+            common.writeFile(index, partialIndex, done);
         });
-
-        common.writeFile(index, partialIndex, done);
-    });
+    }
 
     tasks.push(function(done) {
         var bundleOpts = {

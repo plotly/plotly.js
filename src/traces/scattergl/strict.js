@@ -2,6 +2,6 @@
 
 var index = require('./base_index');
 
-index.basePlotModule = require('./base_plot'),
+index.plot = require('./plot_strict');
 
 module.exports = index;
