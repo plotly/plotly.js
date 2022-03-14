@@ -46,7 +46,7 @@ module.exports = {
             dflt: 1,
             editType: 'plot',
             description: [
-                'When using *squarify* `packing` algorithm, according to https://github.com/d3/d3-hierarchy/blob/master/README.md#squarify_ratio',
+                'When using *squarify* `packing` algorithm, according to https://github.com/d3/d3-hierarchy/blob/v3.1.1/README.md#squarify_ratio',
                 'this option specifies the desired aspect ratio of the generated rectangles.',
                 'The ratio must be specified as a number greater than or equal to one.',
                 'Note that the orientation of the generated rectangles (tall or wide)',
