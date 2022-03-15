@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.11.1] -- 2022-03-15
+
+### Fixed
+ - Regenerate functions of regl-based traces in the "strict" bundle [[#6141](https://github.com/plotly/plotly.js/pull/6141)]
+
+
 ## [2.11.0] -- 2022-03-11
 
 ### Added
