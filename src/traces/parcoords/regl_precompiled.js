@@ -1,12 +1,12 @@
 'use strict';
-var v0 = require('../../generated/regl-codegen/909861c036d6f1ef40ba2dfcc33ef32489d2fe05fa7b7984d5ff315ddceb17b1');
-var v1 = require('../../generated/regl-codegen/4df455b48c9de7d9f1de4b9481b505c09613ba7f90d2b4e360e673839566688e');
-var v2 = require('../../generated/regl-codegen/59568c77bcbe6343ee6109df49ceeb78c8a8a8a81872e88fb077f9a3d6dc0567');
-var v3 = require('../../generated/regl-codegen/c759965c8d66b2b356ae7455825df829f2ba7d4e7e903236f8c8d3bc5f45bd44');
+var v0 = require('../../generated/regl-codegen/453a70fefa48db31713162aeb1ac438cb8579f54504f3b23acf32128df3dfd45');
+var v1 = require('../../generated/regl-codegen/30680f8f6712ef1af5cf7547e0af35b036fb300c67b07967cf448492ff4de4d0');
+var v2 = require('../../generated/regl-codegen/a3970baf1d8cac9305ee830c7026550387343d4dde2353dd86a4d082c97d3470');
+var v3 = require('../../generated/regl-codegen/3fd666968f3ce90d1c048b7a9aab515f3ce387a5401a10f8b66121c9469d1c0d');
 
 module.exports = {
-    '909861c036d6f1ef40ba2dfcc33ef32489d2fe05fa7b7984d5ff315ddceb17b1': v0,
-    '4df455b48c9de7d9f1de4b9481b505c09613ba7f90d2b4e360e673839566688e': v1,
-    '59568c77bcbe6343ee6109df49ceeb78c8a8a8a81872e88fb077f9a3d6dc0567': v2,
-    'c759965c8d66b2b356ae7455825df829f2ba7d4e7e903236f8c8d3bc5f45bd44': v3
+    '453a70fefa48db31713162aeb1ac438cb8579f54504f3b23acf32128df3dfd45': v0,
+    '30680f8f6712ef1af5cf7547e0af35b036fb300c67b07967cf448492ff4de4d0': v1,
+    'a3970baf1d8cac9305ee830c7026550387343d4dde2353dd86a4d082c97d3470': v2,
+    '3fd666968f3ce90d1c048b7a9aab515f3ce387a5401a10f8b66121c9469d1c0d': v3
 };

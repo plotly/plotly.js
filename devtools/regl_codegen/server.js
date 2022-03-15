@@ -66,7 +66,13 @@ var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {
 // Start the server up!
 server.listen(PORT);
 
-var reglTraceList = getReglTraces();
+var reglTraceList = [
+    'parcoords',
+    'scattergl',
+    'scatterpolargl',
+    'splom'
+];
+
 purgeGeneratedCode(reglTraceList);
 
 // Build and bundle all the things!
@@ -88,25 +94,6 @@ function getMockFiles() {
                 resolve(files);
             }
         });
-    });
-}
-
-function getReglTraces() {
-    return constants.allTraces.filter(function(trace) {
-        var indexPath = constants.pathToSrc + '/traces/' + trace + '/index.js';
-
-        // get categories
-        var indexContents = fs.readFileSync(indexPath, 'utf8');
-        var categories = indexContents.match(/^\s*categories:\s*\[([^\]]+)\]/m);
-        if(categories) {
-            categories = categories[1].split(',').map(function(c) {
-                return c.trim().replace(/^['"]|['"]$/g, '');
-            });
-        }
-
-        if(categories && categories.indexOf('regl') !== -1) {
-            return true;
-        }
     });
 }
 
