@@ -138,41 +138,50 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
+    var gridDash = coerce2('griddash');
     var showGrid = coerce('showgrid');
 
     if(!showGrid) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
+        delete containerOut.griddash;
     }
 
     var startLineColor = coerce2('startlinecolor', dfltColor);
     var startLineWidth = coerce2('startlinewidth', gridWidth);
-    var showStartLine = coerce('startline', containerOut.showgrid || !!startLineColor || !!startLineWidth);
+    var startLineDash = coerce2('startlinewidth', gridDash);
+    var showStartLine = coerce('startline', containerOut.showgrid || !!startLineColor || !!startLineWidth || !!startLineDash);
 
     if(!showStartLine) {
         delete containerOut.startlinecolor;
         delete containerOut.startlinewidth;
+        delete containerOut.startlinedash;
     }
 
     var endLineColor = coerce2('endlinecolor', dfltColor);
     var endLineWidth = coerce2('endlinewidth', gridWidth);
-    var showEndLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth);
+    var endLineDash = coerce2('endlinewidth', gridDash);
+    var showEndLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth || !!endLineDash);
 
     if(!showEndLine) {
         delete containerOut.endlinecolor;
         delete containerOut.endlinewidth;
+        delete containerOut.endlinedash;
     }
 
     if(!showGrid) {
         delete containerOut.gridcolor;
         delete containerOut.gridWidth;
+        delete containerOut.gridDash;
     } else {
         coerce('minorgridcount');
         coerce('minorgridwidth', gridWidth);
+        coerce('minorgriddash', gridDash);
         coerce('minorgridcolor', addOpacity(gridColor, 0.06));
 
         if(!containerOut.minorgridcount) {
             delete containerOut.minorgridwidth;
+            delete containerOut.minorgriddash;
             delete containerOut.minorgridcolor;
         }
     }

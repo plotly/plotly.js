@@ -1,0 +1,39 @@
+{
+    "data": [
+        {
+            "y": [
+                -5,
+                -1,
+                1
+            ],
+            "x": [
+                -1,
+                0,
+                1
+            ]
+        }
+    ],
+    "layout": {
+        "xaxis": {
+            "griddash": "longdashdot",
+            "type": "linear",
+            "range": [
+                -1.122244488977956,
+                1.122244488977956
+            ],
+            "autorange": true
+        },
+        "yaxis": {
+            "griddash": "dashdot",
+            "type": "linear",
+            "range": [
+                -5.439490445859873,
+                1.4394904458598727
+            ],
+            "autorange": true
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true
+    }
+}

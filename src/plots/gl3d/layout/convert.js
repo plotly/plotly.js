@@ -39,6 +39,7 @@ function AxesOptions() {
 
     this.gridEnable = [ true, true, true ];
     this.gridWidth = [ 1, 1, 1 ];
+    this.gridDash = [ '', '', '' ];
     this.gridColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
 
     this.zeroEnable = [ true, true, true ];
@@ -93,6 +94,7 @@ proto.merge = function(fullLayout, sceneLayout) {
         if('showgrid' in axes) opts.gridEnable[i] = axes.showgrid;
         if('gridcolor' in axes) opts.gridColor[i] = str2RgbaArray(axes.gridcolor);
         if('gridwidth' in axes) opts.gridWidth[i] = axes.gridwidth;
+        if('griddash' in axes) opts.gridDash[i] = axes.griddash;
 
         // Remove zeroline if axis type is log
         // otherwise the zeroline is incorrectly drawn at 1 on log axes

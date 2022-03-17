@@ -2869,6 +2869,7 @@ axes.drawTicks = function(gd, ax, opts) {
  *  - {boolean} showgrid
  *  - {string} gridcolor
  *  - {string} gridwidth
+ *  - {string} griddash
  *  - {boolean} zeroline
  *  - {string} type
  *  - {string} dtick
@@ -2914,10 +2915,13 @@ axes.drawGrid = function(gd, ax, opts) {
         .classed('crisp', opts.crisp !== false);
 
     ax._gw = Drawing.crispRound(gd, ax.gridwidth, 1);
+    ax._gd = Drawing.dashStyle(ax.griddash, ax.gridwidth);
+    console.log(ax._gd, ax.griddash, ax.gridwidth);
 
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
+        .style('stroke-dasharray', ax._gd)
         .style('stroke-width', ax._gw + 'px')
         .style('display', null); // visible
 

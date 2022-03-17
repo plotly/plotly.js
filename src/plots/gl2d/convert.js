@@ -68,6 +68,7 @@ function Axes2DOptions(scene) {
         [0, 0, 0, 0.5]
     ];
     this.gridLineWidth = [1, 1];
+    this.gridLineDash = ['', ''];
 
     this.zeroLineEnable = [true, true];
     this.zeroLineWidth = [1, 1];
@@ -162,6 +163,7 @@ proto.merge = function(options) {
         this.gridLineEnable[i] = ax.showgrid;
         this.gridLineColor[i] = str2RGBArray(ax.gridcolor);
         this.gridLineWidth[i] = ax.gridwidth;
+        this.gridLineDash[i] = ax.griddash;
 
         this.zeroLineEnable[i] = ax.zeroline;
         this.zeroLineColor[i] = str2RGBArray(ax.zerolinecolor);
