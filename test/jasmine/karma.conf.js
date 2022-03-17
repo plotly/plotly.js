@@ -313,24 +313,19 @@ func.defaultConfig = {
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
+func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'minified_bundle':
             func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
         case 'plotschema':
             func.defaultConfig.browserify.ignoreTransform = './tasks/compress_attributes.js';
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
-            break;
-        default:
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
     }
 } else {
     func.defaultConfig.files.push(pathToJQuery);
-    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
 
 // lastly, load test file glob
