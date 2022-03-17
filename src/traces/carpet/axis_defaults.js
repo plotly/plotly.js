@@ -149,7 +149,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var startLineColor = coerce2('startlinecolor', dfltColor);
     var startLineWidth = coerce2('startlinewidth', gridWidth);
-    var startLineDash = coerce2('startlinewidth', gridDash);
+    var startLineDash = coerce2('startlinedash', gridDash);
     var showStartLine = coerce('startline', containerOut.showgrid || !!startLineColor || !!startLineWidth || !!startLineDash);
 
     if(!showStartLine) {
@@ -160,7 +160,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var endLineColor = coerce2('endlinecolor', dfltColor);
     var endLineWidth = coerce2('endlinewidth', gridWidth);
-    var endLineDash = coerce2('endlinewidth', gridDash);
+    var endLineDash = coerce2('endlinedash', gridDash);
     var showEndLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth || !!endLineDash);
 
     if(!showEndLine) {
