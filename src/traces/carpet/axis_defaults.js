@@ -138,7 +138,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
-    var gridDash = coerce('griddash');
+    var gridDash = coerce2('griddash');
     var showGrid = coerce('showgrid');
 
     if(!showGrid) {
