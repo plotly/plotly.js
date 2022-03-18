@@ -26,9 +26,9 @@ for(var k = 0; k < allFolders.length; k++) {
 }
 
 function replaceSubstr(str) {
-    var i0;
+    var i0 = 0;
     while(i0 !== -1) {
-        i0 = str.indexOf('.substr(');
+        i0 = str.indexOf('.substr(', i0);
         if(i0 === -1) return str;
 
         var args = [];
