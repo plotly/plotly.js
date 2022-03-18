@@ -5,35 +5,10 @@
 // String.prototype.substr() is deprecated!
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr
 
-var fs = require('fs');
-var allFolders = ['dist/'];
-if(process.argv.indexOf('build') !== -1) allFolders.push('build/');
-
-for(var k = 0; k < allFolders.length; k++) {
-    var folder = allFolders[k];
-    var allFilenames = fs.readdirSync(folder);
-
-    for(var i = 0; i < allFilenames.length; i++) {
-        var filename = allFilenames[i];
-        var len = filename.length;
-        if(
-            filename.substring(0, 6) === 'plotly' &&
-            filename.substring(len - 3) === '.js'
-        ) {
-            var f = folder + filename;
-            var str = fs.readFileSync(f, {encoding: 'utf8', flag: 'r+'});
-            var newStr = replaceSubstr(str);
-            if(newStr !== str) {
-                fs.writeFileSync(f, newStr, 'utf8');
-                console.log('Overwritten: ' + f);
-            }
-        }
-    }
-}
-
-function replaceSubstr(str) {
+module.exports = function substr2substring(str) {
     var i0 = 0;
     while(i0 !== -1) {
+        // assuming there is no white space after substr
         i0 = str.indexOf('.substr(', i0);
         if(i0 === -1) return str;
 
@@ -73,7 +48,7 @@ function replaceSubstr(str) {
         if(lengthStr !== undefined) {
             out += ',';
             if(+startStr !== 0) {
-                out += '(' + startStr + ')+';
+                out += '(' + startStr + ') + ';
             }
             out += lengthStr;
         }
@@ -87,4 +62,4 @@ function replaceSubstr(str) {
     }
 
     return str;
-}
+};

@@ -4,6 +4,7 @@ var path = require('path');
 var browserify = require('browserify');
 var minify = require('minify-stream');
 var derequire = require('derequire');
+var substr2substring = require('./substr2substring');
 var through = require('through2');
 
 var strictD3 = require('./strict_d3');
@@ -78,7 +79,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
         };
 
         bundleStream
-            .pipe(applyDerequire())
+            .pipe(modify())
             .pipe(minify(minifyOpts))
             .pipe(fs.createWriteStream(pathToMinBundle))
             .on('finish', function() {
@@ -89,7 +90,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     if(pathToBundle) {
         bundleStream
-            .pipe(applyDerequire())
+            .pipe(modify())
             .pipe(fs.createWriteStream(pathToBundle))
             .on('finish', function() {
                 logger(pathToBundle);
@@ -103,13 +104,19 @@ function logger(pathToOutput) {
     console.log(log);
 }
 
-function applyDerequire() {
-    var buf = '';
+function modify() {
+    var str = '';
     return through(function(chunk, enc, next) {
-        buf += chunk.toString();
+        str += chunk.toString();
         next();
     }, function(done) {
-        this.push(derequire(buf));
+        this.push(
+            derequire( // require >> _dereq_
+                substr2substring( // substr >> substring
+                    str
+                )
+            )
+        );
         done();
     });
 }
