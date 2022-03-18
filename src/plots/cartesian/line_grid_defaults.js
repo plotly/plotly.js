@@ -41,7 +41,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     if(!showGridLines) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
-        delete containerOut.gridDash;
+        delete containerOut.griddash;
     }
 
     if(!opts.noZeroLine) {
