@@ -1934,6 +1934,20 @@
       "editType": "plot",
       "valType": "color"
      },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
      "gridwidth": {
       "description": "Sets the graticule's stroke width (in px).",
       "dflt": 1,
@@ -1982,6 +1996,20 @@
       "dflt": "#eee",
       "editType": "plot",
       "valType": "color"
+     },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "gridwidth": {
       "description": "Sets the graticule's stroke width (in px).",
@@ -3577,6 +3605,20 @@
       "editType": "plot",
       "valType": "color"
      },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
       "dflt": 1,
@@ -4136,6 +4178,20 @@
       "dflt": "#eee",
       "editType": "plot",
       "valType": "color"
+     },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
@@ -5234,6 +5290,20 @@
       "editType": "plot",
       "valType": "color"
      },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
       "dflt": 1,
@@ -5796,6 +5866,20 @@
       "editType": "plot",
       "valType": "color"
      },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
       "dflt": 1,
@@ -6357,6 +6441,20 @@
       "dflt": "rgb(204, 204, 204)",
       "editType": "plot",
       "valType": "color"
+     },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
@@ -7445,6 +7543,20 @@
       "editType": "plot",
       "valType": "color"
      },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
       "dflt": 1,
@@ -7623,6 +7735,20 @@
       "dflt": "#eee",
       "editType": "plot",
       "valType": "color"
+     },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
@@ -7890,6 +8016,20 @@
       "dflt": "#eee",
       "editType": "plot",
       "valType": "color"
+     },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
@@ -8274,6 +8414,20 @@
       "dflt": "#eee",
       "editType": "plot",
       "valType": "color"
+     },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
@@ -8664,6 +8818,20 @@
       "dflt": "#eee",
       "editType": "plot",
       "valType": "color"
+     },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
@@ -9770,6 +9938,20 @@
      "dflt": "#eee",
      "editType": "ticks",
      "valType": "color"
+    },
+    "griddash": {
+     "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string",
+     "values": [
+      "solid",
+      "dot",
+      "dash",
+      "longdash",
+      "dashdot",
+      "longdashdot"
+     ]
     },
     "gridwidth": {
      "description": "Sets the width (in px) of the grid lines.",
@@ -10888,6 +11070,20 @@
      "dflt": "#eee",
      "editType": "ticks",
      "valType": "color"
+    },
+    "griddash": {
+     "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+     "dflt": "",
+     "editType": "none",
+     "valType": "string",
+     "values": [
+      "solid",
+      "dot",
+      "dash",
+      "longdash",
+      "dashdot",
+      "longdashdot"
+     ]
     },
     "gridwidth": {
      "description": "Sets the width (in px) of the grid lines.",
@@ -16599,6 +16795,20 @@
       "editType": "calc",
       "valType": "color"
      },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "none",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
      "gridwidth": {
       "description": "Sets the width (in px) of the axis line.",
       "dflt": 1,
@@ -16655,6 +16865,20 @@
       "editType": "calc",
       "min": 0,
       "valType": "integer"
+     },
+     "minorgriddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "none",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "minorgridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
@@ -17133,6 +17357,20 @@
       "editType": "calc",
       "valType": "color"
      },
+     "griddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "none",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
      "gridwidth": {
       "description": "Sets the width (in px) of the axis line.",
       "dflt": 1,
@@ -17189,6 +17427,20 @@
       "editType": "calc",
       "min": 0,
       "valType": "integer"
+     },
+     "minorgriddash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "",
+      "editType": "none",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
      },
      "minorgridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
