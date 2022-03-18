@@ -3,7 +3,9 @@ var fs = require('fs');
 var browserify = require('browserify');
 var watchify = require('watchify');
 var prettySize = require('prettysize');
+var through = require('through2');
 
+var substr2substring = require('../../tasks/util/substr2substring');
 var constants = require('./constants');
 var common = require('./common');
 
@@ -50,6 +52,7 @@ module.exports = function makeWatchifiedBundle(strict, onFirstBundleCallback) {
                 firstBundle = false;
             }
         })
+        .pipe(modify())
         .pipe(
             fs.createWriteStream(constants.pathToPlotlyBuild)
         );
@@ -79,5 +82,20 @@ function formatBundleMsg(b, bundleName) {
         msgParts[msgParts.length - 2] = formattedTime;
 
         console.log(msgParts.join(' '));
+    });
+}
+
+function modify() {
+    var str = '';
+    return through(function(chunk, enc, next) {
+        str += chunk.toString();
+        next();
+    }, function(done) {
+        this.push(
+            substr2substring( // substr >> substring
+                str
+            )
+        );
+        done();
     });
 }
