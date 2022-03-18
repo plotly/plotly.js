@@ -50,8 +50,8 @@ tasks.push(function(done) {
         standalone: 'Plotly',
         pathToMinBundle: pathToPlotlyStrictDistMin
     }, function() {
-        prependFile.sync(pathToPlotlyStrictDist, header, common.throwOnError);
-        prependFile.sync(pathToPlotlyStrictDistMin, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
+        prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
 
         done();
     });
