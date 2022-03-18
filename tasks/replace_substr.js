@@ -16,11 +16,17 @@ for(var k = 0; k < allFolders.length; k++) {
     for(var i = 0; i < allFilenames.length; i++) {
         var filename = allFilenames[i];
         var len = filename.length;
-        if(filename.substring(len - 3) === '.js') {
+        if(
+            filename.substring(0, 6) === 'plotly' &&
+            filename.substring(len - 3) === '.js'
+        ) {
             var f = folder + filename;
             var str = fs.readFileSync(f, {encoding: 'utf8', flag: 'r+'});
-            fs.writeFileSync(f, replaceSubstr(str), 'utf8');
-            console.log('Overwritten:' + f);
+            var newStr = replaceSubstr(str);
+            if(newStr !== str) {
+                fs.writeFileSync(f, newStr, 'utf8');
+                console.log('Overwritten: ' + f);
+            }
         }
     }
 }
