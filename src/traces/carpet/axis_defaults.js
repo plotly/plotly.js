@@ -138,7 +138,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
-    var gridDash = coerce2('griddash');
+    var gridDash = coerce('griddash');
     var showGrid = coerce('showgrid');
 
     if(!showGrid) {
@@ -149,24 +149,20 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var startLineColor = coerce2('startlinecolor', dfltColor);
     var startLineWidth = coerce2('startlinewidth', gridWidth);
-    var startLineDash = coerce2('startlinedash', gridDash);
-    var showStartLine = coerce('startline', containerOut.showgrid || !!startLineColor || !!startLineWidth || !!startLineDash);
+    var showStartLine = coerce('startline', containerOut.showgrid || !!startLineColor || !!startLineWidth);
 
     if(!showStartLine) {
         delete containerOut.startlinecolor;
         delete containerOut.startlinewidth;
-        delete containerOut.startlinedash;
     }
 
     var endLineColor = coerce2('endlinecolor', dfltColor);
     var endLineWidth = coerce2('endlinewidth', gridWidth);
-    var endLineDash = coerce2('endlinedash', gridDash);
-    var showEndLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth || !!endLineDash);
+    var showEndLine = coerce('endline', containerOut.showgrid || !!endLineColor || !!endLineWidth);
 
     if(!showEndLine) {
         delete containerOut.endlinecolor;
         delete containerOut.endlinewidth;
-        delete containerOut.endlinedash;
     }
 
     if(!showGrid) {

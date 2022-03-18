@@ -2916,7 +2916,6 @@ axes.drawGrid = function(gd, ax, opts) {
 
     ax._gw = Drawing.crispRound(gd, ax.gridwidth, 1);
     ax._gd = Drawing.dashStyle(ax.griddash, ax.gridwidth);
-    console.log(ax._gd, ax.griddash, ax.gridwidth);
 
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
