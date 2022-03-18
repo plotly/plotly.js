@@ -1150,6 +1150,9 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
 
     var radialDrag = dragBox.makeRectDragger(layers, className, 'crosshair', -bl2, -bl2, bl, bl);
     var dragOpts = {element: radialDrag, gd: gd};
+    if(fullLayout.dragmode === false) {
+        dragOpts.dragmode = false;
+    }
 
     updateElement(d3.select(radialDrag), radialAxis.visible && innerRadius < radius, {
         transform: strTranslate(tx, ty)
@@ -1295,10 +1298,14 @@ proto.updateAngularDrag = function(fullLayout) {
     var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', 'move');
     var dragOpts = {element: angularDrag, gd: gd};
 
-    d3.select(angularDrag)
-        .attr('d', _this.pathAnnulus(radius, radius + dbs))
-        .attr('transform', strTranslate(cx, cy))
-        .call(setCursor, 'move');
+    if(fullLayout.dragmode === false) {
+        dragOpts.dragmode = false;
+    } else {
+        d3.select(angularDrag)
+            .attr('d', _this.pathAnnulus(radius, radius + dbs))
+            .attr('transform', strTranslate(cx, cy))
+            .call(setCursor, 'move');
+    }
 
     function xy2a(x, y) {
         return Math.atan2(cyy + dbs - y, x - cxx - dbs);
