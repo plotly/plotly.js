@@ -37,8 +37,8 @@ tasks.push(function(done) {
         standalone: 'Plotly',
         pathToMinBundle: pathToPlotlyDistMin
     }, function() {
-        prependFile(pathToPlotlyDist, header, common.throwOnError);
-        prependFile(pathToPlotlyDistMin, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDist, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDistMin, header, common.throwOnError);
 
         done();
     });
@@ -50,8 +50,8 @@ tasks.push(function(done) {
         standalone: 'Plotly',
         pathToMinBundle: pathToPlotlyStrictDistMin
     }, function() {
-        prependFile(pathToPlotlyStrictDist, header, common.throwOnError);
-        prependFile(pathToPlotlyStrictDistMin, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
+        prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
 
         done();
     });
@@ -62,7 +62,7 @@ tasks.push(function(done) {
     _bundle(pathToPlotlyGeoAssetsSrc, pathToPlotlyGeoAssetsDist, {
         standalone: 'PlotlyGeoAssets'
     }, function() {
-        prependFile(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
 
         done();
     });
@@ -74,7 +74,7 @@ tasks.push(function(done) {
         standalone: 'Plotly',
         noCompress: true
     }, function() {
-        prependFile(pathToPlotlyDistWithMeta, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
 
         done();
     });

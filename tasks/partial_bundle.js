@@ -63,8 +63,8 @@ module.exports = function partialBundle(tasks, opts) {
             var headerDist = header.replace('plotly.js', 'plotly.js (' + name + ')');
             var headerDistMin = header.replace('plotly.js', 'plotly.js (' + name + ' - minified)');
 
-            if(dist) prependFile(dist, headerDist, common.throwOnError);
-            if(distMin) prependFile(distMin, headerDistMin, common.throwOnError);
+            if(dist) prependFile.sync(dist, headerDist, common.throwOnError);
+            if(distMin) prependFile.sync(distMin, headerDistMin, common.throwOnError);
 
             done();
         });
