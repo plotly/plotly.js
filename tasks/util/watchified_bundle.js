@@ -5,7 +5,7 @@ var watchify = require('watchify');
 var prettySize = require('prettysize');
 var through = require('through2');
 
-var substr2substring = require('../../tasks/util/substr2substring');
+var substr2slice = require('../../tasks/util/substr2slice');
 var constants = require('./constants');
 var common = require('./common');
 
@@ -92,7 +92,7 @@ function modify() {
         next();
     }, function(done) {
         this.push(
-            substr2substring( // substr >> substring
+            substr2slice( // substr >> slice
                 str
             )
         );

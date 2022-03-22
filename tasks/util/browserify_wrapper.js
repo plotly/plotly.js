@@ -4,7 +4,7 @@ var path = require('path');
 var browserify = require('browserify');
 var minify = require('minify-stream');
 var derequire = require('derequire');
-var substr2substring = require('./substr2substring');
+var substr2slice = require('./substr2slice');
 var through = require('through2');
 
 var strictD3 = require('./strict_d3');
@@ -112,7 +112,7 @@ function modify() {
     }, function(done) {
         this.push(
             derequire( // require >> _dereq_
-                substr2substring( // substr >> substring
+                substr2slice( // substr >> slice
                     str
                 )
             )

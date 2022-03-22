@@ -1,11 +1,11 @@
 'use strict';
 
-// Replace .substr(a, ?b) with .substring(a, (a)+b)
+// Replace .substr(a, ?b) with .slice(a, (a)+b)
 //
 // String.prototype.substr() is deprecated!
 // See https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substr
 
-module.exports = function substr2substring(str) {
+module.exports = function substr2slice(str) {
     var i0 = 0;
     while(i0 !== -1) {
         // assuming there is no white space after substr
@@ -38,12 +38,12 @@ module.exports = function substr2substring(str) {
             if(c === ')') p--;
         }
 
-        // console.log(str.substring(i0, i + 1));
+        // console.log(str.slice(i0, i + 1));
         // console.log(args);
 
         var startStr = args[0];
         var lengthStr = args[1];
-        var out = '.substring(' + startStr;
+        var out = '.slice(' + startStr;
 
         if(lengthStr !== undefined) {
             out += ',';
@@ -58,7 +58,7 @@ module.exports = function substr2substring(str) {
         // console.log(out)
         // console.log('__');
 
-        str = str.substring(0, i0) + out + str.substring(i + 1);
+        str = str.slice(0, i0) + out + str.slice(i + 1);
     }
 
     return str;
