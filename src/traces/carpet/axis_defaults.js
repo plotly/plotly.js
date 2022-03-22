@@ -165,7 +165,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     if(!showGrid) {
         delete containerOut.gridcolor;
-        delete containerOut.gridWidth;
+        delete containerOut.gridwidth;
     } else {
         coerce('minorgridcount');
         coerce('minorgridwidth', gridWidth);
