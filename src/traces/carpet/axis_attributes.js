@@ -362,7 +362,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the width (in px) of the axis line.'
     },
-    griddash: extendFlat({}, dash, {dflt: '', editType: 'none'}),
+    griddash: extendFlat({}, dash, {editType: 'calc'}),
     showgrid: {
         valType: 'boolean',
         dflt: true,
