@@ -386,7 +386,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the width (in px) of the grid lines.'
     },
-    minorgriddash: extendFlat({}, dash, {dflt: '', editType: 'none'}),
+    minorgriddash: extendFlat({}, dash, {editType: 'calc'}),
     minorgridcolor: {
         valType: 'color',
         dflt: colorAttrs.lightLine,
