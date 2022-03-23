@@ -3,7 +3,6 @@
 var colorAttrs = require('../../components/color/attributes');
 var domainAttrs = require('../domain').attributes;
 var dash = require('../../components/drawing/attributes').dash;
-var extendFlat = require('../../lib/extend').extendFlat;
 var constants = require('./constants');
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var sortObjectKeys = require('../../lib/sort_object_keys');
