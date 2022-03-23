@@ -797,7 +797,7 @@ module.exports = {
         editType: 'ticks',
         description: 'Sets the width (in px) of the grid lines.'
     },
-    griddash: extendFlat({}, dash, {dflt: '', editType: 'none'}),
+    griddash: extendFlat({}, dash, {dflt: '', editType: 'ticks'}),
     zeroline: {
         valType: 'boolean',
         editType: 'ticks',
