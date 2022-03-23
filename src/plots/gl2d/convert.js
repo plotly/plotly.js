@@ -162,7 +162,6 @@ proto.merge = function(options) {
         this.gridLineEnable[i] = ax.showgrid;
         this.gridLineColor[i] = str2RGBArray(ax.gridcolor);
         this.gridLineWidth[i] = ax.gridwidth;
-        this.gridLineDash[i] = ax.griddash;
 
         this.zeroLineEnable[i] = ax.zeroline;
         this.zeroLineColor[i] = str2RGBArray(ax.zerolinecolor);
