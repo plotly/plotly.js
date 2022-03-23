@@ -68,7 +68,6 @@ function Axes2DOptions(scene) {
         [0, 0, 0, 0.5]
     ];
     this.gridLineWidth = [1, 1];
-    this.gridLineDash = ['', ''];
 
     this.zeroLineEnable = [true, true];
     this.zeroLineWidth = [1, 1];
