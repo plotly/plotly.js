@@ -107,7 +107,6 @@ module.exports = overrideAll({
     gridcolor: extendFlat({}, axesAttrs.gridcolor,  // shouldn't this be on-par with 2D?
         {dflt: 'rgb(204, 204, 204)'}),
     gridwidth: axesAttrs.gridwidth,
-    griddash: axesAttrs.griddash,
     zeroline: axesAttrs.zeroline,
     zerolinecolor: axesAttrs.zerolinecolor,
     zerolinewidth: axesAttrs.zerolinewidth,
