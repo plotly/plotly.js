@@ -192,7 +192,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
                 if(realImage) {
                     href = trace.source;
                 } else {
-                    var context = trace._canvas.el.getContext('2d', {willReadFrequently:true});
+                    var context = trace._canvas.el.getContext('2d', {willReadFrequently: true});
                     var data = context.getImageData(0, 0, w, h).data;
                     canvas = drawMagnifiedPixelsOnCanvas(function(i, j) {
                         var index = 4 * (j * w + i);
