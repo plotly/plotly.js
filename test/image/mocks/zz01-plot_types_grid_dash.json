@@ -64,8 +64,7 @@
         -45,
         0,
         45
-      ],
-      "subplot": "geo"
+      ]
     },
     {
       "type": "scatterternary",
