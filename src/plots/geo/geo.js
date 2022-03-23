@@ -367,7 +367,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         } else if(isAxisLayer(d)) {
             path.datum(makeGraticule(d, geoLayout, fullLayout))
                 .call(Color.stroke, geoLayout[d].gridcolor)
-                .call(Drawing.dashLine, '', geoLayout[d].gridwidth);
+                .call(Drawing.dashLine, geoLayout[d].griddash, geoLayout[d].gridwidth);
         }
 
         if(isLineLayer(d)) {

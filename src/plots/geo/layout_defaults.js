@@ -87,6 +87,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         if(show) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
+            coerce(axisName + '.griddash');
         }
 
         // mock axis for autorange computations

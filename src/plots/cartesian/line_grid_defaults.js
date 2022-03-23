@@ -35,11 +35,13 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || lightFraction).toRgbString();
     var gridColor = coerce2('gridcolor', gridColorDflt);
     var gridWidth = coerce2('gridwidth');
-    var showGridLines = coerce('showgrid', opts.showGrid || !!gridColor || !!gridWidth);
+    var gridDash = coerce2('griddash');
+    var showGridLines = coerce('showgrid', opts.showGrid || !!gridColor || !!gridWidth || !!gridDash);
 
     if(!showGridLines) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
+        delete containerOut.griddash;
     }
 
     if(!opts.noZeroLine) {

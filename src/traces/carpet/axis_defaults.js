@@ -138,11 +138,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
+    var gridDash = coerce2('griddash');
     var showGrid = coerce('showgrid');
 
     if(!showGrid) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
+        delete containerOut.griddash;
     }
 
     var startLineColor = coerce2('startlinecolor', dfltColor);
@@ -166,13 +168,16 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     if(!showGrid) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
+        delete containerOut.griddash;
     } else {
         coerce('minorgridcount');
         coerce('minorgridwidth', gridWidth);
+        coerce('minorgriddash', gridDash);
         coerce('minorgridcolor', addOpacity(gridColor, 0.06));
 
         if(!containerOut.minorgridcount) {
             delete containerOut.minorgridwidth;
+            delete containerOut.minorgriddash;
             delete containerOut.minorgridcolor;
         }
     }

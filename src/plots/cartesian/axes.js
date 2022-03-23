@@ -2869,6 +2869,7 @@ axes.drawTicks = function(gd, ax, opts) {
  *  - {boolean} showgrid
  *  - {string} gridcolor
  *  - {string} gridwidth
+ *  - {string} griddash
  *  - {boolean} zeroline
  *  - {string} type
  *  - {string} dtick
@@ -2918,6 +2919,7 @@ axes.drawGrid = function(gd, ax, opts) {
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .call(Color.stroke, ax.gridcolor || '#ddd')
+        .style('stroke-dasharray', Drawing.dashStyle(ax.griddash, ax.gridwidth))
         .style('stroke-width', ax._gw + 'px')
         .style('display', null); // visible
 
