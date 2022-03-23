@@ -53,7 +53,7 @@ var geoAxesAttrs = {
             'Sets the graticule\'s stroke width (in px).'
         ].join(' ')
     },
-    griddash: extendFlat({}, dash, {dflt: '', editType: 'none'})
+    griddash: dash
 };
 
 var attrs = module.exports = overrideAll({
