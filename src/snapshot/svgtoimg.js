@@ -33,7 +33,7 @@ function svgToImg(opts) {
         var w1 = scale * w0;
         var h1 = scale * h0;
 
-        var ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d', {willReadFrequently: true});
         var img = new Image();
         var svgBlob, url;
 

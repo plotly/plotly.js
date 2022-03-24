@@ -24,7 +24,7 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     if(trace._hasZ) {
         pixel = cd0.z[ny][nx];
     } else if(trace._hasSource) {
-        pixel = trace._canvas.el.getContext('2d').getImageData(nx, ny, 1, 1).data;
+        pixel = trace._canvas.el.getContext('2d', {willReadFrequently: true}).getImageData(nx, ny, 1, 1).data;
     }
 
     // return early if pixel is undefined
