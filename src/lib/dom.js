@@ -32,6 +32,22 @@ function getGraphDiv(gd) {
     return gd;
 }
 
+/**
+ * Allow referencing a graph DOM element either directly
+ * or by its id string, if undefined will create a new element
+ *
+ * @param {HTMLDivElement|string} gd: a graph element or its id, may be undefined
+ *
+ * @returns {HTMLDivElement} the DOM element of the graph
+ */
+function getOrCreateGraphDiv(gd) {
+    if(gd === null || gd === undefined) {
+        return document.createElement('div');
+    }
+
+    return getGraphDiv(gd);
+}
+
 function isPlotDiv(el) {
     var el3 = d3.select(el);
     return el3.node() instanceof HTMLElement &&
@@ -156,6 +172,7 @@ function equalDomRects(a, b) {
 
 module.exports = {
     getGraphDiv: getGraphDiv,
+    getOrCreateGraphDiv: getOrCreateGraphDiv,
     isPlotDiv: isPlotDiv,
     removeElement: removeElement,
     addStyleRule: addStyleRule,

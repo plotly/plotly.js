@@ -557,7 +557,7 @@ function redraw(gd) {
  * @param {Object} config
  */
 function newPlot(gd, data, layout, config) {
-    gd = Lib.getGraphDiv(gd);
+    gd = Lib.getOrCreateGraphDiv(gd);
 
     // remove gl contexts
     Plots.cleanPlot([], {}, gd._fullData || [], gd._fullLayout || {});
@@ -2612,7 +2612,7 @@ function react(gd, data, layout, config) {
 
     function addFrames() { return exports.addFrames(gd, frames); }
 
-    gd = Lib.getGraphDiv(gd);
+    gd = Lib.getOrCreateGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
     var oldFullData = gd._fullData;
