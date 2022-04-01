@@ -985,6 +985,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     ax._inCalcTicks = false;
 
+    if(isPeriod && ticksOut.length) {
+        // drop very first tick that we added to handle period
+        ticksOut[0].noTick = true;
+    }
+
     return ticksOut;
 };
 
@@ -2832,14 +2837,7 @@ axes.drawTicks = function(gd, ax, opts) {
 
     var cls = ax._id + 'tick';
 
-    var vals = opts.vals;
-    if(
-        ax.ticklabelmode === 'period'
-    ) {
-        // drop very first tick that we added to handle period
-        vals = vals.slice();
-        vals.shift();
-    }
+    var vals = opts.vals.filter(function(e) { return !e.noTick; });
 
     var ticks = opts.layer.selectAll('path.' + cls)
         .data(ax.ticks ? vals : [], tickDataFn);
