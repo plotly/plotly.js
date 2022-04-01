@@ -946,7 +946,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     var lastVisibleHead;
     var hideLabel = function(tick) {
-        tick.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
+        tick.text = '';
         ax._prevDateHead = lastVisibleHead;
     };
 
@@ -3008,7 +3008,7 @@ axes.drawLabels = function(gd, ax, opts) {
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
 
-    var vals = opts.vals;
+    var vals = opts.vals.filter(function(e) { return e.text; });
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
