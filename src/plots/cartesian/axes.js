@@ -2174,12 +2174,14 @@ axes.drawOne = function(gd, ax, opts) {
     }
 
     var tickSigns = axes.getTickSigns(ax);
-    var tickSubplots = [];
 
+    var tickPath;
     if(ax.ticks) {
-        var mainTickPath = axes.makeTickPath(ax, mainLinePosition, tickSigns[2]);
+        var mainTickPath;
         var mirrorTickPath;
         var fullTickPath;
+
+        mainTickPath = axes.makeTickPath(ax, mainLinePosition, tickSigns[2]);
         if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
             mirrorTickPath = axes.makeTickPath(ax, mainMirrorPosition, tickSigns[3]);
             fullTickPath = mainTickPath + mirrorTickPath;
@@ -2188,7 +2190,6 @@ axes.drawOne = function(gd, ax, opts) {
             fullTickPath = mainTickPath;
         }
 
-        var tickPath;
         if(ax.showdividers && outsideTicks && ax.tickson === 'boundaries') {
             var dividerLookup = {};
             for(i = 0; i < dividerVals.length; i++) {
@@ -2200,33 +2201,33 @@ axes.drawOne = function(gd, ax, opts) {
         } else {
             tickPath = fullTickPath;
         }
-
-        axes.drawTicks(gd, ax, {
-            vals: tickVals,
-            layer: mainAxLayer,
-            path: tickPath,
-            transFn: transTickFn
-        });
-
-        if(ax.mirror === 'allticks') {
-            tickSubplots = Object.keys(ax._linepositions || {});
-        }
     }
 
-    for(i = 0; i < tickSubplots.length; i++) {
-        sp = tickSubplots[i];
-        plotinfo = fullLayout._plots[sp];
-        // [bottom or left, top or right], free and main are handled above
-        var linepositions = ax._linepositions[sp] || [];
-        var spTickPath = axes.makeTickPath(ax, linepositions[0], tickSigns[0]) +
-            axes.makeTickPath(ax, linepositions[1], tickSigns[1]);
+    axes.drawTicks(gd, ax, {
+        vals: tickVals,
+        layer: mainAxLayer,
+        path: tickPath,
+        transFn: transTickFn
+    });
 
-        axes.drawTicks(gd, ax, {
-            vals: tickVals,
-            layer: plotinfo[axLetter + 'axislayer'],
-            path: spTickPath,
-            transFn: transTickFn
-        });
+    if(ax.mirror === 'allticks') {
+        var tickSubplots = Object.keys(ax._linepositions || {});
+
+        for(i = 0; i < tickSubplots.length; i++) {
+            sp = tickSubplots[i];
+            plotinfo = fullLayout._plots[sp];
+            // [bottom or left, top or right], free and main are handled above
+            var linepositions = ax._linepositions[sp] || [];
+            var spTickPath = axes.makeTickPath(ax, linepositions[0], tickSigns[0]) +
+                axes.makeTickPath(ax, linepositions[1], tickSigns[1]);
+
+            axes.drawTicks(gd, ax, {
+                vals: tickVals,
+                layer: plotinfo[axLetter + 'axislayer'],
+                path: spTickPath,
+                transFn: transTickFn
+            });
+        }
     }
 
     var seq = [];
