@@ -4,6 +4,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
+var Template = require('../../plot_api/plot_template');
 
 var handleArrayContainerDefaults = require('../array_container_defaults');
 
@@ -121,16 +122,36 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
+    // major ticks
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
+
+    var hasMinor = options.hasMinor;
+    if(hasMinor) {
+        // minor ticks
+        Template.newContainer(containerOut, 'minor');
+        handleTickValueDefaults(containerIn, containerOut, coerce, axType, { isMinor: true });
+    }
+
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
+
+    // major and minor ticks
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+    if(hasMinor) {
+        var keepIsMinor = options.isMinor;
+        options.isMinor = true;
+        handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+        options.isMinor = keepIsMinor;
+    }
+
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
         bgColor: options.bgColor,
         showGrid: options.showGrid,
+        hasMinor: hasMinor,
         attributes: layoutAttributes
     });
 
+    // mirror
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
     if(options.automargin) coerce('automargin');

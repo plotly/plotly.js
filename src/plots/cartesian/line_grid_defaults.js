@@ -1,7 +1,7 @@
 'use strict';
 
 var colorMix = require('tinycolor2').mix;
-var lightFraction = require('../../components/color/attributes').lightFraction;
+var colorAttrs = require('../../components/color/attributes');
 var Lib = require('../../lib');
 
 /**
@@ -32,16 +32,38 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
         delete containerOut.linewidth;
     }
 
-    var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || lightFraction).toRgbString();
+    var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || colorAttrs.lightFraction).toRgbString();
     var gridColor = coerce2('gridcolor', gridColorDflt);
     var gridWidth = coerce2('gridwidth');
     var gridDash = coerce2('griddash');
-    var showGridLines = coerce('showgrid', opts.showGrid || !!gridColor || !!gridWidth || !!gridDash);
+    var showGridLines = coerce('showgrid', opts.showGrid ||
+        !!gridColor ||
+        !!gridWidth ||
+        !!gridDash
+    );
 
     if(!showGridLines) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
         delete containerOut.griddash;
+    }
+
+    if(opts.hasMinor) {
+        var minorGridColorDflt = colorMix(gridColor || gridColorDflt, opts.bgColor).toRgbString();
+        var minorGridColor = coerce2('minor.gridcolor', minorGridColorDflt);
+        var minorGridWidth = coerce2('minor.gridwidth');
+        var minorGridDash = coerce2('minor.griddash');
+        var minorShowGridLines = coerce('minor.showgrid',
+            !!minorGridColor ||
+            !!minorGridWidth ||
+            !!minorGridDash
+        );
+
+        if(!minorShowGridLines) {
+            delete containerOut.minor.gridcolor;
+            delete containerOut.minor.gridwidth;
+            delete containerOut.minor.griddash;
+        }
     }
 
     if(!opts.noZeroLine) {

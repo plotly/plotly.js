@@ -229,6 +229,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
               ));
 
         var defaultOptions = {
+            hasMinor: true,
             letter: axLetter,
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
