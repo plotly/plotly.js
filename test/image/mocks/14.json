@@ -156,6 +156,7 @@
             "autorange": true
         },
         "yaxis": {
+            "minor": { "showgrid": true },
             "title": {
                 "text": "Cost ($/W<sub>P</sub>)"
             },
