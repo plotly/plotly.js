@@ -584,6 +584,10 @@
         "width": 800,
         "height": 440,
         "xaxis": {
+            "minor": {
+                "ticks": "inside",
+                "showgrid": true
+            },
             "title": {
                 "text": "Time (s)"
             },
@@ -630,6 +634,10 @@
             "autorange": false
         },
         "yaxis": {
+            "minor": {
+                "ticks": "outside",
+                "showgrid": true
+            },
             "title": {
                 "text": "Velocity (m/s)"
             },
