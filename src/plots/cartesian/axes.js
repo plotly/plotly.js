@@ -903,7 +903,8 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     r2l: ax.r2l,
                     type: ax.type,
                     range: ax.range,
-                    calendar: ax.calendar
+                    calendar: ax.calendar,
+                    _hasDayOfWeekBreaks: ax._hasDayOfWeekBreaks
                 });
 
                 var minorRoughDtick = 1;
@@ -915,7 +916,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     );
                 }
 
-                axes.autoTicks(mockAxis, minorRoughDtick, true);
+                axes.autoTicks(mockAxis, minorRoughDtick);
 
                 minorDtick = mockAxis.dtick;
                 var majorDtick = ax.dtick;
@@ -1183,7 +1184,7 @@ function roundDTick(roughDTick, base, roundingSet) {
 //      log with linear ticks: L# where # is the linear tick spacing
 //      log showing powers plus some intermediates:
 //          D1 shows all digits, D2 shows 2 and 5
-axes.autoTicks = function(ax, roughDTick, isMinor) {
+axes.autoTicks = function(ax, roughDTick) {
     var base;
 
     function getBase(v) {
@@ -1205,7 +1206,7 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         } else if(roughX2 > ONEDAY) {
-            ax.dtick = roundDTick(roughDTick, ONEDAY, isMinor ? [1] : ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
+            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
             // get week ticks on sunday
             // this will also move the base tick off 2000-01-01 if dtick is
             // 2 or 3 days... but that's a weird enough case that we'll ignore it.
