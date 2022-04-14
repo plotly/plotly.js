@@ -163,7 +163,7 @@
             "anchor": "y3"
         },
         "xaxis4": {
-            "minor": { "ticks": "inside", "dtick": 604800000 },
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -174,7 +174,7 @@
             "anchor": "y4"
         },
         "xaxis5": {
-            "minor": { "ticks": "inside", "dtick": "M1" },
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
