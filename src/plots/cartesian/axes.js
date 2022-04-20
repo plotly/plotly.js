@@ -541,11 +541,8 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // ----------------------------------------------------
 
 // ensure we have tick0, dtick, and tick rounding calculated
-axes.prepTicks = function(ax, opts) {
+axes.prepTicks = function(ax, opts, isMinor) {
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
-
-    ax._dtickInit = ax.dtick;
-    ax._tick0Init = ax.tick0;
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
@@ -572,7 +569,7 @@ axes.prepTicks = function(ax, opts) {
 
 
         ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
-        axes.autoTicks(ax, ax._roughDTick);
+        axes.autoTicks(ax, ax._roughDTick, isMinor);
 
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
@@ -787,202 +784,191 @@ function positionPeriodTicks(tickVals, ax, definedDelta) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks(ax, opts) {
-    axes.prepTicks(ax, opts);
+    var type = ax.type;
+    var calendar = ax.calendar;
+    var ticklabelstep = ax.ticklabelstep;
+    var isPeriod = ax.ticklabelmode === 'period';
+
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
-
-    // now that we've figured out the auto values for formatting
-    // in case we're missing some ticktext, we can break out for array ticks
-    if(ax.tickmode === 'array') return arrayTicks(ax);
-
-    // add a tiny bit so we get ticks which may have rounded out
-    var exRng = expandRange(rng);
-    var startTick = exRng[0];
-    var endTick = exRng[1];
-    // check for reversed axis
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
 
-    var numDtick = isNumeric(ax.dtick);
-    var isDLog = (ax.type === 'log') && !(numDtick || ax.dtick.charAt(0) === 'L');
-    var isPeriod = ax.ticklabelmode === 'period';
-
-    // find the first tick
-    ax._tmin = axes.tickFirst(ax, opts);
-
-    // No visible ticks? Quit.
-    // I've only seen this on category axes with all categories off the edge.
-    if((ax._tmin < startTick) !== axrev) return [];
-
-    // return the full set of tick vals
-    if(ax.type === 'category' || ax.type === 'multicategory') {
-        endTick = (axrev) ? Math.max(-0.5, endTick) :
-            Math.min(ax._categories.length - 0.5, endTick);
-    }
-
-    var x = ax._tmin;
-
-    if(ax.rangebreaks && ax._tick0Init !== ax.tick0) {
-        // adjust tick0
-        x = moveOutsideBreak(x, ax);
-        if(!axrev) {
-            x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
-        }
-    }
-
-    if(isPeriod) {
-        // add one item to label period before tick0
-        x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
-    }
-
-    var ticklabelstep = ax.ticklabelstep;
-
     var maxTicks = Math.max(1000, ax._length || 0);
+
+    var ticksOut = [];
+    var minorTicks = [];
+
     var tickVals = [];
     var minorTickVals = [];
-    var prevX = null;
 
-    var dTick;
-    if(numDtick) {
-        dTick = ax.dtick;
-    } else {
-        if(ax.type === 'date') {
-            if(typeof ax.dtick === 'string' && ax.dtick.charAt(0) === 'M') {
-                dTick = ONEAVGMONTH * ax.dtick.substring(1);
-            }
+    var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
+
+    // calc major first
+    for(var major = 1; major >= (hasMinor ? 0 : 1); major--) {
+        var isMinor = !major;
+
+        if(major) {
+            ax._dtickInit = ax.dtick;
+            ax._tick0Init = ax.tick0;
         } else {
-            dTick = ax._roughDTick;
+            if(ax.minor) {
+                ax.minor._dtickInit = ax.minor.dtick;
+                ax.minor._tick0Init = ax.minor.tick0;
+            }
+        }
+
+        var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
+
+        if(isMinor && ax.minor && !ax.minor.dtick) {
+            mockAx._majorDtick = ax.dtick;
+
+            mockAx.dtick = mockAx._dtickInit;
+            mockAx.tick0 = mockAx._tick0Init;
+        }
+
+        axes.prepTicks(mockAx, opts, isMinor);
+
+        // now that we've figured out the auto values for formatting
+        // in case we're missing some ticktext, we can break out for array ticks
+        if(mockAx.tickmode === 'array') {
+            if(major) {
+                tickVals = [];
+                ticksOut = arrayTicks(ax);
+            } else {
+                minorTickVals = [];
+                minorTicks = arrayTicks(ax);
+            }
+            break;
+        }
+
+        // add a tiny bit so we get ticks which may have rounded out
+        var exRng = expandRange(rng);
+        var startTick = exRng[0];
+        var endTick = exRng[1];
+
+        var numDtick = isNumeric(mockAx.dtick);
+        var isDLog = (type === 'log') && !(numDtick || mockAx.dtick.charAt(0) === 'L');
+
+        // find the first tick
+        var x0 = axes.tickFirst(mockAx, opts);
+
+        if(major) {
+            ax._tmin = x0;
+
+            // No visible ticks? Quit.
+            // I've only seen this on category axes with all categories off the edge.
+            if((x0 < startTick) !== axrev) break;
+
+            // return the full set of tick vals
+            if(type === 'category' || type === 'multicategory') {
+                endTick = (axrev) ? Math.max(-0.5, endTick) :
+                    Math.min(ax._categories.length - 0.5, endTick);
+            }
+        }
+
+        var prevX = null;
+        var x = x0;
+        var id;
+
+        if(major) {
+            // ids for ticklabelstep
+            var _dTick;
+            if(numDtick) {
+                _dTick = ax.dtick;
+            } else {
+                if(type === 'date') {
+                    if(typeof ax.dtick === 'string' && ax.dtick.charAt(0) === 'M') {
+                        _dTick = ONEAVGMONTH * ax.dtick.substring(1);
+                    }
+                } else {
+                    _dTick = ax._roughDTick;
+                }
+            }
+
+            id = Math.round((
+                ax.r2l(x) -
+                ax.r2l(ax.tick0)
+            ) / _dTick) - 1;
+        }
+
+        var dtick = mockAx.dtick;
+
+        if(mockAx.rangebreaks && mockAx._tick0Init !== mockAx.tick0) {
+            // adjust tick0
+            x = moveOutsideBreak(x, ax);
+            if(!axrev) {
+                x = axes.tickIncrement(x, dtick, !axrev, calendar);
+            }
+        }
+
+        if(major && isPeriod) {
+            // add one item to label period before tick0
+            x = axes.tickIncrement(x, dtick, !axrev, calendar);
+            id--;
+        }
+
+        for(;
+            axrev ?
+                (x >= endTick) :
+                (x <= endTick);
+            x = axes.tickIncrement(
+                x,
+                dtick,
+                axrev,
+                calendar
+            )
+        ) {
+            if(major) id++;
+
+            if(mockAx.rangebreaks) {
+                if(!axrev) {
+                    if(x < startTick) continue;
+                    if(mockAx.maskBreaks(x) === BADNUM && moveOutsideBreak(x, mockAx) >= maxRange) break;
+                }
+            }
+
+            // prevent infinite loops - no more than one tick per pixel,
+            // and make sure each value is different from the previous
+            if(tickVals.length > maxTicks || x === prevX) break;
+            prevX = x;
+
+            var obj = { value: x };
+
+            if(major) {
+                if(isDLog && (x !== (x | 0))) {
+                    obj.simpleLabel = true;
+                }
+
+                if(ticklabelstep > 1 && id % ticklabelstep) {
+                    obj.skipLabel = true;
+                }
+
+                tickVals.push(obj);
+            } else {
+                obj.minor = true;
+
+                minorTickVals.push(obj);
+            }
         }
     }
 
-    var id = Math.round((
-        ax.r2l(x) -
-        ax.r2l(ax.tick0)
-    ) / dTick) - 1;
+    if(hasMinor) {
+        var canOverlap =
+            (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
+            (ax.minor.ticks === 'outside' && ax.ticks === 'inside');
 
-    for(;
-        axrev ?
-            (x >= endTick) :
-            (x <= endTick);
-        x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
-    ) {
-        id++;
+        if(!canOverlap) {
+            // remove duplicate minors
 
-        if(ax.rangebreaks) {
-            if(!axrev) {
-                if(x < startTick) continue;
-                if(ax.maskBreaks(x) === BADNUM && moveOutsideBreak(x, ax) >= maxRange) break;
-            }
-        }
-
-        // prevent infinite loops - no more than one tick per pixel,
-        // and make sure each value is different from the previous
-        if(tickVals.length > maxTicks || x === prevX) break;
-        prevX = x;
-
-        var obj = { value: x };
-
-        if(isDLog && (x !== (x | 0))) {
-            obj.simpleLabel = true;
-        }
-
-        if(ticklabelstep > 1 && id % ticklabelstep) {
-            obj.skipLabel = true;
-        }
-
-        tickVals.push(obj);
-
-        if(ax.minor && (
-            ax.minor.ticks ||
-            ax.minor.showgrid
-        )) {
-            var minorDtick = ax.minor.dtick;
-
-            if(!minorDtick) {
-                var mockAxis = Lib.extendFlat({}, ax.minor, {
-                    r2l: ax.r2l,
-                    type: ax.type,
-                    range: ax.range,
-                    calendar: ax.calendar,
-                    _hasDayOfWeekBreaks: ax._hasDayOfWeekBreaks
-                });
-
-                var minorRoughDtick = 1;
-                if(ax._roughDTick) {
-                    minorRoughDtick = ax._roughDTick / (
-                        ax.type === 'log' ? 5 :
-                        ax.type === 'date' ? 3 :
-                        ax.type === 'linear' ? 4 : 2
-                    );
-                }
-
-                axes.autoTicks(mockAxis, minorRoughDtick);
-
-                minorDtick = mockAxis.dtick;
-                var majorDtick = ax.dtick;
-
-                var haveM = ax.type === 'date' &&
-                    typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M' &&
-                    typeof minorDtick === 'string' && minorDtick.charAt(0) === 'M';
-
-                if(haveM) {
-                    // without M
-                    majorDtick = majorDtick.slice(1);
-                    minorDtick = minorDtick.slice(1);
-                }
-
-                var ratio = minorDtick / majorDtick;
-                if(
-                    ratio === 2 / 5 ||
-                    ratio === 2 / 7
-                ) {
-                    minorDtick /= 2;
-                }
-
-                if(haveM) {
-                    // with M
-                    majorDtick = 'M' + majorDtick;
-                    minorDtick = 'M' + minorDtick;
-                }
+            var majorValues = [];
+            for(var k = 0; k < tickVals.length; k++) {
+                majorValues.push(tickVals[k].value);
             }
 
-            var nextTick = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar);
-            var prevTick = tickVals.length > 1 ? x :
-                axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
-
-            var canOverlap = (
-                (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
-                (ax.minor.ticks === 'outside' && ax.ticks === 'inside')
-            );
-
-            var minorX = prevTick;
-            if(!canOverlap) {
-                minorX = axes.tickIncrement(prevTick, minorDtick, axrev, ax.calendar);
-            }
-
-            var prevMinorX = null;
-            for(;
-                axrev ?
-                    (minorX > nextTick) :
-                    (minorX < nextTick);
-                minorX = axes.tickIncrement(minorX, minorDtick, axrev, ax.calendar)
-            ) {
-                // prevent infinite loops - no more than one tick per pixel,
-                // and make sure each value is different from the previous
-                if(minorTickVals.length > maxTicks || minorX === prevMinorX) break;
-                prevMinorX = minorX;
-
-                if(
-                    minorX >= minRange &&
-                    minorX <= maxRange &&
-                    (canOverlap || minorX !== x)
-                ) {
-                    minorTickVals.push({
-                        value: minorX,
-                        minor: true
-                    });
-                }
-            }
+            minorTickVals = minorTickVals.filter(function(d) {
+                return majorValues.indexOf(d.value) === -1;
+            });
         }
     }
 
@@ -1044,8 +1030,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     tickVals = tickVals.concat(minorTickVals);
 
-    var ticksOut = [];
-    var minorTicks = [];
     var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
@@ -1184,7 +1168,93 @@ function roundDTick(roughDTick, base, roundingSet) {
 //      log with linear ticks: L# where # is the linear tick spacing
 //      log showing powers plus some intermediates:
 //          D1 shows all digits, D2 shows 2 and 5
-axes.autoTicks = function(ax, roughDTick) {
+axes.autoTicks = function(ax, roughDTick, isMinor) {
+    var majorDtick = ax._majorDtick;
+
+    if(isMinor && ax.type === 'date') {
+        if(typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M') {
+            var months = Number(majorDtick.substring(1));
+
+            if(months > 12) {
+                ax.dtick = 'M12';
+                return;
+            }
+
+            if(months === 12) {
+                ax.dtick = 'M3';
+                return;
+            }
+
+            if(months > 1) {
+                ax.dtick = 'M1';
+                return;
+            }
+
+            if(months === 1) {
+                ax.dtick = 'M1'; // not using week in this case
+                return;
+            }
+        } else {
+            var weeks = majorDtick / ONEWEEK;
+
+            if(weeks > 52) {
+                ax.dtick = 'M12';
+                return;
+            }
+
+            if(weeks > 4) {
+                ax.dtick = 'M1';
+                return;
+            }
+
+            if(weeks > 1) {
+                ax.dtick = ONEWEEK;
+                return;
+            }
+
+            var days = majorDtick / ONEDAY;
+
+            if(days > 1) {
+                ax.dtick = ONEDAY;
+                return;
+            }
+
+            var hours = majorDtick / ONEHOUR;
+
+            if(hours > 12) {
+                ax.dtick = 12 * ONEHOUR;
+                return;
+            }
+
+            if(hours > 6) {
+                ax.dtick = 6 * ONEHOUR;
+                return;
+            }
+
+            if(hours > 3) {
+                ax.dtick = 3 * ONEHOUR;
+                return;
+            }
+
+            if(hours > 1) {
+                ax.dtick = ONEHOUR;
+                return;
+            }
+
+            if(hours === 1) {
+                ax.dtick = 0.5 * ONEHOUR;
+                return;
+            }
+
+            if(hours === 0.5) {
+                ax.dtick = 0.25 * ONEHOUR;
+                return;
+            }
+        }
+    }
+
+    if(isMinor) roughDTick /= 5;
+
     var base;
 
     function getBase(v) {
@@ -1266,6 +1336,10 @@ axes.autoTicks = function(ax, roughDTick) {
         ax.tick0 = 0;
         base = getBase(10);
         ax.dtick = roundDTick(roughDTick, base, roundBase10);
+    }
+
+    if(isMinor && ax.dtick * 10 === majorDtick) {
+        ax.dtick *= 2;
     }
 
     // prevent infinite loops
