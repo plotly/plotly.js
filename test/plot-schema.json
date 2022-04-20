@@ -10029,7 +10029,6 @@
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
-      "dflt": 3,
       "editType": "ticks",
       "min": 0,
       "valType": "number"
@@ -11271,7 +11270,6 @@
      },
      "ticklen": {
       "description": "Sets the tick length (in px).",
-      "dflt": 3,
       "editType": "ticks",
       "min": 0,
       "valType": "number"

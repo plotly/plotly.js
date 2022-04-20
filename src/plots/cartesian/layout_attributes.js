@@ -108,13 +108,16 @@ var ticks = {
 };
 
 function makeTicklen(minor) {
-    return {
+    var obj = {
         valType: 'number',
         min: 0,
-        dflt: minor ? 3 : 5,
         editType: 'ticks',
         description: 'Sets the tick length (in px).'
     };
+
+    if(!minor) obj.dflt = 5;
+
+    return obj;
 }
 
 var tickwidth = {
