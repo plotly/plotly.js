@@ -972,7 +972,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 }
                 var found = false;
                 for(var q = 0; !found && (q < tickVals.length); q++) {
-                    if(almostEq(v, tickVals[q].value)) {
+                    if(
+                        // add 1000 to eliminate problematic digits
+                        1000 + tickVals[q].value ===
+                        1000 + v
+                    ) {
                         found = true;
                     }
                 }
@@ -1855,13 +1859,13 @@ function formatAngle(ax, out, hover, extraPrecision, hideexp) {
     }
 }
 
-function almostEq(a, b) {
-    return Math.abs(a - b) <= 1e-6;
-}
-
 // inspired by
 // https://github.com/yisibl/num2fraction/blob/master/index.js
 function num2frac(num) {
+    function almostEq(a, b) {
+        return Math.abs(a - b) <= 1e-6;
+    }
+
     function findGCD(a, b) {
         return almostEq(b, 0) ? a : findGCD(b, a % b);
     }
