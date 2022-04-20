@@ -961,14 +961,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(!canOverlap) {
             // remove duplicate minors
 
-            var majorValues = [];
-            for(var k = 0; k < tickVals.length; k++) {
-                majorValues.push(tickVals[k].value);
-            }
+            var majorValues = tickVals.map(function(d) { return d.value; });
 
             minorTickVals = minorTickVals.filter(function(d) {
                 return majorValues.indexOf(d.value) === -1;
             });
+
+            // TODO: also filter using almostEq to handle rounding errors as illustrated by mock 32
         }
     }
 
