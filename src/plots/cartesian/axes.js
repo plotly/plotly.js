@@ -963,11 +963,22 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
             var majorValues = tickVals.map(function(d) { return d.value; });
 
-            minorTickVals = minorTickVals.filter(function(d) {
-                return majorValues.indexOf(d.value) === -1;
-            });
-
-            // TODO: also filter using almostEq to handle rounding errors as illustrated by mock 32
+            var list = [];
+            for(var k = 0; k < minorTickVals.length; k++) {
+                var T = minorTickVals[k];
+                var v = T.value;
+                if(majorValues.indexOf(v) !== -1) {
+                    continue;
+                }
+                var found = false;
+                for(var q = 0; !found && (q < tickVals.length); q++) {
+                    if(almostEq(v, tickVals[q].value)) {
+                        found = true;
+                    }
+                }
+                if(!found) list.push(T);
+            }
+            minorTickVals = list;
         }
     }
 
@@ -1844,13 +1855,13 @@ function formatAngle(ax, out, hover, extraPrecision, hideexp) {
     }
 }
 
+function almostEq(a, b) {
+    return Math.abs(a - b) <= 1e-6;
+}
+
 // inspired by
 // https://github.com/yisibl/num2fraction/blob/master/index.js
 function num2frac(num) {
-    function almostEq(a, b) {
-        return Math.abs(a - b) <= 1e-6;
-    }
-
     function findGCD(a, b) {
         return almostEq(b, 0) ? a : findGCD(b, a % b);
     }
