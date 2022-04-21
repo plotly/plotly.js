@@ -820,14 +820,19 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
         var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
 
-        if(isMinor && ax.minor && !ax.minor.dtick) {
-            mockAx._majorDtick = ax.dtick;
+        if(isMinor && ax.minor) {
+            if(!ax.minor.dtick) {
+                mockAx._majorDtick = ax.dtick;
 
-            mockAx.dtick = mockAx._dtickInit;
-            mockAx.tick0 = mockAx._tick0Init;
+                mockAx.dtick = mockAx._dtickInit;
+                mockAx.tick0 = mockAx._tick0Init;
+            }
         }
 
-        axes.prepTicks(mockAx, opts, isMinor);
+        axes.prepTicks(mockAx, opts,
+            isMinor &&
+            ax.tickmode !== 'array' // avoid dense grid when main axes has tickvals
+        );
 
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
@@ -839,7 +844,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 minorTickVals = [];
                 minorTicks = arrayTicks(ax);
             }
-            break;
+            continue;
         }
 
         // add a tiny bit so we get ticks which may have rounded out
