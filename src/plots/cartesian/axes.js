@@ -540,8 +540,27 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // Ticks and grids
 // ----------------------------------------------------
 
+// ensure we have minor tick0 and dtick calculated
+axes.prepMinorTicks = function(ax, opts) {
+    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
+
+    // calculate max number of (auto) ticks to display based on plot size
+    if(ax.tickmode === 'auto' || !ax.dtick) {
+        var nt = ax.nticks;
+        var minPx;
+
+        if(!nt) {
+            minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
+            nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
+        }
+
+        ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
+        axes.autoTicks(ax, ax._roughDTick, 'minor');
+    }
+};
+
 // ensure we have tick0, dtick, and tick rounding calculated
-axes.prepTicks = function(ax, opts, isMinor) {
+axes.prepTicks = function(ax, opts) {
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
     // calculate max number of (auto) ticks to display based on plot size
@@ -565,11 +584,11 @@ axes.prepTicks = function(ax, opts, isMinor) {
 
         // add a couple of extra digits for filling in ticks when we
         // have explicit tickvals without tick text
-        if(ax.tickmode === 'array' && !isMinor) nt *= 100;
+        if(ax.tickmode === 'array') nt *= 100;
 
 
         ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
-        axes.autoTicks(ax, ax._roughDTick, isMinor);
+        axes.autoTicks(ax, ax._roughDTick);
 
         // check for a forced minimum dtick
         if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
@@ -578,7 +597,7 @@ axes.prepTicks = function(ax, opts, isMinor) {
         }
     }
 
-    if(ax.ticklabelmode === 'period' && !isMinor) {
+    if(ax.ticklabelmode === 'period') {
         adjustPeriodDelta(ax);
     }
 
@@ -592,7 +611,7 @@ axes.prepTicks = function(ax, opts, isMinor) {
     if(ax.type === 'date' && ax.dtick < 0.1) ax.dtick = 0.1;
 
     // now figure out rounding of tick values
-    if(!isMinor) autoTickRound(ax);
+    autoTickRound(ax);
 };
 
 function nMonths(dtick) {
@@ -827,7 +846,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        axes.prepTicks(mockAx, opts, isMinor);
+        if(isMinor) {
+            axes.prepMinorTicks(mockAx, opts);
+        } else {
+            axes.prepTicks(mockAx, opts);
+        }
 
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
