@@ -541,21 +541,17 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // ----------------------------------------------------
 
 // ensure we have minor tick0 and dtick calculated
-axes.prepMinorTicks = function(ax, opts) {
-    var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
+axes.prepMinorTicks = function(ax) {
+    var majorDtick = ax._majorDtick;
+    var dist = majorDtick;
 
-    // calculate max number of (auto) ticks to display based on plot size
+    if(ax.type === 'date' && typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M') {
+        var months = Number(majorDtick.substring(1));
+        dist = months * ONEAVGMONTH;
+    }
+
     if(ax.tickmode === 'auto' || !ax.dtick) {
-        var nt = ax.nticks;
-        var minPx;
-
-        if(!nt) {
-            minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
-            nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
-        }
-
-        ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
-        axes.autoTicks(ax, ax._roughDTick, 'minor');
+        axes.autoTicks(ax, dist / 7, 'minor');
     }
 };
 
@@ -582,10 +578,11 @@ axes.prepTicks = function(ax, opts) {
             if(ax._name === 'radialaxis') nt *= 2;
         }
 
-        // add a couple of extra digits for filling in ticks when we
-        // have explicit tickvals without tick text
-        if(ax.tickmode === 'array') nt *= 100;
-
+        if(!(ax.minor && ax.minor.tickmode !== 'array')) {
+            // add a couple of extra digits for filling in ticks when we
+            // have explicit tickvals without tick text
+            if(ax.tickmode === 'array') nt *= 100;
+        }
 
         ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
         axes.autoTicks(ax, ax._roughDTick);
@@ -840,14 +837,12 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(isMinor) {
             if(!ax.minor.dtick) {
                 mockAx._majorDtick = ax.dtick;
-
                 mockAx.dtick = mockAx._dtickInit;
-                mockAx.tick0 = mockAx._tick0Init;
             }
         }
 
         if(isMinor) {
-            axes.prepMinorTicks(mockAx, opts);
+            axes.prepMinorTicks(mockAx);
         } else {
             axes.prepTicks(mockAx, opts);
         }
@@ -1208,90 +1203,6 @@ function roundDTick(roughDTick, base, roundingSet) {
 axes.autoTicks = function(ax, roughDTick, isMinor) {
     var majorDtick = ax._majorDtick;
 
-    if(isMinor && ax.type === 'date') {
-        if(typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M') {
-            var months = Number(majorDtick.substring(1));
-
-            if(months > 12) {
-                ax.dtick = 'M12';
-                return;
-            }
-
-            if(months === 12) {
-                ax.dtick = 'M3';
-                return;
-            }
-
-            if(months > 1) {
-                ax.dtick = 'M1';
-                return;
-            }
-
-            if(months === 1) {
-                ax.dtick = 'M1'; // not using week in this case
-                return;
-            }
-        } else {
-            var weeks = majorDtick / ONEWEEK;
-
-            if(weeks > 52) {
-                ax.dtick = 'M12';
-                return;
-            }
-
-            if(weeks > 4) {
-                ax.dtick = 'M1';
-                return;
-            }
-
-            if(weeks > 1) {
-                ax.dtick = ONEWEEK;
-                return;
-            }
-
-            var days = majorDtick / ONEDAY;
-
-            if(days > 1) {
-                ax.dtick = ONEDAY;
-                return;
-            }
-
-            var hours = majorDtick / ONEHOUR;
-
-            if(hours > 12) {
-                ax.dtick = 12 * ONEHOUR;
-                return;
-            }
-
-            if(hours > 6) {
-                ax.dtick = 6 * ONEHOUR;
-                return;
-            }
-
-            if(hours > 3) {
-                ax.dtick = 3 * ONEHOUR;
-                return;
-            }
-
-            if(hours > 1) {
-                ax.dtick = ONEHOUR;
-                return;
-            }
-
-            if(hours === 1) {
-                ax.dtick = 0.5 * ONEHOUR;
-                return;
-            }
-
-            if(hours === 0.5) {
-                ax.dtick = 0.25 * ONEHOUR;
-                return;
-            }
-        }
-    }
-
-    if(isMinor) roughDTick /= 5;
-
     var base;
 
     function getBase(v) {
@@ -1300,6 +1211,8 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
 
     if(ax.type === 'date') {
         ax.tick0 = Lib.dateTick0(ax.calendar, 0);
+
+        var _roundDays = ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays;
 
         // the criteria below are all based on the rough spacing we calculate
         // being > half of the final unit - so precalculate twice the rough val
@@ -1313,21 +1226,23 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
             roughDTick /= ONEAVGMONTH;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         } else if(roughX2 > ONEDAY) {
-            ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
-            // get week ticks on sunday
-            // this will also move the base tick off 2000-01-01 if dtick is
-            // 2 or 3 days... but that's a weird enough case that we'll ignore it.
-            var tickformat = axes.getTickFormat(ax);
-            var isPeriod = ax.ticklabelmode === 'period';
-            if(isPeriod) ax._rawTick0 = ax.tick0;
+            ax.dtick = roundDTick(roughDTick, ONEDAY, _roundDays);
+            if(!isMinor) {
+                // get week ticks on sunday
+                // this will also move the base tick off 2000-01-01 if dtick is
+                // 2 or 3 days... but that's a weird enough case that we'll ignore it.
+                var tickformat = axes.getTickFormat(ax);
+                var isPeriod = ax.ticklabelmode === 'period';
+                if(isPeriod) ax._rawTick0 = ax.tick0;
 
-            if(/%[uVW]/.test(tickformat)) {
-                ax.tick0 = Lib.dateTick0(ax.calendar, 2); // Monday
-            } else {
-                ax.tick0 = Lib.dateTick0(ax.calendar, 1); // Sunday
+                if(/%[uVW]/.test(tickformat)) {
+                    ax.tick0 = Lib.dateTick0(ax.calendar, 2); // Monday
+                } else {
+                    ax.tick0 = Lib.dateTick0(ax.calendar, 1); // Sunday
+                }
+
+                if(isPeriod) ax._dowTick0 = ax.tick0;
             }
-
-            if(isPeriod) ax._dowTick0 = ax.tick0;
         } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {
@@ -1338,6 +1253,40 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
             // milliseconds
             base = getBase(10);
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
+        }
+
+        if(isMinor) {
+            if(
+                typeof majorDtick === 'string' &&
+                majorDtick.charAt(0) === 'M'
+            ) {
+                if(majorDtick === 'M24') {
+                    ax.dtick = 'M12';
+                }
+
+                if(majorDtick === 'M12') {
+                    ax.dtick = 'M3';
+                }
+
+                if(typeof ax.dtick !== 'string') {
+                    ax.dtick = 'M1';
+                }
+            }
+
+            if(majorDtick > ONEDAY) {
+                if(majorDtick === 14 * ONEDAY) ax.dtick = 7 * ONEDAY;
+                else {
+                    var v = roundDTick(majorDtick, ONEDAY, _roundDays);
+                    if(v >= majorDtick) {
+                        v = roundDTick(majorDtick / 7, ONEDAY, _roundDays);
+                    }
+
+                    if((majorDtick / ONEDAY) % (v / ONEDAY)) {
+                        v = ONEDAY;
+                    }
+                    ax.dtick = v;
+                }
+            }
         }
     } else if(ax.type === 'log') {
         ax.tick0 = 0;
@@ -1373,10 +1322,6 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
         ax.tick0 = 0;
         base = getBase(10);
         ax.dtick = roundDTick(roughDTick, base, roundBase10);
-    }
-
-    if(isMinor && ax.dtick * 10 === majorDtick) {
-        ax.dtick *= 2;
     }
 
     // prevent infinite loops
