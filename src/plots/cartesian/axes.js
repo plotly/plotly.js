@@ -565,7 +565,7 @@ axes.prepTicks = function(ax, opts, isMinor) {
 
         // add a couple of extra digits for filling in ticks when we
         // have explicit tickvals without tick text
-        if(ax.tickmode === 'array') nt *= 100;
+        if(ax.tickmode === 'array' && !isMinor) nt *= 100;
 
 
         ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
@@ -578,7 +578,7 @@ axes.prepTicks = function(ax, opts, isMinor) {
         }
     }
 
-    if(ax.ticklabelmode === 'period') {
+    if(ax.ticklabelmode === 'period' && !isMinor) {
         adjustPeriodDelta(ax);
     }
 
@@ -827,10 +827,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
         }
 
-        axes.prepTicks(mockAx, opts,
-            isMinor &&
-            ax.tickmode !== 'array' // avoid dense grid when main axes has tickvals
-        );
+        axes.prepTicks(mockAx, opts, isMinor);
 
         // now that we've figured out the auto values for formatting
         // in case we're missing some ticktext, we can break out for array ticks
