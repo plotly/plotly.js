@@ -51,7 +51,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     if(opts.hasMinor) {
         var minorGridColorDflt = colorMix(containerOut.gridcolor, opts.bgColor).toRgbString();
         var minorGridColor = coerce2('minor.gridcolor', minorGridColorDflt);
-        var minorGridWidth = coerce2('minor.gridwidth', (containerOut.gridwidth || 3) * 2 / 3);
+        var minorGridWidth = coerce2('minor.gridwidth', containerOut.gridwidth || 1);
         var minorGridDash = coerce2('minor.griddash', containerOut.griddash || 'solid');
         var minorShowGridLines = coerce('minor.showgrid',
             !!minorGridColor ||

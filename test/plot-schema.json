@@ -9995,7 +9995,6 @@
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
-      "dflt": 1,
       "editType": "ticks",
       "min": 0,
       "valType": "number"
@@ -10066,7 +10065,6 @@
      },
      "tickwidth": {
       "description": "Sets the tick width (in px).",
-      "dflt": 1,
       "editType": "ticks",
       "min": 0,
       "valType": "number"
@@ -11236,7 +11234,6 @@
      },
      "gridwidth": {
       "description": "Sets the width (in px) of the grid lines.",
-      "dflt": 1,
       "editType": "ticks",
       "min": 0,
       "valType": "number"
@@ -11307,7 +11304,6 @@
      },
      "tickwidth": {
       "description": "Sets the tick width (in px).",
-      "dflt": 1,
       "editType": "ticks",
       "min": 0,
       "valType": "number"

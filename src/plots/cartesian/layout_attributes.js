@@ -120,13 +120,18 @@ function makeTicklen(minor) {
     return obj;
 }
 
-var tickwidth = {
-    valType: 'number',
-    min: 0,
-    dflt: 1,
-    editType: 'ticks',
-    description: 'Sets the tick width (in px).'
-};
+function makeTickwidth(minor) {
+    var obj = {
+        valType: 'number',
+        min: 0,
+        editType: 'ticks',
+        description: 'Sets the tick width (in px).'
+    };
+
+    if(!minor) obj.dflt = 1;
+
+    return obj;
+}
 
 var tickcolor = {
     valType: 'color',
@@ -142,13 +147,18 @@ var gridcolor = {
     description: 'Sets the color of the grid lines.'
 };
 
-var gridwidth = {
-    valType: 'number',
-    min: 0,
-    dflt: 1,
-    editType: 'ticks',
-    description: 'Sets the width (in px) of the grid lines.'
-};
+function makeGridwidth(minor) {
+    var obj = {
+        valType: 'number',
+        min: 0,
+        editType: 'ticks',
+        description: 'Sets the width (in px) of the grid lines.'
+    };
+
+    if(!minor) obj.dflt = 1;
+
+    return obj;
+}
 
 var griddash = extendFlat({}, dash, {editType: 'ticks'});
 
@@ -604,7 +614,7 @@ module.exports = {
         ].join(' ')
     },
     ticklen: makeTicklen(),
-    tickwidth: tickwidth,
+    tickwidth: makeTickwidth(),
     tickcolor: tickcolor,
     showticklabels: {
         valType: 'boolean',
@@ -827,7 +837,7 @@ module.exports = {
     },
     showgrid: showgrid,
     gridcolor: gridcolor,
-    gridwidth: gridwidth,
+    gridwidth: makeGridwidth(),
     griddash: griddash,
 
     zeroline: {
@@ -940,11 +950,11 @@ module.exports = {
         tickvals: tickvals,
         ticks: ticks,
         ticklen: makeTicklen('minor'),
-        tickwidth: tickwidth,
+        tickwidth: makeTickwidth('minor'),
         tickcolor: tickcolor,
 
         gridcolor: gridcolor,
-        gridwidth: gridwidth,
+        gridwidth: makeGridwidth('minor'),
         griddash: griddash,
         showgrid: showgrid,
 
