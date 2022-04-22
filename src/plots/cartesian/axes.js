@@ -592,7 +592,7 @@ axes.prepTicks = function(ax, opts, isMinor) {
     if(ax.type === 'date' && ax.dtick < 0.1) ax.dtick = 0.1;
 
     // now figure out rounding of tick values
-    autoTickRound(ax);
+    if(!isMinor) autoTickRound(ax);
 };
 
 function nMonths(dtick) {
