@@ -3123,8 +3123,10 @@ axes.drawGrid = function(gd, ax, opts) {
 
     var cls = ax._id + 'grid';
 
+    var hasMinor = ax.minor && ax.minor.showgrid;
+
     var vals = []
-        .concat(ax.minor && ax.minor.showgrid ?
+        .concat(hasMinor ?
             // minor vals
             opts.vals.filter(function(d) { return d.minor; }) :
             []
@@ -3162,6 +3164,9 @@ axes.drawGrid = function(gd, ax, opts) {
 
     ax._gw = Drawing.crispRound(gd, ax.gridwidth, 1);
 
+    var wMinor;
+    if(hasMinor) wMinor = Drawing.crispRound(gd, ax.minor.gridwidth, 1);
+
     grid.attr('transform', opts.transFn)
         .attr('d', opts.path)
         .each(function(d) {
@@ -3177,10 +3182,7 @@ axes.drawGrid = function(gd, ax, opts) {
             );
         })
         .style('stroke-width', function(d) {
-            return (d.minor ?
-                Drawing.crispRound(gd, ax.minor.gridwidth, 1) :
-                ax._gw
-            ) + 'px';
+            return (d.minor ? wMinor : ax._gw) + 'px';
         })
         .style('display', null); // visible
 
