@@ -545,24 +545,29 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 axes.prepMinorTicks = function(ax) {
     var majorDtick = ax._majorDtick;
     if(ax.tickmode === 'auto' || !ax.dtick) {
+        var nt = ax.nticks; // minor.nticks
         var dist = majorDtick;
 
         if(ax.type === 'date' && typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M') {
             var months = Number(majorDtick.substring(1));
-            dist = months * ONEAVGMONTH / 7;
+            dist = months * ONEAVGMONTH / (nt || 7);
         } else if(ax.type === 'log') {
-            if(typeof majorDtick === 'string' && majorDtick.charAt(0) === 'L') {
-                ax.dtick = 'L' + (majorDtick.substring(1) / 2);
-                return;
-            } else if(dist === 'D1') {
-                dist = 1;
-            } else if(dist === 'D2') {
-                dist = 'D1';
-            } else {
-                dist /= 2;
+            if(!nt) nt = 2;
+
+            if(nt > 1) {
+                if(typeof majorDtick === 'string' && majorDtick.charAt(0) === 'L') {
+                    ax.dtick = 'L' + (majorDtick.substring(1) / nt);
+                    return;
+                } else if(dist === 'D1') {
+                    dist = nt - 1;
+                } else if(dist === 'D2') {
+                    dist = nt === 2 ? 'D1' : nt;
+                } else {
+                    dist /= nt;
+                }
             }
         } else {
-            dist /= 7;
+            dist /= nt || 7;
         }
 
         axes.autoTicks(ax, dist, 'minor');
