@@ -851,11 +851,16 @@ axes.calcTicks = function calcTicks(ax, opts) {
             if(!ax.minor.dtick) {
                 mockAx._majorDtick = ax.dtick;
                 mockAx.dtick = mockAx._dtickInit;
+                mockAx.tick0 = mockAx._tick0Init;
             }
         }
 
         if(isMinor) {
             axes.prepMinorTicks(mockAx);
+            if(mockAx.tick0 !== ax.tick0 && ax.minor._tick0Init === undefined) {
+                // ensure identical tick0
+                mockAx.tick0 = ax.tick0;
+            }
         } else {
             axes.prepTicks(mockAx, opts);
         }
