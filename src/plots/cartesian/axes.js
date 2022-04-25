@@ -991,11 +991,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     if(hasMinor) {
-        var canOverlap =
+        ax._inOutTicksCanOverlap =
             (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
             (ax.minor.ticks === 'outside' && ax.ticks === 'inside');
 
-        if(!canOverlap) {
+        if(!ax._inOutTicksCanOverlap) {
             // remove duplicate minors
 
             var majorValues = tickVals.map(function(d) { return d.value; });
@@ -2854,6 +2854,9 @@ axes.makeTickPath = function(ax, shift, sgn, opts) {
     var minor = opts.minor;
     var len = opts.len !== undefined ? opts.len :
         minor ? ax.minor.ticklen : ax.ticklen;
+
+    // move one pixel so that minor ticks reach major ticks
+    if(minor && ax._inOutTicksCanOverlap) shift += 0.5;
 
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
