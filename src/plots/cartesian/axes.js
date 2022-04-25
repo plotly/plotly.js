@@ -543,15 +543,28 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // ensure we have minor tick0 and dtick calculated
 axes.prepMinorTicks = function(ax) {
     var majorDtick = ax._majorDtick;
-    var dist = majorDtick;
-
-    if(ax.type === 'date' && typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M') {
-        var months = Number(majorDtick.substring(1));
-        dist = months * ONEAVGMONTH;
-    }
-
     if(ax.tickmode === 'auto' || !ax.dtick) {
-        axes.autoTicks(ax, dist / 7, 'minor');
+        var dist = majorDtick;
+
+        if(ax.type === 'date' && typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M') {
+            var months = Number(majorDtick.substring(1));
+            dist = months * ONEAVGMONTH / 7;
+        } else if(ax.type === 'log') {
+            if(typeof majorDtick === 'string' && majorDtick.charAt(0) === 'L') {
+                ax.dtick = 'L' + (majorDtick.substring(1) / 2);
+                return;
+            } else if(dist === 'D1') {
+                dist = 1;
+            } else if(dist === 'D2') {
+                dist = 'D1';
+            } else {
+                dist /= 2;
+            }
+        } else {
+            dist /= 7;
+        }
+
+        axes.autoTicks(ax, dist, 'minor');
     }
 };
 
@@ -1294,7 +1307,7 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
 
         if(roughDTick > 0.7) {
             // only show powers of 10
-            ax.dtick = Math.ceil(roughDTick);
+            ax.dtick = isMinor ? 1 : Math.ceil(roughDTick);
         } else if(Math.abs(rng[1] - rng[0]) < 1) {
             // span is less than one power of 10
             var nt = 1.5 * Math.abs((rng[1] - rng[0]) / roughDTick);
