@@ -1228,6 +1228,19 @@ function roundDTick(roughDTick, base, roundingSet) {
 //          D1 shows all digits, D2 shows 2 and 5
 axes.autoTicks = function(ax, roughDTick, isMinor) {
     var majorDtick = ax._majorDtick;
+    var hasMinorNtick = isMinor && ax.nticks;
+
+    var mayRound = function(roughDTick, base, roundingSet) {
+        return hasMinorNtick ?
+            roughDTick :
+            roundDTick(roughDTick, base, roundingSet);
+    };
+
+    var mayCeil = function(roughDTick) {
+        return hasMinorNtick ?
+            roughDTick :
+            Math.ceil(roughDTick);
+    };
 
     var base;
 
@@ -1247,12 +1260,12 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
         if(roughX2 > ONEAVGYEAR) {
             roughDTick /= ONEAVGYEAR;
             base = getBase(10);
-            ax.dtick = 'M' + (12 * roundDTick(roughDTick, base, roundBase10));
+            ax.dtick = 'M' + (12 * mayRound(roughDTick, base, roundBase10));
         } else if(roughX2 > ONEAVGMONTH) {
             roughDTick /= ONEAVGMONTH;
-            ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
+            ax.dtick = 'M' + mayRound(roughDTick, 1, roundBase24);
         } else if(roughX2 > ONEDAY) {
-            ax.dtick = roundDTick(roughDTick, ONEDAY, _roundDays);
+            ax.dtick = mayRound(roughDTick, ONEDAY, _roundDays);
             if(!isMinor) {
                 // get week ticks on sunday
                 // this will also move the base tick off 2000-01-01 if dtick is
@@ -1270,18 +1283,18 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
                 if(isPeriod) ax._dowTick0 = ax.tick0;
             }
         } else if(roughX2 > ONEHOUR) {
-            ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
+            ax.dtick = mayRound(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {
-            ax.dtick = roundDTick(roughDTick, ONEMIN, roundBase60);
+            ax.dtick = mayRound(roughDTick, ONEMIN, roundBase60);
         } else if(roughX2 > ONESEC) {
-            ax.dtick = roundDTick(roughDTick, ONESEC, roundBase60);
+            ax.dtick = mayRound(roughDTick, ONESEC, roundBase60);
         } else {
             // milliseconds
             base = getBase(10);
-            ax.dtick = roundDTick(roughDTick, base, roundBase10);
+            ax.dtick = mayRound(roughDTick, base, roundBase10);
         }
 
-        if(isMinor) {
+        if(isMinor && !hasMinorNtick) {
             if(
                 typeof majorDtick === 'string' &&
                 majorDtick.charAt(0) === 'M'
@@ -1302,9 +1315,9 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
             if(majorDtick > ONEDAY) {
                 if(majorDtick === 14 * ONEDAY) ax.dtick = 7 * ONEDAY;
                 else {
-                    var v = roundDTick(majorDtick, ONEDAY, _roundDays);
+                    var v = mayRound(majorDtick, ONEDAY, _roundDays);
                     if(v >= majorDtick) {
-                        v = roundDTick(majorDtick / 7, ONEDAY, _roundDays);
+                        v = mayRound(majorDtick / 7, ONEDAY, _roundDays);
                     }
 
                     if((majorDtick / ONEDAY) % (v / ONEDAY)) {
@@ -1320,7 +1333,7 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
 
         if(roughDTick > 0.7) {
             // only show powers of 10
-            ax.dtick = isMinor ? 1 : Math.ceil(roughDTick);
+            ax.dtick = mayCeil(roughDTick);
         } else if(Math.abs(rng[1] - rng[0]) < 1) {
             // span is less than one power of 10
             var nt = 1.5 * Math.abs((rng[1] - rng[0]) / roughDTick);
@@ -1329,7 +1342,7 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
             roughDTick = Math.abs(Math.pow(10, rng[1]) -
                 Math.pow(10, rng[0])) / nt;
             base = getBase(10);
-            ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
+            ax.dtick = 'L' + mayRound(roughDTick, base, roundBase10);
         } else {
             // include intermediates between powers of 10,
             // labeled with small digits
@@ -1338,21 +1351,16 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
         }
     } else if(ax.type === 'category' || ax.type === 'multicategory') {
         ax.tick0 = 0;
-        ax.dtick = Math.ceil(Math.max(roughDTick, 1));
+        ax.dtick = mayCeil(Math.max(roughDTick, 1));
     } else if(isAngular(ax)) {
         ax.tick0 = 0;
         base = 1;
-        ax.dtick = roundDTick(roughDTick, base, roundAngles);
+        ax.dtick = mayRound(roughDTick, base, roundAngles);
     } else {
         // auto ticks always start at 0
         ax.tick0 = 0;
-        if(isMinor && ax.nticks) {
-            // do not round when minor has nticks in this case
-            ax.dtick = roughDTick;
-        } else {
-            base = getBase(10);
-            ax.dtick = roundDTick(roughDTick, base, roundBase10);
-        }
+        base = getBase(10);
+        ax.dtick = mayRound(roughDTick, base, roundBase10);
     }
 
     // prevent infinite loops
