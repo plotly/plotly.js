@@ -1257,13 +1257,19 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
         // being > half of the final unit - so precalculate twice the rough val
         var roughX2 = 2 * roughDTick;
 
+        var months;
         if(roughX2 > ONEAVGYEAR) {
             roughDTick /= ONEAVGYEAR;
             base = getBase(10);
-            ax.dtick = 'M' + (12 * mayRound(roughDTick, base, roundBase10));
+            months = 12 * mayRound(roughDTick, base, roundBase10);
+            months = Math.round(months);
+            ax.dtick = 'M' + months;
         } else if(roughX2 > ONEAVGMONTH) {
             roughDTick /= ONEAVGMONTH;
-            ax.dtick = 'M' + mayRound(roughDTick, 1, roundBase24);
+            months = mayRound(roughDTick, 1, roundBase24);
+            months = Math.round(months);
+            if(months < 1) months = 1;
+            ax.dtick = 'M' + months;
         } else if(roughX2 > ONEDAY) {
             ax.dtick = mayRound(roughDTick, ONEDAY, _roundDays);
             if(!isMinor) {
