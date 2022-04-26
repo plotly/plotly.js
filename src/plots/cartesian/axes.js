@@ -913,7 +913,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
         var prevX = null;
         var x = x0;
-        var id;
+        var majorId;
 
         if(major) {
             // ids for ticklabelstep
@@ -930,7 +930,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 }
             }
 
-            id = Math.round((
+            majorId = Math.round((
                 ax.r2l(x) -
                 ax.r2l(ax.tick0)
             ) / _dTick) - 1;
@@ -949,7 +949,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         if(major && isPeriod) {
             // add one item to label period before tick0
             x = axes.tickIncrement(x, dtick, !axrev, calendar);
-            id--;
+            majorId--;
         }
 
         for(;
@@ -963,7 +963,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 calendar
             )
         ) {
-            if(major) id++;
+            if(major) majorId++;
 
             if(mockAx.rangebreaks) {
                 if(!axrev) {
@@ -984,7 +984,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                     obj.simpleLabel = true;
                 }
 
-                if(ticklabelstep > 1 && id % ticklabelstep) {
+                if(ticklabelstep > 1 && majorId % ticklabelstep) {
                     obj.skipLabel = true;
                 }
 
