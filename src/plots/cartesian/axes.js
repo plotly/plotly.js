@@ -849,6 +849,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         } else {
             ax.minor._dtickInit = ax.minor.dtick;
             ax.minor._tick0Init = ax.minor.tick0;
+            ax.minor._ntickInit = ax.minor.ntick;
         }
 
         var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
@@ -858,6 +859,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 mockAx._majorDtick = ax.dtick;
                 mockAx.dtick = mockAx._dtickInit;
                 mockAx.tick0 = mockAx._tick0Init;
+                mockAx.ntick = mockAx._ntickInit;
             }
         }
 
@@ -1015,9 +1017,9 @@ axes.calcTicks = function calcTicks(ax, opts) {
                 var found = false;
                 for(var q = 0; !found && (q < tickVals.length); q++) {
                     if(
-                        // add 1000 to eliminate problematic digits
-                        1000 + tickVals[q].value ===
-                        1000 + v
+                        // add 10e6 to eliminate problematic digits
+                        10e6 + tickVals[q].value ===
+                        10e6 + v
                     ) {
                         found = true;
                     }
@@ -1344,8 +1346,13 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
     } else {
         // auto ticks always start at 0
         ax.tick0 = 0;
-        base = getBase(10);
-        ax.dtick = roundDTick(roughDTick, base, roundBase10);
+        if(isMinor && ax.nticks) {
+            // do not round when minor has nticks in this case
+            ax.dtick = roughDTick;
+        } else {
+            base = getBase(10);
+            ax.dtick = roundDTick(roughDTick, base, roundBase10);
+        }
     }
 
     // prevent infinite loops
