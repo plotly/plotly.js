@@ -2766,7 +2766,7 @@ axes.getTickSigns = function(ax, minor) {
     var out = [-1, 1, main, -main];
     // then we flip if outside XOR y axis
 
-    var ticks = minor ? ax.minor.ticks : ax.ticks;
+    var ticks = minor ? (ax.minor || {}).ticks : ax.ticks;
     if((ticks !== 'inside') === (axLetter === 'x')) {
         out = out.map(function(v) { return -v; });
     }
@@ -2878,6 +2878,8 @@ function getTickLabelUV(ax) {
 axes.makeTickPath = function(ax, shift, sgn, opts) {
     if(!opts) opts = {};
     var minor = opts.minor;
+    if(minor && !ax.minor) return '';
+
     var len = opts.len !== undefined ? opts.len :
         minor ? ax.minor.ticklen : ax.ticklen;
 

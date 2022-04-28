@@ -151,6 +151,15 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         attributes: layoutAttributes
     });
 
+    // delete minor when no minor ticks or gridlines
+    if(
+        hasMinor &&
+        !containerOut.minor.ticks &&
+        !containerOut.minor.showgrid
+    ) {
+        delete containerOut.minor;
+    }
+
     // mirror
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
