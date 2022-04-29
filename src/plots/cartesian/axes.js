@@ -2883,9 +2883,6 @@ axes.makeTickPath = function(ax, shift, sgn, opts) {
     var len = opts.len !== undefined ? opts.len :
         minor ? ax.minor.ticklen : ax.ticklen;
 
-    // move one pixel so that minor ticks reach major ticks
-    if(minor && ax._inOutTicksCanOverlap) shift += 0.5;
-
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
 
