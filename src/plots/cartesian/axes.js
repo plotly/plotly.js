@@ -542,37 +542,71 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // ----------------------------------------------------
 
 // ensure we have minor tick0 and dtick calculated
-axes.prepMinorTicks = function(ax) {
-    var majorDtick = ax._majorDtick;
-    if(ax.tickmode === 'auto' || !ax.dtick) {
-        var nt = ax.nticks; // minor.nticks
-        var dist = majorDtick;
-
-        if(ax.type === 'date' && typeof majorDtick === 'string' && majorDtick.charAt(0) === 'M') {
-            var months = Number(majorDtick.substring(1));
-            dist = months * ONEAVGMONTH / (nt || 7);
-        } else if(ax.type === 'log') {
-            if(!nt) nt = 2;
-
-            if(nt > 1) {
-                if(typeof majorDtick === 'string' && majorDtick.charAt(0) === 'L') {
-                    ax.dtick = 'L' + (majorDtick.substring(1) / nt);
-                    return;
-                } else if(dist === 'D1') {
-                    dist = nt - 1;
-                } else if(dist === 'D2') {
-                    dist = nt === 2 ? 'D1' : nt;
+axes.prepMinorTicks = function(mockAx, ax, opts) {
+    if(!ax.minor.dtick) {
+        delete mockAx.dtick;
+        var tick2 = axes.tickIncrement(ax._tmin, ax.dtick, true);
+        // mock range a tiny bit smaller than one major tick interval
+        mockAx.range = Lib.simpleMap([ax._tmin, tick2 * 0.99 + ax._tmin * 0.01], ax.l2r);
+        mockAx._isMinor = true;
+        axes.prepTicks(mockAx, opts);
+        if(isNumeric(ax.dtick) && isNumeric(mockAx.dtick)) {
+            if(!isMultiple(ax.dtick, mockAx.dtick)) {
+                // give up on minor ticks, with one exception:
+                // dtick === 2 weeks, minor = 3 days -> set minor 1 week
+                // other than that, this can only happen if minor.nticks is
+                // smaller than two jumps in the auto-tick scale and the first
+                // jump is not an even multiple (5 -> 2 or for dates 3 ->2, 15 -> 10 etc)
+                // or if you provided an explicit dtick, in which case it's fine to
+                // give up, you can provide an explicit minor.dtick.
+                if((ax.dtick === 2 * ONEWEEK) && (mockAx.dtick === 3 * ONEDAY)) {
+                    mockAx.dtick = ONEWEEK;
                 } else {
-                    dist /= nt;
+                    mockAx.dtick = ax.dtick;
+                }
+            } else if(ax.dtick === 2 * ONEWEEK && mockAx.dtick === 2 * ONEDAY) {
+                // this is a weird one: we don't want to automatically choose
+                // 2-day minor ticks for 2-week major, even though it IS an even multiple,
+                // because people would expect to see the weeks clearly
+                mockAx.dtick = ONEWEEK;
+            }
+        } else if(String(ax.dtick).charAt(0) === 'M') {
+            if(isNumeric(mockAx.dtick)) {
+                mockAx.dtick = 'M1';
+            } else {
+                var majorMonths = +ax.dtick.substring(1);
+                var minorMonths = +mockAx.dtick.substring(1);
+                if(!isMultiple(majorMonths, minorMonths)) {
+                    // unless you provided an explicit ax.dtick (in which case
+                    // it's OK for us to give up, you can provide an explicit
+                    // minor.dtick too), this can only happen with:
+                    // minor.nticks < 3 and dtick === M3, or
+                    // minor.nticks < 5 and dtick === 5 * 10^n years
+                    // so in all cases we just give up.
+                    mockAx.dtick = ax.dtick;
                 }
             }
-        } else {
-            dist /= nt || 7;
+        } else if(String(mockAx.dtick).charAt(0) === 'L') {
+            if(String(ax.dtick).charAt(0) === 'L') {
+                if(!isMultiple(+ax.dtick.substring(1), +mockAx.dtick.substring(1))) {
+                    mockAx.dtick = ax.dtick;
+                }
+            } else {
+                mockAx.dtick = 'D1';
+            }
         }
-
-        axes.autoTicks(ax, dist, 'minor');
+        // put back the original range, to use to find the full set of minor ticks
+        mockAx.range = ax.range;
+    }
+    if(ax.minor._tick0Init === undefined) {
+        // ensure identical tick0
+        mockAx.tick0 = ax.tick0;
     }
 };
+
+function isMultiple(bigger, smaller) {
+    return Math.abs((bigger / smaller + 0.5) % 1 - 0.5) < 0.001;
+}
 
 // ensure we have tick0, dtick, and tick rounding calculated
 axes.prepTicks = function(ax, opts) {
@@ -855,20 +889,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
         var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
 
         if(isMinor) {
-            if(!ax.minor.dtick) {
-                mockAx._majorDtick = ax.dtick;
-                mockAx.dtick = mockAx._dtickInit;
-                mockAx.tick0 = mockAx._tick0Init;
-                mockAx.ntick = mockAx._ntickInit;
-            }
-        }
-
-        if(isMinor) {
-            axes.prepMinorTicks(mockAx);
-            if(mockAx.tick0 !== ax.tick0 && ax.minor._tick0Init === undefined) {
-                // ensure identical tick0
-                mockAx.tick0 = ax.tick0;
-            }
+            axes.prepMinorTicks(mockAx, ax, opts);
         } else {
             axes.prepTicks(mockAx, opts);
         }
@@ -1336,7 +1357,12 @@ axes.autoTicks = function(ax, roughDTick, isMinor) {
     } else if(ax.type === 'log') {
         ax.tick0 = 0;
         var rng = Lib.simpleMap(ax.range, ax.r2l);
-
+        if(ax._isMinor) {
+            // Log axes by default get MORE than nTicks based on the metrics below
+            // But for minor ticks we don't want this increase, we already have
+            // the major ticks.
+            roughDTick *= 1.5;
+        }
         if(roughDTick > 0.7) {
             // only show powers of 10
             ax.dtick = mayCeil(roughDTick);

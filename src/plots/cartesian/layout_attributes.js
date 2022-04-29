@@ -29,18 +29,20 @@ var tickmode = {
     ].join(' ')
 };
 
-var nticks = {
-    valType: 'integer',
-    min: 0,
-    dflt: 0,
-    editType: 'ticks',
-    description: [
-        'Specifies the maximum number of ticks for the particular axis.',
-        'The actual number of ticks will be chosen automatically to be',
-        'less than or equal to `nticks`.',
-        'Has an effect only if `tickmode` is set to *auto*.'
-    ].join(' ')
-};
+function makeNticks(minor) {
+    return {
+        valType: 'integer',
+        min: 0,
+        dflt: minor ? 7 : 0,
+        editType: 'ticks',
+        description: [
+            'Specifies the maximum number of ticks for the particular axis.',
+            'The actual number of ticks will be chosen automatically to be',
+            'less than or equal to `nticks`.',
+            'Has an effect only if `tickmode` is set to *auto*.'
+        ].join(' ')
+    };
+}
 
 var tick0 = {
     valType: 'any',
@@ -503,7 +505,7 @@ module.exports = {
 
     // ticks
     tickmode: tickmode,
-    nticks: nticks,
+    nticks: makeNticks(),
     tick0: tick0,
     dtick: dtick,
     ticklabelstep: {
@@ -944,7 +946,7 @@ module.exports = {
 
     minor: {
         tickmode: tickmode,
-        nticks: nticks,
+        nticks: makeNticks('minor'),
         tick0: tick0,
         dtick: dtick,
         tickvals: tickvals,
