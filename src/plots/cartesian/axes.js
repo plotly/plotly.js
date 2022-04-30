@@ -545,54 +545,82 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 axes.prepMinorTicks = function(mockAx, ax, opts) {
     if(!ax.minor.dtick) {
         delete mockAx.dtick;
-        var tick2 = axes.tickIncrement(ax._tmin, ax.dtick, true);
-        // mock range a tiny bit smaller than one major tick interval
-        mockAx.range = Lib.simpleMap([ax._tmin, tick2 * 0.99 + ax._tmin * 0.01], ax.l2r);
+        var hasMajor = ax.dtick && isNumeric(ax._tmin);
+        var mockMinorRange;
+        if(hasMajor) {
+            var tick2 = axes.tickIncrement(ax._tmin, ax.dtick, true);
+            // mock range a tiny bit smaller than one major tick interval
+            mockMinorRange = [ax._tmin, tick2 * 0.99 + ax._tmin * 0.01];
+        } else {
+            var rl = Lib.simpleMap(ax.range, ax.r2l);
+            // If we don't have a major dtick, the concept of minor ticks is a little
+            // ambiguous - just take a stab and say minor.nticks should span 1/5 the axis
+            mockMinorRange = [rl[0], 0.8 * rl[0] + 0.2 * rl[1]];
+        }
+        mockAx.range = Lib.simpleMap(mockMinorRange, ax.l2r);
         mockAx._isMinor = true;
+
         axes.prepTicks(mockAx, opts);
-        if(isNumeric(ax.dtick) && isNumeric(mockAx.dtick)) {
-            if(!isMultiple(ax.dtick, mockAx.dtick)) {
-                // give up on minor ticks, with one exception:
-                // dtick === 2 weeks, minor = 3 days -> set minor 1 week
-                // other than that, this can only happen if minor.nticks is
-                // smaller than two jumps in the auto-tick scale and the first
-                // jump is not an even multiple (5 -> 2 or for dates 3 ->2, 15 -> 10 etc)
-                // or if you provided an explicit dtick, in which case it's fine to
-                // give up, you can provide an explicit minor.dtick.
-                if((ax.dtick === 2 * ONEWEEK) && (mockAx.dtick === 3 * ONEDAY)) {
+
+        if(hasMajor) {
+            var numericMajor = isNumeric(ax.dtick);
+            var numericMinor = isNumeric(mockAx.dtick);
+            var majorNum = numericMajor ? ax.dtick : +ax.dtick.substring(1);
+            var minorNum = numericMinor ? mockAx.dtick : +mockAx.dtick.substring(1);
+            if(numericMajor && numericMinor) {
+                if(!isMultiple(majorNum, minorNum)) {
+                    // give up on minor ticks - outside the below exceptions,
+                    // this can only happen if minor.nticks is smaller than two jumps
+                    // in the auto-tick scale and the first jump is not an even multiple
+                    // (5 -> 2 or for dates 3 ->2, 15 -> 10 etc)  or if you provided
+                    // an explicit dtick, in which case it's fine to give up,
+                    // you can provide an explicit minor.dtick.
+                    if((majorNum === 2 * ONEWEEK) && (minorNum === 3 * ONEDAY)) {
+                        mockAx.dtick = ONEWEEK;
+                    } else if(majorNum === ONEWEEK && !(ax._input.minor || {}).nticks) {
+                        // minor.nticks defaults to 5, but in this one case we want 7,
+                        // so the minor ticks show on all days of the week
+                        mockAx.dtick = ONEDAY;
+                    } else if(isClose(majorNum / minorNum, 2.5)) {
+                        // 5*10^n -> 2*10^n and you've set nticks < 5
+                        // quarters are pretty common, we don't do this by default as it
+                        // would add an extra digit to display, but minor has no labels
+                        mockAx.dtick = majorNum / 2;
+                    } else {
+                        mockAx.dtick = majorNum;
+                    }
+                } else if(majorNum === 2 * ONEWEEK && minorNum === 2 * ONEDAY) {
+                    // this is a weird one: we don't want to automatically choose
+                    // 2-day minor ticks for 2-week major, even though it IS an even multiple,
+                    // because people would expect to see the weeks clearly
                     mockAx.dtick = ONEWEEK;
+                }
+            } else if(String(ax.dtick).charAt(0) === 'M') {
+                if(numericMinor) {
+                    mockAx.dtick = 'M1';
                 } else {
-                    mockAx.dtick = ax.dtick;
+                    if(!isMultiple(majorNum, minorNum)) {
+                        // unless you provided an explicit ax.dtick (in which case
+                        // it's OK for us to give up, you can provide an explicit
+                        // minor.dtick too), this can only happen with:
+                        // minor.nticks < 3 and dtick === M3, or
+                        // minor.nticks < 5 and dtick === 5 * 10^n years
+                        // so in all cases we just give up.
+                        mockAx.dtick = ax.dtick;
+                    } else if((majorNum >= 12) && (minorNum === 2)) {
+                        // another special carve-out: for year major ticks, don't show
+                        // 2-month minor ticks, bump to quarters
+                        mockAx.dtick = 'M3';
+                    }
                 }
-            } else if(ax.dtick === 2 * ONEWEEK && mockAx.dtick === 2 * ONEDAY) {
-                // this is a weird one: we don't want to automatically choose
-                // 2-day minor ticks for 2-week major, even though it IS an even multiple,
-                // because people would expect to see the weeks clearly
-                mockAx.dtick = ONEWEEK;
-            }
-        } else if(String(ax.dtick).charAt(0) === 'M') {
-            if(isNumeric(mockAx.dtick)) {
-                mockAx.dtick = 'M1';
-            } else {
-                var majorMonths = +ax.dtick.substring(1);
-                var minorMonths = +mockAx.dtick.substring(1);
-                if(!isMultiple(majorMonths, minorMonths)) {
-                    // unless you provided an explicit ax.dtick (in which case
-                    // it's OK for us to give up, you can provide an explicit
-                    // minor.dtick too), this can only happen with:
-                    // minor.nticks < 3 and dtick === M3, or
-                    // minor.nticks < 5 and dtick === 5 * 10^n years
-                    // so in all cases we just give up.
-                    mockAx.dtick = ax.dtick;
+            } else if(String(mockAx.dtick).charAt(0) === 'L') {
+                if(String(ax.dtick).charAt(0) === 'L') {
+                    if(!isMultiple(majorNum, minorNum)) {
+                        mockAx.dtick = isClose(majorNum / minorNum, 2.5) ? (ax.dtick / 2) : ax.dtick;
+                    }
+                } else {
+                    mockAx.dtick = 'D1';
                 }
-            }
-        } else if(String(mockAx.dtick).charAt(0) === 'L') {
-            if(String(ax.dtick).charAt(0) === 'L') {
-                if(!isMultiple(+ax.dtick.substring(1), +mockAx.dtick.substring(1))) {
-                    mockAx.dtick = ax.dtick;
-                }
-            } else {
-                mockAx.dtick = 'D1';
             }
         }
         // put back the original range, to use to find the full set of minor ticks
@@ -606,6 +634,10 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
 
 function isMultiple(bigger, smaller) {
     return Math.abs((bigger / smaller + 0.5) % 1 - 0.5) < 0.001;
+}
+
+function isClose(a, b) {
+    return Math.abs((a / b) - 1) < 0.001;
 }
 
 // ensure we have tick0, dtick, and tick rounding calculated

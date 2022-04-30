@@ -33,7 +33,7 @@ function makeNticks(minor) {
     return {
         valType: 'integer',
         min: 0,
-        dflt: minor ? 7 : 0,
+        dflt: minor ? 5 : 0,
         editType: 'ticks',
         description: [
             'Specifies the maximum number of ticks for the particular axis.',
