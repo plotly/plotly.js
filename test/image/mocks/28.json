@@ -886,6 +886,7 @@
         "width": 606,
         "height": 400,
         "xaxis": {
+            "minor": { "ticks": "outside" },
             "title": {
                 "text": "Note: Data are for cash income. Source: Piketty and Saez (2007)",
                 "font": {
@@ -936,6 +937,7 @@
             "autorange": false
         },
         "yaxis": {
+            "minor": { "ticks": "outside" },
             "title": {
                 "text": "Tax Rate (%)"
             },

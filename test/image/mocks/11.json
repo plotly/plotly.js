@@ -176,6 +176,7 @@
             "autorange": true
         },
         "yaxis": {
+            "minor": { "showgrid": true },
             "title": {
                 "text": "Length",
                 "font": {

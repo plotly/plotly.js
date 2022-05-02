@@ -28,18 +28,21 @@
       "columns": 2
     },
     "xaxis": {
+      "minor": {"ticks": "inside"},
       "title": {"text": "mirror:all"},
       "ticks": "outside",
       "showline": true,
       "mirror": "all"
     },
     "xaxis2": {
+      "minor": {"ticks": "inside"},
       "title": {"text": "mirror:allticks"},
       "ticks": "outside",
       "showline": true,
       "mirror": "allticks"
     },
     "yaxis": {
+      "minor": {"ticks": "inside"},
       "title": {"text": "mirror:all"},
       "ticks": "outside",
       "showline": true,
@@ -47,6 +50,7 @@
       "mirror": "all"
     },
     "yaxis2": {
+      "minor": {"ticks": "inside"},
       "title": {"text": "mirror:allticks"},
       "ticks": "outside",
       "showline": true,
