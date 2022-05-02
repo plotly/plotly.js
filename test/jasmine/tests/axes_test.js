@@ -6630,6 +6630,27 @@ describe('Test axes', function() {
         it('log auto - case 2', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
+                    x: [1, 10e10]
+                }],
+                layout: {
+                    width: 1000,
+                    xaxis: {
+                        type: 'log',
+                        minor: {
+                            showgrid: true
+                        }
+                    }
+                }
+            })
+            .then(function() {
+                _assert([ 1, 3, 5, 7, 9, 11 ]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('log auto - case 3', function(done) {
+            Plotly.newPlot(gd, {
+                data: [{
                     x: [1, 10e3]
                 }],
                 layout: {
@@ -6648,7 +6669,7 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
-        it('log auto - case 3', function(done) {
+        it('log auto - case 4', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
                     x: [1, 10]
@@ -6669,7 +6690,7 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
-        it('log auto - case 4', function(done) {
+        it('log auto - case 5', function(done) {
             Plotly.newPlot(gd, {
                 data: [{
                     x: [1, 2]

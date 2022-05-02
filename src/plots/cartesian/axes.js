@@ -621,6 +621,10 @@ axes.prepMinorTicks = function(mockAx, ax, opts) {
                 } else {
                     mockAx.dtick = 'D1';
                 }
+            } else if(mockAx.dtick === 'D2' && +ax.dtick > 1) {
+                // the D2 log axis tick spacing is confusing for unlabeled minor ticks if
+                // the major dtick is more than one order of magnitude.
+                mockAx.dtick = 1;
             }
         }
         // put back the original range, to use to find the full set of minor ticks
