@@ -915,7 +915,6 @@ axes.calcTicks = function calcTicks(ax, opts) {
         } else {
             ax.minor._dtickInit = ax.minor.dtick;
             ax.minor._tick0Init = ax.minor.tick0;
-            ax.minor._ntickInit = ax.minor.ntick;
         }
 
         var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
@@ -1051,11 +1050,11 @@ axes.calcTicks = function calcTicks(ax, opts) {
     }
 
     if(hasMinor) {
-        ax._inOutTicksCanOverlap =
+        var canOverlap =
             (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
             (ax.minor.ticks === 'outside' && ax.ticks === 'inside');
 
-        if(!ax._inOutTicksCanOverlap) {
+        if(!canOverlap) {
             // remove duplicate minors
 
             var majorValues = tickVals.map(function(d) { return d.value; });
