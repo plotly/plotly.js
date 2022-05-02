@@ -10001,7 +10001,7 @@
      },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
-      "dflt": 0,
+      "dflt": 5,
       "editType": "ticks",
       "min": 0,
       "valType": "integer"
@@ -11240,7 +11240,7 @@
      },
      "nticks": {
       "description": "Specifies the maximum number of ticks for the particular axis. The actual number of ticks will be chosen automatically to be less than or equal to `nticks`. Has an effect only if `tickmode` is set to *auto*.",
-      "dflt": 0,
+      "dflt": 5,
       "editType": "ticks",
       "min": 0,
       "valType": "integer"
