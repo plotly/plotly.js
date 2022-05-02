@@ -9,6 +9,22 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.12.0] -- 2022-05-02
+
+### Added
+ - Add `griddash` axis property to cartesian, polar, smith, ternary and geo subplots and add `griddash` and `minorgriddash` to `carpet` trace [[6144](https://github.com/plotly/plotly.js/pull/6144)], with thanks to @njwhite for the contribution!
+ - Implement various options to position and style `minor` ticks and grid lines on cartesian axis types including
+   `minor.tickmode`, `minor.tickvals`, `minor.tickcolor`, `minor.ticklen`, `minor.tickwidth`, `minor.dtick`, `minor.tick0`, `minor.nticks`, `minor.ticks`,
+   `minor.showgrid`, `minor.gridcolor`, `minor.griddash` and `minor.gridwidth` [[6166](https://github.com/plotly/plotly.js/pull/6166)]
+
+### Changed
+ - Use the "willReadFrequently" 2d context creation attribute to optimize readback performance [[#6084](https://github.com/plotly/plotly.js/pull/6084)],
+   with thanks to @junov for the contribution!
+
+### Fixed
+ - avoid drawing blank tick labels on cartesian axes [[#6163](https://github.com/plotly/plotly.js/pull/6163)]
+
+
 ## [2.11.1] -- 2022-03-15
 
 ### Fixed
