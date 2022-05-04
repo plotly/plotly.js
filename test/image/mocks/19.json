@@ -45,6 +45,7 @@
         "width": 1152,
         "height": 481,
         "xaxis": {
+            "minor": { "showgrid": true },
             "title": {
                 "text": "Click to enter X axis title"
             },
@@ -91,6 +92,7 @@
             "autorange": true
         },
         "yaxis": {
+            "minor": { "showgrid": true },
             "title": {
                 "text": "Click to enter Y axis title"
             },

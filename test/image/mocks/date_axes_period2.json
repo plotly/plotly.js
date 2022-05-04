@@ -130,6 +130,7 @@
             ]
         },
         "xaxis": {
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -140,6 +141,7 @@
             "tickformat": "%b %d, %Y"
         },
         "xaxis2": {
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -150,6 +152,7 @@
             "anchor": "y2"
         },
         "xaxis3": {
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -160,6 +163,7 @@
             "anchor": "y3"
         },
         "xaxis4": {
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -170,6 +174,7 @@
             "anchor": "y4"
         },
         "xaxis5": {
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -180,6 +185,7 @@
             "anchor": "y5"
         },
         "xaxis6": {
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [
@@ -190,6 +196,7 @@
             "anchor": "y6"
         },
         "xaxis7": {
+            "minor": { "ticks": "inside" },
             "tickcolor": "black",
             "gridcolor": "orange",
             "range": [

@@ -282,6 +282,7 @@
         }
     ],
     "layout": {
+        "xaxis": { "minor": { "ticks": "outside" } },
         "title": {"text": "heatmap xyz with date & categories"}
     }
 }

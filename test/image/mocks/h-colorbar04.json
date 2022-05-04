@@ -43,6 +43,20 @@
       "font": {
         "size": 24
       }
+    },
+    "xaxis": {
+      "gridwidth": 2,
+      "gridcolor": "gray",
+      "minor": {
+        "showgrid": true
+      }
+    },
+    "yaxis": {
+      "gridwidth": 2,
+      "gridcolor": "gray",
+      "minor": {
+        "showgrid": true
+      }
     }
   }
 }

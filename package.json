@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.11.1",
+  "version": "2.12.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -32,7 +32,7 @@
     "use-draftlogs": "node tasks/use_draftlogs.js",
     "empty-draftlogs": "node tasks/empty_draftlogs.js",
     "empty-dist": "node tasks/empty_dist.js",
-    "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles basic && npm run extra-bundles cartesian && npm run extra-bundles geo && npm run extra-bundles gl2d && npm run extra-bundles gl3d && npm run extra-bundles mapbox && npm run extra-bundles finance && npm run locales && npm run schema dist && npm run stats",
+    "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
     "regl-codegen": "node devtools/regl_codegen/server.js",
     "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.js",
     "watch": "node tasks/watch.js",

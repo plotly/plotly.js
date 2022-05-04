@@ -42,6 +42,22 @@
       "font": {
         "size": 24
       }
+    },
+    "xaxis": {
+      "gridwidth": 3,
+      "gridcolor": "gray",
+      "tickvals": [0.25, 0.75],
+      "minor": {
+        "griddash": "dash"
+      }
+    },
+    "yaxis": {
+      "gridwidth": 3,
+      "gridcolor": "green",
+      "minor": {
+        "tickvals": [0.25, 0.75],
+        "griddash": "dash"
+      }
     }
   }
 }
