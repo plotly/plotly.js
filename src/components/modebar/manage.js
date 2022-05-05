@@ -8,6 +8,7 @@ var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
 var DRAW_MODES = require('./constants').DRAW_MODES;
+var cloneDeep = require('lodash').cloneDeep;
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -44,7 +45,7 @@ module.exports = function manageModeBar(gd) {
         ].join(' '));
     }
 
-    var customButtons = context.modeBarButtons;
+    var customButtons = cloneDeep(context.modeBarButtons);
     var buttonGroups;
 
     if(Array.isArray(customButtons) && customButtons.length) {
