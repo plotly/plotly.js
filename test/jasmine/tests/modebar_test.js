@@ -996,6 +996,15 @@ describe('ModeBar', function() {
             expect(countButtons(gd._fullLayout._modeBar))
                 .toEqual(initialButtonCount + 6);
         });
+
+        it('sets up buttons without changing the input', function() {
+            var config = [['toImage']];
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtons = config;
+            manageModeBar(gd);
+            expect(config).toEqual([['toImage']]);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(2);
+        });
     });
 
     describe('modebar on clicks', function() {
