@@ -85,23 +85,6 @@ dragElement.init = function init(options) {
         initialTarget,
         rightClick;
 
-    if(options.dragmode === false) {
-        if(element.onmousedown) {
-            element.onmousedown = undefined;
-        }
-        if(!supportsPassive) {
-            if(element.ontouchstart) {
-                element.ontouchstart = undefined;
-            }
-        } else {
-            if(element._ontouchstart) {
-                element.removeEventListener('touchstart', element._ontouchstart);
-                element._ontouchstart = undefined;
-            }
-        }
-        return;
-    }
-
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     element.style.pointerEvents = 'all';
