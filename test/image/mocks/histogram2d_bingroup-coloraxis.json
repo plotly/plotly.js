@@ -586,6 +586,13 @@
     }
   ],
   "layout": {
+    "template": {
+      "data": {
+        "histogram2d": [{
+          "texttemplate": "%{z}"
+        }]
+      }
+    },
     "annotations": [
       {
         "showarrow": false,

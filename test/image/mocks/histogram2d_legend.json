@@ -28,6 +28,7 @@
             "histfunc": "sum",
             "showlegend": true,
             "showscale": false,
+            "texttemplate": "%{z}",
             "type": "histogram2d",
             "name": "histogram2d"
         },
@@ -62,6 +63,7 @@
             "showlegend": true,
             "showscale": false,
             "reversescale": true,
+            "texttemplate": "%{z}",
             "type": "histogram2d",
             "name": "histogram2d reversed scale"
         },
@@ -95,6 +97,8 @@
             "histfunc": "sum",
             "showlegend": true,
             "showscale": false,
+            "texttemplate": "%{z}",
+            "contours": {"coloring": "heatmap"},
             "type": "histogram2dcontour",
             "name": "histogram2dcontour"
         },
@@ -129,6 +133,8 @@
             "showlegend": true,
             "showscale": false,
             "reversescale": true,
+            "texttemplate": "%{z}",
+            "contours": {"coloring": "heatmap"},
             "type": "histogram2dcontour",
             "name": "histogram2dcontour reversed scale"
         }

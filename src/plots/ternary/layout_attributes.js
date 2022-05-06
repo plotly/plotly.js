@@ -25,6 +25,7 @@ var ternaryAxesAttrs = {
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
+    ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,
@@ -46,6 +47,7 @@ var ternaryAxesAttrs = {
     showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
     gridwidth: axesAttrs.gridwidth,
+    griddash: axesAttrs.griddash,
     layer: axesAttrs.layer,
     // range
     min: {

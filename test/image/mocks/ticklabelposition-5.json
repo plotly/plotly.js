@@ -110,6 +110,7 @@
     }],
     "layout": {
         "xaxis": {
+            "minor": { "showgrid": true },
             "rangemode": "nonnegative",
             "anchor": "y",
             "domain": [0, 0.475],
@@ -118,6 +119,7 @@
             "gridcolor": "white"
         },
         "yaxis": {
+            "minor": { "showgrid": true },
             "anchor": "x",
             "domain": [0, 0.475],
             "side": "left",
@@ -125,6 +127,7 @@
             "gridcolor": "white"
         },
         "xaxis2": {
+            "minor": { "showgrid": true },
             "rangemode": "nonnegative",
             "anchor": "y2",
             "domain": [0.525, 1],
@@ -133,6 +136,7 @@
             "gridcolor": "white"
         },
         "yaxis2": {
+            "minor": { "showgrid": true },
             "anchor": "x2",
             "domain": [0, 0.475],
             "side": "right",
@@ -140,6 +144,7 @@
             "gridcolor": "white"
         },
         "xaxis3": {
+            "minor": { "showgrid": true },
             "anchor": "y3",
             "domain": [0.525, 1],
             "side": "top",
@@ -147,6 +152,7 @@
             "gridcolor": "white"
         },
         "yaxis3": {
+            "minor": { "showgrid": true },
             "rangemode": "nonnegative",
             "anchor": "x3",
             "domain": [0.525, 1],
@@ -155,6 +161,7 @@
             "gridcolor": "white"
         },
         "xaxis4": {
+            "minor": { "showgrid": true },
             "anchor": "y4",
             "domain": [0, 0.475],
             "side": "top",

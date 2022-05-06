@@ -30,6 +30,13 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the font used to text the legend items.'
     }),
+    grouptitlefont: fontAttrs({
+        editType: 'legend',
+        description: [
+            'Sets the font for group titles in legend.',
+            'Defaults to `legend.font` with its size increased about 10%.'
+        ].join(' ')
+    }),
     orientation: {
         valType: 'enumerated',
         values: ['v', 'h'],

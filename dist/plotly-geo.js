@@ -1,6 +1,6 @@
 /**
-* plotly.js (geo) v2.5.1
-* Copyright 2012-2021, Plotly, Inc.
+* plotly.js (geo) v2.12.0
+* Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -77,7 +77,7 @@ for(var selector in rules) {
 
 module.exports = _dereq_('../src/transforms/aggregate');
 
-},{"../src/transforms/aggregate":400}],3:[function(_dereq_,module,exports){
+},{"../src/transforms/aggregate":402}],3:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/components/calendars');
@@ -87,7 +87,7 @@ module.exports = _dereq_('../src/components/calendars');
 
 module.exports = _dereq_('../src/traces/choropleth');
 
-},{"../src/traces/choropleth":354}],5:[function(_dereq_,module,exports){
+},{"../src/traces/choropleth":356}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/core');
@@ -97,12 +97,12 @@ module.exports = _dereq_('../src/core');
 
 module.exports = _dereq_('../src/transforms/filter');
 
-},{"../src/transforms/filter":401}],7:[function(_dereq_,module,exports){
+},{"../src/transforms/filter":403}],7:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/groupby');
 
-},{"../src/transforms/groupby":402}],8:[function(_dereq_,module,exports){
+},{"../src/transforms/groupby":404}],8:[function(_dereq_,module,exports){
 'use strict';
 
 var Plotly = _dereq_('./core');
@@ -129,12 +129,12 @@ module.exports = Plotly;
 
 module.exports = _dereq_('../src/traces/scattergeo');
 
-},{"../src/traces/scattergeo":396}],10:[function(_dereq_,module,exports){
+},{"../src/traces/scattergeo":398}],10:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/sort');
 
-},{"../src/transforms/sort":404}],11:[function(_dereq_,module,exports){
+},{"../src/transforms/sort":406}],11:[function(_dereq_,module,exports){
 !function() {
   var d3 = {
     version: "3.8.0"
@@ -33179,7 +33179,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../constants/axis_placeable_objects":222,"../../plot_api/plot_template":285,"../../plots/cartesian/constants":303,"../../plots/font_attributes":325,"./arrow_paths":98}],100:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":222,"../../plot_api/plot_template":285,"../../plots/cartesian/constants":303,"../../plots/font_attributes":327,"./arrow_paths":98}],100:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -33391,7 +33391,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":248,"../../plot_api/plot_template":285,"../../registry":340}],102:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plot_api/plot_template":285,"../../registry":342}],102:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -34368,7 +34368,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     } else annText.call(textLayout);
 }
 
-},{"../../lib":248,"../../lib/setcursor":268,"../../lib/svg_text_utils":271,"../../plot_api/plot_template":285,"../../plots/cartesian/axes":296,"../../plots/plots":337,"../../registry":340,"../color":116,"../dragelement":135,"../drawing":138,"../fx":156,"./draw_arrow_head":106,"@plotly/d3":11}],106:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../lib/setcursor":268,"../../lib/svg_text_utils":271,"../../plot_api/plot_template":285,"../../plots/cartesian/axes":296,"../../plots/plots":339,"../../registry":342,"../color":116,"../dragelement":135,"../drawing":138,"../fx":156,"./draw_arrow_head":106,"@plotly/d3":11}],106:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -34778,7 +34778,7 @@ module.exports = function draw(scene) {
     }
 };
 
-},{"../../plots/gl3d/project":334,"../annotations/draw":105}],112:[function(_dereq_,module,exports){
+},{"../../plots/gl3d/project":336,"../annotations/draw":105}],112:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -34818,7 +34818,7 @@ function includeGL3D(layoutIn, layoutOut) {
     }
 }
 
-},{"../../lib":248,"../../registry":340,"./attributes":108,"./convert":109,"./defaults":110,"./draw":111}],113:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342,"./attributes":108,"./convert":109,"./defaults":110,"./draw":111}],113:[function(_dereq_,module,exports){
 'use strict';
 
 // a trimmed down version of:
@@ -35317,13 +35317,11 @@ var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 
 
 module.exports = overrideAll({
-// TODO: only right is supported currently
-//     orient: {
-//         valType: 'enumerated',
-//         values: ['left', 'right', 'top', 'bottom'],
-//         dflt: 'right',
-//
-//     },
+    orientation: {
+        valType: 'enumerated',
+        values: ['h', 'v'],
+        dflt: 'v',
+    },
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
@@ -35346,14 +35344,12 @@ module.exports = overrideAll({
     },
     x: {
         valType: 'number',
-        dflt: 1.02,
         min: -2,
         max: 3,
     },
     xanchor: {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
-        dflt: 'left',
     },
     xpad: {
         valType: 'number',
@@ -35362,14 +35358,12 @@ module.exports = overrideAll({
     },
     y: {
         valType: 'number',
-        dflt: 0.5,
         min: -2,
         max: 3,
     },
     yanchor: {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
-        dflt: 'middle',
     },
     ypad: {
         valType: 'number',
@@ -35401,18 +35395,25 @@ module.exports = overrideAll({
     ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
     ticklabeloverflow: extendFlat({}, axesAttrs.ticklabeloverflow, {
     }),
+
+    // ticklabelposition: not used directly, as values depend on orientation
+    // left/right options are for x axes, and top/bottom options are for y axes
     ticklabelposition: {
         valType: 'enumerated',
         values: [
             'outside', 'inside',
             'outside top', 'inside top',
+            'outside left', 'inside left',
+            'outside right', 'inside right',
             'outside bottom', 'inside bottom'
         ],
         dflt: 'outside',
     },
+
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
+    ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     tickfont: fontAttrs({
     }),
@@ -35436,7 +35437,6 @@ module.exports = overrideAll({
         side: {
             valType: 'enumerated',
             values: ['right', 'top', 'bottom'],
-            dflt: 'top',
         }
     },
 
@@ -35454,7 +35454,7 @@ module.exports = overrideAll({
     }
 }, 'colorbars', 'from-root');
 
-},{"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plots/cartesian/layout_attributes":311,"../../plots/font_attributes":325}],118:[function(_dereq_,module,exports){
+},{"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plots/cartesian/layout_attributes":311,"../../plots/font_attributes":327}],118:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -35483,6 +35483,7 @@ var Template = _dereq_('../../plot_api/plot_template');
 var handleTickValueDefaults = _dereq_('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = _dereq_('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = _dereq_('../../plots/cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = _dereq_('../../plots/cartesian/prefix_suffix_defaults');
 
 var attributes = _dereq_('./attributes');
 
@@ -35494,23 +35495,30 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);
     }
 
+    var margin = layout.margin || {t: 0, b: 0, l: 0, r: 0};
+    var w = layout.width - margin.l - margin.r;
+    var h = layout.height - margin.t - margin.b;
+
+    var orientation = coerce('orientation');
+    var isVertical = orientation === 'v';
+
     var thicknessmode = coerce('thicknessmode');
     coerce('thickness', (thicknessmode === 'fraction') ?
-        30 / (layout.width - layout.margin.l - layout.margin.r) :
+        30 / (isVertical ? w : h) :
         30
     );
 
     var lenmode = coerce('lenmode');
     coerce('len', (lenmode === 'fraction') ?
         1 :
-        layout.height - layout.margin.t - layout.margin.b
+        isVertical ? h : w
     );
 
-    coerce('x');
-    coerce('xanchor');
+    coerce('x', isVertical ? 1.02 : 0.5);
+    coerce('xanchor', isVertical ? 'left' : 'center');
     coerce('xpad');
-    coerce('y');
-    coerce('yanchor');
+    coerce('y', isVertical ? 0.5 : 1.02);
+    coerce('yanchor', isVertical ? 'middle' : 'bottom');
     coerce('ypad');
     Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
@@ -35520,7 +35528,22 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    var ticklabelposition = coerce('ticklabelposition');
+    var ticklabelposition = Lib.coerce(colorbarIn, colorbarOut, {
+        ticklabelposition: {
+            valType: 'enumerated',
+            dflt: 'outside',
+            values: isVertical ? [
+                'outside', 'inside',
+                'outside top', 'inside top',
+                'outside bottom', 'inside bottom'
+            ] : [
+                'outside', 'inside',
+                'outside left', 'inside left',
+                'outside right', 'inside right'
+            ]
+        }
+    }, 'ticklabelposition');
+
     coerce('ticklabeloverflow', ticklabelposition.indexOf('inside') !== -1 ? 'hide past domain' : 'hide past div');
 
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
@@ -35530,6 +35553,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     if(ticklabelposition.indexOf('inside') !== -1) {
         opts.bgColor = 'black'; // could we instead use the average of colors in the scale?
     }
+    handlePrefixSuffixDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
     handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
     handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
 
@@ -35541,10 +35565,10 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         size: Lib.bigFont(tickFont.size)
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
-    coerce('title.side');
+    coerce('title.side', isVertical ? 'top' : 'right');
 };
 
-},{"../../lib":248,"../../plot_api/plot_template":285,"../../plots/cartesian/tick_label_defaults":318,"../../plots/cartesian/tick_mark_defaults":319,"../../plots/cartesian/tick_value_defaults":320,"./attributes":117}],120:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plot_api/plot_template":285,"../../plots/cartesian/prefix_suffix_defaults":315,"../../plots/cartesian/tick_label_defaults":320,"../../plots/cartesian/tick_mark_defaults":321,"../../plots/cartesian/tick_value_defaults":322,"./attributes":117}],120:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -35714,6 +35738,21 @@ function makeColorBarData(gd) {
 }
 
 function drawColorBar(g, opts, gd) {
+    var isVertical = opts.orientation === 'v';
+    var len = opts.len;
+    var lenmode = opts.lenmode;
+    var thickness = opts.thickness;
+    var thicknessmode = opts.thicknessmode;
+    var outlinewidth = opts.outlinewidth;
+    var borderwidth = opts.borderwidth;
+    var bgcolor = opts.bgcolor;
+    var xanchor = opts.xanchor;
+    var yanchor = opts.yanchor;
+    var xpad = opts.xpad;
+    var ypad = opts.ypad;
+    var optsX = opts.x;
+    var optsY = isVertical ? opts.y : 1 - opts.y;
+
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
 
@@ -35743,42 +35782,64 @@ function drawColorBar(g, opts, gd) {
     // when the colorbar itself is pushing the margins.
     // but then the fractional size is calculated based on the
     // actual graph size, so that the axes will size correctly.
-    var thickPx = Math.round(opts.thickness * (opts.thicknessmode === 'fraction' ? gs.w : 1));
-    var thickFrac = thickPx / gs.w;
-    var lenPx = Math.round(opts.len * (opts.lenmode === 'fraction' ? gs.h : 1));
-    var lenFrac = lenPx / gs.h;
-    var xpadFrac = opts.xpad / gs.w;
-    var yExtraPx = (opts.borderwidth + opts.outlinewidth) / 2;
-    var ypadFrac = opts.ypad / gs.h;
+    var thickPx = Math.round(thickness * (thicknessmode === 'fraction' ? (isVertical ? gs.w : gs.h) : 1));
+    var thickFrac = thickPx / (isVertical ? gs.w : gs.h);
+    var lenPx = Math.round(len * (lenmode === 'fraction' ? (isVertical ? gs.h : gs.w) : 1));
+    var lenFrac = lenPx / (isVertical ? gs.h : gs.w);
 
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
-    var xLeft = Math.round(opts.x * gs.w + opts.xpad);
-    // for dragging... this is getting a little muddled...
-    var xLeftFrac = opts.x - thickFrac * ({middle: 0.5, right: 1}[opts.xanchor] || 0);
+    var uPx = Math.round(isVertical ?
+        optsX * gs.w + xpad :
+        optsY * gs.h + ypad
+    );
 
-    // y positioning we can do correctly from the start
-    var yBottomFrac = opts.y + lenFrac * (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5);
-    var yBottomPx = Math.round(gs.h * (1 - yBottomFrac));
-    var yTopPx = yBottomPx - lenPx;
+    var xRatio = {center: 0.5, right: 1}[xanchor] || 0;
+    var yRatio = {top: 1, middle: 0.5}[yanchor] || 0;
+
+    // for dragging... this is getting a little muddled...
+    var uFrac = isVertical ?
+        optsX - xRatio * thickFrac :
+        optsY - yRatio * thickFrac;
+
+    // y/x positioning (for v/h) we can do correctly from the start
+    var vFrac = isVertical ?
+        optsY - yRatio * lenFrac :
+        optsX - xRatio * lenFrac;
+
+    var vPx = Math.round(isVertical ?
+        gs.h * (1 - vFrac) :
+        gs.w * vFrac
+    );
 
     // stash a few things for makeEditable
     opts._lenFrac = lenFrac;
     opts._thickFrac = thickFrac;
-    opts._xLeftFrac = xLeftFrac;
-    opts._yBottomFrac = yBottomFrac;
+    opts._uFrac = uFrac;
+    opts._vFrac = vFrac;
 
     // stash mocked axis for contour label formatting
     var ax = opts._axis = mockColorBarAxis(gd, opts, zrange);
 
     // position can't go in through supplyDefaults
     // because that restricts it to [0,1]
-    ax.position = opts.x + xpadFrac + thickFrac;
+    ax.position = thickFrac + (isVertical ?
+        optsX + xpad / gs.w :
+        optsY + ypad / gs.h
+    );
 
-    if(['top', 'bottom'].indexOf(titleSide) !== -1) {
+    var topOrBottom = ['top', 'bottom'].indexOf(titleSide) !== -1;
+
+    if(isVertical && topOrBottom) {
         ax.title.side = titleSide;
-        ax.titlex = opts.x + xpadFrac;
-        ax.titley = yBottomFrac + (title.side === 'top' ? lenFrac - ypadFrac : ypadFrac);
+        ax.titlex = optsX + xpad / gs.w;
+        ax.titley = vFrac + (title.side === 'top' ? lenFrac - ypad / gs.h : ypad / gs.h);
+    }
+
+    if(!isVertical && !topOrBottom) {
+        ax.title.side = titleSide;
+        ax.titley = optsY + ypad / gs.h;
+        ax.titlex = vFrac + xpad / gs.w; // right side
     }
 
     if(line.color && opts.tickmode === 'auto') {
@@ -35786,7 +35847,7 @@ function drawColorBar(g, opts, gd) {
         ax.tick0 = levelsIn.start;
         var dtick = levelsIn.size;
         // expand if too many contours, so we don't get too many ticks
-        var autoNtick = Lib.constrain((yBottomPx - yTopPx) / 50, 4, 15) + 1;
+        var autoNtick = Lib.constrain(lenPx / 50, 4, 15) + 1;
         var dtFactor = (zrange[1] - zrange[0]) / ((opts.nticks || autoNtick) * dtick);
         if(dtFactor > 1) {
             var dtexp = Math.pow(10, Math.floor(Math.log(dtFactor) / Math.LN10));
@@ -35803,9 +35864,12 @@ function drawColorBar(g, opts, gd) {
 
     // set domain after init, because we may want to
     // allow it outside [0,1]
-    ax.domain = [
-        yBottomFrac + ypadFrac,
-        yBottomFrac + lenFrac - ypadFrac
+    ax.domain = isVertical ? [
+        vFrac + ypad / gs.h,
+        vFrac + lenFrac - ypad / gs.h
+    ] : [
+        vFrac + xpad / gs.w,
+        vFrac + lenFrac - xpad / gs.w
     ];
 
     ax.setScale();
@@ -35815,9 +35879,13 @@ function drawColorBar(g, opts, gd) {
     var titleCont = g.select('.' + cn.cbtitleunshift)
         .attr('transform', strTranslate(-Math.round(gs.l), -Math.round(gs.t)));
 
+    var ticklabelposition = ax.ticklabelposition;
+    var titleFontSize = ax.title.font.size;
+
     var axLayer = g.select('.' + cn.cbaxis);
     var titleEl;
     var titleHeight = 0;
+    var titleWidth = 0;
 
     function drawTitle(titleClass, titleOpts) {
         var dfltTitleOpts = {
@@ -35842,58 +35910,102 @@ function drawColorBar(g, opts, gd) {
     }
 
     function drawDummyTitle() {
-        if(['top', 'bottom'].indexOf(titleSide) !== -1) {
-            // draw the title so we know how much room it needs
-            // when we squish the axis. This one only applies to
-            // top or bottom titles, not right side.
-            var x = gs.l + (opts.x + xpadFrac) * gs.w;
-            var fontSize = ax.title.font.size;
-            var y;
+        // draw the title so we know how much room it needs
+        // when we squish the axis.
+        // On vertical colorbars this only applies to top or bottom titles, not right side.
+        // On horizontal colorbars this only applies to right, etc.
+
+        if(
+            (isVertical && topOrBottom) ||
+            (!isVertical && !topOrBottom)
+        ) {
+            var x, y;
 
             if(titleSide === 'top') {
-                y = (1 - (yBottomFrac + lenFrac - ypadFrac)) * gs.h +
-                    gs.t + 3 + fontSize * 0.75;
-            } else {
-                y = (1 - (yBottomFrac + ypadFrac)) * gs.h +
-                    gs.t - 3 - fontSize * 0.25;
+                x = xpad + gs.l + gs.w * optsX;
+                y = ypad + gs.t + gs.h * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
             }
+
+            if(titleSide === 'bottom') {
+                x = xpad + gs.l + gs.w * optsX;
+                y = ypad + gs.t + gs.h * (1 - vFrac) - 3 - titleFontSize * 0.25;
+            }
+
+            if(titleSide === 'right') {
+                y = ypad + gs.t + gs.h * optsY + 3 + titleFontSize * 0.75;
+                x = xpad + gs.l + gs.w * vFrac;
+            }
+
             drawTitle(ax._id + 'title', {
-                attributes: {x: x, y: y, 'text-anchor': 'start'}
+                attributes: {x: x, y: y, 'text-anchor': isVertical ? 'start' : 'middle'}
             });
         }
     }
 
     function drawCbTitle() {
-        if(['top', 'bottom'].indexOf(titleSide) === -1) {
-            var fontSize = ax.title.font.size;
-            var y = ax._offset + ax._length / 2;
-            var x = gs.l + (ax.position || 0) * gs.w + ((ax.side === 'right') ?
-                10 + fontSize * ((ax.showticklabels ? 1 : 0.5)) :
-                -10 - fontSize * ((ax.showticklabels ? 0.5 : 0)));
+        if(
+            (isVertical && !topOrBottom) ||
+            (!isVertical && topOrBottom)
+        ) {
+            var pos = ax.position || 0;
+            var mid = ax._offset + ax._length / 2;
+            var x, y;
 
-            // the 'h' + is a hack to get around the fact that
-            // convertToTspans rotates any 'y...' class by 90 degrees.
-            // TODO: find a better way to control this.
-            drawTitle('h' + ax._id + 'title', {
+            if(titleSide === 'right') {
+                y = mid;
+                x = gs.l + gs.w * pos + 10 + titleFontSize * (
+                    ax.showticklabels ? 1 : 0.5
+                );
+            } else {
+                x = mid;
+
+                if(titleSide === 'bottom') {
+                    y = gs.t + gs.h * pos + 10 + (
+                        ticklabelposition.indexOf('inside') === -1 ?
+                            ax.tickfont.size :
+                            0
+                    ) + (
+                        ax.ticks !== 'intside' ?
+                            opts.ticklen || 0 :
+                            0
+                    );
+                }
+
+                if(titleSide === 'top') {
+                    var nlines = title.text.split('<br>').length;
+                    y = gs.t + gs.h * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
+                }
+            }
+
+            drawTitle((isVertical ?
+                // the 'h' + is a hack to get around the fact that
+                // convertToTspans rotates any 'y...' class by 90 degrees.
+                // TODO: find a better way to control this.
+                'h' :
+                'v'
+            ) + ax._id + 'title', {
                 avoid: {
                     selection: d3.select(gd).selectAll('g.' + ax._id + 'tick'),
                     side: titleSide,
-                    offsetLeft: gs.l,
-                    offsetTop: 0,
-                    maxShift: fullLayout.width
+                    offsetTop: isVertical ? 0 : gs.t,
+                    offsetLeft: isVertical ? gs.l : 0,
+                    maxShift: isVertical ? fullLayout.width : fullLayout.height
                 },
                 attributes: {x: x, y: y, 'text-anchor': 'middle'},
-                transform: {rotate: '-90', offset: 0}
+                transform: {rotate: isVertical ? -90 : 0, offset: 0}
             });
         }
     }
 
     function drawAxis() {
-        if(['top', 'bottom'].indexOf(titleSide) !== -1) {
+        if(
+            (!isVertical && !topOrBottom) ||
+            (isVertical && topOrBottom)
+        ) {
             // squish the axis top to make room for the title
             var titleGroup = g.select('.' + cn.cbtitle);
             var titleText = titleGroup.select('text');
-            var titleTrans = [-opts.outlinewidth / 2, opts.outlinewidth / 2];
+            var titleTrans = [-outlinewidth / 2, outlinewidth / 2];
             var mathJaxNode = titleGroup
                 .select('.h' + ax._id + 'title-math-group')
                 .node();
@@ -35901,39 +36013,63 @@ function drawColorBar(g, opts, gd) {
             if(titleText.node()) {
                 lineSize = parseInt(titleText.node().style.fontSize, 10) * LINE_SPACING;
             }
+
+            var bb;
             if(mathJaxNode) {
-                titleHeight = Drawing.bBox(mathJaxNode).height;
+                bb = Drawing.bBox(mathJaxNode);
+                titleWidth = bb.width;
+                titleHeight = bb.height;
                 if(titleHeight > lineSize) {
                     // not entirely sure how mathjax is doing
                     // vertical alignment, but this seems to work.
                     titleTrans[1] -= (titleHeight - lineSize) / 2;
                 }
             } else if(titleText.node() && !titleText.classed(cn.jsPlaceholder)) {
-                titleHeight = Drawing.bBox(titleText.node()).height;
+                bb = Drawing.bBox(titleText.node());
+                titleWidth = bb.width;
+                titleHeight = bb.height;
             }
-            if(titleHeight) {
-                // buffer btwn colorbar and title
-                // TODO: configurable
-                titleHeight += 5;
 
-                if(titleSide === 'top') {
-                    ax.domain[1] -= titleHeight / gs.h;
-                    titleTrans[1] *= -1;
-                } else {
-                    ax.domain[0] += titleHeight / gs.h;
-                    var nlines = svgTextUtils.lineCount(titleText);
-                    titleTrans[1] += (1 - nlines) * lineSize;
+            if(isVertical) {
+                if(titleHeight) {
+                    // buffer btwn colorbar and title
+                    // TODO: configurable
+                    titleHeight += 5;
+
+                    if(titleSide === 'top') {
+                        ax.domain[1] -= titleHeight / gs.h;
+                        titleTrans[1] *= -1;
+                    } else {
+                        ax.domain[0] += titleHeight / gs.h;
+                        var nlines = svgTextUtils.lineCount(titleText);
+                        titleTrans[1] += (1 - nlines) * lineSize;
+                    }
+
+                    titleGroup.attr('transform', strTranslate(titleTrans[0], titleTrans[1]));
+                    ax.setScale();
                 }
+            } else { // horizontal colorbars
+                if(titleWidth) {
+                    if(titleSide === 'right') {
+                        ax.domain[0] += (titleWidth + titleFontSize / 2) / gs.w;
+                    }
 
-                titleGroup.attr('transform', strTranslate(titleTrans[0], titleTrans[1]));
-                ax.setScale();
+                    titleGroup.attr('transform', strTranslate(titleTrans[0], titleTrans[1]));
+                    ax.setScale();
+                }
             }
         }
 
         g.selectAll('.' + cn.cbfills + ',.' + cn.cblines)
-            .attr('transform', strTranslate(0, Math.round(gs.h * (1 - ax.domain[1]))));
+            .attr('transform', isVertical ?
+                strTranslate(0, Math.round(gs.h * (1 - ax.domain[1]))) :
+                strTranslate(Math.round(gs.w * ax.domain[0]), 0)
+            );
 
-        axLayer.attr('transform', strTranslate(0, Math.round(-gs.t)));
+        axLayer.attr('transform', isVertical ?
+            strTranslate(0, Math.round(-gs.t)) :
+            strTranslate(Math.round(-gs.l), 0)
+        );
 
         var fills = g.select('.' + cn.cbfills)
             .selectAll('rect.' + cn.cbfill)
@@ -35959,20 +36095,22 @@ function drawColorBar(g, opts, gd) {
 
             // offset the side adjoining the next rectangle so they
             // overlap, to prevent antialiasing gaps
-            z[1] = Lib.constrain(z[1] + (z[1] > z[0]) ? 1 : -1, zBounds[0], zBounds[1]);
-
+            if(isVertical) {
+                z[1] = Lib.constrain(z[1] + (z[1] > z[0]) ? 1 : -1, zBounds[0], zBounds[1]);
+            } /* else {
+                // TODO: horizontal case
+            } */
 
             // Colorbar cannot currently support opacities so we
             // use an opaque fill even when alpha channels present
-            var fillEl = d3.select(this).attr({
-                x: xLeft,
-                width: Math.max(thickPx, 2),
-                y: d3.min(z),
-                height: Math.max(d3.max(z) - d3.min(z), 2),
-            });
+            var fillEl = d3.select(this)
+            .attr(isVertical ? 'x' : 'y', uPx)
+            .attr(isVertical ? 'y' : 'x', d3.min(z))
+            .attr(isVertical ? 'width' : 'height', Math.max(thickPx, 2))
+            .attr(isVertical ? 'height' : 'width', Math.max(d3.max(z) - d3.min(z), 2));
 
             if(opts._fillgradient) {
-                Drawing.gradient(fillEl, gd, opts._id, 'vertical', opts._fillgradient, 'fill');
+                Drawing.gradient(fillEl, gd, opts._id, isVertical ? 'vertical' : 'horizontalreversed', opts._fillgradient, 'fill');
             } else {
                 // tinycolor can't handle exponents and
                 // at this scale, removing it makes no difference.
@@ -35988,17 +36126,23 @@ function drawColorBar(g, opts, gd) {
             .classed(cn.cbline, true);
         lines.exit().remove();
         lines.each(function(d) {
+            var a = uPx;
+            var b = (Math.round(ax.c2p(d)) + (line.width / 2) % 1);
+
             d3.select(this)
-                .attr('d', 'M' + xLeft + ',' +
-                    (Math.round(ax.c2p(d)) + (line.width / 2) % 1) + 'h' + thickPx)
+                .attr('d', 'M' +
+                    (isVertical ? a + ',' + b : b + ',' + a) +
+                    (isVertical ? 'h' : 'v') +
+                    thickPx
+                )
                 .call(Drawing.lineGroupStyle, line.width, lineColormap(d), line.dash);
         });
 
         // force full redraw of labels and ticks
         axLayer.selectAll('g.' + ax._id + 'tick,path').remove();
 
-        var shift = xLeft + thickPx +
-            (opts.outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
+        var shift = uPx + thickPx +
+            (outlinewidth || 0) / 2 - (opts.ticks === 'outside' ? 1 : 0);
 
         var vals = Axes.calcTicks(ax);
         var tickSign = Axes.getTickSigns(ax)[2];
@@ -36023,83 +36167,211 @@ function drawColorBar(g, opts, gd) {
     // TODO: why are we redrawing multiple times now with this?
     // I guess autoMargin doesn't like being post-promise?
     function positionCB() {
-        var innerWidth = thickPx + opts.outlinewidth / 2;
-        if(ax.ticklabelposition.indexOf('inside') === -1) {
-            innerWidth += Drawing.bBox(axLayer.node()).width;
+        var bb;
+        var innerThickness = thickPx + outlinewidth / 2;
+        if(ticklabelposition.indexOf('inside') === -1) {
+            bb = Drawing.bBox(axLayer.node());
+            innerThickness += isVertical ? bb.width : bb.height;
         }
 
         titleEl = titleCont.select('text');
 
+        var titleWidth = 0;
+
+        var topSideVertical = isVertical && titleSide === 'top';
+        var rightSideHorizontal = !isVertical && titleSide === 'right';
+
+        var moveY = 0;
+
         if(titleEl.node() && !titleEl.classed(cn.jsPlaceholder)) {
+            var _titleHeight;
+
             var mathJaxNode = titleCont.select('.h' + ax._id + 'title-math-group').node();
-            var titleWidth;
-            if(mathJaxNode && ['top', 'bottom'].indexOf(titleSide) !== -1) {
-                titleWidth = Drawing.bBox(mathJaxNode).width;
+            if(mathJaxNode && (
+                (isVertical && topOrBottom) ||
+                (!isVertical && !topOrBottom)
+            )) {
+                bb = Drawing.bBox(mathJaxNode);
+                titleWidth = bb.width;
+                _titleHeight = bb.height;
             } else {
                 // note: the formula below works for all title sides,
                 // (except for top/bottom mathjax, above)
                 // but the weird gs.l is because the titleunshift
                 // transform gets removed by Drawing.bBox
-                titleWidth = Drawing.bBox(titleCont.node()).right - xLeft - gs.l;
+                bb = Drawing.bBox(titleCont.node());
+                titleWidth = bb.right - gs.l - (isVertical ? uPx : vPx);
+                _titleHeight = bb.bottom - gs.t - (isVertical ? vPx : uPx);
+
+                if(
+                    !isVertical && titleSide === 'top'
+                ) {
+                    innerThickness += bb.height;
+                    moveY = bb.height;
+                }
             }
-            innerWidth = Math.max(innerWidth, titleWidth);
+
+            if(rightSideHorizontal) {
+                titleEl.attr('transform', strTranslate(titleWidth / 2 + titleFontSize / 2, 0));
+
+                titleWidth *= 2;
+            }
+
+            innerThickness = Math.max(innerThickness,
+                isVertical ? titleWidth : _titleHeight
+            );
         }
 
-        var outerwidth = 2 * opts.xpad + innerWidth + opts.borderwidth + opts.outlinewidth / 2;
-        var outerheight = yBottomPx - yTopPx;
+        var outerThickness = (isVertical ?
+            xpad :
+            ypad
+        ) * 2 + innerThickness + borderwidth + outlinewidth / 2;
 
-        g.select('.' + cn.cbbg).attr({
-            x: xLeft - opts.xpad - (opts.borderwidth + opts.outlinewidth) / 2,
-            y: yTopPx - yExtraPx,
-            width: Math.max(outerwidth, 2),
-            height: Math.max(outerheight + 2 * yExtraPx, 2)
-        })
-        .call(Color.fill, opts.bgcolor)
+        var hColorbarMoveTitle = 0;
+        if(!isVertical && title.text && yanchor === 'bottom' && optsY <= 0) {
+            hColorbarMoveTitle = outerThickness / 2;
+
+            outerThickness += hColorbarMoveTitle;
+            moveY += hColorbarMoveTitle;
+        }
+        fullLayout._hColorbarMoveTitle = hColorbarMoveTitle;
+        fullLayout._hColorbarMoveCBTitle = moveY;
+
+        var extraW = borderwidth + outlinewidth;
+
+        g.select('.' + cn.cbbg)
+        .attr('x', (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0))
+        .attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle))
+        .attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2))
+        .attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2))
+        .call(Color.fill, bgcolor)
         .call(Color.stroke, opts.bordercolor)
-        .style('stroke-width', opts.borderwidth);
+        .style('stroke-width', borderwidth);
 
-        g.selectAll('.' + cn.cboutline).attr({
-            x: xLeft,
-            y: yTopPx + opts.ypad + (titleSide === 'top' ? titleHeight : 0),
-            width: Math.max(thickPx, 2),
-            height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
-        })
+        var moveX = rightSideHorizontal ? Math.max(titleWidth - 10, 0) : 0;
+
+        g.selectAll('.' + cn.cboutline)
+        .attr('x', (isVertical ? uPx : vPx + xpad) + moveX)
+        .attr('y', (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0))
+        .attr(isVertical ? 'width' : 'height', Math.max(thickPx, 2))
+        .attr(isVertical ? 'height' : 'width', Math.max(lenPx - (isVertical ?
+            2 * ypad + titleHeight :
+            2 * xpad + moveX
+        ), 2))
         .call(Color.stroke, opts.outlinecolor)
         .style({
             fill: 'none',
-            'stroke-width': opts.outlinewidth
+            'stroke-width': outlinewidth
         });
 
-        // fix positioning for xanchor!='left'
-        var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) * outerwidth;
-        g.attr('transform', strTranslate(gs.l - xoffset, gs.t));
+        g.attr('transform', strTranslate(
+            gs.l - (isVertical ? xRatio * outerThickness : 0),
+            gs.t - (isVertical ? 0 : (1 - yRatio) * outerThickness - moveY)
+        ));
+
+        if(!isVertical && (
+            borderwidth || (
+                tinycolor(bgcolor).getAlpha() &&
+                !tinycolor.equals(fullLayout.paper_bgcolor, bgcolor)
+            )
+        )) {
+            // for horizontal colorbars when there is a border line or having different background color
+            // hide/adjust x positioning for the first/last tick labels if they go outside the border
+            var tickLabels = axLayer.selectAll('text');
+            var numTicks = tickLabels[0].length;
+
+            var border = g.select('.' + cn.cbbg).node();
+            var oBb = Drawing.bBox(border);
+            var oTr = Drawing.getTranslate(g);
+
+            var TEXTPAD = 2;
+
+            tickLabels.each(function(d, i) {
+                var first = 0;
+                var last = numTicks - 1;
+                if(i === first || i === last) {
+                    var iBb = Drawing.bBox(this);
+                    var iTr = Drawing.getTranslate(this);
+                    var deltaX;
+
+                    if(i === last) {
+                        var iRight = iBb.right + iTr.x;
+                        var oRight = oBb.right + oTr.x + vPx - borderwidth - TEXTPAD + optsX;
+
+                        deltaX = oRight - iRight;
+                        if(deltaX > 0) deltaX = 0;
+                    } else if(i === first) {
+                        var iLeft = iBb.left + iTr.x;
+                        var oLeft = oBb.left + oTr.x + vPx + borderwidth + TEXTPAD;
+
+                        deltaX = oLeft - iLeft;
+                        if(deltaX < 0) deltaX = 0;
+                    }
+
+                    if(deltaX) {
+                        if(numTicks < 3) { // adjust position
+                            this.setAttribute('transform',
+                                'translate(' + deltaX + ',0) ' +
+                                this.getAttribute('transform')
+                            );
+                        } else { // hide
+                            this.setAttribute('visibility', 'hidden');
+                        }
+                    }
+                }
+            });
+        }
 
         // auto margin adjustment
         var marginOpts = {};
-        var tFrac = FROM_TL[opts.yanchor];
-        var bFrac = FROM_BR[opts.yanchor];
-        if(opts.lenmode === 'pixels') {
-            marginOpts.y = opts.y;
-            marginOpts.t = outerheight * tFrac;
-            marginOpts.b = outerheight * bFrac;
-        } else {
-            marginOpts.t = marginOpts.b = 0;
-            marginOpts.yt = opts.y + opts.len * tFrac;
-            marginOpts.yb = opts.y - opts.len * bFrac;
-        }
+        var lFrac = FROM_TL[xanchor];
+        var rFrac = FROM_BR[xanchor];
+        var tFrac = FROM_TL[yanchor];
+        var bFrac = FROM_BR[yanchor];
 
-        var lFrac = FROM_TL[opts.xanchor];
-        var rFrac = FROM_BR[opts.xanchor];
-        if(opts.thicknessmode === 'pixels') {
-            marginOpts.x = opts.x;
-            marginOpts.l = outerwidth * lFrac;
-            marginOpts.r = outerwidth * rFrac;
-        } else {
-            var extraThickness = outerwidth - thickPx;
-            marginOpts.l = extraThickness * lFrac;
-            marginOpts.r = extraThickness * rFrac;
-            marginOpts.xl = opts.x - opts.thickness * lFrac;
-            marginOpts.xr = opts.x + opts.thickness * rFrac;
+        var extraThickness = outerThickness - thickPx;
+        if(isVertical) {
+            if(lenmode === 'pixels') {
+                marginOpts.y = optsY;
+                marginOpts.t = lenPx * tFrac;
+                marginOpts.b = lenPx * bFrac;
+            } else {
+                marginOpts.t = marginOpts.b = 0;
+                marginOpts.yt = optsY + len * tFrac;
+                marginOpts.yb = optsY - len * bFrac;
+            }
+
+            if(thicknessmode === 'pixels') {
+                marginOpts.x = optsX;
+                marginOpts.l = outerThickness * lFrac;
+                marginOpts.r = outerThickness * rFrac;
+            } else {
+                marginOpts.l = extraThickness * lFrac;
+                marginOpts.r = extraThickness * rFrac;
+                marginOpts.xl = optsX - thickness * lFrac;
+                marginOpts.xr = optsX + thickness * rFrac;
+            }
+        } else { // horizontal colorbars
+            if(lenmode === 'pixels') {
+                marginOpts.x = optsX;
+                marginOpts.l = lenPx * lFrac;
+                marginOpts.r = lenPx * rFrac;
+            } else {
+                marginOpts.l = marginOpts.r = 0;
+                marginOpts.xl = optsX + len * lFrac;
+                marginOpts.xr = optsX - len * rFrac;
+            }
+
+            if(thicknessmode === 'pixels') {
+                marginOpts.y = 1 - optsY;
+                marginOpts.t = outerThickness * tFrac;
+                marginOpts.b = outerThickness * bFrac;
+            } else {
+                marginOpts.t = extraThickness * tFrac;
+                marginOpts.b = extraThickness * bFrac;
+                marginOpts.yt = optsY - thickness * tFrac;
+                marginOpts.yb = optsY + thickness * bFrac;
+            }
         }
 
         Plots.autoMargin(gd, opts._id, marginOpts);
@@ -36116,6 +36388,7 @@ function drawColorBar(g, opts, gd) {
 }
 
 function makeEditable(g, opts, gd) {
+    var isVertical = opts.orientation === 'v';
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
     var t0, xf, yf;
@@ -36130,9 +36403,13 @@ function makeEditable(g, opts, gd) {
         moveFn: function(dx, dy) {
             g.attr('transform', t0 + strTranslate(dx, dy));
 
-            xf = dragElement.align(opts._xLeftFrac + (dx / gs.w), opts._thickFrac,
+            xf = dragElement.align(
+                (isVertical ? opts._uFrac : opts._vFrac) + (dx / gs.w),
+                isVertical ? opts._thickFrac : opts._lenFrac,
                 0, 1, opts.xanchor);
-            yf = dragElement.align(opts._yBottomFrac - (dy / gs.h), opts._lenFrac,
+            yf = dragElement.align(
+                (isVertical ? opts._vFrac : (1 - opts._uFrac)) - (dy / gs.h),
+                isVertical ? opts._lenFrac : opts._thickFrac,
                 0, 1, opts.yanchor);
 
             var csr = dragElement.getCursor(xf, yf, opts.xanchor, opts.yanchor);
@@ -36209,6 +36486,8 @@ function calcLevels(gd, opts, zrange) {
 function mockColorBarAxis(gd, opts, zrange) {
     var fullLayout = gd._fullLayout;
 
+    var isVertical = opts.orientation === 'v';
+
     var cbAxisIn = {
         type: 'linear',
         range: zrange,
@@ -36225,6 +36504,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         showticklabels: opts.showticklabels,
         ticklabelposition: opts.ticklabelposition,
         ticklabeloverflow: opts.ticklabeloverflow,
+        ticklabelstep: opts.ticklabelstep,
         tickfont: opts.tickfont,
         tickangle: opts.tickangle,
         tickformat: opts.tickformat,
@@ -36239,17 +36519,19 @@ function mockColorBarAxis(gd, opts, zrange) {
         title: opts.title,
         showline: true,
         anchor: 'free',
-        side: 'right',
+        side: isVertical ? 'right' : 'bottom',
         position: 1
     };
 
+    var letter = isVertical ? 'y' : 'x';
+
     var cbAxisOut = {
         type: 'linear',
-        _id: 'y' + opts._id
+        _id: letter + opts._id
     };
 
     var axisOptions = {
-        letter: 'y',
+        letter: letter,
         font: fullLayout.font,
         noHover: true,
         noTickson: true,
@@ -36271,7 +36553,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":221,"../../lib":248,"../../lib/extend":240,"../../lib/setcursor":268,"../../lib/svg_text_utils":271,"../../plots/cartesian/axes":296,"../../plots/cartesian/axis_defaults":298,"../../plots/cartesian/layout_attributes":311,"../../plots/cartesian/position_defaults":314,"../../plots/plots":337,"../../registry":340,"../color":116,"../colorscale/helpers":127,"../dragelement":135,"../drawing":138,"../titles":214,"./constants":118,"@plotly/d3":11,"tinycolor2":80}],121:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221,"../../lib":248,"../../lib/extend":240,"../../lib/setcursor":268,"../../lib/svg_text_utils":271,"../../plots/cartesian/axes":296,"../../plots/cartesian/axis_defaults":298,"../../plots/cartesian/layout_attributes":311,"../../plots/cartesian/position_defaults":314,"../../plots/plots":339,"../../registry":342,"../color":116,"../colorscale/helpers":127,"../dragelement":135,"../drawing":138,"../titles":214,"./constants":118,"@plotly/d3":11,"tinycolor2":80}],121:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -36733,7 +37015,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
     }
 };
 
-},{"../../lib":248,"../../registry":340,"../colorbar/defaults":119,"../colorbar/has_colorbar":121,"./scales":131,"fast-isnumeric":30}],127:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342,"../colorbar/defaults":119,"../colorbar/has_colorbar":121,"./scales":131,"fast-isnumeric":30}],127:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -37961,24 +38243,42 @@ drawing.dashStyle = function(dash, lineWidth) {
     return dash;
 };
 
+function setFillStyle(sel, trace, gd) {
+    var markerPattern = trace.fillpattern;
+    var patternShape = markerPattern && drawing.getPatternAttr(markerPattern.shape, 0, '');
+    if(patternShape) {
+        var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, 0, null);
+        var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, 0, null);
+        var patternFGOpacity = markerPattern.fgopacity;
+        var patternSize = drawing.getPatternAttr(markerPattern.size, 0, 8);
+        var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, 0, 0.3);
+        var patternID = trace.uid;
+        drawing.pattern(sel, 'point', gd, patternID,
+            patternShape, patternSize, patternSolidity,
+            undefined, markerPattern.fillmode,
+            patternBGColor, patternFGColor, patternFGOpacity
+        );
+    } else if(trace.fillcolor) {
+        sel.call(Color.fill, trace.fillcolor);
+    }
+}
+
 // Same as fillGroupStyle, except in this case the selection may be a transition
-drawing.singleFillStyle = function(sel) {
+drawing.singleFillStyle = function(sel, gd) {
     var node = d3.select(sel.node());
     var data = node.data();
-    var fillcolor = (((data[0] || [])[0] || {}).trace || {}).fillcolor;
-    if(fillcolor) {
-        sel.call(Color.fill, fillcolor);
-    }
+    var trace = ((data[0] || [])[0] || {}).trace || {};
+    setFillStyle(sel, trace, gd);
 };
 
-drawing.fillGroupStyle = function(s) {
+drawing.fillGroupStyle = function(s, gd) {
     s.style('stroke-width', 0)
     .each(function(d) {
         var shape = d3.select(this);
         // N.B. 'd' won't be a calcdata item when
         // fill !== 'none' on a segment-less and marker-less trace
         if(d[0].trace) {
-            shape.call(Color.fill, d[0].trace.fillcolor);
+            setFillStyle(shape, d[0].trace, gd);
         }
     });
 };
@@ -38131,12 +38431,7 @@ drawing.gradient = function(sel, gd, gradientID, type, colorscale, prop) {
     sel.style(prop, getFullUrl(fullID, gd))
         .style(prop + '-opacity', null);
 
-    var className2query = function(s) {
-        return '.' + s.attr('class').replace(/\s/g, '.');
-    };
-    var k = className2query(d3.select(sel.node().parentNode)) +
-        '>' + className2query(sel);
-    fullLayout._gradientUrlQueryParts[k] = 1;
+    sel.classed('gradient_filled', true);
 };
 
 /**
@@ -38343,11 +38638,6 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
         .style('fill-opacity', null);
 
     sel.classed('pattern_filled', true);
-    var className2query = function(s) {
-        return '.' + s.attr('class').replace(/\s/g, '.');
-    };
-    var k = className2query(d3.select(sel.node().parentNode)) + '>.pattern_filled';
-    fullLayout._patternUrlQueryParts[k] = 1;
 };
 
 /*
@@ -38363,9 +38653,7 @@ drawing.initGradients = function(gd) {
     var gradientsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'gradients');
     gradientsGroup.selectAll('linearGradient,radialGradient').remove();
 
-    // initialize stash of query parts filled in Drawing.gradient,
-    // used to fix URL strings during image exports
-    fullLayout._gradientUrlQueryParts = {};
+    d3.select(gd).selectAll('.gradient_filled').classed('gradient_filled', false);
 };
 
 drawing.initPatterns = function(gd) {
@@ -38374,9 +38662,7 @@ drawing.initPatterns = function(gd) {
     var patternsGroup = Lib.ensureSingle(fullLayout._defs, 'g', 'patterns');
     patternsGroup.selectAll('pattern').remove();
 
-    // initialize stash of query parts filled in Drawing.pattern,
-    // used to fix URL strings during image exports
-    fullLayout._patternUrlQueryParts = {};
+    d3.select(gd).selectAll('.pattern_filled').classed('pattern_filled', false);
 };
 
 drawing.getPatternAttr = function(mp, i, dflt) {
@@ -38711,7 +38997,7 @@ var TEXTOFFSETSIGN = {
     start: 1, end: -1, middle: 0, bottom: 1, top: -1
 };
 
-function textPointPosition(s, textPosition, fontSize, markerRadius) {
+function textPointPosition(s, textPosition, fontSize, markerRadius, dontTouchParent) {
     var group = d3.select(s.node().parentNode);
 
     var v = textPosition.indexOf('top') !== -1 ?
@@ -38733,7 +39019,9 @@ function textPointPosition(s, textPosition, fontSize, markerRadius) {
 
     // fix the overall text group position
     s.attr('text-anchor', h);
-    group.attr('transform', strTranslate(dx, dy));
+    if(!dontTouchParent) {
+        group.attr('transform', strTranslate(dx, dy));
+    }
 }
 
 function extracTextFontSize(d, trace) {
@@ -38803,7 +39091,8 @@ drawing.selectedTextStyle = function(s, trace) {
         var fontSize = extracTextFontSize(d, trace);
 
         Color.fill(tx, tc);
-        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc);
+        var dontTouchParent = Registry.traceIs(trace, 'bar-like');
+        textPointPosition(tx, tp, fontSize, d.mrc2 || d.mrc, dontTouchParent);
     });
 };
 
@@ -39225,7 +39514,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../components/fx/helpers":152,"../../constants/alignment":221,"../../constants/interactions":225,"../../constants/xmlns_namespaces":227,"../../lib":248,"../../lib/svg_text_utils":271,"../../registry":340,"../../traces/scatter/make_bubble_size_func":379,"../../traces/scatter/subtypes":387,"../color":116,"../colorscale":128,"./symbol_defs":139,"@plotly/d3":11,"fast-isnumeric":30,"tinycolor2":80}],139:[function(_dereq_,module,exports){
+},{"../../components/fx/helpers":152,"../../constants/alignment":221,"../../constants/interactions":225,"../../constants/xmlns_namespaces":227,"../../lib":248,"../../lib/svg_text_utils":271,"../../registry":342,"../../traces/scatter/make_bubble_size_func":381,"../../traces/scatter/subtypes":389,"../color":116,"../colorscale":128,"./symbol_defs":139,"@plotly/d3":11,"fast-isnumeric":30,"tinycolor2":80}],139:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -39941,7 +40230,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }
 
-},{"../../lib":248,"../../plots/cartesian/axes":296,"../../registry":340,"./compute_error":142,"fast-isnumeric":30}],142:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plots/cartesian/axes":296,"../../registry":342,"./compute_error":142,"fast-isnumeric":30}],142:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -40100,7 +40389,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":248,"../../plot_api/plot_template":285,"../../registry":340,"./attributes":140,"fast-isnumeric":30}],144:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plot_api/plot_template":285,"../../registry":342,"./attributes":140,"fast-isnumeric":30}],144:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -40324,7 +40613,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":387,"../drawing":138,"@plotly/d3":11,"fast-isnumeric":30}],146:[function(_dereq_,module,exports){
+},{"../../traces/scatter/subtypes":389,"../drawing":138,"@plotly/d3":11,"fast-isnumeric":30}],146:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -40377,7 +40666,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":240,"../../plots/font_attributes":325,"./layout_attributes":157}],148:[function(_dereq_,module,exports){
+},{"../../lib/extend":240,"../../plots/font_attributes":327,"./layout_attributes":157}],148:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -40428,7 +40717,7 @@ function paste(traceAttr, cd, cdAttr, fn) {
     }
 }
 
-},{"../../lib":248,"../../registry":340}],149:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342}],149:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -40457,7 +40746,7 @@ module.exports = function click(gd, evt, subplot) {
     }
 };
 
-},{"../../registry":340,"./hover":153}],150:[function(_dereq_,module,exports){
+},{"../../registry":342,"./hover":153}],150:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -40834,11 +41123,13 @@ var cartesianScatterPoints = {
 // The actual rendering is done by private function _hover.
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
-
+    // The 'target' property changes when bubbling out of Shadow DOM.
+    // Throttling can delay reading the target, so we save the current value.
+    var eventTarget = evt.target;
     Lib.throttle(
         gd._fullLayout._uid + constants.HOVERID,
         constants.HOVERMINTIME,
-        function() { _hover(gd, evt, subplot, noHoverEvent); }
+        function() { _hover(gd, evt, subplot, noHoverEvent, eventTarget); }
     );
 };
 
@@ -41003,7 +41294,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 };
 
 // The actual implementation is here:
-function _hover(gd, evt, subplot, noHoverEvent) {
+function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if(!subplot) subplot = 'xy';
 
     // if the user passed in an array of subplots,
@@ -41122,7 +41413,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // [x|y]px: the pixels (from top left) of the mouse location
         // on the currently selected plot area
         // add pointerX|Y property for drawing the spikes in spikesnap 'cursor' situation
-        var hasUserCalledHover = !evt.target;
+        var hasUserCalledHover = !eventTarget;
         var xpx, ypx;
 
         if(hasUserCalledHover) {
@@ -41139,13 +41430,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 return;
             }
 
-            // Discover event target, traversing open shadow roots.
-            var target = evt.composedPath && evt.composedPath()[0];
-            if(!target) {
-                // Fallback for browsers not supporting composedPath
-                target = evt.target;
-            }
-            var dbb = target.getBoundingClientRect();
+            var dbb = eventTarget.getBoundingClientRect();
 
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
@@ -41593,15 +41878,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
-    }    // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
+    }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
-    if(evt.target && evt.target.tagName) {
+    if(eventTarget && eventTarget.tagName) {
         var hasClickToShow = Registry.getComponentMethod('annotations', 'hasClickToShow')(gd, newhoverdata);
-        overrideCursor(d3.select(evt.target), hasClickToShow ? 'pointer' : '');
+        overrideCursor(d3.select(eventTarget), hasClickToShow ? 'pointer' : '');
     }
 
     // don't emit events if called manually
-    if(!evt.target || noHoverEvent || !hoverChanged(gd, evt, oldhoverdata)) return;
+    if(!eventTarget || noHoverEvent || !hoverChanged(gd, evt, oldhoverdata)) return;
 
     if(oldhoverdata) {
         gd.emit('plotly_unhover', {
@@ -41635,6 +41920,8 @@ function createHoverText(hoverData, opts) {
     var container = opts.container;
     var outerContainer = opts.outerContainer;
     var commonLabelOpts = opts.commonLabelOpts || {};
+    // Early exit if no labels are drawn
+    if(hoverData.length === 0) return [[]];
 
     // opts.fontFamily/Size are used for the common label
     // and as defaults for each hover label, though the individual labels
@@ -41841,9 +42128,9 @@ function createHoverText(hoverData, opts) {
     if(helpers.isUnifiedHover(hovermode)) {
         // Delete leftover hover labels from other hovermodes
         container.selectAll('g.hovertext').remove();
-
+        var groupedHoverData = hoverData.filter(function(data) {return data.hoverinfo !== 'none';});
         // Return early if nothing is hovered on
-        if(hoverData.length === 0) return;
+        if(groupedHoverData.length === 0) return;
 
         // mock legend
         var hoverlabel = fullLayout.hoverlabel;
@@ -41861,17 +42148,22 @@ function createHoverText(hoverData, opts) {
                 orientation: 'v'
             }
         };
-        var mockLayoutOut = {};
+        var mockLayoutOut = {
+            font: font
+        };
         legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
         var mockLegend = mockLayoutOut.legend;
 
         // prepare items for the legend
         mockLegend.entries = [];
-        for(var j = 0; j < hoverData.length; j++) {
-            var texts = getHoverLabelText(hoverData[j], true, hovermode, fullLayout, t0);
+        for(var j = 0; j < groupedHoverData.length; j++) {
+            var pt = groupedHoverData[j];
+            if(pt.hoverinfo === 'none') continue;
+
+            var texts = getHoverLabelText(pt, true, hovermode, fullLayout, t0);
             var text = texts[0];
             var name = texts[1];
-            var pt = hoverData[j];
+
             pt.name = name;
             if(name !== '') {
                 pt.text = name + ' : ' + text;
@@ -41899,7 +42191,8 @@ function createHoverText(hoverData, opts) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
-        mockLegend._groupTitleFont = font;
+        mockLegend._groupTitleFont = hoverlabel.grouptitlefont;
+
         legendDraw(gd, mockLegend);
 
         // Position the hover
@@ -41907,7 +42200,7 @@ function createHoverText(hoverData, opts) {
         var tbb = getBoundingClientRect(gd, legendContainer.node());
         var tWidth = tbb.width + 2 * HOVERTEXTPAD;
         var tHeight = tbb.height + 2 * HOVERTEXTPAD;
-        var winningPoint = hoverData[0];
+        var winningPoint = groupedHoverData[0];
         var avgX = (winningPoint.x0 + winningPoint.x1) / 2;
         var avgY = (winningPoint.y0 + winningPoint.y1) / 2;
         // When a scatter (or e.g. heatmap) point wins, it's OK for the hovelabel to occlude the bar and other points.
@@ -41922,11 +42215,11 @@ function createHoverText(hoverData, opts) {
                 lyTop = avgY - HOVERTEXTPAD;
                 lyBottom = avgY + HOVERTEXTPAD;
             } else {
-                lyTop = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
-                lyBottom = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
+                lyTop = Math.min.apply(null, groupedHoverData.map(function(c) { return Math.min(c.y0, c.y1); }));
+                lyBottom = Math.max.apply(null, groupedHoverData.map(function(c) { return Math.max(c.y0, c.y1); }));
             }
         } else {
-            lyTop = lyBottom = Lib.mean(hoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
+            lyTop = lyBottom = Lib.mean(groupedHoverData.map(function(c) { return (c.y0 + c.y1) / 2; })) - tHeight / 2;
         }
 
         var lxRight, lxLeft;
@@ -41935,11 +42228,11 @@ function createHoverText(hoverData, opts) {
                 lxRight = avgX + HOVERTEXTPAD;
                 lxLeft = avgX - HOVERTEXTPAD;
             } else {
-                lxRight = Math.max.apply(null, hoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
-                lxLeft = Math.min.apply(null, hoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
+                lxRight = Math.max.apply(null, groupedHoverData.map(function(c) { return Math.max(c.x0, c.x1); }));
+                lxLeft = Math.min.apply(null, groupedHoverData.map(function(c) { return Math.min(c.x0, c.x1); }));
             }
         } else {
-            lxRight = lxLeft = Lib.mean(hoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
+            lxRight = lxLeft = Lib.mean(groupedHoverData.map(function(c) { return (c.x0 + c.x1) / 2; })) - tWidth / 2;
         }
 
         var xOffset = xa._offset;
@@ -42891,7 +43184,7 @@ function getBoundingClientRect(gd, node) {
     };
 }
 
-},{"../../lib":248,"../../lib/events":239,"../../lib/override_cursor":259,"../../lib/svg_text_utils":271,"../../plots/cartesian/axes":296,"../../registry":340,"../color":116,"../dragelement":135,"../drawing":138,"../legend/defaults":168,"../legend/draw":169,"./constants":150,"./helpers":152,"@plotly/d3":11,"fast-isnumeric":30,"tinycolor2":80}],154:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../lib/events":239,"../../lib/override_cursor":259,"../../lib/svg_text_utils":271,"../../plots/cartesian/axes":296,"../../registry":342,"../color":116,"../dragelement":135,"../drawing":138,"../legend/defaults":168,"../legend/draw":169,"./constants":150,"./helpers":152,"@plotly/d3":11,"fast-isnumeric":30,"tinycolor2":80}],154:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -42901,9 +43194,11 @@ var isUnifiedHover = _dereq_('./helpers').isUnifiedHover;
 module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts) {
     opts = opts || {};
 
+    var hasLegend = contOut.legend;
+
     function inheritFontAttr(attr) {
         if(!opts.font[attr]) {
-            opts.font[attr] = contOut.legend ? contOut.legend.font[attr] : contOut.font[attr];
+            opts.font[attr] = hasLegend ? contOut.legend.font[attr] : contOut.font[attr];
         }
     }
 
@@ -42914,7 +43209,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
         inheritFontAttr('family');
         inheritFontAttr('color');
 
-        if(contOut.legend) {
+        if(hasLegend) {
             if(!opts.bgcolor) opts.bgcolor = Color.combine(contOut.legend.bgcolor, contOut.paper_bgcolor);
             if(!opts.bordercolor) opts.bordercolor = contOut.legend.bordercolor;
         } else {
@@ -43023,11 +43318,13 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
 
 var constants = _dereq_('./constants');
 
-var fontAttrs = _dereq_('../../plots/font_attributes')({
+var fontAttrs = _dereq_('../../plots/font_attributes');
+
+var font = fontAttrs({
     editType: 'none',
 });
-fontAttrs.family.dflt = constants.HOVERFONT;
-fontAttrs.size.dflt = constants.HOVERFONTSIZE;
+font.family.dflt = constants.HOVERFONT;
+font.size.dflt = constants.HOVERFONTSIZE;
 
 module.exports = {
     clickmode: {
@@ -43083,7 +43380,10 @@ module.exports = {
             valType: 'color',
             editType: 'none',
         },
-        font: fontAttrs,
+        font: font,
+        grouptitlefont: fontAttrs({
+            editType: 'none',
+        }),
         align: {
             valType: 'enumerated',
             values: ['left', 'right', 'auto'],
@@ -43096,6 +43396,7 @@ module.exports = {
             dflt: 15,
             editType: 'none',
         },
+
         editType: 'none'
     },
     selectdirection: {
@@ -43106,7 +43407,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":325,"./constants":150}],158:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":327,"./constants":150}],158:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -43143,6 +43444,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
+
+    Lib.coerceFont(coerce, 'hoverlabel.grouptitlefont', layoutOut.hoverlabel.font);
 };
 
 },{"../../lib":248,"./hoverlabel_defaults":154,"./hovermode_defaults":155,"./layout_attributes":157}],159:[function(_dereq_,module,exports){
@@ -43503,7 +43806,7 @@ module.exports = {
     contentDefaults: contentDefaults
 };
 
-},{"../../lib":248,"../../lib/regex":264,"../../plot_api/plot_template":285,"../../plots/cartesian/constants":303,"../../plots/domain":324}],161:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../lib/regex":264,"../../plot_api/plot_template":285,"../../plots/cartesian/constants":303,"../../plots/domain":326}],161:[function(_dereq_,module,exports){
 'use strict';
 
 var cartesianConstants = _dereq_('../../plots/cartesian/constants');
@@ -43826,7 +44129,7 @@ module.exports = function draw(gd) {
                     canvas.width = this.width;
                     canvas.height = this.height;
 
-                    var ctx = canvas.getContext('2d');
+                    var ctx = canvas.getContext('2d', {willReadFrequently: true});
                     ctx.drawImage(this, 0, 0);
 
                     var dataURL = canvas.toDataURL('image/png');
@@ -44026,6 +44329,9 @@ module.exports = {
     font: fontAttrs({
         editType: 'legend',
     }),
+    grouptitlefont: fontAttrs({
+        editType: 'legend',
+    }),
     orientation: {
         valType: 'enumerated',
         values: ['v', 'h'],
@@ -44126,7 +44432,7 @@ module.exports = {
     editType: 'legend'
 };
 
-},{"../../plots/font_attributes":325,"../color/attributes":115}],167:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":327,"../color/attributes":115}],167:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -44149,6 +44455,7 @@ var Registry = _dereq_('../../registry');
 var Lib = _dereq_('../../lib');
 var Template = _dereq_('../../plot_api/plot_template');
 
+var plotsAttrs = _dereq_('../../plots/attributes');
 var attributes = _dereq_('./attributes');
 var basePlotLayoutAttributes = _dereq_('../../plots/layout_attributes');
 var helpers = _dereq_('./helpers');
@@ -44156,13 +44463,30 @@ var helpers = _dereq_('./helpers');
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {};
+    var containerOut = Template.newContainer(layoutOut, 'legend');
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
+    }
+
+    var trace;
+    var traceCoerce = function(attr, dflt) {
+        var traceIn = trace._input;
+        var traceOut = trace;
+        return Lib.coerce(traceIn, traceOut, plotsAttrs, attr, dflt);
+    };
+
+    var globalFont = layoutOut.font || {};
+    var grouptitlefont = Lib.coerceFont(coerce, 'grouptitlefont', Lib.extendFlat({}, globalFont, {
+        size: Math.round(globalFont.size * 1.1)
+    }));
 
     var legendTraceCount = 0;
     var legendReallyHasATrace = false;
     var defaultOrder = 'normal';
 
     for(var i = 0; i < fullData.length; i++) {
-        var trace = fullData[i];
+        trace = fullData[i];
 
         if(!trace.visible) continue;
 
@@ -44189,6 +44513,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
                     legendTraceCount++;
                 }
             }
+
+            Lib.coerceFont(traceCoerce, 'legendgrouptitle.font', grouptitlefont);
         }
 
         if((Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
@@ -44207,13 +44533,10 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         basePlotLayoutAttributes, 'showlegend',
         legendReallyHasATrace && legendTraceCount > 1);
 
+    // delete legend
+    if(showLegend === false) layoutOut.legend = undefined;
+
     if(showLegend === false && !containerIn.uirevision) return;
-
-    var containerOut = Template.newContainer(layoutOut, 'legend');
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
-    }
 
     coerce('uirevision', layoutOut.uirevision);
 
@@ -44275,7 +44598,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../lib":248,"../../plot_api/plot_template":285,"../../plots/layout_attributes":335,"../../registry":340,"./attributes":166,"./helpers":172}],169:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plot_api/plot_template":285,"../../plots/attributes":292,"../../plots/layout_attributes":337,"../../registry":342,"./attributes":166,"./helpers":172}],169:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -44401,35 +44724,39 @@ function _draw(gd, legendObj) {
         Plots.previousPromises,
         function() { return computeLegendDimensions(gd, groups, traces, legendObj); },
         function() {
-            // IF expandMargin return a Promise (which is truthy),
-            // we're under a doAutoMargin redraw, so we don't have to
-            // draw the remaining pieces below
-            if(!inHover && expandMargin(gd)) return;
-
             var gs = fullLayout._size;
             var bw = legendObj.borderwidth;
 
-            var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
-            var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+            if(!inHover) {
+                var expMargin = expandMargin(gd);
 
-            if(!inHover && fullLayout.margin.autoexpand) {
-                var lx0 = lx;
-                var ly0 = ly;
+                // IF expandMargin return a Promise (which is truthy),
+                // we're under a doAutoMargin redraw, so we don't have to
+                // draw the remaining pieces below
+                if(expMargin) return;
 
-                lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
-                ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+                var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
 
-                if(lx !== lx0) {
-                    Lib.log('Constrain legend.x to make legend fit inside graph');
+                if(fullLayout.margin.autoexpand) {
+                    var lx0 = lx;
+                    var ly0 = ly;
+
+                    lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
+                    ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+
+                    if(lx !== lx0) {
+                        Lib.log('Constrain legend.x to make legend fit inside graph');
+                    }
+                    if(ly !== ly0) {
+                        Lib.log('Constrain legend.y to make legend fit inside graph');
+                    }
                 }
-                if(ly !== ly0) {
-                    Lib.log('Constrain legend.y to make legend fit inside graph');
-                }
+
+                // Set size and position of all the elements that make up a legend:
+                // legend, background and border, scroll box and scroll bar as well as title
+                Drawing.setTranslate(legend, lx, ly);
             }
-
-            // Set size and position of all the elements that make up a legend:
-            // legend, background and border, scroll box and scroll bar as well as title
-            if(!inHover) Drawing.setTranslate(legend, lx, ly);
 
             // to be safe, remove previous listeners
             scrollBar.on('.drag', null);
@@ -44978,23 +45305,33 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 var maxWidthInGroup = 0;
                 var offsetY = 0;
                 d3.select(this).selectAll('g.traces').each(function(d) {
+                    var w = d[0].width;
                     var h = d[0].height;
+
                     Drawing.setTranslate(this,
                         titleSize[0],
                         titleSize[1] + bw + itemGap + h / 2 + offsetY
                     );
                     offsetY += h;
-                    maxWidthInGroup = Math.max(maxWidthInGroup, textGap + d[0].width);
+                    maxWidthInGroup = Math.max(maxWidthInGroup, textGap + w);
                 });
-                maxGroupHeightInRow = Math.max(maxGroupHeightInRow, offsetY);
 
                 var next = maxWidthInGroup + itemGap;
 
-                if((next + bw + groupOffsetX) > legendObj._maxWidth) {
+                // horizontal_wrapping
+                if(
+                    // not on the first column already
+                    groupOffsetX > 0 &&
+
+                    // goes beyound limit
+                    next + bw + groupOffsetX > legendObj._maxWidth
+                ) {
                     maxRowWidth = Math.max(maxRowWidth, groupOffsetX);
                     groupOffsetX = 0;
                     groupOffsetY += maxGroupHeightInRow + traceGroupGap;
                     maxGroupHeightInRow = offsetY;
+                } else {
+                    maxGroupHeightInRow = Math.max(maxGroupHeightInRow, offsetY);
                 }
 
                 Drawing.setTranslate(this, groupOffsetX, groupOffsetY);
@@ -45100,7 +45437,7 @@ function getYanchor(legendObj) {
         'top';
 }
 
-},{"../../constants/alignment":221,"../../lib":248,"../../lib/events":239,"../../lib/svg_text_utils":271,"../../plots/plots":337,"../../registry":340,"../color":116,"../dragelement":135,"../drawing":138,"./constants":167,"./get_legend_data":170,"./handle_click":171,"./helpers":172,"./style":174,"@plotly/d3":11}],170:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221,"../../lib":248,"../../lib/events":239,"../../lib/svg_text_utils":271,"../../plots/plots":339,"../../registry":342,"../color":116,"../dragelement":135,"../drawing":138,"./constants":167,"./get_legend_data":170,"./handle_click":171,"./helpers":172,"./style":174,"@plotly/d3":11}],170:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -45276,7 +45613,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":340,"./helpers":172}],171:[function(_dereq_,module,exports){
+},{"../../registry":342,"./helpers":172}],171:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -45518,7 +45855,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 };
 
-},{"../../lib":248,"../../registry":340}],172:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342}],172:[function(_dereq_,module,exports){
 'use strict';
 
 exports.isGrouped = function isGrouped(legendLayout) {
@@ -45662,12 +45999,16 @@ module.exports = function style(s, gd, legend) {
         var colorscale = cOpts.colorscale;
         var reversescale = cOpts.reversescale;
 
-        var fillGradient = function(s) {
+        var fillStyle = function(s) {
             if(s.size()) {
-                var gradientID = 'legendfill-' + trace.uid;
-                Drawing.gradient(s, gd, gradientID,
-                    getGradientDirection(reversescale),
-                    colorscale, 'fill');
+                if(showFill) {
+                    Drawing.fillGroupStyle(s, gd);
+                } else {
+                    var gradientID = 'legendfill-' + trace.uid;
+                    Drawing.gradient(s, gd, gradientID,
+                        getGradientDirection(reversescale),
+                        colorscale, 'fill');
+                }
             }
         };
 
@@ -45696,7 +46037,7 @@ module.exports = function style(s, gd, legend) {
         fill.enter().append('path').classed('js-fill', true);
         fill.exit().remove();
         fill.attr('d', pathStart + 'h' + itemWidth + 'v6h-' + itemWidth + 'z')
-            .call(showFill ? Drawing.fillGroupStyle : fillGradient);
+            .call(fillStyle);
 
         if(showLine || showGradientLine) {
             var lw = boundLineWidth(undefined, trace.line, MAX_LINE_WIDTH, CST_LINE_WIDTH);
@@ -46235,7 +46576,7 @@ function dimAttr(v, dflt, max) {
     return v;
 }
 
-},{"../../lib":248,"../../registry":340,"../../traces/pie/helpers":359,"../../traces/pie/style_one":360,"../../traces/scatter/subtypes":387,"../color":116,"../colorscale/helpers":127,"../drawing":138,"./constants":167,"@plotly/d3":11}],175:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342,"../../traces/pie/helpers":361,"../../traces/pie/style_one":362,"../../traces/scatter/subtypes":389,"../color":116,"../colorscale/helpers":127,"../drawing":138,"./constants":167,"@plotly/d3":11}],175:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -47031,7 +47372,7 @@ function resetView(gd, subplotType) {
     Registry.call('_guiRelayout', gd, aObj);
 }
 
-},{"../../fonts/ploticon":229,"../../lib":248,"../../plots/cartesian/axis_ids":300,"../../plots/plots":337,"../../registry":340,"../shapes/draw":200}],177:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":229,"../../lib":248,"../../plots/cartesian/axis_ids":300,"../../plots/plots":339,"../../registry":342,"../shapes/draw":200}],177:[function(_dereq_,module,exports){
 'use strict';
 
 var modeBarButtons = _dereq_('./buttons');
@@ -47226,6 +47567,7 @@ function getButtonGroups(gd) {
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasPolar = fullLayout._has('polar');
+    var hasSmith = fullLayout._has('smith');
     var hasSankey = fullLayout._has('sankey');
     var allAxesFixed = areAllAxesFixed(fullLayout);
     var hasUnifiedHoverLabel = isUnifiedHover(fullLayout.hovermode);
@@ -47268,7 +47610,7 @@ function getButtonGroups(gd) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
+    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar + hasSmith > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
@@ -47291,7 +47633,7 @@ function getButtonGroups(gd) {
     } else if(hasSankey) {
         hoverGroup = ['hoverClosestCartesian', 'hoverCompareCartesian'];
         resetGroup = ['resetViewSankey'];
-    } else { // hasPolar, hasTernary
+    } else { // hasPolar, hasSmith, hasTernary
         // always show at least one hover icon.
         hoverGroup = ['toggleHover'];
     }
@@ -47468,7 +47810,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":300,"../../registry":340,"../../traces/scatter/subtypes":387,"../fx/helpers":152,"./buttons":176,"./constants":177,"./modebar":181}],181:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axis_ids":300,"../../registry":342,"../../traces/scatter/subtypes":389,"../fx/helpers":152,"./buttons":176,"./constants":177,"./modebar":181}],181:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -47476,6 +47818,8 @@ var isNumeric = _dereq_('fast-isnumeric');
 
 var Lib = _dereq_('../../lib');
 var Icons = _dereq_('../../fonts/ploticon');
+var version = _dereq_('../../version').version;
+
 var Parser = new DOMParser();
 
 /**
@@ -47754,6 +48098,10 @@ proto.hasButtons = function(buttons) {
     return true;
 };
 
+function jsVersion(str) {
+    return str + ' (v' + version + ')';
+}
+
 /**
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
@@ -47763,7 +48111,7 @@ proto.getLogo = function() {
 
     a.href = 'https://plotly.com/';
     a.target = '_blank';
-    a.setAttribute('data-title', Lib._(this.graphInfo, 'Produced with Plotly'));
+    a.setAttribute('data-title', jsVersion(Lib._(this.graphInfo, 'Produced with Plotly.js')));
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(Icons.newplotlylogo));
@@ -47805,7 +48153,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../fonts/ploticon":229,"../../lib":248,"@plotly/d3":11,"fast-isnumeric":30}],182:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":229,"../../lib":248,"../../version":407,"@plotly/d3":11,"fast-isnumeric":30}],182:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -47903,7 +48251,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{"../../plot_api/plot_template":285,"../../plots/font_attributes":325,"../color/attributes":115}],183:[function(_dereq_,module,exports){
+},{"../../plot_api/plot_template":285,"../../plots/font_attributes":327,"../color/attributes":115}],183:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -48255,7 +48603,7 @@ function reposition(gd, buttons, opts, axName, selector) {
     selector.attr('transform', strTranslate(lx, ly));
 }
 
-},{"../../constants/alignment":221,"../../lib":248,"../../lib/svg_text_utils":271,"../../plots/cartesian/axis_ids":300,"../../plots/plots":337,"../../registry":340,"../color":116,"../drawing":138,"./constants":183,"./get_update_object":186,"@plotly/d3":11}],186:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221,"../../lib":248,"../../lib/svg_text_utils":271,"../../plots/cartesian/axis_ids":300,"../../plots/plots":339,"../../registry":342,"../color":116,"../drawing":138,"./constants":183,"./get_update_object":186,"@plotly/d3":11}],186:[function(_dereq_,module,exports){
 'use strict';
 
 var d3Time = _dereq_('d3-time');
@@ -49163,7 +49511,7 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     grabAreaMax.attr('height', opts._height);
 }
 
-},{"../../lib":248,"../../lib/setcursor":268,"../../plots/cartesian":310,"../../plots/cartesian/axis_ids":300,"../../plots/plots":337,"../../registry":340,"../color":116,"../dragelement":135,"../drawing":138,"../titles":214,"./constants":190,"@plotly/d3":11}],193:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../lib/setcursor":268,"../../plots/cartesian":310,"../../plots/cartesian/axis_ids":300,"../../plots/plots":339,"../../registry":342,"../color":116,"../dragelement":135,"../drawing":138,"../titles":214,"./constants":190,"@plotly/d3":11}],193:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIDs = _dereq_('../../plots/cartesian/axis_ids');
@@ -49397,7 +49745,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":222,"../../lib/extend":240,"../../plot_api/plot_template":285,"../../traces/scatter/attributes":362,"../annotations/attributes":99,"../drawing/attributes":137}],197:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":222,"../../lib/extend":240,"../../plot_api/plot_template":285,"../../traces/scatter/attributes":364,"../annotations/attributes":99,"../drawing/attributes":137}],197:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -50451,7 +50799,7 @@ function eraseActiveShape(gd) {
     }
 }
 
-},{"../../lib":248,"../../lib/setcursor":268,"../../plot_api/plot_template":285,"../../plots/cartesian/axes":296,"../../plots/cartesian/handle_outline":307,"../../registry":340,"../color":116,"../dragelement":135,"../drawing":138,"./constants":198,"./draw_newshape/display_outlines":204,"./draw_newshape/helpers":205,"./helpers":207}],201:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../lib/setcursor":268,"../../plot_api/plot_template":285,"../../plots/cartesian/axes":296,"../../plots/cartesian/handle_outline":307,"../../registry":342,"../color":116,"../dragelement":135,"../drawing":138,"./constants":198,"./draw_newshape/display_outlines":204,"./draw_newshape/helpers":205,"./helpers":207}],201:[function(_dereq_,module,exports){
 'use strict';
 
 var dash = _dereq_('../../drawing/attributes').dash;
@@ -50852,7 +51200,7 @@ function recordPositions(polygonsOut, polygonsIn) {
     return polygonsOut;
 }
 
-},{"../../../plots/cartesian/handle_outline":307,"../../../registry":340,"../../dragelement":135,"../../dragelement/helpers":134,"./constants":202,"./helpers":205,"./newshapes":206}],205:[function(_dereq_,module,exports){
+},{"../../../plots/cartesian/handle_outline":307,"../../../registry":342,"../../dragelement":135,"../../dragelement/helpers":134,"./constants":202,"./helpers":205,"./newshapes":206}],205:[function(_dereq_,module,exports){
 'use strict';
 
 var parseSvgPath = _dereq_('parse-svg-path');
@@ -51773,7 +52121,7 @@ module.exports = overrideAll(templatedArray('slider', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plot_api/plot_template":285,"../../plots/animation_attributes":290,"../../plots/font_attributes":325,"../../plots/pad_attributes":336,"./constants":210}],210:[function(_dereq_,module,exports){
+},{"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plot_api/plot_template":285,"../../plots/animation_attributes":290,"../../plots/font_attributes":327,"../../plots/pad_attributes":338,"./constants":210}],210:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -52599,7 +52947,7 @@ function drawRail(sliderGroup, sliderOpts) {
     );
 }
 
-},{"../../constants/alignment":221,"../../lib":248,"../../lib/svg_text_utils":271,"../../plot_api/plot_template":285,"../../plots/plots":337,"../color":116,"../drawing":138,"./constants":210,"@plotly/d3":11}],213:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221,"../../lib":248,"../../lib/svg_text_utils":271,"../../plot_api/plot_template":285,"../../plots/plots":339,"../color":116,"../drawing":138,"./constants":210,"@plotly/d3":11}],213:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -52713,8 +53061,10 @@ function draw(gd, titleClass, options) {
 
     var elShouldExist = txt || editable;
 
+    var hColorbarMoveTitle;
     if(!group) {
         group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
+        hColorbarMoveTitle = fullLayout._hColorbarMoveTitle;
     }
 
     var el = group.selectAll('text')
@@ -52738,13 +53088,17 @@ function draw(gd, titleClass, options) {
     function drawTitle(titleEl) {
         var transformVal;
 
+        if(!transform && hColorbarMoveTitle) {
+            transform = {};
+        }
+
         if(transform) {
             transformVal = '';
             if(transform.rotate) {
                 transformVal += 'rotate(' + [transform.rotate, attributes.x, attributes.y] + ')';
             }
-            if(transform.offset) {
-                transformVal += strTranslate(0, transform.offset);
+            if(transform.offset || hColorbarMoveTitle) {
+                transformVal += strTranslate(0, (transform.offset || 0) - (hColorbarMoveTitle || 0));
             }
         } else {
             transformVal = null;
@@ -52873,7 +53227,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":221,"../../constants/interactions":225,"../../lib":248,"../../lib/svg_text_utils":271,"../../plots/plots":337,"../../registry":340,"../color":116,"../drawing":138,"@plotly/d3":11,"fast-isnumeric":30}],215:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221,"../../constants/interactions":225,"../../lib":248,"../../lib/svg_text_utils":271,"../../plots/plots":339,"../../registry":342,"../color":116,"../drawing":138,"@plotly/d3":11,"fast-isnumeric":30}],215:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -52996,7 +53350,7 @@ module.exports = overrideAll(templatedArray('updatemenu', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plot_api/plot_template":285,"../../plots/font_attributes":325,"../../plots/pad_attributes":336,"../color/attributes":115}],216:[function(_dereq_,module,exports){
+},{"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plot_api/plot_template":285,"../../plots/font_attributes":327,"../../plots/pad_attributes":338,"../color/attributes":115}],216:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -53785,7 +54139,7 @@ function removeAllButtons(gButton, newMenuIndexAttr) {
         .selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
 
-},{"../../constants/alignment":221,"../../lib":248,"../../lib/svg_text_utils":271,"../../plot_api/plot_template":285,"../../plots/plots":337,"../color":116,"../drawing":138,"./constants":216,"./scrollbox":220,"@plotly/d3":11}],219:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221,"../../lib":248,"../../lib/svg_text_utils":271,"../../plot_api/plot_template":285,"../../plots/plots":339,"../color":116,"../drawing":138,"./constants":216,"./scrollbox":220,"@plotly/d3":11}],219:[function(_dereq_,module,exports){
 arguments[4][213][0].apply(exports,arguments)
 },{"./attributes":215,"./constants":216,"./defaults":217,"./draw":218,"dup":213}],220:[function(_dereq_,module,exports){
 'use strict';
@@ -54541,7 +54895,7 @@ exports.Fx = {
 exports.Snapshot = _dereq_('./snapshot');
 exports.PlotSchema = _dereq_('./plot_api/plot_schema');
 
-},{"../build/plotcss":1,"./components/annotations":107,"./components/annotations3d":112,"./components/colorbar":122,"./components/colorscale":128,"./components/errorbars":144,"./components/fx":156,"./components/grid":160,"./components/images":165,"./components/legend":173,"./components/modebar":179,"./components/rangeselector":187,"./components/rangeslider":194,"./components/shapes":208,"./components/sliders":213,"./components/updatemenus":219,"./fonts/ploticon":229,"./locale-en":276,"./locale-en-us":275,"./plot_api":280,"./plot_api/plot_schema":284,"./plots/plots":337,"./registry":340,"./snapshot":345,"./traces/scatter":374,"./version":405,"native-promise-only":67}],229:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"./components/annotations":107,"./components/annotations3d":112,"./components/colorbar":122,"./components/colorscale":128,"./components/errorbars":144,"./components/fx":156,"./components/grid":160,"./components/images":165,"./components/legend":173,"./components/modebar":179,"./components/rangeselector":187,"./components/rangeslider":194,"./components/shapes":208,"./components/sliders":213,"./components/updatemenus":219,"./fonts/ploticon":229,"./locale-en":276,"./locale-en-us":275,"./plot_api":280,"./plot_api/plot_schema":284,"./plots/plots":339,"./registry":342,"./snapshot":347,"./traces/scatter":376,"./version":407,"native-promise-only":67}],229:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -56251,7 +56605,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":226,"../registry":340,"./loggers":252,"./mod":255,"d3-time-format":27,"fast-isnumeric":30}],238:[function(_dereq_,module,exports){
+},{"../constants/numerical":226,"../registry":342,"./loggers":252,"./mod":255,"d3-time-format":27,"fast-isnumeric":30}],238:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -59173,7 +59527,7 @@ module.exports = function localize(gd, s) {
     return s;
 };
 
-},{"../registry":340}],252:[function(_dereq_,module,exports){
+},{"../registry":342}],252:[function(_dereq_,module,exports){
 'use strict';
 
 /* eslint-disable no-console */
@@ -60787,10 +61141,6 @@ var LINE_SPACING = _dereq_('../constants/alignment').LINE_SPACING;
 
 // text converter
 
-function getSize(_selection, _dimension) {
-    return _selection.node().getBoundingClientRect()[_dimension];
-}
-
 var FIND_TEX = /([^$]*)([$]+[^$]*[$]+)([^$]*)/;
 
 exports.convertToTspans = function(_context, gd, _callback) {
@@ -60799,6 +61149,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
     var tex = (!_context.attr('data-notex')) &&
+        gd && gd._context.typesetMath &&
         (typeof MathJax !== 'undefined') &&
         str.match(FIND_TEX);
 
@@ -60874,9 +61225,12 @@ exports.convertToTspans = function(_context, gd, _callback) {
                                                newSvg.node().firstChild);
                 }
 
+                var w0 = _svgBBox.width;
+                var h0 = _svgBBox.height;
+
                 newSvg.attr({
                     'class': svgClass,
-                    height: _svgBBox.height,
+                    height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
                 .style({overflow: 'visible', 'pointer-events': 'none'});
@@ -60885,27 +61239,50 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var g = newSvg.select('g');
                 g.attr({fill: fill, stroke: fill});
 
-                var newSvgW = getSize(g, 'width');
-                var newSvgH = getSize(g, 'height');
-                var newX = +_context.attr('x') - newSvgW *
-                    {start: 0, middle: 0.5, end: 1}[_context.attr('text-anchor') || 'start'];
+                var bb = g.node().getBoundingClientRect();
+                var w = bb.width;
+                var h = bb.height;
+
+                if(w > w0 || h > h0) {
+                    // this happen in firefox v82+ | see https://bugzilla.mozilla.org/show_bug.cgi?id=1709251 addressed
+                    // temporary fix:
+                    newSvg.style('overflow', 'hidden');
+                    bb = newSvg.node().getBoundingClientRect();
+                    w = bb.width;
+                    h = bb.height;
+                }
+
+                var x = +_context.attr('x');
+                var y = +_context.attr('y');
+
                 // font baseline is about 1/4 fontSize below centerline
-                var textHeight = fontSize || getSize(_context, 'height');
+                var textHeight = fontSize || _context.node().getBoundingClientRect().height;
                 var dy = -textHeight / 4;
 
                 if(svgClass[0] === 'y') {
                     mathjaxGroup.attr({
-                        transform: 'rotate(' + [-90, +_context.attr('x'), +_context.attr('y')] +
-                        ')' + strTranslate(-newSvgW / 2, dy - newSvgH / 2)
+                        transform: 'rotate(' + [-90, x, y] +
+                        ')' + strTranslate(-w / 2, dy - h / 2)
                     });
-                    newSvg.attr({x: +_context.attr('x'), y: +_context.attr('y')});
                 } else if(svgClass[0] === 'l') {
-                    newSvg.attr({x: _context.attr('x'), y: dy - (newSvgH / 2)});
+                    y = dy - h / 2;
                 } else if(svgClass[0] === 'a' && svgClass.indexOf('atitle') !== 0) {
-                    newSvg.attr({x: 0, y: dy});
+                    x = 0;
+                    y = dy;
                 } else {
-                    newSvg.attr({x: newX, y: (+_context.attr('y') + dy - newSvgH / 2)});
+                    var anchor = _context.attr('text-anchor');
+
+                    x = x - w * (
+                        anchor === 'middle' ? 0.5 :
+                        anchor === 'end' ? 1 : 0
+                    );
+                    y = y + dy - h / 2;
                 }
+
+                newSvg.attr({
+                    x: x,
+                    y: y
+                });
 
                 if(_callback) _callback.call(_context, mathjaxGroup);
                 resolve(mathjaxGroup);
@@ -60927,70 +61304,154 @@ function cleanEscapesForTex(s) {
         .replace(GT_MATCH, '\\gt ');
 }
 
+var inlineMath = [['$', '$'], ['\\(', '\\)']];
+
 function texToSVG(_texString, _config, _callback) {
+    var MathJaxVersion = parseInt(
+        (MathJax.version || '').split('.')[0]
+    );
+
+    if(
+        MathJaxVersion !== 2 &&
+        MathJaxVersion !== 3
+    ) {
+        Lib.warn('No MathJax version:', MathJax.version);
+        return;
+    }
+
     var originalRenderer,
         originalConfig,
         originalProcessSectionDelay,
         tmpDiv;
 
-    MathJax.Hub.Queue(
-    function() {
+    var setConfig2 = function() {
         originalConfig = Lib.extendDeepAll({}, MathJax.Hub.config);
 
         originalProcessSectionDelay = MathJax.Hub.processSectionDelay;
         if(MathJax.Hub.processSectionDelay !== undefined) {
-            // MathJax 2.5+
+            // MathJax 2.5+ but not 3+
             MathJax.Hub.processSectionDelay = 0;
         }
 
         return MathJax.Hub.Config({
             messageStyle: 'none',
             tex2jax: {
-                inlineMath: [['$', '$'], ['\\(', '\\)']]
+                inlineMath: inlineMath
             },
             displayAlign: 'left',
         });
-    },
-    function() {
-        // Get original renderer
+    };
+
+    var setConfig3 = function() {
+        originalConfig = Lib.extendDeepAll({}, MathJax.config);
+
+        if(!MathJax.config.tex) {
+            MathJax.config.tex = {};
+        }
+
+        MathJax.config.tex.inlineMath = inlineMath;
+    };
+
+    var setRenderer2 = function() {
         originalRenderer = MathJax.Hub.config.menuSettings.renderer;
         if(originalRenderer !== 'SVG') {
             return MathJax.Hub.setRenderer('SVG');
         }
-    },
-    function() {
+    };
+
+    var setRenderer3 = function() {
+        originalRenderer = MathJax.config.startup.output;
+        if(originalRenderer !== 'svg') {
+            MathJax.config.startup.output = 'svg';
+        }
+    };
+
+    var initiateMathJax = function() {
         var randomID = 'math-output-' + Lib.randstr({}, 64);
         tmpDiv = d3.select('body').append('div')
             .attr({id: randomID})
-            .style({visibility: 'hidden', position: 'absolute'})
-            .style({'font-size': _config.fontSize + 'px'})
+            .style({
+                visibility: 'hidden',
+                position: 'absolute',
+                'font-size': _config.fontSize + 'px'
+            })
             .text(cleanEscapesForTex(_texString));
 
-        return MathJax.Hub.Typeset(tmpDiv.node());
-    },
-    function() {
-        var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
+        var tmpNode = tmpDiv.node();
 
-        if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
+        return MathJaxVersion === 2 ?
+            MathJax.Hub.Typeset(tmpNode) :
+            MathJax.typeset([tmpNode]);
+    };
+
+    var finalizeMathJax = function() {
+        var sel = tmpDiv.select(
+            MathJaxVersion === 2 ? '.MathJax_SVG' : '.MathJax'
+        );
+
+        var node = !sel.empty() && tmpDiv.select('svg').node();
+        if(!node) {
             Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         } else {
-            var svgBBox = tmpDiv.select('svg').node().getBoundingClientRect();
-            _callback(tmpDiv.select('.MathJax_SVG'), glyphDefs, svgBBox);
+            var nodeBBox = node.getBoundingClientRect();
+            var glyphDefs;
+            if(MathJaxVersion === 2) {
+                glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
+            } else {
+                glyphDefs = sel.select('defs');
+            }
+            _callback(sel, glyphDefs, nodeBBox);
         }
 
         tmpDiv.remove();
+    };
 
+    var resetRenderer2 = function() {
         if(originalRenderer !== 'SVG') {
             return MathJax.Hub.setRenderer(originalRenderer);
         }
-    },
-    function() {
+    };
+
+    var resetRenderer3 = function() {
+        if(originalRenderer !== 'svg') {
+            MathJax.config.startup.output = originalRenderer;
+        }
+    };
+
+    var resetConfig2 = function() {
         if(originalProcessSectionDelay !== undefined) {
             MathJax.Hub.processSectionDelay = originalProcessSectionDelay;
         }
         return MathJax.Hub.Config(originalConfig);
-    });
+    };
+
+    var resetConfig3 = function() {
+        MathJax.config = originalConfig;
+    };
+
+    if(MathJaxVersion === 2) {
+        MathJax.Hub.Queue(
+            setConfig2,
+            setRenderer2,
+            initiateMathJax,
+            finalizeMathJax,
+            resetRenderer2,
+            resetConfig2
+        );
+    } else if(MathJaxVersion === 3) {
+        setConfig3();
+        setRenderer3();
+        MathJax.startup.defaultReady();
+
+        MathJax.startup.promise.then(function() {
+            initiateMathJax();
+            finalizeMathJax();
+
+            resetRenderer3();
+            resetConfig3();
+        });
+    }
 }
 
 var TAG_STYLES = {
@@ -61823,7 +62284,7 @@ topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
     return topojsonFeature(topojson, obj).features;
 };
 
-},{"../plots/geo/constants":327,"topojson-client":81}],275:[function(_dereq_,module,exports){
+},{"../plots/geo/constants":329,"topojson-client":81}],275:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -61921,7 +62382,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":340}],278:[function(_dereq_,module,exports){
+},{"../registry":342}],278:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -62730,7 +63191,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     }
 };
 
-},{"../components/color":116,"../lib":248,"../plots/cartesian/axis_ids":300,"../plots/plots":337,"../registry":340,"fast-isnumeric":30,"gl-mat4/fromQuat":36}],280:[function(_dereq_,module,exports){
+},{"../components/color":116,"../lib":248,"../plots/cartesian/axis_ids":300,"../plots/plots":339,"../registry":342,"fast-isnumeric":30,"gl-mat4/fromQuat":36}],280:[function(_dereq_,module,exports){
 'use strict';
 
 var main = _dereq_('./plot_api');
@@ -62765,7 +63226,7 @@ var templateApi = _dereq_('./template_api');
 exports.makeTemplate = templateApi.makeTemplate;
 exports.validateTemplate = templateApi.validateTemplate;
 
-},{"../snapshot/download":342,"./plot_api":282,"./template_api":287,"./to_image":288,"./validate":289}],281:[function(_dereq_,module,exports){
+},{"../snapshot/download":344,"./plot_api":282,"./template_api":287,"./to_image":288,"./validate":289}],281:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('../lib/is_plain_object');
@@ -62969,7 +63430,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":249,"../lib/loggers":252,"../lib/noop":257,"../lib/search":267,"../registry":340,"./container_array_match":277}],282:[function(_dereq_,module,exports){
+},{"../lib/is_plain_object":249,"../lib/loggers":252,"../lib/noop":257,"../lib/search":267,"../registry":342,"./container_array_match":277}],282:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -64691,7 +65152,7 @@ function cleanDeprecatedAttributeKeys(aobj) {
         if((key === 'title' || oldAxisTitleRegex.test(key) || colorbarRegex.test(key)) &&
           (typeof value === 'string' || typeof value === 'number')) {
             replace(key, key.replace('title', 'title.text'));
-        } else if(key.indexOf('titlefont') > -1) {
+        } else if(key.indexOf('titlefont') > -1 && key.indexOf('grouptitlefont') === -1) {
             replace(key, key.replace('titlefont', 'title.font'));
         } else if(key.indexOf('titleposition') > -1) {
             replace(key, key.replace('titleposition', 'title.position'));
@@ -65368,7 +65829,8 @@ function findUIPattern(key, patternSpecs) {
         var spec = patternSpecs[i];
         var match = key.match(spec.pattern);
         if(match) {
-            return {head: match[1], attr: spec.attr};
+            var head = match[1] || '';
+            return {head: head, tail: key.substr(head.length + 1), attr: spec.attr};
         }
     }
 }
@@ -65420,26 +65882,54 @@ function valsMatch(v1, v2) {
 
 function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
     var layoutPreGUI = oldFullLayout._preGUI;
-    var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal;
+    var key, revAttr, oldRev, newRev, match, preGUIVal, newNP, newVal, head, tail;
     var bothInheritAutorange = [];
+    var newAutorangeIn = {};
     var newRangeAccepted = {};
     for(key in layoutPreGUI) {
         match = findUIPattern(key, layoutUIControlPatterns);
         if(match) {
-            revAttr = match.attr || (match.head + '.uirevision');
+            head = match.head;
+            tail = match.tail;
+            revAttr = match.attr || (head + '.uirevision');
             oldRev = nestedProperty(oldFullLayout, revAttr).get();
             newRev = oldRev && getNewRev(revAttr, layout);
+
             if(newRev && (newRev === oldRev)) {
                 preGUIVal = layoutPreGUI[key];
                 if(preGUIVal === null) preGUIVal = undefined;
                 newNP = nestedProperty(layout, key);
                 newVal = newNP.get();
+
                 if(valsMatch(newVal, preGUIVal)) {
-                    if(newVal === undefined && key.substr(key.length - 9) === 'autorange') {
-                        bothInheritAutorange.push(key.substr(0, key.length - 10));
+                    if(newVal === undefined && tail === 'autorange') {
+                        bothInheritAutorange.push(head);
                     }
                     newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
                     continue;
+                } else if(tail === 'autorange' || tail.substr(0, 6) === 'range[') {
+                    // Special case for (auto)range since we push it back into the layout
+                    // so all null should be treated equivalently to autorange: true with any range
+                    var pre0 = layoutPreGUI[head + '.range[0]'];
+                    var pre1 = layoutPreGUI[head + '.range[1]'];
+                    var preAuto = layoutPreGUI[head + '.autorange'];
+                    if(preAuto || (preAuto === null && pre0 === null && pre1 === null)) {
+                        // Only read the input layout once and stash the result,
+                        // so we get it before we start modifying it
+                        if(!(head in newAutorangeIn)) {
+                            var newContainer = nestedProperty(layout, head).get();
+                            newAutorangeIn[head] = newContainer && (
+                                newContainer.autorange ||
+                                (newContainer.autorange !== false && (
+                                    !newContainer.range || newContainer.range.length !== 2)
+                                )
+                            );
+                        }
+                        if(newAutorangeIn[head]) {
+                            newNP.set(undefinedToNull(nestedProperty(oldFullLayout, key).get()));
+                            continue;
+                        }
+                    }
                 }
             }
         } else {
@@ -65450,12 +65940,12 @@ function applyUIRevisions(data, layout, oldFullData, oldFullLayout) {
         // so remove it from _preGUI for next time.
         delete layoutPreGUI[key];
 
-        if(key.substr(key.length - 8, 6) === 'range[') {
-            newRangeAccepted[key.substr(0, key.length - 9)] = 1;
+        if(match && match.tail.substr(0, 6) === 'range[') {
+            newRangeAccepted[match.head] = 1;
         }
     }
 
-    // Special logic for `autorange`, since it interacts with `range`:
+    // More special logic for `autorange`, since it interacts with `range`:
     // If the new figure's matching `range` was kept, and `autorange`
     // wasn't supplied explicitly in either the original or the new figure,
     // we shouldn't alter that - but we may just have done that, so fix it.
@@ -66701,6 +67191,9 @@ function makePlotFramework(gd) {
     // single polar layer for the whole plot
     fullLayout._polarlayer = fullLayout._paper.append('g').classed('polarlayer', true);
 
+    // single smith layer for the whole plot
+    fullLayout._smithlayer = fullLayout._paper.append('g').classed('smithlayer', true);
+
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
 
@@ -66783,7 +67276,7 @@ exports._guiUpdate = guiEdit(update);
 
 exports._storeDirectGUIEdit = _storeDirectGUIEdit;
 
-},{"../components/color":116,"../components/drawing":138,"../constants/xmlns_namespaces":227,"../lib":248,"../lib/events":239,"../lib/queue":263,"../plots/cartesian/axes":296,"../plots/cartesian/constants":303,"../plots/cartesian/graph_interact":306,"../plots/cartesian/select":316,"../plots/plots":337,"../registry":340,"./edit_types":278,"./helpers":279,"./manage_arrays":281,"./plot_config":283,"./plot_schema":284,"./subroutines":286,"@plotly/d3":11,"fast-isnumeric":30,"has-hover":61}],283:[function(_dereq_,module,exports){
+},{"../components/color":116,"../components/drawing":138,"../constants/xmlns_namespaces":227,"../lib":248,"../lib/events":239,"../lib/queue":263,"../plots/cartesian/axes":296,"../plots/cartesian/constants":303,"../plots/cartesian/graph_interact":306,"../plots/cartesian/select":317,"../plots/plots":339,"../registry":342,"./edit_types":278,"./helpers":279,"./manage_arrays":281,"./plot_config":283,"./plot_schema":284,"./subroutines":286,"@plotly/d3":11,"fast-isnumeric":30,"has-hover":61}],283:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -66802,6 +67295,11 @@ var configAttributes = {
     staticPlot: {
         valType: 'boolean',
         dflt: false,
+    },
+
+    typesetMath: {
+        valType: 'boolean',
+        dflt: true,
     },
 
     plotlyServerURL: {
@@ -67709,7 +68207,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":248,"../plots/animation_attributes":290,"../plots/attributes":292,"../plots/frame_attributes":326,"../plots/layout_attributes":335,"../registry":340,"./edit_types":278,"./plot_config":283}],285:[function(_dereq_,module,exports){
+},{"../lib":248,"../plots/animation_attributes":290,"../plots/attributes":292,"../plots/frame_attributes":328,"../plots/layout_attributes":337,"../registry":342,"./edit_types":278,"./plot_config":283}],285:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -68724,7 +69222,7 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('colorbar', 'draw')(gd);
 };
 
-},{"../components/color":116,"../components/drawing":138,"../components/modebar":179,"../components/titles":214,"../constants/alignment":221,"../lib":248,"../lib/clear_gl_canvases":234,"../plots/cartesian/autorange":295,"../plots/cartesian/axes":296,"../plots/cartesian/constraints":304,"../plots/plots":337,"../registry":340,"@plotly/d3":11}],287:[function(_dereq_,module,exports){
+},{"../components/color":116,"../components/drawing":138,"../components/modebar":179,"../components/titles":214,"../constants/alignment":221,"../lib":248,"../lib/clear_gl_canvases":234,"../plots/cartesian/autorange":295,"../plots/cartesian/axes":296,"../plots/cartesian/constraints":304,"../plots/plots":339,"../registry":342,"@plotly/d3":11}],287:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -69177,7 +69675,7 @@ function format(opts) {
     return opts;
 }
 
-},{"../lib":248,"../plots/attributes":292,"../plots/plots":337,"./plot_config":283,"./plot_schema":284,"./plot_template":285}],288:[function(_dereq_,module,exports){
+},{"../lib":248,"../plots/attributes":292,"../plots/plots":339,"./plot_config":283,"./plot_schema":284,"./plot_template":285}],288:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -69384,7 +69882,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":248,"../plots/plots":337,"../snapshot/helpers":344,"../snapshot/svgtoimg":346,"../snapshot/tosvg":348,"../version":405,"./plot_api":282,"fast-isnumeric":30}],289:[function(_dereq_,module,exports){
+},{"../lib":248,"../plots/plots":339,"../snapshot/helpers":346,"../snapshot/svgtoimg":348,"../snapshot/tosvg":350,"../version":407,"./plot_api":282,"fast-isnumeric":30}],289:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -69807,7 +70305,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":248,"../plots/plots":337,"./plot_config":283,"./plot_schema":284}],290:[function(_dereq_,module,exports){
+},{"../lib":248,"../plots/plots":339,"./plot_config":283,"./plot_schema":284}],290:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -70104,7 +70602,7 @@ module.exports = {
     }
 };
 
-},{"../components/fx/attributes":147,"./font_attributes":325}],293:[function(_dereq_,module,exports){
+},{"../components/fx/attributes":147,"./font_attributes":327}],293:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -70843,7 +71341,7 @@ function goodNumber(v) {
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
-},{"../../components/drawing":138,"../../constants/numerical":226,"../../lib":248,"../../registry":340,"./axis_ids":300,"@plotly/d3":11,"fast-isnumeric":30}],296:[function(_dereq_,module,exports){
+},{"../../components/drawing":138,"../../constants/numerical":226,"../../lib":248,"../../registry":342,"./axis_ids":300,"@plotly/d3":11,"fast-isnumeric":30}],296:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -70882,6 +71380,7 @@ var BADNUM = constants.BADNUM;
 
 var ZERO_PATH = { K: 'zeroline' };
 var GRID_PATH = { K: 'gridline', L: 'path' };
+var MINORGRID_PATH = { K: 'minor-gridline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
 var TICK_TEXT = { K: 'tick', L: 'text' };
 
@@ -71386,12 +71885,112 @@ function autoShiftMonthBins(binStart, data, dtick, dataMin, calendar) {
 // Ticks and grids
 // ----------------------------------------------------
 
+// ensure we have minor tick0 and dtick calculated
+axes.prepMinorTicks = function(mockAx, ax, opts) {
+    if(!ax.minor.dtick) {
+        delete mockAx.dtick;
+        var hasMajor = ax.dtick && isNumeric(ax._tmin);
+        var mockMinorRange;
+        if(hasMajor) {
+            var tick2 = axes.tickIncrement(ax._tmin, ax.dtick, true);
+            // mock range a tiny bit smaller than one major tick interval
+            mockMinorRange = [ax._tmin, tick2 * 0.99 + ax._tmin * 0.01];
+        } else {
+            var rl = Lib.simpleMap(ax.range, ax.r2l);
+            // If we don't have a major dtick, the concept of minor ticks is a little
+            // ambiguous - just take a stab and say minor.nticks should span 1/5 the axis
+            mockMinorRange = [rl[0], 0.8 * rl[0] + 0.2 * rl[1]];
+        }
+        mockAx.range = Lib.simpleMap(mockMinorRange, ax.l2r);
+        mockAx._isMinor = true;
+
+        axes.prepTicks(mockAx, opts);
+
+        if(hasMajor) {
+            var numericMajor = isNumeric(ax.dtick);
+            var numericMinor = isNumeric(mockAx.dtick);
+            var majorNum = numericMajor ? ax.dtick : +ax.dtick.substring(1);
+            var minorNum = numericMinor ? mockAx.dtick : +mockAx.dtick.substring(1);
+            if(numericMajor && numericMinor) {
+                if(!isMultiple(majorNum, minorNum)) {
+                    // give up on minor ticks - outside the below exceptions,
+                    // this can only happen if minor.nticks is smaller than two jumps
+                    // in the auto-tick scale and the first jump is not an even multiple
+                    // (5 -> 2 or for dates 3 ->2, 15 -> 10 etc)  or if you provided
+                    // an explicit dtick, in which case it's fine to give up,
+                    // you can provide an explicit minor.dtick.
+                    if((majorNum === 2 * ONEWEEK) && (minorNum === 3 * ONEDAY)) {
+                        mockAx.dtick = ONEWEEK;
+                    } else if(majorNum === ONEWEEK && !(ax._input.minor || {}).nticks) {
+                        // minor.nticks defaults to 5, but in this one case we want 7,
+                        // so the minor ticks show on all days of the week
+                        mockAx.dtick = ONEDAY;
+                    } else if(isClose(majorNum / minorNum, 2.5)) {
+                        // 5*10^n -> 2*10^n and you've set nticks < 5
+                        // quarters are pretty common, we don't do this by default as it
+                        // would add an extra digit to display, but minor has no labels
+                        mockAx.dtick = majorNum / 2;
+                    } else {
+                        mockAx.dtick = majorNum;
+                    }
+                } else if(majorNum === 2 * ONEWEEK && minorNum === 2 * ONEDAY) {
+                    // this is a weird one: we don't want to automatically choose
+                    // 2-day minor ticks for 2-week major, even though it IS an even multiple,
+                    // because people would expect to see the weeks clearly
+                    mockAx.dtick = ONEWEEK;
+                }
+            } else if(String(ax.dtick).charAt(0) === 'M') {
+                if(numericMinor) {
+                    mockAx.dtick = 'M1';
+                } else {
+                    if(!isMultiple(majorNum, minorNum)) {
+                        // unless you provided an explicit ax.dtick (in which case
+                        // it's OK for us to give up, you can provide an explicit
+                        // minor.dtick too), this can only happen with:
+                        // minor.nticks < 3 and dtick === M3, or
+                        // minor.nticks < 5 and dtick === 5 * 10^n years
+                        // so in all cases we just give up.
+                        mockAx.dtick = ax.dtick;
+                    } else if((majorNum >= 12) && (minorNum === 2)) {
+                        // another special carve-out: for year major ticks, don't show
+                        // 2-month minor ticks, bump to quarters
+                        mockAx.dtick = 'M3';
+                    }
+                }
+            } else if(String(mockAx.dtick).charAt(0) === 'L') {
+                if(String(ax.dtick).charAt(0) === 'L') {
+                    if(!isMultiple(majorNum, minorNum)) {
+                        mockAx.dtick = isClose(majorNum / minorNum, 2.5) ? (ax.dtick / 2) : ax.dtick;
+                    }
+                } else {
+                    mockAx.dtick = 'D1';
+                }
+            } else if(mockAx.dtick === 'D2' && +ax.dtick > 1) {
+                // the D2 log axis tick spacing is confusing for unlabeled minor ticks if
+                // the major dtick is more than one order of magnitude.
+                mockAx.dtick = 1;
+            }
+        }
+        // put back the original range, to use to find the full set of minor ticks
+        mockAx.range = ax.range;
+    }
+    if(ax.minor._tick0Init === undefined) {
+        // ensure identical tick0
+        mockAx.tick0 = ax.tick0;
+    }
+};
+
+function isMultiple(bigger, smaller) {
+    return Math.abs((bigger / smaller + 0.5) % 1 - 0.5) < 0.001;
+}
+
+function isClose(a, b) {
+    return Math.abs((a / b) - 1) < 0.001;
+}
+
 // ensure we have tick0, dtick, and tick rounding calculated
 axes.prepTicks = function(ax, opts) {
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
-
-    ax._dtickInit = ax.dtick;
-    ax._tick0Init = ax.tick0;
 
     // calculate max number of (auto) ticks to display based on plot size
     if(ax.tickmode === 'auto' || !ax.dtick) {
@@ -71412,10 +72011,11 @@ axes.prepTicks = function(ax, opts) {
             if(ax._name === 'radialaxis') nt *= 2;
         }
 
-        // add a couple of extra digits for filling in ticks when we
-        // have explicit tickvals without tick text
-        if(ax.tickmode === 'array') nt *= 100;
-
+        if(!(ax.minor && ax.minor.tickmode !== 'array')) {
+            // add a couple of extra digits for filling in ticks when we
+            // have explicit tickvals without tick text
+            if(ax.tickmode === 'array') nt *= 100;
+        }
 
         ax._roughDTick = Math.abs(rng[1] - rng[0]) / nt;
         axes.autoTicks(ax, ax._roughDTick);
@@ -71633,81 +72233,201 @@ function positionPeriodTicks(tickVals, ax, definedDelta) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks(ax, opts) {
-    axes.prepTicks(ax, opts);
+    var type = ax.type;
+    var calendar = ax.calendar;
+    var ticklabelstep = ax.ticklabelstep;
+    var isPeriod = ax.ticklabelmode === 'period';
+
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
-
-    // now that we've figured out the auto values for formatting
-    // in case we're missing some ticktext, we can break out for array ticks
-    if(ax.tickmode === 'array') return arrayTicks(ax);
-
-    // add a tiny bit so we get ticks which may have rounded out
-    var exRng = expandRange(rng);
-    var startTick = exRng[0];
-    var endTick = exRng[1];
-    // check for reversed axis
     var axrev = (rng[1] < rng[0]);
     var minRange = Math.min(rng[0], rng[1]);
     var maxRange = Math.max(rng[0], rng[1]);
 
-    var isDLog = (ax.type === 'log') && !(isNumeric(ax.dtick) || ax.dtick.charAt(0) === 'L');
-    var isPeriod = ax.ticklabelmode === 'period';
-
-    // find the first tick
-    ax._tmin = axes.tickFirst(ax, opts);
-
-    // No visible ticks? Quit.
-    // I've only seen this on category axes with all categories off the edge.
-    if((ax._tmin < startTick) !== axrev) return [];
-
-    // return the full set of tick vals
-    if(ax.type === 'category' || ax.type === 'multicategory') {
-        endTick = (axrev) ? Math.max(-0.5, endTick) :
-            Math.min(ax._categories.length - 0.5, endTick);
-    }
-
-    var x = ax._tmin;
-
-    if(ax.rangebreaks && ax._tick0Init !== ax.tick0) {
-        // adjust tick0
-        x = moveOutsideBreak(x, ax);
-        if(!axrev) {
-            x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
-        }
-    }
-
-    if(isPeriod) {
-        // add one item to label period before tick0
-        x = axes.tickIncrement(x, ax.dtick, !axrev, ax.calendar);
-    }
-
     var maxTicks = Math.max(1000, ax._length || 0);
+
+    var ticksOut = [];
+    var minorTicks = [];
+
     var tickVals = [];
-    var xPrevious = null;
-    for(;
-        (axrev) ? (x >= endTick) : (x <= endTick);
-        x = axes.tickIncrement(x, ax.dtick, axrev, ax.calendar)
-    ) {
-        if(ax.rangebreaks) {
-            if(!axrev) {
-                if(x < startTick) continue;
-                if(ax.maskBreaks(x) === BADNUM && moveOutsideBreak(x, ax) >= maxRange) break;
+    var minorTickVals = [];
+
+    var hasMinor = ax.minor && (ax.minor.ticks || ax.minor.showgrid);
+
+    // calc major first
+    for(var major = 1; major >= (hasMinor ? 0 : 1); major--) {
+        var isMinor = !major;
+
+        if(major) {
+            ax._dtickInit = ax.dtick;
+            ax._tick0Init = ax.tick0;
+        } else {
+            ax.minor._dtickInit = ax.minor.dtick;
+            ax.minor._tick0Init = ax.minor.tick0;
+        }
+
+        var mockAx = major ? ax : Lib.extendFlat({}, ax, ax.minor);
+
+        if(isMinor) {
+            axes.prepMinorTicks(mockAx, ax, opts);
+        } else {
+            axes.prepTicks(mockAx, opts);
+        }
+
+        // now that we've figured out the auto values for formatting
+        // in case we're missing some ticktext, we can break out for array ticks
+        if(mockAx.tickmode === 'array') {
+            if(major) {
+                tickVals = [];
+                ticksOut = arrayTicks(ax);
+            } else {
+                minorTickVals = [];
+                minorTicks = arrayTicks(ax);
+            }
+            continue;
+        }
+
+        // add a tiny bit so we get ticks which may have rounded out
+        var exRng = expandRange(rng);
+        var startTick = exRng[0];
+        var endTick = exRng[1];
+
+        var numDtick = isNumeric(mockAx.dtick);
+        var isDLog = (type === 'log') && !(numDtick || mockAx.dtick.charAt(0) === 'L');
+
+        // find the first tick
+        var x0 = axes.tickFirst(mockAx, opts);
+
+        if(major) {
+            ax._tmin = x0;
+
+            // No visible ticks? Quit.
+            // I've only seen this on category axes with all categories off the edge.
+            if((x0 < startTick) !== axrev) break;
+
+            // return the full set of tick vals
+            if(type === 'category' || type === 'multicategory') {
+                endTick = (axrev) ? Math.max(-0.5, endTick) :
+                    Math.min(ax._categories.length - 0.5, endTick);
             }
         }
 
-        // prevent infinite loops - no more than one tick per pixel,
-        // and make sure each value is different from the previous
-        if(tickVals.length > maxTicks || x === xPrevious) break;
-        xPrevious = x;
+        var prevX = null;
+        var x = x0;
+        var majorId;
 
-        var minor = false;
-        if(isDLog && (x !== (x | 0))) {
-            minor = true;
+        if(major) {
+            // ids for ticklabelstep
+            var _dTick;
+            if(numDtick) {
+                _dTick = ax.dtick;
+            } else {
+                if(type === 'date') {
+                    if(typeof ax.dtick === 'string' && ax.dtick.charAt(0) === 'M') {
+                        _dTick = ONEAVGMONTH * ax.dtick.substring(1);
+                    }
+                } else {
+                    _dTick = ax._roughDTick;
+                }
+            }
+
+            majorId = Math.round((
+                ax.r2l(x) -
+                ax.r2l(ax.tick0)
+            ) / _dTick) - 1;
         }
 
-        tickVals.push({
-            minor: minor,
-            value: x
-        });
+        var dtick = mockAx.dtick;
+
+        if(mockAx.rangebreaks && mockAx._tick0Init !== mockAx.tick0) {
+            // adjust tick0
+            x = moveOutsideBreak(x, ax);
+            if(!axrev) {
+                x = axes.tickIncrement(x, dtick, !axrev, calendar);
+            }
+        }
+
+        if(major && isPeriod) {
+            // add one item to label period before tick0
+            x = axes.tickIncrement(x, dtick, !axrev, calendar);
+            majorId--;
+        }
+
+        for(;
+            axrev ?
+                (x >= endTick) :
+                (x <= endTick);
+            x = axes.tickIncrement(
+                x,
+                dtick,
+                axrev,
+                calendar
+            )
+        ) {
+            if(major) majorId++;
+
+            if(mockAx.rangebreaks) {
+                if(!axrev) {
+                    if(x < startTick) continue;
+                    if(mockAx.maskBreaks(x) === BADNUM && moveOutsideBreak(x, mockAx) >= maxRange) break;
+                }
+            }
+
+            // prevent infinite loops - no more than one tick per pixel,
+            // and make sure each value is different from the previous
+            if(tickVals.length > maxTicks || x === prevX) break;
+            prevX = x;
+
+            var obj = { value: x };
+
+            if(major) {
+                if(isDLog && (x !== (x | 0))) {
+                    obj.simpleLabel = true;
+                }
+
+                if(ticklabelstep > 1 && majorId % ticklabelstep) {
+                    obj.skipLabel = true;
+                }
+
+                tickVals.push(obj);
+            } else {
+                obj.minor = true;
+
+                minorTickVals.push(obj);
+            }
+        }
+    }
+
+    if(hasMinor) {
+        var canOverlap =
+            (ax.minor.ticks === 'inside' && ax.ticks === 'outside') ||
+            (ax.minor.ticks === 'outside' && ax.ticks === 'inside');
+
+        if(!canOverlap) {
+            // remove duplicate minors
+
+            var majorValues = tickVals.map(function(d) { return d.value; });
+
+            var list = [];
+            for(var k = 0; k < minorTickVals.length; k++) {
+                var T = minorTickVals[k];
+                var v = T.value;
+                if(majorValues.indexOf(v) !== -1) {
+                    continue;
+                }
+                var found = false;
+                for(var q = 0; !found && (q < tickVals.length); q++) {
+                    if(
+                        // add 10e6 to eliminate problematic digits
+                        10e6 + tickVals[q].value ===
+                        10e6 + v
+                    ) {
+                        found = true;
+                    }
+                }
+                if(!found) list.push(T);
+            }
+            minorTickVals = list;
+        }
     }
 
     if(isPeriod) positionPeriodTicks(tickVals, ax, ax._definedDelta);
@@ -71760,52 +72480,69 @@ axes.calcTicks = function calcTicks(ax, opts) {
     ax._prevDateHead = '';
     ax._inCalcTicks = true;
 
-    var ticksOut = [];
+    var lastVisibleHead;
+    var hideLabel = function(tick) {
+        tick.text = '';
+        ax._prevDateHead = lastVisibleHead;
+    };
+
+    tickVals = tickVals.concat(minorTickVals);
+
     var t, p;
     for(i = 0; i < tickVals.length; i++) {
         var _minor = tickVals[i].minor;
         var _value = tickVals[i].value;
 
-        t = axes.tickText(
-            ax,
-            _value,
-            false, // hover
-            _minor // noSuffixPrefix
-        );
+        if(_minor) {
+            minorTicks.push({
+                x: _value,
+                minor: true
+            });
+        } else {
+            lastVisibleHead = ax._prevDateHead;
 
-        p = tickVals[i].periodX;
-        if(p !== undefined) {
-            t.periodX = p;
-            if(p > maxRange || p < minRange) { // hide label if outside the range
-                if(p > maxRange) t.periodX = maxRange;
-                if(p < minRange) t.periodX = minRange;
+            t = axes.tickText(
+                ax,
+                _value,
+                false, // hover
+                tickVals[i].simpleLabel // noSuffixPrefix
+            );
 
-                t.text = ' '; // don't use an empty string here which can confuse automargin (issue 5132)
-                ax._prevDateHead = '';
+            p = tickVals[i].periodX;
+            if(p !== undefined) {
+                t.periodX = p;
+                if(p > maxRange || p < minRange) { // hide label if outside the range
+                    if(p > maxRange) t.periodX = maxRange;
+                    if(p < minRange) t.periodX = minRange;
+
+                    hideLabel(t);
+                }
             }
-        }
 
-        ticksOut.push(t);
+            if(tickVals[i].skipLabel) {
+                hideLabel(t);
+            }
+
+            ticksOut.push(t);
+        }
     }
+    ticksOut = ticksOut.concat(minorTicks);
 
     ax._inCalcTicks = false;
+
+    if(isPeriod && ticksOut.length) {
+        // drop very first tick that we added to handle period
+        ticksOut[0].noTick = true;
+    }
 
     return ticksOut;
 };
 
 function arrayTicks(ax) {
-    var vals = ax.tickvals;
-    var text = ax.ticktext;
-    var ticksOut = new Array(vals.length);
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var exRng = expandRange(rng);
     var tickMin = Math.min(exRng[0], exRng[1]);
     var tickMax = Math.max(exRng[0], exRng[1]);
-    var j = 0;
-
-    // without a text array, just format the given values as any other ticks
-    // except with more precision to the numbers
-    if(!Array.isArray(text)) text = [];
 
     // make sure showing ticks doesn't accidentally add new categories
     // TODO multicategory, if we allow ticktext / tickvals
@@ -71817,16 +72554,35 @@ function arrayTicks(ax) {
         ax.dtick = 'L' + Math.pow(10, Math.floor(Math.min(ax.range[0], ax.range[1])) - 1);
     }
 
-    for(var i = 0; i < vals.length; i++) {
-        var vali = tickVal2l(vals[i]);
-        if(vali > tickMin && vali < tickMax) {
-            if(text[i] === undefined) ticksOut[j] = axes.tickText(ax, vali);
-            else ticksOut[j] = tickTextObj(ax, vali, String(text[i]));
-            j++;
+    var ticksOut = [];
+    for(var isMinor = 0; isMinor <= 1; isMinor++) {
+        if(isMinor && !ax.minor) continue;
+        var vals = !isMinor ? ax.tickvals : ax.minor.tickvals;
+        var text = !isMinor ? ax.ticktext : [];
+
+        if(!vals) continue;
+
+
+        // without a text array, just format the given values as any other ticks
+        // except with more precision to the numbers
+        if(!Array.isArray(text)) text = [];
+
+        for(var i = 0; i < vals.length; i++) {
+            var vali = tickVal2l(vals[i]);
+            if(vali > tickMin && vali < tickMax) {
+                var obj = text[i] === undefined ?
+                        axes.tickText(ax, vali) :
+                        tickTextObj(ax, vali, String(text[i]));
+
+                if(isMinor) {
+                    obj.minor = true;
+                    obj.text = '';
+                }
+
+                ticksOut.push(obj);
+            }
         }
     }
-
-    if(j < vals.length) ticksOut.splice(j, vals.length - j);
 
     if(ax.rangebreaks) {
         // remove ticks falling inside rangebreaks
@@ -71870,7 +72626,7 @@ function roundDTick(roughDTick, base, roundingSet) {
 //      log with linear ticks: L# where # is the linear tick spacing
 //      log showing powers plus some intermediates:
 //          D1 shows all digits, D2 shows 2 and 5
-axes.autoTicks = function(ax, roughDTick) {
+axes.autoTicks = function(ax, roughDTick, isMinor) {
     var base;
 
     function getBase(v) {
@@ -71893,20 +72649,22 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         } else if(roughX2 > ONEDAY) {
             ax.dtick = roundDTick(roughDTick, ONEDAY, ax._hasDayOfWeekBreaks ? [1, 2, 7, 14] : roundDays);
-            // get week ticks on sunday
-            // this will also move the base tick off 2000-01-01 if dtick is
-            // 2 or 3 days... but that's a weird enough case that we'll ignore it.
-            var tickformat = axes.getTickFormat(ax);
-            var isPeriod = ax.ticklabelmode === 'period';
-            if(isPeriod) ax._rawTick0 = ax.tick0;
+            if(!isMinor) {
+                // get week ticks on sunday
+                // this will also move the base tick off 2000-01-01 if dtick is
+                // 2 or 3 days... but that's a weird enough case that we'll ignore it.
+                var tickformat = axes.getTickFormat(ax);
+                var isPeriod = ax.ticklabelmode === 'period';
+                if(isPeriod) ax._rawTick0 = ax.tick0;
 
-            if(/%[uVW]/.test(tickformat)) {
-                ax.tick0 = Lib.dateTick0(ax.calendar, 2); // Monday
-            } else {
-                ax.tick0 = Lib.dateTick0(ax.calendar, 1); // Sunday
+                if(/%[uVW]/.test(tickformat)) {
+                    ax.tick0 = Lib.dateTick0(ax.calendar, 2); // Monday
+                } else {
+                    ax.tick0 = Lib.dateTick0(ax.calendar, 1); // Sunday
+                }
+
+                if(isPeriod) ax._dowTick0 = ax.tick0;
             }
-
-            if(isPeriod) ax._dowTick0 = ax.tick0;
         } else if(roughX2 > ONEHOUR) {
             ax.dtick = roundDTick(roughDTick, ONEHOUR, roundBase24);
         } else if(roughX2 > ONEMIN) {
@@ -71921,7 +72679,12 @@ axes.autoTicks = function(ax, roughDTick) {
     } else if(ax.type === 'log') {
         ax.tick0 = 0;
         var rng = Lib.simpleMap(ax.range, ax.r2l);
-
+        if(ax._isMinor) {
+            // Log axes by default get MORE than nTicks based on the metrics below
+            // But for minor ticks we don't want this increase, we already have
+            // the major ticks.
+            roughDTick *= 1.5;
+        }
         if(roughDTick > 0.7) {
             // only show powers of 10
             ax.dtick = Math.ceil(roughDTick);
@@ -72308,7 +73071,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 dateStr += '<br>' + headStr;
             } else {
                 var isInside = insideTicklabelposition(ax);
-                var side = ax._realSide || ax.side; // polar mocks the side of the radial axis
+                var side = ax._trueSide || ax.side; // polar mocks the side of the radial axis
                 if(
                     (!isInside && side === 'top') ||
                     (isInside && side === 'bottom')
@@ -72808,6 +73571,7 @@ axes.draw = function(gd, arg, opts) {
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
                 plotinfo.yaxislayer.selectAll('.' + ya._id + 'divider').remove();
 
+                if(plotinfo.minorGridlayer) plotinfo.minorGridlayer.selectAll('path').remove();
                 if(plotinfo.gridlayer) plotinfo.gridlayer.selectAll('path').remove();
                 if(plotinfo.zerolinelayer) plotinfo.zerolinelayer.selectAll('path').remove();
 
@@ -72961,6 +73725,7 @@ axes.drawOne = function(gd, ax, opts) {
                 vals: gridVals,
                 counterAxis: counterAxis,
                 layer: plotinfo.gridlayer.select('.' + axId),
+                minorLayer: plotinfo.minorGridlayer.select('.' + axId),
                 path: gridPath,
                 transFn: transTickFn
             });
@@ -72973,60 +73738,86 @@ axes.drawOne = function(gd, ax, opts) {
         }
     }
 
-    var tickSigns = axes.getTickSigns(ax);
-    var tickSubplots = [];
+    var tickPath;
 
-    if(ax.ticks) {
-        var mainTickPath = axes.makeTickPath(ax, mainLinePosition, tickSigns[2]);
-        var mirrorTickPath;
-        var fullTickPath;
+    var majorTickSigns = axes.getTickSigns(ax);
+    var minorTickSigns = axes.getTickSigns(ax, 'minor');
+
+    if(ax.ticks || (ax.minor && ax.minor.ticks)) {
+        var majorTickPath = axes.makeTickPath(ax, mainLinePosition, majorTickSigns[2]);
+        var minorTickPath = axes.makeTickPath(ax, mainLinePosition, minorTickSigns[2], { minor: true });
+
+        var mirrorMajorTickPath;
+        var mirrorMinorTickPath;
+
+        var fullMajorTickPath;
+        var fullMinorTickPath;
+
         if(ax._anchorAxis && ax.mirror && ax.mirror !== true) {
-            mirrorTickPath = axes.makeTickPath(ax, mainMirrorPosition, tickSigns[3]);
-            fullTickPath = mainTickPath + mirrorTickPath;
+            mirrorMajorTickPath = axes.makeTickPath(ax, mainMirrorPosition, majorTickSigns[3]);
+            mirrorMinorTickPath = axes.makeTickPath(ax, mainMirrorPosition, minorTickSigns[3], { minor: true });
+
+            fullMajorTickPath = majorTickPath + mirrorMajorTickPath;
+            fullMinorTickPath = minorTickPath + mirrorMinorTickPath;
         } else {
-            mirrorTickPath = '';
-            fullTickPath = mainTickPath;
+            mirrorMajorTickPath = '';
+            mirrorMinorTickPath = '';
+            fullMajorTickPath = majorTickPath;
+            fullMinorTickPath = minorTickPath;
         }
 
-        var tickPath;
         if(ax.showdividers && outsideTicks && ax.tickson === 'boundaries') {
             var dividerLookup = {};
             for(i = 0; i < dividerVals.length; i++) {
                 dividerLookup[dividerVals[i].x] = 1;
             }
             tickPath = function(d) {
-                return dividerLookup[d.x] ? mirrorTickPath : fullTickPath;
+                return dividerLookup[d.x] ? mirrorMajorTickPath : fullMajorTickPath;
             };
         } else {
-            tickPath = fullTickPath;
-        }
-
-        axes.drawTicks(gd, ax, {
-            vals: tickVals,
-            layer: mainAxLayer,
-            path: tickPath,
-            transFn: transTickFn
-        });
-
-        if(ax.mirror === 'allticks') {
-            tickSubplots = Object.keys(ax._linepositions || {});
+            tickPath = function(d) {
+                return d.minor ? fullMinorTickPath : fullMajorTickPath;
+            };
         }
     }
 
-    for(i = 0; i < tickSubplots.length; i++) {
-        sp = tickSubplots[i];
-        plotinfo = fullLayout._plots[sp];
-        // [bottom or left, top or right], free and main are handled above
-        var linepositions = ax._linepositions[sp] || [];
-        var spTickPath = axes.makeTickPath(ax, linepositions[0], tickSigns[0]) +
-            axes.makeTickPath(ax, linepositions[1], tickSigns[1]);
+    axes.drawTicks(gd, ax, {
+        vals: tickVals,
+        layer: mainAxLayer,
+        path: tickPath,
+        transFn: transTickFn
+    });
 
-        axes.drawTicks(gd, ax, {
-            vals: tickVals,
-            layer: plotinfo[axLetter + 'axislayer'],
-            path: spTickPath,
-            transFn: transTickFn
-        });
+    if(ax.mirror === 'allticks') {
+        var tickSubplots = Object.keys(ax._linepositions || {});
+
+        for(i = 0; i < tickSubplots.length; i++) {
+            sp = tickSubplots[i];
+            plotinfo = fullLayout._plots[sp];
+            // [bottom or left, top or right], free and main are handled above
+            var linepositions = ax._linepositions[sp] || [];
+
+            var p0 = linepositions[0];
+            var p1 = linepositions[1];
+            var isMinor = linepositions[2];
+
+            var spTickPath =
+                axes.makeTickPath(ax, p0,
+                    isMinor ? majorTickSigns[0] : minorTickSigns[0],
+                    { minor: isMinor }
+                ) +
+                axes.makeTickPath(ax, p1,
+                    isMinor ? majorTickSigns[1] : minorTickSigns[1],
+                    { minor: isMinor }
+                );
+
+            axes.drawTicks(gd, ax, {
+                vals: tickVals,
+                layer: plotinfo[axLetter + 'axislayer'],
+                path: spTickPath,
+                transFn: transTickFn
+            });
+        }
     }
 
     var seq = [];
@@ -73059,23 +73850,23 @@ axes.drawOne = function(gd, ax, opts) {
                 repositionOnUpdate: true,
                 secondary: true,
                 transFn: transTickFn,
-                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * tickSigns[4])
+                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
             });
         });
 
         seq.push(function() {
-            ax._depth = tickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+            ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
                 layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, tickSigns[4], ax._depth),
+                path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
                 transFn: transTickFn
             });
         });
     } else if(ax.title.hasOwnProperty('standoff')) {
         seq.push(function() {
-            ax._depth = tickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
+            ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
         });
     }
 
@@ -73316,13 +74107,15 @@ function calcLabelLevelBbox(ax, cls) {
  *  - [3]: sign for ticks mirroring 'ax.side'
  *  - [4]: sign of arrow starting at axis pointing towards margin
  */
-axes.getTickSigns = function(ax) {
+axes.getTickSigns = function(ax, minor) {
     var axLetter = ax._id.charAt(0);
     var sideOpposite = {x: 'top', y: 'right'}[axLetter];
     var main = ax.side === sideOpposite ? 1 : -1;
     var out = [-1, 1, main, -main];
     // then we flip if outside XOR y axis
-    if((ax.ticks !== 'inside') === (axLetter === 'x')) {
+
+    var ticks = minor ? (ax.minor || {}).ticks : ax.ticks;
+    if((ticks !== 'inside') === (axLetter === 'x')) {
         out = out.map(function(v) { return -v; });
     }
     // independent of `ticks`; do not flip this one
@@ -73426,11 +74219,17 @@ function getTickLabelUV(ax) {
  *  - {number} linewidth
  * @param {number} shift along direction of ticklen
  * @param {1 or -1} sgn tick sign
- * @param {number (optional)} len tick length
+ * @param {object} opts
+ * - {number (optional)} len tick length
  * @return {string}
  */
-axes.makeTickPath = function(ax, shift, sgn, len) {
-    len = len !== undefined ? len : ax.ticklen;
+axes.makeTickPath = function(ax, shift, sgn, opts) {
+    if(!opts) opts = {};
+    var minor = opts.minor;
+    if(minor && !ax.minor) return '';
+
+    var len = opts.len !== undefined ? opts.len :
+        minor ? ax.minor.ticklen : ax.ticklen;
 
     var axLetter = ax._id.charAt(0);
     var pad = (ax.linewidth || 1) / 2;
@@ -73637,17 +74436,20 @@ axes.drawTicks = function(gd, ax, opts) {
 
     var cls = ax._id + 'tick';
 
-    var vals = opts.vals;
-    if(
-        ax.ticklabelmode === 'period'
-    ) {
-        // drop very first tick that we added to handle period
-        vals = vals.slice();
-        vals.shift();
-    }
+    var vals = []
+        .concat(ax.minor && ax.minor.ticks ?
+            // minor vals
+            opts.vals.filter(function(d) { return d.minor && !d.noTick; }) :
+            []
+        )
+        .concat(ax.ticks ?
+            // major vals
+            opts.vals.filter(function(d) { return !d.minor && !d.noTick; }) :
+            []
+        );
 
     var ticks = opts.layer.selectAll('path.' + cls)
-        .data(ax.ticks ? vals : [], tickDataFn);
+        .data(vals, tickDataFn);
 
     ticks.exit().remove();
 
@@ -73655,8 +74457,16 @@ axes.drawTicks = function(gd, ax, opts) {
         .classed(cls, 1)
         .classed('ticks', 1)
         .classed('crisp', opts.crisp !== false)
-        .call(Color.stroke, ax.tickcolor)
-        .style('stroke-width', Drawing.crispRound(gd, ax.tickwidth, 1) + 'px')
+        .each(function(d) {
+            return Color.stroke(d3.select(this), d.minor ? ax.minor.tickcolor : ax.tickcolor);
+        })
+        .style('stroke-width', function(d) {
+            return Drawing.crispRound(
+                gd,
+                d.minor ? ax.minor.tickwidth : ax.tickwidth,
+                1
+            ) + 'px';
+        })
         .attr('d', opts.path)
         .style('display', null); // visible
 
@@ -73674,6 +74484,7 @@ axes.drawTicks = function(gd, ax, opts) {
  *  - {boolean} showgrid
  *  - {string} gridcolor
  *  - {string} gridwidth
+ *  - {string} griddash
  *  - {boolean} zeroline
  *  - {string} type
  *  - {string} dtick
@@ -73690,16 +74501,18 @@ axes.drawGrid = function(gd, ax, opts) {
     opts = opts || {};
 
     var cls = ax._id + 'grid';
-    var vals = opts.vals;
+
+    var hasMinor = ax.minor && ax.minor.showgrid;
+    var minorVals = hasMinor ? opts.vals.filter(function(d) { return d.minor; }) : [];
+    var majorVals = ax.showgrid ? opts.vals.filter(function(d) { return !d.minor; }) : [];
+
     var counterAx = opts.counterAxis;
-    if(ax.showgrid === false) {
-        vals = [];
-    } else if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
+    if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
         var isArrayMode = ax.tickmode === 'array';
-        for(var i = 0; i < vals.length; i++) {
-            var xi = vals[i].x;
+        for(var i = 0; i < majorVals.length; i++) {
+            var xi = majorVals[i].x;
             if(isArrayMode ? !xi : (Math.abs(xi) < ax.dtick / 100)) {
-                vals = vals.slice(0, i).concat(vals.slice(i + 1));
+                majorVals = majorVals.slice(0, i).concat(majorVals.slice(i + 1));
                 // In array mode you can in principle have multiple
                 // ticks at 0, so test them all. Otherwise once we found
                 // one we can stop.
@@ -73709,26 +74522,50 @@ axes.drawGrid = function(gd, ax, opts) {
         }
     }
 
-    var grid = opts.layer.selectAll('path.' + cls)
-        .data(vals, tickDataFn);
+    ax._gw =
+        Drawing.crispRound(gd, ax.gridwidth, 1);
 
-    grid.exit().remove();
+    var wMinor = !hasMinor ? 0 :
+        Drawing.crispRound(gd, ax.minor.gridwidth, 1);
 
-    grid.enter().append('path')
-        .classed(cls, 1)
-        .classed('crisp', opts.crisp !== false);
+    var majorLayer = opts.layer;
+    var minorLayer = opts.minorLayer;
+    for(var major = 1; major >= 0; major--) {
+        var layer = major ? majorLayer : minorLayer;
+        if(!layer) continue;
 
-    ax._gw = Drawing.crispRound(gd, ax.gridwidth, 1);
+        var grid = layer.selectAll('path.' + cls)
+            .data(major ? majorVals : minorVals, tickDataFn);
 
-    grid.attr('transform', opts.transFn)
-        .attr('d', opts.path)
-        .call(Color.stroke, ax.gridcolor || '#ddd')
-        .style('stroke-width', ax._gw + 'px')
-        .style('display', null); // visible
+        grid.exit().remove();
 
-    hideCounterAxisInsideTickLabels(ax, [GRID_PATH]);
+        grid.enter().append('path')
+            .classed(cls, 1)
+            .classed('crisp', opts.crisp !== false);
 
-    if(typeof opts.path === 'function') grid.attr('d', opts.path);
+        grid.attr('transform', opts.transFn)
+            .attr('d', opts.path)
+            .each(function(d) {
+                return Color.stroke(d3.select(this), d.minor ?
+                    ax.minor.gridcolor :
+                    (ax.gridcolor || '#ddd')
+                );
+            })
+            .style('stroke-dasharray', function(d) {
+                return Drawing.dashStyle(
+                    d.minor ? ax.minor.griddash : ax.griddash,
+                    d.minor ? ax.minor.gridwidth : ax.gridwidth
+                );
+            })
+            .style('stroke-width', function(d) {
+                return (d.minor ? wMinor : ax._gw) + 'px';
+            })
+            .style('display', null); // visible
+
+        if(typeof opts.path === 'function') grid.attr('d', opts.path);
+    }
+
+    hideCounterAxisInsideTickLabels(ax, [GRID_PATH, MINORGRID_PATH]);
 };
 
 /**
@@ -73812,7 +74649,8 @@ axes.drawLabels = function(gd, ax, opts) {
     var axId = ax._id;
     var axLetter = axId.charAt(0);
     var cls = opts.cls || axId + 'tick';
-    var vals = opts.vals;
+
+    var vals = opts.vals.filter(function(d) { return d.text; });
 
     var labelFns = opts.labelFns;
     var tickAngle = opts.secondary ? 0 : ax.tickangle;
@@ -73994,6 +74832,7 @@ axes.drawLabels = function(gd, ax, opts) {
             if(anchorAx && insideTicklabelposition(anchorAx)) {
                 (partialOpts || [
                     ZERO_PATH,
+                    MINORGRID_PATH,
                     GRID_PATH,
                     TICK_PATH,
                     TICK_TEXT
@@ -74007,6 +74846,7 @@ axes.drawLabels = function(gd, ax, opts) {
 
                     var sel;
                     if(e.K === ZERO_PATH.K) sel = mainPlotinfo.zerolinelayer.selectAll('.' + ax._id + 'zl');
+                    else if(e.K === MINORGRID_PATH.K) sel = mainPlotinfo.minorGridlayer.selectAll('.' + ax._id);
                     else if(e.K === GRID_PATH.K) sel = mainPlotinfo.gridlayer.selectAll('.' + ax._id);
                     else sel = mainPlotinfo[ax._id.charAt(0) + 'axislayer'];
 
@@ -74115,7 +74955,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 var pad = !isAligned ? 0 :
                     (ax.tickwidth || 0) + 2 * TEXTPAD;
 
-                var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory';
+                var rotate90 = (tickSpacing < maxFontSize * 2.5) || ax.type === 'multicategory' || ax._name === 'realaxis';
 
                 // any overlap at all - set 30 degrees or 90 degrees
                 for(i = 0; i < lbbArray.length - 1; i++) {
@@ -74685,7 +75525,7 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
     }
 }
 
-},{"../../components/color":116,"../../components/drawing":138,"../../components/titles":214,"../../constants/alignment":221,"../../constants/numerical":226,"../../lib":248,"../../lib/svg_text_utils":271,"../../plots/plots":337,"../../registry":340,"./autorange":295,"./axis_autotype":297,"./axis_ids":300,"./clean_ticks":302,"./layout_attributes":311,"./set_convert":317,"@plotly/d3":11,"fast-isnumeric":30}],297:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/drawing":138,"../../components/titles":214,"../../constants/alignment":221,"../../constants/numerical":226,"../../lib":248,"../../lib/svg_text_utils":271,"../../plots/plots":339,"../../registry":342,"./autorange":295,"./axis_autotype":297,"./axis_ids":300,"./clean_ticks":302,"./layout_attributes":311,"./set_convert":318,"@plotly/d3":11,"fast-isnumeric":30}],297:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -74814,6 +75654,7 @@ var isNumeric = _dereq_('fast-isnumeric');
 
 var Registry = _dereq_('../../registry');
 var Lib = _dereq_('../../lib');
+var Template = _dereq_('../../plot_api/plot_template');
 
 var handleArrayContainerDefaults = _dereq_('../array_container_defaults');
 
@@ -74821,6 +75662,7 @@ var layoutAttributes = _dereq_('./layout_attributes');
 var handleTickValueDefaults = _dereq_('./tick_value_defaults');
 var handleTickMarkDefaults = _dereq_('./tick_mark_defaults');
 var handleTickLabelDefaults = _dereq_('./tick_label_defaults');
+var handlePrefixSuffixDefaults = _dereq_('./prefix_suffix_defaults');
 var handleCategoryOrderDefaults = _dereq_('./category_order_defaults');
 var handleLineGridDefaults = _dereq_('./line_grid_defaults');
 var setConvert = _dereq_('./set_convert');
@@ -74920,7 +75762,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // try to get default title from splom trace, fallback to graph-wide value
     var dfltTitle = splomStash.label || layoutOut._dfltTitle[letter];
 
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 1});
+    handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options);
     if(!visible) return containerOut;
 
     coerce('title.text', dfltTitle);
@@ -74930,16 +75772,45 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         color: dfltFontColor
     });
 
+    // major ticks
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, {pass: 2});
+
+    var hasMinor = options.hasMinor;
+    if(hasMinor) {
+        // minor ticks
+        Template.newContainer(containerOut, 'minor');
+        handleTickValueDefaults(containerIn, containerOut, coerce, axType, { isMinor: true });
+    }
+
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
+
+    // major and minor ticks
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+    if(hasMinor) {
+        var keepIsMinor = options.isMinor;
+        options.isMinor = true;
+        handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+        options.isMinor = keepIsMinor;
+    }
+
     handleLineGridDefaults(containerIn, containerOut, coerce, {
         dfltColor: dfltColor,
         bgColor: options.bgColor,
         showGrid: options.showGrid,
+        hasMinor: hasMinor,
         attributes: layoutAttributes
     });
 
+    // delete minor when no minor ticks or gridlines
+    if(
+        hasMinor &&
+        !containerOut.minor.ticks &&
+        !containerOut.minor.showgrid
+    ) {
+        delete containerOut.minor;
+    }
+
+    // mirror
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
     if(options.automargin) coerce('automargin');
@@ -75119,7 +75990,7 @@ function indexOfDay(v) {
     ];
 }
 
-},{"../../lib":248,"../../registry":340,"../array_container_defaults":291,"./category_order_defaults":301,"./constants":303,"./layout_attributes":311,"./line_grid_defaults":313,"./set_convert":317,"./tick_label_defaults":318,"./tick_mark_defaults":319,"./tick_value_defaults":320,"fast-isnumeric":30}],299:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plot_api/plot_template":285,"../../registry":342,"../array_container_defaults":291,"./category_order_defaults":301,"./constants":303,"./layout_attributes":311,"./line_grid_defaults":313,"./prefix_suffix_defaults":315,"./set_convert":318,"./tick_label_defaults":320,"./tick_mark_defaults":321,"./tick_value_defaults":322,"fast-isnumeric":30}],299:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../../constants/docs');
@@ -75316,7 +76187,7 @@ exports.isLinked = function(fullLayout, axId) {
     );
 };
 
-},{"../../registry":340,"./constants":303}],301:[function(_dereq_,module,exports){
+},{"../../registry":342,"./constants":303}],301:[function(_dereq_,module,exports){
 'use strict';
 
 function findCategories(ax, opts) {
@@ -76213,7 +77084,7 @@ function updateDomain(ax, factor) {
     ax.setScale();
 }
 
-},{"../../constants/alignment":221,"../../constants/numerical":226,"../../lib":248,"./autorange":295,"./axis_ids":300,"./layout_attributes":311,"./scale_zoom":315,"./set_convert":317}],305:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221,"../../constants/numerical":226,"../../lib":248,"./autorange":295,"./axis_ids":300,"./layout_attributes":311,"./scale_zoom":316,"./set_convert":318}],305:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -77545,7 +78416,7 @@ module.exports = {
     attachWheelEventHandler: attachWheelEventHandler
 };
 
-},{"../../components/color":116,"../../components/dragelement":135,"../../components/dragelement/helpers":134,"../../components/drawing":138,"../../components/fx":156,"../../constants/alignment":221,"../../lib":248,"../../lib/clear_gl_canvases":234,"../../lib/setcursor":268,"../../lib/svg_text_utils":271,"../../plot_api/subroutines":286,"../../registry":340,"../plots":337,"./axes":296,"./axis_ids":300,"./constants":303,"./scale_zoom":315,"./select":316,"@plotly/d3":11,"has-passive-events":62,"tinycolor2":80}],306:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/dragelement":135,"../../components/dragelement/helpers":134,"../../components/drawing":138,"../../components/fx":156,"../../constants/alignment":221,"../../lib":248,"../../lib/clear_gl_canvases":234,"../../lib/setcursor":268,"../../lib/svg_text_utils":271,"../../plot_api/subroutines":286,"../../registry":342,"../plots":339,"./axes":296,"./axis_ids":300,"./constants":303,"./scale_zoom":316,"./select":317,"@plotly/d3":11,"has-passive-events":62,"tinycolor2":80}],306:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -77848,7 +78719,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
     };
 };
 
-},{"../../lib":248,"../../registry":340,"./axis_ids":300}],310:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342,"./axis_ids":300}],310:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -78312,6 +79183,7 @@ function makeSubplotLayer(gd, plotinfo) {
             plotinfo.shapelayer = ensureSingle(backLayer, 'g', 'shapelayer');
             plotinfo.imagelayer = ensureSingle(backLayer, 'g', 'imagelayer');
 
+            plotinfo.minorGridlayer = ensureSingle(plotgroup, 'g', 'minor-gridlayer');
             plotinfo.gridlayer = ensureSingle(plotgroup, 'g', 'gridlayer');
             plotinfo.zerolinelayer = ensureSingle(plotgroup, 'g', 'zerolinelayer');
 
@@ -78351,6 +79223,7 @@ function makeSubplotLayer(gd, plotinfo) {
         // their other components to the corresponding
         // extra groups of their main plots.
 
+        plotinfo.minorGridlayer = mainplotinfo.minorGridlayer;
         plotinfo.gridlayer = mainplotinfo.gridlayer;
         plotinfo.zerolinelayer = mainplotinfo.zerolinelayer;
 
@@ -78376,6 +79249,12 @@ function makeSubplotLayer(gd, plotinfo) {
     // common attributes for all subplots, overlays or not
 
     if(!hasOnlyLargeSploms) {
+        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.xaxis._id);
+        ensureSingleAndAddDatum(plotinfo.minorGridlayer, 'g', plotinfo.yaxis._id);
+        plotinfo.minorGridlayer.selectAll('g')
+            .map(function(d) { return d[0]; })
+            .sort(axisIds.idSort);
+
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.xaxis._id);
         ensureSingleAndAddDatum(plotinfo.gridlayer, 'g', plotinfo.yaxis._id);
         plotinfo.gridlayer.selectAll('g')
@@ -78457,7 +79336,7 @@ exports.toSVG = function(gd) {
 
 exports.updateFx = _dereq_('./graph_interact').updateFx;
 
-},{"../../components/drawing":138,"../../constants/xmlns_namespaces":227,"../../lib":248,"../../registry":340,"../get_data":333,"../plots":337,"./attributes":294,"./axis_ids":300,"./constants":303,"./graph_interact":306,"./layout_attributes":311,"./layout_defaults":312,"./transition_axes":321,"@plotly/d3":11}],311:[function(_dereq_,module,exports){
+},{"../../components/drawing":138,"../../constants/xmlns_namespaces":227,"../../lib":248,"../../registry":342,"../get_data":335,"../plots":339,"./attributes":294,"./axis_ids":300,"./constants":303,"./graph_interact":306,"./layout_attributes":311,"./layout_defaults":312,"./transition_axes":323,"@plotly/d3":11}],311:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../font_attributes');
@@ -78471,6 +79350,100 @@ var ONEDAY = _dereq_('../../constants/numerical').ONEDAY;
 var constants = _dereq_('./constants');
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
+
+var tickmode = {
+    valType: 'enumerated',
+    values: ['auto', 'linear', 'array'],
+    editType: 'ticks',
+    impliedEdits: {tick0: undefined, dtick: undefined},
+};
+
+function makeNticks(minor) {
+    return {
+        valType: 'integer',
+        min: 0,
+        dflt: minor ? 5 : 0,
+        editType: 'ticks',
+    };
+}
+
+var tick0 = {
+    valType: 'any',
+    editType: 'ticks',
+    impliedEdits: {tickmode: 'linear'},
+};
+
+var dtick = {
+    valType: 'any',
+    editType: 'ticks',
+    impliedEdits: {tickmode: 'linear'},
+};
+
+var tickvals = {
+    valType: 'data_array',
+    editType: 'ticks',
+};
+
+var ticks = {
+    valType: 'enumerated',
+    values: ['outside', 'inside', ''],
+    editType: 'ticks',
+};
+
+function makeTicklen(minor) {
+    var obj = {
+        valType: 'number',
+        min: 0,
+        editType: 'ticks',
+    };
+
+    if(!minor) obj.dflt = 5;
+
+    return obj;
+}
+
+function makeTickwidth(minor) {
+    var obj = {
+        valType: 'number',
+        min: 0,
+        editType: 'ticks',
+    };
+
+    if(!minor) obj.dflt = 1;
+
+    return obj;
+}
+
+var tickcolor = {
+    valType: 'color',
+    dflt: colorAttrs.defaultLine,
+    editType: 'ticks',
+};
+
+var gridcolor = {
+    valType: 'color',
+    dflt: colorAttrs.lightLine,
+    editType: 'ticks',
+};
+
+function makeGridwidth(minor) {
+    var obj = {
+        valType: 'number',
+        min: 0,
+        editType: 'ticks',
+    };
+
+    if(!minor) obj.dflt = 1;
+
+    return obj;
+}
+
+var griddash = extendFlat({}, dash, {editType: 'ticks'});
+
+var showgrid = {
+    valType: 'boolean',
+    editType: 'ticks',
+};
 
 module.exports = {
     visible: {
@@ -78645,41 +79618,22 @@ module.exports = {
     }),
 
     // ticks
-    tickmode: {
-        valType: 'enumerated',
-        values: ['auto', 'linear', 'array'],
-        editType: 'ticks',
-        impliedEdits: {tick0: undefined, dtick: undefined},
-    },
-    nticks: {
+    tickmode: tickmode,
+    nticks: makeNticks(),
+    tick0: tick0,
+    dtick: dtick,
+    ticklabelstep: {
         valType: 'integer',
-        min: 0,
-        dflt: 0,
+        min: 1,
+        dflt: 1,
         editType: 'ticks',
     },
-    tick0: {
-        valType: 'any',
-        editType: 'ticks',
-        impliedEdits: {tickmode: 'linear'},
-    },
-    dtick: {
-        valType: 'any',
-        editType: 'ticks',
-        impliedEdits: {tickmode: 'linear'},
-    },
-    tickvals: {
-        valType: 'data_array',
-        editType: 'ticks',
-    },
+    tickvals: tickvals,
     ticktext: {
         valType: 'data_array',
         editType: 'ticks',
     },
-    ticks: {
-        valType: 'enumerated',
-        values: ['outside', 'inside', ''],
-        editType: 'ticks',
-    },
+    ticks: ticks,
     tickson: {
         valType: 'enumerated',
         values: ['labels', 'boundaries'],
@@ -78721,23 +79675,9 @@ module.exports = {
         dflt: false,
         editType: 'ticks+layoutstyle',
     },
-    ticklen: {
-        valType: 'number',
-        min: 0,
-        dflt: 5,
-        editType: 'ticks',
-    },
-    tickwidth: {
-        valType: 'number',
-        min: 0,
-        dflt: 1,
-        editType: 'ticks',
-    },
-    tickcolor: {
-        valType: 'color',
-        dflt: colorAttrs.defaultLine,
-        editType: 'ticks',
-    },
+    ticklen: makeTicklen(),
+    tickwidth: makeTickwidth(),
+    tickcolor: tickcolor,
     showticklabels: {
         valType: 'boolean',
         dflt: true,
@@ -78879,21 +79819,11 @@ module.exports = {
         dflt: 1,
         editType: 'ticks+layoutstyle',
     },
-    showgrid: {
-        valType: 'boolean',
-        editType: 'ticks',
-    },
-    gridcolor: {
-        valType: 'color',
-        dflt: colorAttrs.lightLine,
-        editType: 'ticks',
-    },
-    gridwidth: {
-        valType: 'number',
-        min: 0,
-        dflt: 1,
-        editType: 'ticks',
-    },
+    showgrid: showgrid,
+    gridcolor: gridcolor,
+    gridwidth: makeGridwidth(),
+    griddash: griddash,
+
     zeroline: {
         valType: 'boolean',
         editType: 'ticks',
@@ -78957,6 +79887,26 @@ module.exports = {
         ],
         editType: 'plot',
     },
+
+    minor: {
+        tickmode: tickmode,
+        nticks: makeNticks('minor'),
+        tick0: tick0,
+        dtick: dtick,
+        tickvals: tickvals,
+        ticks: ticks,
+        ticklen: makeTicklen('minor'),
+        tickwidth: makeTickwidth('minor'),
+        tickcolor: tickcolor,
+
+        gridcolor: gridcolor,
+        gridwidth: makeGridwidth('minor'),
+        griddash: griddash,
+        showgrid: showgrid,
+
+        editType: 'ticks'
+    },
+
     layer: {
         valType: 'enumerated',
         values: ['above traces', 'below traces'],
@@ -79018,7 +79968,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":115,"../../components/drawing/attributes":137,"../../constants/numerical":226,"../../lib/extend":240,"../../plot_api/plot_template":285,"../../plots/cartesian/axis_format_attributes":299,"../font_attributes":325,"./constants":303}],312:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":115,"../../components/drawing/attributes":137,"../../constants/numerical":226,"../../lib/extend":240,"../../plot_api/plot_template":285,"../../plots/cartesian/axis_format_attributes":299,"../font_attributes":327,"./constants":303}],312:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -79250,6 +80200,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
               ));
 
         var defaultOptions = {
+            hasMinor: true,
             letter: axLetter,
             font: layoutOut.font,
             outerTicks: outerTicks[axName],
@@ -79396,11 +80347,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":116,"../../components/fx/helpers":152,"../../components/fx/hovermode_defaults":155,"../../lib":248,"../../plot_api/plot_template":285,"../../registry":340,"../layout_attributes":335,"./axis_defaults":298,"./axis_ids":300,"./constants":303,"./constraints":304,"./layout_attributes":311,"./position_defaults":314,"./type_defaults":322}],313:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/fx/helpers":152,"../../components/fx/hovermode_defaults":155,"../../lib":248,"../../plot_api/plot_template":285,"../../registry":342,"../layout_attributes":337,"./axis_defaults":298,"./axis_ids":300,"./constants":303,"./constraints":304,"./layout_attributes":311,"./position_defaults":314,"./type_defaults":324}],313:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
-var lightFraction = _dereq_('../../components/color/attributes').lightFraction;
+var colorAttrs = _dereq_('../../components/color/attributes');
 var Lib = _dereq_('../../lib');
 
 /**
@@ -79431,14 +80382,38 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
         delete containerOut.linewidth;
     }
 
-    var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || lightFraction).toRgbString();
+    var gridColorDflt = colorMix(dfltColor, opts.bgColor, opts.blend || colorAttrs.lightFraction).toRgbString();
     var gridColor = coerce2('gridcolor', gridColorDflt);
     var gridWidth = coerce2('gridwidth');
-    var showGridLines = coerce('showgrid', opts.showGrid || !!gridColor || !!gridWidth);
+    var gridDash = coerce2('griddash');
+    var showGridLines = coerce('showgrid', opts.showGrid ||
+        !!gridColor ||
+        !!gridWidth ||
+        !!gridDash
+    );
 
     if(!showGridLines) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
+        delete containerOut.griddash;
+    }
+
+    if(opts.hasMinor) {
+        var minorGridColorDflt = colorMix(containerOut.gridcolor, opts.bgColor, 67).toRgbString();
+        var minorGridColor = coerce2('minor.gridcolor', minorGridColorDflt);
+        var minorGridWidth = coerce2('minor.gridwidth', containerOut.gridwidth || 1);
+        var minorGridDash = coerce2('minor.griddash', containerOut.griddash || 'solid');
+        var minorShowGridLines = coerce('minor.showgrid',
+            !!minorGridColor ||
+            !!minorGridWidth ||
+            !!minorGridDash
+        );
+
+        if(!minorShowGridLines) {
+            delete containerOut.minor.gridcolor;
+            delete containerOut.minor.gridwidth;
+            delete containerOut.minor.griddash;
+        }
     }
 
     if(!opts.noZeroLine) {
@@ -79535,6 +80510,24 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
 },{"../../lib":248,"fast-isnumeric":30}],315:[function(_dereq_,module,exports){
 'use strict';
 
+var getShowAttrDflt = _dereq_('./show_dflt');
+
+module.exports = function handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options) {
+    if(!options) options = {};
+    var tickSuffixDflt = options.tickSuffixDflt;
+
+    var showAttrDflt = getShowAttrDflt(containerIn);
+
+    var tickPrefix = coerce('tickprefix');
+    if(tickPrefix) coerce('showtickprefix', showAttrDflt);
+
+    var tickSuffix = coerce('ticksuffix', tickSuffixDflt);
+    if(tickSuffix) coerce('showticksuffix', showAttrDflt);
+};
+
+},{"./show_dflt":319}],316:[function(_dereq_,module,exports){
+'use strict';
+
 var FROM_BL = _dereq_('../../constants/alignment').FROM_BL;
 
 module.exports = function scaleZoom(ax, factor, centerFraction) {
@@ -79552,7 +80545,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     ax.setScale();
 };
 
-},{"../../constants/alignment":221}],316:[function(_dereq_,module,exports){
+},{"../../constants/alignment":221}],317:[function(_dereq_,module,exports){
 'use strict';
 
 var polybool = _dereq_('polybooljs');
@@ -80486,7 +81479,7 @@ module.exports = {
     selectOnClick: selectOnClick
 };
 
-},{"../../components/color":116,"../../components/dragelement/helpers":134,"../../components/drawing":138,"../../components/fx":156,"../../components/fx/helpers":152,"../../components/shapes/draw_newshape/display_outlines":204,"../../components/shapes/draw_newshape/helpers":205,"../../components/shapes/draw_newshape/newshapes":206,"../../lib":248,"../../lib/clear_gl_canvases":234,"../../lib/polygon":260,"../../lib/throttle":272,"../../plot_api/subroutines":286,"../../registry":340,"./axis_ids":300,"./constants":303,"./handle_outline":307,"./helpers":308,"polybooljs":70}],317:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/dragelement/helpers":134,"../../components/drawing":138,"../../components/fx":156,"../../components/fx/helpers":152,"../../components/shapes/draw_newshape/display_outlines":204,"../../components/shapes/draw_newshape/helpers":205,"../../components/shapes/draw_newshape/newshapes":206,"../../lib":248,"../../lib/clear_gl_canvases":234,"../../lib/polygon":260,"../../lib/throttle":272,"../../plot_api/subroutines":286,"../../registry":342,"./axis_ids":300,"./constants":303,"./handle_outline":307,"./helpers":308,"polybooljs":70}],318:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -80938,6 +81931,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         if(ax.type === 'date') dflt = Lib.dfltRange(ax.calendar);
         else if(axLetter === 'y') dflt = constants.DFLTRANGEY;
+        else if(ax._name === 'realaxis') dflt = [0, 1];
         else dflt = opts.dfltRange || constants.DFLTRANGEX;
 
         // make sure we don't later mutate the defaults
@@ -81450,42 +82444,49 @@ module.exports = function setConvert(ax, fullLayout) {
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":226,"../../lib":248,"./axis_ids":300,"./constants":303,"@plotly/d3":11,"d3-time-format":27,"fast-isnumeric":30}],318:[function(_dereq_,module,exports){
+},{"../../constants/numerical":226,"../../lib":248,"./axis_ids":300,"./constants":303,"@plotly/d3":11,"d3-time-format":27,"fast-isnumeric":30}],319:[function(_dereq_,module,exports){
+'use strict';
+
+/*
+ * Attributes 'showexponent', 'showtickprefix' and 'showticksuffix'
+ * share values.
+ *
+ * If only 1 attribute is set,
+ * the remaining attributes inherit that value.
+ *
+ * If 2 attributes are set to the same value,
+ * the remaining attribute inherits that value.
+ *
+ * If 2 attributes are set to different values,
+ * the remaining is set to its dflt value.
+ *
+ */
+module.exports = function getShowAttrDflt(containerIn) {
+    var showAttrsAll = ['showexponent', 'showtickprefix', 'showticksuffix'];
+    var showAttrs = showAttrsAll.filter(function(a) {
+        return containerIn[a] !== undefined;
+    });
+    var sameVal = function(a) {
+        return containerIn[a] === containerIn[showAttrs[0]];
+    };
+
+    if(showAttrs.every(sameVal) || showAttrs.length === 1) {
+        return containerIn[showAttrs[0]];
+    }
+};
+
+},{}],320:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
 var contrast = _dereq_('../../components/color').contrast;
 var layoutAttributes = _dereq_('./layout_attributes');
+var getShowAttrDflt = _dereq_('./show_dflt');
 var handleArrayContainerDefaults = _dereq_('../array_container_defaults');
 
-module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options, config) {
-    if(!config || config.pass === 1) {
-        handlePrefixSuffix(containerIn, containerOut, coerce, axType, options);
-    }
-
-    if(!config || config.pass === 2) {
-        handleOtherDefaults(containerIn, containerOut, coerce, axType, options);
-    }
-};
-
-function handlePrefixSuffix(containerIn, containerOut, coerce, axType, options) {
+module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
+    if(!options) options = {};
     var showAttrDflt = getShowAttrDflt(containerIn);
-
-    var tickPrefix = coerce('tickprefix');
-    if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-    var tickSuffix = coerce('ticksuffix', options.tickSuffixDflt);
-    if(tickSuffix) coerce('showticksuffix', showAttrDflt);
-}
-
-function handleOtherDefaults(containerIn, containerOut, coerce, axType, options) {
-    var showAttrDflt = getShowAttrDflt(containerIn);
-
-    var tickPrefix = coerce('tickprefix');
-    if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-    var tickSuffix = coerce('ticksuffix', options.tickSuffixDflt);
-    if(tickSuffix) coerce('showticksuffix', showAttrDflt);
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
@@ -81504,7 +82505,16 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
             size: font.size,
             color: dfltFontColor
         });
-        coerce('tickangle');
+
+        if(
+            !options.noTicklabelstep &&
+            axType !== 'multicategory' &&
+            axType !== 'log'
+        ) {
+            coerce('ticklabelstep');
+        }
+
+        if(!options.noAng) coerce('tickangle');
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
@@ -81518,7 +82528,7 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
                 delete containerOut.tickformatstops;
             }
 
-            if(!tickFormat && axType !== 'date') {
+            if(!options.noExp && !tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');
                 coerce('minexponent');
@@ -81526,35 +82536,7 @@ function handleOtherDefaults(containerIn, containerOut, coerce, axType, options)
             }
         }
     }
-}
-
-/*
- * Attributes 'showexponent', 'showtickprefix' and 'showticksuffix'
- * share values.
- *
- * If only 1 attribute is set,
- * the remaining attributes inherit that value.
- *
- * If 2 attributes are set to the same value,
- * the remaining attribute inherits that value.
- *
- * If 2 attributes are set to different values,
- * the remaining is set to its dflt value.
- *
- */
-function getShowAttrDflt(containerIn) {
-    var showAttrsAll = ['showexponent', 'showtickprefix', 'showticksuffix'];
-    var showAttrs = showAttrsAll.filter(function(a) {
-        return containerIn[a] !== undefined;
-    });
-    var sameVal = function(a) {
-        return containerIn[a] === containerIn[showAttrs[0]];
-    };
-
-    if(showAttrs.every(sameVal) || showAttrs.length === 1) {
-        return containerIn[showAttrs[0]];
-    }
-}
+};
 
 function tickformatstopDefaults(valueIn, valueOut) {
     function coerce(attr, dflt) {
@@ -81568,7 +82550,7 @@ function tickformatstopDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../components/color":116,"../../lib":248,"../array_container_defaults":291,"./layout_attributes":311}],319:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../lib":248,"../array_container_defaults":291,"./layout_attributes":311,"./show_dflt":319}],321:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -81579,31 +82561,45 @@ var layoutAttributes = _dereq_('./layout_attributes');
 /**
  * options: inherits outerTicks from axes.handleAxisDefaults
  */
-module.exports = function handleTickDefaults(containerIn, containerOut, coerce, options) {
-    var tickLen = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'ticklen');
-    var tickWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'tickwidth');
-    var tickColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'tickcolor', containerOut.color);
-    var showTicks = coerce('ticks', (options.outerTicks || tickLen || tickWidth || tickColor) ? 'outside' : '');
+module.exports = function handleTickMarkDefaults(containerIn, containerOut, coerce, options) {
+    var isMinor = options.isMinor;
+    var cIn = isMinor ? containerIn.minor || {} : containerIn;
+    var cOut = isMinor ? containerOut.minor : containerOut;
+    var lAttr = isMinor ? layoutAttributes.minor : layoutAttributes;
+    var prefix = isMinor ? 'minor.' : '';
+
+    var tickLen = Lib.coerce2(cIn, cOut, lAttr, 'ticklen', isMinor ? ((containerOut.ticklen || 5) * 0.6) : undefined);
+    var tickWidth = Lib.coerce2(cIn, cOut, lAttr, 'tickwidth', isMinor ? (containerOut.tickwidth || 1) : undefined);
+    var tickColor = Lib.coerce2(cIn, cOut, lAttr, 'tickcolor', (isMinor ? containerOut.tickcolor : undefined) || cOut.color);
+    var showTicks = coerce(prefix + 'ticks', (
+        (!isMinor && options.outerTicks) || tickLen || tickWidth || tickColor
+    ) ? 'outside' : '');
 
     if(!showTicks) {
-        delete containerOut.ticklen;
-        delete containerOut.tickwidth;
-        delete containerOut.tickcolor;
+        delete cOut.ticklen;
+        delete cOut.tickwidth;
+        delete cOut.tickcolor;
     }
 };
 
-},{"../../lib":248,"./layout_attributes":311}],320:[function(_dereq_,module,exports){
+},{"../../lib":248,"./layout_attributes":311}],322:[function(_dereq_,module,exports){
 'use strict';
 
 var cleanTicks = _dereq_('./clean_ticks');
 var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
 
-module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
+module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType, opts) {
+    if(!opts) opts = {};
+    var isMinor = opts.isMinor;
+    var cIn = isMinor ? containerIn.minor || {} : containerIn;
+    var cOut = isMinor ? containerOut.minor : containerOut;
+    var prefix = isMinor ? 'minor.' : '';
+
     function readInput(attr) {
-        var v = containerIn[attr];
+        var v = cIn[attr];
         return (
             v !== undefined
-        ) ? v : (containerOut._template || {})[attr];
+        ) ? v : (cOut._template || {})[attr];
     }
 
     var _tick0 = readInput('tick0');
@@ -81613,25 +82609,26 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     var tickmodeDefault = isArrayOrTypedArray(_tickvals) ? 'array' :
         _dtick ? 'linear' :
         'auto';
-    var tickmode = coerce('tickmode', tickmodeDefault);
+    var tickmode = coerce(prefix + 'tickmode', tickmodeDefault);
 
-    if(tickmode === 'auto') coerce('nticks');
-    else if(tickmode === 'linear') {
+    if(tickmode === 'auto') {
+        coerce(prefix + 'nticks');
+    } else if(tickmode === 'linear') {
         // dtick is usually a positive number, but there are some
         // special strings available for log or date axes
         // tick0 also has special logic
-        var dtick = containerOut.dtick = cleanTicks.dtick(
+        var dtick = cOut.dtick = cleanTicks.dtick(
             _dtick, axType);
-        containerOut.tick0 = cleanTicks.tick0(
+        cOut.tick0 = cleanTicks.tick0(
             _tick0, axType, containerOut.calendar, dtick);
     } else if(axType !== 'multicategory') {
-        var tickvals = coerce('tickvals');
-        if(tickvals === undefined) containerOut.tickmode = 'auto';
-        else coerce('ticktext');
+        var tickvals = coerce(prefix + 'tickvals');
+        if(tickvals === undefined) cOut.tickmode = 'auto';
+        else if(!isMinor) coerce('ticktext');
     }
 };
 
-},{"../../lib":248,"./clean_ticks":302}],321:[function(_dereq_,module,exports){
+},{"../../lib":248,"./clean_ticks":302}],323:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -81836,7 +82833,7 @@ module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnComple
     return Promise.resolve();
 };
 
-},{"../../components/drawing":138,"../../lib":248,"../../registry":340,"./axes":296,"@plotly/d3":11}],322:[function(_dereq_,module,exports){
+},{"../../components/drawing":138,"../../lib":248,"../../registry":342,"./axes":296,"@plotly/d3":11}],324:[function(_dereq_,module,exports){
 'use strict';
 
 var traceIs = _dereq_('../../registry').traceIs;
@@ -81968,7 +82965,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-},{"../../registry":340,"./axis_autotype":297}],323:[function(_dereq_,module,exports){
+},{"../../registry":342,"./axis_autotype":297}],325:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -82387,7 +83384,7 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":248,"../registry":340}],324:[function(_dereq_,module,exports){
+},{"../lib":248,"../registry":342}],326:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../lib/extend').extendFlat;
@@ -82484,7 +83481,7 @@ exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
     if(!(y[0] < y[1])) containerOut.domain.y = dfltY.slice();
 };
 
-},{"../lib/extend":240}],325:[function(_dereq_,module,exports){
+},{"../lib/extend":240}],327:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -82527,6 +83524,9 @@ module.exports = function(opts) {
         // TODO - that's uber hacky... better solution?
     };
 
+    if(opts.autoSize) attrs.size.dflt = 'auto';
+    if(opts.autoColor) attrs.color.dflt = 'auto';
+
     if(opts.arrayOk) {
         attrs.family.arrayOk = true;
         attrs.size.arrayOk = true;
@@ -82536,7 +83536,7 @@ module.exports = function(opts) {
     return attrs;
 };
 
-},{}],326:[function(_dereq_,module,exports){
+},{}],328:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -82562,7 +83562,7 @@ module.exports = {
     }
 };
 
-},{}],327:[function(_dereq_,module,exports){
+},{}],329:[function(_dereq_,module,exports){
 'use strict';
 
 // projection names to d3 function name
@@ -82820,7 +83820,7 @@ exports.layerNameToAdjective = {
     frame: 'frame'
 };
 
-},{}],328:[function(_dereq_,module,exports){
+},{}],330:[function(_dereq_,module,exports){
 'use strict';
 
 /* global PlotlyGeoAssets:false */
@@ -83190,7 +84190,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         } else if(isAxisLayer(d)) {
             path.datum(makeGraticule(d, geoLayout, fullLayout))
                 .call(Color.stroke, geoLayout[d].gridcolor)
-                .call(Drawing.dashLine, '', geoLayout[d].gridwidth);
+                .call(Drawing.dashLine, geoLayout[d].griddash, geoLayout[d].gridwidth);
         }
 
         if(isLineLayer(d)) {
@@ -83608,7 +84608,7 @@ function makeRangeBox(lon, lat) {
     };
 }
 
-},{"../../components/color":116,"../../components/dragelement":135,"../../components/drawing":138,"../../components/fx":156,"../../lib":248,"../../lib/geo_location_utils":243,"../../lib/topojson_utils":274,"../../registry":340,"../cartesian/autorange":295,"../cartesian/axes":296,"../cartesian/select":316,"../plots":337,"./constants":327,"./zoom":332,"@plotly/d3":11,"d3-geo":26,"d3-geo-projection":25,"topojson-client":81}],329:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/dragelement":135,"../../components/drawing":138,"../../components/fx":156,"../../lib":248,"../../lib/geo_location_utils":243,"../../lib/topojson_utils":274,"../../registry":342,"../cartesian/autorange":295,"../cartesian/axes":296,"../cartesian/select":317,"../plots":339,"./constants":329,"./zoom":334,"@plotly/d3":11,"d3-geo":26,"d3-geo-projection":25,"topojson-client":81}],331:[function(_dereq_,module,exports){
 'use strict';
 
 var getSubplotCalcData = _dereq_('../../plots/get_data').getSubplotCalcData;
@@ -83692,11 +84692,12 @@ module.exports = {
     clean: clean
 };
 
-},{"../../lib":248,"../../plots/get_data":333,"./geo":328,"./layout_attributes":330,"./layout_defaults":331}],330:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plots/get_data":335,"./geo":330,"./layout_attributes":332,"./layout_defaults":333}],332:[function(_dereq_,module,exports){
 'use strict';
 
 var colorAttrs = _dereq_('../../components/color/attributes');
 var domainAttrs = _dereq_('../domain').attributes;
+var dash = _dereq_('../../components/drawing/attributes').dash;
 var constants = _dereq_('./constants');
 var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
 var sortObjectKeys = _dereq_('../../lib/sort_object_keys');
@@ -83728,7 +84729,8 @@ var geoAxesAttrs = {
         valType: 'number',
         min: 0,
         dflt: 1,
-    }
+    },
+    griddash: dash
 };
 
 var attrs = module.exports = overrideAll({
@@ -83902,7 +84904,7 @@ attrs.uirevision = {
     editType: 'none',
 };
 
-},{"../../components/color/attributes":115,"../../lib/sort_object_keys":269,"../../plot_api/edit_types":278,"../domain":324,"./constants":327}],331:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":115,"../../components/drawing/attributes":137,"../../lib/sort_object_keys":269,"../../plot_api/edit_types":278,"../domain":326,"./constants":329}],333:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -83992,6 +84994,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         if(show) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
+            coerce(axisName + '.griddash');
         }
 
         // mock axis for autorange computations
@@ -84128,7 +85131,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     }
 }
 
-},{"../../lib":248,"../get_data":333,"../subplot_defaults":338,"./constants":327,"./layout_attributes":330}],332:[function(_dereq_,module,exports){
+},{"../../lib":248,"../get_data":335,"../subplot_defaults":340,"./constants":329,"./layout_attributes":332}],334:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -84631,7 +85634,7 @@ function d3eventDispatch(target) {
     return dispatch;
 }
 
-},{"../../lib":248,"../../registry":340,"@plotly/d3":11}],333:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342,"@plotly/d3":11}],335:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -84752,7 +85755,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-},{"../registry":340,"./cartesian/constants":303}],334:[function(_dereq_,module,exports){
+},{"../registry":342,"./cartesian/constants":303}],336:[function(_dereq_,module,exports){
 'use strict';
 
 function xformMatrix(m, v) {
@@ -84777,7 +85780,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],335:[function(_dereq_,module,exports){
+},{}],337:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
@@ -84955,6 +85958,7 @@ module.exports = {
         valType: 'boolean',
         editType: 'legend',
     },
+
     colorway: {
         valType: 'colorlist',
         dflt: colorAttrs.defaults,
@@ -85004,7 +86008,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":115,"../components/shapes/draw_newshape/attributes":201,"../lib/extend":240,"./animation_attributes":290,"./font_attributes":325,"./pad_attributes":336}],336:[function(_dereq_,module,exports){
+},{"../components/color/attributes":115,"../components/shapes/draw_newshape/attributes":201,"../lib/extend":240,"./animation_attributes":290,"./font_attributes":327,"./pad_attributes":338}],338:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -85043,7 +86047,7 @@ module.exports = function(opts) {
     };
 };
 
-},{}],337:[function(_dereq_,module,exports){
+},{}],339:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -86367,13 +87371,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
-            var titleText = coerce('legendgrouptitle.text');
-            if(titleText) {
-                Lib.coerceFont(coerce, 'legendgrouptitle.font', Lib.extendFlat({}, layout.font, {
-                    size: Math.round(layout.font.size * 1.1) // default to larger font size
-                }));
-            }
-
+            coerce('legendgrouptitle.text');
             coerce('legendrank');
 
             traceOut._dfltShowLegend = true;
@@ -86521,16 +87519,14 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('autotypenumbers');
 
-    var globalFont = Lib.coerceFont(coerce, 'font');
+    var font = Lib.coerceFont(coerce, 'font');
+    var fontSize = font.size;
+
+    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+        size: Math.round(fontSize * 1.4)
+    }));
 
     coerce('title.text', layoutOut._dfltTitle.plot);
-
-    Lib.coerceFont(coerce, 'title.font', {
-        family: globalFont.family,
-        size: Math.round(globalFont.size * 1.4),
-        color: globalFont.color
-    });
-
     coerce('title.xref');
     coerce('title.yref');
     coerce('title.x');
@@ -88469,7 +89465,7 @@ plots.cleanBasePlot = function(desiredType, newFullData, newFullLayout, oldFullD
     }
 };
 
-},{"../components/color":116,"../constants/numerical":226,"../lib":248,"../plot_api/plot_schema":284,"../plot_api/plot_template":285,"../plots/get_data":333,"../registry":340,"./animation_attributes":290,"./attributes":292,"./cartesian/axis_ids":300,"./cartesian/handle_outline":307,"./command":323,"./font_attributes":325,"./frame_attributes":326,"./layout_attributes":335,"@plotly/d3":11,"d3-format":24,"d3-time-format":27,"fast-isnumeric":30}],338:[function(_dereq_,module,exports){
+},{"../components/color":116,"../constants/numerical":226,"../lib":248,"../plot_api/plot_schema":284,"../plot_api/plot_template":285,"../plots/get_data":335,"../registry":342,"./animation_attributes":290,"./attributes":292,"./cartesian/axis_ids":300,"./cartesian/handle_outline":307,"./command":325,"./font_attributes":327,"./frame_attributes":328,"./layout_attributes":337,"@plotly/d3":11,"d3-format":24,"d3-time-format":27,"fast-isnumeric":30}],340:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -88530,11 +89526,7 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
 
         subplotLayoutOut = Template.newContainer(layoutOut, id, baseId);
 
-        // All subplot containers get a `uirevision` inheriting from the base.
-        // Currently all subplots containers have some user interaction
-        // attributes, but if we ever add one that doesn't, we would need an
-        // option to skip this step.
-        coerce('uirevision', layoutOut.uirevision);
+        if(!opts.noUirevision) coerce('uirevision', layoutOut.uirevision);
 
         var dfltDomains = {};
         dfltDomains[partition] = [i / idsLength, (i + 1) / idsLength];
@@ -88545,7 +89537,7 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     }
 };
 
-},{"../lib":248,"../plot_api/plot_template":285,"./domain":324}],339:[function(_dereq_,module,exports){
+},{"../lib":248,"../plot_api/plot_template":285,"./domain":326}],341:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../constants/docs');
@@ -88626,7 +89618,7 @@ exports.texttemplateAttrs = function(opts, extra) {
     return texttemplate;
 };
 
-},{"../constants/docs":223}],340:[function(_dereq_,module,exports){
+},{"../constants/docs":223}],342:[function(_dereq_,module,exports){
 'use strict';
 
 var Loggers = _dereq_('./lib/loggers');
@@ -89084,7 +90076,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib/dom":238,"./lib/extend":240,"./lib/is_plain_object":249,"./lib/loggers":252,"./lib/noop":257,"./lib/push_unique":262,"./plots/attributes":292,"./plots/layout_attributes":335}],341:[function(_dereq_,module,exports){
+},{"./lib/dom":238,"./lib/extend":240,"./lib/is_plain_object":249,"./lib/loggers":252,"./lib/noop":257,"./lib/push_unique":262,"./plots/attributes":292,"./plots/layout_attributes":337}],343:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -89244,7 +90236,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":248,"../registry":340}],342:[function(_dereq_,module,exports){
+},{"../lib":248,"../registry":342}],344:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -89308,7 +90300,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":248,"../plot_api/to_image":288,"./filesaver":343,"./helpers":344}],343:[function(_dereq_,module,exports){
+},{"../lib":248,"../plot_api/to_image":288,"./filesaver":345,"./helpers":346}],345:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -89376,7 +90368,7 @@ function fileSaver(url, name, format) {
 
 module.exports = fileSaver;
 
-},{"../lib":248,"./helpers":344}],344:[function(_dereq_,module,exports){
+},{"../lib":248,"./helpers":346}],346:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -89445,7 +90437,7 @@ exports.IMAGE_URL_PREFIX = /^data:image\/\w+;base64,/;
 
 exports.MSG_IE_BAD_FORMAT = 'Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.';
 
-},{"../registry":340}],345:[function(_dereq_,module,exports){
+},{"../registry":342}],347:[function(_dereq_,module,exports){
 'use strict';
 
 var helpers = _dereq_('./helpers');
@@ -89462,7 +90454,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":341,"./download":342,"./helpers":344,"./svgtoimg":346,"./toimage":347,"./tosvg":348}],346:[function(_dereq_,module,exports){
+},{"./cloneplot":343,"./download":344,"./helpers":346,"./svgtoimg":348,"./toimage":349,"./tosvg":350}],348:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -89498,7 +90490,7 @@ function svgToImg(opts) {
         var w1 = scale * w0;
         var h1 = scale * h0;
 
-        var ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d', {willReadFrequently: true});
         var img = new Image();
         var svgBlob, url;
 
@@ -89581,7 +90573,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":248,"./helpers":344,"events":21}],347:[function(_dereq_,module,exports){
+},{"../lib":248,"./helpers":346,"events":21}],349:[function(_dereq_,module,exports){
 'use strict';
 
 var EventEmitter = _dereq_('events').EventEmitter;
@@ -89650,7 +90642,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":248,"../registry":340,"./cloneplot":341,"./helpers":344,"./svgtoimg":346,"./tosvg":348,"events":21}],348:[function(_dereq_,module,exports){
+},{"../lib":248,"../registry":342,"./cloneplot":343,"./helpers":346,"./svgtoimg":348,"./tosvg":350,"events":21}],350:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -89686,7 +90678,7 @@ module.exports = function toSVG(gd, format, scale) {
     var toppaper = fullLayout._toppaper;
     var width = fullLayout.width;
     var height = fullLayout.height;
-    var i, k;
+    var i;
 
     // make background color a rect in the svg, then revert after scraping
     // all other alterations have been dealt with by properly preparing the svg
@@ -89759,32 +90751,21 @@ module.exports = function toSVG(gd, format, scale) {
             }
         });
 
-    var queryParts = [];
-    if(fullLayout._gradientUrlQueryParts) {
-        for(k in fullLayout._gradientUrlQueryParts) queryParts.push(k);
-    }
+    svg.selectAll('.gradient_filled,.pattern_filled').each(function() {
+        var pt = d3.select(this);
 
-    if(fullLayout._patternUrlQueryParts) {
-        for(k in fullLayout._patternUrlQueryParts) queryParts.push(k);
-    }
+        // similar to font family styles above,
+        // we must remove " after the SVG DOM has been serialized
+        var fill = this.style.fill;
+        if(fill && fill.indexOf('url(') !== -1) {
+            pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+        }
 
-    if(queryParts.length) {
-        svg.selectAll(queryParts.join(',')).each(function() {
-            var pt = d3.select(this);
-
-            // similar to font family styles above,
-            // we must remove " after the SVG DOM has been serialized
-            var fill = this.style.fill;
-            if(fill && fill.indexOf('url(') !== -1) {
-                pt.style('fill', fill.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
-            }
-
-            var stroke = this.style.stroke;
-            if(stroke && stroke.indexOf('url(') !== -1) {
-                pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
-            }
-        });
-    }
+        var stroke = this.style.stroke;
+        if(stroke && stroke.indexOf('url(') !== -1) {
+            pt.style('stroke', stroke.replace(DOUBLEQUOTE_REGEX, DUMMY_SUB));
+        }
+    });
 
     if(format === 'pdf' || format === 'eps') {
         // these formats make the extra line MathJax adds around symbols look super thick in some cases
@@ -89835,7 +90816,7 @@ module.exports = function toSVG(gd, format, scale) {
     return s;
 };
 
-},{"../components/color":116,"../components/drawing":138,"../constants/xmlns_namespaces":227,"../lib":248,"@plotly/d3":11}],349:[function(_dereq_,module,exports){
+},{"../components/color":116,"../components/drawing":138,"../constants/xmlns_namespaces":227,"../lib":248,"@plotly/d3":11}],351:[function(_dereq_,module,exports){
 'use strict';
 
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
@@ -89912,7 +90893,7 @@ module.exports = extendFlat({
     })
 );
 
-},{"../../components/color/attributes":115,"../../components/colorscale/attributes":123,"../../lib/extend":240,"../../plots/attributes":292,"../../plots/template_attributes":339,"../scattergeo/attributes":390}],350:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":115,"../../components/colorscale/attributes":123,"../../lib/extend":240,"../../plots/attributes":292,"../../plots/template_attributes":341,"../scattergeo/attributes":392}],352:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -89965,7 +90946,7 @@ module.exports = function calc(gd, trace) {
     return calcTrace;
 };
 
-},{"../../components/colorscale/calc":124,"../../constants/numerical":226,"../scatter/arrays_to_calcdata":361,"../scatter/calc_selection":364,"fast-isnumeric":30}],351:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":124,"../../constants/numerical":226,"../scatter/arrays_to_calcdata":363,"../scatter/calc_selection":366,"fast-isnumeric":30}],353:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -90013,7 +90994,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../components/colorscale/defaults":126,"../../lib":248,"./attributes":349}],352:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":126,"../../lib":248,"./attributes":351}],354:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function eventData(out, pt, trace, cd, pointNumber) {
@@ -90030,7 +91011,7 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     return out;
 };
 
-},{}],353:[function(_dereq_,module,exports){
+},{}],355:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../../plots/cartesian/axes');
@@ -90117,7 +91098,7 @@ function makeHoverInfo(pointData, trace, pt) {
     pointData.extraText = text.join('<br>');
 }
 
-},{"../../lib":248,"../../plots/cartesian/axes":296,"./attributes":349}],354:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../plots/cartesian/axes":296,"./attributes":351}],356:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -90141,7 +91122,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/geo":329,"../heatmap/colorbar":358,"./attributes":349,"./calc":350,"./defaults":351,"./event_data":352,"./hover":353,"./plot":355,"./select":356,"./style":357}],355:[function(_dereq_,module,exports){
+},{"../../plots/geo":331,"../heatmap/colorbar":360,"./attributes":351,"./calc":352,"./defaults":353,"./event_data":354,"./hover":355,"./plot":357,"./select":358,"./style":359}],357:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -90221,7 +91202,7 @@ module.exports = {
     plot: plot
 };
 
-},{"../../lib":248,"../../lib/geo_location_utils":243,"../../lib/topojson_utils":274,"../../plots/cartesian/autorange":295,"./style":357,"@plotly/d3":11}],356:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../lib/geo_location_utils":243,"../../lib/topojson_utils":274,"../../plots/cartesian/autorange":295,"./style":359,"@plotly/d3":11}],358:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function selectPoints(searchInfo, selectionTester) {
@@ -90262,7 +91243,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{}],357:[function(_dereq_,module,exports){
+},{}],359:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -90310,7 +91291,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/color":116,"../../components/colorscale":128,"../../components/drawing":138,"@plotly/d3":11}],358:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/colorscale":128,"../../components/drawing":138,"@plotly/d3":11}],360:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -90318,7 +91299,7 @@ module.exports = {
     max: 'zmax'
 };
 
-},{}],359:[function(_dereq_,module,exports){
+},{}],361:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -90358,7 +91339,7 @@ exports.getRotationAngle = function(rotation) {
     return (rotation === 'auto' ? 0 : rotation) * Math.PI / 180;
 };
 
-},{"../../lib":248}],360:[function(_dereq_,module,exports){
+},{"../../lib":248}],362:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -90374,7 +91355,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":116,"./helpers":359}],361:[function(_dereq_,module,exports){
+},{"../../components/color":116,"./helpers":361}],363:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -90417,7 +91398,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":248}],362:[function(_dereq_,module,exports){
+},{"../../lib":248}],364:[function(_dereq_,module,exports){
 'use strict';
 
 var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
@@ -90426,6 +91407,7 @@ var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplat
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
 var fontAttrs = _dereq_('../../plots/font_attributes');
 var dash = _dereq_('../../components/drawing/attributes').dash;
+var pattern = _dereq_('../../components/drawing/attributes').pattern;
 
 var Drawing = _dereq_('../../components/drawing');
 var constants = _dereq_('./constants');
@@ -90613,6 +91595,7 @@ module.exports = {
         editType: 'style',
         anim: true,
     },
+    fillpattern: pattern,
     marker: extendFlat({
         symbol: {
             valType: 'enumerated',
@@ -90767,7 +91750,7 @@ module.exports = {
     }),
 };
 
-},{"../../components/colorscale/attributes":123,"../../components/drawing":138,"../../components/drawing/attributes":137,"../../lib/extend":240,"../../plots/cartesian/axis_format_attributes":299,"../../plots/font_attributes":325,"../../plots/template_attributes":339,"./constants":366}],363:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":123,"../../components/drawing":138,"../../components/drawing/attributes":137,"../../lib/extend":240,"../../plots/cartesian/axis_format_attributes":299,"../../plots/font_attributes":327,"../../plots/template_attributes":341,"./constants":368}],365:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -91064,7 +92047,7 @@ module.exports = {
     getStackOpts: getStackOpts
 };
 
-},{"../../constants/numerical":226,"../../lib":248,"../../plots/cartesian/align_period":293,"../../plots/cartesian/axes":296,"./arrays_to_calcdata":361,"./calc_selection":364,"./colorscale_calc":365,"./subtypes":387,"fast-isnumeric":30}],364:[function(_dereq_,module,exports){
+},{"../../constants/numerical":226,"../../lib":248,"../../plots/cartesian/align_period":293,"../../plots/cartesian/axes":296,"./arrays_to_calcdata":363,"./calc_selection":366,"./colorscale_calc":367,"./subtypes":389,"fast-isnumeric":30}],366:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -91075,7 +92058,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":248}],365:[function(_dereq_,module,exports){
+},{"../../lib":248}],367:[function(_dereq_,module,exports){
 'use strict';
 
 var hasColorscale = _dereq_('../../components/colorscale/helpers').hasColorscale;
@@ -91110,7 +92093,7 @@ module.exports = function calcMarkerColorscale(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":124,"../../components/colorscale/helpers":127,"./subtypes":387}],366:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":124,"../../components/colorscale/helpers":127,"./subtypes":389}],368:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -91130,7 +92113,7 @@ module.exports = {
     eventDataKeys: []
 };
 
-},{}],367:[function(_dereq_,module,exports){
+},{}],369:[function(_dereq_,module,exports){
 'use strict';
 
 var calc = _dereq_('./calc');
@@ -91302,7 +92285,7 @@ function getInterp(calcTrace, index, position, posAttr) {
     return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
 }
 
-},{"./calc":363}],368:[function(_dereq_,module,exports){
+},{"./calc":365}],370:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -91332,7 +92315,7 @@ module.exports = function crossTraceDefaults(fullData) {
     }
 };
 
-},{}],369:[function(_dereq_,module,exports){
+},{}],371:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -91349,6 +92332,7 @@ var handleLineDefaults = _dereq_('./line_defaults');
 var handleLineShapeDefaults = _dereq_('./line_shape_defaults');
 var handleTextDefaults = _dereq_('./text_defaults');
 var handleFillColorDefaults = _dereq_('./fillcolor_defaults');
+var coercePattern = _dereq_('../../lib').coercePattern;
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -91402,6 +92386,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
+        coercePattern(coerce, 'fillpattern', traceOut.fillcolor, false);
     }
 
     var lineColor = (traceOut.line || {}).color;
@@ -91419,7 +92404,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":248,"../../registry":340,"./attributes":362,"./constants":366,"./fillcolor_defaults":370,"./line_defaults":375,"./line_shape_defaults":377,"./marker_defaults":381,"./period_defaults":382,"./stack_defaults":385,"./subtypes":387,"./text_defaults":388,"./xy_defaults":389}],370:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342,"./attributes":364,"./constants":368,"./fillcolor_defaults":372,"./line_defaults":377,"./line_shape_defaults":379,"./marker_defaults":383,"./period_defaults":384,"./stack_defaults":387,"./subtypes":389,"./text_defaults":390,"./xy_defaults":391}],372:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -91447,7 +92432,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":116,"../../lib":248}],371:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../lib":248}],373:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../../plots/cartesian/axes');
@@ -91465,7 +92450,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     return labels;
 };
 
-},{"../../plots/cartesian/axes":296}],372:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axes":296}],374:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -91505,7 +92490,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":116,"./subtypes":387}],373:[function(_dereq_,module,exports){
+},{"../../components/color":116,"./subtypes":389}],375:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -91716,7 +92701,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":116,"../../components/fx":156,"../../lib":248,"../../registry":340,"./get_trace_color":372}],374:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/fx":156,"../../lib":248,"../../registry":342,"./get_trace_color":374}],376:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -91753,7 +92738,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian":310,"./arrays_to_calcdata":361,"./attributes":362,"./calc":363,"./cross_trace_calc":367,"./cross_trace_defaults":368,"./defaults":369,"./format_labels":371,"./hover":373,"./marker_colorbar":380,"./plot":383,"./select":384,"./style":386,"./subtypes":387}],375:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":310,"./arrays_to_calcdata":363,"./attributes":364,"./calc":365,"./cross_trace_calc":369,"./cross_trace_defaults":370,"./defaults":371,"./format_labels":373,"./hover":375,"./marker_colorbar":382,"./plot":385,"./select":386,"./style":388,"./subtypes":389}],377:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
@@ -91776,7 +92761,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":126,"../../components/colorscale/helpers":127,"../../lib":248}],376:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":126,"../../components/colorscale/helpers":127,"../../lib":248}],378:[function(_dereq_,module,exports){
 'use strict';
 
 var numConstants = _dereq_('../../constants/numerical');
@@ -92228,7 +93213,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":226,"../../lib":248,"./constants":366}],377:[function(_dereq_,module,exports){
+},{"../../constants/numerical":226,"../../lib":248,"./constants":368}],379:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -92238,7 +93223,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],378:[function(_dereq_,module,exports){
+},{}],380:[function(_dereq_,module,exports){
 'use strict';
 
 var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
@@ -92320,7 +93305,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     return cdscatterSorted;
 };
 
-},{}],379:[function(_dereq_,module,exports){
+},{}],381:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -92356,7 +93341,7 @@ module.exports = function makeBubbleSizeFn(trace, factor) {
     };
 };
 
-},{"fast-isnumeric":30}],380:[function(_dereq_,module,exports){
+},{"fast-isnumeric":30}],382:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -92365,7 +93350,7 @@ module.exports = {
     max: 'cmax'
 };
 
-},{}],381:[function(_dereq_,module,exports){
+},{}],383:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -92438,7 +93423,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":116,"../../components/colorscale/defaults":126,"../../components/colorscale/helpers":127,"./subtypes":387}],382:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/colorscale/defaults":126,"../../components/colorscale/helpers":127,"./subtypes":389}],384:[function(_dereq_,module,exports){
 'use strict';
 
 var dateTick0 = _dereq_('../../lib').dateTick0;
@@ -92477,7 +93462,7 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     }
 };
 
-},{"../../constants/numerical":226,"../../lib":248}],383:[function(_dereq_,module,exports){
+},{"../../constants/numerical":226,"../../lib":248}],385:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -92784,11 +93769,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // the points on the axes are the first two points. Otherwise
                     // animations get a little crazy if the number of points changes.
                     transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1))
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 } else {
                     // fill to self: just join the path to itself
                     transition(ownFillEl3).attr('d', fullpath + 'Z')
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 }
             }
         } else if(tonext) {
@@ -92800,7 +93785,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // This makes strange results if one path is *not* entirely
                     // inside the other, but then that is a strange usage.
                     transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 } else {
                     // tonextx/y: for now just connect endpoints with lines. This is
                     // the correct behavior if the endpoints are at the same value of
@@ -92808,7 +93793,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // things depending on whether the new endpoint projects onto the
                     // existing curve or off the end of it
                     transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 }
                 trace._polygons = trace._polygons.concat(prevPolygons);
             } else {
@@ -93029,7 +94014,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":138,"../../lib":248,"../../lib/polygon":260,"../../registry":340,"./line_points":376,"./link_traces":378,"./subtypes":387,"@plotly/d3":11}],384:[function(_dereq_,module,exports){
+},{"../../components/drawing":138,"../../lib":248,"../../lib/polygon":260,"../../registry":342,"./line_points":378,"./link_traces":380,"./subtypes":389,"@plotly/d3":11}],386:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -93074,7 +94059,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"./subtypes":387}],385:[function(_dereq_,module,exports){
+},{"./subtypes":389}],387:[function(_dereq_,module,exports){
 'use strict';
 
 var perStackAttrs = ['orientation', 'groupnorm', 'stackgaps'];
@@ -93171,7 +94156,7 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
     }
 };
 
-},{}],386:[function(_dereq_,module,exports){
+},{}],388:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -93201,7 +94186,7 @@ function style(gd) {
         .call(Drawing.lineGroupStyle);
 
     s.selectAll('g.trace path.js-fill')
-        .call(Drawing.fillGroupStyle);
+        .call(Drawing.fillGroupStyle, gd);
 
     Registry.getComponentMethod('errorbars', 'style')(s);
 }
@@ -93233,7 +94218,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/drawing":138,"../../registry":340,"@plotly/d3":11}],387:[function(_dereq_,module,exports){
+},{"../../components/drawing":138,"../../registry":342,"@plotly/d3":11}],389:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -93263,7 +94248,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":248}],388:[function(_dereq_,module,exports){
+},{"../../lib":248}],390:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -93284,7 +94269,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":248}],389:[function(_dereq_,module,exports){
+},{"../../lib":248}],391:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -93320,7 +94305,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../lib":248,"../../registry":340}],390:[function(_dereq_,module,exports){
+},{"../../lib":248,"../../registry":342}],392:[function(_dereq_,module,exports){
 'use strict';
 
 var hovertemplateAttrs = _dereq_('../../plots/template_attributes').hovertemplateAttrs;
@@ -93418,7 +94403,7 @@ module.exports = overrideAll({
     hovertemplate: hovertemplateAttrs(),
 }, 'calc', 'nested');
 
-},{"../../components/colorscale/attributes":123,"../../components/drawing/attributes":137,"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plots/attributes":292,"../../plots/template_attributes":339,"../scatter/attributes":362}],391:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":123,"../../components/drawing/attributes":137,"../../lib/extend":240,"../../plot_api/edit_types":278,"../../plots/attributes":292,"../../plots/template_attributes":341,"../scatter/attributes":364}],393:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -93477,7 +94462,7 @@ module.exports = function calc(gd, trace) {
     return calcTrace;
 };
 
-},{"../../constants/numerical":226,"../../lib":248,"../scatter/arrays_to_calcdata":361,"../scatter/calc_selection":364,"../scatter/colorscale_calc":365,"fast-isnumeric":30}],392:[function(_dereq_,module,exports){
+},{"../../constants/numerical":226,"../../lib":248,"../scatter/arrays_to_calcdata":363,"../scatter/calc_selection":366,"../scatter/colorscale_calc":367,"fast-isnumeric":30}],394:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -93552,7 +94537,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":248,"../scatter/fillcolor_defaults":370,"../scatter/line_defaults":375,"../scatter/marker_defaults":381,"../scatter/subtypes":387,"../scatter/text_defaults":388,"./attributes":390}],393:[function(_dereq_,module,exports){
+},{"../../lib":248,"../scatter/fillcolor_defaults":372,"../scatter/line_defaults":377,"../scatter/marker_defaults":383,"../scatter/subtypes":389,"../scatter/text_defaults":390,"./attributes":392}],395:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -93570,7 +94555,7 @@ module.exports = function eventData(out, pt, trace, cd, pointNumber) {
     return out;
 };
 
-},{}],394:[function(_dereq_,module,exports){
+},{}],396:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../../plots/cartesian/axes');
@@ -93587,7 +94572,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     return labels;
 };
 
-},{"../../plots/cartesian/axes":296}],395:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axes":296}],397:[function(_dereq_,module,exports){
 'use strict';
 
 var Fx = _dereq_('../../components/fx');
@@ -93691,7 +94676,7 @@ function getExtraText(trace, pt, pointData, labels) {
     return text.join('<br>');
 }
 
-},{"../../components/fx":156,"../../constants/numerical":226,"../../lib":248,"../scatter/get_trace_color":372,"./attributes":390}],396:[function(_dereq_,module,exports){
+},{"../../components/fx":156,"../../constants/numerical":226,"../../lib":248,"../scatter/get_trace_color":374,"./attributes":392}],398:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -93716,7 +94701,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/geo":329,"../scatter/marker_colorbar":380,"../scatter/style":386,"./attributes":390,"./calc":391,"./defaults":392,"./event_data":393,"./format_labels":394,"./hover":395,"./plot":397,"./select":398,"./style":399}],397:[function(_dereq_,module,exports){
+},{"../../plots/geo":331,"../scatter/marker_colorbar":382,"../scatter/style":388,"./attributes":392,"./calc":393,"./defaults":394,"./event_data":395,"./format_labels":396,"./hover":397,"./plot":399,"./select":400,"./style":401}],399:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -93837,7 +94822,7 @@ module.exports = {
     plot: plot
 };
 
-},{"../../constants/numerical":226,"../../lib":248,"../../lib/geo_location_utils":243,"../../lib/geojson_utils":244,"../../lib/topojson_utils":274,"../../plots/cartesian/autorange":295,"../scatter/calc":363,"../scatter/subtypes":387,"./style":399,"@plotly/d3":11}],398:[function(_dereq_,module,exports){
+},{"../../constants/numerical":226,"../../lib":248,"../../lib/geo_location_utils":243,"../../lib/geojson_utils":244,"../../lib/topojson_utils":274,"../../plots/cartesian/autorange":295,"../scatter/calc":365,"../scatter/subtypes":389,"./style":401,"@plotly/d3":11}],400:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('../scatter/subtypes');
@@ -93886,7 +94871,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"../../constants/numerical":226,"../scatter/subtypes":387}],399:[function(_dereq_,module,exports){
+},{"../../constants/numerical":226,"../scatter/subtypes":389}],401:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -93927,7 +94912,7 @@ function styleTrace(gd, calcTrace) {
         });
 }
 
-},{"../../components/color":116,"../../components/drawing":138,"../scatter/style":386,"@plotly/d3":11}],400:[function(_dereq_,module,exports){
+},{"../../components/color":116,"../../components/drawing":138,"../scatter/style":388,"@plotly/d3":11}],402:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../plots/cartesian/axes');
@@ -94331,7 +95316,7 @@ function last(array, indices) {
     return array[indices[indices.length - 1]];
 }
 
-},{"../constants/numerical":226,"../lib":248,"../plot_api/plot_schema":284,"../plots/cartesian/axes":296,"./helpers":403}],401:[function(_dereq_,module,exports){
+},{"../constants/numerical":226,"../lib":248,"../plot_api/plot_schema":284,"../plots/cartesian/axes":296,"./helpers":405}],403:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -94591,7 +95576,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
     }
 }
 
-},{"../constants/filter_ops":224,"../lib":248,"../plots/cartesian/axes":296,"../registry":340,"./helpers":403}],402:[function(_dereq_,module,exports){
+},{"../constants/filter_ops":224,"../lib":248,"../plots/cartesian/axes":296,"../registry":342,"./helpers":405}],404:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -94835,7 +95820,7 @@ function transformOne(trace, state) {
     return newData;
 }
 
-},{"../lib":248,"../plot_api/plot_schema":284,"../plots/plots":337,"./helpers":403}],403:[function(_dereq_,module,exports){
+},{"../lib":248,"../plot_api/plot_schema":284,"../plots/plots":339,"./helpers":405}],405:[function(_dereq_,module,exports){
 'use strict';
 
 exports.pointsAccessorFunction = function(transforms, opts) {
@@ -94853,7 +95838,7 @@ exports.pointsAccessorFunction = function(transforms, opts) {
     return originalPointsAccessor;
 };
 
-},{}],404:[function(_dereq_,module,exports){
+},{}],406:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -94991,11 +95976,11 @@ function getSortFunc(opts, d2c) {
     }
 }
 
-},{"../constants/numerical":226,"../lib":248,"../plots/cartesian/axes":296,"./helpers":403}],405:[function(_dereq_,module,exports){
+},{"../constants/numerical":226,"../lib":248,"../plots/cartesian/axes":296,"./helpers":405}],407:[function(_dereq_,module,exports){
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.5.1';
+exports.version = '2.12.0';
 
 },{}]},{},[8])(8)
 });

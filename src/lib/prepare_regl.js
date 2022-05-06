@@ -18,12 +18,15 @@ var createRegl = require('regl');
  *
  * @return {boolean} true if all createRegl calls succeeded, false otherwise
  */
-module.exports = function prepareRegl(gd, extensions) {
+module.exports = function prepareRegl(gd, extensions, reglPrecompiled) {
     var fullLayout = gd._fullLayout;
     var success = true;
 
     fullLayout._glcanvas.each(function(d) {
-        if(d.regl) return;
+        if(d.regl) {
+            d.regl.preloadCachedCode(reglPrecompiled);
+            return;
+        }
         // only parcoords needs pick layer
         if(d.pick && !fullLayout._has('parcoords')) return;
 
@@ -35,7 +38,8 @@ module.exports = function prepareRegl(gd, extensions) {
                     preserveDrawingBuffer: true
                 },
                 pixelRatio: gd._context.plotGlPixelRatio || global.devicePixelRatio,
-                extensions: extensions || []
+                extensions: extensions || [],
+                cachedCode: reglPrecompiled || {}
             });
         } catch(e) {
             success = false;

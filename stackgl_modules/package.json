@@ -1,0 +1,54 @@
+{
+  "browserify": {
+    "transform": [
+      "glslify"
+    ]
+  },
+  "scripts": {
+    "bundle-stackgl": "../node_modules/browserify/bin/cmd.js main.js --standalone stackgl | ../node_modules/derequire/bin/cmd.js --from require --to _glvis_ > index.js",
+    "postshrinkwrap": "chttps ."
+  },
+  "dependencies": {
+    "@plotly/point-cluster": "^3.1.9",
+    "alpha-shape": "^1.0.0",
+    "box-intersect": "plotly/box-intersect#v1.1.0",
+    "convex-hull": "^1.0.3",
+    "delaunay-triangulate": "^1.1.6",
+    "gl-cone3d": "^1.5.2",
+    "gl-error3d": "^1.0.16",
+    "gl-heatmap2d": "^1.1.1",
+    "gl-line3d": "1.2.1",
+    "gl-mesh3d": "^2.3.1",
+    "gl-plot2d": "^1.4.5",
+    "gl-plot3d": "^2.4.7",
+    "gl-pointcloud2d": "^1.0.3",
+    "gl-scatter3d": "^1.2.3",
+    "gl-select-box": "^1.0.4",
+    "gl-shader": "4.3.1",
+    "gl-spikes2d": "^1.0.2",
+    "gl-streamtube3d": "^1.4.1",
+    "gl-surface3d": "^1.6.0",
+    "glslify": "^7.1.1",
+    "incremental-convex-hull": "plotly/incremental-convex-hull#v1.1.0",
+    "matrix-camera-controller": "^2.1.4",
+    "ndarray": "plotly/ndarray#v1.1.0",
+    "ndarray-extract-contour": "plotly/ndarray-extract-contour#v1.1.0",
+    "ndarray-gradient": "plotly/ndarray-gradient#v1.1.0",
+    "ndarray-linear-interpolate": "^1.0.0",
+    "ndarray-ops": "plotly/ndarray-ops#v1.3.0",
+    "ndarray-pack": "plotly/ndarray-pack#v1.3.0",
+    "ndarray-sort": "plotly/ndarray-sort#v1.1.0",
+    "right-now": "^1.0.0",
+    "robust-determinant": "plotly/robust-determinant#v1.2.2",
+    "robust-in-sphere": "1.2.1",
+    "robust-linear-solve": "plotly/robust-linear-solve#v1.1.2",
+    "robust-orientation": "1.2.1",
+    "simplicial-complex-contour": "plotly/simplicial-complex-contour#v1.1.0",
+    "surface-nets": "plotly/surface-nets#v1.1.1",
+    "vectorize-text": "3.2.2",
+    "zero-crossings": "plotly/zero-crossings#v1.1.0"
+  },
+  "devDependencies": {
+    "chttps": "^1.0.6"
+  }
+}

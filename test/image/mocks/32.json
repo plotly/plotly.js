@@ -1023,6 +1023,7 @@
         "width": 1366,
         "height": 713,
         "xaxis": {
+            "minor": { "ticks": "outside" },
             "title": {
                 "text": "Click to enter X axis title"
             },
@@ -1069,6 +1070,7 @@
             "autorange": true
         },
         "yaxis": {
+            "minor": { "ticks": "outside" },
             "title": {
                 "text": "Click to enter Y axis title"
             },

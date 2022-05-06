@@ -1,6 +1,6 @@
 'use strict';
 
-var createPointCloudRenderer = require('gl-pointcloud2d');
+var createPointCloudRenderer = require('../../../stackgl_modules').gl_pointcloud2d;
 
 var str2RGBArray = require('../../lib/str2rgbarray');
 var findExtremes = require('../../plots/cartesian/autorange').findExtremes;

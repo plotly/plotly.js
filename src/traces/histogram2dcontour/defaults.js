@@ -5,6 +5,7 @@ var Lib = require('../../lib');
 var handleSampleDefaults = require('../histogram2d/sample_defaults');
 var handleContoursDefaults = require('../contour/contours_defaults');
 var handleStyleDefaults = require('../contour/style_defaults');
+var handleHeatmapLabelDefaults = require('../heatmap/label_defaults');
 var attributes = require('./attributes');
 
 
@@ -22,7 +23,13 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     handleContoursDefaults(traceIn, traceOut, coerce, coerce2);
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
-    coerce('hovertemplate');
     coerce('xhoverformat');
     coerce('yhoverformat');
+    coerce('hovertemplate');
+    if(
+        traceOut.contours &&
+        traceOut.contours.coloring === 'heatmap'
+    ) {
+        handleHeatmapLabelDefaults(coerce, layout);
+    }
 };

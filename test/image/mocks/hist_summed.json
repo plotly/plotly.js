@@ -16,6 +16,7 @@
                 "Oranges",
                 "Bananas"
             ],
+            "texttemplate": "%{y:.1f}<br>%{x}",
             "type": "histogram"
         }
     ],

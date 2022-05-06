@@ -89,7 +89,7 @@ module.exports = function draw(gd) {
                     canvas.width = this.width;
                     canvas.height = this.height;
 
-                    var ctx = canvas.getContext('2d');
+                    var ctx = canvas.getContext('2d', {willReadFrequently: true});
                     ctx.drawImage(this, 0, 0);
 
                     var dataURL = canvas.toDataURL('image/png');

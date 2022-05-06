@@ -13,7 +13,8 @@ var axisLineGridAttr = overrideAll({
     linewidth: axesAttrs.linewidth,
     showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
-    gridwidth: axesAttrs.gridwidth
+    gridwidth: axesAttrs.gridwidth,
+    griddash: axesAttrs.griddash
 
     // TODO add spike* attributes down the road
 
@@ -32,6 +33,7 @@ var axisTickAttrs = overrideAll({
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
+    ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     showtickprefix: axesAttrs.showtickprefix,
     tickprefix: axesAttrs.tickprefix,

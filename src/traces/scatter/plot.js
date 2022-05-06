@@ -304,11 +304,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // the points on the axes are the first two points. Otherwise
                     // animations get a little crazy if the number of points changes.
                     transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1))
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 } else {
                     // fill to self: just join the path to itself
                     transition(ownFillEl3).attr('d', fullpath + 'Z')
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 }
             }
         } else if(tonext) {
@@ -320,7 +320,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // This makes strange results if one path is *not* entirely
                     // inside the other, but then that is a strange usage.
                     transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z')
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 } else {
                     // tonextx/y: for now just connect endpoints with lines. This is
                     // the correct behavior if the endpoints are at the same value of
@@ -328,7 +328,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // things depending on whether the new endpoint projects onto the
                     // existing curve or off the end of it
                     transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z')
-                        .call(Drawing.singleFillStyle);
+                        .call(Drawing.singleFillStyle, gd);
                 }
                 trace._polygons = trace._polygons.concat(prevPolygons);
             } else {

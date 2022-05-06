@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plotly.js Devtools - MathJax v3 loaded with svg output</title>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:600,400,300,200|Droid+Sans|PT+Sans+Narrow|Gravitas+One|Droid+Sans+Mono|Droid+Serif|Raleway|Old+Standard+TT"/>
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+  <header>
+    <img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" onClick="Tabs.reload();" />
+    <span id="reload-time"></span>
+
+    <input id="mocks-search" type="text" placeholder="mocks search" />
+    <input id="css-transform" type="text" placeholder="css transform" />
+  </header>
+
+  <section id="mocks-list"></section>
+
+  <p id="pWithMathJax">MathJax $V^3$ with $svg$ output on the page as well as plotly graphs</p>
+  <h4>no MathJax: Apple: $2, Orange: $3</h4>
+
+  <div id="plots">
+    <div id="graph"></div>
+  </div>
+  <div id="snapshot"></div>
+
+  <script>
+    window.MathJax = {
+      startup: {
+        elements: [
+          document.getElementById('pWithMathJax')
+        ],
+        // typeset: false,
+        // in case the elements array is empty one could disable startup typeset
+        // https://docs.mathjax.org/en/latest/options/startup/startup.html#the-configuration-block
+      }
+    };
+  </script>
+  <script src="../../node_modules/mathjax-v3/es5/tex-svg.js"></script>
+  <script charset="utf-8" id="source" src="../../build/plotly.js" type="module"></script>
+  <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
+</body>
+</html>

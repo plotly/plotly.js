@@ -1,0 +1,43 @@
+{
+  "data": [
+    {
+      "x": [-1, 0, 1],
+      "y": [0, 0, 0],
+      "mode": "markers",
+      "marker": {
+        "size": 100,
+        "color": [0, 50, 100],
+        "colorscale": "Reds",
+        "showscale": true,
+        "colorbar": {
+          "orientation": "h",
+          "yanchor": "top",
+          "y": 1,
+          "len": 0.5,
+          "ticks": "outside",
+          "ticklen": 10,
+          "bgcolor": "rgba(255,255,0,0.5)",
+          "borderwidth": 1,
+          "bordercolor": "gray",
+          "title": {
+            "text": "Colorbar<br>title",
+            "font": {
+              "size": 16
+            }
+          }
+        }
+      }
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 400,
+    "plot_bgcolor": "lightblue",
+    "title": {
+      "text": "Graph title",
+      "font": {
+        "size": 24
+      }
+    }
+  }
+}

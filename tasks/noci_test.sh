@@ -28,7 +28,7 @@ test_image () {
     $root/../orca/bin/orca.js graph \
         $root/test/image/mocks/mapbox_osm-style.json \
         $root/test/image/mocks/mapbox_density0-legend.json \
-        --mathjax $root/node_modules/mathjax/MathJax.js \
+        --mathjax $root/node_modules/mathjax-v2/MathJax.js \
         --plotly $root/build/plotly.js \
         --mapbox-access-token "pk.eyJ1IjoicGxvdGx5LWpzLXRlc3RzIiwiYSI6ImNrNG9meTJmOTAxa3UzZm10dWdteDQ2eWMifQ.2REjOFyIrleMqwS8H8y1-A" \
         --output-dir $root/test/image/baselines/ \

@@ -69,6 +69,13 @@
     }
   ],
   "layout": {
+    "template": {
+      "data": {
+        "histogram2d": [{
+          "texttemplate": "%{z}"
+        }]
+      }
+    },
     "grid": {
       "rows": 4,
       "columns": 2,

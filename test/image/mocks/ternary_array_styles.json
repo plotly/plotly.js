@@ -111,12 +111,16 @@
     "layout": {
         "ternary": {
             "aaxis": {
+                "ticklabelstep": 4,
+                "dtick": 0.05,
                 "showline": true,
                 "ticks": "inside",
                 "showgrid": true,
                 "color": "#ccc"
             },
             "baxis": {
+                "ticklabelstep": 2,
+                "dtick": 0.1,
                 "showline": true,
                 "ticks": "inside",
                 "showgrid": true,
@@ -132,6 +136,9 @@
         },
         "height": 450,
         "width": 700,
+        "legend": {
+            "orientation": "h"
+        },
         "autosize": false
     }
 }

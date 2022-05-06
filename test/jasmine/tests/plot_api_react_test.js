@@ -461,6 +461,28 @@ describe('@noCIdep Plotly.react', function() {
         .then(done, done.fail);
     });
 
+    it('can put smith plots into staticPlot mode', function(done) {
+        var data = [{real: [0, 1, 2], imag: [0, 1, 2], type: 'scattersmith'}];
+        var layout = {};
+
+        Plotly.newPlot(gd, data, layout)
+        .then(countPlots)
+        .then(function() {
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(1);
+
+            return Plotly.react(gd, data, layout, {staticPlot: true});
+        })
+        .then(function() {
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(0);
+
+            return Plotly.react(gd, data, layout, {});
+        })
+        .then(function() {
+            expect(d3Select(gd).selectAll('.drag').size()).toBe(1);
+        })
+        .then(done, done.fail);
+    });
+
     it('can change from scatter to category scatterpolar and back', function(done) {
         function scatter() {
             return {
@@ -1344,6 +1366,59 @@ describe('Plotly.react and uirevision attributes', function() {
         .then(done, done.fail);
     });
 
+    function setCartesianRanges(xRange, yRange) {
+        return function() {
+            return Registry.call('_guiRelayout', gd, {
+                'xaxis.range': xRange,
+                'yaxis.range': yRange
+            });
+        };
+    }
+
+    function checkCartesianRanges(xRange, yRange, msg) {
+        return checkState([], {
+            'xaxis.range': [xRange],
+            'yaxis.range': [yRange]
+        }, msg);
+    }
+
+    it('treats explicit and implicit cartesian autorange the same', function(done) {
+        function fig(explicit, uirevision) {
+            return {
+                data: [{z: [[1, 2], [3, 4]], type: 'heatmap', x: [0, 1, 2], y: [3, 4, 5]}],
+                layout: {
+                    xaxis: explicit ? {autorange: true, range: [0, 2]} : {},
+                    yaxis: explicit ? {autorange: true, range: [3, 5]} : {},
+                    uirevision: uirevision
+                }
+            };
+        }
+
+        // First go from implicit to explicit and back after zooming in
+        Plotly.newPlot(gd, fig(false, 'a'))
+        .then(checkCartesianRanges([0, 2], [3, 5], 'initial implicit'))
+        .then(setCartesianRanges([2, 4], [5, 7]))
+        .then(checkCartesianRanges([2, 4], [5, 7], 'zoomed from implicit'))
+        .then(_react(fig(true, 'a')))
+        .then(checkCartesianRanges([2, 4], [5, 7], 'react to explicit'))
+        .then(_react(fig(true, 'a')))
+        .then(checkCartesianRanges([2, 4], [5, 7], 'react to STAY explicit'))
+        .then(_react(fig(false, 'a')))
+        .then(checkCartesianRanges([2, 4], [5, 7], 'back to implicit'))
+        // then go from explicit to implicit and back after zooming in
+        .then(_react(fig(true, 'b')))
+        .then(checkCartesianRanges([0, 2], [3, 5], 'new uirevision explicit'))
+        .then(setCartesianRanges([4, 6], [7, 9]))
+        .then(checkCartesianRanges([4, 6], [7, 9], 'zoomed from explicit'))
+        .then(_react(fig(false, 'b')))
+        .then(checkCartesianRanges([4, 6], [7, 9], 'react to implicit'))
+        .then(_react(fig(false, 'b')))
+        .then(checkCartesianRanges([4, 6], [7, 9], 'react to STAY implicit'))
+        .then(_react(fig(true, 'b')))
+        .then(checkCartesianRanges([4, 6], [7, 9], 'back to explicit'))
+        .then(done, done.fail);
+    });
+
     it('respects reverting an explicit cartesian axis range to auto', function(done) {
         function fig(xRange, yRange) {
             return {
@@ -1356,28 +1431,12 @@ describe('Plotly.react and uirevision attributes', function() {
             };
         }
 
-        function setRanges(xRange, yRange) {
-            return function() {
-                return Registry.call('_guiRelayout', gd, {
-                    'xaxis.range': xRange,
-                    'yaxis.range': yRange
-                });
-            };
-        }
-
-        function checkRanges(xRange, yRange) {
-            return checkState([], {
-                'xaxis.range': [xRange],
-                'yaxis.range': [yRange]
-            });
-        }
-
         Plotly.newPlot(gd, fig([1, 3], [4, 6]))
-        .then(checkRanges([1, 3], [4, 6]))
-        .then(setRanges([2, 4], [5, 7]))
-        .then(checkRanges([2, 4], [5, 7]))
+        .then(checkCartesianRanges([1, 3], [4, 6], 'initial explicit ranges'))
+        .then(setCartesianRanges([2, 4], [5, 7]))
+        .then(checkCartesianRanges([2, 4], [5, 7], 'zoomed to different explicit'))
         .then(_react(fig(undefined, undefined)))
-        .then(checkRanges([0, 2], [3, 5]))
+        .then(checkCartesianRanges([0, 2], [3, 5], 'react to autorange'))
         .then(done, done.fail);
     });
 

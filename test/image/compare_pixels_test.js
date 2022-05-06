@@ -41,15 +41,32 @@ if(argv._.length === 0) {
 
 // Build list of mocks to compare
 var allMockList = [];
+var mathjax3;
 argv._.forEach(function(pattern) {
-    var mockList = getMockList(pattern);
+    if(pattern === 'mathjax3') {
+        mathjax3 = true;
+    } else {
+        var mockList = getMockList(pattern);
 
-    if(mockList.length === 0) {
-        throw 'No mocks found with pattern ' + pattern;
+        if(mockList.length === 0) {
+            throw 'No mocks found with pattern ' + pattern;
+        }
+
+        allMockList = allMockList.concat(mockList);
     }
-
-    allMockList = allMockList.concat(mockList);
 });
+
+if(mathjax3) {
+    allMockList = [
+        'legend_mathjax_title_and_items',
+        'mathjax',
+        'parcats_grid_subplots',
+        'table_latex_multitrace_scatter',
+        'table_plain_birds',
+        'table_wrapped_birds',
+        'ternary-mathjax'
+    ];
+}
 
 // To get rid of duplicates
 function unique(value, index, self) {
@@ -75,11 +92,19 @@ for(var i = 0; i < allMockList.length; i++) {
         continue;
     }
 
+    var isMapbox = mockName.substr(0, 7) === 'mapbox_';
+    var isOtherFlaky = [
+        // list flaky mocks other than mapbox:
+        'gl3d_bunny-hull'
+    ].indexOf(mockName) !== -1;
+
+    if(mathjax3) mockName = 'mathjax3___' + mockName;
+
     var imagePaths = getImagePaths(mockName);
     var base = imagePaths.baseline;
     var test = imagePaths.test;
 
-    if(!common.doesFileExist(test)) {
+    if(!common.doesFileExist(test) && !mathjax3) {
         console.log('- skip:', mockName);
         skipped.push(mockName);
         continue;
@@ -113,12 +138,6 @@ for(var i = 0; i < allMockList.length; i++) {
         width: width,
         height: height
     });
-
-    var isMapbox = mockName.substr(0, 7) === 'mapbox_';
-    var isOtherFlaky = [
-        // list flaky mocks other than mapbox:
-        'gl3d_bunny-hull'
-    ].indexOf(mockName) !== -1;
 
     var shouldBePixelPerfect = !(isMapbox || isOtherFlaky);
 
