@@ -961,7 +961,7 @@ describe('Test polar interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('should response to drag interactions on radial drag area', function(done) {
+    it('should respond to drag interactions on radial drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
@@ -1044,7 +1044,7 @@ describe('Test polar interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('should response to drag interactions on inner radial drag area', function(done) {
+    it('should respond to drag interactions on inner radial drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
         fig.layout.polar.hole = 0.2;
         // to avoid dragging on hover labels
@@ -1082,7 +1082,7 @@ describe('Test polar interactions:', function() {
         .then(done, done.fail);
     });
 
-    it('should response to drag interactions on angular drag area', function(done) {
+    it('should respond to drag interactions on angular drag area', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
@@ -1327,7 +1327,7 @@ describe('Test polar interactions:', function() {
             .then(done, done.fail);
         });
 
-        it('should not responsd to drag interactions on inner radial drag area when dragmode === false', function(done) {
+        it('should not respond to drag interactions on inner radial drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
             fig.layout.dragmode = false;
             fig.layout.polar.hole = 0.2;
@@ -1371,7 +1371,7 @@ describe('Test polar interactions:', function() {
             .then(done, done.fail);
         });
 
-        it('should not responsd to drag interactions on angular drag area when dragmode === false', function(done) {
+        it('should not respond to drag interactions on angular drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
             fig.layout.dragmode = false;
