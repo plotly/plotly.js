@@ -145,7 +145,7 @@
     "jsdom": "^19.0.0",
     "karma": "^6.3.19",
     "karma-browserify": "^8.1.0",
-    "karma-chrome-launcher": "^3.1.0",
+    "karma-chrome-launcher": "^3.1.1",
     "karma-firefox-launcher": "^2.1.2",
     "karma-ie-launcher": "^1.0.0",
     "karma-jasmine": "^3.3.1",
