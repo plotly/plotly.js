@@ -1150,8 +1150,6 @@ describe('Test polar interactions:', function() {
         it('should not respond to drag interactions on plot area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
 
-            fig.layout.dragmode = false;
-
             // to avoid dragging on hover labels
             fig.layout.hovermode = false;
 
@@ -1188,6 +1186,7 @@ describe('Test polar interactions:', function() {
 
             _plot(fig)
             .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
             .then(function() { return _drag(mid, [50, 50]); })
             .then(function() {
                 _assertBase('from center move toward bottom-right');
@@ -1228,7 +1227,7 @@ describe('Test polar interactions:', function() {
             .then(function() { _assertBase('from right edge to not far enough'); })
             .then(function() {
                 expect(eventCnts.plotly_relayout)
-                    .toBe(0, 'no new relayout events after *not far enough* cases');
+                    .toBe(1, 'no new relayout events after *not far enough* cases');
             })
             .then(delay(20))
             .then(function() { return _doubleClick(mid); })
@@ -1244,8 +1243,6 @@ describe('Test polar interactions:', function() {
 
         it('should not respond to drag interactions on radial drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
-
-            fig.layout.dragmode = false;
 
             // to avoid dragging on hover labels
             fig.layout.hovermode = false;
@@ -1301,6 +1298,7 @@ describe('Test polar interactions:', function() {
 
             _plot(fig)
             .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
             .then(function() { return _drag(dragPos0, [-50, 0]); })
             .then(function() {
                 _assertBase('move inward');
@@ -1322,14 +1320,13 @@ describe('Test polar interactions:', function() {
             })
             .then(_reset)
             .then(function() {
-                expect(eventCnts.plotly_relayout).toBe(0, 'total # of relayout events');
+                expect(eventCnts.plotly_relayout).toBe(1, 'total # of relayout events');
             })
             .then(done, done.fail);
         });
 
         it('should not respond to drag interactions on inner radial drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
-            fig.layout.dragmode = false;
             fig.layout.polar.hole = 0.2;
             // to avoid dragging on hover labels
             fig.layout.hovermode = false;
@@ -1359,6 +1356,8 @@ describe('Test polar interactions:', function() {
             }
 
             _plot(fig)
+            .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
             .then(function() { return _drag(dragPos0, [-50, 0]); })
             .then(function() {
                 _assertBase('move inward');
@@ -1373,8 +1372,6 @@ describe('Test polar interactions:', function() {
 
         it('should not respond to drag interactions on angular drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
-
-            fig.layout.dragmode = false;
 
             // to avoid dragging on hover labels
             fig.layout.hovermode = false;
@@ -1421,6 +1418,7 @@ describe('Test polar interactions:', function() {
 
             _plot(fig)
             .then(_assertBase)
+            .then(function() { return Plotly.relayout(gd, 'dragmode', false); })
             .then(function() { return _drag(dragPos0, [-20, -20]); })
             .then(function() {
                 _assertBase('move counterclockwise');
@@ -1432,7 +1430,7 @@ describe('Test polar interactions:', function() {
             })
             .then(_reset)
             .then(function() {
-                expect(eventCnts.plotly_relayout).toBe(0, 'total # of relayout events');
+                expect(eventCnts.plotly_relayout).toBe(1, 'total # of relayout events');
             })
             .then(done, done.fail);
         });
