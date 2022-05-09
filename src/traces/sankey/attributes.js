@@ -249,17 +249,13 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 editType: 'calc',
                 dflt: 1,
-                description: [
-                    'Sets the upper bound of the color domain.'
-                ].join('')
+                description: 'Sets the upper bound of the color domain.'
             },
             cmin: {
                 valType: 'number',
                 editType: 'calc',
                 dflt: 0,
-                description: [
-                    'Sets the lower bound of the color domain.'
-                ].join('')
+                description: 'Sets the lower bound of the color domain.'
             },
             colorscale: extendFlat(colorAttributes().colorscale, {dflt: [[0, 'white'], [1, 'black']]})
         }),
