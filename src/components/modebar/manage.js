@@ -45,7 +45,7 @@ module.exports = function manageModeBar(gd) {
         ].join(' '));
     }
 
-    var customButtons = extendDeep([], context.modeBarButtons);
+    var customButtons = context.modeBarButtons;
     var buttonGroups;
 
     if(Array.isArray(customButtons) && customButtons.length) {
@@ -331,7 +331,9 @@ function appendButtonsToGroups(groups, buttons) {
 }
 
 // fill in custom buttons referring to default mode bar buttons
-function fillCustomButton(customButtons) {
+function fillCustomButton(originalModeBarButtons) {
+    var customButtons = extendDeep([], originalModeBarButtons);
+
     for(var i = 0; i < customButtons.length; i++) {
         var buttonGroup = customButtons[i];
 
