@@ -276,7 +276,7 @@ function registerTraceModule(_module) {
     // add `PlotlyGeoAssets` global to stash references to all fetched
     // topojson / geojson data
     if((bpmName === 'geo' || bpmName === 'mapbox') &&
-        (typeof window !== undefined && window.PlotlyGeoAssets === undefined)
+        (window.PlotlyGeoAssets === undefined)
     ) {
         window.PlotlyGeoAssets = {topojson: {}};
     }
