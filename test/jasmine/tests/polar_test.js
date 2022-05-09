@@ -1149,10 +1149,6 @@ describe('Test polar interactions:', function() {
     describe('dragmode === false', function() {
         it('should not respond to drag interactions on plot area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
-
-            // to avoid dragging on hover labels
-            fig.layout.hovermode = false;
-
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
             fig.layout.width = 400;
@@ -1243,10 +1239,6 @@ describe('Test polar interactions:', function() {
 
         it('should not respond to drag interactions on radial drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
-
-            // to avoid dragging on hover labels
-            fig.layout.hovermode = false;
-
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
             fig.layout.width = 400;
@@ -1328,8 +1320,6 @@ describe('Test polar interactions:', function() {
         it('should not respond to drag interactions on inner radial drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
             fig.layout.polar.hole = 0.2;
-            // to avoid dragging on hover labels
-            fig.layout.hovermode = false;
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
             fig.layout.width = 400;
@@ -1372,10 +1362,6 @@ describe('Test polar interactions:', function() {
 
         it('should not respond to drag interactions on angular drag area when dragmode === false', function(done) {
             var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
-
-            // to avoid dragging on hover labels
-            fig.layout.hovermode = false;
-
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
             fig.layout.width = 400;
