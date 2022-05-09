@@ -800,7 +800,7 @@ proto.updateHoverAndMainDrag = function(fullLayout) {
     var scaleX;
     var scaleY;
 
-    var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', 'crosshair');
+    var mainDrag = dragBox.makeDragger(layers, 'path', 'maindrag', fullLayout.dragmode === false ? 'none' : 'crosshair');
 
     d3.select(mainDrag)
         .attr('d', _this.pathSubplot())
@@ -1295,7 +1295,7 @@ proto.updateAngularDrag = function(fullLayout) {
     var cyy = _this.cyy;
     var dbs = constants.angularDragBoxSize;
 
-    var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', 'move');
+    var angularDrag = dragBox.makeDragger(layers, 'path', 'angulardrag', fullLayout.dragmode === false ? 'none' : 'move');
     var dragOpts = {element: angularDrag, gd: gd};
 
     if(fullLayout.dragmode === false) {
