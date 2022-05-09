@@ -119,7 +119,7 @@ proto.fetchTopojson = function() {
                 if(err.status === 404) {
                     return reject(new Error([
                         'plotly.js could not find topojson file at',
-                        topojsonPath, '.',
+                        topojsonPath + '.',
                         'Make sure the *topojsonURL* plot config option',
                         'is set properly.'
                     ].join(' ')));
