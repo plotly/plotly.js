@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.12.0
+* plotly.js (cartesian) v2.12.1
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -51,10 +51,10 @@ var rules = {
     "X .modebar.vertical .modebar-group .modebar-btn": "display:block;text-align:center;",
     "X [data-title]:before,X [data-title]:after": "position:absolute;-webkit-transform:translate3d(0, 0, 0);-moz-transform:translate3d(0, 0, 0);-ms-transform:translate3d(0, 0, 0);-o-transform:translate3d(0, 0, 0);transform:translate3d(0, 0, 0);display:none;opacity:0;z-index:1001;pointer-events:none;top:110%;right:50%;",
     "X [data-title]:hover:before,X [data-title]:hover:after": "display:block;opacity:1;",
-    "X [data-title]:before": "content:\"\";position:absolute;background:transparent;border:6px solid transparent;z-index:1002;margin-top:-12px;border-bottom-color:#69738a;margin-right:-6px;",
+    "X [data-title]:before": "content:\"\";position:absolute;background:rgba(0,0,0,0);border:6px solid rgba(0,0,0,0);z-index:1002;margin-top:-12px;border-bottom-color:#69738a;margin-right:-6px;",
     "X [data-title]:after": "content:attr(data-title);background:#69738a;color:#fff;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
     "X .vertical [data-title]:before,X .vertical [data-title]:after": "top:0%;right:200%;",
-    "X .vertical [data-title]:before": "border:6px solid transparent;border-left-color:#69738a;margin-top:8px;margin-right:-30px;",
+    "X .vertical [data-title]:before": "border:6px solid rgba(0,0,0,0);border-left-color:#69738a;margin-top:8px;margin-right:-30px;",
     "X .select-outline": "fill:none;stroke-width:1;shape-rendering:crispEdges;",
     "X .select-outline-1": "stroke:#fff;",
     "X .select-outline-2": "stroke:#000;stroke-dasharray:2px 2px;",
@@ -32074,7 +32074,7 @@ module.exports = function colorScaleAttrs(context, opts) {
     }
 
     var effectDesc = onlyIfNumerical ?
-        ' Has an effect only if ' + colorAttrFull + 'is set to a numerical array.' :
+        ' Has an effect only if ' + colorAttrFull + ' is set to a numerical array.' :
         '';
 
     var auto = cLetter + 'auto';
@@ -42882,6 +42882,7 @@ var isUnifiedHover = _dereq_('../fx/helpers').isUnifiedHover;
 var createModeBar = _dereq_('./modebar');
 var modeBarButtons = _dereq_('./buttons');
 var DRAW_MODES = _dereq_('./constants').DRAW_MODES;
+var extendDeep = _dereq_('../../lib').extendDeep;
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -43204,7 +43205,9 @@ function appendButtonsToGroups(groups, buttons) {
 }
 
 // fill in custom buttons referring to default mode bar buttons
-function fillCustomButton(customButtons) {
+function fillCustomButton(originalModeBarButtons) {
+    var customButtons = extendDeep([], originalModeBarButtons);
+
     for(var i = 0; i < customButtons.length; i++) {
         var buttonGroup = customButtons[i];
 
@@ -43227,7 +43230,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axis_ids":338,"../../registry":378,"../../traces/scatter/subtypes":525,"../fx/helpers":193,"./buttons":217,"./constants":218,"./modebar":222}],222:[function(_dereq_,module,exports){
+},{"../../lib":287,"../../plots/cartesian/axis_ids":338,"../../registry":378,"../../traces/scatter/subtypes":525,"../fx/helpers":193,"./buttons":217,"./constants":218,"./modebar":222}],222:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -60510,7 +60513,9 @@ function _relayout(gd, aobj) {
             if(parentFull.autorange) flags.calc = true;
             else flags.plot = true;
         } else {
-            if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
+            if(ai === 'dragmode' && ((vi === false && vOld !== false) || (vi !== false && vOld === false))) {
+                flags.plot = true;
+            } else if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
@@ -83794,7 +83799,7 @@ function registerTraceModule(_module) {
     // add `PlotlyGeoAssets` global to stash references to all fetched
     // topojson / geojson data
     if((bpmName === 'geo' || bpmName === 'mapbox') &&
-        (typeof window !== undefined && window.PlotlyGeoAssets === undefined)
+        (window.PlotlyGeoAssets === undefined)
     ) {
         window.PlotlyGeoAssets = {topojson: {}};
     }
@@ -103426,7 +103431,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.12.0';
+exports.version = '2.12.1';
 
 },{}]},{},[15])(15)
 });
