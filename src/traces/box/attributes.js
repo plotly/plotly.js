@@ -275,7 +275,7 @@ module.exports = {
             'Sets the method used to compute the sample\'s Q1 and Q3 quartiles.',
 
             'The *linear* method uses the 25th percentile for Q1 and 75th percentile for Q3',
-            'as computed using method #10 (listed on http://www.amstat.org/publications/jse/v14n3/langford.html).',
+            'as computed using method #10 (listed on http://jse.amstat.org/v14n3/langford.html).',
 
             'The *exclusive* method uses the median to divide the ordered dataset into two halves',
             'if the sample is odd, it does not include the median in either half -',

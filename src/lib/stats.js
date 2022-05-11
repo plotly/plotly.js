@@ -77,7 +77,7 @@ exports.median = function(data) {
 /**
  * interp() computes a percentile (quantile) for a given distribution.
  * We interpolate the distribution (to compute quantiles, we follow method #10 here:
- * http://www.amstat.org/publications/jse/v14n3/langford.html).
+ * http://jse.amstat.org/v14n3/langford.html).
  * Typically the index or rank (n * arr.length) may be non-integer.
  * For reference: ends are clipped to the extreme values in the array;
  * For box plots: index you get is half a point too high (see
