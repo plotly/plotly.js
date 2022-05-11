@@ -154,6 +154,8 @@ module.exports = {
     hovertext: boxAttrs.hovertext,
     hovertemplate: boxAttrs.hovertemplate,
 
+    quartilemethod: boxAttrs.quartilemethod,
+
     box: {
         visible: {
             valType: 'boolean',
