@@ -44,7 +44,6 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
     var isViolin = trace.type === 'violin';
-    var closeBoxData = [];
 
     var pLetter, vLetter, pAxis, vAxis, vVal, pVal, dx, dy, dPos,
         hoverPseudoDistance, spikePseudoDistance;
@@ -141,22 +140,27 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     pointData.spikeDistance = dxy(di) * spikePseudoDistance / hoverPseudoDistance;
     pointData[spikePosAttr] = pAxis.c2p(di.pos, true);
 
-    // box plots: each "point" gets many labels
-    var usedVals = {};
-    var attrs = ['med', 'q1', 'q3', 'min', 'max'];
+    var hasMean = trace.boxmean || (trace.meanline || {}).visible;
+    var hasFences = trace.boxpoints || trace.points;
 
-    if(trace.boxmean || (trace.meanline || {}).visible) {
-        attrs.push('mean');
-    }
-    if(trace.boxpoints || trace.points) {
-        attrs.push('lf', 'uf');
-    }
+    // labels with euqual values (e.g. when min === q1) should be presented in certain order
+    var attrs =
+        (hasFences && hasMean) ? ['uf', 'max', 'q3', 'mean', 'q1', 'min', 'lf'] :
+        (hasFences && !hasMean) ? ['uf', 'max', 'q3', 'q1', 'min', 'lf'] :
+        (!hasFences && hasMean) ? ['max', 'q3', 'mean', 'q1', 'min'] :
+        ['max', 'q3', 'q1', 'min'];
 
+    if(trace.orientation === 'h') attrs.reverse();
+
+    // always put median at the start so that it get the extra label
+    attrs = ['med'].concat(attrs);
+
+    var closeBoxData = [];
+    var lf, uf, min, max;
     for(var i = 0; i < attrs.length; i++) {
         var attr = attrs[i];
 
-        if(!(attr in di) || (di[attr] in usedVals)) continue;
-        usedVals[di[attr]] = true;
+        if(!(attr in di)) continue;
 
         // copy out to a new object for each value to label
         var val = di[attr];
@@ -185,6 +189,19 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         pointData2.hovertemplate = false;
 
         closeBoxData.push(pointData2);
+
+        if(attr === 'lf') lf = val;
+        if(attr === 'uf') uf = val;
+        if(attr === 'max') max = val;
+        if(attr === 'min') min = val;
+    }
+
+    // reduce labels if uf === max or lf === min
+    if(uf === max) {
+        closeBoxData = closeBoxData.filter(function(e) { return e.attr !== 'uf'; });
+    }
+    if(lf === min) {
+        closeBoxData = closeBoxData.filter(function(e) { return e.attr !== 'lf'; });
     }
 
     return closeBoxData;

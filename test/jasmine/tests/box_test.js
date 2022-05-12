@@ -795,12 +795,18 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'q1: 0.1',
-            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'q1: 0.2', 'q3: 0.6', 'max: 0.9'
+            'median: 0.45', 'median: 0.45', 'median: 0.55',
+            'min: 0', 'min: 0.1', 'min: 0.2',
+            'q1: 0.1', 'q1: 0.2', 'q1: 0.3',
+            'q3: 0.6', 'q3: 0.6', 'q3: 0.6',
+            'max: 0.7', 'max: 0.9', 'max: 1'
         ],
         name: [
-            '', 'kale', '', '', 'radishes', '', '',
-            '', '', 'carrots', '', '', ''
+            'carrots', 'kale', 'radishes',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', ''
         ],
         axis: 'day 1'
     }, {
@@ -909,20 +915,28 @@ describe('Test box hover:', function() {
         },
         pos: [430, 130],
         nums: [
-            'max: 1', 'mean ± σ: 0.6833333 ± 0.2409472', 'min: 0.3',
-            'q1: 0.5', 'q3: 0.9', 'median: 0.7'],
-        name: ['', '', '', '', '', 'carrots'],
-        axis: 'day 2',
-        hOrder: [0, 4, 5, 1, 3, 2]
+            'median: 0.7',
+            'min: 0.3',
+            'q1: 0.5',
+            'q3: 0.9',
+            'max: 1',
+            'mean ± σ: 0.6833333 ± 0.2409472',
+        ],
+        name: ['carrots', '', '', '', '', ''],
+        axis: 'day 2'
     }, {
         desc: 'orientation:h | hovermode:closest',
         mock: require('@mocks/box_grouped_horz.json'),
         pos: [430, 130],
         nums: [
-            '(max: 1, day 2)', '(mean ± σ: 0.6833333 ± 0.2409472, day 2)', '(min: 0.3, day 2)',
-            '(q1: 0.5, day 2)', '(q3: 0.9, day 2)', '(median: 0.7, day 2)'],
-        name: ['', '', '', '', '', 'carrots'],
-        hOrder: [0, 4, 5, 1, 3, 2]
+            '(median: 0.7, day 2)',
+            '(min: 0.3, day 2)',
+            '(q1: 0.5, day 2)',
+            '(q3: 0.9, day 2)',
+            '(max: 1, day 2)',
+            '(mean ± σ: 0.6833333 ± 0.2409472, day 2)'
+        ],
+        name: ['carrots', '', '', '', '', ''],
     }, {
         desc: 'on boxpoints with numeric positions | hovermode:closest',
         mock: {
@@ -987,8 +1001,8 @@ describe('Test box hover:', function() {
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'q1: 1', 'q3: 3'],
-        name: ['', '', ''],
+        nums: ['median: 2', 'min: 1', 'q1: 1', 'q3: 3', 'max: 3'],
+        name: ['', '', '', '', ''],
         axis: 'A'
     }, {
         desc: 'q1/median/q3 signature on points',
