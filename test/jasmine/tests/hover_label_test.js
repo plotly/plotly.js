@@ -6144,6 +6144,40 @@ describe('hovermode: (x|y)unified', function() {
             .then(done, done.fail);
     });
 
+    it('should use hoverlabel.grouptitlefont for group titles', function(done) {
+        function assertFont(fontFamily, fontSize, fontColor) {
+            var hover = getHoverLabel();
+            var traces = hover.selectAll('g.traces');
+
+            traces.each(function() {
+                var e = d3Select(this);
+                var text = e.select('text.legendtext');
+                var node = text.node();
+                var label = node.innerHTML;
+                if(label.indexOf('group') !== -1) {
+                    var textStyle = window.getComputedStyle(node);
+                    expect(textStyle.fontFamily.split(',')[0]).toBe(fontFamily, 'wrong font family');
+                    expect(textStyle.fontSize).toBe(fontSize, 'wrong font size');
+                    expect(textStyle.fill).toBe(fontColor, 'wrong font color');
+                }
+            });
+        }
+
+        var mockCopy = Lib.extendDeep({}, groupTitlesMock);
+
+        mockCopy.layout.hoverlabel = {
+            grouptitlefont: {size: 20, family: 'Mono', color: 'rgb(255, 127, 0)'}
+        };
+
+        Plotly.newPlot(gd, mockCopy)
+            .then(function(gd) {
+                _hover(gd, { xval: 0});
+
+                assertFont('Mono', '20px', 'rgb(255, 127, 0)');
+            })
+            .then(done, done.fail);
+    });
+
     it('should work with hovertemplate', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.data[0].hovertemplate = 'hovertemplate: %{y:0.2f}';

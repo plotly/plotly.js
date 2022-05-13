@@ -3,6 +3,7 @@
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
 var isVisible = require('./helpers').isVisible;
+var reglPrecompiled = {};
 
 function newIndex(visibleIndices, orig, dim) {
     var origIndex = orig.indexOf(dim);
@@ -23,10 +24,10 @@ function sorter(visibleIndices, orig) {
     };
 }
 
-module.exports = function plot(gd, cdModule) {
+var exports = module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
 
-    var success = prepareRegl(gd);
+    var success = prepareRegl(gd, [], reglPrecompiled);
     if(!success) return;
 
     var currentDims = {};
@@ -143,3 +144,5 @@ module.exports = function plot(gd, cdModule) {
         }
     );
 };
+
+exports.reglPrecompiled = reglPrecompiled;

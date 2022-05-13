@@ -62,14 +62,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         coerceAxis('uirevision', contOut.uirevision);
 
-        var dfltColor;
-        var dfltFontColor;
-
-        if(visible) {
-            dfltColor = coerceAxis('color');
-            dfltFontColor = (dfltColor === axIn.color) ? dfltColor : opts.font.color;
-        }
-
         // We don't want to make downstream code call ax.setScale,
         // as both radial and angular axes don't have a set domain.
         // Furthermore, angular axes don't have a set range.
@@ -91,18 +83,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
                 coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
-
-                if(visible) {
-                    coerceAxis('side');
-                    coerceAxis('angle', sector[0]);
-
-                    coerceAxis('title.text');
-                    Lib.coerceFont(coerceAxis, 'title.font', {
-                        family: opts.font.family,
-                        size: Lib.bigFont(opts.font.size),
-                        color: dfltFontColor
-                    });
-                }
                 break;
 
             case 'angularaxis':
@@ -142,20 +122,27 @@ function handleDefaults(contIn, contOut, coerce, opts) {
         });
 
         if(visible) {
-            handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
-            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type);
-            handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
+            var dfltColor;
+            var dfltFontColor;
+            var dfltFontSize;
+            var dfltFontFamily;
+            var font = opts.font || {};
 
-            var showTickLabels = coerceAxis('showticklabels');
-            if(showTickLabels) {
-                Lib.coerceFont(coerceAxis, 'tickfont', {
-                    family: opts.font.family,
-                    size: opts.font.size,
-                    color: dfltFontColor
-                });
-                coerceAxis('tickangle');
-                coerceAxis('tickformat');
-            }
+            dfltColor = coerceAxis('color');
+            dfltFontColor = (dfltColor === axIn.color) ? dfltColor : font.color;
+            dfltFontSize = font.size;
+            dfltFontFamily = font.family;
+
+            handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
+            handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
+                font: {
+                    color: dfltFontColor,
+                    size: dfltFontSize,
+                    family: dfltFontFamily
+                }
+            });
+
+            handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
 
             handleLineGridDefaults(axIn, axOut, coerceAxis, {
                 dfltColor: dfltColor,
@@ -170,6 +157,18 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             });
 
             coerceAxis('layer');
+
+            if(axName === 'radialaxis') {
+                coerceAxis('side');
+                coerceAxis('angle', sector[0]);
+
+                coerceAxis('title.text');
+                Lib.coerceFont(coerceAxis, 'title.font', {
+                    color: dfltFontColor,
+                    size: Lib.bigFont(dfltFontSize),
+                    family: dfltFontFamily
+                });
+            }
         }
 
         if(axType !== 'category') coerceAxis('hoverformat');

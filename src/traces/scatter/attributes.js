@@ -6,6 +6,7 @@ var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplat
 var colorScaleAttrs = require('../../components/colorscale/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var dash = require('../../components/drawing/attributes').dash;
+var pattern = require('../../components/drawing/attributes').pattern;
 
 var Drawing = require('../../components/drawing');
 var constants = require('./constants');
@@ -363,6 +364,7 @@ module.exports = {
             'marker color, or marker line color, whichever is available.'
         ].join(' ')
     },
+    fillpattern: pattern,
     marker: extendFlat({
         symbol: {
             valType: 'enumerated',

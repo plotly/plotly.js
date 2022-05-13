@@ -1,0 +1,65 @@
+{
+  "data": [
+    {
+      "type": "scattersmith",
+      "name": "gaps",
+      "real": [
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
+      ],
+      "imag": [
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
+      ],
+      "mode": "markers+lines",
+      "line": { "shape": "spline" }
+    },
+    {
+      "type": "scattersmith",
+      "name": "connectgaps",
+      "connectgaps": true,
+      "real": [
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
+      ],
+      "imag": [
+        0, 0.2, 0.4, null, 0.8, 1, null, 2, 3, null, 5
+      ],
+      "mode": "markers+lines",
+      "line": { "shape": "spline" },
+      "subplot": "smith2"
+    }
+  ],
+  "layout": {
+    "smith": {
+      "domain": {
+        "x": [
+          0,
+          1
+        ],
+        "y": [
+          0,
+          0.45
+        ]
+      }
+    },
+    "smith2": {
+      "domain": {
+        "x": [
+          0,
+          1
+        ],
+        "y": [
+          0.55,
+          1
+        ]
+      }
+    },
+    "legend": { "orientation": "h" },
+    "margin": {
+      "t": 30,
+      "b": 30,
+      "r": 30,
+      "l": 30
+    },
+    "width": 300,
+    "height": 600
+  }
+}

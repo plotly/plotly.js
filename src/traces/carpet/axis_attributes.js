@@ -5,6 +5,9 @@ var colorAttrs = require('../../components/color/attributes');
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var descriptionWithDates = require('../../plots/cartesian/axis_format_attributes').descriptionWithDates;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var dash = require('../../components/drawing/attributes').dash;
+var extendFlat = require('../../lib/extend').extendFlat;
+
 
 module.exports = {
     color: {
@@ -359,6 +362,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the width (in px) of the axis line.'
     },
+    griddash: extendFlat({}, dash, {editType: 'calc'}),
     showgrid: {
         valType: 'boolean',
         dflt: true,
@@ -382,6 +386,7 @@ module.exports = {
         editType: 'calc',
         description: 'Sets the width (in px) of the grid lines.'
     },
+    minorgriddash: extendFlat({}, dash, {editType: 'calc'}),
     minorgridcolor: {
         valType: 'color',
         dflt: colorAttrs.lightLine,

@@ -13,14 +13,28 @@ root = os.getcwd()
 dirIn = os.path.join(root, 'test', 'image', 'mocks')
 dirOut = os.path.join(root, 'build', 'test_images')
 
+# N.B. equal is the falg to write to baselines not test_images
+
 if '=' in args :
     args = args[args.index('=') + 1:]
     dirOut = os.path.join(root, 'test', 'image', 'baselines')
-    print('output to', dirOut)
+
+if 'mathjax3=' in sys.argv :
+    dirOut = os.path.join(root, 'test', 'image', 'baselines')
+
+print('output to', dirOut)
+
+mathjax_version = 2
+if 'mathjax3' in sys.argv or 'mathjax3=' in sys.argv :
+    # until https://github.com/plotly/Kaleido/issues/124 is addressed
+    # we are uanble to use local mathjax v3 installed in node_modules
+    # for now let's download it from the internet:
+    pio.kaleido.scope.mathjax = 'https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-svg.js'
+    mathjax_version = 3
+    print('Kaleido using MathJax v3')
 
 pio.templates.default = 'none'
 pio.kaleido.scope.plotlyjs = os.path.join(root, 'build', 'plotly.js')
-# TODO: specify local mathjax and plotly-geo-assets files?
 
 _credentials = open(os.path.join(root, 'build', 'credentials.json'), 'r')
 pio.kaleido.scope.mapbox_access_token = json.load(_credentials)['MAPBOX_ACCESS_TOKEN']
@@ -73,7 +87,11 @@ if len(allNames) == 0 :
 
 failed = []
 for name in allNames :
-    print(name)
+    outName = name
+    if mathjax_version == 3 :
+        outName = 'mathjax3___' + name
+
+    print(outName)
 
     created = False
 
@@ -95,7 +113,7 @@ for name in allNames :
             try :
                 pio.write_image(
                     fig=fig,
-                    file=os.path.join(dirOut, name + '.png'),
+                    file=os.path.join(dirOut, outName + '.png'),
                     width=width,
                     height=height,
                     validate=False
@@ -106,7 +124,7 @@ for name in allNames :
                 if attempt < MAX_RETRY :
                     print('retry', attempt + 1, '/', MAX_RETRY)
                 else :
-                    failed.append(name)
+                    failed.append(outName)
 
         if(created) : break
 

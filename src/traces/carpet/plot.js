@@ -102,6 +102,7 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
         el.attr('d', path)
             .style('stroke-width', gridline.width)
             .style('stroke', gridline.color)
+            .style('stroke-dasharray', Drawing.dashStyle(gridline.dash, gridline.width))
             .style('fill', 'none');
     });
 

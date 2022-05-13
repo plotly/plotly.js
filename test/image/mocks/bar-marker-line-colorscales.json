@@ -1,6 +1,7 @@
 {
     "data": [
         {
+            "texttemplate": "%{x}",
             "marker": {
                 "color": [
                     0,

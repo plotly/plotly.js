@@ -123,35 +123,39 @@ function _draw(gd, legendObj) {
         Plots.previousPromises,
         function() { return computeLegendDimensions(gd, groups, traces, legendObj); },
         function() {
-            // IF expandMargin return a Promise (which is truthy),
-            // we're under a doAutoMargin redraw, so we don't have to
-            // draw the remaining pieces below
-            if(!inHover && expandMargin(gd)) return;
-
             var gs = fullLayout._size;
             var bw = legendObj.borderwidth;
 
-            var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
-            var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+            if(!inHover) {
+                var expMargin = expandMargin(gd);
 
-            if(!inHover && fullLayout.margin.autoexpand) {
-                var lx0 = lx;
-                var ly0 = ly;
+                // IF expandMargin return a Promise (which is truthy),
+                // we're under a doAutoMargin redraw, so we don't have to
+                // draw the remaining pieces below
+                if(expMargin) return;
 
-                lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
-                ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+                var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
 
-                if(lx !== lx0) {
-                    Lib.log('Constrain legend.x to make legend fit inside graph');
+                if(fullLayout.margin.autoexpand) {
+                    var lx0 = lx;
+                    var ly0 = ly;
+
+                    lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
+                    ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+
+                    if(lx !== lx0) {
+                        Lib.log('Constrain legend.x to make legend fit inside graph');
+                    }
+                    if(ly !== ly0) {
+                        Lib.log('Constrain legend.y to make legend fit inside graph');
+                    }
                 }
-                if(ly !== ly0) {
-                    Lib.log('Constrain legend.y to make legend fit inside graph');
-                }
+
+                // Set size and position of all the elements that make up a legend:
+                // legend, background and border, scroll box and scroll bar as well as title
+                Drawing.setTranslate(legend, lx, ly);
             }
-
-            // Set size and position of all the elements that make up a legend:
-            // legend, background and border, scroll box and scroll bar as well as title
-            if(!inHover) Drawing.setTranslate(legend, lx, ly);
 
             // to be safe, remove previous listeners
             scrollBar.on('.drag', null);
@@ -700,23 +704,33 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 var maxWidthInGroup = 0;
                 var offsetY = 0;
                 d3.select(this).selectAll('g.traces').each(function(d) {
+                    var w = d[0].width;
                     var h = d[0].height;
+
                     Drawing.setTranslate(this,
                         titleSize[0],
                         titleSize[1] + bw + itemGap + h / 2 + offsetY
                     );
                     offsetY += h;
-                    maxWidthInGroup = Math.max(maxWidthInGroup, textGap + d[0].width);
+                    maxWidthInGroup = Math.max(maxWidthInGroup, textGap + w);
                 });
-                maxGroupHeightInRow = Math.max(maxGroupHeightInRow, offsetY);
 
                 var next = maxWidthInGroup + itemGap;
 
-                if((next + bw + groupOffsetX) > legendObj._maxWidth) {
+                // horizontal_wrapping
+                if(
+                    // not on the first column already
+                    groupOffsetX > 0 &&
+
+                    // goes beyound limit
+                    next + bw + groupOffsetX > legendObj._maxWidth
+                ) {
                     maxRowWidth = Math.max(maxRowWidth, groupOffsetX);
                     groupOffsetX = 0;
                     groupOffsetY += maxGroupHeightInRow + traceGroupGap;
                     maxGroupHeightInRow = offsetY;
+                } else {
+                    maxGroupHeightInRow = Math.max(maxGroupHeightInRow, offsetY);
                 }
 
                 Drawing.setTranslate(this, groupOffsetX, groupOffsetY);

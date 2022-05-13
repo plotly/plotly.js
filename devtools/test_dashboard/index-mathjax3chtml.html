@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Plotly.js Devtools - MathJax v3 loaded with chtml output</title>
+  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:600,400,300,200|Droid+Sans|PT+Sans+Narrow|Gravitas+One|Droid+Sans+Mono|Droid+Serif|Raleway|Old+Standard+TT"/>
+  <link rel="stylesheet" type="text/css" href="./style.css">
+</head>
+<body>
+  <header>
+    <img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" onClick="Tabs.reload();" />
+    <span id="reload-time"></span>
+
+    <input id="mocks-search" type="text" placeholder="mocks search" />
+    <input id="css-transform" type="text" placeholder="css transform" />
+  </header>
+
+  <section id="mocks-list"></section>
+
+  <p>MathJax $V^3$ with $chtml$ output on the page and <b>svg</b> output on the plotly graphs</p>
+  <div id="plots">
+    <div id="graph"></div>
+  </div>
+  <div id="snapshot"></div>
+
+  <script>
+    window.MathJax = window.MathJax || {
+      // see https://github.com/mathjax/MathJax/issues/2705#issuecomment-859742446
+      loader: {load: ['output/svg']},
+      startup: {
+        ready() {
+          // Get the MathJax modules that we need.
+          const {mathjax} = MathJax._.mathjax;
+          const {SVG} = MathJax._.output.svg_ts;
+
+          // Do the normal setup
+          MathJax.startup.defaultReady();
+
+          // Create an SVG output jax and a new MathDocument that uses it.
+          const svgOutput = new SVG(MathJax.config.svg);
+          const svgDocument = mathjax.document(document, {
+            ...MathJax.config.options,
+            InputJax: MathJax.startup.input,
+            OutputJax: svgOutput
+          });
+
+          // Define the SVG-based conversion methods
+          MathJax.tex2svg = (math, options = {}) => {
+            options.format = svgDocument.inputJax[0].name;
+            return svgDocument.convert(math, options);
+          };
+          /*
+          MathJax.tex2svgPromise = (math, options = {}) => {
+            options.format = svgDocument.inputJax[0].name;
+            return mathjax.handleRetriesFor(() => svgDocument.convert(math, options));
+          };
+          */
+          MathJax.svgStylesheet = () => svgOutput.styleSheet(svgDocument);
+        }
+      }
+    };
+  </script>
+  <script src="../../node_modules/mathjax-v3/es5/tex-chtml.js"></script>
+
+  <script charset="utf-8" id="source" src="../../build/plotly.js" type="module"></script>
+  <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
+</body>
+</html>

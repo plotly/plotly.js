@@ -38,6 +38,7 @@ var svgMockList = [
     ['icicle_coffee', require('@mocks/icicle_coffee.json')],
     ['parcats_bad-displayindex', require('@mocks/parcats_bad-displayindex.json')],
     ['scattercarpet', require('@mocks/scattercarpet.json')],
+    ['smith_basic', require('@mocks/smith_basic.json')],
     ['shapes', require('@mocks/shapes.json')],
     ['splom_iris', require('@mocks/splom_iris.json')],
     ['table_wrapped_birds', require('@mocks/table_wrapped_birds.json')],

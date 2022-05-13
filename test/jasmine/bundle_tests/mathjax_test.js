@@ -3,29 +3,26 @@ var d3Select = require('../../strict-d3').select;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var loadScript = require('../assets/load_script');
 
+// eslint-disable-next-line no-undef
+var mathjaxVersion = __karma__.config.mathjaxVersion;
 
-describe('Test MathJax:', function() {
-    var mathJaxScriptTag;
-
-    // N.B. we have to load MathJax "dynamically" as Karam
-    // does not undefined the MathJax's `?config=` parameter.
-    //
-    // Now with the mathjax_config no longer needed,
-    // it might be nice to move these tests in the "regular" test
-    // suites, but to do that we'll need to find a way to remove MathJax from
-    // page without breaking things downstream.
+describe('Test MathJax v' + mathjaxVersion + ':', function() {
     beforeAll(function(done) {
-        mathJaxScriptTag = document.createElement('script');
-        mathJaxScriptTag.type = 'text/javascript';
-        mathJaxScriptTag.onload = function() {
-            done();
-        };
-        mathJaxScriptTag.onerror = function() {
-            fail('MathJax failed to load');
-        };
-        mathJaxScriptTag.src = '/base/node_modules/mathjax/MathJax.js?config=TeX-AMS-MML_SVG';
-        document.body.appendChild(mathJaxScriptTag);
+        var src = mathjaxVersion === 3 ?
+            '/base/node_modules/mathjax-v3/es5/tex-svg.js' :
+            '/base/node_modules/mathjax-v2/MathJax.js?config=TeX-AMS-MML_SVG';
+
+        // N.B. we have to load MathJax "dynamically" as Karma
+        // does not undefined the MathJax's `?config=` parameter.
+        //
+        // Now with the mathjax_config no longer needed,
+        // it might be nice to move these tests in the "regular" test
+        // suites, but to do that we'll need to find a way to remove MathJax from
+        // page without breaking things downstream.
+
+        loadScript(src, done);
     });
 
     describe('Test axis title scoot:', function() {
@@ -98,7 +95,7 @@ describe('Test MathJax:', function() {
             .then(done, done.fail);
         });
 
-        it('should scoot x-axis title (with MathJax) below x-axis ticks', function(done) {
+        it('@noFF82 should scoot x-axis title (with MathJax) below x-axis ticks', function(done) {
             expect(window.MathJax).toBeDefined();
 
             testTitleScoot({

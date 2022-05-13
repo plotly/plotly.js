@@ -9,6 +9,7 @@ var isCI = Boolean(process.env.CI);
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
     'boolean': [
+        'mathjax3',
         'info',
         'nowatch', 'randomize',
         'failFast', 'doNotFailOnEmptyTestSuite',
@@ -60,6 +61,7 @@ if(argv.info) {
         '',
         'Other options:',
         '  - `--info`: show this info message',
+        '  - `--mathjax3`: to load mathjax v3 in relevant test',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
@@ -122,7 +124,8 @@ var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
 var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
-var pathToMathJax = path.join(__dirname, '..', '..', 'node_modules', 'mathjax');
+var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v2');
+var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v3');
 
 var reporters = [];
 if(argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
@@ -180,9 +183,10 @@ func.defaultConfig = {
     files: [
         pathToCustomMatchers,
         pathToUnpolyfill,
-        // available to fetch from /base/node_modules/mathjax/
+        // available to fetch from /base/node_modules/mathjax-v2/
         // more info: http://karma-runner.github.io/3.0/config/files.html
-        {pattern: pathToMathJax + '/**', included: false, watched: false, served: true},
+        {pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true},
+        {pattern: pathToMathJax3 + '/**', included: false, watched: false, served: true},
         // available to fetch from /base/node_modules/sane-topojson/dist/
         {pattern: pathToSaneTopojsonDist + '/**', included: false, watched: false, served: true}
     ],
@@ -285,6 +289,8 @@ func.defaultConfig = {
         tagPrefix: '@',
         skipTags: isCI ? 'noCI' : null,
 
+        mathjaxVersion: argv.mathjax3 ? 3 : 2,
+
         // See https://jasmine.github.io/api/3.4/Configuration.html
         jasmine: {
             random: argv.randomize,
@@ -307,24 +313,19 @@ func.defaultConfig = {
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
+func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'minified_bundle':
             func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
         case 'plotschema':
             func.defaultConfig.browserify.ignoreTransform = './tasks/compress_attributes.js';
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
-            break;
-        default:
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
     }
 } else {
     func.defaultConfig.files.push(pathToJQuery);
-    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
 
 // lastly, load test file glob

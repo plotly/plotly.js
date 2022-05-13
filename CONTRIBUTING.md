@@ -118,7 +118,7 @@ npm start
 
 This command bundles up the source files with source maps using
 [browserify](https://github.com/substack/node-browserify), starts a
-[watchify](https://github.com/substack/watchify) file watcher (making the your
+[watchify](https://github.com/substack/watchify) file watcher (making your
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 
@@ -161,6 +161,23 @@ npm run schema
 > If you are editing attribute descriptions or implementing a new feature this file located in the test folder records the proposed changes to the API. Note that there is another plot-schema.json file located in the dist folder, which should only be updated by the maintainers at release time.
 
 **IMPORTANT:** please do not change and commit any files in the "dist" folder
+
+#### Step 9: REGL - Review & commit potential changes to precompiled regl shaders
+
+If you are implementing a new feature that involves regl shaders, or if you are
+making changes that affect the usage of regl shaders, you would need to run
+
+```bash
+npm run regl-codegen
+```
+
+to regenerate the regl code. This opens a browser window, runs through all
+traces with 'regl' in the tags, and stores the captured code into 
+[src/generated/regl-codegen](https://github.com/plotly/plotly.js/blob/master/src/generated/regl-codegen). If no updates are necessary, it would be a no-op, but
+if there are changes, you would need to commit them.
+
+This is needed because regl performs codegen in runtime which breaks CSP
+compliance, and so for strict builds we pre-generate regl shader code here.
 
 #### Other npm scripts that may be of interest in development
 

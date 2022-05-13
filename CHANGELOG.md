@@ -9,6 +9,172 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.12.1] -- 2022-05-09
+
+### Fixed
+ - Fix for disabling polar rotation when `dragmode` is set to false [[#6147](https://github.com/plotly/plotly.js/pull/6147)],
+   with thanks to @jonfunkhouser for the contribution!
+ - Fix custom modebar buttons mutate the input [[#6177](https://github.com/plotly/plotly.js/pull/6177)]
+ - Fix various missing and duplicate spaces in plot schema descriptions [[#6183](https://github.com/plotly/plotly.js/pull/6183)]
+
+
+## [2.12.0] -- 2022-05-02
+
+### Added
+ - Add `griddash` axis property to cartesian, polar, smith, ternary and geo subplots and add `griddash` and `minorgriddash` to `carpet` trace [[6144](https://github.com/plotly/plotly.js/pull/6144)], with thanks to @njwhite for the contribution!
+ - Implement various options to position and style `minor` ticks and grid lines on cartesian axis types including
+   `minor.tickmode`, `minor.tickvals`, `minor.tickcolor`, `minor.ticklen`, `minor.tickwidth`, `minor.dtick`, `minor.tick0`, `minor.nticks`, `minor.ticks`,
+   `minor.showgrid`, `minor.gridcolor`, `minor.griddash` and `minor.gridwidth` [[6166](https://github.com/plotly/plotly.js/pull/6166)]
+
+### Changed
+ - Use the "willReadFrequently" 2d context creation attribute to optimize readback performance [[#6084](https://github.com/plotly/plotly.js/pull/6084)],
+   with thanks to @junov for the contribution!
+
+### Fixed
+ - avoid drawing blank tick labels on cartesian axes [[#6163](https://github.com/plotly/plotly.js/pull/6163)]
+
+
+## [2.11.1] -- 2022-03-15
+
+### Fixed
+ - Regenerate functions of regl-based traces in the "strict" bundle [[#6141](https://github.com/plotly/plotly.js/pull/6141)]
+
+
+## [2.11.0] -- 2022-03-11
+
+### Added
+ - Add a CSP complaint variation of regl-based traces i.e. `parcoords`, `splom`, `scattergl`, `scatterpolargl` to the "strict" bundle [[#6083](https://github.com/plotly/plotly.js/pull/6083)]
+ - Add `scattersmith` trace to the "strict" bundle [[#6135](https://github.com/plotly/plotly.js/pull/6135)]
+
+
+## [2.10.1] -- 2022-03-08
+
+### Fixed
+ - Fix `mesh3d` generation when `alphahull` is a positive number (regression introduced in 2.5.1) [[#6133](https://github.com/plotly/plotly.js/pull/6133)]
+
+
+## [2.10.0] -- 2022-03-04
+
+### Added
+ - Add support to use version 3 of MathJax and add `typesetMath` attribute to config [[#6073](https://github.com/plotly/plotly.js/pull/6073)],
+   with thanks to [Equinor](https://www.equinor.com) for sponsoring the related development!
+ - Add `fillpattern` options to `scatter` trace [[#6101](https://github.com/plotly/plotly.js/pull/6101)],
+   with thanks to @s417-lama for the contribution!
+
+
+## [2.9.0] -- 2022-02-04
+
+### Added
+ - Implement `ticklabelstep` to reduce labels on 2D axes and colorbars [[#6088](https://github.com/plotly/plotly.js/pull/6088)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Changed
+ - Display the version of plotly.js when hovering over the modebar [[#6077](https://github.com/plotly/plotly.js/pull/6077)]
+ - Various dependency updates as listed under [the v2.9.0 milestone](https://github.com/plotly/plotly.js/milestone/69?closed=1)
+
+### Fixed
+ - Fix vertical spacing of legend items in horizontal mode [[#6094](https://github.com/plotly/plotly.js/pull/6094)]
+
+
+## [2.8.3] -- 2021-12-20
+
+### Fixed
+ - Correct formatted x/y `texttempate` for `histogram` trace [[#6070](https://github.com/plotly/plotly.js/pull/6070)]
+
+
+## [2.8.2] -- 2021-12-20
+
+### Fixed
+ - Fix missing x/y `texttemplate` for `histogram`, `bar`, `funnel` and `waterfall` traces [[#6069](https://github.com/plotly/plotly.js/pull/6069)]
+
+
+## [2.8.1] -- 2021-12-15
+
+### Fixed
+ - Do not exceed layout font size when `textfont` is set to "auto" for `heatmap`, `histogram2d`, `contour` and
+   `histogram2dcontour` traces [[#6061](https://github.com/plotly/plotly.js/pull/6061)]
+
+
+## [2.8.0] -- 2021-12-10
+
+### Added
+ - Introduce horizontal colorbars [[#6024](https://github.com/plotly/plotly.js/pull/6024)]
+ - Implement `legend.grouptitlefont` and `hoverlabel.grouptitlefont` [[#6040](https://github.com/plotly/plotly.js/pull/6040)]
+ - Add `texttemplate` and `textfont` to `heatmap` and `histogram2d` traces as well as
+   `histogram2dcontour` and `contour` traces when `coloring` is set "heatmap" [[#6028](https://github.com/plotly/plotly.js/pull/6028)]
+
+### Fixed
+ - Fix to discard negative values from `pie` chart post-aggregation instead of during summation [[#6051](https://github.com/plotly/plotly.js/pull/6051)],
+   with thanks to @destiny-wu for the contribution!
+
+
+## [2.7.0] -- 2021-12-02
+
+### Added
+ - Add `texttemplate`, `textposition`, `textfont`, `textangle`,
+   `outsidetextfont`, `insidetextfont`, `insidetextanchor`,
+   `constraintext` and `cliponaxis` to `histogram` trace [[#6038](https://github.com/plotly/plotly.js/pull/6038)]
+
+### Changed
+ - Bump `probe-image-size` module to v7.2.2 [[#6036](https://github.com/plotly/plotly.js/pull/6036)]
+
+### Fixed
+ - Fix mapbox derived coordinate for Retina displays [[#6039](https://github.com/plotly/plotly.js/pull/6039)]
+ - Fix interaction between `uirevision` and `autorange`. Because we push `autorange` and `range` back into `layout`,
+   there can be times it looks like we're applying GUI-driven changes on top of explicit autorange and other times
+   it's an implicit autorange, even though the user's intent was always implicit. This fix treats them as equivalent. [[#6046](https://github.com/plotly/plotly.js/pull/6046)]
+
+
+## [2.6.4] -- 2021-11-26
+
+### Fixed
+ - Avoid bar with text to jump when selected [[#6043](https://github.com/plotly/plotly.js/pull/6043)]
+
+
+## [2.6.3] -- 2021-11-12
+
+### Fixed
+ - Fix hover events in Shadow DOM [[#6021](https://github.com/plotly/plotly.js/pull/6021)],
+   with thanks to @SabineWren for the contribution!
+
+
+## [2.6.2] -- 2021-11-05
+
+### Fixed
+ - Fix loading issue in [orca](https://github.com/plotly/orca) (regression introduced in 2.6.0) [[#6011](https://github.com/plotly/plotly.js/pull/6011)]
+
+
+## [2.6.1] -- 2021-11-03
+
+### Fixed
+ - Fix to avoid including local stackgl_modules/node_modules in the package (regression introduced in 2.6.0) [[#6008](https://github.com/plotly/plotly.js/pull/6008)]
+
+
+## [2.6.0] -- 2021-10-29
+
+### Added
+ - Add `smith` subplots and the `scattersmith` trace type for displaying Smith charts [[#5956](https://github.com/plotly/plotly.js/pull/5956), [#5992](https://github.com/plotly/plotly.js/pull/5992)],
+   with thanks to Kitware and @waxlamp for kicking off this effort.
+
+### Changed
+ - Improve drawing the contour lines in non-linear space e.g. on log axes [[#5985](https://github.com/plotly/plotly.js/pull/5985)], with thanks to @andrew-matteson for the contribution!
+ - Bump eslint to v8 release candidate including fixes for `no-new-func` test [[#5969](https://github.com/plotly/plotly.js/pull/5969)]
+
+### Fixed
+ - Fix `npm install` problem for `npm v6` users (regression introduced in 2.5.0) [[#6004](https://github.com/plotly/plotly.js/pull/6004)]
+ - Fix unhover event data for gl3d subplots [[#5954](https://github.com/plotly/plotly.js/pull/5954)],
+   with thanks to @dwoznicki for the contribution!
+ - Fix scatter3d opacity restyle bug [[#5958](https://github.com/plotly/plotly.js/pull/5958)],
+   with thanks to @dwoznicki for the contribution!
+ - Skip `"hoverinfo": "none"` trace display for hover modes [[#5854](https://github.com/plotly/plotly.js/pull/5854)],
+   with thanks to @Domino987 for the contribution!
+ - Display prefix and suffix of invisible polar axes in hover [[#5964](https://github.com/plotly/plotly.js/pull/5964)]
+ - Reduce calls to `getBoundingClientRect` in `convertToTspans` [[#5976](https://github.com/plotly/plotly.js/pull/5976)]
+ - Avoid wrapping legend items if already on the first column [[#5996](https://github.com/plotly/plotly.js/pull/5996)]
+ - Fix horizontal alignment of colorbar in editable mode when `xanchor` is set to "center" [[#6002](https://github.com/plotly/plotly.js/pull/6002)]
+ - Fix to improve rendering of graphs with Mathjax on Firefox v82 and higher [[#5993](https://github.com/plotly/plotly.js/pull/5993)]
+
+
 ## [2.5.1] -- 2021-09-16
 
 ### Fixed

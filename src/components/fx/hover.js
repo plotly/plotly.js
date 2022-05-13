@@ -78,11 +78,13 @@ var cartesianScatterPoints = {
 // The actual rendering is done by private function _hover.
 exports.hover = function hover(gd, evt, subplot, noHoverEvent) {
     gd = Lib.getGraphDiv(gd);
-
+    // The 'target' property changes when bubbling out of Shadow DOM.
+    // Throttling can delay reading the target, so we save the current value.
+    var eventTarget = evt.target;
     Lib.throttle(
         gd._fullLayout._uid + constants.HOVERID,
         constants.HOVERMINTIME,
-        function() { _hover(gd, evt, subplot, noHoverEvent); }
+        function() { _hover(gd, evt, subplot, noHoverEvent, eventTarget); }
     );
 };
 
@@ -247,7 +249,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 };
 
 // The actual implementation is here:
-function _hover(gd, evt, subplot, noHoverEvent) {
+function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if(!subplot) subplot = 'xy';
 
     // if the user passed in an array of subplots,
@@ -366,7 +368,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
         // [x|y]px: the pixels (from top left) of the mouse location
         // on the currently selected plot area
         // add pointerX|Y property for drawing the spikes in spikesnap 'cursor' situation
-        var hasUserCalledHover = !evt.target;
+        var hasUserCalledHover = !eventTarget;
         var xpx, ypx;
 
         if(hasUserCalledHover) {
@@ -383,13 +385,7 @@ function _hover(gd, evt, subplot, noHoverEvent) {
                 return;
             }
 
-            // Discover event target, traversing open shadow roots.
-            var target = evt.composedPath && evt.composedPath()[0];
-            if(!target) {
-                // Fallback for browsers not supporting composedPath
-                target = evt.target;
-            }
-            var dbb = target.getBoundingClientRect();
+            var dbb = eventTarget.getBoundingClientRect();
 
             xpx = evt.clientX - dbb.left;
             ypx = evt.clientY - dbb.top;
@@ -837,15 +833,15 @@ function _hover(gd, evt, subplot, noHoverEvent) {
     if(!helpers.isUnifiedHover(hovermode)) {
         hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
-    }    // TODO: tagName hack is needed to appease geo.js's hack of using evt.target=true
+    }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
-    if(evt.target && evt.target.tagName) {
+    if(eventTarget && eventTarget.tagName) {
         var hasClickToShow = Registry.getComponentMethod('annotations', 'hasClickToShow')(gd, newhoverdata);
-        overrideCursor(d3.select(evt.target), hasClickToShow ? 'pointer' : '');
+        overrideCursor(d3.select(eventTarget), hasClickToShow ? 'pointer' : '');
     }
 
     // don't emit events if called manually
-    if(!evt.target || noHoverEvent || !hoverChanged(gd, evt, oldhoverdata)) return;
+    if(!eventTarget || noHoverEvent || !hoverChanged(gd, evt, oldhoverdata)) return;
 
     if(oldhoverdata) {
         gd.emit('plotly_unhover', {
@@ -1107,7 +1103,9 @@ function createHoverText(hoverData, opts) {
                 orientation: 'v'
             }
         };
-        var mockLayoutOut = {};
+        var mockLayoutOut = {
+            font: font
+        };
         legendSupplyDefaults(mockLayoutIn, mockLayoutOut, gd._fullData);
         var mockLegend = mockLayoutOut.legend;
 
@@ -1148,7 +1146,8 @@ function createHoverText(hoverData, opts) {
 
         // Draw unified hover label
         mockLegend._inHover = true;
-        mockLegend._groupTitleFont = font;
+        mockLegend._groupTitleFont = hoverlabel.grouptitlefont;
+
         legendDraw(gd, mockLegend);
 
         // Position the hover

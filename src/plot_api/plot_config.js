@@ -22,6 +22,15 @@ var configAttributes = {
         ].join(' ')
     },
 
+    typesetMath: {
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'Determines whether math should be typeset or not,',
+            'when MathJax (either v2 or v3) is present on the page.'
+        ].join(' ')
+    },
+
     plotlyServerURL: {
         valType: 'string',
         dflt: '',

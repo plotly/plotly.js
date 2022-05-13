@@ -25,6 +25,7 @@
                 "5",
                 "6"
             ],
+            "texttemplate": "%{z} %{y}<br> %{x}",
             "type": "histogram2d",
             "histfunc": "sum"
         }

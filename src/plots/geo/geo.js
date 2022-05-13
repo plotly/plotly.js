@@ -119,7 +119,7 @@ proto.fetchTopojson = function() {
                 if(err.status === 404) {
                     return reject(new Error([
                         'plotly.js could not find topojson file at',
-                        topojsonPath, '.',
+                        topojsonPath + '.',
                         'Make sure the *topojsonURL* plot config option',
                         'is set properly.'
                     ].join(' ')));
@@ -367,7 +367,7 @@ proto.updateBaseLayers = function(fullLayout, geoLayout) {
         } else if(isAxisLayer(d)) {
             path.datum(makeGraticule(d, geoLayout, fullLayout))
                 .call(Color.stroke, geoLayout[d].gridcolor)
-                .call(Drawing.dashLine, '', geoLayout[d].gridwidth);
+                .call(Drawing.dashLine, geoLayout[d].griddash, geoLayout[d].gridwidth);
         }
 
         if(isLineLayer(d)) {

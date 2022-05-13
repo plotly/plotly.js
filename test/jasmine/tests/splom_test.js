@@ -807,7 +807,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 25,
-                innerSubplotNodeCnt: 17,
+                innerSubplotNodeCnt: 18,
                 hasSplomGrid: false,
                 bgCnt: 0
             });
@@ -826,8 +826,8 @@ describe('Test splom interactions:', function() {
             // from large -> small splom:
             // grid layer would be above xaxis layer,
             // if we didn't clear subplot children.
-            expect(gridIndex).toBe(1, '<g.gridlayer> index');
-            expect(xaxisIndex).toBe(14, '<g.xaxislayer-above> index');
+            expect(gridIndex).toBe(2, '<g.gridlayer> index');
+            expect(xaxisIndex).toBe(15, '<g.xaxislayer-above> index');
 
             return Plotly.restyle(gd, 'dimensions', [dimsLarge]);
         })
@@ -839,7 +839,7 @@ describe('Test splom interactions:', function() {
                 // new subplots though have reduced number of children.
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 4 : 17;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 18;
                 },
                 hasSplomGrid: true,
                 bgCnt: 0
@@ -1586,7 +1586,7 @@ describe('Test splom select:', function() {
 
             var to = setTimeout(function() {
                 reject('fail: plotly_selected not emitter');
-            }, 300);
+            }, 700);
 
             gd.once('plotly_selected', function(d) {
                 clearTimeout(to);

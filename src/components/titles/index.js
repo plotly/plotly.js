@@ -96,8 +96,10 @@ function draw(gd, titleClass, options) {
 
     var elShouldExist = txt || editable;
 
+    var hColorbarMoveTitle;
     if(!group) {
         group = Lib.ensureSingle(fullLayout._infolayer, 'g', 'g-' + titleClass);
+        hColorbarMoveTitle = fullLayout._hColorbarMoveTitle;
     }
 
     var el = group.selectAll('text')
@@ -121,13 +123,17 @@ function draw(gd, titleClass, options) {
     function drawTitle(titleEl) {
         var transformVal;
 
+        if(!transform && hColorbarMoveTitle) {
+            transform = {};
+        }
+
         if(transform) {
             transformVal = '';
             if(transform.rotate) {
                 transformVal += 'rotate(' + [transform.rotate, attributes.x, attributes.y] + ')';
             }
-            if(transform.offset) {
-                transformVal += strTranslate(0, transform.offset);
+            if(transform.offset || hColorbarMoveTitle) {
+                transformVal += strTranslate(0, (transform.offset || 0) - (hColorbarMoveTitle || 0));
             }
         } else {
             transformVal = null;

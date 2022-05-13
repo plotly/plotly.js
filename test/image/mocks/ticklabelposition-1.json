@@ -22,6 +22,7 @@
     }],
     "layout": {
         "xaxis": {
+            "minor": { "showgrid": true },
             "anchor": "y",
             "domain": [0, 0.475],
             "type": "date",
@@ -36,6 +37,7 @@
             "gridcolor": "white"
         },
         "yaxis": {
+            "minor": { "showgrid": true },
             "anchor": "x",
             "domain": [0, 0.475],
             "autorange": "reversed",
@@ -50,6 +52,7 @@
             "gridcolor": "white"
         },
         "xaxis2": {
+            "minor": { "showgrid": true },
             "anchor": "y2",
             "domain": [0.525, 1],
             "autorange": "reversed",
@@ -64,6 +67,7 @@
             "gridcolor": "white"
         },
         "yaxis2": {
+            "minor": { "showgrid": true },
             "anchor": "x2",
             "domain": [0, 0.475],
             "type": "log",
@@ -77,6 +81,7 @@
             "gridcolor": "white"
         },
         "xaxis3": {
+            "minor": { "showgrid": true },
             "anchor": "y3",
             "domain": [0.525, 1],
             "type": "date",
@@ -90,6 +95,7 @@
             "gridcolor": "white"
         },
         "yaxis3": {
+            "minor": { "showgrid": true },
             "anchor": "x3",
             "domain": [0.525, 1],
             "autorange": "reversed",
@@ -104,6 +110,7 @@
             "gridcolor": "white"
         },
         "xaxis4": {
+            "minor": { "showgrid": true },
             "anchor": "y4",
             "domain": [0, 0.475],
             "autorange": "reversed",
@@ -119,6 +126,7 @@
             "gridcolor": "white"
         },
         "yaxis4": {
+            "minor": { "showgrid": true },
             "anchor": "x4",
             "domain": [0.525, 1],
             "type": "log",

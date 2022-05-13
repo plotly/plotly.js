@@ -2206,6 +2206,47 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
+        it('should work on scattersmith traces, hasCssTransform: ' + hasCssTransform, function(done) {
+            var assertPoints = makeAssertPoints(['real', 'imag']);
+            var assertSelectedPoints = makeAssertSelectedPoints();
+
+            var fig = Lib.extendDeep({}, require('@mocks/smith_basic.json'));
+            fig.layout.dragmode = 'select';
+            addInvisible(fig);
+
+            Plotly.newPlot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
+                return _run(hasCssTransform,
+                    [[260, 260], [460, 460]],
+                    function() {
+                        assertPoints([[1, 0]]);
+                        assertSelectedPoints({0: [2]});
+                    },
+                    [360, 360],
+                    BOXEVENTS, 'scattersmith select'
+                );
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'lasso');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[260, 260], [260, 460], [460, 460], [460, 260], [260, 260]],
+                    function() {
+                        assertPoints([[1, 0]]);
+                        assertSelectedPoints({0: [2]});
+                    },
+                    [360, 360],
+                    LASSOEVENTS, 'scattersmith lasso'
+                );
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    [false, true].forEach(function(hasCssTransform) {
         it('should work on barpolar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['r', 'theta']);
             var assertSelectedPoints = makeAssertSelectedPoints();

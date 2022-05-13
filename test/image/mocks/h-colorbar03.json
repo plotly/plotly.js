@@ -1,0 +1,63 @@
+{
+  "data": [
+    {
+      "x": [-1, 0, 1],
+      "y": [0, 0, 0],
+      "mode": "markers",
+      "marker": {
+        "size": 100,
+        "color": [0, 50, 100],
+        "colorscale": "Reds",
+        "showscale": true,
+        "colorbar": {
+          "orientation": "h",
+          "x": 0.25,
+          "len": 0.5,
+          "thickness": 25,
+          "ticks": "inside",
+          "dtick": 20,
+          "ticklabelposition": "inside left",
+          "ticklen": 8,
+          "tickwidth": 4,
+          "bgcolor": "rgba(255,255,0,0.5)",
+          "borderwidth": 1,
+          "bordercolor": "gray",
+          "title": {
+            "side": "bottom",
+            "text": "Colorbar<br>title",
+            "font": {
+              "size": 16
+            }
+          }
+        }
+      }
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 400,
+    "plot_bgcolor": "lightblue",
+    "title": {
+      "text": "Graph title",
+      "font": {
+        "size": 24
+      }
+    },
+    "xaxis": {
+      "gridwidth": 3,
+      "gridcolor": "gray",
+      "tickvals": [0.25, 0.75],
+      "minor": {
+        "griddash": "dash"
+      }
+    },
+    "yaxis": {
+      "gridwidth": 3,
+      "gridcolor": "green",
+      "minor": {
+        "tickvals": [0.25, 0.75],
+        "griddash": "dash"
+      }
+    }
+  }
+}

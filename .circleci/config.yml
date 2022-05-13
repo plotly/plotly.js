@@ -10,7 +10,23 @@ orbs:
 # https://hub.docker.com/r/cimg/node/tags/
 
 jobs:
-  install-and-cibuild:
+  install-and-cibuild-node12: # cibuild using node 12 & npm 6
+    docker:
+      - image: cimg/node:12.22.7
+    working_directory: ~/plotly.js
+    steps:
+      - checkout
+      - run:
+          name: Set up build environment
+          command: .circleci/env_build.sh
+      - run:
+          name: Pretest
+          command: npm run pretest
+      - run:
+          name: CI-Build
+          command: npm run cibuild
+
+  install-and-cibuild: # main cibuild using node 16 & npm 7
     docker:
       - image: cimg/node:16.8.0
     working_directory: ~/plotly.js
@@ -73,7 +89,7 @@ jobs:
     environment:
       # Alaska time (arbitrary timezone to test date logic)
       TZ: "America/Anchorage"
-    parallelism: 8
+    parallelism: 12
     working_directory: ~/plotly.js
     steps:
       - browser-tools/install-browser-tools: &browser-versions
@@ -163,6 +179,61 @@ jobs:
           name: Test MathJax on firefox-81
           command: .circleci/test.sh mathjax-firefox
 
+  mathjax-firefox82:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          firefox-version: '82.0'
+          install-chrome: false
+          install-chromedriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test MathJax on firefox-82
+          command: .circleci/test.sh mathjax-firefox82+
+
+  mathjax-firefoxLatest:
+    docker:
+      # need '-browsers' version to test in real (xvfb-wrapped) browsers
+      - image: cimg/node:16.8.0-browsers
+    environment:
+      # Alaska time (arbitrary timezone to test date logic)
+      TZ: "America/Anchorage"
+    working_directory: ~/plotly.js
+    steps:
+      - browser-tools/install-browser-tools: &browser-versions
+          install-chrome: false
+          install-chromedriver: false
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Test MathJax on firefox-latest
+          command: .circleci/test.sh mathjax-firefox82+
+
+  make-baselines-mathjax3:
+    docker:
+      - image: circleci/python:3.8.9
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install kaleido, plotly.io and required fonts
+          command: .circleci/env_image.sh
+      - run:
+          name: Create mathjax v3 png files
+          command: .circleci/test.sh make-baselines-mathjax3
+      - persist_to_workspace:
+          root: ~/
+          paths:
+            - plotly.js
+
   make-baselines:
     parallelism: 4
     docker:
@@ -192,6 +263,20 @@ jobs:
       - run:
           name: Compare pixels
           command: .circleci/test.sh test-image ; find build -maxdepth 1 -type f -delete
+      - store_artifacts:
+          path: build
+          destination: /
+
+  test-baselines-mathjax3:
+    docker:
+      - image: circleci/node:16.8.0
+    working_directory: ~/plotly.js
+    steps:
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Compare pixels of mathjax v3 baselines
+          command: .circleci/test.sh test-image-mathjax3
       - store_artifacts:
           path: build
           destination: /
@@ -333,6 +418,8 @@ workflows:
   version: 2
   build-and-test:
     jobs:
+      - install-and-cibuild-node12
+
       - install-and-cibuild
       - timezone-jasmine:
           requires:
@@ -341,6 +428,12 @@ workflows:
           requires:
             - install-and-cibuild
       - mathjax-firefox81:
+          requires:
+            - install-and-cibuild
+      - mathjax-firefox82:
+          requires:
+            - install-and-cibuild
+      - mathjax-firefoxLatest:
           requires:
             - install-and-cibuild
       - no-gl-jasmine:
@@ -352,6 +445,12 @@ workflows:
       - flaky-no-gl-jasmine:
           requires:
             - install-and-cibuild
+      - make-baselines-mathjax3:
+          requires:
+            - install-and-cibuild
+      - test-baselines-mathjax3:
+          requires:
+            - make-baselines-mathjax3
       - make-baselines:
           requires:
             - install-and-cibuild

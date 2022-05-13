@@ -3,12 +3,18 @@
 var cleanTicks = require('./clean_ticks');
 var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 
-module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
+module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType, opts) {
+    if(!opts) opts = {};
+    var isMinor = opts.isMinor;
+    var cIn = isMinor ? containerIn.minor || {} : containerIn;
+    var cOut = isMinor ? containerOut.minor : containerOut;
+    var prefix = isMinor ? 'minor.' : '';
+
     function readInput(attr) {
-        var v = containerIn[attr];
+        var v = cIn[attr];
         return (
             v !== undefined
-        ) ? v : (containerOut._template || {})[attr];
+        ) ? v : (cOut._template || {})[attr];
     }
 
     var _tick0 = readInput('tick0');
@@ -18,20 +24,21 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     var tickmodeDefault = isArrayOrTypedArray(_tickvals) ? 'array' :
         _dtick ? 'linear' :
         'auto';
-    var tickmode = coerce('tickmode', tickmodeDefault);
+    var tickmode = coerce(prefix + 'tickmode', tickmodeDefault);
 
-    if(tickmode === 'auto') coerce('nticks');
-    else if(tickmode === 'linear') {
+    if(tickmode === 'auto') {
+        coerce(prefix + 'nticks');
+    } else if(tickmode === 'linear') {
         // dtick is usually a positive number, but there are some
         // special strings available for log or date axes
         // tick0 also has special logic
-        var dtick = containerOut.dtick = cleanTicks.dtick(
+        var dtick = cOut.dtick = cleanTicks.dtick(
             _dtick, axType);
-        containerOut.tick0 = cleanTicks.tick0(
+        cOut.tick0 = cleanTicks.tick0(
             _tick0, axType, containerOut.calendar, dtick);
     } else if(axType !== 'multicategory') {
-        var tickvals = coerce('tickvals');
-        if(tickvals === undefined) containerOut.tickmode = 'auto';
-        else coerce('ticktext');
+        var tickvals = coerce(prefix + 'tickvals');
+        if(tickvals === undefined) cOut.tickmode = 'auto';
+        else if(!isMinor) coerce('ticktext');
     }
 };

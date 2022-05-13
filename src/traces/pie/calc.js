@@ -39,7 +39,6 @@ function calc(gd, trace) {
             v = vals[i];
             if(!isNumeric(v)) continue;
             v = +v;
-            if(v < 0) continue;
         } else v = 1;
 
         label = labels[i];
@@ -75,6 +74,9 @@ function calc(gd, trace) {
             }
         }
     }
+
+    // Drop aggregate sums of value 0 or less
+    cd = cd.filter(function(elem) { return elem.v >= 0; });
 
     var shouldSort = (trace.type === 'funnelarea') ? isAggregated : trace.sort;
     if(shouldSort) cd.sort(function(a, b) { return b.v - a.v; });

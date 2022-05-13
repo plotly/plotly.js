@@ -8,6 +8,7 @@ var isUnifiedHover = require('../fx/helpers').isUnifiedHover;
 var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
 var DRAW_MODES = require('./constants').DRAW_MODES;
+var extendDeep = require('../../lib').extendDeep;
 
 /**
  * ModeBar wrapper around 'create' and 'update',
@@ -110,6 +111,7 @@ function getButtonGroups(gd) {
     var hasTernary = fullLayout._has('ternary');
     var hasMapbox = fullLayout._has('mapbox');
     var hasPolar = fullLayout._has('polar');
+    var hasSmith = fullLayout._has('smith');
     var hasSankey = fullLayout._has('sankey');
     var allAxesFixed = areAllAxesFixed(fullLayout);
     var hasUnifiedHoverLabel = isUnifiedHover(fullLayout.hovermode);
@@ -152,7 +154,7 @@ function getButtonGroups(gd) {
     var resetGroup = [];
     var dragModeGroup = [];
 
-    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar > 1) {
+    if((hasCartesian || hasGL2D || hasPie || hasFunnelarea || hasTernary) + hasGeo + hasGL3D + hasMapbox + hasPolar + hasSmith > 1) {
         // graphs with more than one plot types get 'union buttons'
         // which reset the view or toggle hover labels across all subplots.
         hoverGroup = ['toggleHover'];
@@ -175,7 +177,7 @@ function getButtonGroups(gd) {
     } else if(hasSankey) {
         hoverGroup = ['hoverClosestCartesian', 'hoverCompareCartesian'];
         resetGroup = ['resetViewSankey'];
-    } else { // hasPolar, hasTernary
+    } else { // hasPolar, hasSmith, hasTernary
         // always show at least one hover icon.
         hoverGroup = ['toggleHover'];
     }
@@ -329,7 +331,9 @@ function appendButtonsToGroups(groups, buttons) {
 }
 
 // fill in custom buttons referring to default mode bar buttons
-function fillCustomButton(customButtons) {
+function fillCustomButton(originalModeBarButtons) {
+    var customButtons = extendDeep([], originalModeBarButtons);
+
     for(var i = 0; i < customButtons.length; i++) {
         var buttonGroup = customButtons[i];
 

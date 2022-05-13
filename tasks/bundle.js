@@ -10,6 +10,11 @@ var pathToPlotlyDist = constants.pathToPlotlyDist;
 var pathToPlotlyIndex = constants.pathToPlotlyIndex;
 var pathToPlotlyDistMin = constants.pathToPlotlyDistMin;
 var pathToPlotlyDistWithMeta = constants.pathToPlotlyDistWithMeta;
+
+var pathToPlotlyStrict = constants.pathToPlotlyStrict;
+var pathToPlotlyStrictDist = constants.pathToPlotlyStrictDist;
+var pathToPlotlyStrictDistMin = constants.pathToPlotlyStrictDistMin;
+
 var pathToPlotlyGeoAssetsSrc = constants.pathToPlotlyGeoAssetsSrc;
 var pathToPlotlyGeoAssetsDist = constants.pathToPlotlyGeoAssetsDist;
 
@@ -32,8 +37,21 @@ tasks.push(function(done) {
         standalone: 'Plotly',
         pathToMinBundle: pathToPlotlyDistMin
     }, function() {
-        prependFile(pathToPlotlyDist, header, common.throwOnError);
-        prependFile(pathToPlotlyDistMin, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDist, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDistMin, header, common.throwOnError);
+
+        done();
+    });
+});
+
+// Browserify plotly.js-strict
+tasks.push(function(done) {
+    _bundle(pathToPlotlyStrict, pathToPlotlyStrictDist, {
+        standalone: 'Plotly',
+        pathToMinBundle: pathToPlotlyStrictDistMin
+    }, function() {
+        prependFile.sync(pathToPlotlyStrictDist, header.replace('plotly.js', 'plotly.js (strict)'), common.throwOnError);
+        prependFile.sync(pathToPlotlyStrictDistMin, header.replace('plotly.js', 'plotly.js (strict - minified)'), common.throwOnError);
 
         done();
     });
@@ -44,7 +62,7 @@ tasks.push(function(done) {
     _bundle(pathToPlotlyGeoAssetsSrc, pathToPlotlyGeoAssetsDist, {
         standalone: 'PlotlyGeoAssets'
     }, function() {
-        prependFile(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyGeoAssetsDist, header, common.throwOnError);
 
         done();
     });
@@ -56,7 +74,7 @@ tasks.push(function(done) {
         standalone: 'Plotly',
         noCompress: true
     }, function() {
-        prependFile(pathToPlotlyDistWithMeta, header, common.throwOnError);
+        prependFile.sync(pathToPlotlyDistWithMeta, header, common.throwOnError);
 
         done();
     });

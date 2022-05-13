@@ -1,9 +1,9 @@
 'use strict';
 
-var createSurface = require('gl-surface3d');
+var createSurface = require('../../../stackgl_modules').gl_surface3d;
 
-var ndarray = require('ndarray');
-var ndarrayInterp2d = require('ndarray-linear-interpolate').d2;
+var ndarray = require('../../../stackgl_modules').ndarray;
+var ndarrayInterp2d = require('../../../stackgl_modules').ndarray_linear_interpolate.d2;
 
 var interp2d = require('../heatmap/interp2d');
 var findEmpties = require('../heatmap/find_empties');
