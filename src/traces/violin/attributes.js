@@ -64,7 +64,7 @@ module.exports = {
             '*width* means each violin has the same (max) width',
             '*count* means the violins are scaled by the number of sample points making',
             'up each violin.'
-        ].join('')
+        ].join(' ')
     },
 
     spanmode: {

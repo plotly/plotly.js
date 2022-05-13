@@ -9,6 +9,15 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.12.1] -- 2022-05-09
+
+### Fixed
+ - Fix for disabling polar rotation when `dragmode` is set to false [[#6147](https://github.com/plotly/plotly.js/pull/6147)],
+   with thanks to @jonfunkhouser for the contribution!
+ - Fix custom modebar buttons mutate the input [[#6177](https://github.com/plotly/plotly.js/pull/6177)]
+ - Fix various missing and duplicate spaces in plot schema descriptions [[#6183](https://github.com/plotly/plotly.js/pull/6183)]
+
+
 ## [2.12.0] -- 2022-05-02
 
 ### Added

@@ -2171,7 +2171,9 @@ function _relayout(gd, aobj) {
             if(parentFull.autorange) flags.calc = true;
             else flags.plot = true;
         } else {
-            if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
+            if(ai === 'dragmode' && ((vi === false && vOld !== false) || (vi !== false && vOld === false))) {
+                flags.plot = true;
+            } else if((fullLayout._has('scatter-like') && fullLayout._has('regl')) &&
                 (ai === 'dragmode' &&
                 (vi === 'lasso' || vi === 'select') &&
                 !(vOld === 'lasso' || vOld === 'select'))
