@@ -3,25 +3,25 @@
 var polybool = require('polybooljs');
 
 var Registry = require('../../registry');
-var dashStyle = require('../../components/drawing').dashStyle;
-var Color = require('../../components/color');
-var Fx = require('../../components/fx');
-var makeEventData = require('../../components/fx/helpers').makeEventData;
-var dragHelpers = require('../../components/dragelement/helpers');
+var dashStyle = require('../drawing').dashStyle;
+var Color = require('../color');
+var Fx = require('../fx');
+var makeEventData = require('../fx/helpers').makeEventData;
+var dragHelpers = require('../dragelement/helpers');
 var freeMode = dragHelpers.freeMode;
 var rectMode = dragHelpers.rectMode;
 var drawMode = dragHelpers.drawMode;
 var openMode = dragHelpers.openMode;
 var selectMode = dragHelpers.selectMode;
 
-var displayOutlines = require('../../components/shapes/draw_newshape/display_outlines');
-var handleEllipse = require('../../components/shapes/draw_newshape/helpers').handleEllipse;
-var newShapes = require('../../components/shapes/draw_newshape/newshapes');
+var displayOutlines = require('../shapes/draw_newshape/display_outlines');
+var handleEllipse = require('../shapes/draw_newshape/helpers').handleEllipse;
+var newShapes = require('../shapes/draw_newshape/newshapes');
 
 var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
-var getFromId = require('./axis_ids').getFromId;
+var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
 
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;

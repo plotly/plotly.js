@@ -14,10 +14,10 @@ var rectMode = dragHelpers.rectMode;
 var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
-var prepSelect = require('../cartesian/select').prepSelect;
-var clearSelect = require('../cartesian/select').clearSelect;
-var clearSelectionsCache = require('../cartesian/select').clearSelectionsCache;
-var selectOnClick = require('../cartesian/select').selectOnClick;
+var prepSelect = require('../../components/selections/select').prepSelect;
+var clearSelect = require('../../components/selections/select').clearSelect;
+var clearSelectionsCache = require('../../components/selections/select').clearSelectionsCache;
+var selectOnClick = require('../../components/selections/select').selectOnClick;
 
 var constants = require('./constants');
 var createMapboxLayer = require('./layers');

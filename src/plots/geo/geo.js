@@ -18,9 +18,9 @@ var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var getAutoRange = require('../cartesian/autorange').getAutoRange;
 var dragElement = require('../../components/dragelement');
-var prepSelect = require('../cartesian/select').prepSelect;
-var clearSelect = require('../cartesian/select').clearSelect;
-var selectOnClick = require('../cartesian/select').selectOnClick;
+var prepSelect = require('../../components/selections/select').prepSelect;
+var clearSelect = require('../../components/selections/select').clearSelect;
+var selectOnClick = require('../../components/selections/select').selectOnClick;
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');

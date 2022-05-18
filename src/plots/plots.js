@@ -13,7 +13,7 @@ var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('./cartesian/axis_ids');
-var clearSelect = require('./cartesian/handle_outline').clearSelect;
+var clearSelect = require('../components/selections/handle_outline').clearSelect;
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');

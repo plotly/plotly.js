@@ -19,10 +19,10 @@ var dragHelpers = require('../../components/dragelement/helpers');
 var freeMode = dragHelpers.freeMode;
 var rectMode = dragHelpers.rectMode;
 var Titles = require('../../components/titles');
-var prepSelect = require('../cartesian/select').prepSelect;
-var selectOnClick = require('../cartesian/select').selectOnClick;
-var clearSelect = require('../cartesian/select').clearSelect;
-var clearSelectionsCache = require('../cartesian/select').clearSelectionsCache;
+var prepSelect = require('../../components/selections/select').prepSelect;
+var selectOnClick = require('../../components/selections/select').selectOnClick;
+var clearSelect = require('../../components/selections/select').clearSelect;
+var clearSelectionsCache = require('../../components/selections/select').clearSelectionsCache;
 var constants = require('../cartesian/constants');
 
 function Ternary(options, fullLayout) {

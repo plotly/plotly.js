@@ -12,7 +12,7 @@ var i090 = constants.i090;
 var i180 = constants.i180;
 var i270 = constants.i270;
 
-var handleOutline = require('../../../plots/cartesian/handle_outline');
+var handleOutline = require('../../selections/handle_outline');
 var clearOutlineControllers = handleOutline.clearOutlineControllers;
 
 var helpers = require('./helpers');

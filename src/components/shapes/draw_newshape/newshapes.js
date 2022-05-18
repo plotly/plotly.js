@@ -12,11 +12,11 @@ var i270 = constants.i270;
 var cos45 = constants.cos45;
 var sin45 = constants.sin45;
 
-var cartesianHelpers = require('../../../plots/cartesian/helpers');
+var cartesianHelpers = require('../../selections/helpers');
 var p2r = cartesianHelpers.p2r;
 var r2p = cartesianHelpers.r2p;
 
-var handleOutline = require('../../../plots/cartesian/handle_outline');
+var handleOutline = require('../../selections/handle_outline');
 var clearSelect = handleOutline.clearSelect;
 
 var helpers = require('./helpers');

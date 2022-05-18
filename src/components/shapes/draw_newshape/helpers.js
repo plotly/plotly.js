@@ -6,7 +6,7 @@ var constants = require('./constants');
 var CIRCLE_SIDES = constants.CIRCLE_SIDES;
 var SQRT2 = constants.SQRT2;
 
-var cartesianHelpers = require('../../../plots/cartesian/helpers');
+var cartesianHelpers = require('../../selections/helpers');
 var p2r = cartesianHelpers.p2r;
 var r2p = cartesianHelpers.r2p;
 
