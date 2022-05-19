@@ -109,6 +109,10 @@ module.exports = templatedArray('shape', {
         description: [
             'Sets the annotation\'s y coordinate axis.',
             axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
+            'If the axis `type` is *log*, then you must take the',
+            'log of your desired range.',
+            'If the axis `type` is *date*, then you must convert',
+            'the date to unix time in milliseconds.'
         ].join(' ')
     }),
     ysizemode: {
