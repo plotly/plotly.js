@@ -625,7 +625,14 @@ module.exports = {
         description: 'Determines whether or not the tick labels are drawn.'
     },
     automargin: {
-        valType: 'boolean',
+        valType: 'enumerated',
+        values: [
+            true, false, 'height', 'width',
+            'top', 'bottom', 'left', 'right',
+            'top left', 'top width', 'top right',
+            'left height', 'right height',
+            'bottom left', 'bottom width', 'bottom right',
+        ],
         dflt: false,
         editType: 'ticks',
         description: [

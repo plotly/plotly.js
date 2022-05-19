@@ -2622,6 +2622,8 @@ axes.drawOne = function(gd, ax, opts) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
 
+        keepSelectedAutoMargin(ax.automargin, push);
+
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
         Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
@@ -2635,6 +2637,35 @@ axes.drawOne = function(gd, ax, opts) {
 
     return Lib.syncOrAsync(seq);
 };
+
+function keepSelectedAutoMargin(automargin, push) {
+    if(typeof automargin === 'boolean') return push;
+
+    var keepMargin = [];
+    var mapping = {
+        width: ['x', 'r', 'l'],
+        height: ['y', 't', 'b'],
+        right: ['r'],
+        left: ['l'],
+        top: ['t'],
+        bottom: ['b']
+    };
+
+    Object.keys(mapping).forEach(function(key) {
+        if(automargin.includes(key)) {
+            mapping[key].forEach(function(item) {
+                keepMargin.push(item);
+            });
+        }
+    });
+
+    Object.keys(push).forEach(function(key) {
+        if(key.length !== 2 && !keepMargin.includes(key)) {
+            push[key] = 0;
+        }
+    });
+    return push;
+}
 
 function getBoundaryVals(ax, vals) {
     var out = [];
