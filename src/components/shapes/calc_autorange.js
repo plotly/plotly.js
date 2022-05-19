@@ -93,6 +93,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     var val;
 
     if(ax.type === 'date') convertVal = helpers.decodeDate(convertVal);
+    if(ax.type === 'category') convertVal = helpers.castNumericStringsToNumbers(convertVal);
 
     for(i = 0; i < segments.length; i++) {
         segment = segments[i];

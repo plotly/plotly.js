@@ -338,7 +338,14 @@ describe('Test axes', function() {
             });
         });
 
+        /* TODO: These tests don't actually test if the numeric strings are
+         * indeed converted or not... */
         describe('autotype disable/enable converting numeric strings', function() {
+            /* TODO: The test description doesn't totally reflect what it is
+             * testing: here the test is to determine that setting
+             * autotypenumbers: 'strict' on the yaxis forces yaxis.type to be
+             * 'category', that's it.
+             */
             it('should disable converting numeric strings using axis.autotypenumbers', function() {
                 layoutIn = {
                     xaxis: {},
@@ -381,7 +388,11 @@ describe('Test axes', function() {
                 expect(layoutOut.yaxis.type).toBe('category');
             });
 
-            it('should autotype date having more dates with & without strict autotypenumbers', function() {
+            /* TODO: Should not the opposite also be tested? Namely that data
+             * having fewer dates gets forced to 'category' (that's consitent
+             * with the previous test).
+             */
+            it('should autotype data having more dates with & without strict autotypenumbers', function() {
                 layoutIn = {
                     xaxis: {},
                     yaxis: { autotypenumbers: 'strict' }

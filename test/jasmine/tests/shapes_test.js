@@ -12,6 +12,8 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var drag = require('../assets/drag');
+var numericCategory = require('../assets/numeric_category');
+
 
 var customAssertions = require('../assets/custom_assertions');
 var assertElemRightTo = customAssertions.assertElemRightTo;
@@ -1516,6 +1518,10 @@ describe('Test shapes', function() {
         var ya = Axes.getFromId(gd, layoutShape.yref);
         var x2p = helpers.getDataToPixel(gd, xa);
         var y2p = helpers.getDataToPixel(gd, ya, true);
+        // This is required to match what src/components/shapes/draw.js does for
+        // category axes, so the test is done correctly.
+        if(xa && xa.type === 'category') { x2p = helpers.castNumericStringsToNumbers(x2p); }
+        if(ya && ya.type === 'category') { y2p = helpers.castNumericStringsToNumbers(y2p); }
 
         var initialPath = layoutShape.path;
         var initialCoordinates = getPathCoordinates(initialPath, x2p, y2p);
@@ -1644,4 +1650,29 @@ describe('Test shapes', function() {
 
         return coordinates;
     }
+});
+
+describe('Numeric string categories', function() {
+    'use strict';
+
+    var gd; var dx = 100; var dy = 100;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    numericCategory.shapeColors.forEach(function(color) {
+        it('should correctly drag shapes where ' + numericCategory.shapeColorTestDesc[color],
+        function(done) {
+            var promise = numericCategory.testDragShapeByColor(gd, color, dx, dy);
+            promise.then(function(dbbox) {
+                expect(dbbox.dx).toBeCloseTo(dx);
+                expect(dbbox.dy).toBeCloseTo(dy);
+                expect(dbbox.dwidth).toBeCloseTo(0);
+                expect(dbbox.dheight).toBeCloseTo(0);
+            }).then(done);
+        });
+    });
 });
