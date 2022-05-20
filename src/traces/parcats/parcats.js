@@ -285,7 +285,7 @@ function performPlot(parcatsModels, graphDiv, layout, svg) {
         .attr('x', function(d) {
             return d.width / 2;
         })
-        .attr('y', -5)
+        .attr('y', -15)
         .text(function(d, i) {
             if(i === 0) {
                 // Add dimension label above topmost category
