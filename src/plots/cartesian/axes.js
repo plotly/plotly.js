@@ -2643,16 +2643,16 @@ function keepSelectedAutoMargin(automargin, push) {
 
     var keepMargin = [];
     var mapping = {
-        width: ['x', 'r', 'l'],
-        height: ['y', 't', 'b'],
-        right: ['r'],
-        left: ['l'],
-        top: ['t'],
-        bottom: ['b']
+        width: ['x', 'r', 'l', 'xl', 'xr'],
+        height: ['y', 't', 'b', 'yt', 'yb'],
+        right: ['r', 'xr'],
+        left: ['l', 'xl'],
+        top: ['t', 'yt'],
+        bottom: ['b', 'yb']
     };
 
     Object.keys(mapping).forEach(function(key) {
-        if(automargin.includes(key)) {
+        if(automargin.indexOf(key) !== -1) {
             mapping[key].forEach(function(item) {
                 keepMargin.push(item);
             });
@@ -2660,8 +2660,12 @@ function keepSelectedAutoMargin(automargin, push) {
     });
 
     Object.keys(push).forEach(function(key) {
-        if(key.length !== 2 && !keepMargin.includes(key)) {
-            push[key] = 0;
+        if(keepMargin.indexOf(key) === -1) {
+            if(key.length === 1) {
+                push[key] = 0;
+            } else {
+                delete push[key];
+            }
         }
     });
     return push;
