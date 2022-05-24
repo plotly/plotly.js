@@ -4284,15 +4284,15 @@ describe('Test axes', function() {
                 t: 'grew', l: 'grew',
                 b: '=', r: '='
             }))
-            .then(check('automargin not left', {'yaxis.automargin': 'right height'}, {
+            .then(check('automargin not left', {'yaxis.automargin': 'right+height'}, {
                 t: 'grew', l: '=',
                 b: '=', r: '='
             }))
-            .then(check('automargin keep left height', {'yaxis.automargin': 'left height'}, {
+            .then(check('automargin keep left height', {'yaxis.automargin': 'left+height'}, {
                 t: 'grew', l: 'grew',
                 b: '=', r: '='
             }))
-            .then(check('automargin keep bottom right', {'yaxis.automargin': 'bottom right'}, {
+            .then(check('automargin keep bottom right', {'yaxis.automargin': 'bottom+right'}, {
                 t: '=', l: '=',
                 b: '=', r: '='
             }))
@@ -4304,7 +4304,7 @@ describe('Test axes', function() {
                 t: 'grew', l: '=',
                 b: '=', r: '='
             }))
-            .then(check('automargin not top', {'yaxis.automargin': 'bottom width'}, {
+            .then(check('automargin not top', {'yaxis.automargin': 'bottom+width'}, {
                 t: '=', l: 'grew',
                 b: '=', r: '='
             }))
@@ -4320,7 +4320,7 @@ describe('Test axes', function() {
                 t: '=', l: '=',
                 b: 'grew', r: 'grew'
             }))
-            .then(check('automargin not bottom', {'xaxis.automargin': 'top width'}, {
+            .then(check('automargin not bottom', {'xaxis.automargin': 'top+width'}, {
                 t: '=', l: '=',
                 b: '=', r: 'grew'
             }))
@@ -4332,15 +4332,15 @@ describe('Test axes', function() {
                 t: '=', l: '=',
                 b: 'grew', r: '='
             }))
-            .then(check('automargin keep top right', {'xaxis.automargin': 'top right'}, {
+            .then(check('automargin keep top right', {'xaxis.automargin': 'top+right'}, {
                 t: '=', l: '=',
                 b: '=', r: 'grew'
             }))
-            .then(check('automargin keep top left', {'xaxis.automargin': 'top left'}, {
+            .then(check('automargin keep top left', {'xaxis.automargin': 'top+left'}, {
                 t: '=', l: '=',
                 b: '=', r: '='
             }))
-            .then(check('automargin keep bottom left', {'xaxis.automargin': 'bottom left'}, {
+            .then(check('automargin keep bottom left', {'xaxis.automargin': 'bottom+left'}, {
                 t: '=', l: '=',
                 b: 'grew', r: '='
             }))
