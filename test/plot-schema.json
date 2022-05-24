@@ -9717,25 +9717,19 @@
      "description": "Determines whether long tick labels automatically grow the figure margins.",
      "dflt": false,
      "editType": "ticks",
-     "valType": "enumerated",
-     "values": [
+     "extras": [
       true,
-      false,
+      false
+     ],
+     "flags": [
       "height",
       "width",
-      "top",
-      "bottom",
       "left",
       "right",
-      "top left",
-      "top width",
-      "top right",
-      "left height",
-      "right height",
-      "bottom left",
-      "bottom width",
-      "bottom right"
-     ]
+      "top",
+      "bottom"
+     ],
+     "valType": "flaglist"
     },
     "autorange": {
      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
@@ -10974,25 +10968,19 @@
      "description": "Determines whether long tick labels automatically grow the figure margins.",
      "dflt": false,
      "editType": "ticks",
-     "valType": "enumerated",
-     "values": [
+     "extras": [
       true,
-      false,
+      false
+     ],
+     "flags": [
       "height",
       "width",
-      "top",
-      "bottom",
       "left",
       "right",
-      "top left",
-      "top width",
-      "top right",
-      "left height",
-      "right height",
-      "bottom left",
-      "bottom width",
-      "bottom right"
-     ]
+      "top",
+      "bottom"
+     ],
+     "valType": "flaglist"
     },
     "autorange": {
      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
