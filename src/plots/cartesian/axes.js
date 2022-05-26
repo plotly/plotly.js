@@ -2632,6 +2632,7 @@ axes.drawOne = function(gd, ax, opts) {
 
         if(typeof ax.automargin === 'string') {
             filterPush(push, ax.automargin);
+            filterPush(mirrorPush, ax.automargin);
         }
 
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
@@ -2649,6 +2650,8 @@ axes.drawOne = function(gd, ax, opts) {
 };
 
 function filterPush(push, automargin) {
+    if(!push) return push;
+
     var keepMargin = [];
 
     Object.keys(MARGIN_MAPPING).forEach(function(key) {
