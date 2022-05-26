@@ -156,7 +156,6 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     attrs = ['med'].concat(attrs);
 
     var closeBoxData = [];
-    var lf, uf, min, max;
     for(var i = 0; i < attrs.length; i++) {
         var attr = attrs[i];
 
@@ -189,19 +188,6 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         pointData2.hovertemplate = false;
 
         closeBoxData.push(pointData2);
-
-        if(attr === 'lf') lf = val;
-        if(attr === 'uf') uf = val;
-        if(attr === 'max') max = val;
-        if(attr === 'min') min = val;
-    }
-
-    // reduce labels if uf === max or lf === min
-    if(uf === max) {
-        closeBoxData = closeBoxData.filter(function(e) { return e.attr !== 'uf'; });
-    }
-    if(lf === min) {
-        closeBoxData = closeBoxData.filter(function(e) { return e.attr !== 'lf'; });
     }
 
     return closeBoxData;

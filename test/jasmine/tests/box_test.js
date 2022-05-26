@@ -743,8 +743,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with mean',
@@ -755,8 +755,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45'],
-        name: ['radishes', '', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7', 'mean: 0.45'],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with sd',
@@ -768,10 +768,10 @@ describe('Test box hover:', function() {
             return fig;
         },
         nums: [
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
+            'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7',
             'mean ± σ: 0.45 ± 0.2362908'
         ],
-        name: ['radishes', '', '', '', '', ''],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with boxpoints fences',
@@ -797,12 +797,16 @@ describe('Test box hover:', function() {
         nums: [
             'median: 0.45', 'median: 0.45', 'median: 0.55',
             'min: 0', 'min: 0.1', 'min: 0.2',
+            'lower fence: 0', 'lower fence: 0.1', 'lower fence: 0.2',
             'q1: 0.1', 'q1: 0.2', 'q1: 0.3',
             'q3: 0.6', 'q3: 0.6', 'q3: 0.6',
+            'upper fence: 0.7', 'upper fence: 0.9', 'upper fence: 1',
             'max: 0.7', 'max: 0.9', 'max: 1'
         ],
         name: [
             'carrots', 'kale', 'radishes',
+            '', '', '',
+            '', '', '',
             '', '', '',
             '', '', '',
             '', '', '',
@@ -847,8 +851,8 @@ describe('Test box hover:', function() {
             return fig;
         },
         pos: [215, 200],
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'lower fence: 0', 'upper fence: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'hoveron boxes+points | hovermode x (box AND closest point)',
@@ -861,8 +865,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['0.6', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', 'radishes', '', '', '', ''],
+        nums: ['0.6', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'lower fence: 0', 'upper fence: 0.7'],
+        name: ['radishes', 'radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'text items on hover',
@@ -920,9 +924,11 @@ describe('Test box hover:', function() {
             'q1: 0.5',
             'q3: 0.9',
             'max: 1',
+            'lower fence: 0.3',
+            'upper fence: 1',
             'mean ± σ: 0.6833333 ± 0.2409472',
         ],
-        name: ['carrots', '', '', '', '', ''],
+        name: ['carrots', '', '', '', '', '', '', ''],
         axis: 'day 2'
     }, {
         desc: 'orientation:h | hovermode:closest',
@@ -934,9 +940,11 @@ describe('Test box hover:', function() {
             '(q1: 0.5, day 2)',
             '(q3: 0.9, day 2)',
             '(max: 1, day 2)',
+            '(lower fence: 0.3, day 2)',
+            '(upper fence: 1, day 2)',
             '(mean ± σ: 0.6833333 ± 0.2409472, day 2)'
         ],
-        name: ['carrots', '', '', '', '', ''],
+        name: ['carrots', '', '', '', '', '', '', ''],
     }, {
         desc: 'on boxpoints with numeric positions | hovermode:closest',
         mock: {
@@ -981,8 +989,8 @@ describe('Test box hover:', function() {
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
-        name: ['', '', '', '', ''],
+        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1', 'lower fence: 1', 'upper fence: 3'],
+        name: ['', '', '', '', '', '', ''],
         axis: 'trace 0'
     }, {
         desc: 'q1/median/q3 signature on boxes',
@@ -1001,8 +1009,8 @@ describe('Test box hover:', function() {
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'min: 1', 'q1: 1', 'q3: 3', 'max: 3'],
-        name: ['', '', '', '', ''],
+        nums: ['median: 2', 'min: 1', 'q1: 1', 'q3: 3', 'max: 3', 'lower fence: 1', 'upper fence: 3'],
+        name: ['', '', '', '', '', '', ''],
         axis: 'A'
     }, {
         desc: 'q1/median/q3 signature on points',
