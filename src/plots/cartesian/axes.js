@@ -39,6 +39,14 @@ var GRID_PATH = { K: 'gridline', L: 'path' };
 var MINORGRID_PATH = { K: 'minor-gridline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
 var TICK_TEXT = { K: 'tick', L: 'text' };
+var MARGIN_MAPPING = {
+    width: ['x', 'r', 'l', 'xl', 'xr'],
+    height: ['y', 't', 'b', 'yt', 'yb'],
+    right: ['r', 'xr'],
+    left: ['l', 'xl'],
+    top: ['t', 'yt'],
+    bottom: ['b', 'yb']
+};
 
 var alignmentConstants = require('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
@@ -2622,7 +2630,9 @@ axes.drawOne = function(gd, ax, opts) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
 
-        keepSelectedAutoMargin(ax.automargin, push);
+        if(typeof ax.automargin === 'string') {
+            filterPush(push, ax.automargin);
+        }
 
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
         Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
@@ -2638,22 +2648,12 @@ axes.drawOne = function(gd, ax, opts) {
     return Lib.syncOrAsync(seq);
 };
 
-function keepSelectedAutoMargin(automargin, push) {
-    if(typeof automargin === 'boolean') return push;
-
+function filterPush(push, automargin) {
     var keepMargin = [];
-    var mapping = {
-        width: ['x', 'r', 'l', 'xl', 'xr'],
-        height: ['y', 't', 'b', 'yt', 'yb'],
-        right: ['r', 'xr'],
-        left: ['l', 'xl'],
-        top: ['t', 'yt'],
-        bottom: ['b', 'yb']
-    };
 
-    Object.keys(mapping).forEach(function(key) {
+    Object.keys(MARGIN_MAPPING).forEach(function(key) {
         if(automargin.indexOf(key) !== -1) {
-            mapping[key].forEach(function(item) {
+            MARGIN_MAPPING[key].forEach(function(item) {
                 keepMargin.push(item);
             });
         }
