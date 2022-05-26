@@ -13,5 +13,37 @@
     "y": [1, 2, 3, 4, 5],
     "name": "inclusive",
     "quartilemethod": "inclusive"
-  }]
+  },
+
+  {
+    "type": "violin",
+    "yaxis": "y2",
+    "y": [1, 2, 3, 4, 5],
+    "name": "linear"
+  }, {
+    "type": "violin",
+    "yaxis": "y2",
+    "y": [1, 2, 3, 4, 5],
+    "name": "exclusive",
+    "quartilemethod": "exclusive"
+  }, {
+    "type": "violin",
+    "yaxis": "y2",
+    "y": [1, 2, 3, 4, 5],
+    "name": "inclusive",
+    "quartilemethod": "inclusive"
+  }],
+  "layout": {
+    "yaxis": {
+      "domain": [0, 0.45]
+    },
+    "yaxis2": {
+      "domain": [0.55, 1]
+    },
+    "width": 500,
+    "height": 500,
+    "title": {
+      "text": "box and violin quartile methods"
+    }
+  }
 }
