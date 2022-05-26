@@ -145,8 +145,8 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     // labels with euqual values (e.g. when min === q1) should be presented in certain order
     var attrs =
-        (hasFences && hasMean) ? ['uf', 'max', 'q3', 'mean', 'q1', 'min', 'lf'] :
-        (hasFences && !hasMean) ? ['uf', 'max', 'q3', 'q1', 'min', 'lf'] :
+        (hasFences && hasMean) ? ['max', 'uf', 'q3', 'mean', 'q1', 'lf', 'min'] :
+        (hasFences && !hasMean) ? ['max', 'uf', 'q3', 'q1', 'lf', 'min'] :
         (!hasFences && hasMean) ? ['max', 'q3', 'mean', 'q1', 'min'] :
         ['max', 'q3', 'q1', 'min'];
 
