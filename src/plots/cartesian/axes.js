@@ -2650,7 +2650,7 @@ axes.drawOne = function(gd, ax, opts) {
 };
 
 function filterPush(push, automargin) {
-    if(!push) return push;
+    if(!push) return;
 
     var keepMargin = Object.keys(MARGIN_MAPPING).reduce(function(data, nextKey) {
         if(automargin.indexOf(nextKey) !== -1) {
@@ -2658,14 +2658,12 @@ function filterPush(push, automargin) {
         }
         return data;
     }, {});
-
     Object.keys(push).forEach(function(key) {
         if(!keepMargin[key]) {
             if(key.length === 1) push[key] = 0;
             else delete push[key];
         }
     });
-    return push;
 }
 
 function getBoundaryVals(ax, vals) {
