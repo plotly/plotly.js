@@ -2652,23 +2652,17 @@ axes.drawOne = function(gd, ax, opts) {
 function filterPush(push, automargin) {
     if(!push) return push;
 
-    var keepMargin = [];
-
-    Object.keys(MARGIN_MAPPING).forEach(function(key) {
-        if(automargin.indexOf(key) !== -1) {
-            MARGIN_MAPPING[key].forEach(function(item) {
-                keepMargin.push(item);
-            });
+    var keepMargin = Object.keys(MARGIN_MAPPING).reduce(function(data, nextKey) {
+        if(automargin.indexOf(nextKey) !== -1) {
+            MARGIN_MAPPING[nextKey].forEach(function(key) { data[key] = 1;});
         }
-    });
+        return data;
+    }, {});
 
     Object.keys(push).forEach(function(key) {
-        if(keepMargin.indexOf(key) === -1) {
-            if(key.length === 1) {
-                push[key] = 0;
-            } else {
-                delete push[key];
-            }
+        if(!keepMargin[key]) {
+            if(key.length === 1) push[key] = 0;
+            else delete push[key];
         }
     });
     return push;
