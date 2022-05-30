@@ -150,7 +150,14 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         (!hasFences && hasMean) ? ['max', 'q3', 'mean', 'q1', 'min'] :
         ['max', 'q3', 'q1', 'min'];
 
-    if(trace.orientation === 'h') attrs.reverse();
+    var rev = vAxis.range[1] < vAxis.range[0];
+
+    if(
+        (!rev && trace.orientation === 'h') ||
+        (rev && trace.orientation === 'v')
+    ) {
+        attrs.reverse();
+    }
 
     // always put median at the start so that it get the extra label
     attrs = ['med'].concat(attrs);
