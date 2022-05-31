@@ -782,10 +782,11 @@ describe('Test box hover:', function() {
         },
         pos: [350, 200],
         nums: [
+            '23.25',
             'median: 8.15', 'min: 0.75', 'q1: 6.8',
             'q3: 10.25', 'max: 23.25', 'lower fence: 5.25', 'upper fence: 12'
         ],
-        name: ['', '', '', '', '', '', ''],
+        name: ['', '', '', '', '', '', '', ''],
         axis: 'trace 0'
     }, {
         desc: 'with overlaid boxes',

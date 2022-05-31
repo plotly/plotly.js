@@ -145,10 +145,10 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     // labels with euqual values (e.g. when min === q1) should be presented in certain order
     var attrs =
-        (hasFences && hasMean) ? ['max', 'uf', 'q3', 'mean', 'q1', 'lf', 'min'] :
-        (hasFences && !hasMean) ? ['max', 'uf', 'q3', 'q1', 'lf', 'min'] :
-        (!hasFences && hasMean) ? ['max', 'q3', 'mean', 'q1', 'min'] :
-        ['max', 'q3', 'q1', 'min'];
+        (hasFences && hasMean) ? ['max', 'uf', 'q3', 'med', 'mean', 'q1', 'lf', 'min'] :
+        (hasFences && !hasMean) ? ['max', 'uf', 'q3', 'med', 'q1', 'lf', 'min'] :
+        (!hasFences && hasMean) ? ['max', 'q3', 'med', 'mean', 'q1', 'min'] :
+        ['max', 'q3', 'med', 'q1', 'min'];
 
     var rev = vAxis.range[1] < vAxis.range[0];
 
@@ -158,9 +158,6 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     ) {
         attrs.reverse();
     }
-
-    // always put median at the start so that it get the extra label
-    attrs = ['med'].concat(attrs);
 
     var closeBoxData = [];
     for(var i = 0; i < attrs.length; i++) {
@@ -187,9 +184,15 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         }
 
         // only keep name and spikes on the first item (median)
-        pointData.name = '';
-        pointData.spikeDistance = undefined;
-        pointData[spikePosAttr] = undefined;
+        if(attr === 'med') {
+            pointData.name = '';
+            pointData.spikeDistance = undefined;
+            pointData[spikePosAttr] = undefined;
+        } else {
+            pointData2.name = '';
+            pointData2.spikeDistance = undefined;
+            pointData2[spikePosAttr] = undefined;
+        }
 
         // no hovertemplate support yet
         pointData2.hovertemplate = false;
