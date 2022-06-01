@@ -6975,7 +6975,7 @@
        "valType": "any"
       },
       "xref": {
-       "description": "Sets the shape's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x  axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis. If the axis `type` is *log*, then you must take the log of your desired range. If the axis `type` is *date*, then you must convert the date to unix time in milliseconds.",
+       "description": "Sets the shape's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x  axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -9717,7 +9717,19 @@
      "description": "Determines whether long tick labels automatically grow the figure margins.",
      "dflt": false,
      "editType": "ticks",
-     "valType": "boolean"
+     "extras": [
+      true,
+      false
+     ],
+     "flags": [
+      "height",
+      "width",
+      "left",
+      "right",
+      "top",
+      "bottom"
+     ],
+     "valType": "flaglist"
     },
     "autorange": {
      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
@@ -10956,7 +10968,19 @@
      "description": "Determines whether long tick labels automatically grow the figure margins.",
      "dflt": false,
      "editType": "ticks",
-     "valType": "boolean"
+     "extras": [
+      true,
+      false
+     ],
+     "flags": [
+      "height",
+      "width",
+      "left",
+      "right",
+      "top",
+      "bottom"
+     ],
+     "valType": "flaglist"
     },
     "autorange": {
      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
@@ -15905,7 +15929,7 @@
      "valType": "string"
     },
     "quartilemethod": {
-     "description": "Sets the method used to compute the sample's Q1 and Q3 quartiles. The *linear* method uses the 25th percentile for Q1 and 75th percentile for Q3 as computed using method #10 (listed on http://www.amstat.org/publications/jse/v14n3/langford.html). The *exclusive* method uses the median to divide the ordered dataset into two halves if the sample is odd, it does not include the median in either half - Q1 is then the median of the lower half and Q3 the median of the upper half. The *inclusive* method also uses the median to divide the ordered dataset into two halves but if the sample is odd, it includes the median in both halves - Q1 is then the median of the lower half and Q3 the median of the upper half.",
+     "description": "Sets the method used to compute the sample's Q1 and Q3 quartiles. The *linear* method uses the 25th percentile for Q1 and 75th percentile for Q3 as computed using method #10 (listed on http://jse.amstat.org/v14n3/langford.html). The *exclusive* method uses the median to divide the ordered dataset into two halves if the sample is odd, it does not include the median in either half - Q1 is then the median of the lower half and Q3 the median of the upper half. The *inclusive* method also uses the median to divide the ordered dataset into two halves but if the sample is odd, it includes the median in both halves - Q1 is then the median of the lower half and Q3 the median of the upper half.",
      "dflt": "linear",
      "editType": "calc",
      "valType": "enumerated",
@@ -69493,6 +69517,17 @@
       "outliers",
       "suspectedoutliers",
       false
+     ]
+    },
+    "quartilemethod": {
+     "description": "Sets the method used to compute the sample's Q1 and Q3 quartiles. The *linear* method uses the 25th percentile for Q1 and 75th percentile for Q3 as computed using method #10 (listed on http://jse.amstat.org/v14n3/langford.html). The *exclusive* method uses the median to divide the ordered dataset into two halves if the sample is odd, it does not include the median in either half - Q1 is then the median of the lower half and Q3 the median of the upper half. The *inclusive* method also uses the median to divide the ordered dataset into two halves but if the sample is odd, it includes the median in both halves - Q1 is then the median of the lower half and Q3 the median of the upper half.",
+     "dflt": "linear",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "linear",
+      "exclusive",
+      "inclusive"
      ]
     },
     "scalegroup": {

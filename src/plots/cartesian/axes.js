@@ -39,6 +39,14 @@ var GRID_PATH = { K: 'gridline', L: 'path' };
 var MINORGRID_PATH = { K: 'minor-gridline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
 var TICK_TEXT = { K: 'tick', L: 'text' };
+var MARGIN_MAPPING = {
+    width: ['x', 'r', 'l', 'xl', 'xr'],
+    height: ['y', 't', 'b', 'yt', 'yb'],
+    right: ['r', 'xr'],
+    left: ['l', 'xl'],
+    top: ['t', 'yt'],
+    bottom: ['b', 'yb']
+};
 
 var alignmentConstants = require('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
@@ -2622,6 +2630,11 @@ axes.drawOne = function(gd, ax, opts) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
 
+        if(typeof ax.automargin === 'string') {
+            filterPush(push, ax.automargin);
+            filterPush(mirrorPush, ax.automargin);
+        }
+
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
         Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
@@ -2635,6 +2648,23 @@ axes.drawOne = function(gd, ax, opts) {
 
     return Lib.syncOrAsync(seq);
 };
+
+function filterPush(push, automargin) {
+    if(!push) return;
+
+    var keepMargin = Object.keys(MARGIN_MAPPING).reduce(function(data, nextKey) {
+        if(automargin.indexOf(nextKey) !== -1) {
+            MARGIN_MAPPING[nextKey].forEach(function(key) { data[key] = 1;});
+        }
+        return data;
+    }, {});
+    Object.keys(push).forEach(function(key) {
+        if(!keepMargin[key]) {
+            if(key.length === 1) push[key] = 0;
+            else delete push[key];
+        }
+    });
+}
 
 function getBoundaryVals(ax, vals) {
     var out = [];
