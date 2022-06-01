@@ -56,11 +56,19 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
                 kdePointData[vLetter + 'Label'] = vLetter + ': ' + Axes.hoverLabelText(vAxis, vVal, trace[vLetter + 'hoverformat']) + ', ' + cd[0].t.labels.kde + ' ' + kdeVal.toFixed(3);
 
                 // move the spike to the KDE point
-                kdePointData.spikeDistance = closeBoxData[0].spikeDistance;
+                var medId = 0;
+                for(var k = 0; k < closeBoxData.length; k++) {
+                    if(closeBoxData[k].attr === 'med') {
+                        medId = k;
+                        break;
+                    }
+                }
+
+                kdePointData.spikeDistance = closeBoxData[medId].spikeDistance;
                 var spikePosAttr = pLetter + 'Spike';
-                kdePointData[spikePosAttr] = closeBoxData[0][spikePosAttr];
-                closeBoxData[0].spikeDistance = undefined;
-                closeBoxData[0][spikePosAttr] = undefined;
+                kdePointData[spikePosAttr] = closeBoxData[medId][spikePosAttr];
+                closeBoxData[medId].spikeDistance = undefined;
+                closeBoxData[medId][spikePosAttr] = undefined;
 
                 // no hovertemplate support yet
                 kdePointData.hovertemplate = false;

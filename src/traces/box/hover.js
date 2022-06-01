@@ -159,6 +159,9 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         attrs.reverse();
     }
 
+    var spikeDistance = pointData.spikeDistance;
+    var spikePosition = pointData[spikePosAttr];
+
     var closeBoxData = [];
     for(var i = 0; i < attrs.length; i++) {
         var attr = attrs[i];
@@ -183,21 +186,25 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
             pointData2[vLetter + 'err'] = di.sd;
         }
 
-        // only keep name and spikes on the first item (median)
-        if(attr === 'med') {
-            pointData.name = '';
-            pointData.spikeDistance = undefined;
-            pointData[spikePosAttr] = undefined;
-        } else {
-            pointData2.name = '';
-            pointData2.spikeDistance = undefined;
-            pointData2[spikePosAttr] = undefined;
-        }
-
         // no hovertemplate support yet
         pointData2.hovertemplate = false;
 
         closeBoxData.push(pointData2);
+    }
+
+    // only keep name and spikes on the first item (median)
+    pointData.name = '';
+    pointData.spikeDistance = undefined;
+    pointData[spikePosAttr] = undefined;
+    for(var k = 0; k < closeBoxData.length; k++) {
+        if(closeBoxData[k].attr !== 'med') {
+            closeBoxData[k].name = '';
+            closeBoxData[k].spikeDistance = undefined;
+            closeBoxData[k][spikePosAttr] = undefined;
+        } else {
+            closeBoxData[k].spikeDistance = spikeDistance;
+            closeBoxData[k][spikePosAttr] = spikePosition;
+        }
     }
 
     return closeBoxData;
