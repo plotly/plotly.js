@@ -74,6 +74,12 @@ module.exports = {
             'Sets the amount of vertical space (in px) between legend groups.'
         ].join(' ')
     },
+    legendtextwidth: {
+        valType: 'number',
+        min: 0,
+        editType: 'legend',
+        description: 'Sets the width (in px) of the legend.',
+    },
     itemsizing: {
         valType: 'enumerated',
         values: ['trace', 'constant'],

@@ -2823,6 +2823,12 @@
      "min": 30,
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend.",
+     "editType": "legend",
+     "min": 0,
+     "valType": "number"
+    },
     "orientation": {
      "description": "Sets the orientation of the legend.",
      "dflt": "v",
@@ -12437,6 +12443,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "marker": {
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
@@ -13952,6 +13964,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "marker": {
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
@@ -15244,6 +15262,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -16563,6 +16587,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -18061,6 +18091,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "meta": {
      "arrayOk": true,
      "description": "Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.",
@@ -18907,6 +18943,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "locationmode": {
@@ -19894,6 +19936,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "locations": {
@@ -20910,6 +20958,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "lighting": {
@@ -22102,6 +22156,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -23342,6 +23402,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the color of the contour level. Has no effect if `contours.coloring` is set to *lines*.",
@@ -24291,6 +24357,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "lon": {
      "description": "Sets the longitude coordinates (in degrees East).",
      "editType": "calc",
@@ -24820,6 +24892,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "marker": {
@@ -26243,6 +26321,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "marker": {
      "colors": {
       "description": "Sets the color of each sector. If not specified, the default trace color set is used to pick the sector colors.",
@@ -27311,6 +27395,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "meta": {
@@ -28438,6 +28528,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "meta": {
      "arrayOk": true,
      "description": "Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.",
@@ -29223,6 +29319,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "marker": {
@@ -31177,6 +31279,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "marker": {
      "color": {
       "description": "Sets the aggregation data.",
@@ -32437,6 +32545,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the color of the contour level. Has no effect if `contours.coloring` is set to *lines*.",
@@ -33186,6 +33300,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "level": {
@@ -34397,6 +34517,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "meta": {
      "arrayOk": true,
      "description": "Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.",
@@ -35242,6 +35368,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "meta": {
@@ -36269,6 +36401,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "lighting": {
@@ -37548,6 +37686,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "lighting": {
      "ambient": {
       "description": "Ambient light increases overall color visibility but can wash out the image.",
@@ -38170,6 +38314,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "dash": {
       "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*). Note that this style setting can also be set per direction via `increasing.line.dash` and `decreasing.line.dash`.",
@@ -38662,6 +38812,12 @@
       "editType": "style",
       "valType": "string"
      }
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
     },
     "line": {
      "autocolorscale": {
@@ -39618,6 +39774,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -40793,6 +40955,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "marker": {
      "colors": {
       "description": "Sets the color of each sector. If not specified, the default trace color set is used to pick the sector colors.",
@@ -41385,6 +41553,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "marker": {
      "blend": {
       "description": "Determines if colors are blended together for a translucency effect in case `opacity` is specified as a value less then `1`. Setting `blend` to `true` reduces zoom/pan speed if used with large numbers of points.",
@@ -41841,6 +42015,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "link": {
@@ -43030,6 +43210,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -45289,6 +45475,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `line.colorscale`. Has an effect only if in `line.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
@@ -47272,6 +47464,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the line color.",
@@ -49091,6 +49289,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -51093,6 +51297,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the line color.",
@@ -52992,6 +53202,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the line color.",
@@ -54155,6 +54371,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -56000,6 +56222,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the line color.",
@@ -57808,6 +58036,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -59651,6 +59885,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "line": {
      "color": {
       "description": "Sets the line color.",
@@ -61492,6 +61732,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "marker": {
@@ -63646,6 +63892,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "lighting": {
      "ambient": {
       "description": "Ambient light increases overall color visibility but can wash out the image.",
@@ -64344,6 +64596,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "level": {
@@ -66262,6 +66520,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "lighting": {
      "ambient": {
       "description": "Ambient light increases overall color visibility but can wash out the image.",
@@ -67155,6 +67419,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "meta": {
      "arrayOk": true,
      "description": "Assigns extra meta information associated with this trace that can be used in various text attributes. Attributes such as trace `name`, graph, axis and colorbar `title.text`, annotation `text` `rangeselector`, `updatemenues` and `sliders` `label` text all support `meta`. To access the trace `meta` values in an attribute in the same trace, simply use `%{meta[i]}` where `i` is the index or key of the `meta` item in question. To access trace `meta` in layout attributes, use `%{data[n[.meta[i]}` where `i` is the index or key of the `meta` and `n` is the trace index.",
@@ -67559,6 +67829,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "level": {
@@ -68876,6 +69152,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "line": {
@@ -70662,6 +70944,12 @@
      "editType": "style",
      "valType": "number"
     },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
+     "valType": "number"
+    },
     "lighting": {
      "ambient": {
       "description": "Ambient light increases overall color visibility but can wash out the image.",
@@ -71499,6 +71787,12 @@
      "description": "Sets the legend rank for this trace. Items and groups with smaller ranks are presented on top/left side while with `*reversed* `legend.traceorder` they are on bottom/right side. The default legendrank is 1000, so that you can use ranks less than 1000 to place certain items before all unranked items, and ranks greater than 1000 to go after all unranked items.",
      "dflt": 1000,
      "editType": "style",
+     "valType": "number"
+    },
+    "legendtextwidth": {
+     "description": "Sets the width (in px) of the legend for this trace.",
+     "editType": "style",
+     "min": 0,
      "valType": "number"
     },
     "measure": {

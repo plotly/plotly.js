@@ -6,6 +6,7 @@ var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickD
 var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
+var constants = require('@src/components/legend/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -2344,4 +2345,95 @@ describe('legend with custom doubleClickDelay', function() {
         .then(_assert('[short] after click + (1.1*t) delay + click', 2, 0))
         .then(done, done.fail);
     }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
+});
+
+describe('legend with custom legendtextwidth', function() {
+    var gd;
+
+    var data = [
+        {x: [1, 2, 1], y: [1, 2, 1], name: 'legend text 1'},
+        {x: [2, 1, 2], y: [2, 1, 2], name: 'legend text 12'},
+        {x: [2, 3, 4], y: [2, 3, 4], name: 'legend text 123'}
+    ];
+
+    var layout = {
+        legend: {
+            orientation: 'h'
+        }
+    };
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    function assertLegendTextWidth(variants) {
+        var nodes = d3SelectAll('rect.legendtoggle');
+        var index = 0;
+        nodes.each(function() {
+            var node = d3Select(this);
+            var w = +node.attr('width');
+            if(variants[index]) expect(w).toEqual(variants[index]);
+            index += 1;
+        });
+    }
+
+    it('should change width when trace has legendtextwidth', function(done) {
+        var extendedData = Lib.extendDeep([], data);
+        extendedData.forEach(function(trace, index) {
+            trace.legendtextwidth = (index + 1) * 50;
+        });
+
+        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
+
+        Plotly.newPlot(gd, {data: extendedData, layout: layout}).then(function() {
+            assertLegendTextWidth([50 + textGap, 100 + textGap, 150 + textGap]);
+        }).then(done);
+    });
+
+    it('should change width when legend has legendtextwidth', function(done) {
+        var extendedLayout = Lib.extendDeep([], layout);
+        var width = 50;
+        extendedLayout.legend.legendtextwidth = width;
+
+        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
+
+        Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
+            assertLegendTextWidth([width + textGap, width + textGap, width + textGap]);
+        }).then(done);
+    });
+
+    it('should change group width when trace has legendtextwidth', function(done) {
+        var extendedLayout = Lib.extendDeep([], layout);
+        extendedLayout.legend.traceorder = 'grouped';
+
+        var extendedData = Lib.extendDeep([], data);
+        extendedData[0].legendtextwidth = 100;
+        extendedData[0].legendgroup = 'test';
+        extendedData[1].legendgroup = 'test';
+
+        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
+
+        Plotly.newPlot(gd, {data: extendedData, layout: extendedLayout}).then(function() {
+            assertLegendTextWidth([100 + textGap, 100 + textGap, undefined]);
+        }).then(done);
+    });
+
+    it('should prefer group legendtextwidth to the legend legendtextwidth', function(done) {
+        var extendedLayout = Lib.extendDeep([], layout);
+        extendedLayout.legend.traceorder = 'grouped';
+        extendedLayout.legend.legendtextwidth = 50;
+
+        var extendedData = Lib.extendDeep([], data);
+        extendedData[0].legendtextwidth = 100;
+        extendedData[0].legendgroup = 'test';
+        extendedData[1].legendgroup = 'test';
+
+        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
+
+        Plotly.newPlot(gd, {data: extendedData, layout: extendedLayout}).then(function() {
+            assertLegendTextWidth([100 + textGap, 100 + textGap, 50 + textGap]);
+        }).then(done);
+    });
 });
