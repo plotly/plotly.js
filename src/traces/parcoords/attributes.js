@@ -133,5 +133,21 @@ module.exports = {
             autoColorDflt: false,
             editTypeOverride: 'calc'
         })
-    )
+    ),
+
+    unselected: {
+        line: {
+            color: {
+                valType: 'color',
+                dflt: '#777',
+                editType: 'plot',
+                description: [
+                    'Sets the color of lines in the background',
+                    'i.e. unselected lines.'
+                ].join(' ')
+            },
+            editType: 'plot'
+        },
+        editType: 'plot'
+    }
 };

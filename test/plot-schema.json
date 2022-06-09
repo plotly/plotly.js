@@ -40355,6 +40355,20 @@
      "editType": "none",
      "valType": "any"
     },
+    "unselected": {
+     "editType": "plot",
+     "line": {
+      "color": {
+       "description": "Sets the color of lines in the background i.e. unselected lines.",
+       "dflt": "#777",
+       "editType": "plot",
+       "valType": "color"
+      },
+      "editType": "plot",
+      "role": "object"
+     },
+     "role": "object"
+    },
     "visible": {
      "description": "Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).",
      "dflt": true,
