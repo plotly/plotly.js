@@ -93,7 +93,7 @@ To support MathJax, you could load either version two or version three of MathJa
 ```
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.0/es5/tex-svg.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-svg.js"></script>
 ```
 
 > When using MathJax version 3, it is also possible to use `chtml` output on the other parts of the page in addition to `svg` output for the plotly graph.
