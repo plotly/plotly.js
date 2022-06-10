@@ -103,7 +103,7 @@ module.exports = templatedArray('shape', {
 
     yref: extendFlat({}, annAttrs.yref, {
         description: [
-            'Sets the annotation\'s y coordinate axis.',
+            'Sets the shape\'s y coordinate axis.',
             axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top')
         ].join(' ')
     }),
