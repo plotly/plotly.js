@@ -149,7 +149,10 @@ function model(layout, d, i) {
     var trace = cd0.trace;
     var lineColor = helpers.convertTypedArray(cd0.lineColor);
     var line = trace.line;
-    var deselectedLines = {color: rgba(trace.unselected.line.color)};
+    var deselectedLines = {
+        color: rgba(trace.unselected.line.color),
+        opacity: trace.unselected.line.opacity
+    };
     var cOpts = Colorscale.extractOpts(line);
     var cscale = cOpts.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
     var domain = trace.domain;

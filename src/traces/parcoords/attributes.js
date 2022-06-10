@@ -141,10 +141,15 @@ module.exports = {
                 valType: 'color',
                 dflt: '#777',
                 editType: 'plot',
-                description: [
-                    'Sets the color of lines in the background',
-                    'i.e. unselected lines.'
-                ].join(' ')
+                description: 'Sets the color of unselected lines.'
+            },
+            opacity: {
+                valType: 'number',
+                min: 0,
+                max: 1,
+                dflt: 'auto',
+                editType: 'plot',
+                description: 'Sets the opacity of unselected lines.'
             },
             editType: 'plot'
         },

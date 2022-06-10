@@ -40359,12 +40359,20 @@
      "editType": "plot",
      "line": {
       "color": {
-       "description": "Sets the color of lines in the background i.e. unselected lines.",
+       "description": "Sets the color of unselected lines.",
        "dflt": "#777",
        "editType": "plot",
        "valType": "color"
       },
       "editType": "plot",
+      "opacity": {
+       "description": "Sets the opacity of unselected lines.",
+       "dflt": "auto",
+       "editType": "plot",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
       "role": "object"
      },
      "role": "object"

@@ -71,6 +71,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(traceIn, traceOut, attributes, attr, dflt);
+    }
+
     var dimensionsIn = traceIn.dimensions;
     if(Array.isArray(dimensionsIn) && dimensionsIn.length > maxDimensionCount) {
         Lib.log('parcoords traces support up to ' + maxDimensionCount + ' dimensions at the moment');
@@ -108,5 +112,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('labelangle');
     coerce('labelside');
 
-    coerce('unselected.line.color');
+    var unselectedLineColor = coerce2('unselected.line.color');
+    coerce('unselected.line.opacity', unselectedLineColor ? 1 : 'auto');
 };
