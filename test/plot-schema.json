@@ -40360,7 +40360,7 @@
      "line": {
       "color": {
        "description": "Sets the color of unselected lines.",
-       "dflt": "#777",
+       "dflt": "",
        "editType": "plot",
        "valType": "color"
       },

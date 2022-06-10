@@ -139,7 +139,7 @@ module.exports = {
         line: {
             color: {
                 valType: 'color',
-                dflt: '#777',
+                dflt: '',
                 editType: 'plot',
                 description: 'Sets the color of unselected lines.'
             },

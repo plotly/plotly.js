@@ -150,7 +150,7 @@ function model(layout, d, i) {
     var lineColor = helpers.convertTypedArray(cd0.lineColor);
     var line = trace.line;
     var deselectedLines = {
-        color: rgba(trace.unselected.line.color),
+        color: rgba(trace.unselected.line.color || '#777'),
         opacity: trace.unselected.line.opacity
     };
     var cOpts = Colorscale.extractOpts(line);
