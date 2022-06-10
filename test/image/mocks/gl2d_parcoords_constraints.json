@@ -24,6 +24,12 @@
       ]
     },
 
+    "unselected": {
+      "line": {
+        "color": "white"
+      }
+    },
+
     "dimensions": [
       {
         "label": "±1.1",
