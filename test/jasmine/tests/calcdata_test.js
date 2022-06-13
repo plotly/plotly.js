@@ -1154,6 +1154,23 @@ describe('calculated data and points', function() {
                         checkAggregatedValue(baseMock, expectedAgg, false, done);
                     });
 
+                    it('takes the geomean of all values per category across traces of type ' + trace.type, function(done) {
+                        var type = trace.type;
+                        var data = [7, 2, 3];
+                        var data2 = [5, 4, 2];
+                        var baseMock = { data: [makeData(type, axName, cat, data), makeData(type, axName, cat, data2)], layout: {}};
+                        baseMock.layout[axName] = { type: 'category', categoryorder: 'geomean ascending'};
+
+                        var expectedAgg = [['a', Math.sqrt(data[0] * data2[0])], ['b', Math.sqrt(data[1] * data2[1])], ['c', Math.sqrt(data[2] * data2[2])]];
+                        // TODO: how to actually calc these? what do these even mean?
+                        if(type === 'histogram') expectedAgg = [['a', 2], ['b', 1], ['c', 1]];
+                        if(type === 'histogram2d') expectedAgg = [['a', 2 / 3], ['b', 1 / 3], ['c', 1 / 3]];
+                        if(type === 'contour' || type === 'heatmap') expectedAgg = [['a', expectedAgg[0][1] / 3], ['b', expectedAgg[1][1] / 3], ['c', expectedAgg[2][1] / 3]];
+                        if(type === 'histogram2dcontour') expectedAgg = [['a', 2 / 4], ['b', 1 / 4], ['c', 1 / 4]];
+
+                        checkAggregatedValue(baseMock, expectedAgg, false, done);
+                    });
+
                     it('takes the median of all values per category across traces of type ' + trace.type, function(done) {
                         var type = trace.type;
                         var data = [7, 2, 3];
