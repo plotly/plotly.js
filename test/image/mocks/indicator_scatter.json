@@ -8,9 +8,6 @@
     "type": "indicator",
     "mode": "number+delta",
     "delta": {"reference": 512, "valueformat": ".0f"},
-    "ticker": {
-      "showticker": true
-    },
     "vmax": 500,
     "value": 492
   }, {
