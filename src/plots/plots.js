@@ -3127,6 +3127,7 @@ function sortAxisCategoriesByValue(axList, gd) {
         'sum': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         'total': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
         'mean': function(values) {return Lib.mean(values);},
+        'geomean': function(values) {return Lib.geoMean(values)},
         'median': function(values) {return Lib.median(values);}
     };
 

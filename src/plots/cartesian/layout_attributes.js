@@ -1012,6 +1012,7 @@ module.exports = {
             'max ascending', 'max descending',
             'sum ascending', 'sum descending',
             'mean ascending', 'mean descending',
+            'geomean ascending', 'geomean descending',
             'median ascending', 'median descending'
         ],
         dflt: 'trace',
@@ -1026,7 +1027,7 @@ module.exports = {
             'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.',
             'Set `categoryorder` to *total ascending* or *total descending* if order should be determined by the',
             'numerical order of the values.',
-            'Similarly, the order can be determined by the min, max, sum, mean or median of all the values.'
+            'Similarly, the order can be determined by the min, max, sum, mean, geomean or median of all the values.'
         ].join(' ')
     },
     categoryarray: {
