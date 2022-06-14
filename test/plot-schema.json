@@ -7009,7 +7009,7 @@
        "valType": "any"
       },
       "yref": {
-       "description": "Sets the annotation's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y  axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis.",
+       "description": "Sets the shape's y coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y  axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis.",
        "editType": "calc",
        "valType": "enumerated",
        "values": [
@@ -40354,6 +40354,28 @@
      "description": "Controls persistence of some user-driven changes to the trace: `constraintrange` in `parcoords` traces, as well as some `editable: true` modifications such as `name` and `colorbar.title`. Defaults to `layout.uirevision`. Note that other user-driven trace attribute changes are controlled by `layout` attributes: `trace.visible` is controlled by `layout.legend.uirevision`, `selectedpoints` is controlled by `layout.selectionrevision`, and `colorbar.(x|y)` (accessible with `config: {editable: true}`) is controlled by `layout.editrevision`. Trace changes are tracked by `uid`, which only falls back on trace index if no `uid` is provided. So if your app can add/remove traces before the end of the `data` array, such that the same trace has a different index, you can still preserve user-driven changes if you give each trace a `uid` that stays with it as it moves.",
      "editType": "none",
      "valType": "any"
+    },
+    "unselected": {
+     "editType": "plot",
+     "line": {
+      "color": {
+       "description": "Sets the base color of unselected lines. in connection with `unselected.line.opacity`.",
+       "dflt": "#777",
+       "editType": "plot",
+       "valType": "color"
+      },
+      "editType": "plot",
+      "opacity": {
+       "description": "Sets the opacity of unselected lines. The default *auto* decreases the opacity smoothly as the number of lines increases. Use *1* to achieve exact `unselected.line.color`.",
+       "dflt": "auto",
+       "editType": "plot",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "role": "object"
+     },
+     "role": "object"
     },
     "visible": {
      "description": "Determines whether or not this trace is visible. If *legendonly*, the trace is not drawn, but can appear as a legend item (provided that the legend itself is visible).",

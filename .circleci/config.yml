@@ -293,7 +293,9 @@ jobs:
           command: .circleci/env_image.sh
       - run:
           name: Install poppler-utils to have pdftops for exporting eps
-          command: sudo apt-get install poppler-utils
+          command: |
+              sudo apt-get update --allow-releaseinfo-change
+              sudo apt-get install poppler-utils
       - run:
           name: Create svg, jpg, jpeg, webp, pdf and eps files
           command: python3 test/image/make_exports.py

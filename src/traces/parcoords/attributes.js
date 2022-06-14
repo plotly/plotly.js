@@ -133,5 +133,33 @@ module.exports = {
             autoColorDflt: false,
             editTypeOverride: 'calc'
         })
-    )
+    ),
+
+    unselected: {
+        line: {
+            color: {
+                valType: 'color',
+                dflt: '#777',
+                editType: 'plot',
+                description: [
+                    'Sets the base color of unselected lines.',
+                    'in connection with `unselected.line.opacity`.'
+                ].join(' ')
+            },
+            opacity: {
+                valType: 'number',
+                min: 0,
+                max: 1,
+                dflt: 'auto',
+                editType: 'plot',
+                description: [
+                    'Sets the opacity of unselected lines.',
+                    'The default *auto* decreases the opacity smoothly as the number of lines increases.',
+                    'Use *1* to achieve exact `unselected.line.color`.'
+                ].join(' ')
+            },
+            editType: 'plot'
+        },
+        editType: 'plot'
+    }
 };
