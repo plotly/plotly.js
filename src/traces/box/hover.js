@@ -152,10 +152,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
 
     var rev = vAxis.range[1] < vAxis.range[0];
 
-    if(
-        (!rev && trace.orientation === 'h') ||
-        (rev && trace.orientation === 'v')
-    ) {
+    if(trace.orientation === (rev ? 'v' : 'h')) {
         attrs.reverse();
     }
 
