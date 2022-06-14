@@ -2833,21 +2833,25 @@ describe('hover on traces with (x|y)period positioning', function() {
         .then(function() { _hover(385, 355); })
         .then(function() {
             assertHoverLabelContent({
-                name: ['', '', '', 'box (v)', ''],
+                name: ['', '', '', 'box (v)', '', '', ''],
                 nums: [
                     '(Jan 2001, min: 2)',
+                    '(Jan 2001, lower fence: 2)',
                     '(Jan 2001, q1: 4)',
-                    '(Jan 2001, q3: 8)',
                     '(Jan 2001, median: 6)',
-                    '(Jan 2001, max: 10)',
+                    '(Jan 2001, q3: 8)',
+                    '(Jan 2001, upper fence: 10)',
+                    '(Jan 2001, max: 10)'
                 ]
             });
         })
         .then(function() { _hover(475, 120); })
         .then(function() {
             assertHoverLabelContent({
-                name: ['', '', '', '', 'box (h)'],
+                name: ['', '', '', '', '', '', 'box (h)'],
                 nums: [
+                    '(upper fence: 8, Jan 2004)',
+                    '(lower fence: 0, Jan 2004)',
                     '(max: 8, Jan 2004)',
                     '(min: 0, Jan 2004)',
                     '(q1: 2, Jan 2004)',
@@ -4673,7 +4677,13 @@ describe('hovermode: (x|y)unified', function() {
 
                 assertLabel({title: '3', items: [
                     'trace 0 : 2',
+                    'min: 1',
+                    'lower fence: 1',
+                    'q1: 1',
                     'trace 1 : median: 1',
+                    'q3: 1',
+                    'upper fence: 1',
+                    'max: 1',
                     'trace 3 : 2',
                     'trace 2 : 2',
                     'trace 5 : 2',
@@ -6262,7 +6272,18 @@ describe('hover on traces with (x|y)hoverformat', function() {
         {type: 'scattergl', nums: '(02/01/2000, 1.00)'},
         {type: 'histogram', nums: '(02/01/2000, 1.00)'},
         {type: 'bar', nums: '(02/01/2000, 1.00)'},
-        {type: 'box', nums: '(02/01/2000, median: 1.00)'},
+        {type: 'box',
+            name: ['', '', '', '', '', '', ''],
+            nums: [
+                '(02/01/2000, median: 1.00)',
+                '(02/01/2000, max: 1.00)',
+                '(02/01/2000, upper fence: 1.00)',
+                '(02/01/2000, q3: 1.00)',
+                '(02/01/2000, q1: 1.00)',
+                '(02/01/2000, lower fence: 1.00)',
+                '(02/01/2000, min: 1.00)'
+            ]
+        },
         {type: 'ohlc', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
         {type: 'candlestick', nums: '02/01/2000\nopen: 4.00\nhigh: 5.00\nlow: 2.00\nclose: 3.00  ▼'},
         {type: 'waterfall', nums: '(02/01/2000, 1.00)\n1.00 ▲\nInitial: 0.00'},
@@ -6286,7 +6307,7 @@ describe('hover on traces with (x|y)hoverformat', function() {
             .then(function() { _hover(200, 200); })
             .then(function() {
                 assertHoverLabelContent({
-                    name: '',
+                    name: t.name ? t.name : '',
                     nums: t.nums
                 });
             })
