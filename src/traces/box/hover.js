@@ -143,7 +143,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var hasMean = trace.boxmean || (trace.meanline || {}).visible;
     var hasFences = trace.boxpoints || trace.points;
 
-    // labels with euqual values (e.g. when min === q1) should be presented in certain order
+    // labels with equal values (e.g. when min === q1) should still be presented in the order they have when they're unequal
     var attrs =
         (hasFences && hasMean) ? ['max', 'uf', 'q3', 'med', 'mean', 'q1', 'lf', 'min'] :
         (hasFences && !hasMean) ? ['max', 'uf', 'q3', 'med', 'q1', 'lf', 'min'] :
