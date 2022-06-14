@@ -1,5 +1,6 @@
 {
   "layout": {
+    "paper_bgcolor": "lightgray",
     "width": 1000,
     "height": 400
   },
@@ -26,6 +27,7 @@
 
     "unselected": {
       "line": {
+        "opacity": 1,
         "color": "white"
       }
     },

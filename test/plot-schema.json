@@ -40359,14 +40359,14 @@
      "editType": "plot",
      "line": {
       "color": {
-       "description": "Sets the color of unselected lines.",
-       "dflt": "",
+       "description": "Sets the base color of unselected lines. in connection with `unselected.line.opacity`.",
+       "dflt": "#777",
        "editType": "plot",
        "valType": "color"
       },
       "editType": "plot",
       "opacity": {
-       "description": "Sets the opacity of unselected lines.",
+       "description": "Sets the opacity of unselected lines. The default *auto* decreases the opacity smoothly as the number of lines increases. Use *1* to achieve exact `unselected.line.color`.",
        "dflt": "auto",
        "editType": "plot",
        "max": 1,
