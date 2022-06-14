@@ -892,6 +892,128 @@ describe('parcoords Lifecycle methods', function() {
         })
         .then(done, done.fail);
     });
+
+    it('@gl unselected.line.color `Plotly.restyle` should change context layer line.color', function(done) {
+        var testLayer = '.gl-canvas-context';
+
+        var list1 = [];
+        var list2 = [];
+        for(var i = 0; i <= 100; i++) {
+            list1[i] = i;
+            list2[i] = 100 - i;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'parcoords',
+            dimensions: [{
+                constraintrange: [1, 10],
+                values: list1
+            }, {
+                values: list2
+            }],
+            line: {color: '#0F0'},
+            unselected: {line: {color: '#F00'}}
+        }], {
+            margin: {
+                t: 0,
+                b: 0,
+                l: 0,
+                r: 0
+            },
+            width: 300,
+            height: 200
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            return Plotly.restyle(gd, 'unselected.line.color', '#00F');
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).not.toBe(0, 'blue');
+
+            return Plotly.restyle(gd, 'unselected.line.color', 'rgba(0,0,0,0)');
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl unselected.line.color `Plotly.react` should change line.color and unselected.line.color', function(done) {
+        var unselectedLayer = '.gl-canvas-context';
+        var selectedLayer = '.gl-canvas-focus';
+
+        var list1 = [];
+        var list2 = [];
+        for(var i = 0; i <= 100; i++) {
+            list1[i] = i;
+            list2[i] = 100 - i;
+        }
+
+        var fig = {
+            data: [{
+                type: 'parcoords',
+                dimensions: [{
+                    constraintrange: [1, 10],
+                    values: list1
+                }, {
+                    values: list2
+                }],
+                line: {color: '#0F0'},
+                unselected: {line: {color: '#F00'}}
+            }],
+            layout: {
+                margin: {
+                    t: 0,
+                    b: 0,
+                    l: 0,
+                    r: 0
+                },
+                width: 300,
+                height: 200
+            }
+        };
+
+        var rgb;
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            rgb = getAvgPixelByChannel(unselectedLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            rgb = getAvgPixelByChannel(selectedLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).not.toBe(0, 'green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            fig.data[0].line.color = '#FF0';
+            fig.data[0].unselected.line.color = '#00F';
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            rgb = getAvgPixelByChannel(selectedLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).not.toBe(0, 'green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            rgb = getAvgPixelByChannel(unselectedLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).not.toBe(0, 'blue');
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('parcoords hover', function() {
