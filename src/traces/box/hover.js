@@ -189,7 +189,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         closeBoxData.push(pointData2);
     }
 
-    // only keep name and spikes on the first item (median)
+    // only keep name and spikes on the median
     pointData.name = '';
     pointData.spikeDistance = undefined;
     pointData[spikePosAttr] = undefined;
