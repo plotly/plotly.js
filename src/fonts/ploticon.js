@@ -166,7 +166,7 @@ module.exports = {
     'newplotlylogo': {
         'name': 'newplotlylogo',
         'svg': [
-            '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'>',
+            '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'21 21 90 90\'>',
             '<defs>',
             ' <style>',
             '  .cls-1{fill:#8c99cd;}',
