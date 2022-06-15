@@ -171,7 +171,7 @@ module.exports = {
             ' <style>',
             '  .cls-1{fill:#8c99cd;}',
             '  .cls-2{fill:url(#linear-gradient);}',
-            '  .cls-3{fill:#777;}',
+            '  .cls-3{fill:#777; stroke:#FFF; strokewidth:2;}',
             ' </style>',
             ' <linearGradient id=\'linear-gradient\' x1=\'20.32\' y1=\'42.71\' x2=\'115.98\' y2=\'42.71\' gradientTransform=\'translate(-1.21 -2.82)\' gradientUnits=\'userSpaceOnUse\'>',
             '  <stop offset=\'0\' stop-color=\'#ff2c6d\'/>',
