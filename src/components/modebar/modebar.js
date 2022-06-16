@@ -4,6 +4,7 @@ var d3 = require('@plotly/d3');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var Color = require('../color');
 var Icons = require('../../fonts/ploticon');
 var version = require('../../version').version;
 
@@ -62,6 +63,12 @@ proto.update = function(graphInfo, buttons) {
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn:hover .icon path', 'fill: ' + style.activecolor);
     Lib.addRelatedStyleRule(modeBarId, '#' + modeBarId + ' .modebar-btn.active .icon path', 'fill: ' + style.activecolor);
 
+    // logo constrast color
+    var logoId = modeBarId + '-logo';
+    var logoSelector = context.displayModeBar === 'hover' ? '.plotlyjsicon' : '';
+    Lib.deleteRelatedStyleRule(logoId);
+    Lib.addRelatedStyleRule(logoId, logoSelector + ' .cls-bg-contrast', 'fill: ' + Color.contrast(fullLayout.paper_bgcolor));
+
     // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons);
     var needsNewLogo = (this.hasLogo !== context.displaylogo);
@@ -75,7 +82,7 @@ proto.update = function(graphInfo, buttons) {
         this.updateButtons(buttons);
 
         if(context.watermark || context.displaylogo) {
-            var logoGroup = this.getLogo();
+            var logoGroup = this.getLogo(graphInfo);
             if(context.watermark) {
                 logoGroup.className = logoGroup.className + ' watermark';
             }
@@ -292,7 +299,7 @@ function jsVersion(str) {
 /**
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
-proto.getLogo = function() {
+proto.getLogo = function(graphInfo) {
     var group = this.createGroup();
     var a = document.createElement('a');
 
@@ -302,6 +309,15 @@ proto.getLogo = function() {
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
     a.appendChild(this.createIcon(Icons.newplotlylogo));
+
+    var context = graphInfo._context;
+    var fullLayout = graphInfo._fullLayout;
+    var modeBarId = 'modebar-' + fullLayout._uid;
+
+    var logoId = modeBarId + '-logo';
+    var logoSelector = context.displayModeBar === 'hover' ? '.plotlyjsicon' : '';
+    Lib.deleteRelatedStyleRule(logoId);
+    Lib.addRelatedStyleRule(logoId, logoSelector + ' .cls-bg-contrast', 'fill: ' + Color.contrast(fullLayout.paper_bgcolor));
 
     group.appendChild(a);
     return group;
@@ -318,6 +334,7 @@ proto.removeAllButtons = function() {
 proto.destroy = function() {
     Lib.removeElement(this.container.querySelector('.modebar'));
     Lib.deleteRelatedStyleRule(this._uid);
+    Lib.deleteRelatedStyleRule(this._uid + '-logo');
 };
 
 function createModeBar(gd, buttons) {

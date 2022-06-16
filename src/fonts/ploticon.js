@@ -169,7 +169,7 @@ module.exports = {
             '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'21 21 90 90\'>',
             '<defs>',
             ' <style>',
-            '  .cls-0{fill:#777; stroke:#FFF; strokewidth:2;}',
+            '  .cls-bg-contrast{}',
             '  .cls-1{fill:#F26;}',
             '  .cls-2{fill:#D69;}',
             '  .cls-3{fill:#BAC;}',
@@ -184,10 +184,10 @@ module.exports = {
             '  <circle class=\'cls-2\' cx=\'54\' cy=\'30\' r=\'6\'/>',
             '  <circle class=\'cls-1\' cx=\'30\' cy=\'30\' r=\'6\'/>',
             '  <circle class=\'cls-1\' cx=\'30\' cy=\'54\' r=\'6\'/>',
-            '  <path class=\'cls-0\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/>',
-            '  <path class=\'cls-0\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/>',
-            '  <path class=\'cls-0\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/>',
-            '  <path class=\'cls-0\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/>',
+            '  <path class=\'cls-bg-contrast\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/>',
+            '  <path class=\'cls-bg-contrast\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/>',
+            '  <path class=\'cls-bg-contrast\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/>',
+            '  <path class=\'cls-bg-contrast\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/>',
             ' </g>',
             '</svg>'
         ].join('')
