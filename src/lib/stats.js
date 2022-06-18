@@ -47,10 +47,10 @@ exports.mean = function(data, len) {
     return exports.aggNums(function(a, b) { return a + b; }, 0, data) / len;
 };
 
-exports.geoMean = function(data, len) {
+exports.geometricMean = function(data, len) {
     if(!len) len = exports.len(data);
-    return exports.aggNums(function(a, b) { return a * b; }, 0, data) ** (1 / len);
-}
+    return Math.pow(exports.aggNums(function(a, b) { return a * b; }, 1, data), 1 / len);
+};
 
 exports.midRange = function(numArr) {
     if(numArr === undefined || numArr.length === 0) return undefined;

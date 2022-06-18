@@ -126,20 +126,20 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('geomean() should', function() {
+    describe('geometricMean() should', function() {
         it('toss out non-numerics (strings)', function() {
             var input = [1, 2, 'apple', 'orange'];
-            var res = Lib.geomean(input);
+            var res = Lib.geometricMean(input);
             expect(res).toBeCloseTo(1.414, 3);
         });
         it('toss out non-numerics (NaN)', function() {
             var input = [1, 2, NaN];
-            var res = Lib.geomean(input);
+            var res = Lib.geometricMean(input);
             expect(res).toBeCloseTo(1.414, 3);
         });
         it('evaluate numbers which are passed around as text strings:', function() {
             var input = ['1', '2'];
-            var res = Lib.geomean(input);
+            var res = Lib.geometricMean(input);
             expect(res).toBeCloseTo(1.414, 3);
         });
     });
