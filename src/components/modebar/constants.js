@@ -9,7 +9,8 @@ var DRAW_MODES = [
     'drawclosedpath',
     'drawcircle',
     'drawrect',
-    'eraseshape'
+    'eraseshape',
+    'eraseselection'
 ];
 
 var backButtons = [

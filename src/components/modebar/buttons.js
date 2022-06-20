@@ -5,6 +5,7 @@ var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
+var eraseActiveSelection = require('../selections/draw').eraseActiveSelection;
 var Lib = require('../../lib');
 var _ = Lib._;
 
@@ -180,6 +181,13 @@ modeBarButtons.eraseshape = {
     title: function(gd) { return _(gd, 'Erase active shape'); },
     icon: Icons.eraseshape,
     click: eraseActiveShape
+};
+
+modeBarButtons.eraseselection = {
+    name: 'eraseselection',
+    title: function(gd) { return _(gd, 'Erase active selection'); },
+    icon: Icons.eraseselection,
+    click: eraseActiveSelection
 };
 
 modeBarButtons.zoomIn2d = {
