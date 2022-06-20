@@ -112,9 +112,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
     }
 
-    if(shapeType === 'path') {
-        coerce('path');
-    } else {
+    if(shapeType !== 'path') {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 }
