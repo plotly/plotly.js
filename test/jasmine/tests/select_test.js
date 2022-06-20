@@ -74,7 +74,7 @@ function resetEvents(gd) {
             // these event handlers was called (via assertEventCounts),
             // we no longer need separate tests that these nodes are created
             // and this way *all* subplot variants get the test.
-            assertSelectionNodes(1, 2);
+            assertSelectionNodes(1, 1);
             selectingCnt++;
             selectingData = data;
         });
@@ -85,7 +85,7 @@ function resetEvents(gd) {
             if(data &&
               gd._fullLayout.dragmode.indexOf('select') > -1 &&
               gd._fullLayout.dragmode.indexOf('lasso') > -1) {
-                assertSelectionNodes(0, 2);
+                assertSelectionNodes(0, 1);
             }
             selectedCnt++;
             selectedData = data;
@@ -1353,11 +1353,11 @@ describe('Test select box and lasso in general:', function() {
 
         Plotly.newPlot(gd, fig)
         .then(_drag)
-        .then(function() { assertSelectionNodes(0, 2, 'after drag 1'); })
+        .then(function() { assertSelectionNodes(0, 1, 'after drag 1'); })
         .then(function() { return Plotly.relayout(gd, 'xaxis.range', [-5, 5]); })
         .then(function() { assertSelectionNodes(0, 0, 'after axrange relayout'); })
         .then(_drag)
-        .then(function() { assertSelectionNodes(0, 2, 'after drag 2'); })
+        .then(function() { assertSelectionNodes(0, 1, 'after drag 2'); })
         .then(done, done.fail);
     });
 
@@ -1592,7 +1592,7 @@ describe('Test select box and lasso in general:', function() {
         }
 
         function _assert(msg, exp) {
-            var outline = d3Select(gd).select('.zoomlayer').select('.select-outline-1');
+            var outline = d3Select(gd).select('.zoomlayer').select('.select-outline');
 
             if(exp.outline) {
                 expect(outline2coords(outline)).toBeCloseTo2DArray(exp.outline, 2, msg);

@@ -92,14 +92,14 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
-    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data(isDrawMode ? [0] : [1, 2]);
+    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1]);
     var newStyle = isDrawMode ?
         fullLayout.newshape :
         fullLayout.newselection;
 
     outlines.enter()
         .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
+        .attr('class', 'select-outline select-outline-' + plotinfo.id)
         .style({
             opacity: isDrawMode ? newStyle.opacity / 2 : 1,
             fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',

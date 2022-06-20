@@ -1637,7 +1637,7 @@ describe('Test splom select:', function() {
                 {pointNumber: 2, x: 3, y: 3}
             ], {
                 subplot: 'xy',
-                selectionOutlineCnt: 2
+                selectionOutlineCnt: 1
             });
         })
         .then(function() { return _select([[50, 50], [100, 100]]); })
@@ -1646,7 +1646,7 @@ describe('Test splom select:', function() {
                 {pointNumber: 1, x: 2, y: 2}
             ], {
                 subplot: 'xy',
-                selectionOutlineCnt: 2
+                selectionOutlineCnt: 1
             });
         })
         .then(function() { return _select([[5, 195], [100, 100]], {shiftKey: true}); })
@@ -1656,8 +1656,8 @@ describe('Test splom select:', function() {
                 {pointNumber: 1, x: 2, y: 2}
             ], {
                 subplot: 'xy',
-                // still '2' as the selection get merged
-                selectionOutlineCnt: 2
+                // still '1' as the selection get merged
+                selectionOutlineCnt: 1
             });
         })
         .then(function() { return _select([[205, 205], [395, 395]]); })
@@ -1669,7 +1669,7 @@ describe('Test splom select:', function() {
             ], {
                 subplot: 'x2y2',
                 // outlines from previous subplot are cleared!
-                selectionOutlineCnt: 2
+                selectionOutlineCnt: 1
             });
         })
         .then(function() { return _select([[50, 50], [100, 100]]); })
@@ -1679,7 +1679,7 @@ describe('Test splom select:', function() {
             ], {
                 subplot: 'xy',
                 // outlines from previous subplot are cleared!
-                selectionOutlineCnt: 2
+                selectionOutlineCnt: 1
             });
         })
         .then(done, done.fail);
