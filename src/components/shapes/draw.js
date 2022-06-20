@@ -18,6 +18,7 @@ var setCursor = require('../../lib/setcursor');
 
 var constants = require('./constants');
 var helpers = require('./helpers');
+var getPathString = helpers.getPathString;
 
 
 // Shapes are stored in gd.layout.shapes, an array of objects
@@ -58,7 +59,7 @@ function draw(gd) {
 }
 
 function shouldSkipEdits(gd) {
-    return !!gd._fullLayout._drawing;
+    return !!gd._fullLayout._outlining;
 }
 
 function couldHaveActiveShape(gd) {
@@ -73,7 +74,7 @@ function drawOne(gd, index) {
         .selectAll('.shapelayer [data-index="' + index + '"]')
         .remove();
 
-    var o = helpers.makeOptionsAndPlotinfo(gd, index);
+    var o = helpers.makeShapesOptionsAndPlotinfo(gd, index);
     var options = o.options;
     var plotinfo = o.plotinfo;
 
@@ -576,115 +577,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
             gd
         );
     }
-}
-
-function getPathString(gd, options) {
-    var type = options.type;
-    var xRefType = Axes.getRefType(options.xref);
-    var yRefType = Axes.getRefType(options.yref);
-    var xa = Axes.getFromId(gd, options.xref);
-    var ya = Axes.getFromId(gd, options.yref);
-    var gs = gd._fullLayout._size;
-    var x2r, x2p, y2r, y2p;
-    var x0, x1, y0, y1;
-
-    if(xa) {
-        if(xRefType === 'domain') {
-            x2p = function(v) { return xa._offset + xa._length * v; };
-        } else {
-            x2r = helpers.shapePositionToRange(xa);
-            x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
-        }
-    } else {
-        x2p = function(v) { return gs.l + gs.w * v; };
-    }
-
-    if(ya) {
-        if(yRefType === 'domain') {
-            y2p = function(v) { return ya._offset + ya._length * (1 - v); };
-        } else {
-            y2r = helpers.shapePositionToRange(ya);
-            y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
-        }
-    } else {
-        y2p = function(v) { return gs.t + gs.h * (1 - v); };
-    }
-
-    if(type === 'path') {
-        if(xa && xa.type === 'date') x2p = helpers.decodeDate(x2p);
-        if(ya && ya.type === 'date') y2p = helpers.decodeDate(y2p);
-        return convertPath(options, x2p, y2p);
-    }
-
-    if(options.xsizemode === 'pixel') {
-        var xAnchorPos = x2p(options.xanchor);
-        x0 = xAnchorPos + options.x0;
-        x1 = xAnchorPos + options.x1;
-    } else {
-        x0 = x2p(options.x0);
-        x1 = x2p(options.x1);
-    }
-
-    if(options.ysizemode === 'pixel') {
-        var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0;
-        y1 = yAnchorPos - options.y1;
-    } else {
-        y0 = y2p(options.y0);
-        y1 = y2p(options.y1);
-    }
-
-    if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
-    if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
-
-    // circle
-    var cx = (x0 + x1) / 2;
-    var cy = (y0 + y1) / 2;
-    var rx = Math.abs(cx - x0);
-    var ry = Math.abs(cy - y0);
-    var rArc = 'A' + rx + ',' + ry;
-    var rightPt = (cx + rx) + ',' + cy;
-    var topPt = cx + ',' + (cy - ry);
-    return 'M' + rightPt + rArc + ' 0 1,1 ' + topPt +
-        rArc + ' 0 0,1 ' + rightPt + 'Z';
-}
-
-
-function convertPath(options, x2p, y2p) {
-    var pathIn = options.path;
-    var xSizemode = options.xsizemode;
-    var ySizemode = options.ysizemode;
-    var xAnchor = options.xanchor;
-    var yAnchor = options.yanchor;
-
-    return pathIn.replace(constants.segmentRE, function(segment) {
-        var paramNumber = 0;
-        var segmentType = segment.charAt(0);
-        var xParams = constants.paramIsX[segmentType];
-        var yParams = constants.paramIsY[segmentType];
-        var nParams = constants.numParams[segmentType];
-
-        var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
-            if(xParams[paramNumber]) {
-                if(xSizemode === 'pixel') param = x2p(xAnchor) + Number(param);
-                else param = x2p(param);
-            } else if(yParams[paramNumber]) {
-                if(ySizemode === 'pixel') param = y2p(yAnchor) - Number(param);
-                else param = y2p(param);
-            }
-            paramNumber++;
-
-            if(paramNumber > nParams) param = 'X';
-            return param;
-        });
-
-        if(paramNumber > nParams) {
-            paramString = paramString.replace(/[\s,]*X.*/, '');
-            Lib.log('Ignoring extra params in segment ' + segment);
-        }
-
-        return segmentType + paramString;
-    });
 }
 
 function movePath(pathIn, moveX, moveY) {

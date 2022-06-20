@@ -23,7 +23,7 @@ var helpers = require('./helpers');
 var readPaths = helpers.readPaths;
 var writePaths = helpers.writePaths;
 var ellipseOver = helpers.ellipseOver;
-
+var fixDatesForPaths = helpers.fixDatesForPaths;
 
 module.exports = function newShapes(outlines, dragOptions) {
     if(!outlines.length) return;
@@ -32,7 +32,7 @@ module.exports = function newShapes(outlines, dragOptions) {
     var d = e.getAttribute('d');
 
     var gd = dragOptions.gd;
-    var drwStyle = gd._fullLayout.newshape;
+    var newStyle = gd._fullLayout.newshape;
 
     var plotinfo = dragOptions.plotinfo;
     var xaxis = plotinfo.xaxis;
@@ -80,18 +80,18 @@ module.exports = function newShapes(outlines, dragOptions) {
         xref: xPaper ? 'paper' : xaxis._id,
         yref: yPaper ? 'paper' : yaxis._id,
 
-        layer: drwStyle.layer,
-        opacity: drwStyle.opacity,
+        layer: newStyle.layer,
+        opacity: newStyle.opacity,
         line: {
-            color: drwStyle.line.color,
-            width: drwStyle.line.width,
-            dash: drwStyle.line.dash
+            color: newStyle.line.color,
+            width: newStyle.line.width,
+            dash: newStyle.line.dash
         }
     };
 
     if(!isOpenMode) {
-        newShape.fillcolor = drwStyle.fillcolor;
-        newShape.fillrule = drwStyle.fillrule;
+        newShape.fillcolor = newStyle.fillcolor;
+        newShape.fillrule = newStyle.fillrule;
     }
 
     var cell;
@@ -101,6 +101,7 @@ module.exports = function newShapes(outlines, dragOptions) {
 
     if(
         cell &&
+        cell.length === 5 && // ensure we only have 4 corners for a rect
         dragmode === 'drawrect'
     ) {
         newShape.type = 'rect';
@@ -229,20 +230,3 @@ module.exports = function newShapes(outlines, dragOptions) {
 
     return editHelpers ? editHelpers.getUpdateObj() : {};
 };
-
-function fixDatesForPaths(polygons, xaxis, yaxis) {
-    var xIsDate = xaxis.type === 'date';
-    var yIsDate = yaxis.type === 'date';
-    if(!xIsDate && !yIsDate) return polygons;
-
-    for(var i = 0; i < polygons.length; i++) {
-        for(var j = 0; j < polygons[i].length; j++) {
-            for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
-                if(xIsDate) polygons[i][j][k + 1] = polygons[i][j][k + 1].replace(' ', '_');
-                if(yIsDate) polygons[i][j][k + 2] = polygons[i][j][k + 2].replace(' ', '_');
-            }
-        }
-    }
-
-    return polygons;
-}

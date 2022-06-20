@@ -221,7 +221,7 @@ function dist(a, b) {
     );
 }
 
-exports.pointsShapeRectangle = function(cell) {
+exports.pointsOnRectangle = function(cell) {
     var len = cell.length;
     if(len !== 5) return false;
 
@@ -249,7 +249,7 @@ exports.pointsShapeRectangle = function(cell) {
     );
 };
 
-exports.pointsShapeEllipse = function(cell) {
+exports.pointsOnEllipse = function(cell) {
     var len = cell.length;
     if(len !== CIRCLE_SIDES + 1) return false;
 
@@ -324,4 +324,21 @@ exports.ellipseOver = function(pos) {
         x1: cx + dx,
         y1: cy + dy
     };
+};
+
+exports.fixDatesForPaths = function(polygons, xaxis, yaxis) {
+    var xIsDate = xaxis.type === 'date';
+    var yIsDate = yaxis.type === 'date';
+    if(!xIsDate && !yIsDate) return polygons;
+
+    for(var i = 0; i < polygons.length; i++) {
+        for(var j = 0; j < polygons[i].length; j++) {
+            for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
+                if(xIsDate) polygons[i][j][k + 1] = polygons[i][j][k + 1].replace(' ', '_');
+                if(yIsDate) polygons[i][j][k + 2] = polygons[i][j][k + 2].replace(' ', '_');
+            }
+        }
+    }
+
+    return polygons;
 };

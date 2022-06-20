@@ -3,6 +3,7 @@
 var dragElement = require('../../dragelement');
 var dragHelpers = require('../../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
+var selectMode = dragHelpers.selectMode;
 
 var Registry = require('../../../registry');
 
@@ -16,10 +17,11 @@ var handleOutline = require('../../selections/handle_outline');
 var clearOutlineControllers = handleOutline.clearOutlineControllers;
 
 var helpers = require('./helpers');
-var pointsShapeRectangle = helpers.pointsShapeRectangle;
-var pointsShapeEllipse = helpers.pointsShapeEllipse;
+var pointsOnRectangle = helpers.pointsOnRectangle;
+var pointsOnEllipse = helpers.pointsOnEllipse;
 var writePaths = helpers.writePaths;
 var newShapes = require('./newshapes');
+var newSelections = require('../../selections/draw_newselection/newselections');
 
 module.exports = function displayOutlines(polygons, outlines, dragOptions, nCalls) {
     if(!nCalls) nCalls = 0;
@@ -30,47 +32,64 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         // recursive call
         displayOutlines(polygons, outlines, dragOptions, nCalls++);
 
-        if(pointsShapeEllipse(polygons[0])) {
+        if(pointsOnEllipse(polygons[0])) {
             update({redrawing: true});
         }
     }
 
     function update(opts) {
-        dragOptions.isActiveShape = false; // i.e. to disable controllers
+        var updateObject = {};
 
-        var updateObject = newShapes(outlines, dragOptions);
+        if(dragOptions.isActiveShape !== undefined) {
+            dragOptions.isActiveShape = false; // i.e. to disable shape controllers
+            updateObject = newShapes(outlines, dragOptions);
+        }
+
+        if(dragOptions.isActiveSelection !== undefined) {
+            dragOptions.isActiveSelection = false; // i.e. to disable selection controllers
+            updateObject = newSelections(outlines, dragOptions);
+        }
+
         if(Object.keys(updateObject).length) {
             Registry.call((opts || {}).redrawing ? 'relayout' : '_guiRelayout', gd, updateObject);
         }
     }
 
-
-    var isActiveShape = dragOptions.isActiveShape;
     var fullLayout = gd._fullLayout;
     var zoomLayer = fullLayout._zoomlayer;
 
     var dragmode = dragOptions.dragmode;
     var isDrawMode = drawMode(dragmode);
+    var isSelectMode = selectMode(dragmode);
 
-    if(isDrawMode) gd._fullLayout._drawing = true;
-    else if(gd._fullLayout._activeShapeIndex >= 0) clearOutlineControllers(gd);
+    if(isDrawMode || isSelectMode) {
+        gd._fullLayout._outlining = true;
+    } else if(
+        gd._fullLayout._activeShapeIndex >= 0 ||
+        gd._fullLayout._activeSelectionIndex >= 0
+    ) {
+        clearOutlineControllers(gd);
+    }
 
     // make outline
     outlines.attr('d', writePaths(polygons));
 
     // add controllers
     var vertexDragOptions;
-    var shapeDragOptions;
+    var regionDragOptions;
     var indexI; // cell index
     var indexJ; // vertex or cell-controller index
     var copyPolygons;
 
-    if(isActiveShape && !nCalls) {
+    if(!nCalls && (
+        dragOptions.isActiveShape ||
+        dragOptions.isActiveSelection
+    )) {
         copyPolygons = recordPositions([], polygons);
 
         var g = zoomLayer.append('g').attr('class', 'outline-controllers');
         addVertexControllers(g);
-        addShapeControllers();
+        addRegionControllers();
     }
 
     function startDragVertex(evt) {
@@ -88,7 +107,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
         var cell = polygons[indexI];
         var len = cell.length;
-        if(pointsShapeRectangle(cell)) {
+        if(pointsOnRectangle(cell)) {
             for(var q = 0; q < len; q++) {
                 if(q === indexJ) continue;
 
@@ -107,7 +126,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
             cell[indexJ][1] = x0 + dx;
             cell[indexJ][2] = y0 + dy;
 
-            if(!pointsShapeRectangle(cell)) {
+            if(!pointsOnRectangle(cell)) {
                 // reject result to rectangles with ensure areas
                 for(var j = 0; j < len; j++) {
                     for(var k = 0; k < cell[j].length; k++) {
@@ -162,8 +181,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
             var cell = polygons[indexI];
             if(
-                !pointsShapeRectangle(cell) &&
-                !pointsShapeEllipse(cell)
+                !pointsOnRectangle(cell) &&
+                !pointsOnEllipse(cell)
             ) {
                 removeVertex();
             }
@@ -176,8 +195,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         for(var i = 0; i < polygons.length; i++) {
             var cell = polygons[i];
 
-            var onRect = pointsShapeRectangle(cell);
-            var onEllipse = !onRect && pointsShapeEllipse(cell);
+            var onRect = pointsOnRectangle(cell);
+            var onEllipse = !onRect && pointsOnEllipse(cell);
 
             vertexDragOptions[i] = [];
             for(var j = 0; j < cell.length; j++) {
@@ -222,7 +241,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         }
     }
 
-    function moveShape(dx, dy) {
+    function moveRegion(dx, dy) {
         if(!polygons.length) return;
 
         for(var i = 0; i < polygons.length; i++) {
@@ -235,37 +254,37 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         }
     }
 
-    function moveShapeController(dx, dy) {
-        moveShape(dx, dy);
+    function moveRegionController(dx, dy) {
+        moveRegion(dx, dy);
 
         redraw();
     }
 
-    function startDragShapeController(evt) {
+    function startDragRegionController(evt) {
         indexI = +evt.srcElement.getAttribute('data-i');
         if(!indexI) indexI = 0; // ensure non-existing move button get zero index
 
-        shapeDragOptions[indexI].moveFn = moveShapeController;
+        regionDragOptions[indexI].moveFn = moveRegionController;
     }
 
-    function endDragShapeController() {
+    function endDragRegionController() {
         update();
     }
 
-    function addShapeControllers() {
-        shapeDragOptions = [];
+    function addRegionControllers() {
+        regionDragOptions = [];
 
         if(!polygons.length) return;
 
         var i = 0;
-        shapeDragOptions[i] = {
+        regionDragOptions[i] = {
             element: outlines[0][0],
             gd: gd,
-            prepFn: startDragShapeController,
-            doneFn: endDragShapeController
+            prepFn: startDragRegionController,
+            doneFn: endDragRegionController
         };
 
-        dragElement.init(shapeDragOptions[i]);
+        dragElement.init(regionDragOptions[i]);
     }
 };
 
