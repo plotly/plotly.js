@@ -16,7 +16,7 @@ function clearSelect(gd) {
         zoomLayer.selectAll('.select-outline').remove();
     }
 
-    gd._fullLayout._drawing = false;
+    gd._fullLayout._outlining = false;
 }
 
 module.exports = {

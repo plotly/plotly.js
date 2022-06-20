@@ -14,9 +14,14 @@ var drawMode = dragHelpers.drawMode;
 var openMode = dragHelpers.openMode;
 var selectMode = dragHelpers.selectMode;
 
+var shapeHelpers = require('../shapes/helpers');
+var shapeConstants = require('../shapes/constants');
+
 var displayOutlines = require('../shapes/draw_newshape/display_outlines');
 var handleEllipse = require('../shapes/draw_newshape/helpers').handleEllipse;
 var newShapes = require('../shapes/draw_newshape/newshapes');
+
+var newSelections = require('./draw_newselection/newselections');
 
 var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
@@ -39,7 +44,7 @@ var p2r = helpers.p2r;
 var axValue = helpers.axValue;
 var getTransform = helpers.getTransform;
 
-function prepSelect(e, startX, startY, dragOptions, mode) {
+function prepSelect(evt, startX, startY, dragOptions, mode) {
     var isFreeMode = freeMode(mode);
     var isRectMode = rectMode(mode);
     var isOpenMode = openMode(mode);
@@ -69,35 +74,45 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
     var x1 = x0;
     var y1 = y0;
     var path0 = 'M' + x0 + ',' + y0;
-    var pw = dragOptions.xaxes[0]._length;
-    var ph = dragOptions.yaxes[0]._length;
+    var xAxis = dragOptions.xaxes[0];
+    var yAxis = dragOptions.yaxes[0];
+    var pw = xAxis._length;
+    var ph = yAxis._length;
+
     var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
-    var subtract = e.altKey &&
+    var subtract = evt.altKey &&
         !(drawMode(mode) && isOpenMode);
 
-    var filterPoly, selectionTester, mergedPolygons, currentPolygon;
+    var filterPoly, selectionTesters, mergedPolygons, currentPolygon;
     var i, searchInfo, eventData;
 
-    coerceSelectionsCache(e, gd, dragOptions);
+    coerceSelectionsCache(evt, gd, dragOptions);
 
     if(isFreeMode) {
         filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
     var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data(isDrawMode ? [0] : [1, 2]);
-    var drwStyle = fullLayout.newshape;
+    var newStyle = isDrawMode ?
+        fullLayout.newshape :
+        fullLayout.newselection;
 
     outlines.enter()
         .append('path')
         .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
-        .style(isDrawMode ? {
-            opacity: drwStyle.opacity / 2,
-            fill: isOpenMode ? undefined : drwStyle.fillcolor,
-            stroke: drwStyle.line.color,
-            'stroke-dasharray': dashStyle(drwStyle.line.dash, drwStyle.line.width),
-            'stroke-width': drwStyle.line.width + 'px'
-        } : {})
-        .attr('fill-rule', drwStyle.fillrule)
+        .style({
+            opacity: isDrawMode ? newStyle.opacity / 2 : 1,
+            fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
+            stroke: newStyle.line.color || (
+                dragOptions.subplot !== undefined ?
+                    '#7f7f7f' : // non-cartesian subplot
+                    Color.contrast(gd._fullLayout.plot_bgcolor) // cartesian subplot
+            ),
+            'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
+            'stroke-width': newStyle.line.width + 'px',
+            'shape-rendering': 'crispEdges'
+        })
+        .attr('fill-rule', newStyle.fillrule)
         .classed('cursor-move', isDrawMode ? true : false)
         .attr('transform', transform)
         .attr('d', path0 + 'Z');
@@ -269,43 +284,28 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
         // create outline & tester
         if(dragOptions.selectionDefs && dragOptions.selectionDefs.length) {
             mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
+
             currentPolygon.subtract = subtract;
-            selectionTester = multiTester(dragOptions.selectionDefs.concat([currentPolygon]));
+            selectionTesters = multiTester(dragOptions.selectionDefs.concat([currentPolygon]), selectionTesters);
         } else {
             mergedPolygons = [currentPolygon];
-            selectionTester = polygonTester(currentPolygon);
+            selectionTesters = polygonTester(currentPolygon);
+            selectionTesters.testers = [selectionTesters];
         }
 
         // display polygons on the screen
         displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
 
         if(isSelectMode) {
+            selectionTesters = reselect(gd, xAxis._id, yAxis._id, selectionTesters, searchTraces);
+
             throttle.throttle(
                 throttleID,
                 constants.SELECTDELAY,
                 function() {
-                    selection = [];
-
-                    var thisSelection;
-                    var traceSelections = [];
-                    var traceSelection;
-                    for(i = 0; i < searchTraces.length; i++) {
-                        searchInfo = searchTraces[i];
-
-                        traceSelection = searchInfo._module.selectPoints(searchInfo, selectionTester);
-                        traceSelections.push(traceSelection);
-
-                        thisSelection = fillSelectionItem(traceSelection, searchInfo);
-
-                        if(selection.length) {
-                            for(var j = 0; j < thisSelection.length; j++) {
-                                selection.push(thisSelection[j]);
-                            }
-                        } else selection = thisSelection;
-                    }
+                    selection = _doSelect(selectionTesters, searchTraces);
 
                     eventData = {points: selection};
-                    updateSelectedState(gd, searchTraces, eventData);
                     fillRangeItems(eventData, currentPolygon, filterPoly);
                     dragOptions.gd.emit('plotly_selecting', eventData);
                 }
@@ -339,6 +339,30 @@ function prepSelect(e, startX, startY, dragOptions, mode) {
                 clearSelectionsCache(dragOptions);
 
                 gd.emit('plotly_deselect', null);
+
+                if(searchTraces.length) {
+                    var clickedXaxis = searchTraces[0].xaxis;
+                    var clickedYaxis = searchTraces[0].yaxis;
+
+                    if(clickedXaxis && clickedYaxis) {
+                        // drop selections in the clicked subplot
+                        var newSelections = [];
+                        var oldSelections = gd._fullLayout.selections;
+                        for(var k = 0; k < oldSelections.length; k++) {
+                            var s = oldSelections[k];
+                            if(
+                                s.xref !== clickedXaxis._id ||
+                                s.yref !== clickedYaxis._id
+                            ) {
+                                newSelections.push(s);
+                            }
+                        }
+
+                        Registry.call('_guiRelayout', gd, {
+                            selections: newSelections
+                        });
+                    }
+                }
             } else {
                 if(clickmode.indexOf('select') > -1) {
                     selectOnClick(evt, gd, dragOptions.xaxes, dragOptions.yaxes,
@@ -392,7 +416,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
     var clickmode = fullLayout.clickmode;
     var sendEvents = clickmode.indexOf('event') > -1;
     var selection = [];
-    var searchTraces, searchInfo, currentSelectionDef, selectionTester, traceSelection;
+    var searchTraces, searchInfo, currentSelectionDef, selectionTesters, traceSelection;
     var thisTracesSelection, pointOrBinSelected, subtract, eventData, i;
 
     if(isHoverDataSet(hoverData)) {
@@ -430,10 +454,10 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             currentSelectionDef = newPointSelectionDef(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
 
             var allSelectionDefs = dragOptions.selectionDefs.concat([currentSelectionDef]);
-            selectionTester = multiTester(allSelectionDefs);
+            selectionTesters = multiTester(allSelectionDefs, selectionTesters);
 
             for(i = 0; i < searchTraces.length; i++) {
-                traceSelection = searchTraces[i]._module.selectPoints(searchTraces[i], selectionTester);
+                traceSelection = searchTraces[i]._module.selectPoints(searchTraces[i], selectionTesters);
                 thisTracesSelection = fillSelectionItem(traceSelection, searchTraces[i]);
 
                 if(selection.length) {
@@ -511,8 +535,9 @@ function newPointNumTester(pointSelectionDef) {
  * that can be called to evaluate a point against all wrapped
  * selection testers that were passed in list.
  */
-function multiTester(list) {
-    var testers = [];
+function multiTester(list, prevOut) {
+    if(!prevOut) prevOut = {};
+    var testers = prevOut.testers || [];
     var xmin = isPointSelectionDef(list[0]) ? 0 : list[0][0][0];
     var xmax = xmin;
     var ymin = isPointSelectionDef(list[0]) ? 0 : list[0][0][1];
@@ -547,7 +572,7 @@ function multiTester(list) {
         for(var i = 0; i < testers.length; i++) {
             if(testers[i].contains(pt, arg, pointNumber, searchInfo)) {
                 // if contained by subtract tester - exclude the point
-                contained = testers[i].subtract === false;
+                contained = !testers[i].subtract;
             }
         }
 
@@ -562,13 +587,12 @@ function multiTester(list) {
         pts: [],
         contains: contains,
         isRect: false,
-        degenerate: false
+        degenerate: false,
+        testers: testers
     };
 }
 
 function coerceSelectionsCache(evt, gd, dragOptions) {
-    gd._fullLayout._drawing = false;
-
     var fullLayout = gd._fullLayout;
     var plotinfo = dragOptions.plotinfo;
     var dragmode = dragOptions.dragmode;
@@ -581,8 +605,13 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
     var hasModifierKey = (evt.shiftKey || evt.altKey) &&
         !(drawMode(dragmode) && openMode(dragmode));
 
-    if(selectingOnSameSubplot && hasModifierKey &&
-      (plotinfo.selection && plotinfo.selection.selectionDefs) && !dragOptions.selectionDefs) {
+    if(
+        selectingOnSameSubplot &&
+        hasModifierKey &&
+        plotinfo.selection &&
+        plotinfo.selection.selectionDefs &&
+        !dragOptions.selectionDefs
+    ) {
         // take over selection definitions from prev mode, if any
         dragOptions.selectionDefs = plotinfo.selection.selectionDefs;
         dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
@@ -605,22 +634,45 @@ function clearSelectionsCache(dragOptions) {
     if(gd._fullLayout._activeShapeIndex >= 0) {
         gd._fullLayout._deactivateShape(gd);
     }
+    if(gd._fullLayout._activeSelectionIndex >= 0) {
+        gd._fullLayout._deactivateSelection(gd);
+    }
 
-    if(drawMode(dragmode)) {
-        var fullLayout = gd._fullLayout;
-        var zoomLayer = fullLayout._zoomlayer;
+    var fullLayout = gd._fullLayout;
+    var zoomLayer = fullLayout._zoomlayer;
 
+    var isDrawMode = drawMode(dragmode);
+    var isSelectMode = selectMode(dragmode);
+
+    if(isDrawMode || isSelectMode) {
         var outlines = zoomLayer.selectAll('.select-outline-' + plotinfo.id);
-        if(outlines && gd._fullLayout._drawing) {
+        if(outlines && gd._fullLayout._outlining) {
             // add shape
-            var shapes = newShapes(outlines, dragOptions);
+            var shapes;
+            if(isDrawMode) {
+                shapes = newShapes(outlines, dragOptions);
+            }
             if(shapes) {
                 Registry.call('_guiRelayout', gd, {
                     shapes: shapes
                 });
             }
 
-            gd._fullLayout._drawing = false;
+            // add selection
+            var selections;
+            if(
+                isSelectMode &&
+                !dragOptions.subplot // only allow cartesian - no mapbox for now
+            ) {
+                selections = newSelections(outlines, dragOptions);
+            }
+            if(selections) {
+                Registry.call('_guiRelayout', gd, {
+                    selections: selections
+                });
+            }
+
+            gd._fullLayout._outlining = false;
         }
     }
 
@@ -630,6 +682,8 @@ function clearSelectionsCache(dragOptions) {
 }
 
 function determineSearchTraces(gd, xAxes, yAxes, subplot) {
+    if(!gd.calcdata) return [];
+
     var searchTraces = [];
     var xAxisIds = xAxes.map(function(ax) { return ax._id; });
     var yAxisIds = yAxes.map(function(ax) { return ax._id; });
@@ -666,15 +720,15 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
     }
 
     return searchTraces;
+}
 
-    function createSearchInfo(module, calcData, xaxis, yaxis) {
-        return {
-            _module: module,
-            cd: calcData,
-            xaxis: xaxis,
-            yaxis: yaxis
-        };
-    }
+function createSearchInfo(module, calcData, xaxis, yaxis) {
+    return {
+        _module: module,
+        cd: calcData,
+        xaxis: xaxis,
+        yaxis: yaxis
+    };
 }
 
 function isHoverDataSet(hoverData) {
@@ -860,21 +914,11 @@ function updateSelectedState(gd, searchTraces, eventData) {
 }
 
 function mergePolygons(list, poly, subtract) {
-    var res;
+    var fn = subtract ?
+        polybool.difference :
+        polybool.union;
 
-    if(subtract) {
-        res = polybool.difference({
-            regions: list,
-            inverted: false
-        }, {
-            regions: [poly],
-            inverted: false
-        });
-
-        return res.regions;
-    }
-
-    res = polybool.union({
+    var res = fn({
         regions: list,
         inverted: false
     }, {
@@ -924,7 +968,154 @@ function convertPoly(polygonsIn, isOpenMode) { // add M and L command to draft p
     return polygonsOut;
 }
 
+function _doSelect(selectionTesters, searchTraces) {
+    var selection = [];
+
+    var thisSelection;
+    var traceSelections = [];
+    var traceSelection;
+    for(var i = 0; i < searchTraces.length; i++) {
+        var searchInfo = searchTraces[i];
+
+        traceSelection = searchInfo._module.selectPoints(searchInfo, selectionTesters);
+        traceSelections.push(traceSelection);
+
+        thisSelection = fillSelectionItem(traceSelection, searchInfo);
+
+        if(selection.length) {
+            for(var j = 0; j < thisSelection.length; j++) {
+                selection.push(thisSelection[j]);
+            }
+        } else selection = thisSelection;
+    }
+
+    return selection;
+}
+
+function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
+    var hadSearchTraces = !!searchTraces;
+
+    // select layout.selection polygons
+    var layoutPolygons = getLayoutPolygons(gd);
+    var i;
+    var subplots = (xRef && yRef) ? [xRef + yRef] :
+        gd._fullLayout._subplots.cartesian;
+
+    for(i = 0; i < subplots.length; i++) {
+        var subplot = subplots[i];
+        var yAt = subplot.indexOf('y');
+        var _xRef = subplot.slice(0, yAt);
+        var _yRef = subplot.slice(yAt);
+
+        var _selectionTesters = (xRef && yRef) ? selectionTesters : undefined;
+        _selectionTesters = addTester(layoutPolygons, _xRef, _yRef, _selectionTesters);
+
+        var _searchTraces = searchTraces;
+        if(!hadSearchTraces) {
+            _searchTraces = determineSearchTraces(
+                gd,
+                [getFromId(gd, _xRef, 'x')],
+                [getFromId(gd, _yRef, 'y')],
+                subplot
+            );
+        }
+
+        if(_selectionTesters) {
+            var selection = _doSelect(_selectionTesters, _searchTraces);
+
+            updateSelectedState(gd, _searchTraces, {points: selection});
+        }
+    }
+
+    return selectionTesters;
+}
+
+function addTester(layoutPolygons, xRef, yRef, selectionTesters) {
+    for(var m = 0; m < layoutPolygons.length; m++) {
+        var p = layoutPolygons[m];
+        if(
+            xRef === p.xref &&
+            yRef === p.yref
+        ) {
+            selectionTesters = multiTester([p], selectionTesters);
+        }
+    }
+
+    return selectionTesters;
+}
+
+function getLayoutPolygons(gd) {
+    var allPolygons = [];
+    var allSelections = gd._fullLayout.selections;
+    var len = allSelections.length;
+
+    for(var i = 0; i < len; i++) {
+        var selection = allSelections[i];
+
+        var xref = selection.xref;
+        var yref = selection.yref;
+
+        var xaxis = getFromId(gd, xref, 'x');
+        var yaxis = getFromId(gd, yref, 'y');
+
+        var xmin, xmax, ymin, ymax;
+
+        var polygon = [];
+        if(selection.type === 'rect') {
+            var x0 = convert(xaxis, selection.x0);
+            var x1 = convert(xaxis, selection.x1);
+            var y0 = convert(yaxis, selection.y0);
+            var y1 = convert(yaxis, selection.y1);
+            polygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
+
+            xmin = Math.min(x0, x1);
+            xmax = Math.max(x0, x1);
+            ymin = Math.min(y0, y1);
+            ymax = Math.max(y0, y1);
+        } else if(selection.type === 'path') {
+            var path = selection.path;
+            var allX = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsX, 'raw');
+            var allY = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsY, 'raw');
+
+            xmin = Infinity;
+            xmax = -Infinity;
+            ymin = Infinity;
+            ymax = -Infinity;
+
+            for(var q = 0; q < allX.length; q++) {
+                var x = convert(xaxis, allX[q]);
+                var y = convert(yaxis, allY[q]);
+
+                polygon.push([x, y]);
+
+                xmin = Math.min(x, xmin);
+                xmax = Math.max(x, xmax);
+                ymin = Math.min(y, ymin);
+                ymax = Math.max(y, ymax);
+            }
+        }
+
+        polygon.xmin = xmin;
+        polygon.xmax = xmax;
+        polygon.ymin = ymin;
+        polygon.ymax = ymax;
+
+        polygon.xref = xref;
+        polygon.yref = yref;
+
+        allPolygons.push(polygon);
+    }
+
+    return allPolygons;
+}
+
+function convert(ax, d) {
+    if(ax.type === 'date') d = d.replace('_', ' ');
+    return ax.type === 'log' ? ax.c2p(d) : ax.r2p(d, null, ax.calendar);
+}
+
 module.exports = {
+    reselect: reselect,
     prepSelect: prepSelect,
     clearSelect: clearSelect,
     clearSelectionsCache: clearSelectionsCache,
