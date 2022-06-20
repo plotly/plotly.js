@@ -592,6 +592,7 @@ exports.drawData = function(gd) {
 
     // draw components that can be drawn on axes,
     // and that do not push the margins
+    Registry.getComponentMethod('selections', 'draw')(gd);
     Registry.getComponentMethod('shapes', 'draw')(gd);
     Registry.getComponentMethod('annotations', 'draw')(gd);
     Registry.getComponentMethod('images', 'draw')(gd);
