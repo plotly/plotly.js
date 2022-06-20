@@ -40360,7 +40360,7 @@
      "line": {
       "color": {
        "description": "Sets the base color of unselected lines. in connection with `unselected.line.opacity`.",
-       "dflt": "#777",
+       "dflt": "#7f7f7f",
        "editType": "plot",
        "valType": "color"
       },
