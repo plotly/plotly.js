@@ -50,6 +50,7 @@ function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
 
         // Coerce x0, x1, y0, y1
         if(noPath) {
+            // FIXME: Are these the best dflts for selections?
             var dflt0 = 0.25;
             var dflt1 = 0.75;
 
