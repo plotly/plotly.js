@@ -1539,6 +1539,11 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         'supplyDrawNewShapeDefaults'
     )(layoutIn, layoutOut, coerce);
 
+    Registry.getComponentMethod(
+        'selections',
+        'supplyDrawNewSelectionDefaults'
+    )(layoutIn, layoutOut, coerce);
+
     coerce('meta');
 
     // do not include defaults in fullLayout when users do not set transition
@@ -2901,6 +2906,7 @@ function _transition(gd, transitionOpts, opts) {
         interruptPreviousTransitions,
         opts.prepareFn,
         plots.rehover,
+        plots.reselect,
         executeTransitions
     ];
 
@@ -3355,6 +3361,10 @@ plots.redrag = function(gd) {
     if(gd._fullLayout._redrag) {
         gd._fullLayout._redrag();
     }
+};
+
+plots.reselect = function(gd) {
+    Registry.getComponentMethod('selections', 'reselect')(gd);
 };
 
 plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {

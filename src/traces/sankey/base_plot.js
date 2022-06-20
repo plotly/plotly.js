@@ -7,7 +7,7 @@ var fxAttrs = require('../../components/fx/layout_attributes');
 
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
-var prepSelect = require('../../components/selections/select').prepSelect;
+var prepSelect = require('../../components/selections').prepSelect;
 var Lib = require('../../lib');
 var Registry = require('../../registry');
 

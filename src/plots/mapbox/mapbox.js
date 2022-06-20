@@ -14,10 +14,10 @@ var rectMode = dragHelpers.rectMode;
 var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
-var prepSelect = require('../../components/selections/select').prepSelect;
-var clearSelect = require('../../components/selections/select').clearSelect;
-var clearSelectionsCache = require('../../components/selections/select').clearSelectionsCache;
-var selectOnClick = require('../../components/selections/select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearSelect = require('../../components/selections').clearSelect;
+var clearSelectionsCache = require('../../components/selections').clearSelectionsCache;
+var selectOnClick = require('../../components/selections').selectOnClick;
 
 var constants = require('./constants');
 var createMapboxLayer = require('./layers');

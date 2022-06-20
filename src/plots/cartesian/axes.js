@@ -213,6 +213,7 @@ axes.redrawComponents = function(gd, axIds) {
     _redrawOneComp('annotations', 'drawOne', '_annIndices');
     _redrawOneComp('shapes', 'drawOne', '_shapeIndices');
     _redrawOneComp('images', 'draw', '_imgIndices', true);
+    _redrawOneComp('selections', 'drawOne', '_selectionIndices');
 };
 
 var getDataConversions = axes.getDataConversions = function(gd, trace, target, targetArray) {

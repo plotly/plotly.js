@@ -26,9 +26,9 @@ var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 var Plots = require('../plots');
 
 var getFromId = require('./axis_ids').getFromId;
-var prepSelect = require('../../components/selections/select').prepSelect;
-var clearSelect = require('../../components/selections/select').clearSelect;
-var selectOnClick = require('../../components/selections/select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearSelect = require('../../components/selections').clearSelect;
+var selectOnClick = require('../../components/selections').selectOnClick;
 var scaleZoom = require('./scale_zoom');
 
 var constants = require('./constants');
@@ -231,9 +231,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     updateSubplots([0, 0, pw, ph]);
                     dragOptions.moveFn(dragDataNow.dx, dragDataNow.dy);
                 }
-
-                // TODO should we try to "re-select" under select/lasso modes?
-                // probably best to wait for https://github.com/plotly/plotly.js/issues/1851
             }
         };
     };
