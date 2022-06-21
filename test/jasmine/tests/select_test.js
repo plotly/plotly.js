@@ -249,34 +249,6 @@ describe('Click-to-select', function() {
           .then(done, done.fail);
     });
 
-    describe('clears entire selection when the last selected data point', function() {
-        [{
-            desc: 'is clicked',
-            clickOpts: {}
-        }, {
-            desc: 'is clicked while add/subtract modifier keys are active',
-            clickOpts: { shiftKey: true }
-        }].forEach(function(testData) {
-            it('' + testData.desc, function(done) {
-                plotMock14()
-                  .then(function() { return _immediateClickPt(mock14Pts[7]); })
-                  .then(function() {
-                      assertSelectedPoints(7);
-                      _clickPt(mock14Pts[7], testData.clickOpts);
-                      return deselectPromise;
-                  })
-                  .then(function() {
-                      assertSelectionCleared();
-                      return _clickPt(mock14Pts[35], testData.clickOpts);
-                  })
-                  .then(function() {
-                      assertSelectedPoints(35);
-                  })
-                  .then(done, done.fail);
-            });
-        });
-    });
-
     it('cleanly clears and starts selections although add/subtract mode on', function(done) {
         plotMock14()
           .then(function() {
@@ -1611,18 +1583,6 @@ describe('Test select box and lasso in general:', function() {
 
         Plotly.newPlot(gd, fig)
         .then(function() { _assert('base', {outline: false}); })
-        .then(_drag(path1))
-        .then(function() {
-            _assert('select path1', {
-                outline: [[150, 150], [150, 170], [170, 170], [170, 150]]
-            });
-        })
-        .then(_drag(path2))
-        .then(function() {
-            _assert('select path2', {
-                outline: [[193, 0], [193, 500], [213, 500], [213, 0]]
-            });
-        })
         .then(_drag(path1))
         .then(_drag(path2, {shiftKey: true}))
         .then(function() {
