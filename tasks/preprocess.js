@@ -21,8 +21,17 @@ function makeBuildCSS() {
     }, function(err, result) {
         if(err) throw err;
 
-        // css to js
-        pullCSS(String(result.css), constants.pathToCSSBuild);
+        var cspNoInlineStyle = process.argv[2];
+        var pathToCSS = process.argv[3] || 'plot-csp.css';
+        if(cspNoInlineStyle) {
+            // if csp no inline style then build css file to include at path relative to build folder
+            fs.writeFile(constants.pathToBuild + pathToCSS, String(result.css), function(err) {
+                if(err) throw err;
+            });
+        } else {
+            // css to js
+            pullCSS(String(result.css), constants.pathToCSSBuild);
+        }
     });
 }
 

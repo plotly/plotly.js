@@ -28,7 +28,7 @@
     "schema": "node tasks/schema.js",
     "stats": "node tasks/stats.js",
     "find-strings": "node tasks/find_locale_strings.js",
-    "preprocess": "node tasks/preprocess.js",
+    "preprocess": "node tasks/preprocess.js %npm_config_cspNoInlineStyle% %npm_config_pathToCSS%",
     "use-draftlogs": "node tasks/use_draftlogs.js",
     "empty-draftlogs": "node tasks/empty_draftlogs.js",
     "empty-dist": "node tasks/empty_dist.js",
