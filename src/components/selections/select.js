@@ -697,14 +697,14 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
 
         if(subplot && (trace.subplot === subplot || trace.geo === subplot)) {
             searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
-        } else if(
-          trace.type === 'splom' &&
-          // FIXME: make sure we don't have more than single axis for splom
-          trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
-        ) {
-            var info = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
-            info.scene = gd._fullLayout._splomScenes[trace.uid];
-            searchTraces.push(info);
+        } else if(trace.type === 'splom') {
+            for(var j = 0; j < xAxisIds.length; j++) {
+                for(var k = 0; k < yAxisIds.length; k++) {
+                    var info = createSearchInfo(trace._module, cd, xAxes[j], yAxes[k]);
+                    info.scene = gd._fullLayout._splomScenes[trace.uid];
+                    searchTraces.push(info);
+                }
+            }
         } else if(
           trace.type === 'sankey'
         ) {
