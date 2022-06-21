@@ -1649,6 +1649,7 @@ describe('Test splom select:', function() {
                 selectionOutlineCnt: 1
             });
         })
+        /*
         .then(function() { return _select([[5, 195], [100, 100]], {shiftKey: true}); })
         .then(function() {
             _assert('multi-select', [
@@ -1660,6 +1661,7 @@ describe('Test splom select:', function() {
                 selectionOutlineCnt: 1
             });
         })
+        */
         .then(function() { return _select([[205, 205], [395, 395]]); })
         .then(function() {
             _assert('across other subplot', [
