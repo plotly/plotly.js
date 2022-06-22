@@ -94,38 +94,50 @@ function drawOne(gd, index) {
             opacity = gd._fullLayout.activeselection.opacity;
         }
 
-        var path = selectionLayer.append('path')
-            .attr(attrs)
-            .style('opacity', opacity)
-            .call(Color.stroke, lineColor)
-            .call(Color.fill, fillColor)
-            .call(Drawing.dashLine, lineDash, lineWidth);
+        var allPaths = [];
+        for(var sensory = 1; sensory >= 0; sensory--) {
+            var path = selectionLayer.append('path')
+                .attr(attrs)
+                .style('opacity', sensory ? 0.1 : opacity)
+                .call(Color.stroke, lineColor)
+                .call(Color.fill, fillColor)
+                // make it easier to select senory background path
+                .call(Drawing.dashLine,
+                    sensory ? 'solid' : lineDash,
+                    sensory ? 4 + lineWidth : lineWidth
+                );
 
-        setClipPath(path, gd, options);
+            setClipPath(path, gd, options);
 
-        if(isActiveSelection) {
-            var editHelpers = arrayEditor(gd.layout, 'selections', options);
+            if(isActiveSelection) {
+                var editHelpers = arrayEditor(gd.layout, 'selections', options);
 
-            path.style({
-                'cursor': 'move',
-            });
+                path.style({
+                    'cursor': 'move',
+                });
 
-            var dragOptions = {
-                element: path.node(),
-                plotinfo: plotinfo,
-                gd: gd,
-                editHelpers: editHelpers,
-                isActiveSelection: true // i.e. to enable controllers
-            };
+                var dragOptions = {
+                    element: path.node(),
+                    plotinfo: plotinfo,
+                    gd: gd,
+                    editHelpers: editHelpers,
+                    isActiveSelection: true // i.e. to enable controllers
+                };
 
-            var polygons = readPaths(d, gd);
-            // display polygons on the screen
-            displayOutlines(polygons, path, dragOptions);
-        } else {
-            path.style('pointer-events', 'stroke');
+                var polygons = readPaths(d, gd);
+                // display polygons on the screen
+                displayOutlines(polygons, path, dragOptions);
+            } else {
+                path.style('pointer-events', sensory ? 'stroke' : 'none');
+            }
+
+            allPaths[sensory] = path;
         }
 
-        path.node().addEventListener('click', function() { return activateSelection(gd, path); });
+        var visiblePath = allPaths[0];
+        var sensoryPath = allPaths[1];
+
+        sensoryPath.node().addEventListener('click', function() { return activateSelection(gd, visiblePath); });
     }
 }
 

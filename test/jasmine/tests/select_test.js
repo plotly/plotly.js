@@ -1630,22 +1630,6 @@ describe('Test select box and lasso in general:', function() {
         .then(function() {
             _assert('after relayout back to select', {outline: false});
         })
-        .then(_drag(path1, {shiftKey: true}))
-        .then(function() {
-            // this used to merged 'lasso' polygons before (see #2669)
-            _assert('shift select path1 after pan', {
-                outline: [[150, 150], [150, 170], [170, 170], [170, 150]]
-            });
-        })
-        .then(_drag(path2, {shiftKey: true}))
-        .then(function() {
-            _assert('shift select path1+path2 after pan', {
-                outline: [
-                    [170, 170], [170, 150], [150, 150], [150, 170],
-                    [213, 500], [213, 0], [193, 0], [193, 500]
-                ]
-            });
-        })
         .then(function() {
             mouseEvent('mousemove', 200, 200);
             mouseEvent('scroll', 200, 200, {deltaX: 0, deltaY: -20});
