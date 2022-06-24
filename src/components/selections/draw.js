@@ -134,10 +134,10 @@ function drawOne(gd, index) {
             allPaths[sensory] = path;
         }
 
-        var visiblePath = allPaths[0];
-        var sensoryPath = allPaths[1];
+        var forePath = allPaths[0];
+        var backPath = allPaths[1];
 
-        sensoryPath.node().addEventListener('click', function() { return activateSelection(gd, visiblePath); });
+        backPath.node().addEventListener('click', function() { return activateSelection(gd, forePath); });
     }
 }
 
