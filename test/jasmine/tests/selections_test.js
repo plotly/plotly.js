@@ -32,37 +32,30 @@ describe('Test selections defaults:', function() {
         });
     });
 
-    it('should make non-object item visible: false', function() {
+    it('should make non-object item null', function() {
         var selections = [null, undefined, [], 'str', 0, false, true];
         var layoutIn = { selections: selections };
         var out = _supply(layoutIn);
 
         expect(layoutIn.selections).toEqual(selections);
 
-        out.forEach(function(item, i) {
-            expect(item).toEqual(jasmine.objectContaining({
-                visible: false,
-                _index: i
-            }));
+        out.forEach(function(item) {
+            expect(item).toEqual(null);
         });
     });
 
-    it('should provide the right defaults on all axis types', function() {
+    it('should drop box selections with insufficient x0, y0, x1, y1 coordinate', function() {
         var fullLayout = {
             xaxis: {type: 'linear', range: [0, 20], _selectionIndices: []},
-            yaxis: {type: 'log', range: [1, 5], _selectionIndices: []},
-            xaxis2: {type: 'date', range: ['2006-06-05', '2006-06-09'], _selectionIndices: []},
-            yaxis2: {type: 'category', range: [-0.5, 7.5], _selectionIndices: []},
-            _subplots: {xaxis: ['x', 'x2'], yaxis: ['y', 'y2']}
+            yaxis: {type: 'linear', range: [0, 20], _selectionIndices: []},
+            _subplots: {xaxis: ['x'], yaxis: ['y']}
         };
 
         Axes.setConvert(fullLayout.xaxis);
         Axes.setConvert(fullLayout.yaxis);
-        Axes.setConvert(fullLayout.xaxis2);
-        Axes.setConvert(fullLayout.yaxis2);
 
-        var selection1In = {type: 'rect'};
-        var selection2In = {type: 'circle', xref: 'x2', yref: 'y2'};
+        var selection1In = {type: 'rect', x0: 0, x1: 1};
+        var selection2In = {type: 'rect', y0: 0, y1: 1};
 
         var layoutIn = {
             selections: [selection1In, selection2In]
@@ -73,21 +66,8 @@ describe('Test selections defaults:', function() {
         var selection1Out = fullLayout.selections[0];
         var selection2Out = fullLayout.selections[1];
 
-        // default positions are 1/4 and 3/4 of the full range of that axis
-        expect(selection1Out.x0).toBe(5);
-        expect(selection1Out.x1).toBe(15);
-
-        // selections use data values for log axes (like everyone will in V3.0)
-        expect(selection1Out.y0).toBeWithin(100, 0.001);
-        expect(selection1Out.y1).toBeWithin(10000, 0.001);
-
-        // date strings also interpolate
-        expect(selection2Out.x0).toBe('2006-06-06');
-        expect(selection2Out.x1).toBe('2006-06-08');
-
-        // categories must use serial numbers to get continuous values
-        expect(selection2Out.y0).toBeWithin(1.5, 0.001);
-        expect(selection2Out.y1).toBeWithin(5.5, 0.001);
+        expect(selection1Out).toBe(null);
+        expect(selection2Out).toBe(null);
     });
 
     it('should not coerce line.color and line.dash when line.width is zero', function() {

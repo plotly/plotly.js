@@ -87,6 +87,11 @@ module.exports = function newSelections(outlines, dragOptions) {
     var allSelections = [];
     for(var q = 0; q < selections.length; q++) {
         var beforeEdit = gd._fullLayout.selections[q];
+        if(!beforeEdit) {
+            allSelections[q] = beforeEdit;
+            continue;
+        }
+
         allSelections[q] = beforeEdit._input;
 
         if(

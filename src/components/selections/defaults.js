@@ -12,6 +12,26 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
         name: 'selections',
         handleItemDefaults: handleSelectionDefaults
     });
+
+    // Drop rect selections with undefined x0, y0, x1, x1 values.
+    // In future we may accept partially defined rects e.g.
+    // a case with only x0 and x1 may be used to define
+    // [-Infinity, +Infinity] range on the y axis, etc.
+    var selections = layoutOut.selections;
+    for(var i = 0; i < selections.length; i++) {
+        var selection = selections[i];
+        if(!selection) continue;
+        if(selection.path === undefined) {
+            if(
+                selection.x0 === undefined ||
+                selection.x1 === undefined ||
+                selection.y0 === undefined ||
+                selection.y1 === undefined
+            ) {
+                layoutOut.selections[i] = null;
+            }
+        }
+    }
 };
 
 function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
@@ -50,10 +70,6 @@ function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
 
         // Coerce x0, x1, y0, y1
         if(noPath) {
-            // FIXME: Are these the best dflts for selections?
-            var dflt0 = 0.25;
-            var dflt1 = 0.75;
-
             // hack until V3.0 when log has regular range behavior - make it look like other
             // ranges to send to coerce, then put it back after
             // this is all to give reasonable default position behavior on log axes, which is
@@ -65,16 +81,21 @@ function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
             selectionIn[attr0] = pos2r(selectionIn[attr0], true);
             selectionIn[attr1] = pos2r(selectionIn[attr1], true);
 
-            Axes.coercePosition(selectionOut, gdMock, coerce, axRef, attr0, dflt0);
-            Axes.coercePosition(selectionOut, gdMock, coerce, axRef, attr1, dflt1);
+            Axes.coercePosition(selectionOut, gdMock, coerce, axRef, attr0);
+            Axes.coercePosition(selectionOut, gdMock, coerce, axRef, attr1);
 
-            // hack part 2
-            selectionOut[attr0] = r2pos(selectionOut[attr0]);
-            selectionOut[attr1] = r2pos(selectionOut[attr1]);
-            selectionIn[attr0] = in0;
-            selectionIn[attr1] = in1;
+            var p0 = selectionOut[attr0];
+            var p1 = selectionOut[attr1];
+
+            if(p0 !== undefined && p1 !== undefined) {
+                // hack part 2
+                selectionOut[attr0] = r2pos(p0);
+                selectionOut[attr1] = r2pos(p1);
+                selectionIn[attr0] = in0;
+                selectionIn[attr1] = in1;
+            }
         }
-    } // TODO: centralize. This is similar to shapes.
+    }
 
     if(noPath) {
         Lib.noneOrAll(selectionIn, selectionOut, ['x0', 'x1', 'y0', 'y1']);

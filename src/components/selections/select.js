@@ -350,6 +350,8 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                         var oldSelections = gd._fullLayout.selections;
                         for(var k = 0; k < oldSelections.length; k++) {
                             var s = oldSelections[k];
+                            if(!s) continue; // also drop null selections if any
+
                             if(
                                 s.xref !== clickedXaxis._id ||
                                 s.yref !== clickedYaxis._id
@@ -1051,6 +1053,7 @@ function getLayoutPolygons(gd) {
 
     for(var i = 0; i < len; i++) {
         var selection = allSelections[i];
+        if(!selection) continue;
 
         var xref = selection.xref;
         var yref = selection.yref;
