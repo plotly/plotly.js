@@ -184,11 +184,6 @@ describe('Test selections:', function() {
             .then(function() {
                 expect(countSelections(gd)).toEqual(index);
 
-                return Plotly.relayout(gd, 'selections[2].visible', false);
-            })
-            .then(function() {
-                expect(countSelections(gd)).toEqual(index);
-
                 return Plotly.relayout(gd, 'selections[1]', null);
             })
             .then(function() {
