@@ -998,6 +998,9 @@ function _doSelect(selectionTesters, searchTraces) {
 function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
     var hadSearchTraces = !!searchTraces;
 
+    var allSelections = [];
+    var allTesters = [];
+
     // select layout.selection polygons
     var layoutPolygons = getLayoutPolygons(gd);
     var subplots = (xRef && yRef) ? [xRef + yRef] :
@@ -1025,9 +1028,12 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
         if(_selectionTesters) {
             var selection = _doSelect(_selectionTesters, _searchTraces);
 
-            updateSelectedState(gd, _searchTraces, {points: selection});
+            allSelections = allSelections.concat(selection);
+            allTesters = allTesters.concat(_searchTraces);
         }
     }
+
+    updateSelectedState(gd, allTesters, {points: allSelections});
 
     return selectionTesters;
 }
