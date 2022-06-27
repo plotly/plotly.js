@@ -842,7 +842,7 @@ function isOnlyOnePointSelected(searchTraces) {
 }
 
 function updateSelectedState(gd, searchTraces, eventData) {
-    var i, searchInfo, cd, trace;
+    var i;
 
     // before anything else, update preGUI if necessary
     for(i = 0; i < searchTraces.length; i++) {
@@ -853,9 +853,9 @@ function updateSelectedState(gd, searchTraces, eventData) {
         }
     }
 
+    var trace;
     if(eventData) {
         var pts = eventData.points || [];
-
         for(i = 0; i < searchTraces.length; i++) {
             trace = searchTraces[i].cd[0].trace;
             trace._input.selectedpoints = trace._fullInput.selectedpoints = [];
@@ -894,11 +894,10 @@ function updateSelectedState(gd, searchTraces, eventData) {
     var hasRegl = false;
 
     for(i = 0; i < searchTraces.length; i++) {
-        searchInfo = searchTraces[i];
-        cd = searchInfo.cd;
-        trace = cd[0].trace;
+        var searchInfo = searchTraces[i];
+        var cd = searchInfo.cd;
 
-        if(Registry.traceIs(trace, 'regl')) {
+        if(Registry.traceIs(cd[0].trace, 'regl')) {
             hasRegl = true;
         }
 
