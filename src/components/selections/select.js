@@ -1000,11 +1000,10 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
 
     // select layout.selection polygons
     var layoutPolygons = getLayoutPolygons(gd);
-    var i;
     var subplots = (xRef && yRef) ? [xRef + yRef] :
         gd._fullLayout._subplots.cartesian;
 
-    for(i = 0; i < subplots.length; i++) {
+    for(var i = 0; i < subplots.length; i++) {
         var subplot = subplots[i];
         var yAt = subplot.indexOf('y');
         var _xRef = subplot.slice(0, yAt);
