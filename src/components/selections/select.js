@@ -862,8 +862,8 @@ function updateSelectedState(gd, searchTraces, eventData) {
             if(trace._fullInput !== trace) trace.selectedpoints = [];
         }
 
-        for(i = 0; i < pts.length; i++) {
-            var pt = pts[i];
+        for(var k = 0; k < pts.length; k++) {
+            var pt = pts[k];
             var data = pt.data;
             var fullData = pt.fullData;
             var pointIndex = pt.pointIndex;
