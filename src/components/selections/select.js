@@ -975,7 +975,7 @@ function convertPoly(polygonsIn, isOpenMode) { // add M and L command to draft p
 }
 
 function _doSelect(selectionTesters, searchTraces) {
-    var selection = [];
+    var allSelections = [];
 
     var thisSelection;
     var traceSelections = [];
@@ -988,14 +988,10 @@ function _doSelect(selectionTesters, searchTraces) {
 
         thisSelection = fillSelectionItem(traceSelection, searchInfo);
 
-        if(selection.length) {
-            for(var j = 0; j < thisSelection.length; j++) {
-                selection.push(thisSelection[j]);
-            }
-        } else selection = thisSelection;
+        allSelections = allSelections.concat(thisSelection);
     }
 
-    return selection;
+    return allSelections;
 }
 
 function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
