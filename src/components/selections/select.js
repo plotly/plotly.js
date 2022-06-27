@@ -891,9 +891,13 @@ function updateSelectedState(gd, searchTraces, eventData) {
         }
     }
 
+    updateReglSelectedState(gd, searchTraces);
+}
+
+function updateReglSelectedState(gd, searchTraces) {
     var hasRegl = false;
 
-    for(i = 0; i < searchTraces.length; i++) {
+    for(var i = 0; i < searchTraces.length; i++) {
         var searchInfo = searchTraces[i];
         var cd = searchInfo.cd;
 
