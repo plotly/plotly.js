@@ -866,16 +866,17 @@ function updateSelectedState(gd, searchTraces, eventData) {
             var pt = pts[i];
             var data = pt.data;
             var fullData = pt.fullData;
-
-            if(pt.pointIndices) {
-                [].push.apply(data.selectedpoints, pt.pointIndices);
+            var pointIndex = pt.pointIndex;
+            var pointIndices = pt.pointIndices;
+            if(pointIndices) {
+                [].push.apply(data.selectedpoints, pointIndices);
                 if(trace._fullInput !== trace) {
-                    [].push.apply(fullData.selectedpoints, pt.pointIndices);
+                    [].push.apply(fullData.selectedpoints, pointIndices);
                 }
             } else {
-                data.selectedpoints.push(pt.pointIndex);
+                data.selectedpoints.push(pointIndex);
                 if(trace._fullInput !== trace) {
-                    fullData.selectedpoints.push(pt.pointIndex);
+                    fullData.selectedpoints.push(pointIndex);
                 }
             }
         }
