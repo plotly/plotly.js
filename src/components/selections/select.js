@@ -26,9 +26,7 @@ var newSelections = require('./draw_newselection/newselections');
 var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
-var axisIds = require('../../plots/cartesian/axis_ids');
-var getFromId = axisIds.getFromId;
-var id2name = axisIds.id2name;
+var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
 
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
@@ -693,6 +691,8 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
     if(!gd.calcdata) return [];
 
     var searchTraces = [];
+    var xAxisIds = xAxes.map(getAxId);
+    var yAxisIds = yAxes.map(getAxId);
     var cd, trace, i;
 
     for(i = 0; i < gd.calcdata.length; i++) {
@@ -704,30 +704,16 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
         if(subplot && (trace.subplot === subplot || trace.geo === subplot)) {
             searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
         } else if(trace.type === 'splom') {
-            var fullLayout = gd._fullLayout;
-            var splomAxes = fullLayout._splomAxes;
-            var xSplomAxesIds = Object.keys(splomAxes.x);
-            var ySplomAxesIds = Object.keys(splomAxes.y);
-
-            for(var j = 0; j < xSplomAxesIds.length; j++) {
-                for(var k = 0; k < ySplomAxesIds.length; k++) {
-                    var info = createSearchInfo(trace._module, cd,
-                        fullLayout[id2name(xSplomAxesIds[j])],
-                        fullLayout[id2name(ySplomAxesIds[k])]
-                    );
-                    info.scene = gd._fullLayout._splomScenes[trace.uid];
-                    searchTraces.push(info);
-                }
+            // FIXME: make sure we don't have more than single axis for splom
+            if(trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]) {
+                var info = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
+                info.scene = gd._fullLayout._splomScenes[trace.uid];
+                searchTraces.push(info);
             }
-        } else if(
-          trace.type === 'sankey'
-        ) {
+        } else if(trace.type === 'sankey') {
             var sankeyInfo = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
             searchTraces.push(sankeyInfo);
         } else {
-            var xAxisIds = xAxes.map(getAxId);
-            var yAxisIds = yAxes.map(getAxId);
-
             if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
             if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
 
