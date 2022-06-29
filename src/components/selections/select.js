@@ -346,22 +346,22 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
                     if(clickedXaxis && clickedYaxis) {
                         // drop selections in the clicked subplot
-                        var newSelections = [];
-                        var oldSelections = gd._fullLayout.selections;
-                        for(var k = 0; k < oldSelections.length; k++) {
-                            var s = oldSelections[k];
+                        var subSelections = [];
+                        var allSelections = gd._fullLayout.selections;
+                        for(var k = 0; k < allSelections.length; k++) {
+                            var s = allSelections[k];
                             if(!s) continue; // also drop null selections if any
 
                             if(
                                 s.xref !== clickedXaxis._id ||
                                 s.yref !== clickedYaxis._id
                             ) {
-                                newSelections.push(s);
+                                subSelections.push(s);
                             }
                         }
 
                         Registry.call('_guiRelayout', gd, {
-                            selections: newSelections
+                            selections: subSelections
                         });
                     }
                 }
