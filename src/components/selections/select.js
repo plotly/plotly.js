@@ -1067,8 +1067,10 @@ function getLayoutPolygons(gd) {
 
         var xmin, xmax, ymin, ymax;
 
-        var polygon = [];
+        var polygon;
         if(selection.type === 'rect') {
+            polygon = [];
+
             var x0 = convert(xaxis, selection.x0);
             var x1 = convert(xaxis, selection.x1);
             var y0 = convert(yaxis, selection.y0);
@@ -1079,38 +1081,57 @@ function getLayoutPolygons(gd) {
             xmax = Math.max(x0, x1);
             ymin = Math.min(y0, y1);
             ymax = Math.max(y0, y1);
+
+            polygon.xmin = xmin;
+            polygon.xmax = xmax;
+            polygon.ymin = ymin;
+            polygon.ymax = ymax;
+
+            polygon.xref = xref;
+            polygon.yref = yref;
+
+            allPolygons.push(polygon);
         } else if(selection.type === 'path') {
-            var path = selection.path;
-            var allX = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsX, 'raw');
-            var allY = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsY, 'raw');
+            var segments = selection.path.split('Z');
 
-            xmin = Infinity;
-            xmax = -Infinity;
-            ymin = Infinity;
-            ymax = -Infinity;
+            for(var k = 0; k < segments.length; k++) {
+                var path = segments[k];
+                if(!path) continue;
+                path += 'Z';
 
-            for(var q = 0; q < allX.length; q++) {
-                var x = convert(xaxis, allX[q]);
-                var y = convert(yaxis, allY[q]);
+                var allX = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsX, 'raw');
+                var allY = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsY, 'raw');
 
-                polygon.push([x, y]);
+                xmin = Infinity;
+                xmax = -Infinity;
+                ymin = Infinity;
+                ymax = -Infinity;
 
-                xmin = Math.min(x, xmin);
-                xmax = Math.max(x, xmax);
-                ymin = Math.min(y, ymin);
-                ymax = Math.max(y, ymax);
+                polygon = [];
+
+                for(var q = 0; q < allX.length; q++) {
+                    var x = convert(xaxis, allX[q]);
+                    var y = convert(yaxis, allY[q]);
+
+                    polygon.push([x, y]);
+
+                    xmin = Math.min(x, xmin);
+                    xmax = Math.max(x, xmax);
+                    ymin = Math.min(y, ymin);
+                    ymax = Math.max(y, ymax);
+                }
+
+                polygon.xmin = xmin;
+                polygon.xmax = xmax;
+                polygon.ymin = ymin;
+                polygon.ymax = ymax;
+
+                polygon.xref = xref;
+                polygon.yref = yref;
+
+                allPolygons.push(polygon);
             }
         }
-
-        polygon.xmin = xmin;
-        polygon.xmax = xmax;
-        polygon.ymin = ymin;
-        polygon.ymax = ymax;
-
-        polygon.xref = xref;
-        polygon.yref = yref;
-
-        allPolygons.push(polygon);
     }
 
     return allPolygons;
