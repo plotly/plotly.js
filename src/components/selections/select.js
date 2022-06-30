@@ -926,11 +926,9 @@ function mergePolygons(list, poly, subtract) {
         polybool.union;
 
     var res = fn({
-        regions: list,
-        inverted: false
+        regions: list
     }, {
-        regions: [poly],
-        inverted: false
+        regions: [poly]
     });
 
     return res.regions;
