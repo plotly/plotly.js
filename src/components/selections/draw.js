@@ -82,15 +82,11 @@ function drawOne(gd, index) {
             lineDash = 'solid';
         }
 
-        var isOpen = d[d.length - 1] !== 'Z';
-
         var isActiveSelection =
             gd._fullLayout._activeSelectionIndex === index;
 
         if(isActiveSelection) {
-            fillColor = isOpen ? 'rgba(0,0,0,0)' :
-                gd._fullLayout.activeselection.fillcolor;
-
+            fillColor = gd._fullLayout.activeselection.fillcolor;
             opacity = gd._fullLayout.activeselection.opacity;
         }
 
