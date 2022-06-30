@@ -1,6 +1,7 @@
 'use strict';
 
 var polybool = require('polybooljs');
+var pointInPolygon = require('point-in-polygon/nested');
 
 var Registry = require('../../registry');
 var dashStyle = require('../drawing').dashStyle;
@@ -286,11 +287,10 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
 
             currentPolygon.subtract = subtract;
-            selectionTesters = multiTester(dragOptions.selectionDefs.concat([currentPolygon]), selectionTesters);
+            selectionTesters = multiTester(dragOptions.selectionDefs.concat([currentPolygon]));
         } else {
             mergedPolygons = [currentPolygon];
             selectionTesters = polygonTester(currentPolygon);
-            selectionTesters.testers = [selectionTesters];
         }
 
         // display polygons on the screen
@@ -498,7 +498,7 @@ function newPointSelectionDef(pointNumber, searchInfo, subtract) {
     return {
         pointNumber: pointNumber,
         searchInfo: searchInfo,
-        subtract: subtract
+        subtract: !!subtract
     };
 }
 
@@ -524,7 +524,7 @@ function newPointNumTester(pointSelectionDef) {
         },
         isRect: false,
         degenerate: false,
-        subtract: pointSelectionDef.subtract
+        subtract: !!pointSelectionDef.subtract
     };
 }
 
@@ -537,9 +537,8 @@ function newPointNumTester(pointSelectionDef) {
  * that can be called to evaluate a point against all wrapped
  * selection testers that were passed in list.
  */
-function multiTester(list, prevOut) {
-    if(!prevOut) prevOut = {};
-    var testers = prevOut.testers || [];
+function multiTester(list) {
+    var testers = [];
     var xmin = isPointSelectionDef(list[0]) ? 0 : list[0][0][0];
     var xmax = xmin;
     var ymin = isPointSelectionDef(list[0]) ? 0 : list[0][0][1];
@@ -550,8 +549,9 @@ function multiTester(list, prevOut) {
             testers.push(newPointNumTester(list[i]));
         } else {
             var tester = polygon.tester(list[i]);
-            tester.subtract = list[i].subtract;
+            tester.subtract = !!list[i].subtract;
             testers.push(tester);
+
             xmin = Math.min(xmin, tester.xmin);
             xmax = Math.max(xmax, tester.xmax);
             ymin = Math.min(ymin, tester.ymin);
@@ -589,8 +589,7 @@ function multiTester(list, prevOut) {
         pts: [],
         contains: contains,
         isRect: false,
-        degenerate: false,
-        testers: testers
+        degenerate: false
     };
 }
 
@@ -931,7 +930,27 @@ function mergePolygons(list, poly, subtract) {
         regions: [poly]
     });
 
-    return res.regions;
+    var allPolygons = res.regions.reverse();
+
+    for(var i = 0; i < allPolygons.length; i++) {
+        var polygon = allPolygons[i];
+
+        var _subtract = false;
+        for(var q = 0; q < i; q++) {
+            var previousPolygon = allPolygons[q];
+
+            // find out if a point of polygon is inside previous polygons
+            for(var k = 0; k < polygon.length; k++) {
+                if(pointInPolygon(polygon[k], previousPolygon)) {
+                    _subtract = !_subtract;
+                    break;
+                }
+            }
+        }
+        polygon.subtract = _subtract;
+    }
+
+    return allPolygons;
 }
 
 function fillSelectionItem(selection, searchInfo) {
@@ -1036,14 +1055,21 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
     return selectionTesters;
 }
 
+
 function addTester(layoutPolygons, xRef, yRef, selectionTesters) {
-    for(var m = 0; m < layoutPolygons.length; m++) {
-        var p = layoutPolygons[m];
-        if(
-            xRef === p.xref &&
-            yRef === p.yref
-        ) {
-            selectionTesters = multiTester([p], selectionTesters);
+    var mergedPolygons;
+
+    for(var i = 0; i < layoutPolygons.length; i++) {
+        var currentPolygon = layoutPolygons[i];
+        if(xRef !== currentPolygon.xref || yRef !== currentPolygon.yref) continue;
+
+        if(mergedPolygons) {
+            var subtract = !!currentPolygon.subtract;
+            mergedPolygons = mergePolygons(mergedPolygons, currentPolygon, subtract);
+            selectionTesters = multiTester(mergedPolygons);
+        } else {
+            mergedPolygons = [currentPolygon];
+            selectionTesters = polygonTester(currentPolygon);
         }
     }
 
@@ -1090,12 +1116,15 @@ function getLayoutPolygons(gd) {
             polygon.xref = xref;
             polygon.yref = yref;
 
+            polygon.subtract = false;
+
             allPolygons.push(polygon);
         } else if(selection.type === 'path') {
             var segments = selection.path.split('Z');
 
-            for(var k = 0; k < segments.length; k++) {
-                var path = segments[k];
+            var multiPolygons = [];
+            for(var j = 0; j < segments.length; j++) {
+                var path = segments[j];
                 if(!path) continue;
                 path += 'Z';
 
@@ -1109,9 +1138,9 @@ function getLayoutPolygons(gd) {
 
                 polygon = [];
 
-                for(var q = 0; q < allX.length; q++) {
-                    var x = convert(xaxis, allX[q]);
-                    var y = convert(yaxis, allY[q]);
+                for(var k = 0; k < allX.length; k++) {
+                    var x = convert(xaxis, allX[k]);
+                    var y = convert(yaxis, allY[k]);
 
                     polygon.push([x, y]);
 
@@ -1129,6 +1158,21 @@ function getLayoutPolygons(gd) {
                 polygon.xref = xref;
                 polygon.yref = yref;
 
+                // find out if a point of polygon is inside previous polygons of the same path
+                var subtract = false;
+                for(var q = 0; q < multiPolygons.length; q++) {
+                    var previousPolygon = multiPolygons[q];
+                    for(var s = 0; s < polygon.length; s++) {
+                        if(pointInPolygon(polygon[s], previousPolygon)) {
+                            subtract = !subtract;
+                            break;
+                        }
+                    }
+                }
+
+                polygon.subtract = subtract;
+
+                multiPolygons.push(polygon);
                 allPolygons.push(polygon);
             }
         }
