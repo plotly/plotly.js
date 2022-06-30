@@ -67,7 +67,7 @@ function drawOne(gd, index) {
         var d = getPathString(gd, options);
         var attrs = {
             'data-index': index,
-            'fill-rule': options.fillrule,
+            'fill-rule': 'evenodd',
             d: d
         };
 

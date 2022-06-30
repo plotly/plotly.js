@@ -112,7 +112,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             'stroke-width': newStyle.line.width + 'px',
             'shape-rendering': 'crispEdges'
         })
-        .attr('fill-rule', newStyle.fillrule)
+        .attr('fill-rule', 'evenodd')
         .classed('cursor-move', isDrawMode ? true : false)
         .attr('transform', transform)
         .attr('d', path0 + 'Z');
