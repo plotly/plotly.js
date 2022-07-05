@@ -1032,17 +1032,17 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
         var _selectionTesters = (xRef && yRef) ? selectionTesters : undefined;
         _selectionTesters = addTester(layoutPolygons, _xRef, _yRef, _selectionTesters);
 
-        var _searchTraces = searchTraces;
-        if(!hadSearchTraces) {
-            _searchTraces = determineSearchTraces(
-                gd,
-                [getFromId(gd, _xRef, 'x')],
-                [getFromId(gd, _yRef, 'y')],
-                subplot
-            );
-        }
-
         if(_selectionTesters) {
+            var _searchTraces = searchTraces;
+            if(!hadSearchTraces) {
+                _searchTraces = determineSearchTraces(
+                    gd,
+                    [getFromId(gd, _xRef, 'x')],
+                    [getFromId(gd, _yRef, 'y')],
+                    subplot
+                );
+            }
+
             var selection = _doSelect(_selectionTesters, _searchTraces);
 
             allSelections = allSelections.concat(selection);
