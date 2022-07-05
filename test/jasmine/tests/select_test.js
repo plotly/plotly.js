@@ -1588,8 +1588,8 @@ describe('Test select box and lasso in general:', function() {
         .then(function() {
             _assert('select path1+path2', {
                 outline: [
+                    [213, 500], [213, 0], [193, 0], [193, 500],
                     [170, 170], [170, 150], [150, 150], [150, 170],
-                    [213, 500], [213, 0], [193, 0], [193, 500]
                 ]
             });
         })
@@ -1606,9 +1606,9 @@ describe('Test select box and lasso in general:', function() {
             // merged with previous 'select' polygon
             _assert('after shift lasso', {
                 outline: [
-                    [170, 170], [170, 150], [150, 150], [150, 170],
+                    [335, 243], [328, 169], [316, 171], [318, 239],
                     [213, 500], [213, 0], [193, 0], [193, 500],
-                    [335, 243], [328, 169], [316, 171], [318, 239]
+                    [170, 170], [170, 150], [150, 150], [150, 170],
                 ]
             });
         })
