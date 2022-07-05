@@ -6,6 +6,7 @@ var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
 var Registry = require('../../../registry');
+var Color = require('../../color');
 
 var constants = require('./constants');
 var i000 = constants.i000;
@@ -222,10 +223,10 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                     .attr('cy', y)
                     .attr('r', 4)
                     .style({
-                        'mix-blend-mode': 'luminosity',
-                        fill: 'black',
-                        stroke: 'white',
-                        'stroke-width': 1
+                        fill: Color.background,
+                        stroke: Color.defaultLine,
+                        'stroke-width': 1,
+                        'shape-rendering': 'crispEdges',
                     });
 
                 vertexDragOptions[i][j] = {
