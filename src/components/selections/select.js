@@ -538,6 +538,8 @@ function newPointNumTester(pointSelectionDef) {
  * selection testers that were passed in list.
  */
 function multiTester(list) {
+    if(!list.length) return;
+
     var testers = [];
     var xmin = isPointSelectionDef(list[0]) ? 0 : list[0][0][0];
     var xmax = xmin;
