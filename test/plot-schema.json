@@ -34669,6 +34669,12 @@
        "right"
       ]
      },
+     "prefix": {
+      "description": "Sets a prefix appearing before the delta.",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string"
+     },
      "reference": {
       "description": "Sets the reference value to compute the delta. By default, it is set to the current value.",
       "editType": "calc",
@@ -34681,6 +34687,12 @@
       "valType": "boolean"
      },
      "role": "object",
+     "suffix": {
+      "description": "Sets a suffix appearing next to the delta.",
+      "dflt": "",
+      "editType": "plot",
+      "valType": "string"
+     },
      "valueformat": {
       "description": "Sets the value formatting rule using d3 formatting mini-languages which are very similar to those in Python. For numbers, see: https://github.com/d3/d3-format/tree/v1.4.5#d3-format.",
       "editType": "plot",
