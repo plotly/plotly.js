@@ -1037,14 +1037,34 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
         if(_selectionTesters) {
             var _searchTraces = searchTraces;
             if(!hadSearchTraces) {
+                var xaxis = getFromId(gd, _xRef, 'x');
+                var yaxis = getFromId(gd, _yRef, 'y');
+
                 _searchTraces = determineSearchTraces(
                     gd,
-                    [getFromId(gd, _xRef, 'x')],
-                    [getFromId(gd, _yRef, 'y')],
+                    [xaxis],
+                    [yaxis],
                     subplot
                 );
-            }
 
+                for(var k = 0; k < _searchTraces.length; k++) {
+                    var s = _searchTraces[k];
+                    if(s._module.name === 'scattergl') {
+                        var cd0 = s.cd[0];
+                        var trace = cd0.trace;
+                        var x = trace.x;
+                        var y = trace.y;
+                        var len = trace._length;
+                        // generate stash for scattergl
+                        cd0.t.xpx = [];
+                        cd0.t.ypx = [];
+                        for(var j = 0; j < len; j++) {
+                            cd0.t.xpx[j] = xaxis.c2p(x[j]);
+                            cd0.t.ypx[j] = yaxis.c2p(y[j]);
+                        }
+                    }
+                }
+            }
             var selection = _doSelect(_selectionTesters, _searchTraces);
 
             allSelections = allSelections.concat(selection);
