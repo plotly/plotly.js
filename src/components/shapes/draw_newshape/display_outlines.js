@@ -77,7 +77,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
     // add controllers
     var vertexDragOptions;
-    var regionDragOptions;
+    var groupDragOptions;
     var indexI; // cell index
     var indexJ; // vertex or cell-controller index
     var copyPolygons;
@@ -90,7 +90,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
         var g = zoomLayer.append('g').attr('class', 'outline-controllers');
         addVertexControllers(g);
-        addRegionControllers();
+        addGroupControllers();
     }
 
     function startDragVertex(evt) {
@@ -242,7 +242,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         }
     }
 
-    function moveRegion(dx, dy) {
+    function moveGroup(dx, dy) {
         if(!polygons.length) return;
 
         for(var i = 0; i < polygons.length; i++) {
@@ -255,37 +255,37 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         }
     }
 
-    function moveRegionController(dx, dy) {
-        moveRegion(dx, dy);
+    function moveGroupController(dx, dy) {
+        moveGroup(dx, dy);
 
         redraw();
     }
 
-    function startDragRegionController(evt) {
+    function startDragGroupController(evt) {
         indexI = +evt.srcElement.getAttribute('data-i');
         if(!indexI) indexI = 0; // ensure non-existing move button get zero index
 
-        regionDragOptions[indexI].moveFn = moveRegionController;
+        groupDragOptions[indexI].moveFn = moveGroupController;
     }
 
-    function endDragRegionController() {
+    function endDragGroupController() {
         update();
     }
 
-    function addRegionControllers() {
-        regionDragOptions = [];
+    function addGroupControllers() {
+        groupDragOptions = [];
 
         if(!polygons.length) return;
 
         var i = 0;
-        regionDragOptions[i] = {
+        groupDragOptions[i] = {
             element: outlines[0][0],
             gd: gd,
-            prepFn: startDragRegionController,
-            doneFn: endDragRegionController
+            prepFn: startDragGroupController,
+            doneFn: endDragGroupController
         };
 
-        dragElement.init(regionDragOptions[i]);
+        dragElement.init(groupDragOptions[i]);
     }
 };
 
