@@ -338,7 +338,7 @@ describe('Draw new selections to layout', function() {
     });
 });
 
-describe('Activate and edit editable selections', function() {
+describe('Activate and edit selections', function() {
     var fig = {
         'data': [
             {
@@ -438,7 +438,7 @@ describe('Activate and edit editable selections', function() {
             })
 
             // selection between 175, 160 and 255, 230
-            .then(function() { click(200, 160); }) // activate selection
+            .then(function() { click(210, 160); }) // activate selection
             .then(function() {
                 var id = gd._fullLayout._activeSelectionIndex;
                 expect(id).toEqual(i, 'activate selection by clicking border');
@@ -474,8 +474,8 @@ describe('Activate and edit editable selections', function() {
                     'x1': obj.x1,
                     'y1': obj.y1
                 }, {
-                    'x0': 24.998449612403103,
-                    'y0': 24.997032640949552,
+                    'x0': 52.905426356589146,
+                    'y0': 3.6320474777448033,
                     'x1': 102.90852713178295,
                     'y1': 53.63323442136499
                 });

@@ -1,5 +1,8 @@
 'use strict';
 
+var Lib = require('../../../lib');
+var strTranslate = Lib.strTranslate;
+
 var dragElement = require('../../dragelement');
 var dragHelpers = require('../../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
@@ -109,6 +112,18 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         var cell = polygons[indexI];
         var len = cell.length;
         if(pointsOnRectangle(cell)) {
+            var _dx = dx;
+            var _dy = dy;
+            if(dragOptions.isActiveSelection) {
+                // handle an edge contoller for rect selections
+                var nextPoint = getNextPoint(cell, indexJ);
+                if(nextPoint[1] === cell[indexJ][1]) { // a vertical edge
+                    _dy = 0;
+                } else { // a horizontal edge
+                    _dx = 0;
+                }
+            }
+
             for(var q = 0; q < len; q++) {
                 if(q === indexJ) continue;
 
@@ -116,16 +131,16 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                 var pos = cell[q];
 
                 if(pos[1] === cell[indexJ][1]) {
-                    pos[1] = x0 + dx;
+                    pos[1] = x0 + _dx;
                 }
 
                 if(pos[2] === cell[indexJ][2]) {
-                    pos[2] = y0 + dy;
+                    pos[2] = y0 + _dy;
                 }
             }
             // move the corner
-            cell[indexJ][1] = x0 + dx;
-            cell[indexJ][2] = y0 + dy;
+            cell[indexJ][1] = x0 + _dx;
+            cell[indexJ][2] = y0 + _dy;
 
             if(!pointsOnRectangle(cell)) {
                 // reject result to rectangles with ensure areas
@@ -200,7 +215,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
             var onEllipse = !onRect && pointsOnEllipse(cell);
 
             vertexDragOptions[i] = [];
-            for(var j = 0; j < cell.length; j++) {
+            var len = cell.length;
+            for(var j = 0; j < len; j++) {
                 if(cell[j][0] === 'Z') continue;
 
                 if(onEllipse &&
@@ -212,22 +228,43 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                     continue;
                 }
 
+                var rectSelection = onRect && dragOptions.isActiveSelection;
+                var nextPoint;
+                if(rectSelection) nextPoint = getNextPoint(cell, j);
+
                 var x = cell[j][1];
                 var y = cell[j][2];
 
-                var vertex = g.append('circle')
-                    .classed('cursor-grab', true)
+                var vertex = g.append(rectSelection ? 'rect' : 'circle')
                     .attr('data-i', i)
                     .attr('data-j', j)
-                    .attr('cx', x)
-                    .attr('cy', y)
-                    .attr('r', 4)
                     .style({
                         fill: Color.background,
                         stroke: Color.defaultLine,
                         'stroke-width': 1,
                         'shape-rendering': 'crispEdges',
                     });
+
+                if(rectSelection) {
+                    // convert a vertex controller to an edge controller for rect selections
+                    var dx = nextPoint[1] - x;
+                    var dy = nextPoint[2] - y;
+
+                    var width = dy ? 4 : 30;
+                    var height = dy ? 30 : 4;
+
+                    vertex.classed(dy ? 'cursor-ew-resize' : 'cursor-ns-resize', true)
+                        .attr('width', width)
+                        .attr('height', height)
+                        .attr('x', x - width / 2)
+                        .attr('y', y - height / 2)
+                        .attr('transform', strTranslate(dx / 2, dy / 2));
+                } else {
+                    vertex.classed('cursor-grab', true)
+                        .attr('r', 4)
+                        .attr('cx', x)
+                        .attr('cy', y);
+                }
 
                 vertexDragOptions[i][j] = {
                     element: vertex.node(),
@@ -301,4 +338,23 @@ function recordPositions(polygonsOut, polygonsIn) {
         }
     }
     return polygonsOut;
+}
+
+function getNextPoint(cell, j) {
+    var x = cell[j][1];
+    var y = cell[j][2];
+    var len = cell.length;
+    var nextJ, nextX, nextY;
+    nextJ = (j + 1) % len;
+    nextX = cell[nextJ][1];
+    nextY = cell[nextJ][2];
+
+    // avoid potential double points (closing points)
+    if(nextX === x && nextY === y) {
+        nextJ = (j + 2) % len;
+        nextX = cell[nextJ][1];
+        nextY = cell[nextJ][2];
+    }
+
+    return [nextJ, nextX, nextY];
 }
