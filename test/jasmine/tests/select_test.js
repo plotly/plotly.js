@@ -126,9 +126,6 @@ var BOXEVENTS = [1, 2, 1];
 // assumes 5 points in the lasso path
 var LASSOEVENTS = [4, 2, 1];
 
-var SELECT_PATH = [[93, 193], [143, 193]];
-var LASSO_PATH = [[316, 171], [318, 239], [335, 243], [328, 169]];
-
 describe('Click-to-select', function() {
     var mock14Pts = {
         '1': { x: 134, y: 116 },
@@ -292,58 +289,6 @@ describe('Click-to-select', function() {
               return _clickPt(mock14Pts[7], { shiftKey: true });
           })
           .then(function() { assertSelectedPoints(35); })
-          .then(done, done.fail);
-    });
-
-    it('can be used interchangeably with lasso/box select', function(done) {
-        plotMock14()
-          .then(function() {
-              return _immediateClickPt(mock14Pts[35]);
-          })
-          .then(function() {
-              assertSelectedPoints(35);
-              drag(SELECT_PATH, { shiftKey: true });
-          })
-          .then(function() {
-              assertSelectedPoints([0, 1, 35]);
-              return _immediateClickPt(mock14Pts[7], { shiftKey: true });
-          })
-          .then(function() {
-              assertSelectedPoints([0, 1, 7, 35]);
-              return _clickPt(mock14Pts[1], { shiftKey: true });
-          })
-          .then(function() {
-              assertSelectedPoints([0, 7, 35]);
-              return Plotly.relayout(gd, 'dragmode', 'lasso');
-          })
-          .then(function() {
-              assertSelectedPoints([0, 7, 35]);
-              drag(LASSO_PATH, { shiftKey: true });
-          })
-          .then(function() {
-              assertSelectedPoints([0, 7, 10, 35]);
-              return _clickPt(mock14Pts[10], { shiftKey: true });
-          })
-          .then(function() {
-              assertSelectedPoints([0, 7, 35]);
-              drag([[670, 330], [695, 330], [695, 350], [670, 350]],
-                { shiftKey: true, altKey: true });
-          })
-          .then(function() {
-              assertSelectedPoints([0, 7]);
-              return _clickPt(mock14Pts[35], { shiftKey: true });
-          })
-          .then(function() {
-              assertSelectedPoints([0, 7, 35]);
-              return _clickPt(mock14Pts[7]);
-          })
-          .then(function() {
-              assertSelectedPoints([7]);
-              return doubleClick(650, 100);
-          })
-          .then(function() {
-              assertSelectionCleared();
-          })
           .then(done, done.fail);
     });
 
