@@ -1036,8 +1036,8 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
                             var polygon = [];
                             for(var t = 0; t < p.length; t++) {
                                 polygon.push([
-                                    xaxis.c2p(p[t][1]),
-                                    yaxis.c2p(p[t][2])
+                                    convert(xaxis, p[t][1]),
+                                    convert(yaxis, p[t][2])
                                 ]);
                             }
 
