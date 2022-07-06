@@ -20,6 +20,7 @@ var shapeConstants = require('../shapes/constants');
 
 var displayOutlines = require('../shapes/draw_newshape/display_outlines');
 var handleEllipse = require('../shapes/draw_newshape/helpers').handleEllipse;
+var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
 var newShapes = require('../shapes/draw_newshape/newshapes');
 
 var newSelections = require('./draw_newselection/newselections');
@@ -297,7 +298,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
 
         if(isSelectMode) {
-            selectionTesters = reselect(gd, xAxis._id, yAxis._id, selectionTesters, searchTraces);
+            selectionTesters = reselect(gd, xAxis._id, yAxis._id, selectionTesters, searchTraces, plotinfo);
 
             throttle.throttle(
                 throttleID,
@@ -1014,7 +1015,7 @@ function _doSelect(selectionTesters, searchTraces) {
     return allSelections;
 }
 
-function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
+function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
     var hadSearchTraces = !!searchTraces;
 
     var allSelections = [];
@@ -1022,8 +1023,66 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
 
     // select layout.selection polygons
     var layoutPolygons = getLayoutPolygons(gd);
+
+    // add draft outline polygons to layoutPolygons
+    var fullLayout = gd._fullLayout;
+    if(plotinfo) {
+        var zoomLayer = fullLayout._zoomlayer;
+        var mode = fullLayout.dragmode;
+        var isDrawMode = drawMode(mode);
+        var isSelectMode = selectMode(mode);
+        if(isDrawMode || isSelectMode) {
+            var xaxis = getFromId(gd, xRef, 'x');
+            var yaxis = getFromId(gd, yRef, 'y');
+            if(xaxis && yaxis) {
+                var outlines = zoomLayer.selectAll('.select-outline-' + plotinfo.id);
+                if(outlines && gd._fullLayout._outlining) {
+                    if(outlines.length) {
+                        var e = outlines[0][0]; // pick first
+                        var d = e.getAttribute('d');
+                        var outlinePolys = readPaths(d, gd, plotinfo);
+
+                        var draftPolygons = [];
+                        for(var u = 0; u < outlinePolys.length; u++) {
+                            var p = outlinePolys[u];
+                            var polygon = [];
+                            for(var t = 0; t < p.length; t++) {
+                                polygon.push([
+                                    xaxis.c2p(p[t][1]),
+                                    yaxis.c2p(p[t][2])
+                                ]);
+                            }
+
+                            // TODO: centralize this logic in a function
+                            var _subtract = false;
+                            for(var q = 0; q < u; q++) {
+                                var previousPolygon = draftPolygons[q];
+
+                                // find out if a point of polygon is inside previous polygons
+                                for(var k = 0; k < polygon.length; k++) {
+                                    if(pointInPolygon(polygon[k], previousPolygon)) {
+                                        _subtract = !_subtract;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            polygon.subtract = _subtract;
+                            polygon.xref = xRef;
+                            polygon.yref = yRef;
+
+                            draftPolygons.push(polygon);
+                        }
+
+                        layoutPolygons = layoutPolygons.concat(draftPolygons);
+                    }
+                }
+            }
+        }
+    }
+
     var subplots = (xRef && yRef) ? [xRef + yRef] :
-        gd._fullLayout._subplots.cartesian;
+        fullLayout._subplots.cartesian;
 
     for(var i = 0; i < subplots.length; i++) {
         var subplot = subplots[i];
@@ -1037,18 +1096,18 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
         if(_selectionTesters) {
             var _searchTraces = searchTraces;
             if(!hadSearchTraces) {
-                var xaxis = getFromId(gd, _xRef, 'x');
-                var yaxis = getFromId(gd, _yRef, 'y');
+                var _xaxis = getFromId(gd, _xRef, 'x');
+                var _yaxis = getFromId(gd, _yRef, 'y');
 
                 _searchTraces = determineSearchTraces(
                     gd,
-                    [xaxis],
-                    [yaxis],
+                    [_xaxis],
+                    [_yaxis],
                     subplot
                 );
 
-                for(var k = 0; k < _searchTraces.length; k++) {
-                    var s = _searchTraces[k];
+                for(var w = 0; w < _searchTraces.length; w++) {
+                    var s = _searchTraces[w];
                     if(s._module.name === 'scattergl') {
                         var cd0 = s.cd[0];
                         var trace = cd0.trace;
@@ -1059,8 +1118,8 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces) {
                         cd0.t.xpx = [];
                         cd0.t.ypx = [];
                         for(var j = 0; j < len; j++) {
-                            cd0.t.xpx[j] = xaxis.c2p(x[j]);
-                            cd0.t.ypx[j] = yaxis.c2p(y[j]);
+                            cd0.t.xpx[j] = _xaxis.c2p(x[j]);
+                            cd0.t.ypx[j] = _yaxis.c2p(y[j]);
                         }
                     }
                 }
