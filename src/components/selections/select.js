@@ -938,19 +938,7 @@ function mergePolygons(list, poly, subtract) {
     for(var i = 0; i < allPolygons.length; i++) {
         var polygon = allPolygons[i];
 
-        var _subtract = false;
-        for(var q = 0; q < i; q++) {
-            var previousPolygon = allPolygons[q];
-
-            // find out if a point of polygon is inside previous polygons
-            for(var k = 0; k < polygon.length; k++) {
-                if(pointInPolygon(polygon[k], previousPolygon)) {
-                    _subtract = !_subtract;
-                    break;
-                }
-            }
-        }
-        polygon.subtract = _subtract;
+        polygon.subtract = getSubtract(polygon, allPolygons.slice(0, i));
     }
 
     return allPolygons;
@@ -1053,23 +1041,9 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
                                 ]);
                             }
 
-                            // TODO: centralize this logic in a function
-                            var _subtract = false;
-                            for(var q = 0; q < u; q++) {
-                                var previousPolygon = draftPolygons[q];
-
-                                // find out if a point of polygon is inside previous polygons
-                                for(var k = 0; k < polygon.length; k++) {
-                                    if(pointInPolygon(polygon[k], previousPolygon)) {
-                                        _subtract = !_subtract;
-                                        break;
-                                    }
-                                }
-                            }
-
-                            polygon.subtract = _subtract;
                             polygon.xref = xRef;
                             polygon.yref = yRef;
+                            polygon.subtract = getSubtract(polygon, draftPolygons);
 
                             draftPolygons.push(polygon);
                         }
@@ -1238,20 +1212,7 @@ function getLayoutPolygons(gd) {
 
                 polygon.xref = xref;
                 polygon.yref = yref;
-
-                // find out if a point of polygon is inside previous polygons of the same path
-                var subtract = false;
-                for(var q = 0; q < multiPolygons.length; q++) {
-                    var previousPolygon = multiPolygons[q];
-                    for(var s = 0; s < polygon.length; s++) {
-                        if(pointInPolygon(polygon[s], previousPolygon)) {
-                            subtract = !subtract;
-                            break;
-                        }
-                    }
-                }
-
-                polygon.subtract = subtract;
+                polygon.subtract = getSubtract(polygon, multiPolygons);
 
                 multiPolygons.push(polygon);
                 allPolygons.push(polygon);
@@ -1260,6 +1221,22 @@ function getLayoutPolygons(gd) {
     }
 
     return allPolygons;
+}
+
+function getSubtract(polygon, previousPolygons) {
+    var subtract = false;
+    for(var i = 0; i < previousPolygons.length; i++) {
+        var previousPolygon = previousPolygons[i];
+
+        // find out if a point of polygon is inside previous polygons
+        for(var k = 0; k < polygon.length; k++) {
+            if(pointInPolygon(polygon[k], previousPolygon)) {
+                subtract = !subtract;
+                break;
+            }
+        }
+    }
+    return subtract;
 }
 
 function convert(ax, d) {
