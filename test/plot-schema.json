@@ -619,7 +619,7 @@
     "editType": "none",
     "fillcolor": {
      "description": "Sets the color filling the active selection' interior.",
-     "dflt": "#7f7f7f",
+     "dflt": "rgba(0,0,0,0)",
      "editType": "none",
      "valType": "color"
     },

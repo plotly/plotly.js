@@ -37,7 +37,7 @@ module.exports = {
     activeselection: {
         fillcolor: {
             valType: 'color',
-            dflt: '#7f7f7f',
+            dflt: 'rgba(0,0,0,0)',
             editType: 'none',
             description: 'Sets the color filling the active selection\' interior.'
         },
