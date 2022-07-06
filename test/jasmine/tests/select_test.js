@@ -1579,12 +1579,6 @@ describe('Test select box and lasso in general:', function() {
             mouseEvent('mousemove', 200, 200);
             mouseEvent('scroll', 200, 200, {deltaX: 0, deltaY: -20});
         })
-        .then(_drag(path1, {shiftKey: true}))
-        .then(function() {
-            _assert('shift select path1 after scroll', {
-                outline: [[150, 150], [150, 170], [170, 170], [170, 150]]
-            });
-        })
         .then(done, done.fail);
     });
 });

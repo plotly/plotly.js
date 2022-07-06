@@ -640,13 +640,13 @@ describe('Activate and edit selections', function() {
 
         .then(function() {
             var el = d3SelectAll('.selectionlayer path')[0][0]; // first background
-            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style['pointer-events']).toBe('all');
             expect(el.style.stroke).toBe('rgb(0, 0, 0)'); // no color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('5px'); // extra pixels to help activate selection
 
             el = d3SelectAll('.selectionlayer path')[0][2]; // second background
-            expect(el.style['pointer-events']).toBe('stroke');
+            expect(el.style['pointer-events']).toBe('all');
             expect(el.style.stroke).toBe('rgb(0, 128, 0)'); // custom color
             expect(el.style['stroke-opacity']).toBe('1'); // visible
             expect(el.style['stroke-width']).toBe('7px'); // extra pixels to help activate selection

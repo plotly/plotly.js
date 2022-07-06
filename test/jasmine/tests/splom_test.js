@@ -1649,19 +1649,6 @@ describe('Test splom select:', function() {
                 selectionOutlineCnt: 1
             });
         })
-        /*
-        .then(function() { return _select([[5, 195], [100, 100]], {shiftKey: true}); })
-        .then(function() {
-            _assert('multi-select', [
-                {pointNumber: 0, x: 1, y: 1},
-                {pointNumber: 1, x: 2, y: 2}
-            ], {
-                subplot: 'xy',
-                // still '1' as the selection get merged
-                selectionOutlineCnt: 1
-            });
-        })
-        */
         .then(function() { return _select([[205, 205], [395, 395]]); })
         .then(function() {
             _assert('across other subplot', [
@@ -1670,16 +1657,6 @@ describe('Test splom select:', function() {
                 {pointNumber: 2, x: 6, y: 6}
             ], {
                 subplot: 'x2y2',
-                // outlines from previous subplot are cleared!
-                selectionOutlineCnt: 1
-            });
-        })
-        .then(function() { return _select([[50, 50], [100, 100]]); })
-        .then(function() {
-            _assert('multi-select across other subplot (prohibited for now)', [
-                {pointNumber: 1, x: 2, y: 2}
-            ], {
-                subplot: 'xy',
                 // outlines from previous subplot are cleared!
                 selectionOutlineCnt: 1
             });

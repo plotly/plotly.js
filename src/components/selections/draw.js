@@ -124,7 +124,7 @@ function drawOne(gd, index) {
                 // display polygons on the screen
                 displayOutlines(polygons, path, dragOptions);
             } else {
-                path.style('pointer-events', sensory ? 'stroke' : 'none');
+                path.style('pointer-events', sensory ? 'all' : 'none');
             }
 
             allPaths[sensory] = path;
