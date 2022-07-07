@@ -27,6 +27,7 @@ var getPathString = helpers.getPathString;
 module.exports = {
     draw: draw,
     drawOne: drawOne,
+    activateLastSelection: activateLastSelection,
     eraseActiveSelection: eraseActiveSelection
 };
 
@@ -162,6 +163,13 @@ function activateSelection(gd, path) {
         gd._fullLayout._deactivateSelection = deactivateSelection;
         draw(gd);
     }
+}
+
+function activateLastSelection(gd) {
+    var id = gd._fullLayout.selections.length - 1;
+    gd._fullLayout._activeSelectionIndex = id;
+    gd._fullLayout._deactivateSelection = deactivateSelection;
+    draw(gd);
 }
 
 function deactivateSelection(gd) {

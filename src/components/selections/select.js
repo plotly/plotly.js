@@ -24,6 +24,7 @@ var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
 var newShapes = require('../shapes/draw_newshape/newshapes');
 
 var newSelections = require('./draw_newselection/newselections');
+var activateLastSelection = require('./draw').activateLastSelection;
 
 var Lib = require('../../lib');
 var polygon = require('../../lib/polygon');
@@ -411,7 +412,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         }).catch(Lib.error);
 
         if(isDrawMode || immediateSelect) {
-            clearSelectionsCache(dragOptions);
+            clearSelectionsCache(dragOptions, immediateSelect);
         }
     };
 }
@@ -633,7 +634,7 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
     }
 }
 
-function clearSelectionsCache(dragOptions) {
+function clearSelectionsCache(dragOptions, immediateSelect) {
     var dragmode = dragOptions.dragmode;
     var plotinfo = dragOptions.plotinfo;
 
@@ -676,6 +677,8 @@ function clearSelectionsCache(dragOptions) {
             if(selections) {
                 Registry.call('_guiRelayout', gd, {
                     selections: selections
+                }).then(function() {
+                    if(immediateSelect) { activateLastSelection(gd); }
                 });
             }
 
