@@ -250,8 +250,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                     var dx = nextPoint[1] - x;
                     var dy = nextPoint[2] - y;
 
-                    var width = dy ? 4 : 30;
-                    var height = dy ? 30 : 4;
+                    var width = dy ? 5 : 25;
+                    var height = dy ? 25 : 5;
 
                     vertex.classed(dy ? 'cursor-ew-resize' : 'cursor-ns-resize', true)
                         .attr('width', width)
@@ -261,7 +261,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                         .attr('transform', strTranslate(dx / 2, dy / 2));
                 } else {
                     vertex.classed('cursor-grab', true)
-                        .attr('r', 4)
+                        .attr('r', 5)
                         .attr('cx', x)
                         .attr('cy', y);
                 }
