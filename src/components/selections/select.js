@@ -59,6 +59,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
     var gd = dragOptions.gd;
     var fullLayout = gd._fullLayout;
+    var immediateSelect = isSelectMode && fullLayout.newselection.mode === 'immediate' &&
+        !dragOptions.subplot; // N.B. only cartesian subplots have persistent selection
+
     var zoomLayer = fullLayout._zoomlayer;
     var dragBBox = dragOptions.element.getBoundingClientRect();
     var plotinfo = dragOptions.plotinfo;
@@ -392,7 +395,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             throttle.clear(throttleID);
             dragOptions.gd.emit('plotly_selected', eventData);
 
-            if(currentPolygon && dragOptions.selectionDefs) {
+            if(!immediateSelect && currentPolygon && dragOptions.selectionDefs) {
                 // save last polygons
                 currentPolygon.subtract = subtract;
                 dragOptions.selectionDefs.push(currentPolygon);
@@ -407,7 +410,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             }
         }).catch(Lib.error);
 
-        if(isDrawMode) {
+        if(isDrawMode || immediateSelect) {
             clearSelectionsCache(dragOptions);
         }
     };
