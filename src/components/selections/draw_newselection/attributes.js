@@ -5,6 +5,20 @@ var extendFlat = require('../../../lib/extend').extendFlat;
 
 module.exports = {
     newselection: {
+        mode: {
+            valType: 'enumerated',
+            values: ['immediate', 'gradual'],
+            dflt: 'immediate',
+            editType: 'none',
+            description: [
+                'Describes how a new selection is created.',
+                'If `immediate`, a new selection is created after first mouse up.',
+                'If `gradual`, a new selection is not created after first mouse.',
+                'By adding to and subtracting from the initial selection,',
+                'this option allows declaring extra outlines of the selection.'
+            ].join(' ')
+        },
+
         line: {
             color: {
                 valType: 'color',

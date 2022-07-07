@@ -3471,6 +3471,16 @@
       "valType": "number"
      }
     },
+    "mode": {
+     "description": "Describes how a new selection is created. If `immediate`, a new selection is created after first mouse up. If `gradual`, a new selection is not created after first mouse. By adding to and subtracting from the initial selection, this option allows declaring extra outlines of the selection.",
+     "dflt": "immediate",
+     "editType": "none",
+     "valType": "enumerated",
+     "values": [
+      "immediate",
+      "gradual"
+     ]
+    },
     "role": "object"
    },
    "newshape": {
