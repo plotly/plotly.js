@@ -58,7 +58,8 @@ module.exports = overrideAll(templatedArray('selection', {
         valType: 'string',
         editType: 'arraydraw',
         description: [
-            'For `type` *path* - a valid SVG path with the pixel values similar to `shapes.path`.'
+            'For `type` *path* - a valid SVG path similar to `shapes.path` in data coordinates.',
+            'Allowed segments are: M, L and Z.'
         ].join(' ')
     },
 

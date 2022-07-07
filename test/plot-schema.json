@@ -6947,7 +6947,7 @@
        "valType": "number"
       },
       "path": {
-       "description": "For `type` *path* - a valid SVG path with the pixel values similar to `shapes.path`.",
+       "description": "For `type` *path* - a valid SVG path similar to `shapes.path` in data coordinates. Allowed segments are: M, L and Z.",
        "editType": "arraydraw",
        "valType": "string"
       },
