@@ -412,11 +412,7 @@ describe('Activate and edit selections', function() {
                 }
             ]
         },
-        'config': {
-            'modeBarButtonsToAdd': [
-                'eraseselection'
-            ]
-        }
+        'config': {}
     };
 
     var gd;
