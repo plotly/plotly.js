@@ -5,7 +5,7 @@ var Plots = require('../../plots/plots');
 var axisIds = require('../../plots/cartesian/axis_ids');
 var Icons = require('../../fonts/ploticon');
 var eraseActiveShape = require('../shapes/draw').eraseActiveShape;
-var eraseActiveSelection = require('../selections/draw').eraseActiveSelection;
+var eraseActiveSelection = require('../shapes/draw_newshape/display_outlines').eraseActiveSelection;
 var Lib = require('../../lib');
 var _ = Lib._;
 

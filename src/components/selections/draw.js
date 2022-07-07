@@ -1,9 +1,8 @@
 'use strict';
 
-var Registry = require('../../registry');
-
 var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
 var displayOutlines = require('../shapes/draw_newshape/display_outlines');
+var eraseActiveSelection = displayOutlines.eraseActiveSelection;
 
 var clearOutlineControllers = require('./handle_outline').clearOutlineControllers;
 
@@ -178,26 +177,5 @@ function deactivateSelection(gd) {
         clearOutlineControllers(gd);
         delete gd._fullLayout._activeSelectionIndex;
         draw(gd);
-    }
-}
-
-function eraseActiveSelection(gd) {
-    clearOutlineControllers(gd);
-
-    var id = gd._fullLayout._activeSelectionIndex;
-    var selections = (gd.layout || {}).selections || [];
-    if(id < selections.length) {
-        var list = [];
-        for(var q = 0; q < selections.length; q++) {
-            if(q !== id) {
-                list.push(selections[q]);
-            }
-        }
-
-        delete gd._fullLayout._activeSelectionIndex;
-
-        Registry.call('_guiRelayout', gd, {
-            selections: list
-        });
     }
 }

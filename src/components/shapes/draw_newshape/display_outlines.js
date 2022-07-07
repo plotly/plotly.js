@@ -309,6 +309,12 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         update();
     }
 
+    function clickGroupController(numClicks) {
+        if(numClicks === 2) {
+            exports.eraseActiveSelection(gd);
+        }
+    }
+
     function addGroupControllers() {
         groupDragOptions = [];
 
@@ -319,7 +325,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
             element: outlines[0][0],
             gd: gd,
             prepFn: startDragGroupController,
-            doneFn: endDragGroupController
+            doneFn: endDragGroupController,
+            clickFn: clickGroupController
         };
 
         dragElement.init(groupDragOptions[i]);
@@ -358,3 +365,24 @@ function getNextPoint(cell, j) {
 
     return [nextJ, nextX, nextY];
 }
+
+exports.eraseActiveSelection = function(gd) {
+    clearOutlineControllers(gd);
+
+    var id = gd._fullLayout._activeSelectionIndex;
+    var selections = (gd.layout || {}).selections || [];
+    if(id < selections.length) {
+        var list = [];
+        for(var q = 0; q < selections.length; q++) {
+            if(q !== id) {
+                list.push(selections[q]);
+            }
+        }
+
+        delete gd._fullLayout._activeSelectionIndex;
+
+        Registry.call('_guiRelayout', gd, {
+            selections: list
+        });
+    }
+};
