@@ -311,7 +311,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
     function clickGroupController(numClicks) {
         if(numClicks === 2) {
-            exports.eraseActiveSelection(gd);
+            eraseActiveSelection(gd);
         }
     }
 
@@ -366,7 +366,7 @@ function getNextPoint(cell, j) {
     return [nextJ, nextX, nextY];
 }
 
-exports.eraseActiveSelection = function(gd) {
+function eraseActiveSelection(gd) {
     clearOutlineControllers(gd);
 
     var id = gd._fullLayout._activeSelectionIndex;
@@ -385,4 +385,4 @@ exports.eraseActiveSelection = function(gd) {
             selections: list
         });
     }
-};
+}

@@ -2,7 +2,6 @@
 
 var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
 var displayOutlines = require('../shapes/display_outlines');
-var eraseActiveSelection = displayOutlines.eraseActiveSelection;
 
 var clearOutlineControllers = require('./handle_outline').clearOutlineControllers;
 
@@ -26,8 +25,7 @@ var getPathString = helpers.getPathString;
 module.exports = {
     draw: draw,
     drawOne: drawOne,
-    activateLastSelection: activateLastSelection,
-    eraseActiveSelection: eraseActiveSelection
+    activateLastSelection: activateLastSelection
 };
 
 function draw(gd) {
