@@ -179,17 +179,17 @@ function eraseActiveSelection(gd) {
     var id = gd._fullLayout._activeSelectionIndex;
     var selections = (gd.layout || {}).selections || [];
     if(id < selections.length) {
-        var newSelections = [];
+        var list = [];
         for(var q = 0; q < selections.length; q++) {
             if(q !== id) {
-                newSelections.push(selections[q]);
+                list.push(selections[q]);
             }
         }
 
         delete gd._fullLayout._activeSelectionIndex;
 
         Registry.call('_guiRelayout', gd, {
-            selections: newSelections
+            selections: list
         });
     }
 }

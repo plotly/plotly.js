@@ -639,17 +639,17 @@ function eraseActiveShape(gd) {
     var id = gd._fullLayout._activeShapeIndex;
     var shapes = (gd.layout || {}).shapes || [];
     if(id < shapes.length) {
-        var newShapes = [];
+        var list = [];
         for(var q = 0; q < shapes.length; q++) {
             if(q !== id) {
-                newShapes.push(shapes[q]);
+                list.push(shapes[q]);
             }
         }
 
         delete gd._fullLayout._activeShapeIndex;
 
         Registry.call('_guiRelayout', gd, {
-            shapes: newShapes
+            shapes: list
         });
     }
 }
