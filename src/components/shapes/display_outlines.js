@@ -1,31 +1,31 @@
 'use strict';
 
-var Lib = require('../../../lib');
+var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 
-var dragElement = require('../../dragelement');
-var dragHelpers = require('../../dragelement/helpers');
+var dragElement = require('../dragelement');
+var dragHelpers = require('../dragelement/helpers');
 var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
-var Registry = require('../../../registry');
-var Color = require('../../color');
+var Registry = require('../../registry');
+var Color = require('../color');
 
-var constants = require('./constants');
+var constants = require('./draw_newshape/constants');
 var i000 = constants.i000;
 var i090 = constants.i090;
 var i180 = constants.i180;
 var i270 = constants.i270;
 
-var handleOutline = require('../../selections/handle_outline');
+var handleOutline = require('../selections/handle_outline');
 var clearOutlineControllers = handleOutline.clearOutlineControllers;
 
-var helpers = require('./helpers');
+var helpers = require('./draw_newshape/helpers');
 var pointsOnRectangle = helpers.pointsOnRectangle;
 var pointsOnEllipse = helpers.pointsOnEllipse;
 var writePaths = helpers.writePaths;
-var newShapes = require('./newshapes');
-var newSelections = require('../../selections/draw_newselection/newselections');
+var newShapes = require('./draw_newshape/newshapes');
+var newSelections = require('../selections/draw_newselection/newselections');
 
 module.exports = function displayOutlines(polygons, outlines, dragOptions, nCalls) {
     if(!nCalls) nCalls = 0;

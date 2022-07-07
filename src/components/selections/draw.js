@@ -1,7 +1,7 @@
 'use strict';
 
 var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
-var displayOutlines = require('../shapes/draw_newshape/display_outlines');
+var displayOutlines = require('../shapes/display_outlines');
 var eraseActiveSelection = displayOutlines.eraseActiveSelection;
 
 var clearOutlineControllers = require('./handle_outline').clearOutlineControllers;

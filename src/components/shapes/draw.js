@@ -5,7 +5,7 @@ var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
 
 var readPaths = require('./draw_newshape/helpers').readPaths;
-var displayOutlines = require('./draw_newshape/display_outlines');
+var displayOutlines = require('./display_outlines');
 
 var clearOutlineControllers = require('../selections/handle_outline').clearOutlineControllers;
 

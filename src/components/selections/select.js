@@ -18,7 +18,7 @@ var selectMode = dragHelpers.selectMode;
 var shapeHelpers = require('../shapes/helpers');
 var shapeConstants = require('../shapes/constants');
 
-var displayOutlines = require('../shapes/draw_newshape/display_outlines');
+var displayOutlines = require('../shapes/display_outlines');
 var handleEllipse = require('../shapes/draw_newshape/helpers').handleEllipse;
 var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
 var newShapes = require('../shapes/draw_newshape/newshapes');
