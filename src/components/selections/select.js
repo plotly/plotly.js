@@ -302,7 +302,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
 
         if(isSelectMode) {
-            selectionTesters = reselect(gd, xAxis._id, yAxis._id, selectionTesters, searchTraces, plotinfo);
+            var _res = reselect(gd, xAxis._id, yAxis._id, selectionTesters, searchTraces, plotinfo);
+            selectionTesters = _res.selectionTesters;
+            eventData = _res.eventData;
 
             throttle.throttle(
                 throttleID,
@@ -1122,9 +1124,14 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
         }
     }
 
-    updateSelectedState(gd, allTesters, {points: allSelections});
+    var eventData = {points: allSelections};
 
-    return selectionTesters;
+    updateSelectedState(gd, allTesters, eventData);
+
+    return {
+        eventData: eventData,
+        selectionTesters: selectionTesters
+    };
 }
 
 function epmtySplomSelectionBatch(gd) {
