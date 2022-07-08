@@ -31,6 +31,8 @@ module.exports = {
 function draw(gd) {
     var fullLayout = gd._fullLayout;
 
+    clearOutlineControllers(gd);
+
     // Remove previous selections before drawing new selections in fullLayout.selections
     fullLayout._selectionLayer.selectAll('path').remove();
 
