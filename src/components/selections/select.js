@@ -1129,12 +1129,12 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
 
 function epmtySplomSelectionBatch(gd) {
     var cd = gd.calcdata;
-    var fullLayout = gd._fullLayout;
+    if(!cd.length) return;
 
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
-        var splomScenes = fullLayout._splomScenes;
+        var splomScenes = gd._fullLayout._splomScenes;
         if(splomScenes) {
             var scene = splomScenes[trace.uid];
             if(scene) {
