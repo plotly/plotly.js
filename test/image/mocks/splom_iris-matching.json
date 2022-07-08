@@ -689,12 +689,28 @@
     }
   ],
   "layout": {
-	"title": {"text": "Iris dataset splom"},
+	  "title": {"text": "Iris dataset splom with multiple selections"},
     "xaxis": {"matches": "y"},
     "xaxis2": {"matches": "y2"},
     "xaxis3": {"matches": "y3"},
     "xaxis4": {"matches": "y4"},
-  	"width": 600,
-	"height": 500
+  	"width": 900,
+  	"height": 750,
+    "dragmode": "select",
+    "selections": [{
+      "x0": 3,
+      "x1": 4,
+      "xref": "x2",
+      "y0": 8,
+      "y1": 6,
+      "yref": "y"
+    }, {
+      "x0": 5,
+      "x1": 1,
+      "xref": "x3",
+      "y0": 5,
+      "y1": 4,
+      "yref": "y"
+    }]
   }
 }
