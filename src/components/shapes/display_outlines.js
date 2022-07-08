@@ -367,6 +367,14 @@ function getNextPoint(cell, j) {
 }
 
 function eraseActiveSelection(gd) {
+    // Do not allow removal of selections on other dragmodes.
+    // This ensures the user could still double click to
+    // deselect all trace.selectedpoints,
+    // if that's what they wanted.
+    // Also double click to zoom back won't result in
+    // any surprising selection removal.
+    if(!selectMode(gd._fullLayout.dragmode)) return;
+
     clearOutlineControllers(gd);
 
     var id = gd._fullLayout._activeSelectionIndex;
