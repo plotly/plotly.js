@@ -1129,7 +1129,7 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
 
 function epmtySplomSelectionBatch(gd) {
     var cd = gd.calcdata;
-    if(!cd.length) return;
+    if(!cd) return;
 
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
