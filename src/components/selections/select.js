@@ -1122,7 +1122,15 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
         }
     }
 
-    updateSelectedState(gd, allTesters, {points: allSelections});
+    var eventData = {points: allSelections};
+
+    updateSelectedState(gd, allTesters, eventData);
+
+    var clickmode = fullLayout.clickmode;
+    var sendEvents = clickmode.indexOf('event') > -1;
+    if(sendEvents) {
+        gd.emit('plotly_selected', eventData);
+    }
 
     return selectionTesters;
 }
