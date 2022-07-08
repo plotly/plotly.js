@@ -1134,9 +1134,12 @@ function epmtySplomSelectionBatch(gd) {
     for(var i = 0; i < cd.length; i++) {
         var cd0 = cd[i][0];
         var trace = cd0.trace;
-        var scene = fullLayout._splomScenes[trace.uid];
-        if(scene) {
-            scene.selectBatch = [];
+        var splomScenes = fullLayout._splomScenes;
+        if(splomScenes) {
+            var scene = splomScenes[trace.uid];
+            if(scene) {
+                scene.selectBatch = [];
+            }
         }
     }
 }
