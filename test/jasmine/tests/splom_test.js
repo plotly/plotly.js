@@ -1786,7 +1786,7 @@ describe('Test splom select:', function() {
                 updateCnt: 0,
                 drawCnt: 0,      // nothing here, this is a 'modebar' edit
                 matrixTraces: 2,
-                selectBatch: [1],
+                selectBatch: [],
                 unselectBatch: [0, 2]
             });
         })
@@ -1796,7 +1796,7 @@ describe('Test splom select:', function() {
                 updateCnt: 1,
                 drawCnt: 1,       // a 'plot' edit (again)
                 matrixTraces: 2,
-                selectBatch: [1],
+                selectBatch: [],
                 unselectBatch: [0, 2]
             });
         })
@@ -1823,7 +1823,7 @@ describe('Test splom select:', function() {
         .then(done, done.fail);
     });
 
-    it('@gl should be able to select and then clear using API', function(done) {
+    it('@gl should be able to select', function(done) {
         function _assert(msg, exp) {
             return function() {
                 var uid = gd._fullData[0].uid;
@@ -1854,11 +1854,6 @@ describe('Test splom select:', function() {
         .then(_assert('after selection', {
             selectBatch: [1],
             unselectBatch: [0, 2]
-        }))
-        .then(function() { return Plotly.restyle(gd, 'selectedpoints', null); })
-        .then(_assert('after API clear', {
-            selectBatch: [],
-            unselectBatch: []
         }))
         .then(done, done.fail);
     });

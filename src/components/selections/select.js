@@ -1064,6 +1064,10 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
     var subplots = (xRef && yRef) ? [xRef + yRef] :
         fullLayout._subplots.cartesian;
 
+    epmtySplomSelectionBatch(gd);
+
+    var seenSplom = {};
+
     for(var i = 0; i < subplots.length; i++) {
         var subplot = subplots[i];
         var yAt = subplot.indexOf('y');
@@ -1088,9 +1092,10 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
 
                 for(var w = 0; w < _searchTraces.length; w++) {
                     var s = _searchTraces[w];
+                    var cd0 = s.cd[0];
+                    var trace = cd0.trace;
+
                     if(s._module.name === 'scattergl') {
-                        var cd0 = s.cd[0];
-                        var trace = cd0.trace;
                         var x = trace.x;
                         var y = trace.y;
                         var len = trace._length;
@@ -1100,6 +1105,12 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
                         for(var j = 0; j < len; j++) {
                             cd0.t.xpx[j] = _xaxis.c2p(x[j]);
                             cd0.t.ypx[j] = _yaxis.c2p(y[j]);
+                        }
+                    }
+
+                    if(s._module.name === 'splom') {
+                        if(!seenSplom[trace.uid]) {
+                            seenSplom[trace.uid] = true;
                         }
                     }
                 }
@@ -1116,6 +1127,19 @@ function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
     return selectionTesters;
 }
 
+function epmtySplomSelectionBatch(gd) {
+    var cd = gd.calcdata;
+    var fullLayout = gd._fullLayout;
+
+    for(var i = 0; i < cd.length; i++) {
+        var cd0 = cd[i][0];
+        var trace = cd0.trace;
+        var scene = fullLayout._splomScenes[trace.uid];
+        if(scene) {
+            scene.selectBatch = [];
+        }
+    }
+}
 
 function addTester(layoutPolygons, xRef, yRef, selectionTesters) {
     var mergedPolygons;
