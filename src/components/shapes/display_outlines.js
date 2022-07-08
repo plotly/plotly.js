@@ -68,12 +68,9 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
     if(isDrawMode || isSelectMode) {
         gd._fullLayout._outlining = true;
-    } else if(
-        gd._fullLayout._activeShapeIndex >= 0 ||
-        gd._fullLayout._activeSelectionIndex >= 0
-    ) {
-        clearOutlineControllers(gd);
     }
+
+    clearOutlineControllers(gd);
 
     // make outline
     outlines.attr('d', writePaths(polygons));
