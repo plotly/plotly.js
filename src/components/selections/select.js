@@ -311,7 +311,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                     selection = _doSelect(selectionTesters, searchTraces);
 
                     eventData = {points: selection};
-                    fillRangeItems(eventData, currentPolygon, filterPoly);
+                    fillRangeItems(eventData, mergedPolygons, filterPoly);
                     dragOptions.gd.emit('plotly_selecting', eventData);
                 }
             );
