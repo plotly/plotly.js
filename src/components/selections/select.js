@@ -408,14 +408,14 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
             }
 
+            if(immediateSelect || isDrawMode) {
+                clearSelectionsCache(dragOptions, immediateSelect);
+            }
+
             if(dragOptions.doneFnCompleted) {
                 dragOptions.doneFnCompleted(selection);
             }
         }).catch(Lib.error);
-
-        if(isDrawMode || immediateSelect) {
-            clearSelectionsCache(dragOptions, immediateSelect);
-        }
     };
 }
 
