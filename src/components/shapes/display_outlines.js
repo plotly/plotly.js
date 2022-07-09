@@ -52,6 +52,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         if(dragOptions.isActiveSelection !== undefined) {
             dragOptions.isActiveSelection = false; // i.e. to disable selection controllers
             updateObject = newSelections(outlines, dragOptions);
+
+            gd._fullLayout._reselect = true;
         }
 
         if(Object.keys(updateObject).length) {
