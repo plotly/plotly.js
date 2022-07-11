@@ -141,9 +141,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var searchTraces = determineSearchTraces(gd, dragOptions.xaxes,
       dragOptions.yaxes, dragOptions.subplot);
 
-    // allow subplots (i.e. geo, mapbox, sankey) to override fillRangeItems routine
-    var fillRangeItems = plotinfo.fillRangeItems ||
-        makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes));
+    var fillRangeItems = getFillRangeItems(dragOptions);
 
     dragOptions.moveFn = function(dx0, dy0) {
         x1 = Math.max(0, Math.min(pw, scaleX * dx0 + x0));
@@ -1306,6 +1304,16 @@ function makeFillRangeItems(allAxes) {
         }
     };
 }
+
+function getFillRangeItems(dragOptions) {
+    var plotinfo = dragOptions.plotinfo;
+
+    return (
+        plotinfo.fillRangeItems || // allow subplots (i.e. geo, mapbox, sankey) to override fillRangeItems routine
+        makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes))
+    );
+}
+
 
 module.exports = {
     reselect: reselect,
