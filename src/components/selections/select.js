@@ -141,7 +141,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var searchTraces = determineSearchTraces(gd, dragOptions.xaxes,
       dragOptions.yaxes, dragOptions.subplot);
 
-    // allow subplots to override fillRangeItems routine
+    // allow subplots (i.e. geo, mapbox, sankey) to override fillRangeItems routine
     var fillRangeItems = plotinfo.fillRangeItems ||
         makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes));
 
