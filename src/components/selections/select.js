@@ -149,30 +149,44 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     if(plotinfo.fillRangeItems) {
         fillRangeItems = plotinfo.fillRangeItems;
     } else {
-        if(isRectMode) {
-            fillRangeItems = function(eventData, poly) {
-                var ranges = eventData.range = {};
+        fillRangeItems = function(eventData, poly, filterPoly) {
+            var range = {};
+            var ranges = {};
 
-                for(i = 0; i < allAxes.length; i++) {
-                    var ax = allAxes[i];
-                    var axLetter = ax._id.charAt(0);
+            var hasRange = false;
+            var hasRanges = false;
 
-                    ranges[ax._id] = [
-                        p2r(ax, poly[axLetter + 'min']),
-                        p2r(ax, poly[axLetter + 'max'])
+            for(i = 0; i < allAxes.length; i++) {
+                var ax = allAxes[i];
+                var axLetter = ax._id.charAt(0);
+
+                var min = poly[axLetter + 'min'];
+                var max = poly[axLetter + 'max'];
+
+                if(min !== undefined && max !== undefined) {
+                    range[ax._id] = [
+                        p2r(ax, min),
+                        p2r(ax, max)
                     ].sort(ascending);
-                }
-            };
-        } else { // case of isFreeMode
-            fillRangeItems = function(eventData, poly, filterPoly) {
-                var dataPts = eventData.lassoPoints = {};
 
-                for(i = 0; i < allAxes.length; i++) {
-                    var ax = allAxes[i];
-                    dataPts[ax._id] = filterPoly.filtered.map(axValue(ax));
+                    hasRange = true;
                 }
-            };
-        }
+
+                if(filterPoly.filtered) {
+                    ranges[ax._id] = filterPoly.filtered.map(axValue(ax));
+
+                    hasRanges = true;
+                }
+            }
+
+            if(hasRange) {
+                eventData.range = range;
+            }
+
+            if(hasRanges) {
+                eventData.lassoPoints = ranges;
+            }
+        };
     }
 
     dragOptions.moveFn = function(dx0, dy0) {
