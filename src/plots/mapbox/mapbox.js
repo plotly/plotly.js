@@ -559,9 +559,9 @@ proto.updateFx = function(fullLayout) {
             ];
         };
     } else {
-        fillRangeItems = function(eventData, poly, pts) {
+        fillRangeItems = function(eventData, pts) {
             var dataPts = eventData.lassoPoints = {};
-            dataPts[self.id] = pts.filtered.map(invert);
+            dataPts[self.id] = pts.map(invert);
         };
     }
 

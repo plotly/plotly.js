@@ -440,9 +440,9 @@ proto.updateFx = function(fullLayout, geoLayout) {
             ];
         };
     } else if(dragMode === 'lasso') {
-        fillRangeItems = function(eventData, poly, pts) {
+        fillRangeItems = function(eventData, poly) {
             var dataPts = eventData.lassoPoints = {};
-            dataPts[_this.id] = pts.filtered.map(invert);
+            dataPts[_this.id] = poly.map(invert);
         };
     }
 

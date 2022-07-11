@@ -19,8 +19,11 @@ var shapeHelpers = require('../shapes/helpers');
 var shapeConstants = require('../shapes/constants');
 
 var displayOutlines = require('../shapes/display_outlines');
-var handleEllipse = require('../shapes/draw_newshape/helpers').handleEllipse;
-var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
+
+var newShapeHelpers = require('../shapes/draw_newshape/helpers');
+var handleEllipse = newShapeHelpers.handleEllipse;
+var readPaths = newShapeHelpers.readPaths;
+
 var newShapes = require('../shapes/draw_newshape/newshapes');
 
 var newSelections = require('./draw_newselection/newselections');
@@ -281,7 +284,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                     selection = _doSelect(selectionTesters, searchTraces);
 
                     eventData = {points: selection};
-                    fillRangeItems(eventData, currentPolygon, filterPoly);
+                    fillRangeItems(eventData, filterPoly ? filterPoly.filtered : currentPolygon);
                     dragOptions.gd.emit('plotly_selecting', eventData);
                 }
             );
@@ -1110,6 +1113,28 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
         var clickmode = fullLayout.clickmode;
         var sendEvents = clickmode.indexOf('event') > -1;
         if(sendEvents) {
+            var activePolygons = getLayoutPolygons(gd, true);
+
+            var xref = activePolygons[0].xref;
+            var yref = activePolygons[0].yref;
+            if(xref && yref) {
+                var activePolygon = activePolygons[0];
+                // handle active shape with multiple polygons
+                for(var n = 1; n < activePolygons.length; n++) {
+                    // close previous polygon
+                    activePolygon.push(activePolygon[0]);
+                    // add this polygon
+                    activePolygon = activePolygon.concat(activePolygons[n]);
+                }
+
+                var fillRangeItems = makeFillRangeItems([
+                    getFromId(gd, xref, 'x'),
+                    getFromId(gd, yref, 'y')
+                ]);
+
+                fillRangeItems(eventData, activePolygon);
+            }
+
             gd.emit('plotly_selected', eventData);
         }
     }
@@ -1157,12 +1182,16 @@ function addTester(layoutPolygons, xRef, yRef, selectionTesters) {
     return selectionTesters;
 }
 
-function getLayoutPolygons(gd) {
+function getLayoutPolygons(gd, onlyActiveOnes) {
     var allPolygons = [];
-    var allSelections = gd._fullLayout.selections;
+
+    var fullLayout = gd._fullLayout;
+    var allSelections = fullLayout.selections;
     var len = allSelections.length;
 
     for(var i = 0; i < len; i++) {
+        if(onlyActiveOnes && i !== fullLayout._activeSelectionIndex) continue;
+
         var selection = allSelections[i];
         if(!selection) continue;
 
@@ -1198,6 +1227,7 @@ function getLayoutPolygons(gd) {
             polygon.yref = yref;
 
             polygon.subtract = false;
+            polygon.isRect = true;
 
             allPolygons.push(polygon);
         } else if(selection.type === 'path') {
@@ -1271,42 +1301,37 @@ function convert(ax, d) {
 }
 
 function makeFillRangeItems(allAxes) {
-    return function(eventData, poly, filterPoly) {
-        var range = {};
-        var ranges = {};
-
-        var hasRange = false;
-        var hasRanges = false;
+    return function(eventData, poly) {
+        var range;
+        var lassoPoints;
 
         for(var i = 0; i < allAxes.length; i++) {
             var ax = allAxes[i];
-            var axLetter = ax._id.charAt(0);
+            var id = ax._id;
+            var axLetter = id.charAt(0);
 
+            if(!range) range = {};
             var min = poly[axLetter + 'min'];
             var max = poly[axLetter + 'max'];
 
             if(min !== undefined && max !== undefined) {
-                range[ax._id] = [
+                range[id] = [
                     p2r(ax, min),
                     p2r(ax, max)
                 ].sort(ascending);
-
-                hasRange = true;
             }
-
-            if(filterPoly && filterPoly.filtered) {
-                ranges[ax._id] = filterPoly.filtered.map(axValue(ax));
-
-                hasRanges = true;
+            if(!lassoPoints) {
+                lassoPoints = {};
             }
+            lassoPoints[id] = poly.map(axValue(ax));
         }
 
-        if(hasRange) {
+        if(range) {
             eventData.range = range;
         }
 
-        if(hasRanges) {
-            eventData.lassoPoints = ranges;
+        if(lassoPoints) {
+            eventData.lassoPoints = lassoPoints;
         }
     };
 }
