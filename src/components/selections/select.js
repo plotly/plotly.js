@@ -277,6 +277,35 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             selectionTesters = _res.selectionTesters;
             eventData = _res.eventData;
 
+            var poly;
+            if(filterPoly) {
+                poly = filterPoly.filtered;
+            } else {
+                poly = castMultiPolygon(mergedPolygons);
+                poly.isRect = poly.length === 5 &&
+                    poly[0][0] === poly[4][0] &&
+                    poly[0][1] === poly[4][1] &&
+                    (
+                        poly[0][0] === poly[1][0] &&
+                        poly[2][0] === poly[3][0] &&
+                        poly[0][1] === poly[3][1] &&
+                        poly[1][1] === poly[2][1]
+                    ) ||
+                    (
+                        poly[0][1] === poly[1][1] &&
+                        poly[2][1] === poly[3][1] &&
+                        poly[0][0] === poly[3][0] &&
+                        poly[1][0] === poly[2][0]
+                    );
+
+                if(poly.isRect) {
+                    poly.xmin = Math.min(poly[0][0], poly[2][0]);
+                    poly.xmax = Math.max(poly[0][0], poly[2][0]);
+                    poly.ymin = Math.min(poly[0][1], poly[2][1]);
+                    poly.ymax = Math.max(poly[0][1], poly[2][1]);
+                }
+            }
+
             throttle.throttle(
                 throttleID,
                 constants.SELECTDELAY,
@@ -285,13 +314,6 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
                     eventData = {points: selection};
 
-                    var poly;
-                    if(filterPoly) {
-                        poly = filterPoly.filtered;
-                    } else {
-                        poly = currentPolygon;
-                        poly.isRect = selectionTesters.isRect;
-                    }
                     fillRangeItems(eventData, poly);
 
                     dragOptions.gd.emit('plotly_selecting', eventData);
@@ -1127,14 +1149,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
             var xref = activePolygons[0].xref;
             var yref = activePolygons[0].yref;
             if(xref && yref) {
-                var activePolygon = activePolygons[0];
-                // handle active shape with multiple polygons
-                for(var n = 1; n < activePolygons.length; n++) {
-                    // close previous polygon
-                    activePolygon.push(activePolygon[0]);
-                    // add this polygon
-                    activePolygon = activePolygon.concat(activePolygons[n]);
-                }
+                var activePolygon = castMultiPolygon(activePolygons);
 
                 var fillRangeItems = makeFillRangeItems([
                     getFromId(gd, xref, 'x'),
@@ -1307,6 +1322,22 @@ function getSubtract(polygon, previousPolygons) {
 function convert(ax, d) {
     if(ax.type === 'date') d = d.replace('_', ' ');
     return ax.type === 'log' ? ax.c2p(d) : ax.r2p(d, null, ax.calendar);
+}
+
+function castMultiPolygon(allPolygons) {
+    var len = allPolygons.length;
+
+    // descibe multi polygons in one polygon
+    var p = [];
+    for(var i = 0; i < len; i++) {
+        var polygon = allPolygons[i];
+        p = p.concat(polygon);
+
+        // add starting vertex to close
+        // which indicates next polygon
+        p = p.concat([polygon[0]]);
+    }
+    return p;
 }
 
 function makeFillRangeItems(allAxes) {
