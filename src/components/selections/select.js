@@ -284,7 +284,16 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                     selection = _doSelect(selectionTesters, searchTraces);
 
                     eventData = {points: selection};
-                    fillRangeItems(eventData, filterPoly ? filterPoly.filtered : currentPolygon);
+
+                    var poly;
+                    if(filterPoly) {
+                        poly = filterPoly.filtered;
+                    } else {
+                        poly = currentPolygon;
+                        poly.isRect = selectionTesters.isRect;
+                    }
+                    fillRangeItems(eventData, poly);
+
                     dragOptions.gd.emit('plotly_selecting', eventData);
                 }
             );
@@ -1310,20 +1319,21 @@ function makeFillRangeItems(allAxes) {
             var id = ax._id;
             var axLetter = id.charAt(0);
 
-            if(!range) range = {};
-            var min = poly[axLetter + 'min'];
-            var max = poly[axLetter + 'max'];
+            if(poly.isRect) {
+                if(!range) range = {};
+                var min = poly[axLetter + 'min'];
+                var max = poly[axLetter + 'max'];
 
-            if(min !== undefined && max !== undefined) {
-                range[id] = [
-                    p2r(ax, min),
-                    p2r(ax, max)
-                ].sort(ascending);
+                if(min !== undefined && max !== undefined) {
+                    range[id] = [
+                        p2r(ax, min),
+                        p2r(ax, max)
+                    ].sort(ascending);
+                }
+            } else {
+                if(!lassoPoints) lassoPoints = {};
+                lassoPoints[id] = poly.map(axValue(ax));
             }
-            if(!lassoPoints) {
-                lassoPoints = {};
-            }
-            lassoPoints[id] = poly.map(axValue(ax));
         }
 
         if(range) {
