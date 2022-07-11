@@ -270,7 +270,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
 
         if(isSelectMode) {
-            var _res = reselect(gd, xAxis._id, yAxis._id, selectionTesters, searchTraces, plotinfo);
+            var _res = reselect(gd, selectionTesters, searchTraces, plotinfo, xAxis._id, yAxis._id);
             selectionTesters = _res.selectionTesters;
             eventData = _res.eventData;
 
@@ -979,7 +979,7 @@ function _doSelect(selectionTesters, searchTraces) {
     return allSelections;
 }
 
-function reselect(gd, xRef, yRef, selectionTesters, searchTraces, plotinfo) {
+function reselect(gd, selectionTesters, searchTraces, plotinfo, xRef, yRef) {
     var hadSearchTraces = !!searchTraces;
 
     var allSelections = [];
