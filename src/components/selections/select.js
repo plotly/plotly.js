@@ -989,7 +989,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
     }
 
     var allSelections = [];
-    var allTesters = [];
+    var allSearchTraces = [];
 
     // select layout.selection polygons
     var layoutPolygons = getLayoutPolygons(gd);
@@ -1094,12 +1094,12 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
             var selection = _doSelect(_selectionTesters, _searchTraces);
 
             allSelections = allSelections.concat(selection);
-            allTesters = allTesters.concat(_searchTraces);
+            allSearchTraces = allSearchTraces.concat(_searchTraces);
         }
     }
 
     var eventData = {points: allSelections};
-    updateSelectedState(gd, allTesters, eventData);
+    updateSelectedState(gd, allSearchTraces, eventData);
 
     if(
         !plotinfo && // get called from plot_api & plots
