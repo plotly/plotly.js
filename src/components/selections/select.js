@@ -27,6 +27,7 @@ var newSelections = require('./draw_newselection/newselections');
 var activateLastSelection = require('./draw').activateLastSelection;
 
 var Lib = require('../../lib');
+var ascending = Lib.sorterAsc;
 var polygon = require('../../lib/polygon');
 var throttle = require('../../lib/throttle');
 var getFromId = require('../../plots/cartesian/axis_ids').getFromId;
@@ -85,7 +86,6 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var pw = xAxis._length;
     var ph = yAxis._length;
 
-    var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
     var subtract = evt.altKey &&
         !(drawMode(mode) && isOpenMode);
 
@@ -141,53 +141,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var searchTraces = determineSearchTraces(gd, dragOptions.xaxes,
       dragOptions.yaxes, dragOptions.subplot);
 
-    function ascending(a, b) { return a - b; }
-
     // allow subplots to override fillRangeItems routine
-    var fillRangeItems;
-
-    if(plotinfo.fillRangeItems) {
-        fillRangeItems = plotinfo.fillRangeItems;
-    } else {
-        fillRangeItems = function(eventData, poly, filterPoly) {
-            var range = {};
-            var ranges = {};
-
-            var hasRange = false;
-            var hasRanges = false;
-
-            for(i = 0; i < allAxes.length; i++) {
-                var ax = allAxes[i];
-                var axLetter = ax._id.charAt(0);
-
-                var min = poly[axLetter + 'min'];
-                var max = poly[axLetter + 'max'];
-
-                if(min !== undefined && max !== undefined) {
-                    range[ax._id] = [
-                        p2r(ax, min),
-                        p2r(ax, max)
-                    ].sort(ascending);
-
-                    hasRange = true;
-                }
-
-                if(filterPoly.filtered) {
-                    ranges[ax._id] = filterPoly.filtered.map(axValue(ax));
-
-                    hasRanges = true;
-                }
-            }
-
-            if(hasRange) {
-                eventData.range = range;
-            }
-
-            if(hasRanges) {
-                eventData.lassoPoints = ranges;
-            }
-        };
-    }
+    var fillRangeItems = plotinfo.fillRangeItems ||
+        makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes));
 
     dragOptions.moveFn = function(dx0, dy0) {
         x1 = Math.max(0, Math.min(pw, scaleX * dx0 + x0));
@@ -1308,6 +1264,47 @@ function getSubtract(polygon, previousPolygons) {
 function convert(ax, d) {
     if(ax.type === 'date') d = d.replace('_', ' ');
     return ax.type === 'log' ? ax.c2p(d) : ax.r2p(d, null, ax.calendar);
+}
+
+function makeFillRangeItems(allAxes) {
+    return function(eventData, poly, filterPoly) {
+        var range = {};
+        var ranges = {};
+
+        var hasRange = false;
+        var hasRanges = false;
+
+        for(var i = 0; i < allAxes.length; i++) {
+            var ax = allAxes[i];
+            var axLetter = ax._id.charAt(0);
+
+            var min = poly[axLetter + 'min'];
+            var max = poly[axLetter + 'max'];
+
+            if(min !== undefined && max !== undefined) {
+                range[ax._id] = [
+                    p2r(ax, min),
+                    p2r(ax, max)
+                ].sort(ascending);
+
+                hasRange = true;
+            }
+
+            if(filterPoly && filterPoly.filtered) {
+                ranges[ax._id] = filterPoly.filtered.map(axValue(ax));
+
+                hasRanges = true;
+            }
+        }
+
+        if(hasRange) {
+            eventData.range = range;
+        }
+
+        if(hasRanges) {
+            eventData.lassoPoints = ranges;
+        }
+    };
 }
 
 module.exports = {
