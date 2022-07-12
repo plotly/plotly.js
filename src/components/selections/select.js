@@ -1109,7 +1109,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
                     var cd0 = s.cd[0];
                     var trace = cd0.trace;
 
-                    if(s._module.name === 'scattergl') {
+                    if(s._module.name === 'scattergl' && !cd0.t.xpx) {
                         var x = trace.x;
                         var y = trace.y;
                         var len = trace._length;
