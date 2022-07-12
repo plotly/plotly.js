@@ -1191,7 +1191,11 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
         updateSelectedState(gd, searchTraces);
 
         if(sendEvents) {
-            gd.emit('plotly_deselect', eventData.points.length ? eventData : null);
+            if(eventData.points.length) {
+                gd.emit('plotly_selected', eventData);
+            } else {
+                gd.emit('plotly_deselect', null);
+            }
         }
 
         fullLayout._deselect = false;
