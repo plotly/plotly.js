@@ -273,7 +273,10 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
 
         if(isSelectMode) {
-            var _res = reselect(gd, selectionTesters, searchTraces, dragOptions);
+            var _res = reselect(gd);
+            var extraPoints = _res.eventData ? _res.eventData.points.slice() : [];
+
+            _res = reselect(gd, selectionTesters, searchTraces, dragOptions);
             selectionTesters = _res.selectionTesters;
             eventData = _res.eventData;
 
@@ -290,7 +293,27 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 function() {
                     selection = _doSelect(selectionTesters, searchTraces);
 
-                    eventData = {points: selection};
+                    var newPoints = selection.slice();
+
+                    for(var w = 0; w < extraPoints.length; w++) {
+                        var p = extraPoints[w];
+                        var found = false;
+                        for(var u = 0; u < newPoints.length; u++) {
+                            if(
+                                newPoints[u].curveNumber === p.curveNumber &&
+                                newPoints[u].pointNumber === p.pointNumber
+                            ) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found) newPoints.push(p);
+                    }
+
+                    if(newPoints.length) {
+                        if(!eventData) eventData = {};
+                        eventData.points = newPoints;
+                    }
 
                     fillRangeItems(eventData, poly);
 
