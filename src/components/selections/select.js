@@ -1116,14 +1116,13 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
     var eventData = {points: allSelections};
     updateSelectedState(gd, allSearchTraces, eventData);
 
+    var clickmode = fullLayout.clickmode;
+    var sendEvents = clickmode.indexOf('event') > -1;
+
     if(
         !plotinfo && // get called from plot_api & plots
-        fullLayout._reselect === true
+        fullLayout._reselect
     ) {
-        fullLayout._reselect = false;
-
-        var clickmode = fullLayout.clickmode;
-        var sendEvents = clickmode.indexOf('event') > -1;
         if(sendEvents) {
             var activePolygons = getLayoutPolygons(gd, true);
 
@@ -1142,6 +1141,37 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
 
             gd.emit('plotly_selected', eventData);
         }
+
+        fullLayout._reselect = false;
+    }
+
+    if(
+        !plotinfo && // get called from plot_api & plots
+        fullLayout._deselect
+    ) {
+        var deselect = fullLayout._deselect;
+        xRef = deselect.xref;
+        yRef = deselect.yref;
+
+        searchTraces = determineSearchTraces(
+            gd,
+            [getFromId(gd, xRef, 'x')],
+            [getFromId(gd, yRef, 'y')],
+            xRef + yRef
+        );
+
+        for(var k = 0; k < searchTraces.length; k++) {
+            var searchInfo = searchTraces[k];
+            searchInfo._module.selectPoints(searchInfo, false);
+        }
+
+        updateSelectedState(gd, searchTraces);
+
+        if(sendEvents) {
+            gd.emit('plotly_deselect', eventData.points.length ? eventData : null);
+        }
+
+        fullLayout._deselect = false;
     }
 
     return {
