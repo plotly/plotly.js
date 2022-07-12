@@ -1176,19 +1176,35 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
         xRef = deselect.xref;
         yRef = deselect.yref;
 
-        searchTraces = determineSearchTraces(
-            gd,
-            [getFromId(gd, xRef, 'x')],
-            [getFromId(gd, yRef, 'y')],
-            xRef + yRef
-        );
-
-        for(var k = 0; k < searchTraces.length; k++) {
-            var searchInfo = searchTraces[k];
-            searchInfo._module.selectPoints(searchInfo, false);
+        var foundSubplot = false;
+        for(var q = 0; q < allSearchTraces.length; q++) {
+            var a = allSearchTraces[q];
+            if(
+                (a.xaxis && a.xaxis._id === xRef) &&
+                (a.yaxis && a.yaxis._id === yRef)
+            ) {
+                foundSubplot = true;
+                break;
+            }
         }
 
-        updateSelectedState(gd, searchTraces);
+        if(!foundSubplot) {
+            // deselect traces in this subplot
+
+            searchTraces = determineSearchTraces(
+                gd,
+                [getFromId(gd, xRef, 'x')],
+                [getFromId(gd, yRef, 'y')],
+                xRef + yRef
+            );
+
+            for(var k = 0; k < searchTraces.length; k++) {
+                var searchInfo = searchTraces[k];
+                searchInfo._module.selectPoints(searchInfo, false);
+            }
+
+            updateSelectedState(gd, searchTraces);
+        }
 
         if(sendEvents) {
             if(eventData.points.length) {
