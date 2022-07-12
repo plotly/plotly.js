@@ -3,7 +3,7 @@
 var readPaths = require('../shapes/draw_newshape/helpers').readPaths;
 var displayOutlines = require('../shapes/display_outlines');
 
-var clearOutlineControllers = require('./handle_outline').clearOutlineControllers;
+var clearOutlineControllers = require('../shapes/handle_outline').clearOutlineControllers;
 
 var Color = require('../color');
 var Drawing = require('../drawing');

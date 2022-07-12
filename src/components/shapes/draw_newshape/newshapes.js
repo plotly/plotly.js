@@ -16,7 +16,7 @@ var cartesianHelpers = require('../../selections/helpers');
 var p2r = cartesianHelpers.p2r;
 var r2p = cartesianHelpers.r2p;
 
-var handleOutline = require('../../selections/handle_outline');
+var handleOutline = require('.././handle_outline');
 var clearSelect = handleOutline.clearSelect;
 
 var helpers = require('./helpers');

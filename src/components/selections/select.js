@@ -44,7 +44,7 @@ var MINSELECT = constants.MINSELECT;
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
 
-var clearSelect = require('./handle_outline').clearSelect;
+var clearSelect = require('../shapes/handle_outline').clearSelect;
 
 var helpers = require('./helpers');
 var p2r = helpers.p2r;

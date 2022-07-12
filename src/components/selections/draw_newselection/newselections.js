@@ -3,7 +3,7 @@
 var dragHelpers = require('../../dragelement/helpers');
 var selectMode = dragHelpers.selectMode;
 
-var handleOutline = require('../handle_outline');
+var handleOutline = require('../../shapes/handle_outline');
 var clearSelect = handleOutline.clearSelect;
 
 var helpers = require('../../shapes/draw_newshape/helpers');
