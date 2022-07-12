@@ -1661,7 +1661,12 @@ describe('Test splom select:', function() {
         .then(function() { return _select([[50, 50], [100, 100]]); })
         .then(function() {
             _assert('second', [
-                {pointNumber: 1, x: 2, y: 2}
+                // new points
+                {pointNumber: 1, x: 2, y: 2},
+
+                // remain from previous selection
+                {pointNumber: 0, x: 1, y: 1},
+                {pointNumber: 2, x: 3, y: 3}
             ], {
                 subplot: 'xy',
                 selectionOutlineCnt: 1
