@@ -388,9 +388,10 @@ function eraseActiveSelection(gd) {
 
         delete gd._fullLayout._activeSelectionIndex;
 
+        var erasedSelection = gd._fullLayout.selections[id];
         gd._fullLayout._deselect = {
-            xref: selections[id].xref,
-            yref: selections[id].yref
+            xref: erasedSelection.xref,
+            yref: erasedSelection.yref
         };
 
         Registry.call('_guiRelayout', gd, {
