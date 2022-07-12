@@ -17,7 +17,7 @@ var p2r = cartesianHelpers.p2r;
 var r2p = cartesianHelpers.r2p;
 
 var handleOutline = require('.././handle_outline');
-var clearSelect = handleOutline.clearSelect;
+var clearOutline = handleOutline.clearOutline;
 
 var helpers = require('./helpers');
 var readPaths = helpers.readPaths;
@@ -190,7 +190,7 @@ module.exports = function newShapes(outlines, dragOptions) {
         cell = null;
     }
 
-    clearSelect(gd);
+    clearOutline(gd);
 
     var editHelpers = dragOptions.editHelpers;
     var modifyItem = (editHelpers || {}).modifyItem;

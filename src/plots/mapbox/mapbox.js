@@ -15,7 +15,7 @@ var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
 var prepSelect = require('../../components/selections').prepSelect;
-var clearSelect = require('../../components/selections').clearSelect;
+var clearOutline = require('../../components/selections').clearOutline;
 var clearSelectionsCache = require('../../components/selections').clearSelectionsCache;
 var selectOnClick = require('../../components/selections').selectOnClick;
 
@@ -506,9 +506,9 @@ proto.initFx = function(calcData, fullLayout) {
 
     // define event handlers on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected
-    self.clearSelect = function() {
+    self.clearOutline = function() {
         clearSelectionsCache(self.dragOptions);
-        clearSelect(self.dragOptions.gd);
+        clearOutline(self.dragOptions.gd);
     };
 
     /**

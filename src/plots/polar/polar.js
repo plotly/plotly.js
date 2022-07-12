@@ -20,7 +20,7 @@ var Fx = require('../../components/fx');
 var Titles = require('../../components/titles');
 var prepSelect = require('../../components/selections').prepSelect;
 var selectOnClick = require('../../components/selections').selectOnClick;
-var clearSelect = require('../../components/selections').clearSelect;
+var clearOutline = require('../../components/selections').clearOutline;
 var setCursor = require('../../lib/setcursor');
 var clearGlCanvases = require('../../lib/clear_gl_canvases');
 var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
@@ -922,7 +922,7 @@ proto.updateHoverAndMainDrag = function(fullLayout) {
         zb = dragBox.makeZoombox(zoomlayer, lum, cx, cy, path0);
         zb.attr('fill-rule', 'evenodd');
         corners = dragBox.makeCorners(zoomlayer, cx, cy);
-        clearSelect(gd);
+        clearOutline(gd);
     }
 
     // N.B. this sets scoped 'r0' and 'r1'
@@ -1269,7 +1269,7 @@ proto.updateRadialDrag = function(fullLayout, polarLayout, rngIndex) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        clearSelect(gd);
+        clearOutline(gd);
     };
 
     dragOpts.clampFn = function(dx, dy) {
@@ -1434,7 +1434,7 @@ proto.updateAngularDrag = function(fullLayout) {
         dragOpts.moveFn = moveFn;
         dragOpts.doneFn = doneFn;
 
-        clearSelect(gd);
+        clearOutline(gd);
     };
 
     // I don't what we should do in this case, skip we now

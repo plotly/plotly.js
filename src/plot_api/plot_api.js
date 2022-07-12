@@ -19,7 +19,7 @@ var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var clearSelect = require('../components/selections').clearSelect;
+var clearOutline = require('../components/selections').clearOutline;
 
 var dfltConfig = require('./plot_config').dfltConfig;
 var manageArrays = require('./manage_arrays');
@@ -1899,7 +1899,7 @@ function addAxRangeSequence(seq, rangesAltered) {
         };
 
     seq.push(
-        clearSelect,
+        clearOutline,
         subroutines.doAutoRangeAndConstraints,
         drawAxes,
         subroutines.drawData,

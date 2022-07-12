@@ -44,7 +44,7 @@ var MINSELECT = constants.MINSELECT;
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
 
-var clearSelect = require('../shapes/handle_outline').clearSelect;
+var clearOutline = require('../shapes/handle_outline').clearOutline;
 
 var helpers = require('./helpers');
 var p2r = helpers.p2r;
@@ -614,7 +614,7 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
 
     // clear selection outline when selecting a different subplot
     if(!selectingOnSameSubplot) {
-        clearSelect(gd);
+        clearOutline(gd);
         fullLayout._lastSelectedSubplot = plotinfo.id;
     }
 }
@@ -1429,7 +1429,7 @@ function getFillRangeItems(dragOptions) {
 module.exports = {
     reselect: reselect,
     prepSelect: prepSelect,
-    clearSelect: clearSelect,
+    clearOutline: clearOutline,
     clearSelectionsCache: clearSelectionsCache,
     selectOnClick: selectOnClick
 };

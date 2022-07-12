@@ -4,7 +4,7 @@ var dragHelpers = require('../../dragelement/helpers');
 var selectMode = dragHelpers.selectMode;
 
 var handleOutline = require('../../shapes/handle_outline');
-var clearSelect = handleOutline.clearSelect;
+var clearOutline = handleOutline.clearOutline;
 
 var helpers = require('../../shapes/draw_newshape/helpers');
 var readPaths = helpers.readPaths;
@@ -79,7 +79,7 @@ module.exports = function newSelections(outlines, dragOptions) {
         cell = null;
     }
 
-    clearSelect(gd);
+    clearOutline(gd);
 
     var editHelpers = dragOptions.editHelpers;
     var modifyItem = (editHelpers || {}).modifyItem;

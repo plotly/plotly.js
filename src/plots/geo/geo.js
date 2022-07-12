@@ -19,7 +19,7 @@ var Axes = require('../cartesian/axes');
 var getAutoRange = require('../cartesian/autorange').getAutoRange;
 var dragElement = require('../../components/dragelement');
 var prepSelect = require('../../components/selections').prepSelect;
-var clearSelect = require('../../components/selections').clearSelect;
+var clearOutline = require('../../components/selections').clearOutline;
 var selectOnClick = require('../../components/selections').selectOnClick;
 
 var createGeoZoom = require('./zoom');
@@ -462,7 +462,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         subplot: _this.id,
         clickFn: function(numClicks) {
             if(numClicks === 2) {
-                clearSelect(gd);
+                clearOutline(gd);
             }
         }
     };

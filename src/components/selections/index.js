@@ -17,7 +17,7 @@ module.exports = {
 
     reselect: select.reselect,
     prepSelect: select.prepSelect,
-    clearSelect: select.clearSelect,
+    clearOutline: select.clearOutline,
     clearSelectionsCache: select.clearSelectionsCache,
     selectOnClick: select.selectOnClick
 };

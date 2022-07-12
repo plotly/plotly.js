@@ -27,7 +27,7 @@ var Plots = require('../plots');
 
 var getFromId = require('./axis_ids').getFromId;
 var prepSelect = require('../../components/selections').prepSelect;
-var clearSelect = require('../../components/selections').clearSelect;
+var clearOutline = require('../../components/selections').clearOutline;
 var selectOnClick = require('../../components/selections').selectOnClick;
 var scaleZoom = require('./scale_zoom');
 
@@ -239,7 +239,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // clear selection polygon cache (if any)
         dragOptions.plotinfo.selection = false;
         // clear selection outlines
-        clearSelect(gd);
+        clearOutline(gd);
     }
 
     function clickFn(numClicks, evt) {
