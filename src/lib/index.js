@@ -12,6 +12,8 @@ var BADNUM = numConstants.BADNUM;
 
 var lib = module.exports = {};
 
+lib.cspNoInlineStyle = false;
+
 lib.adjustFormat = function adjustFormat(formatStr) {
     if(
         !formatStr ||
@@ -187,6 +189,8 @@ lib.removeElement = domModule.removeElement;
 lib.addStyleRule = domModule.addStyleRule;
 lib.addRelatedStyleRule = domModule.addRelatedStyleRule;
 lib.deleteRelatedStyleRule = domModule.deleteRelatedStyleRule;
+lib.setStyleOnElements = domModule.setStyleOnElements;
+lib.setStyleOnElementForEvent = domModule.setStyleOnElementForEvent;
 lib.getFullTransformMatrix = domModule.getFullTransformMatrix;
 lib.getElementTransformMatrix = domModule.getElementTransformMatrix;
 lib.getElementAndAncestors = domModule.getElementAndAncestors;

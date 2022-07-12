@@ -10,6 +10,8 @@ var ExtendModule = require('./lib/extend');
 var basePlotAttributes = require('./plots/attributes');
 var baseLayoutAttributes = require('./plots/layout_attributes');
 
+var cspNoInlineStyle = require('./lib').cspNoInlineStyle;
+
 var extendFlat = ExtendModule.extendFlat;
 var extendDeepAll = ExtendModule.extendDeepAll;
 
@@ -265,7 +267,8 @@ function registerTraceModule(_module) {
     var bpmName = basePlotModule.name;
 
     // add mapbox-gl CSS here to avoid console warning on instantiation
-    if(bpmName === 'mapbox') {
+    // in case of cspNoInlineStyle we will add the styles in a static style sheet during preprocess task
+    if(bpmName === 'mapbox' && !cspNoInlineStyle) {
         var styleRules = basePlotModule.constants.styleRules;
         for(var k in styleRules) {
             addStyleRule('.js-plotly-plot .plotly .mapboxgl-' + k, styleRules[k]);

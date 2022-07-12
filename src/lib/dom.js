@@ -85,6 +85,59 @@ function deleteRelatedStyleRule(uid) {
     if(style) removeElement(style);
 }
 
+/**
+ * to set style directly on elements in CSP Strict style compatible way
+ */
+function setStyleOnElements(selector, style) {
+    var styleRule = style.split(':');
+    document.querySelectorAll(selector).forEach(function(el) {
+        // don't update style for active element, as activated state styling is separately handled
+        if(document.activeElement !== el) {
+            el.style[styleRule[0]] = styleRule[1];
+        }
+    });
+}
+
+/**
+ * set style on element for 'hover' and 'active' state
+ * this method is in CSP strict style source mode instead of addStyleRule which is not CSP compliant
+ * @param {string} selector selector on which to listen to event
+ * @param {string} state 'hover' or 'active' state
+ * @param {string} childSelector the child element on which the styling needs to be updated
+ * @param {string} style    style that has to be applied on 'hover' or 'active' state
+ * @param {string} fallbackStyle    style that has to be applied when we revert from the state
+ */
+function setStyleOnElementForEvent(selector, state, childSelector, style, fallbackStyle) {
+    var styleRule = style.split(':');
+    var activationEvent;
+    var deactivationEvent;
+    switch(state) {
+        case 'hover':
+            activationEvent = 'mouseenter';
+            deactivationEvent = 'mouseleave';
+            break;
+        case 'active':
+            activationEvent = 'mousedown';
+            deactivationEvent = '';
+            break;
+    }
+
+    document.querySelectorAll(selector).forEach(function(el) {
+        if(activationEvent && !el.getAttribute(activationEvent + 'eventAdded')) {
+            el.addEventListener(activationEvent, function() {
+                el.querySelector(childSelector).style[styleRule[0]] = styleRule[1];
+            });
+            el.setAttribute(activationEvent + 'eventAdded', true);
+        }
+        if(deactivationEvent && !el.getAttribute(deactivationEvent + 'eventAdded')) {
+            el.addEventListener(deactivationEvent, function() {
+                el.querySelector(childSelector).style[styleRule[0]] = fallbackStyle.split(':')[1];
+            });
+            el.setAttribute(deactivationEvent + 'eventAdded', true);
+        }
+    });
+}
+
 function getFullTransformMatrix(element) {
     var allElements = getElementAndAncestors(element);
     // the identity matrix
@@ -161,6 +214,8 @@ module.exports = {
     addStyleRule: addStyleRule,
     addRelatedStyleRule: addRelatedStyleRule,
     deleteRelatedStyleRule: deleteRelatedStyleRule,
+    setStyleOnElements: setStyleOnElements,
+    setStyleOnElementForEvent: setStyleOnElementForEvent,
     getFullTransformMatrix: getFullTransformMatrix,
     getElementTransformMatrix: getElementTransformMatrix,
     getElementAndAncestors: getElementAndAncestors,
