@@ -282,28 +282,6 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 poly = filterPoly.filtered;
             } else {
                 poly = castMultiPolygon(mergedPolygons);
-                poly.isRect = poly.length === 5 &&
-                    poly[0][0] === poly[4][0] &&
-                    poly[0][1] === poly[4][1] &&
-                    (
-                        poly[0][0] === poly[1][0] &&
-                        poly[2][0] === poly[3][0] &&
-                        poly[0][1] === poly[3][1] &&
-                        poly[1][1] === poly[2][1]
-                    ) ||
-                    (
-                        poly[0][1] === poly[1][1] &&
-                        poly[2][1] === poly[3][1] &&
-                        poly[0][0] === poly[3][0] &&
-                        poly[1][0] === poly[2][0]
-                    );
-
-                if(poly.isRect) {
-                    poly.xmin = Math.min(poly[0][0], poly[2][0]);
-                    poly.xmax = Math.max(poly[0][0], poly[2][0]);
-                    poly.ymin = Math.min(poly[0][1], poly[2][1]);
-                    poly.ymax = Math.max(poly[0][1], poly[2][1]);
-                }
             }
 
             throttle.throttle(
@@ -398,6 +376,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
+
             dragOptions.gd.emit('plotly_selected', eventData);
 
             if(!immediateSelect && currentPolygon && dragOptions.selectionDefs) {
@@ -1149,14 +1128,14 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
             var xref = activePolygons[0].xref;
             var yref = activePolygons[0].yref;
             if(xref && yref) {
-                var activePolygon = castMultiPolygon(activePolygons);
+                var poly = castMultiPolygon(activePolygons);
 
                 var fillRangeItems = makeFillRangeItems([
                     getFromId(gd, xref, 'x'),
                     getFromId(gd, yref, 'y')
                 ]);
 
-                fillRangeItems(eventData, activePolygon);
+                fillRangeItems(eventData, poly);
             }
 
             gd.emit('plotly_selected', eventData);
@@ -1337,7 +1316,35 @@ function castMultiPolygon(allPolygons) {
         // which indicates next polygon
         p = p.concat([polygon[0]]);
     }
-    return p;
+
+    return computeRectAndRanges(p);
+}
+
+function computeRectAndRanges(poly) {
+    poly.isRect = poly.length === 5 &&
+        poly[0][0] === poly[4][0] &&
+        poly[0][1] === poly[4][1] &&
+        (
+            poly[0][0] === poly[1][0] &&
+            poly[2][0] === poly[3][0] &&
+            poly[0][1] === poly[3][1] &&
+            poly[1][1] === poly[2][1]
+        ) ||
+        (
+            poly[0][1] === poly[1][1] &&
+            poly[2][1] === poly[3][1] &&
+            poly[0][0] === poly[3][0] &&
+            poly[1][0] === poly[2][0]
+        );
+
+    if(poly.isRect) {
+        poly.xmin = Math.min(poly[0][0], poly[2][0]);
+        poly.xmax = Math.max(poly[0][0], poly[2][0]);
+        poly.ymin = Math.min(poly[0][1], poly[2][1]);
+        poly.ymax = Math.max(poly[0][1], poly[2][1]);
+    }
+
+    return poly;
 }
 
 function makeFillRangeItems(allAxes) {
