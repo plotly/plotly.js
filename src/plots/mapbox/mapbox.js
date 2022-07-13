@@ -14,10 +14,10 @@ var rectMode = dragHelpers.rectMode;
 var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
-var prepSelect = require('../cartesian/select').prepSelect;
-var clearSelect = require('../cartesian/select').clearSelect;
-var clearSelectionsCache = require('../cartesian/select').clearSelectionsCache;
-var selectOnClick = require('../cartesian/select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearOutline = require('../../components/selections').clearOutline;
+var clearSelectionsCache = require('../../components/selections').clearSelectionsCache;
+var selectOnClick = require('../../components/selections').selectOnClick;
 
 var constants = require('./constants');
 var createMapboxLayer = require('./layers');
@@ -506,9 +506,9 @@ proto.initFx = function(calcData, fullLayout) {
 
     // define event handlers on map creation, to keep one ref per map,
     // so that map.on / map.off in updateFx works as expected
-    self.clearSelect = function() {
+    self.clearOutline = function() {
         clearSelectionsCache(self.dragOptions);
-        clearSelect(self.dragOptions.gd);
+        clearOutline(self.dragOptions.gd);
     };
 
     /**
@@ -559,9 +559,9 @@ proto.updateFx = function(fullLayout) {
             ];
         };
     } else {
-        fillRangeItems = function(eventData, poly, pts) {
+        fillRangeItems = function(eventData, pts) {
             var dataPts = eventData.lassoPoints = {};
-            dataPts[self.id] = pts.filtered.map(invert);
+            dataPts[self.id] = pts.map(invert);
         };
     }
 

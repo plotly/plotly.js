@@ -843,6 +843,31 @@
         "bargroupgap": 0,
         "boxmode": "overlay",
         "separators": ".,",
-        "hidesources": false
+        "hidesources": false,
+        "selections": [{
+            "x0": 150,
+            "x1": 15000,
+            "y0": 60,
+            "y1": 40,
+            "opacity": 1,
+            "line": {
+                "color": "orange",
+                "dash": "dash",
+                "width": 3
+            }
+        }, {
+            "x0": 15000,
+            "x1": 80000,
+            "y0": 70,
+            "y1": 90,
+            "opacity": 1,
+            "line": {
+                "color": "green",
+                "dash": "dashdot",
+                "width": 2
+            }
+        }, {
+            "path": "M2000,65L4000,75L8000,65Z"
+        }]
     }
 }

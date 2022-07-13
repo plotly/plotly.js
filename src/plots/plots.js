@@ -13,7 +13,7 @@ var Color = require('../components/color');
 var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('./cartesian/axis_ids');
-var clearSelect = require('./cartesian/handle_outline').clearSelect;
+var clearOutline = require('../components/shapes/handle_outline').clearOutline;
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
@@ -481,7 +481,7 @@ plots.supplyDefaults = function(gd, opts) {
     // we should try to come up with a better solution when implementing
     // https://github.com/plotly/plotly.js/issues/1851
     if(oldFullLayout._zoomlayer && !gd._dragging) {
-        clearSelect({ // mock old gd
+        clearOutline({ // mock old gd
             _fullLayout: oldFullLayout
         });
     }
@@ -1537,6 +1537,11 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     Registry.getComponentMethod(
         'shapes',
         'supplyDrawNewShapeDefaults'
+    )(layoutIn, layoutOut, coerce);
+
+    Registry.getComponentMethod(
+        'selections',
+        'supplyDrawNewSelectionDefaults'
     )(layoutIn, layoutOut, coerce);
 
     coerce('meta');
@@ -2901,6 +2906,7 @@ function _transition(gd, transitionOpts, opts) {
         interruptPreviousTransitions,
         opts.prepareFn,
         plots.rehover,
+        plots.reselect,
         executeTransitions
     ];
 
@@ -3355,6 +3361,10 @@ plots.redrag = function(gd) {
     if(gd._fullLayout._redrag) {
         gd._fullLayout._redrag();
     }
+};
+
+plots.reselect = function(gd) {
+    Registry.getComponentMethod('selections', 'reselect')(gd);
 };
 
 plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {

@@ -18,9 +18,9 @@ var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var getAutoRange = require('../cartesian/autorange').getAutoRange;
 var dragElement = require('../../components/dragelement');
-var prepSelect = require('../cartesian/select').prepSelect;
-var clearSelect = require('../cartesian/select').clearSelect;
-var selectOnClick = require('../cartesian/select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearOutline = require('../../components/selections').clearOutline;
+var selectOnClick = require('../../components/selections').selectOnClick;
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');
@@ -440,9 +440,9 @@ proto.updateFx = function(fullLayout, geoLayout) {
             ];
         };
     } else if(dragMode === 'lasso') {
-        fillRangeItems = function(eventData, poly, pts) {
+        fillRangeItems = function(eventData, poly) {
             var dataPts = eventData.lassoPoints = {};
-            dataPts[_this.id] = pts.filtered.map(invert);
+            dataPts[_this.id] = poly.map(invert);
         };
     }
 
@@ -462,7 +462,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         subplot: _this.id,
         clickFn: function(numClicks) {
             if(numClicks === 2) {
-                clearSelect(gd);
+                clearOutline(gd);
             }
         }
     };

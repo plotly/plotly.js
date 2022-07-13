@@ -615,6 +615,24 @@
      }
     }
    },
+   "activeselection": {
+    "editType": "none",
+    "fillcolor": {
+     "description": "Sets the color filling the active selection' interior.",
+     "dflt": "rgba(0,0,0,0)",
+     "editType": "none",
+     "valType": "color"
+    },
+    "opacity": {
+     "description": "Sets the opacity of the active selection.",
+     "dflt": 0.5,
+     "editType": "none",
+     "max": 1,
+     "min": 0,
+     "valType": "number"
+    },
+    "role": "object"
+   },
    "activeshape": {
     "editType": "none",
     "fillcolor": {
@@ -3420,6 +3438,50 @@
      "editType": "none",
      "valType": "any"
     }
+   },
+   "newselection": {
+    "editType": "none",
+    "line": {
+     "color": {
+      "description": "Sets the line color. By default uses either dark grey or white to increase contrast with background color.",
+      "editType": "none",
+      "valType": "color"
+     },
+     "dash": {
+      "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+      "dflt": "dot",
+      "editType": "none",
+      "valType": "string",
+      "values": [
+       "solid",
+       "dot",
+       "dash",
+       "longdash",
+       "dashdot",
+       "longdashdot"
+      ]
+     },
+     "editType": "none",
+     "role": "object",
+     "width": {
+      "description": "Sets the line width (in px).",
+      "dflt": 1,
+      "editType": "none",
+      "min": 1,
+      "valType": "number"
+     }
+    },
+    "mode": {
+     "description": "Describes how a new selection is created. If `immediate`, a new selection is created after first mouse up. If `gradual`, a new selection is not created after first mouse. By adding to and subtracting from the initial selection, this option allows declaring extra outlines of the selection.",
+     "dflt": "immediate",
+     "editType": "none",
+     "valType": "enumerated",
+     "values": [
+      "immediate",
+      "gradual"
+     ]
+    },
+    "role": "object"
    },
    "newshape": {
     "drawdirection": {
@@ -6844,6 +6906,117 @@
     "description": "Controls persistence of user-driven changes in selected points from all traces.",
     "editType": "none",
     "valType": "any"
+   },
+   "selections": {
+    "items": {
+     "selection": {
+      "editType": "arraydraw",
+      "line": {
+       "color": {
+        "anim": true,
+        "description": "Sets the line color.",
+        "editType": "arraydraw",
+        "valType": "color"
+       },
+       "dash": {
+        "description": "Sets the dash style of lines. Set to a dash type string (*solid*, *dot*, *dash*, *longdash*, *dashdot*, or *longdashdot*) or a dash length list in px (eg *5px,10px,2px,2px*).",
+        "dflt": "dot",
+        "editType": "arraydraw",
+        "valType": "string",
+        "values": [
+         "solid",
+         "dot",
+         "dash",
+         "longdash",
+         "dashdot",
+         "longdashdot"
+        ]
+       },
+       "editType": "arraydraw",
+       "role": "object",
+       "width": {
+        "anim": true,
+        "description": "Sets the line width (in px).",
+        "dflt": 1,
+        "editType": "arraydraw",
+        "min": 1,
+        "valType": "number"
+       }
+      },
+      "name": {
+       "description": "When used in a template, named items are created in the output figure in addition to any items the figure already has in this array. You can modify these items in the output figure by making your own item with `templateitemname` matching this `name` alongside your modifications (including `visible: false` or `enabled: false` to hide it). Has no effect outside of a template.",
+       "editType": "arraydraw",
+       "valType": "string"
+      },
+      "opacity": {
+       "description": "Sets the opacity of the selection.",
+       "dflt": 0.7,
+       "editType": "arraydraw",
+       "max": 1,
+       "min": 0,
+       "valType": "number"
+      },
+      "path": {
+       "description": "For `type` *path* - a valid SVG path similar to `shapes.path` in data coordinates. Allowed segments are: M, L and Z.",
+       "editType": "arraydraw",
+       "valType": "string"
+      },
+      "role": "object",
+      "templateitemname": {
+       "description": "Used to refer to a named item in this array in the template. Named items from the template will be created even without a matching item in the input figure, but you can modify one by making an item with `templateitemname` matching its `name`, alongside your modifications (including `visible: false` or `enabled: false` to hide it). If there is no template or no matching item, this item will be hidden unless you explicitly show it with `visible: true`.",
+       "editType": "arraydraw",
+       "valType": "string"
+      },
+      "type": {
+       "description": "Specifies the selection type to be drawn. If *rect*, a rectangle is drawn linking (`x0`,`y0`), (`x1`,`y0`), (`x1`,`y1`) and (`x0`,`y1`). If *path*, draw a custom SVG path using `path`.",
+       "editType": "arraydraw",
+       "valType": "enumerated",
+       "values": [
+        "rect",
+        "path"
+       ]
+      },
+      "x0": {
+       "description": "Sets the selection's starting x position.",
+       "editType": "arraydraw",
+       "valType": "any"
+      },
+      "x1": {
+       "description": "Sets the selection's end x position.",
+       "editType": "arraydraw",
+       "valType": "any"
+      },
+      "xref": {
+       "description": "Sets the selection's x coordinate axis. If set to a x axis id (e.g. *x* or *x2*), the `x` position refers to a x coordinate. If set to *paper*, the `x` position refers to the distance from the left of the plotting area in normalized coordinates where *0* (*1*) corresponds to the left (right). If set to a x axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the left of the domain of that axis: e.g., *x2 domain* refers to the domain of the second x  axis and a x position of 0.5 refers to the point between the left and the right of the domain of the second x axis.",
+       "editType": "arraydraw",
+       "valType": "enumerated",
+       "values": [
+        "paper",
+        "/^x([2-9]|[1-9][0-9]+)?( domain)?$/"
+       ]
+      },
+      "y0": {
+       "description": "Sets the selection's starting y position.",
+       "editType": "arraydraw",
+       "valType": "any"
+      },
+      "y1": {
+       "description": "Sets the selection's end y position.",
+       "editType": "arraydraw",
+       "valType": "any"
+      },
+      "yref": {
+       "description": "Sets the selection's x coordinate axis. If set to a y axis id (e.g. *y* or *y2*), the `y` position refers to a y coordinate. If set to *paper*, the `y` position refers to the distance from the bottom of the plotting area in normalized coordinates where *0* (*1*) corresponds to the bottom (top). If set to a y axis ID followed by *domain* (separated by a space), the position behaves like for *paper*, but refers to the distance in fractions of the domain length from the bottom of the domain of that axis: e.g., *y2 domain* refers to the domain of the second y  axis and a y position of 0.5 refers to the point between the bottom and the top of the domain of the second y axis.",
+       "editType": "arraydraw",
+       "valType": "enumerated",
+       "values": [
+        "paper",
+        "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
+       ]
+      }
+     }
+    },
+    "role": "object"
    },
    "separators": {
     "description": "Sets the decimal and thousand separators. For example, *. * puts a '.' before decimals and a space between thousands. In English locales, dflt is *.,* but other locales may alter this default.",
