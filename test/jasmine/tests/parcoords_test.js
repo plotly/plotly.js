@@ -1,6 +1,12 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = require('@plotly/d3');
+var Registry = require('@src/registry');
+function _doPlot(gd, fig) {
+    return Registry.call('_doPlot', gd, fig.data, fig.layout);
+}
+
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var Plots = require('@src/plots/plots');
 var Parcoords = require('@src/traces/parcoords');
 var attributes = require('@src/traces/parcoords/attributes');
@@ -52,16 +58,8 @@ function mostOfDrag(x1, y1, x2, y2) {
     mouseEvent('mousemove', x2, y2);
 }
 
-function purgeGraphDiv(done) {
-    var gd = d3.select('.js-plotly-plot').node();
-    if(gd) Plotly.purge(gd);
-    destroyGraphDiv();
-
-    return delay(50)().then(done);
-}
-
 function getAvgPixelByChannel(id) {
-    var canvas = d3.select(id).node();
+    var canvas = d3Select(id).node();
 
     var imgData = readPixel(canvas, 0, 0, canvas.width, canvas.height);
     var n = imgData.length * 0.25;
@@ -365,10 +363,12 @@ describe('parcoords initialization tests', function() {
 describe('parcoords edge cases', function() {
     var gd;
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl Works fine with one panel only', function(done) {
         var mockCopy = Lib.extendDeep({}, mock2);
@@ -538,7 +538,7 @@ describe('parcoords edge cases', function() {
             mockCopy.data[0].dimensions[i] = newDimension;
         }
 
-        Plotly.plot(gd, mockCopy).then(function() {
+        Plotly.newPlot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
@@ -565,7 +565,7 @@ describe('parcoords edge cases', function() {
             mockCopy.data[0].dimensions[i] = newDimension;
         }
 
-        Plotly.plot(gd, mockCopy).then(function() {
+        Plotly.newPlot(gd, mockCopy).then(function() {
             expect(gd.data.length).toEqual(1);
             expect(gd.data[0].dimensions.length).toEqual(60);
             expect(document.querySelectorAll('.axis').length).toEqual(60);
@@ -636,8 +636,11 @@ describe('parcoords edge cases', function() {
 
 describe('parcoords Lifecycle methods', function() {
     var gd;
-    beforeEach(function() { gd = createGraphDiv(); });
-    afterEach(purgeGraphDiv);
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+        gd = createGraphDiv();
+    });
+    afterEach(destroyGraphDiv);
 
     it('Plotly.deleteTraces with one trace removes the plot', function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
@@ -648,7 +651,7 @@ describe('parcoords Lifecycle methods', function() {
             expect(gd.data.length).toEqual(1);
 
             return Plotly.deleteTraces(gd, 0).then(function() {
-                expect(d3.selectAll('.gl-canvas').node(0)).toEqual(null);
+                expect(d3SelectAll('.gl-canvas').node(0)).toEqual(null);
                 expect(gd.data.length).toEqual(0);
             });
         })
@@ -665,7 +668,7 @@ describe('parcoords Lifecycle methods', function() {
             .then(function() {
                 expect(gd.data.length).toEqual(1);
                 expect(document.querySelectorAll('.y-axis').length).toEqual(10);
-                return Plotly.plot(gd, mockCopy2);
+                return _doPlot(gd, mockCopy2);
             })
             .then(function() {
                 expect(gd.data.length).toEqual(2);
@@ -688,7 +691,7 @@ describe('parcoords Lifecycle methods', function() {
 
     function _assertVisibleData(visible, msg) {
         return function() {
-            var canvases = d3.selectAll('.gl-canvas');
+            var canvases = d3SelectAll('.gl-canvas');
             expect(canvases.size()).toBe(3, msg);
             canvases.each(function() {
                 var imageArray = readPixel(this, 0, 0, this.width, this.height);
@@ -734,7 +737,7 @@ describe('parcoords Lifecycle methods', function() {
     });
 
     describe('Having two datasets', function() {
-        it('@gl Two subsequent calls to Plotly.plot should create two parcoords rows', function(done) {
+        it('@gl Two subsequent calls to _doPlot should create two parcoords rows', function(done) {
             var mockCopy = Lib.extendDeep({}, mock);
             var mockCopy2 = Lib.extendDeep({}, mock);
             mockCopy.data[0].domain = {x: [0, 0.45]};
@@ -749,7 +752,7 @@ describe('parcoords Lifecycle methods', function() {
                     expect(document.querySelectorAll('.gl-container').length).toEqual(1);
                     expect(gd.data.length).toEqual(1);
 
-                    return Plotly.plot(gd, mockCopy2);
+                    return _doPlot(gd, mockCopy2);
                 })
                 .then(function() {
                     expect(1).toEqual(1);
@@ -889,6 +892,180 @@ describe('parcoords Lifecycle methods', function() {
         })
         .then(done, done.fail);
     });
+
+    it('@gl unselected.line.color `Plotly.restyle` should change context layer line.color', function(done) {
+        var testLayer = '.gl-canvas-context';
+
+        var list1 = [];
+        var list2 = [];
+        for(var i = 0; i <= 100; i++) {
+            list1[i] = i;
+            list2[i] = 100 - i;
+        }
+
+        Plotly.newPlot(gd, [{
+            type: 'parcoords',
+            dimensions: [{
+                constraintrange: [1, 10],
+                values: list1
+            }, {
+                values: list2
+            }],
+            line: {color: '#0F0'},
+            unselected: {line: {color: '#F00'}}
+        }], {
+            margin: {
+                t: 0,
+                b: 0,
+                l: 0,
+                r: 0
+            },
+            width: 300,
+            height: 200
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            return Plotly.restyle(gd, 'unselected.line.color', '#00F');
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).not.toBe(0, 'blue');
+
+            return Plotly.restyle(gd, 'unselected.line.color', 'rgba(0,0,0,0)');
+        })
+        .then(function() {
+            var rgb = getAvgPixelByChannel(testLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl unselected.line.color `Plotly.react` should change line.color and unselected.line.color', function(done) {
+        var unselectedLayer = '.gl-canvas-context';
+        var selectedLayer = '.gl-canvas-focus';
+
+        var list1 = [];
+        var list2 = [];
+        for(var i = 0; i <= 100; i++) {
+            list1[i] = i;
+            list2[i] = 100 - i;
+        }
+
+        var fig = {
+            data: [{
+                type: 'parcoords',
+                dimensions: [{
+                    constraintrange: [1, 10],
+                    values: list1
+                }, {
+                    values: list2
+                }],
+                line: {color: '#0F0'},
+                unselected: {line: {color: '#F00'}}
+            }],
+            layout: {
+                margin: {
+                    t: 0,
+                    b: 0,
+                    l: 0,
+                    r: 0
+                },
+                width: 300,
+                height: 200
+            }
+        };
+
+        var rgb;
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            rgb = getAvgPixelByChannel(unselectedLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            rgb = getAvgPixelByChannel(selectedLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).not.toBe(0, 'green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            fig.data[0].line.color = '#FF0';
+            fig.data[0].unselected.line.color = '#00F';
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            rgb = getAvgPixelByChannel(selectedLayer);
+            expect(rgb[0]).not.toBe(0, 'red');
+            expect(rgb[1]).not.toBe(0, 'green');
+            expect(rgb[2]).toBe(0, 'no blue');
+
+            rgb = getAvgPixelByChannel(unselectedLayer);
+            expect(rgb[0]).toBe(0, 'no red');
+            expect(rgb[1]).toBe(0, 'no green');
+            expect(rgb[2]).not.toBe(0, 'blue');
+        })
+        .then(done, done.fail);
+    });
+});
+
+describe('parcoords hover', function() {
+    var mockCopy;
+    var gd;
+
+    beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
+
+        mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.data[0].domain = {
+            x: [0.1, 0.9],
+            y: [0.05, 0.85]
+        };
+
+        if(!mockCopy.config) mockCopy.config = {};
+        mockCopy.config.plotGlPixelRatio = 1;
+
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('@gl Should emit a \'plotly_hover\' event', function(done) {
+        var hoverCalls = 0;
+        var unhoverCalls = 0;
+
+        Plotly.react(gd, mockCopy)
+        .then(function() {
+            gd.on('plotly_hover', function() { hoverCalls++; });
+            gd.on('plotly_unhover', function() { unhoverCalls++; });
+
+            expect(hoverCalls).toBe(0);
+            expect(unhoverCalls).toBe(0);
+
+            mouseTo(324, 216);
+            mouseTo(315, 218);
+
+            return delay(20)();
+        })
+        .then(function() {
+            expect(hoverCalls).toBe(1);
+            expect(unhoverCalls).toBe(0);
+            mouseTo(329, 153);
+        })
+        .then(delay(20))
+        .then(function() {
+            expect(hoverCalls).toBe(1);
+            expect(unhoverCalls).toBe(1);
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('parcoords basic use', function() {
@@ -896,7 +1073,7 @@ describe('parcoords basic use', function() {
     var gd;
 
     beforeEach(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
 
         mockCopy = Lib.extendDeep({}, mock);
         mockCopy.data[0].domain = {
@@ -907,13 +1084,13 @@ describe('parcoords basic use', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl should create three WebGL contexts per graph', function(done) {
         Plotly.react(gd, mockCopy)
         .then(function() {
             var cnt = 0;
-            d3.select(gd).selectAll('canvas').each(function(d) {
+            d3Select(gd).selectAll('canvas').each(function(d) {
                 if(d.regl) cnt++;
             });
             expect(cnt).toBe(3);
@@ -941,7 +1118,7 @@ describe('parcoords basic use', function() {
         .then(done, done.fail);
     });
 
-    it('@gl Calling `Plotly.plot` again should add the new parcoords', function(done) {
+    it('@gl Calling _doPlot again should add the new parcoords', function(done) {
         var reversedMockCopy = Lib.extendDeep({}, mockCopy);
         reversedMockCopy.data[0].dimensions = reversedMockCopy.data[0].dimensions.slice().reverse();
         reversedMockCopy.data[0].dimensions.forEach(function(d) {d.id = 'R_' + d.id;});
@@ -949,7 +1126,7 @@ describe('parcoords basic use', function() {
 
         Plotly.react(gd, mockCopy)
         .then(function() {
-            return Plotly.plot(gd, reversedMockCopy);
+            return _doPlot(gd, reversedMockCopy);
         })
         .then(function() {
             expect(gd.data.length).toEqual(2);
@@ -1058,36 +1235,6 @@ describe('parcoords basic use', function() {
         })
         .then(function() {
             expect(tester.get()).toBe(true);
-        })
-        .then(done, done.fail);
-    });
-
-    it('@gl Should emit a \'plotly_hover\' event', function(done) {
-        var hoverCalls = 0;
-        var unhoverCalls = 0;
-
-        Plotly.react(gd, mockCopy)
-        .then(function() {
-            gd.on('plotly_hover', function() { hoverCalls++; });
-            gd.on('plotly_unhover', function() { unhoverCalls++; });
-
-            expect(hoverCalls).toBe(0);
-            expect(unhoverCalls).toBe(0);
-
-            mouseTo(324, 216);
-            mouseTo(315, 218);
-
-            return delay(20)();
-        })
-        .then(function() {
-            expect(hoverCalls).toBe(1);
-            expect(unhoverCalls).toBe(0);
-            mouseTo(329, 153);
-        })
-        .then(delay(20))
-        .then(function() {
-            expect(hoverCalls).toBe(1);
-            expect(unhoverCalls).toBe(1);
         })
         .then(done, done.fail);
     });
@@ -1212,10 +1359,11 @@ describe('parcoords react more attributes', function() {
     var gd;
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl should change various axis parameters', function(done) {
         Plotly.react(gd, mock3)
@@ -1242,7 +1390,7 @@ describe('parcoords react more attributes', function() {
             return Plotly.react(gd, mockCopy.data);
         })
         .then(function() {
-            var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+            var allParcoords = d3SelectAll('.' + PC.cn.parcoords);
 
             var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
             expect(allLabels.size()).toBe(3);
@@ -1289,7 +1437,7 @@ describe('parcoords react more attributes', function() {
             expect(allHighlights.size()).toBe(3);
             var nHighlight = [];
             allHighlights.each(function() {
-                var highlight = d3.select(this)[0][0];
+                var highlight = d3Select(this)[0][0];
                 nHighlight.push(
                     highlight.getAttribute('stroke-dasharray').split(',').length
                 );
@@ -1308,7 +1456,7 @@ describe('parcoords react more attributes', function() {
         m0.dimensions[1].visible = false;
 
         Plotly.react(gd, mockCopy.data).then(function() {
-            var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+            var allParcoords = d3SelectAll('.' + PC.cn.parcoords);
 
             var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
             expect(allLabels.size()).toBe(2);
@@ -1317,7 +1465,7 @@ describe('parcoords react more attributes', function() {
         })
         .then(function() {
             return Plotly.react(gd, mockCopy.data).then(function() {
-                var allParcoords = d3.selectAll('.' + PC.cn.parcoords);
+                var allParcoords = d3SelectAll('.' + PC.cn.parcoords);
 
                 var allLabels = allParcoords.selectAll('.' + PC.cn.axisTitle);
                 expect(allLabels.size()).toBe(3);
@@ -1357,22 +1505,21 @@ describe('parcoords constraint interactions - without defined axis ranges', func
     var snapDelay = 100;
     var noSnapDelay = 20;
     beforeAll(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
         initialSnapDuration = PC.bar.snapDuration;
         PC.bar.snapDuration = shortenedSnapDuration;
     });
 
     afterAll(function() {
-        purgeGraphDiv();
+        destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     function getDashArray(index) {
         var highlight = document.querySelectorAll('.highlight')[index];
@@ -1643,22 +1790,21 @@ describe('parcoords constraint interactions - with defined axis ranges', functio
     var shortenedSnapDuration = 20;
     var noSnapDelay = 20;
     beforeAll(function() {
-        jasmine.DEFAULT_TIMEOUT_INTERVAL = 10000;
-
         initialSnapDuration = PC.bar.snapDuration;
         PC.bar.snapDuration = shortenedSnapDuration;
     });
 
     afterAll(function() {
-        purgeGraphDiv();
+        destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl updates constraints above and below axis ranges', function(done) {
         var x = 295;
@@ -1732,15 +1878,16 @@ describe('parcoords constraint click interactions - with pre-defined constraint 
     });
 
     afterAll(function() {
-        purgeGraphDiv();
+        destroyGraphDiv();
         PC.bar.snapDuration = initialSnapDuration;
     });
 
     beforeEach(function() {
+        jasmine.DEFAULT_TIMEOUT_INTERVAL = 15000;
         gd = createGraphDiv();
     });
 
-    afterEach(purgeGraphDiv);
+    afterEach(destroyGraphDiv);
 
     it('@gl should not drop constraintrange on click', function(done) {
         Plotly.react(gd, initialFigure())

@@ -1,16 +1,9 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var parcoords = require('./parcoords');
 var prepareRegl = require('../../lib/prepare_regl');
 var isVisible = require('./helpers').isVisible;
+var reglPrecompiled = {};
 
 function newIndex(visibleIndices, orig, dim) {
     var origIndex = orig.indexOf(dim);
@@ -31,10 +24,10 @@ function sorter(visibleIndices, orig) {
     };
 }
 
-module.exports = function plot(gd, cdModule) {
+var exports = module.exports = function plot(gd, cdModule) {
     var fullLayout = gd._fullLayout;
 
-    var success = prepareRegl(gd);
+    var success = prepareRegl(gd, [], reglPrecompiled);
     if(!success) return;
 
     var currentDims = {};
@@ -151,3 +144,5 @@ module.exports = function plot(gd, cdModule) {
         }
     );
 };
+
+exports.reglPrecompiled = reglPrecompiled;

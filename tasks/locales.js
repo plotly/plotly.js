@@ -1,0 +1,18 @@
+var path = require('path');
+var glob = require('glob');
+
+var constants = require('./util/constants');
+var wrapLocale = require('./util/wrap_locale');
+
+var pathToLib = constants.pathToLib;
+var pathToDist = constants.pathToDist;
+
+// "Browserify" the locales
+var localeGlob = path.join(pathToLib, 'locales', '*.js');
+glob(localeGlob, function(err, files) {
+    files.forEach(function(file) {
+        var outName = 'plotly-locale-' + path.basename(file);
+        var outPath = path.join(pathToDist, outName);
+        wrapLocale(file, outPath);
+    });
+});

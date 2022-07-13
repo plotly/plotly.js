@@ -1,4 +1,4 @@
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -560,7 +560,7 @@ describe('contour plotting and editing', function() {
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
+            d3SelectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
             return out;
         }
 
@@ -639,12 +639,12 @@ describe('contour hover', function() {
         afterAll(destroyGraphDiv);
 
         it('should not display hover on missing data and hoverongaps is disabled', function() {
-            var pt = _hover(gd, 10, 100)[0];
-
             var hoverData;
             gd.on('plotly_hover', function(data) {
                 hoverData = data;
             });
+
+            var pt = _hover(gd, 10, 100)[0];
 
             expect(hoverData).toEqual(undefined);
             expect(pt).toEqual(undefined);

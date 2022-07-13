@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -18,34 +18,10 @@ var hover = require('../assets/hover');
 var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 
-// contourgl is not part of the dist plotly.js bundle initially
-Plotly.register([
-    require('@lib/contourgl')
-]);
-
 var mock0 = require('@mocks/gl2d_scatter-continuous-clustering.json');
 var mock1 = require('@mocks/gl2d_14.json');
-var mock2 = require('@mocks/gl2d_pointcloud-basic.json');
 
-var mock3 = {
-    data: [{
-        type: 'contourgl',
-        z: [
-            [10, 10.625, 12.5, 15.625, 20],
-            [5.625, 6.25, 8.125, 11.25, 15.625],
-            [2.5, 3.125, 5, 8.125, 12.5],
-            [0.625, 1.25, 3.125, 20, 10.625],
-            [0, 0.625, 2.5, 5.625, 10]
-        ],
-        colorscale: 'Jet',
-        // contours: { start: 2, end: 10, size: 1 },
-        zmin: 0,
-        zmax: 20
-    }],
-    layout: {}
-};
-
-var mock4 = {
+var mock2 = {
     data: [{
         x: [1, 2, 3, 4],
         y: [12, 3, 14, 4],
@@ -151,7 +127,7 @@ describe('Test hover and click interactions', function() {
                 .then(function(eventData) {
                     assertEventData(eventData, expected, opts.msg);
 
-                    var g = d3.select('g.hovertext');
+                    var g = d3Select('g.hovertext');
                     if(g.node() === null) {
                         expect(expected.noHoverLabel).toBe(true);
                     } else {
@@ -412,7 +388,7 @@ describe('Test hover and click interactions', function() {
     });
 
     it('@gl should output correct event data for pointcloud', function(done) {
-        var _mock = Lib.extendDeep({}, mock2);
+        var _mock = Lib.extendDeep({}, require('@mocks/gl2d_pointcloud-basic.json'));
 
         _mock.layout.hoverlabel = { font: {size: 8} };
         _mock.data[2].hoverlabel = {
@@ -438,8 +414,9 @@ describe('Test hover and click interactions', function() {
         .then(done, done.fail);
     });
 
-    it('@gl scatter3d should propagate marker colors to hover labels', function(done) {
+    it('@gl scattergl should propagate marker colors to hover labels', function(done) {
         var _mock = Lib.extendDeep({}, mock0);
+        _mock.layout.hovermode = 'x';
         _mock.layout.width = 800;
         _mock.layout.height = 600;
 
@@ -454,7 +431,7 @@ describe('Test hover and click interactions', function() {
             fontFamily: 'Arial',
             fontColor: 'rgb(68, 68, 68)'
         }, {
-            msg: 'pointcloud'
+            msg: 'scattergl marker colors'
         });
 
         Plotly.newPlot(gd, _mock)
@@ -463,15 +440,31 @@ describe('Test hover and click interactions', function() {
     });
 
     it('@gl should output correct event data for heatmapgl', function(done) {
-        var _mock = Lib.extendDeep({}, mock3);
-        _mock.data[0].type = 'heatmapgl';
+        var z = [
+            [10, 10.625, 12.5, 15.625, 20],
+            [5.625, 6.25, 8.125, 11.25, 15.625],
+            [2.5, 3.125, 5, 8.125, 12.5],
+            [0.625, 1.25, 3.125, 20, 10.625],
+            [0, 0.625, 2.5, 5.625, 10]
+        ];
 
-        _mock.data[0].hoverlabel = {
-            font: { size: _mock.data[0].z }
-        };
-
-        _mock.layout.hoverlabel = {
-            font: { family: 'Roboto' }
+        var _mock = {
+            data: [{
+                type: 'heatmapgl',
+                z: z,
+                hoverlabel: {
+                    font: { size: z }
+                },
+                colorscale: 'Jet',
+                // contours: { start: 2, end: 10, size: 1 },
+                zmin: 0,
+                zmax: 20
+            }],
+            layout: {
+                hoverlabel: {
+                    font: { family: 'Roboto' }
+                }
+            }
         };
 
         var run = makeRunner([540, 150], {
@@ -527,7 +520,7 @@ describe('Test hover and click interactions', function() {
     });
 
     it('@gl should output correct event data for scattergl after visibility restyle', function(done) {
-        var _mock = Lib.extendDeep({}, mock4);
+        var _mock = Lib.extendDeep({}, mock2);
 
         var run = makeRunner([435, 216], {
             x: 8,
@@ -568,7 +561,7 @@ describe('Test hover and click interactions', function() {
     });
 
     it('@gl should output correct event data for scattergl-fancy', function(done) {
-        var _mock = Lib.extendDeep({}, mock4);
+        var _mock = Lib.extendDeep({}, mock2);
         _mock.data[0].mode = 'markers+lines';
         _mock.data[1].mode = 'markers+lines';
         _mock.data[2].mode = 'markers+lines';
@@ -611,33 +604,6 @@ describe('Test hover and click interactions', function() {
             return Plotly.restyle(gd, 'visible', false, [1]);
         })
         .then(run2)
-        .then(done, done.fail);
-    });
-
-    it('@gl should output correct event data contourgl', function(done) {
-        var _mock = Lib.extendDeep({}, mock3);
-
-        _mock.data[0].hoverlabel = {
-            font: { size: _mock.data[0].z }
-        };
-
-        var run = makeRunner([540, 150], {
-            x: 3,
-            y: 3,
-            curveNumber: 0,
-            pointNumber: [3, 3],
-            bgcolor: 'rgb(68, 68, 68)',
-            bordercolor: 'rgb(255, 255, 255)',
-            fontSize: 20,
-            fontFamily: 'Arial',
-            fontColor: 'rgb(255, 255, 255)'
-        }, {
-            noUnHover: true,
-            msg: 'contourgl'
-        });
-
-        Plotly.newPlot(gd, _mock)
-        .then(run)
         .then(done, done.fail);
     });
 });

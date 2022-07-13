@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 // var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var delay = require('../assets/delay');
@@ -150,7 +150,7 @@ describe('Indicator plot', function() {
 
     describe('numbers', function() {
         function checkNumbersScale(value, msg) {
-            var numbers = d3.selectAll('g.numbers');
+            var numbers = d3SelectAll('g.numbers');
             expect(numbers.length).toBe(1);
 
             var transform = numbers.attr('transform');
@@ -227,7 +227,7 @@ describe('Indicator plot', function() {
 
     describe('number', function() {
         function assertContent(txt) {
-            var sel = d3.selectAll('text.number');
+            var sel = d3SelectAll('text.number');
             expect(sel.length).toBe(1);
             expect(sel.text()).toBe(txt);
         }
@@ -280,7 +280,7 @@ describe('Indicator plot', function() {
 
     describe('delta', function() {
         function assertContent(txt) {
-            var sel = d3.selectAll('text.delta');
+            var sel = d3SelectAll('text.delta');
             expect(sel.length).toBe(1);
             expect(sel.text()).toBe(txt);
         }
@@ -368,10 +368,10 @@ describe('Indicator plot', function() {
             .then(function() {
                 gd.style.display = 'block';
 
-                var t = d3.selectAll('text.title').node();
+                var t = d3SelectAll('text.title').node();
                 var titleBBox = t.getBoundingClientRect();
 
-                var numbers = d3.selectAll('g.numbers').node();
+                var numbers = d3SelectAll('g.numbers').node();
                 var numbersBBox = numbers.getBoundingClientRect();
 
                 expect(titleBBox.bottom).toBeCloseTo(numbersBBox.top - cn.titlePadding, 0);
@@ -389,10 +389,10 @@ describe('Indicator plot', function() {
             }])
             .then(function() {
                 gd.style.display = 'block';
-                var t = d3.selectAll('text.title').node();
+                var t = d3SelectAll('text.title').node();
                 var titleBBox = t.getBoundingClientRect();
 
-                var ax = d3.selectAll('g.angularaxis').node();
+                var ax = d3SelectAll('g.angularaxis').node();
                 var axBBox = ax.getBoundingClientRect();
                 expect(titleBBox.bottom).toBeCloseTo(axBBox.top - cn.titlePadding, 0);
             })
@@ -409,10 +409,10 @@ describe('Indicator plot', function() {
             }])
             .then(function() {
                 gd.style.display = 'block';
-                var t = d3.selectAll('text.title').node();
+                var t = d3SelectAll('text.title').node();
                 var titleBBox = t.getBoundingClientRect();
 
-                var ax = d3.selectAll('g.bulletaxis').node();
+                var ax = d3SelectAll('g.bulletaxis').node();
                 var axBBox = ax.getBoundingClientRect();
                 expect(titleBBox.right < axBBox.left).toBe(true);
             })
@@ -422,7 +422,7 @@ describe('Indicator plot', function() {
 
     it('restyle between modes', function(done) {
         function assertElementCnt(sel, cnt) {
-            var el = d3.selectAll(sel);
+            var el = d3SelectAll(sel);
             expect(el.size()).toBe(cnt, 'selection "' + sel + '" does not have size ' + cnt);
         }
         function assertGauge(shape, cnt) {
@@ -476,11 +476,11 @@ describe('Indicator plot', function() {
 
     it('should draw blank path when value is NaN', function(done) {
         function getArcPath() {
-            return d3.selectAll('g.value-arc > path').attr('d');
+            return d3SelectAll('g.value-arc > path').attr('d');
         }
 
         function getBulletRect() {
-            return d3.selectAll('g.value-bullet > rect').attr('width');
+            return d3SelectAll('g.value-bullet > rect').attr('width');
         }
 
         Plotly.newPlot(gd, [{

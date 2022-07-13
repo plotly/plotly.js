@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Color = require('../../components/color');
@@ -14,6 +6,7 @@ var Lib = require('../../lib');
 
 var handleSubplotDefaults = require('../subplot_defaults');
 var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
 var handleTickValueDefaults = require('../cartesian/tick_value_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
@@ -90,7 +83,7 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
 
     Lib.coerceFont(coerce, 'title.font', {
         family: options.font.family,
-        size: Math.round(options.font.size * 1.2),
+        size: Lib.bigFont(options.font.size),
         color: dfltFontColor
     });
 
@@ -98,7 +91,8 @@ function handleAxisDefaults(containerIn, containerOut, options, ternaryLayoutOut
     coerce('min');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
-    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear', {});
+    handlePrefixSuffixDefaults(containerIn, containerOut, coerce, 'linear');
+    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear');
     handleTickMarkDefaults(containerIn, containerOut, coerce,
         { outerTicks: true });
 

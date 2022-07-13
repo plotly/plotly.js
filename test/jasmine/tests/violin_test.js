@@ -1,10 +1,11 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 
 var Violin = require('@src/traces/violin');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -222,7 +223,84 @@ describe('Test violin calc:', function() {
         Plots.doCalcdata(gd);
         cd = gd.calcdata[0];
         fullLayout = gd._fullLayout;
+        return cd;
     }
+
+    it('should compute q1/q3 depending on *quartilemethod*', function() {
+        // samples from https://en.wikipedia.org/wiki/Quartile
+        var specs = {
+            // N is odd and is spanned by (4n+3)
+            odd: {
+                sample: [6, 7, 15, 36, 39, 40, 41, 42, 43, 47, 49],
+                methods: {
+                    linear: {q1: 20.25, q3: 42.75},
+                    exclusive: {q1: 15, q3: 43},
+                    inclusive: {q1: 25.5, q3: 42.5}
+                }
+            },
+            // N is odd and is spanned by (4n+1)
+            odd2: {
+                sample: [6, 15, 36, 39, 40, 42, 43, 47, 49],
+                methods: {
+                    linear: {q1: 30.75, q3: 44},
+                    exclusive: {q1: 25.5, q3: 45},
+                    inclusive: {q1: 36, q3: 43}
+                }
+            },
+            // N is even
+            even: {
+                sample: [7, 15, 36, 39, 40, 41],
+                methods: {
+                    linear: {q1: 15, q3: 40},
+                    exclusive: {q1: 15, q3: 40},
+                    inclusive: {q1: 15, q3: 40}
+                }
+            },
+            // samples from http://jse.amstat.org/v14n3/langford.html
+            s4: {
+                sample: [1, 2, 3, 4],
+                methods: {
+                    linear: {q1: 1.5, q3: 3.5},
+                    exclusive: {q1: 1.5, q3: 3.5},
+                    inclusive: {q1: 1.5, q3: 3.5}
+                }
+            },
+            s5: {
+                sample: [1, 2, 3, 4, 5],
+                methods: {
+                    linear: {q1: 1.75, q3: 4.25},
+                    exclusive: {q1: 1.5, q3: 4.5},
+                    inclusive: {q1: 2, q3: 4}
+                }
+            },
+            s6: {
+                sample: [1, 2, 3, 4, 5, 6],
+                methods: {
+                    linear: {q1: 2, q3: 5},
+                    exclusive: {q1: 2, q3: 5},
+                    inclusive: {q1: 2, q3: 5}
+                }
+            },
+            s7: {
+                sample: [1, 2, 3, 4, 5, 6, 7],
+                methods: {
+                    linear: {q1: 2.25, q3: 5.75},
+                    exclusive: {q1: 2, q3: 6},
+                    inclusive: {q1: 2.5, q3: 5.5}
+                }
+            }
+        };
+
+        for(var name in specs) {
+            var spec = specs[name];
+
+            for(var m in spec.methods) {
+                var cd = _calc({y: spec.sample, quartilemethod: m});
+                expect(cd[0].q1).toBe(spec.methods[m].q1, ['q1', m, name].join(' | '));
+                expect(cd[0].q3).toBe(spec.methods[m].q3, ['q3', m, name].join(' | '));
+            }
+        }
+    });
 
     it('should compute bandwidth and span based on the sample and *spanmode*', function() {
         var y = [1, 1, 2, 2, 3];
@@ -349,7 +427,7 @@ describe('Test violin hover:', function() {
             assertHoverLabelContent(specs);
 
             if(specs.hoverLabelPos) {
-                d3.selectAll('g.hovertext').each(function(_, i) {
+                d3SelectAll('g.hovertext').each(function(_, i) {
                     var bbox = this.getBoundingClientRect();
                     expect([bbox.bottom, bbox.top])
                         .toBeWithinArray(specs.hoverLabelPos[i], 10, 'bottom--top hover label ' + i);
@@ -360,11 +438,15 @@ describe('Test violin hover:', function() {
 
     [{
         desc: 'base',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: [
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
+            'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7',
             'y: 0.9266848, kde: 0.182'
         ],
-        name: ['radishes', '', '', '', '', ''],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with mean',
@@ -372,28 +454,45 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.meanline = {visible: true};
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45',
+            'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7', 'mean: 0.45',
             'y: 0.9266848, kde: 0.182'
         ],
-        name: ['radishes', '', '', '', '', '', ''],
+        name: ['radishes', '', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with overlaid violins',
         patch: function(fig) {
             fig.layout.violinmode = 'overlay';
+            fig.layout.hovermode = 'x';
+            fig.layout.height = 700;
+
             return fig;
         },
         nums: [
-            'q3: 0.6', 'median: 0.45', 'q3: 0.6', 'max: 1', 'y: 0.9266848, kde: 0.383',
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q1: 0.2', 'max: 0.7', 'y: 0.9266848, kde: 0.182',
-            'median: 0.45', 'q1: 0.1', 'q3: 0.6', 'max: 0.9', 'y: 0.9266848, kde: 0.435'
+            'median: 0.45', 'median: 0.45', 'median: 0.55',
+            'min: 0', 'min: 0.1', 'min: 0.2',
+            'lower fence: 0', 'lower fence: 0.1', 'lower fence: 0.2',
+            'q1: 0.1', 'q1: 0.2', 'q1: 0.3',
+            'q3: 0.6', 'q3: 0.6', 'q3: 0.6',
+            'upper fence: 0.7', 'upper fence: 0.9', 'upper fence: 1',
+            'max: 0.7', 'max: 0.9', 'max: 1',
+            'y: 1.211363, kde: 0.119',
+            'y: 1.211363, kde: 0.168'
         ],
         name: [
-            '', 'kale', '', '', '', 'radishes', '', '', '', '',
-            '', 'carrots', '', '', '', ''
+            'carrots', 'kale', 'radishes',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '',
+            '',
         ],
         axis: 'day 1'
     }, {
@@ -403,7 +502,6 @@ describe('Test violin hover:', function() {
                 trace.points = 'all';
                 trace.hoveron = 'points';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [220, 200],
@@ -433,8 +531,8 @@ describe('Test violin hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'hoveron violins+points | hovermode x (violin AND closest point)',
@@ -448,8 +546,8 @@ describe('Test violin hover:', function() {
             return fig;
         },
         pos: [207, 240],
-        nums: ['0.7', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', 'radishes', '', '', '', ''],
+        nums: ['0.7', 'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7'],
+        name: ['radishes', 'radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'text items on hover',
@@ -459,7 +557,6 @@ describe('Test violin hover:', function() {
                 trace.hoveron = 'points';
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -474,7 +571,6 @@ describe('Test violin hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -490,7 +586,6 @@ describe('Test violin hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'NOT THIS:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [180, 240],
@@ -499,7 +594,6 @@ describe('Test violin hover:', function() {
     }, {
         desc: 'one-sided violin under hovermode closest',
         // hoveron: 'kde+points'
-        // hovermode: 'closest'
         // width: 400
         // height: 700
         mock: require('@mocks/violin_side-by-side.json'),
@@ -529,23 +623,31 @@ describe('Test violin hover:', function() {
             return fig;
         },
         nums: [
-            'max: 50.81', 'median: 18.24', 'min: 3.07',
-            'q1: 13.8575', 'q3: 24.975', 'upper fence: 39.42'
+            'max: 50.81', 'min: 3.07', 'median: 18.24',
+            'q1: 13.8575', 'q3: 24.975', 'upper fence: 39.42', 'lower fence: 3.07'
         ],
-        name: ['', '', '', '', '', ''],
+        name: ['', '', '', '', '', '', ''],
         axis: 'Sat',
         hoverLabelPos: [
-            [364, 270], [352, 270], [339, 270],
-            [346, 270], [349, 270], [387, 270]
+            [338, 270],
+            [377, 270],
+            [351, 270],
+            [363, 270],
+            [345, 270],
+            [385, 270],
+            [347, 270]
         ]
     }, {
         desc: 'single horizontal violin',
         mock: require('@mocks/violin_non-linear.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'y';
+            return fig;
+        },
         pos: [310, 160],
-        nums: ['median: C', 'min: A', 'q1: B', 'q3: D', 'max: G', 'upper fence: D', 'x: C, kde: 1.005'],
-        name: ['categories', '', '', '', '', '', ''],
+        nums: ['median: C', 'min: A', 'q1: B', 'q3: D', 'max: G', 'upper fence: D', 'lower fence: A', 'x: C, kde: 1.005'],
+        name: ['categories', '', '', '', '', '', '', ''],
         axis: 'categories',
-        hOrder: [4, 5, 3, 6, 0, 2, 1],
         isRotated: true
     }, {
         desc: 'multiple horizontal violins',
@@ -556,12 +658,12 @@ describe('Test violin hover:', function() {
                 t.hoveron = 'violins';
             });
             fig.layout.violinmode = 'group';
+            fig.layout.hovermode = 'y';
             return fig;
         },
-        nums: ['median: 0.4', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'max: 0.9'],
-        name: ['kale', '', '', '', ''],
+        nums: ['median: 0.4', 'min: 0.1', 'lower fence: 0.1', 'q1: 0.2', 'q3: 0.7', 'upper fence: 0.9', 'max: 0.9'],
+        name: ['kale', '', '', '', '', '', ''],
         axis: 'day 2',
-        hOrder: [4, 3, 0, 2, 1],
         isRotated: true
     }, {
         desc: 'multiple horizontal violins (under hovermode:closest)',
@@ -572,16 +674,14 @@ describe('Test violin hover:', function() {
                 t.hoveron = 'violins';
             });
             fig.layout.violinmode = 'group';
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [200, 175],
         nums: [
-            '(median: 0.7, day 2)', '(min: 0.2, day 2)', '(q1: 0.5, day 2)',
-            '(q3: 0.8, day 2)', '(max: 0.9, day 2)'
+            '(median: 0.7, day 2)', '(min: 0.2, day 2)', '(lower fence: 0.2, day 2)', '(q1: 0.5, day 2)',
+            '(q3: 0.8, day 2)', '(upper fence: 0.9, day 2)', '(max: 0.9, day 2)'
         ],
-        name: ['radishes', '', '', '', ''],
-        hOrder: [4, 3, 0, 2, 1],
+        name: ['radishes', '', '', '', '', '', ''],
         isRotated: true
     }, {
         desc: 'hovering over single pt on horizontal violin should not rotate labels',
@@ -590,7 +690,6 @@ describe('Test violin hover:', function() {
             fig.data[0].x = fig.data[0].y;
             delete fig.data[0].y;
             fig.layout = {
-                hovermode: 'closest',
                 yaxis: {range: [-0.696, 0.5]}
             };
             return fig;
@@ -607,13 +706,13 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(t) {
                 t.hoveron = 'violins';
             });
+            fig.layout.hovermode = 'y';
             return fig;
         },
         pos: [430, 130],
-        nums: ['max: 0.9', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'median: 0.4'],
-        name: ['', '', '', '', 'kale'],
+        nums: ['upper fence: 0.9', 'lower fence: 0.1', 'max: 0.9', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'median: 0.4'],
+        name: ['', '', '', '', '', '', 'kale'],
         axis: '2018 - day 2',
-        hOrder: [0, 3, 4, 2, 1]
     }, {
         desc: 'orientation:h | hovermode:closest',
         mock: require('@mocks/violin_grouped_horz-multicategory.json'),
@@ -622,17 +721,16 @@ describe('Test violin hover:', function() {
             fig.data.forEach(function(t) {
                 t.hoveron = 'violins';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [430, 130],
         nums: [
+            '(upper fence: 0.9, 2018 - day 2)', '(lower fence: 0.1, 2018 - day 2)',
             '(max: 0.9, 2018 - day 2)', '(min: 0.1, 2018 - day 2)',
             '(q1: 0.2, 2018 - day 2)', '(q3: 0.7, 2018 - day 2)',
             '(median: 0.4, 2018 - day 2)'
         ],
-        name: ['', '', '', '', 'kale'],
-        hOrder: [0, 3, 4, 2, 1]
+        name: ['', '', '', '', '', '', 'kale']
     }, {
         desc: 'on points with numeric positions | orientation:h | hovermode:closest',
         mock: {
@@ -643,8 +741,7 @@ describe('Test violin hover:', function() {
                 orientation: 'h',
                 y: [2, 2, 2, 2, 2],
                 x: [13.1, 14.2, 14, 13, 13.3]
-            }],
-            layout: {hovermode: 'closest'}
+            }]
         },
         pos: [417, 309],
         nums: '(14, 2)',
@@ -657,7 +754,6 @@ describe('Test violin hover:', function() {
                 trace.hoveron = 'points';
                 trace.hovertemplate = 'Sample pt %{pointNumber}: %{y:.3f}<extra></extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         pos: [220, 200],
@@ -683,7 +779,7 @@ describe('Test violin hover:', function() {
         });
 
         function assertViolinHoverLine(pos) {
-            var line = d3.select('.hoverlayer').selectAll('line');
+            var line = d3Select('.hoverlayer').selectAll('line');
 
             expect(line.size()).toBe(1, 'only one violin line at a time');
             expect(line.attr('class').indexOf('violinline')).toBe(0, 'correct class name');
@@ -734,15 +830,15 @@ describe('Test violin hover:', function() {
             mouseEvent('mousemove', 350, 225);
 
             var actual = [];
-            d3.selectAll('g.hovertext').each(function() {
+            d3SelectAll('g.hovertext').each(function() {
                 var bbox = this.getBoundingClientRect();
-                var tx = d3.select(this).text();
+                var tx = d3Select(this).text();
                 actual.push([tx, bbox]);
             });
 
             actual = actual.sort(function(a, b) { return a[1].top - b[1].top; });
 
-            expect(actual.length).toBe(8, '# of value hover labels');
+            expect(actual.length).toBe(9, '# of value hover labels');
 
             for(var i = 0; i < actual.length - 1; i++) {
                 var a = actual[i];
@@ -777,7 +873,7 @@ describe('Test violin restyle:', function() {
         }
 
         function _assert(msg, exp) {
-            var trace3 = d3.select(gd).select('.violinlayer > .trace');
+            var trace3 = d3Select(gd).select('.violinlayer > .trace');
             _assertOne(msg, exp, trace3, 'violinCnt', 'path.violin');
             _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
             _assertOne(msg, exp, trace3, 'meanlineInBoxCnt', 'path.mean');

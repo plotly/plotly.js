@@ -1,7 +1,7 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -225,7 +225,7 @@ describe('Plotly.toImage', function() {
     it('should work on pages with <base>', function(done) {
         var parser = new DOMParser();
 
-        var base = d3.select('body')
+        var base = d3Select('body')
             .append('base')
             .attr('href', 'https://chart-studio.plotly.com');
 
@@ -239,10 +239,10 @@ describe('Plotly.toImage', function() {
             var clipPath = gSubplot.getAttribute('clip-path');
             var len = clipPath.length;
 
-            var head = clipPath.substr(0, 5);
-            var tail = clipPath.substr(len - 8, len);
-            expect(head).toBe('url(\'', 'subplot clipPath head');
-            expect(tail).toBe('xyplot\')', 'subplot clipPath tail');
+            var head = clipPath.substr(0, 4);
+            var tail = clipPath.substr(len - 7, len);
+            expect(head).toBe('url(', 'subplot clipPath head');
+            expect(tail).toBe('xyplot)', 'subplot clipPath tail');
 
             var middle = clipPath.substr(4, 10);
             expect(middle.length).toBe(10, 'subplot clipPath uid length');

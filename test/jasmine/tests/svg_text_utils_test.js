@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var util = require('@src/lib/svg_text_utils');
 
@@ -18,7 +19,7 @@ describe('svg+text utils', function() {
         });
 
         function mockTextSVGElement(txt) {
-            return d3.select('body')
+            return d3Select('body')
                 .append('svg')
                 .classed('text-tester', true)
                 .append('text')
@@ -82,7 +83,17 @@ describe('svg+text utils', function() {
         }
 
         afterEach(function() {
-            d3.selectAll('.text-tester').remove();
+            d3SelectAll('.text-tester').remove();
+        });
+
+        it('checks for XSS attack in href protocol', function() {
+            var node = mockTextSVGElement(
+                '<a href="j%61vascript:alert(\'attack\')">XSS</a>'
+            );
+
+            expect(node.text()).toEqual('XSS');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, null);
         });
 
         it('checks for XSS attack in href', function() {
@@ -531,7 +542,15 @@ describe('sanitizeHTML', function() {
     }
 
     afterEach(function() {
-        d3.selectAll('.text-tester').remove();
+        d3SelectAll('.text-tester').remove();
+    });
+
+    it('checks for XSS attack in href protocol', function() {
+        var innerHTML = mockHTML(
+            '<a href="j%61vascript:alert(\'attack\')">XSS</a>'
+        );
+
+        expect(innerHTML).toEqual('<a>XSS</a>');
     });
 
     it('checks for XSS attack in href', function() {

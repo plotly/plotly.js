@@ -1,19 +1,10 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
-var createLinePlot = require('gl-line3d');
-var createScatterPlot = require('gl-scatter3d');
-var createErrorBars = require('gl-error3d');
-var createMesh = require('gl-mesh3d');
-var triangulate = require('delaunay-triangulate');
+var createLinePlot = require('../../../stackgl_modules').gl_line3d;
+var createScatterPlot = require('../../../stackgl_modules').gl_scatter3d;
+var createErrorBars = require('../../../stackgl_modules').gl_error3d;
+var createMesh = require('../../../stackgl_modules').gl_mesh3d;
+var triangulate = require('../../../stackgl_modules').delaunay_triangulate;
 
 var Lib = require('../../lib');
 var str2RgbaArray = require('../../lib/str2rgbarray');

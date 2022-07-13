@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
@@ -14,7 +15,7 @@ var selectButton = require('../assets/modebar_button');
 var delay = require('../assets/delay');
 
 function countCanvases() {
-    return d3.selectAll('canvas').size();
+    return d3SelectAll('canvas').size();
 }
 
 describe('Test removal of gl contexts', function() {
@@ -126,7 +127,7 @@ describe('Test gl plot side effects', function() {
 
     it('@gl should be able to replot from a blank graph', function(done) {
         function countCanvases(cnt) {
-            var nodes = d3.selectAll('canvas');
+            var nodes = d3SelectAll('canvas');
             expect(nodes.size()).toEqual(cnt);
         }
 
@@ -179,12 +180,12 @@ describe('Test gl plot side effects', function() {
             ]
         }])
         .then(function() {
-            expect(d3.selectAll('canvas').size()).toEqual(3);
+            expect(d3SelectAll('canvas').size()).toEqual(3);
 
             return Plotly.restyle(gd, 'type', 'scatter');
         })
         .then(function() {
-            expect(d3.selectAll('canvas').size()).toEqual(0);
+            expect(d3SelectAll('canvas').size()).toEqual(0);
         })
         .then(done, done.fail);
     });
@@ -197,12 +198,12 @@ describe('Test gl plot side effects', function() {
 
         Plotly.newPlot(gd, _mock)
         .then(function() {
-            expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
+            expect(gd.querySelector('.gl-canvas-context').width).toBe(1200);
 
             return Plotly.relayout(gd, {width: 300});
         })
         .then(function() {
-            expect(gd.querySelector('.gl-canvas-context').width).toBe(300);
+            expect(gd.querySelector('.gl-canvas-context').width).toBe(600);
         })
         .then(done, done.fail);
     });
@@ -254,11 +255,8 @@ describe('Test gl plot side effects', function() {
     });
 
     it('@gl should not clear context when dimensions are not integers', function(done) {
-        spyOn(Plots, 'cleanPlot').and.callThrough();
-        spyOn(Lib, 'log').and.callThrough();
-
-        var w = 500.5;
-        var h = 400.5;
+        var w = 500.25;
+        var h = 400.25;
         var w0 = Math.floor(w);
         var h0 = Math.floor(h);
 
@@ -268,21 +266,27 @@ describe('Test gl plot side effects', function() {
             expect(fullLayout.height).toBe(h, msg);
 
             var canvas = fullLayout._glcanvas;
-            expect(canvas.node().width).toBe(w0, msg);
-            expect(canvas.node().height).toBe(h0, msg);
+            expect(canvas.node().width).toBe(w0 * 2, msg);
+            expect(canvas.node().height).toBe(h0 * 2, msg);
 
             var gl = canvas.data()[0].regl._gl;
-            expect(gl.drawingBufferWidth).toBe(w0, msg);
-            expect(gl.drawingBufferHeight).toBe(h0, msg);
+            expect(gl.drawingBufferWidth).toBe(w0 * 2, msg);
+            expect(gl.drawingBufferHeight).toBe(h0 * 2, msg);
         }
 
-        Plotly.plot(gd, [{
+        Plotly.newPlot(gd, [{
             type: 'scattergl',
             mode: 'lines',
             y: [1, 2, 1]
-        }], {
-            width: w,
-            height: h
+        }])
+        .then(function() {
+            spyOn(Plots, 'cleanPlot').and.callThrough();
+            spyOn(Lib, 'log').and.callThrough();
+
+            return Plotly.relayout(gd, {
+                width: w,
+                height: h
+            });
         })
         .then(function() {
             assertDims('base state');
@@ -309,19 +313,19 @@ describe('Test gl plot side effects', function() {
         }])
         .then(function() {
             expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(1);
 
             return Plotly.restyle(gd, 'type', 'scattergl');
         })
         .then(function() {
             expect(countCanvases()).toBe(3);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(0);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(0);
 
             return Plotly.restyle(gd, 'type', 'scatter');
         })
         .then(function() {
             expect(countCanvases()).toBe(0);
-            expect(d3.selectAll('.scatterlayer > .trace').size()).toBe(1);
+            expect(d3SelectAll('.scatterlayer > .trace').size()).toBe(1);
         })
         .then(done, done.fail);
     });
@@ -331,7 +335,7 @@ describe('Test gl plot side effects', function() {
 
         Plotly.newPlot(gd, fig).then(function() {
             var cnt = 0;
-            d3.select(gd).selectAll('canvas').each(function(d) {
+            d3Select(gd).selectAll('canvas').each(function(d) {
                 if(d.regl) cnt++;
             });
             expect(cnt).toBe(2);
@@ -389,7 +393,7 @@ describe('Test gl2d plot interactions:', function() {
     });
 
     function mouseTo(p0, p1) {
-        var node = d3.select('.nsewdrag[data-subplot="xy"]').node();
+        var node = d3Select('.nsewdrag[data-subplot="xy"]').node();
         var dx = p1[0] - p0[0];
         var dy = p1[1] - p0[1];
         return drag({node: node, dpos: [dx, dy], pos0: p0});
@@ -620,7 +624,7 @@ describe('Test gl2d plot interactions:', function() {
 
     it('@gl data-referenced annotations should update on drag', function(done) {
         function assertAnnotation(xy) {
-            var ann = d3.select('g.annotation-text-g').select('g');
+            var ann = d3Select('g.annotation-text-g').select('g');
             var translate = Drawing.getTranslate(ann);
 
             expect(translate.x).toBeWithin(xy[0], 8);

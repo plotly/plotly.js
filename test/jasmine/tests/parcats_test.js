@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var strTranslate = Lib.strTranslate;
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -60,7 +60,7 @@ function checkParcatsModelView(gd) {
     expect(size.w).toEqual(512);
 
     /** @type {ParcatsViewModel} */
-    var parcatsViewModel = d3.select('g.trace.parcats').datum();
+    var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
     // Check location/size of this trace inside overall traces area
     expect(parcatsViewModel.x).toEqual(64 + margin.r);
@@ -102,7 +102,7 @@ function checkParcatsSvg(gd) {
     expect(size.w).toEqual(512);
 
     // Check trace transform
-    var parcatsTraceSelection = d3.select('g.trace.parcats');
+    var parcatsTraceSelection = d3Select('g.trace.parcats');
 
     expect(parcatsTraceSelection.attr('transform')).toEqual(
         strTranslate(
@@ -118,16 +118,16 @@ function checkParcatsSvg(gd) {
         var expectedX = categoryLabelPad + dimInd * dimDx;
         var expectedY = 0;
         var expectedTransform = strTranslate(expectedX, expectedY);
-        expect(d3.select(this).attr('transform')).toEqual(expectedTransform);
+        expect(d3Select(this).attr('transform')).toEqual(expectedTransform);
     });
 
     // Check category transforms
     dimensionSelection.each(function(dimension, dimDisplayInd) {
-        var categorySelection = d3.select(this).selectAll('g.category');
+        var categorySelection = d3Select(this).selectAll('g.category');
         var nextY = (3 - categorySelection.size()) * catSpacing / 2;
 
         categorySelection.each(function(category) {
-            var catSel = d3.select(this);
+            var catSel = d3Select(this);
             var catWidth = catSel.datum().width;
             var catHeight = catSel.datum().height;
 
@@ -552,7 +552,7 @@ describe('Drag to reordered dimensions', function() {
                 gd.on('plotly_restyle', restyleCallback);
 
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 var dragDimStartX = parcatsViewModel.dimensions[1].x;
                 var pos = getMousePositions(parcatsViewModel);
@@ -625,7 +625,7 @@ describe('Drag to reordered dimensions', function() {
                 gd.on('plotly_restyle', restyleCallback);
 
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 var dragDimStartX = parcatsViewModel.dimensions[1].x;
                 var pos = getMousePositions(parcatsViewModel);
@@ -699,7 +699,7 @@ describe('Drag to reordered dimensions', function() {
                 gd.on('plotly_restyle', restyleCallback);
 
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
                 var pos = getMousePositions(parcatsViewModel);
 
                 // Check initial dimension order
@@ -892,7 +892,7 @@ describe('Drag to reordered categories', function() {
                 gd.on('plotly_restyle', restyleCallback);
 
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 // Compute Mouse positions
                 // -----------------------
@@ -978,7 +978,7 @@ describe('Drag to reordered categories', function() {
                 gd.on('plotly_restyle', restyleCallback);
 
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 // Compute Mouse positions
                 // -----------------------
@@ -1060,7 +1060,7 @@ describe('Drag to reordered categories', function() {
                 gd.on('plotly_restyle', restyleCallback);
 
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 // Compute Mouse positions
                 // -----------------------
@@ -1141,7 +1141,7 @@ describe('Click events', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_click', function(data) {
                     clickData = data;
@@ -1186,7 +1186,7 @@ describe('Click events', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_click', function(data) {
                     clickData = data;
@@ -1215,7 +1215,7 @@ describe('Click events', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_click', function(data) {
                     clickData = data;
@@ -1259,7 +1259,7 @@ describe('Click events', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_click', function(data) {
                     clickData = data;
@@ -1304,7 +1304,7 @@ describe('Click events with hoveron color', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_click', function(data) {
                     clickData = data;
@@ -1347,7 +1347,7 @@ describe('Click events with hoveron color', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_click', function(data) {
                     clickData = data;
@@ -1409,7 +1409,7 @@ describe('Hover events', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_hover', function(data) {
                     hoverData = data;
@@ -1478,7 +1478,7 @@ describe('Hover events', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_hover', function(data) {
                     hoverData = data;
@@ -1561,7 +1561,7 @@ describe('Hover events with hoveron color', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_hover', function(data) {
                     hoverData = data;
@@ -1626,7 +1626,7 @@ describe('Hover events with hoveron color', function() {
         Plotly.newPlot(gd, mock)
             .then(function() {
                 /** @type {ParcatsViewModel} */
-                var parcatsViewModel = d3.select('g.trace.parcats').datum();
+                var parcatsViewModel = d3Select('g.trace.parcats').datum();
 
                 gd.on('plotly_hover', function(data) {
                     hoverData = data;

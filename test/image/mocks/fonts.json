@@ -109,14 +109,14 @@
             },
             {
                 "yanchor":"middle",
-                "text":"Balto <b>Bold</b> <i>Italic</i>",
+                "text":"Roboto <b>Bold</b> <i>Italic</i>",
                 "arrowsize":1,
                 "textangle":0,
                 "borderwidth":1,
                 "ay":-26.0078125,
                 "ax":-10,
                 "font":{
-                    "family":"Balto, sans-serif",
+                    "family":"Roboto, sans-serif",
                     "size":20
                 },
                 "arrowcolor":"",
@@ -163,14 +163,14 @@
             },
             {
                 "yanchor":"middle",
-                "text":"Droid Sans <b>Bold</b>",
+                "text":"Noto Sans <b>Bold</b>",
                 "arrowsize":1,
                 "textangle":0,
                 "borderwidth":1,
                 "ay":-27.0390625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Sans, sans-serif",
+                    "family":"Noto Sans, sans-serif",
                     "size":20
                 },
                 "arrowcolor":"",
@@ -190,14 +190,14 @@
             },
             {
                 "yanchor":"middle",
-                "text":"Droid Serif <b>Bold</b> <i>Italic</i>",
+                "text":"Noto Serif <b>Bold</b> <i>Italic</i>",
                 "arrowsize":1,
                 "textangle":0,
                 "borderwidth":1,
                 "ay":-27.0390625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Serif, serif",
+                    "family":"Noto Serif, serif",
                     "size":20
                 },
                 "arrowcolor":"",
@@ -217,14 +217,14 @@
             },
             {
                 "yanchor":"middle",
-                "text":"Droid Sans Mono",
+                "text":"Noto Sans Mono",
                 "arrowsize":1,
                 "textangle":0,
                 "borderwidth":1,
                 "ay":-27.9765625,
                 "ax":-10,
                 "font":{
-                    "family":"Droid Sans Mono, sans-serif",
+                    "family":"Noto Sans Mono, sans-serif",
                     "size":20
                 },
                 "arrowcolor":"",

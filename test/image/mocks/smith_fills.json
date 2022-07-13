@@ -1,0 +1,66 @@
+{
+  "data": [{
+    "type": "scattersmith",
+    "mode": "lines",
+    "real": [1, 0.1, 0.1, 1, 1],
+    "imag": [1, 1, 0.2, 0.2, 1],
+    "fill": "toself",
+    "hoveron": "fills"
+  }, {
+    "type": "scattersmith",
+    "mode": "lines",
+    "real": [1, 0.1, 0.1, 1, 1],
+    "imag": [-1, -1, -0.2, -0.2, -1],
+    "line": { "shape": "spline" },
+    "fill": "toself",
+    "hoveron": "fills"
+  }, {
+    "type": "scattersmith",
+    "mode": "markers+lines",
+    "real": [1, 0.1, 0.1, 1, 1],
+    "imag": [1, 1, 0.2, 0.2, 1],
+    "fill": "toself",
+    "hoveron": "fills",
+    "subplot": "smith2"
+  }, {
+    "type": "scattersmith",
+    "mode": "markers",
+    "real": [1, 0.1, 0.1, 1, 1],
+    "imag": [-1, -1, -0.2, -0.2, -1],
+    "fill": "toself",
+    "hoveron": "fills",
+    "subplot": "smith2"
+  }],
+  "layout": {
+    "smith": {
+      "domain": {
+        "x": [0, 1],
+        "y": [0, 0.46]
+      },
+      "realaxis": {
+        "ticks": "top",
+        "side": "bottom"
+      },
+      "imaginaryaxis": {
+        "ticks": "outside"
+      }
+    },
+    "smith2": {
+      "domain": {
+        "x": [0, 1],
+        "y": [0.54, 1]
+      },
+      "realaxis": {
+        "ticks": "top",
+        "side": "top"
+      },
+      "imaginaryaxis": {
+        "ticks": "inside"
+      }
+    },
+    "showlegend": false,
+    "margin": {"t": 40, "b": 40},
+    "width": 500,
+    "height": 800
+  }
+}

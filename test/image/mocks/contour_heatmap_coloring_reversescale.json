@@ -11,6 +11,7 @@
       "x": [ -9, -6, -5, -3, -1 ],
       "y": [ 0, 1, 4, 5, 7 ],
       "type": "contour",
+      "texttemplate": "%{z}",
       "contours": {
         "coloring": "heatmap"
       },
@@ -33,6 +34,7 @@
       "x": [ -9, -6, -5, -3, -1 ],
       "y": [ 0, 1, 4, 5, 7 ],
       "type": "contour",
+      "texttemplate": "%{z}",
       "contours": {
         "coloring": "heatmap"
       },

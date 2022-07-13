@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
@@ -15,21 +7,15 @@ var overrideAll = require('../../plot_api/edit_types').overrideAll;
 
 
 module.exports = overrideAll({
-// TODO: only right is supported currently
-//     orient: {
-//         valType: 'enumerated',
-//         role: 'info',
-//         values: ['left', 'right', 'top', 'bottom'],
-//         dflt: 'right',
-//         description: [
-//             'Determines which side are the labels on',
-//             '(so left and right make vertical bars, etc.)'
-//         ].join(' ')
-//     },
+    orientation: {
+        valType: 'enumerated',
+        values: ['h', 'v'],
+        dflt: 'v',
+        description: 'Sets the orientation of the colorbar.'
+    },
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
-        role: 'style',
         dflt: 'pixels',
         description: [
             'Determines whether this color bar\'s thickness',
@@ -40,7 +26,6 @@ module.exports = overrideAll({
     },
     thickness: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 30,
         description: [
@@ -51,7 +36,6 @@ module.exports = overrideAll({
     lenmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
-        role: 'info',
         dflt: 'fraction',
         description: [
             'Determines whether this color bar\'s length',
@@ -64,7 +48,6 @@ module.exports = overrideAll({
         valType: 'number',
         min: 0,
         dflt: 1,
-        role: 'style',
         description: [
             'Sets the length of the color bar',
             'This measure excludes the padding of both ends.',
@@ -74,56 +57,54 @@ module.exports = overrideAll({
     },
     x: {
         valType: 'number',
-        dflt: 1.02,
         min: -2,
         max: 3,
-        role: 'style',
         description: [
-            'Sets the x position of the color bar (in plot fraction).'
+            'Sets the x position of the color bar (in plot fraction).',
+            'Defaults to 1.02 when `orientation` is *v* and',
+            '0.5 when `orientation` is *h*.'
         ].join(' ')
     },
     xanchor: {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
-        dflt: 'left',
-        role: 'style',
         description: [
             'Sets this color bar\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
-            'or *right* of the color bar.'
+            'or *right* of the color bar.',
+            'Defaults to *left* when `orientation` is *v* and',
+            '*center* when `orientation` is *h*.'
         ].join(' ')
     },
     xpad: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the x direction.'
     },
     y: {
         valType: 'number',
-        role: 'style',
-        dflt: 0.5,
         min: -2,
         max: 3,
         description: [
-            'Sets the y position of the color bar (in plot fraction).'
+            'Sets the y position of the color bar (in plot fraction).',
+            'Defaults to 0.5 when `orientation` is *v* and',
+            '1.02 when `orientation` is *h*.'
         ].join(' ')
     },
     yanchor: {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
-        role: 'style',
-        dflt: 'middle',
         description: [
             'Sets this color bar\'s vertical position anchor',
             'This anchor binds the `y` position to the *top*, *middle*',
-            'or *bottom* of the color bar.'
+            'or *bottom* of the color bar.',
+            'Defaults to *middle* when `orientation` is *v* and',
+            '*bottom* when `orientation` is *h*.'
         ].join(' ')
     },
     ypad: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the y direction.'
@@ -136,7 +117,6 @@ module.exports = overrideAll({
     bordercolor: axesAttrs.linecolor,
     borderwidth: {
         valType: 'number',
-        role: 'style',
         min: 0,
         dflt: 0,
         description: [
@@ -145,7 +125,6 @@ module.exports = overrideAll({
     },
     bgcolor: {
         valType: 'color',
-        role: 'style',
         dflt: 'rgba(0,0,0,0)',
         description: 'Sets the color of padded area.'
     },
@@ -157,22 +136,37 @@ module.exports = overrideAll({
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
     ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
+    ticklabeloverflow: extendFlat({}, axesAttrs.ticklabeloverflow, {
+        description: [
+            'Determines how we handle tick labels that would overflow either the graph div or the domain of the axis.',
+            'The default value for inside tick labels is *hide past domain*.',
+            'In other cases the default is *hide past div*.'
+        ].join(' ')
+    }),
+
+    // ticklabelposition: not used directly, as values depend on orientation
+    // left/right options are for x axes, and top/bottom options are for y axes
     ticklabelposition: {
         valType: 'enumerated',
         values: [
             'outside', 'inside',
             'outside top', 'inside top',
+            'outside left', 'inside left',
+            'outside right', 'inside right',
             'outside bottom', 'inside bottom'
         ],
         dflt: 'outside',
-        role: 'info',
         description: [
-            'Determines where tick labels are drawn.'
+            'Determines where tick labels are drawn relative to the ticks.',
+            'Left and right options are used when `orientation` is *h*,',
+            'top and bottom when `orientation` is *v*.'
         ].join(' ')
     },
+
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
+    ticklabelstep: axesAttrs.ticklabelstep,
     showticklabels: axesAttrs.showticklabels,
     tickfont: fontAttrs({
         description: 'Sets the color bar\'s tick label font'
@@ -191,7 +185,6 @@ module.exports = overrideAll({
     title: {
         text: {
             valType: 'string',
-            role: 'info',
             description: [
                 'Sets the title of the color bar.',
                 'Note that before the existence of `title.text`, the title\'s',
@@ -209,11 +202,11 @@ module.exports = overrideAll({
         side: {
             valType: 'enumerated',
             values: ['right', 'top', 'bottom'],
-            role: 'style',
-            dflt: 'top',
             description: [
                 'Determines the location of color bar\'s title',
                 'with respect to the color bar.',
+                'Defaults to *top* when `orientation` if *v* and ',
+                'defaults to *right* when `orientation` if *h*.',
                 'Note that the title\'s location used to be set',
                 'by the now deprecated `titleside` attribute.'
             ].join(' ')
@@ -223,7 +216,6 @@ module.exports = overrideAll({
     _deprecated: {
         title: {
             valType: 'string',
-            role: 'info',
             description: [
                 'Deprecated in favor of color bar\'s `title.text`.',
                 'Note that value of color bar\'s `title` is no longer a simple',
@@ -236,7 +228,6 @@ module.exports = overrideAll({
         titleside: {
             valType: 'enumerated',
             values: ['right', 'top', 'bottom'],
-            role: 'style',
             dflt: 'top',
             description: 'Deprecated in favor of color bar\'s `title.side`.'
         }

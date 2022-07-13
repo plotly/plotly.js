@@ -1,11 +1,12 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var BADNUM = require('@src/constants/numerical').BADNUM;
 var loggers = require('@src/lib/loggers');
 
 var ScatterGeo = require('@src/traces/scattergeo');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
@@ -335,7 +336,7 @@ describe('Test scattergeo hover', function() {
             name: content[1]
         });
         assertHoverLabelStyle(
-            d3.select('g.hovertext'),
+            d3Select('g.hovertext'),
             style
         );
     }
@@ -415,7 +416,7 @@ describe('Test scattergeo hover', function() {
 
     describe('should preserve lon/lat formatting hovetemplate equivalence', function() {
         var pos = [381, 221];
-        var exp = ['(10.00012°, 10.00088°)\nA'];
+        var exp = ['(10.00088°, 10.00012°)\nA'];
 
         it('- base case (truncate z decimals)', function(done) {
             Plotly.restyle(gd, {
@@ -426,11 +427,11 @@ describe('Test scattergeo hover', function() {
             .then(done, done.fail);
         });
 
-        it('- hovertemplate case (same lon/lat truncation)', function(done) {
+        it('- hovertemplate case (same lat/lon truncation)', function(done) {
             Plotly.restyle(gd, {
                 lon: [[10.0001221321]],
                 lat: [[10.00087683]],
-                hovertemplate: '(%{lon}°, %{lat}°)<br>%{text}<extra></extra>'
+                hovertemplate: '(%{lat}°, %{lon}°)<br>%{text}<extra></extra>'
             })
             .then(function() { check(pos, exp); })
             .then(done, done.fail);
@@ -479,7 +480,7 @@ describe('scattergeo drawing', function() {
     it('preserves order after hide/show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.scattergeo').each(function(d) { out.push(d[0].trace.index); });
+            d3SelectAll('.scattergeo').each(function(d) { out.push(d[0].trace.index); });
             return out;
         }
 

@@ -58,6 +58,10 @@
     }
   ],
   "layout": {
+    "uniformtext": {
+      "mode": "hide",
+      "minsize": 5
+    },
     "showlegend": false,
     "grid": {
       "rows": 2,

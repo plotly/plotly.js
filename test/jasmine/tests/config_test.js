@@ -1,8 +1,8 @@
 var Plotly = require('@lib/index');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var click = require('../assets/click');
@@ -627,6 +627,17 @@ describe('config argument', function() {
                 }
             }
 
+            function checkCanvasSize(canvases, width, height) {
+                var i;
+                for(i = 0; i < canvases.length; i++) {
+                    var domRect = canvases[i].getBoundingClientRect();
+                    expect(domRect.width).toBe(width);
+                    expect(domRect.height).toBe(height);
+                    expect(+canvases[i].getAttribute('width')).toBe(width * 2);
+                    expect(+canvases[i].getAttribute('height')).toBe(height * 2);
+                }
+            }
+
             function testResponsive() {
                 checkLayoutSize(elWidth, elHeight);
                 viewport.set(width / 2, height / 2);
@@ -640,7 +651,7 @@ describe('config argument', function() {
                     checkElementsSize(mainSvgs, elWidth / 2, elHeight / 2);
 
                     var canvases = document.getElementsByTagName('canvas');
-                    checkElementsSize(canvases, elWidth / 2, elHeight / 2);
+                    checkCanvasSize(canvases, elWidth / 2, elHeight / 2);
                 })
                 .catch(failTest);
             }
@@ -687,7 +698,7 @@ describe('config argument', function() {
                 fillParent(1, 1);
                 var cntWindowResize = 0;
                 window.addEventListener('resize', function() {cntWindowResize++;});
-                spyOn(Plotly.Plots, 'resize').and.callThrough();
+                spyOn(Plots, 'resize').and.callThrough();
 
                 Plotly.newPlot(gd, data, {}, {responsive: true})
                 .then(function() {return Plotly.restyle(gd, 'y[0]', data[0].y[0] + 2);})
@@ -696,7 +707,7 @@ describe('config argument', function() {
                 // .then(function() {viewport.set(newWidth, 2 * newHeight);}).then(delay(200))
                 .then(function() {
                     expect(cntWindowResize).toBe(1);
-                    expect(Plotly.Plots.resize.calls.count()).toBe(1);
+                    expect(Plots.resize.calls.count()).toBe(1);
                 })
                 .then(done, done.fail);
             });
@@ -807,7 +818,7 @@ describe('config argument', function() {
             });
 
             it('should not resize if gd is hidden', function(done) {
-                spyOn(Plotly.Plots, 'resize').and.callThrough();
+                spyOn(Plots, 'resize').and.callThrough();
 
                 fillParent(1, 1);
                 Plotly.newPlot(gd, data, {}, {responsive: true})
@@ -817,7 +828,7 @@ describe('config argument', function() {
                 })
                 .then(delay(RESIZE_DELAY))
                 .then(function() {
-                    expect(Plotly.Plots.resize.calls.count()).toBe(0);
+                    expect(Plots.resize.calls.count()).toBe(0);
                 })
                 .then(done, done.fail);
             });
@@ -884,7 +895,7 @@ describe('config argument', function() {
         afterEach(destroyGraphDiv);
 
         function _scroll() {
-            var mainDrag = d3.select('.nsewdrag[data-subplot="xy"]').node();
+            var mainDrag = d3Select('.nsewdrag[data-subplot="xy"]').node();
             mouseEvent('scroll', 200, 200, {deltaY: -200, element: mainDrag});
         }
 

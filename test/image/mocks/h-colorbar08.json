@@ -1,0 +1,50 @@
+{
+  "data": [
+    {
+      "x": [-1, 0, 1],
+      "y": [0, 0, 0],
+      "mode": "markers",
+      "marker": {
+        "size": 100,
+        "color": [0, 50, 100],
+        "colorscale": "Reds",
+        "showscale": true,
+        "colorbar": {
+          "orientation": "h",
+          "yanchor": "top",
+          "y": -0.5,
+          "xanchor": "right",
+          "x": 1,
+          "thickness": 10,
+          "ticks": "outside",
+          "bgcolor": "rgba(255,255,0,0.5)",
+          "borderwidth": 4,
+          "bordercolor": "gray",
+          "title": {
+            "side": "top",
+            "text": "Colorbar<br>title",
+            "font": {
+              "size": 16
+            }
+          }
+        }
+      }
+    }
+  ],
+  "layout": {
+    "width": 600,
+    "height": 400,
+    "plot_bgcolor": "lightblue",
+    "title": {
+      "text": "Graph title",
+      "font": {
+        "size": 24
+      }
+    },
+    "xaxis": {
+      "title": {
+        "text": "X-axis title"
+      }
+    }
+  }
+}

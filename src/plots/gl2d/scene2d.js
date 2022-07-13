@@ -1,21 +1,12 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../components/fx');
 
-var createPlot2D = require('gl-plot2d');
-var createSpikes = require('gl-spikes2d');
-var createSelectBox = require('gl-select-box');
+var createPlot2D = require('../../../stackgl_modules').gl_plot2d;
+var createSpikes = require('../../../stackgl_modules').gl_spikes2d;
+var createSelectBox = require('../../../stackgl_modules').gl_select_box;
 var getContext = require('webgl-context');
 
 var createOptions = require('./convert');
@@ -220,7 +211,7 @@ proto.toImage = function(format) {
     canvas.width = w;
     canvas.height = h;
 
-    var context = canvas.getContext('2d');
+    var context = canvas.getContext('2d', {willReadFrequently: true});
     var imageData = context.createImageData(w, h);
     imageData.data.set(pixels);
     context.putImageData(imageData, 0, 0);
@@ -410,9 +401,10 @@ proto.plot = function(fullData, calcData, fullLayout) {
     options.screenBox = [0, 0, width, height];
 
     var mockGraphDiv = {_fullLayout: {
-        _axisConstraintGroups: this.graphDiv._fullLayout._axisConstraintGroups,
+        _axisConstraintGroups: fullLayout._axisConstraintGroups,
         xaxis: this.xaxis,
-        yaxis: this.yaxis
+        yaxis: this.yaxis,
+        _size: fullLayout._size
     }};
 
     cleanAxisConstraints(mockGraphDiv, this.xaxis);

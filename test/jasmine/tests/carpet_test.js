@@ -6,7 +6,8 @@ var Carpet = require('@src/traces/carpet');
 var smoothFill2D = require('@src/traces/carpet/smooth_fill_2d_array');
 var smoothFill = require('@src/traces/carpet/smooth_fill_array');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -500,11 +501,11 @@ describe('Test carpet interactions:', function() {
     afterEach(destroyGraphDiv);
 
     function countCarpets() {
-        return d3.select(gd).selectAll('.carpetlayer').selectAll('.trace').size();
+        return d3Select(gd).selectAll('.carpetlayer').selectAll('.trace').size();
     }
 
     function countContourTraces() {
-        return d3.select(gd).selectAll('.contour').size();
+        return d3Select(gd).selectAll('.contour').size();
     }
 
     it('should restyle visible attribute properly', function(done) {
@@ -583,7 +584,7 @@ describe('Test carpet interactions:', function() {
         var mock = Lib.extendDeep({}, require('@mocks/scattercarpet.json'));
 
         function _assert(exp) {
-            expect(d3.selectAll('.point').size())
+            expect(d3SelectAll('.point').size())
                 .toBe(exp, 'number of scatter pts on graph');
         }
 
@@ -607,7 +608,7 @@ describe('Test carpet interactions:', function() {
     it('preserves order of carpets on the same subplot after hide/show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.carpetlayer .trace').each(function(d) { out.push(d[0].trace.index); });
+            d3SelectAll('.carpetlayer .trace').each(function(d) { out.push(d[0].trace.index); });
             return out;
         }
 
@@ -808,7 +809,7 @@ describe('contourcarpet plotting & editing', function() {
     it('keeps the correct ordering after hide and show', function(done) {
         function getIndices() {
             var out = [];
-            d3.selectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
+            d3SelectAll('.contour').each(function(d) { out.push(d[0].trace.index); });
             return out;
         }
 

@@ -73,6 +73,14 @@
         "width": 1276,
         "height": 506,
         "xaxis": {
+            "minor": {
+                "ticklen": 8,
+                "tickwidth": 4,
+                "tickcolor": "blue",
+                "griddash": "dash",
+                "gridwidth": 2,
+                "gridcolor": "cyan"
+            },
             "title": {
                 "text": "Click to enter X axis title"
             },
@@ -119,6 +127,14 @@
             "autorange": true
         },
         "yaxis": {
+            "minor": {
+                "ticklen": 6,
+                "tickwidth": 3,
+                "tickcolor": "red",
+                "griddash": "6px",
+                "gridwidth": 3,
+                "gridcolor": "yellow"
+            },
             "title": {
                 "text": "Click to enter Y axis title"
             },

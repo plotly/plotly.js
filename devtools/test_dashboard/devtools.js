@@ -6,7 +6,6 @@ var Fuse = require('fuse.js/dist/fuse.common.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
-var d3 = Plotly.d3;
 
 require('./perf');
 
@@ -18,7 +17,7 @@ var Tabs = {
         Plotly.setPlotConfig({
 
             // use local topojson files
-            topojsonURL: '../../dist/topojson/',
+            topojsonURL: '../../node_modules/sane-topojson/dist/',
 
             // register mapbox access token
             // run `npm run preset` if you haven't yet
@@ -59,23 +58,23 @@ var Tabs = {
     plotMock: function(mockName, id) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
-        d3.json(mockURL, function(err, fig) {
-            Plotly.plot(Tabs.fresh(id), fig);
+        console.warn('Plotting:', mockURL);
 
-            console.warn('Plotting:', mockURL);
-        });
-    },
+        var request = new XMLHttpRequest();
+        request.open('GET', mockURL, true);
+        request.responseType = '';
+        request.send();
 
-    getMock: function(mockName, callback) {
-        var mockURL = '/test/image/mocks/' + mockName + '.json';
-
-        d3.json(mockURL, function(err, fig) {
-            if(typeof callback !== 'function') {
-                window.mock = fig;
-            } else {
-                callback(err, fig);
+        request.onreadystatechange = function() {
+            if(this.readyState === 4) {
+                if(this.status === 200) {
+                    var fig = JSON.parse(this.responseText);
+                    Plotly.newPlot(Tabs.fresh(id), fig);
+                } else {
+                    console.error(this.statusText);
+                }
             }
-        });
+        };
     },
 
     // Save a png snapshot and display it below the plot
@@ -151,7 +150,6 @@ var Tabs = {
 // Bind things to the window
 window.Tabs = Tabs;
 window.Lib = Lib;
-window.d3 = d3;
 window.onload = handleOnLoad;
 setInterval(function() {
     window.gd = Tabs.getGraph() || Tabs.fresh();
@@ -180,11 +178,16 @@ var fuse = new Fuse(mocks, {
     }]
 });
 
-var searchBar = document.getElementById('mocks-search');
+var transformInput = document.getElementById('css-transform');
+var mockInput = document.getElementById('mocks-search');
 var mocksList = document.getElementById('mocks-list');
 var plotArea = document.getElementById('plots');
 
-searchBar.addEventListener('keyup', debounce(searchMocks, 250));
+mockInput.addEventListener('keyup', debounce(searchMocks, 250));
+
+transformInput.addEventListener('keyup', function(e) {
+    plotArea.style.transform = e.target.value;
+});
 
 function debounce(func, wait, immediate) {
     var timeout;
@@ -232,7 +235,16 @@ function searchMocks(e) {
 
         var listWidth = mocksList.getBoundingClientRect().width;
         var plotAreaWidth = Math.floor(window.innerWidth - listWidth);
-        plotArea.setAttribute('style', 'width: ' + plotAreaWidth + 'px;');
+
+        var allStyles = [
+            'width: ' + plotAreaWidth + 'px;'
+        ];
+
+        if(transformInput.value !== '') {
+            allStyles.push('transform: ' + transformInput.value + ';');
+        }
+
+        plotArea.setAttribute('style', allStyles.join(' '));
     });
 }
 

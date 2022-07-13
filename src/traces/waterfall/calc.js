@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
@@ -25,20 +17,22 @@ function isTotal(a) {
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x');
     var ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    var size, pos, origPos;
+    var size, pos, origPos, pObj, hasPeriod, pLetter;
 
-    var hasPeriod;
     if(trace.orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
         origPos = ya.makeCalcdata(trace, 'y');
-        pos = alignPeriod(trace, ya, 'y', origPos);
+        pObj = alignPeriod(trace, ya, 'y', origPos);
         hasPeriod = !!trace.yperiodalignment;
+        pLetter = 'y';
     } else {
         size = ya.makeCalcdata(trace, 'y');
         origPos = xa.makeCalcdata(trace, 'x');
-        pos = alignPeriod(trace, xa, 'x', origPos);
+        pObj = alignPeriod(trace, xa, 'x', origPos);
         hasPeriod = !!trace.xperiodalignment;
+        pLetter = 'x';
     }
+    pos = pObj.vals;
 
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length);
@@ -93,6 +87,8 @@ module.exports = function calc(gd, trace) {
 
         if(hasPeriod) {
             cd[i].orig_p = origPos[i]; // used by hover
+            cd[i][pLetter + 'End'] = pObj.ends[i];
+            cd[i][pLetter + 'Start'] = pObj.starts[i];
         }
 
         if(trace.ids) {

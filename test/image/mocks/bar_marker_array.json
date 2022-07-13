@@ -1,6 +1,8 @@
 {
   "data": [
     {
+      "texttemplate": "%{y:(}",
+      "textfont": { "size": 32 },
       "x": [
         1,
         2,

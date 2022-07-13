@@ -2,10 +2,10 @@ var Lib = require('@src/lib');
 var _ = Lib._;
 var Registry = require('@src/registry');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var utcFormat = require('d3-time-format').utcFormat;
 
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -39,11 +39,11 @@ describe('localization', function() {
     }
 
     function firstXLabel() {
-        return d3.select(gd).select('.xtick').text();
+        return d3Select(gd).select('.xtick').text();
     }
 
     function firstYLabel() {
-        return d3.select(gd).select('.ytick').text();
+        return d3Select(gd).select('.ytick').text();
     }
 
     var monthNums = ['!1', '!2', '!3', '!4', '!5', '!6', '!7', '!8', '!9', '!10', '!11', '!12'];
@@ -64,8 +64,8 @@ describe('localization', function() {
 
     function getLabels(axLetter) {
         var out = [];
-        var s = d3.select(gd).selectAll('.' + axLetter + 'tick');
-        s.each(function() { out.push(d3.select(this).text()); });
+        var s = d3Select(gd).selectAll('.' + axLetter + 'tick');
+        s.each(function() { out.push(d3Select(this).text()); });
         return out;
     }
 
@@ -387,7 +387,7 @@ describe('localization', function() {
             expect(getZoomTip()).toBe('Bigger');
 
             // this is discouraged usage, but it works
-            return Plotly.plot(gd, [], {}, {locale: 'en'});
+            return Plotly.newPlot(gd, gd.data, gd.layout, {locale: 'en'});
         })
         .then(function() {
             expect(firstXLabel()).toBe('Jan 2001');

@@ -1,9 +1,9 @@
 'use strict';
 
-var domainRefComponents = require('../assets/domain_ref/components');
+var domainRefComponents = require('../assets/domain_ref_components');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var Plotly = require('../../../lib/index');
+var Plotly = require('@lib/index');
 // optionally specify a test number to run just a single test
 var testNumber;
 

@@ -1,14 +1,7 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var colorScaleAttrs = require('../../components/colorscale/attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var surfaceAttrs = require('../surface/attributes');
 var baseAttrs = require('../../plots/attributes');
@@ -79,7 +72,6 @@ module.exports = extendFlat({
 
     text: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -91,7 +83,6 @@ module.exports = extendFlat({
     },
     hovertext: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         arrayOk: true,
         editType: 'calc',
@@ -99,9 +90,12 @@ module.exports = extendFlat({
     },
     hovertemplate: hovertemplateAttrs({editType: 'calc'}),
 
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+
     delaunayaxis: {
         valType: 'enumerated',
-        role: 'info',
         values: [ 'x', 'y', 'z' ],
         dflt: 'z',
         editType: 'calc',
@@ -115,7 +109,6 @@ module.exports = extendFlat({
 
     alphahull: {
         valType: 'number',
-        role: 'style',
         dflt: -1,
         editType: 'calc',
         description: [
@@ -154,7 +147,6 @@ module.exports = extendFlat({
         values: ['vertex', 'cell'],
         dflt: 'vertex',
         editType: 'calc',
-        role: 'info',
         description: [
             'Determines the source of `intensity` values.'
         ].join(' ')
@@ -163,13 +155,11 @@ module.exports = extendFlat({
     // Color field
     color: {
         valType: 'color',
-        role: 'style',
         editType: 'calc',
         description: 'Sets the color of the whole mesh'
     },
     vertexcolor: {
         valType: 'data_array',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the color of each vertex',
@@ -181,7 +171,6 @@ module.exports = extendFlat({
     },
     facecolor: {
         valType: 'data_array',
-        role: 'style',
         editType: 'calc',
         description: [
             'Sets the color of each face',
@@ -201,7 +190,6 @@ colorScaleAttrs('', {
     // Flat shaded mode
     flatshading: {
         valType: 'boolean',
-        role: 'style',
         dflt: false,
         editType: 'calc',
         description: [
@@ -230,7 +218,6 @@ colorScaleAttrs('', {
     lighting: extendFlat({
         vertexnormalsepsilon: {
             valType: 'number',
-            role: 'style',
             min: 0.00,
             max: 1,
             dflt: 1e-12, // otherwise finely tessellated things eg. the brain will have no specular light reflection
@@ -239,7 +226,6 @@ colorScaleAttrs('', {
         },
         facenormalsepsilon: {
             valType: 'number',
-            role: 'style',
             min: 0.00,
             max: 1,
             dflt: 1e-6, // even the brain model doesn't appear to need finer than this

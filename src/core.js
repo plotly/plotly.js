@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 exports.version = require('./version').version;
@@ -15,9 +7,6 @@ require('native-promise-only');
 
 // inject plot css
 require('../build/plotcss');
-
-// inject default MathJax config
-require('./fonts/mathjax_config')();
 
 // include registry module and expose register method
 var Registry = require('./registry');
@@ -55,7 +44,8 @@ register([
     require('./components/grid'),
     require('./components/errorbars'),
     require('./components/colorscale'),
-    require('./components/colorbar')
+    require('./components/colorbar'),
+    require('./components/modebar')
 ]);
 
 // locales en and en-US are required for default behavior
@@ -74,11 +64,19 @@ if(window.PlotlyLocales && Array.isArray(window.PlotlyLocales)) {
 exports.Icons = require('./fonts/ploticon');
 
 // unofficial 'beta' plot methods, use at your own risk
-exports.Plots = require('./plots/plots');
-exports.Fx = require('./components/fx');
+var Fx = require('./components/fx');
+var Plots = require('./plots/plots');
+
+exports.Plots = {
+    resize: Plots.resize,
+    graphJson: Plots.graphJson,
+    sendDataToCloud: Plots.sendDataToCloud
+};
+exports.Fx = {
+    hover: Fx.hover,
+    unhover: Fx.unhover,
+    loneHover: Fx.loneHover,
+    loneUnhover: Fx.loneUnhover
+};
 exports.Snapshot = require('./snapshot');
 exports.PlotSchema = require('./plot_api/plot_schema');
-exports.Queue = require('./lib/queue');
-
-// export d3 used in the bundle
-exports.d3 = require('@plotly/d3');

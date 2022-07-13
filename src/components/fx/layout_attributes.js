@@ -1,26 +1,19 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var constants = require('./constants');
 
-var fontAttrs = require('../../plots/font_attributes')({
+var fontAttrs = require('../../plots/font_attributes');
+
+var font = fontAttrs({
     editType: 'none',
     description: 'Sets the default hover label font used by all traces on the graph.'
 });
-fontAttrs.family.dflt = constants.HOVERFONT;
-fontAttrs.size.dflt = constants.HOVERFONTSIZE;
+font.family.dflt = constants.HOVERFONT;
+font.size.dflt = constants.HOVERFONTSIZE;
 
 module.exports = {
     clickmode: {
         valType: 'flaglist',
-        role: 'info',
         flags: ['event', 'select'],
         dflt: 'event',
         editType: 'plot',
@@ -43,7 +36,6 @@ module.exports = {
     },
     dragmode: {
         valType: 'enumerated',
-        role: 'info',
         values: [
             'zoom',
             'pan',
@@ -69,8 +61,8 @@ module.exports = {
     },
     hovermode: {
         valType: 'enumerated',
-        role: 'info',
         values: ['x', 'y', 'closest', false, 'x unified', 'y unified'],
+        dflt: 'closest',
         editType: 'modebar',
         description: [
             'Determines the mode of hover interactions.',
@@ -83,21 +75,13 @@ module.exports = {
             'multiple points at the closest x- (or y-) coordinate within the `hoverdistance`',
             'with the caveat that no more than one hoverlabel will appear per trace.',
             'In this mode, spikelines are enabled by default perpendicular to the specified axis.',
-            'If false, hover interactions are disabled.',
-            'If `clickmode` includes the *select* flag,',
-            '`hovermode` defaults to *closest*.',
-            'If `clickmode` lacks the *select* flag,',
-            'it defaults to *x* or *y* (depending on the trace\'s',
-            '`orientation` value) for plots based on',
-            'cartesian coordinates. For anything else the default',
-            'value is *closest*.',
+            'If false, hover interactions are disabled.'
         ].join(' ')
     },
     hoverdistance: {
         valType: 'integer',
         min: -1,
         dflt: 20,
-        role: 'info',
         editType: 'none',
         description: [
             'Sets the default distance (in pixels) to look for data',
@@ -111,8 +95,7 @@ module.exports = {
     spikedistance: {
         valType: 'integer',
         min: -1,
-        dflt: 20,
-        role: 'info',
+        dflt: -1,
         editType: 'none',
         description: [
             'Sets the default distance (in pixels) to look for data to draw',
@@ -125,7 +108,6 @@ module.exports = {
     hoverlabel: {
         bgcolor: {
             valType: 'color',
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the background color of all hover labels on graph'
@@ -133,18 +115,23 @@ module.exports = {
         },
         bordercolor: {
             valType: 'color',
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the border color of all hover labels on graph.'
             ].join(' ')
         },
-        font: fontAttrs,
+        font: font,
+        grouptitlefont: fontAttrs({
+            editType: 'none',
+            description: [
+                'Sets the font for group titles in hover (unified modes).',
+                'Defaults to `hoverlabel.font`.'
+            ].join(' ')
+        }),
         align: {
             valType: 'enumerated',
             values: ['left', 'right', 'auto'],
             dflt: 'auto',
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the horizontal alignment of the text content within hover label box.',
@@ -155,7 +142,6 @@ module.exports = {
             valType: 'integer',
             min: -1,
             dflt: 15,
-            role: 'style',
             editType: 'none',
             description: [
                 'Sets the default length (in number of characters) of the trace name in',
@@ -166,11 +152,11 @@ module.exports = {
                 '`namelength - 3` characters and add an ellipsis.'
             ].join(' ')
         },
+
         editType: 'none'
     },
     selectdirection: {
         valType: 'enumerated',
-        role: 'info',
         values: ['h', 'v', 'd', 'any'],
         dflt: 'any',
         description: [

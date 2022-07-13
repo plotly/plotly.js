@@ -1,15 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/attributes');
+var axisHoverFormat = require('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
 var hovertemplateAttrs = require('../../plots/template_attributes').hovertemplateAttrs;
 var texttemplateAttrs = require('../../plots/template_attributes').texttemplateAttrs;
 var baseAttrs = require('../../plots/attributes');
@@ -18,6 +11,7 @@ var DASHES = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl3d_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
+var sortObjectKeys = require('../../lib/sort_object_keys');
 
 var scatterLineAttrs = scatterAttrs.line;
 var scatterMarkerAttrs = scatterAttrs.marker;
@@ -27,9 +21,8 @@ var lineAttrs = extendFlat({
     width: scatterLineAttrs.width,
     dash: {
         valType: 'enumerated',
-        values: Object.keys(DASHES),
+        values: sortObjectKeys(DASHES),
         dflt: 'solid',
-        role: 'style',
         description: 'Sets the dash style of the lines.'
     }
 }, colorAttributes('line'));
@@ -38,7 +31,6 @@ function makeProjectionAttr(axLetter) {
     return {
         show: {
             valType: 'boolean',
-            role: 'info',
             dflt: false,
             description: [
                 'Sets whether or not projections are shown along the',
@@ -47,7 +39,6 @@ function makeProjectionAttr(axLetter) {
         },
         opacity: {
             valType: 'number',
-            role: 'style',
             min: 0,
             max: 1,
             dflt: 1,
@@ -55,7 +46,6 @@ function makeProjectionAttr(axLetter) {
         },
         scale: {
             valType: 'number',
-            role: 'style',
             min: 0,
             max: 10,
             dflt: 2 / 3,
@@ -101,11 +91,14 @@ var attrs = module.exports = overrideAll({
     }),
     hovertemplate: hovertemplateAttrs(),
 
+    xhoverformat: axisHoverFormat('x'),
+    yhoverformat: axisHoverFormat('y'),
+    zhoverformat: axisHoverFormat('z'),
+
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
     surfaceaxis: {
         valType: 'enumerated',
-        role: 'info',
         values: [-1, 0, 1, 2],
         dflt: -1,
         description: [
@@ -116,7 +109,6 @@ var attrs = module.exports = overrideAll({
     },
     surfacecolor: {
         valType: 'color',
-        role: 'style',
         description: 'Sets the surface fill color.'
     },
     projection: {
@@ -131,8 +123,7 @@ var attrs = module.exports = overrideAll({
     marker: extendFlat({  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
-            values: Object.keys(MARKER_SYMBOLS),
-            role: 'style',
+            values: sortObjectKeys(MARKER_SYMBOLS),
             dflt: 'circle',
             arrayOk: true,
             description: 'Sets the marker symbol type.'
@@ -169,6 +160,8 @@ var attrs = module.exports = overrideAll({
         size: scatterAttrs.textfont.size,
         family: extendFlat({}, scatterAttrs.textfont.family, {arrayOk: false})
     },
+
+    opacity: baseAttrs.opacity,
 
     hoverinfo: extendFlat({}, baseAttrs.hoverinfo)
 }, 'calc', 'nested');

@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
@@ -233,7 +225,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
             if(j < 0 || j > data.length - 1) continue;
             gridlines.push(extendFlat(constructArrayGridline(j), {
                 color: axis.gridcolor,
-                width: axis.gridwidth
+                width: axis.gridwidth,
+                dash: axis.griddash
             }));
         }
 
@@ -264,7 +257,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
                 if(v < data[0] || v > data[data.length - 1]) continue;
                 minorgridlines.push(extendFlat(constructValueGridline(v), {
                     color: axis.minorgridcolor,
-                    width: axis.minorgridwidth
+                    width: axis.minorgridwidth,
+                    dash: axis.minorgriddash
                 }));
             }
         }
@@ -307,7 +301,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
 
             gridlines.push(extendFlat(constructValueGridline(value), {
                 color: axis.gridcolor,
-                width: axis.gridwidth
+                width: axis.gridwidth,
+                dash: axis.griddash
             }));
         }
 
@@ -319,7 +314,8 @@ module.exports = function calcGridlines(trace, axisLetter, crossAxisLetter) {
                 if(v < data[0] || v > data[data.length - 1]) continue;
                 minorgridlines.push(extendFlat(constructValueGridline(v), {
                     color: axis.minorgridcolor,
-                    width: axis.minorgridwidth
+                    width: axis.minorgridwidth,
+                    dash: axis.minorgriddash
                 }));
             }
         }

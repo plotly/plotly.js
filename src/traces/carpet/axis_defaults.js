@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var carpetAttrs = require('./attributes');
@@ -15,6 +7,7 @@ var Registry = require('../../registry');
 var Lib = require('../../lib');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../../plots/cartesian/prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('../../plots/cartesian/category_order_defaults');
 var setConvert = require('../../plots/cartesian/set_convert');
 var autoType = require('../../plots/cartesian/axis_autotype');
@@ -118,7 +111,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     if(title) {
         Lib.coerceFont(coerce, 'title.font', {
             family: font.family,
-            size: Math.round(font.size * 1.2),
+            size: Lib.bigFont(font.size),
             color: dfltFontColor
         });
         coerce('title.offset');
@@ -136,6 +129,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
     coerce('fixedrange');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
+    handlePrefixSuffixDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, {
         data: options.data,
@@ -144,11 +138,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     var gridColor = coerce2('gridcolor', addOpacity(dfltColor, 0.3));
     var gridWidth = coerce2('gridwidth');
+    var gridDash = coerce2('griddash');
     var showGrid = coerce('showgrid');
 
     if(!showGrid) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
+        delete containerOut.griddash;
     }
 
     var startLineColor = coerce2('startlinecolor', dfltColor);
@@ -171,14 +167,17 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, options)
 
     if(!showGrid) {
         delete containerOut.gridcolor;
-        delete containerOut.gridWidth;
+        delete containerOut.gridwidth;
+        delete containerOut.griddash;
     } else {
         coerce('minorgridcount');
         coerce('minorgridwidth', gridWidth);
+        coerce('minorgriddash', gridDash);
         coerce('minorgridcolor', addOpacity(gridColor, 0.06));
 
         if(!containerOut.minorgridcount) {
             delete containerOut.minorgridwidth;
+            delete containerOut.minorgriddash;
             delete containerOut.minorgridcolor;
         }
     }

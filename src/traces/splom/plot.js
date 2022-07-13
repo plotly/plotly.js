@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var createMatrix = require('regl-splom');
@@ -72,7 +64,13 @@ function plotOne(gd, cd0) {
         }
     }
 
-    viewOpts.viewport = [gs.l, gs.b, gs.w + gs.l, gs.h + gs.b];
+    var plotGlPixelRatio = gd._context.plotGlPixelRatio;
+    var l = gs.l * plotGlPixelRatio;
+    var b = gs.b * plotGlPixelRatio;
+    var w = gs.w * plotGlPixelRatio;
+    var h = gs.h * plotGlPixelRatio;
+
+    viewOpts.viewport = [l, b, w + l, h + b];
 
     if(scene.matrix === true) {
         scene.matrix = createMatrix(regl);

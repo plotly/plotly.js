@@ -1,11 +1,6 @@
-var path = require('path');
 var transformTools = require('browserify-transform-tools');
-var constants = require('./constants');
+var pathToStrictD3Module = require('./constants').pathToStrictD3Module;
 
-var pathToStrictD3Module = path.join(
-    constants.pathToImageTest,
-    'strict-d3.js'
-);
 /**
  * Transform `require('@plotly/d3')` expressions to `require(/path/to/strict-d3.js)`
  */

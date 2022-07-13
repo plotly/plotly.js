@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Axes = require('../../plots/cartesian/axes');
@@ -52,7 +44,6 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     var trace = cd[0].trace;
     var t = cd[0].t;
     var isViolin = trace.type === 'violin';
-    var closeBoxData = [];
 
     var pLetter, vLetter, pAxis, vAxis, vVal, pVal, dx, dy, dPos,
         hoverPseudoDistance, spikePseudoDistance;
@@ -149,22 +140,30 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
     pointData.spikeDistance = dxy(di) * spikePseudoDistance / hoverPseudoDistance;
     pointData[spikePosAttr] = pAxis.c2p(di.pos, true);
 
-    // box plots: each "point" gets many labels
-    var usedVals = {};
-    var attrs = ['med', 'q1', 'q3', 'min', 'max'];
+    var hasMean = trace.boxmean || (trace.meanline || {}).visible;
+    var hasFences = trace.boxpoints || trace.points;
 
-    if(trace.boxmean || (trace.meanline || {}).visible) {
-        attrs.push('mean');
-    }
-    if(trace.boxpoints || trace.points) {
-        attrs.push('lf', 'uf');
+    // labels with equal values (e.g. when min === q1) should still be presented in the order they have when they're unequal
+    var attrs =
+        (hasFences && hasMean) ? ['max', 'uf', 'q3', 'med', 'mean', 'q1', 'lf', 'min'] :
+        (hasFences && !hasMean) ? ['max', 'uf', 'q3', 'med', 'q1', 'lf', 'min'] :
+        (!hasFences && hasMean) ? ['max', 'q3', 'med', 'mean', 'q1', 'min'] :
+        ['max', 'q3', 'med', 'q1', 'min'];
+
+    var rev = vAxis.range[1] < vAxis.range[0];
+
+    if(trace.orientation === (rev ? 'v' : 'h')) {
+        attrs.reverse();
     }
 
+    var spikeDistance = pointData.spikeDistance;
+    var spikePosition = pointData[spikePosAttr];
+
+    var closeBoxData = [];
     for(var i = 0; i < attrs.length; i++) {
         var attr = attrs[i];
 
-        if(!(attr in di) || (di[attr] in usedVals)) continue;
-        usedVals[di[attr]] = true;
+        if(!(attr in di)) continue;
 
         // copy out to a new object for each value to label
         var val = di[attr];
@@ -174,7 +173,7 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
         pointData2.attr = attr;
         pointData2[vLetter + '0'] = pointData2[vLetter + '1'] = valPx;
         pointData2[vLetter + 'LabelVal'] = val;
-        pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val);
+        pointData2[vLetter + 'Label'] = (t.labels ? t.labels[attr] + ' ' : '') + Axes.hoverLabelText(vAxis, val, trace[vLetter + 'hoverformat']);
 
         // Note: introduced to be able to distinguish a
         // clicked point from a box during click-to-select
@@ -184,15 +183,25 @@ function hoverOnBoxes(pointData, xval, yval, hovermode) {
             pointData2[vLetter + 'err'] = di.sd;
         }
 
-        // only keep name and spikes on the first item (median)
-        pointData.name = '';
-        pointData.spikeDistance = undefined;
-        pointData[spikePosAttr] = undefined;
-
         // no hovertemplate support yet
         pointData2.hovertemplate = false;
 
         closeBoxData.push(pointData2);
+    }
+
+    // only keep name and spikes on the median
+    pointData.name = '';
+    pointData.spikeDistance = undefined;
+    pointData[spikePosAttr] = undefined;
+    for(var k = 0; k < closeBoxData.length; k++) {
+        if(closeBoxData[k].attr !== 'med') {
+            closeBoxData[k].name = '';
+            closeBoxData[k].spikeDistance = undefined;
+            closeBoxData[k][spikePosAttr] = undefined;
+        } else {
+            closeBoxData[k].spikeDistance = spikeDistance;
+            closeBoxData[k][spikePosAttr] = spikePosition;
+        }
     }
 
     return closeBoxData;

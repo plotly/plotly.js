@@ -8,6 +8,8 @@ var geoLocationUtils = require('@src/lib/geo_location_utils');
 var topojsonUtils = require('@src/lib/topojson_utils');
 
 var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -22,7 +24,7 @@ var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
 
 // use local topojson files
 Plotly.setPlotConfig({
-    topojsonURL: '/base/dist/topojson/'
+    topojsonURL: '/base/node_modules/sane-topojson/dist/'
 });
 
 function move(fromX, fromY, toX, toY, delay) {
@@ -128,6 +130,35 @@ describe('Test Geo layout defaults', function() {
         });
     });
 
+    it('should only coerce projection.tilt and projection.distance if type is satellite', function() {
+        var projTypes = layoutAttributes.projection.type.values;
+
+        function testOne(projType) {
+            layoutIn = {
+                geo: {
+                    projection: {
+                        type: projType,
+                        tilt: 30,
+                        distance: 3
+                    }
+                }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+
+        projTypes.forEach(function(projType) {
+            testOne(projType);
+            if(projType === 'satellite') {
+                expect(layoutOut.geo.projection.tilt).toBeDefined();
+                expect(layoutOut.geo.projection.distance).toBeDefined();
+            } else {
+                expect(layoutOut.geo.projection.tilt).toBeUndefined();
+                expect(layoutOut.geo.projection.distance).toBeUndefined();
+            }
+        });
+    });
+
     it('should only coerce projection.parallels if type is conic', function() {
         var projTypes = layoutAttributes.projection.type.values;
 
@@ -146,7 +177,7 @@ describe('Test Geo layout defaults', function() {
 
         projTypes.forEach(function(projType) {
             testOne(projType);
-            if(projType.indexOf('conic') !== -1) {
+            if(projType.indexOf('conic') !== -1 || projType === 'albers') {
                 expect(layoutOut.geo.projection.parallels).toBeDefined();
             } else {
                 expect(layoutOut.geo.projection.parallels).toBeUndefined();
@@ -817,15 +848,15 @@ describe('Test geo interactions', function() {
         }
 
         function countTraces(type) {
-            return d3.selectAll('g.trace.' + type).size();
+            return d3SelectAll('g.trace.' + type).size();
         }
 
         function countGeos() {
-            return d3.select('g.geolayer').selectAll('.geo').size();
+            return d3Select('g.geolayer').selectAll('.geo').size();
         }
 
         function countColorBars() {
-            return d3.select('g.infolayer').selectAll('.cbbg').size();
+            return d3Select('g.infolayer').selectAll('.cbbg').size();
         }
 
         beforeEach(function(done) {
@@ -851,10 +882,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
                 expect(cnt).toEqual(1);
             });
 
@@ -916,10 +947,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -948,10 +979,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat', 'location', 'marker.size'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -977,10 +1008,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1005,10 +1036,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1037,10 +1068,10 @@ describe('Test geo interactions', function() {
             });
 
             it('should contain the correct fields', function() {
-                expect(Object.keys(ptData)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(ptData).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'location', 'z', 'ct'
-                ]);
+                ].sort());
             });
 
             it('should show the correct point data', function() {
@@ -1143,25 +1174,25 @@ describe('Test geo interactions', function() {
             });
 
             function countScatterGeoLines() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('path.js-line')
                     .size();
             }
 
             function countScatterGeoMarkers() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('path.point')
                     .size();
             }
 
             function countScatterGeoTextGroups() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('g')
                     .size();
             }
 
             function countScatterGeoTextNodes() {
-                return d3.selectAll('g.trace.scattergeo')
+                return d3SelectAll('g.trace.scattergeo')
                     .selectAll('g')
                     .select('text')
                     .size();
@@ -1169,13 +1200,13 @@ describe('Test geo interactions', function() {
 
             function checkScatterGeoOrder() {
                 var order = ['js-path', 'point', null];
-                var nodes = d3.selectAll('g.trace.scattergeo');
+                var nodes = d3SelectAll('g.trace.scattergeo');
 
                 nodes.each(function() {
                     var list = [];
 
-                    d3.select(this).selectAll('*').each(function() {
-                        var className = d3.select(this).attr('class');
+                    d3Select(this).selectAll('*').each(function() {
+                        var className = d3Select(this).attr('class');
                         list.push(className);
                     });
 
@@ -1188,7 +1219,7 @@ describe('Test geo interactions', function() {
             }
 
             function countChoroplethPaths() {
-                return d3.selectAll('g.trace.choropleth')
+                return d3SelectAll('g.trace.choropleth')
                     .selectAll('path.choroplethlocation')
                     .size();
             }
@@ -1215,8 +1246,8 @@ describe('Test geo interactions', function() {
                         done();
                     }
 
-                    gd.calcdata = undefined;
-                    Plotly.plot(gd);
+                    gd.layout.datarevision = String(i);
+                    Plotly.react(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1246,8 +1277,8 @@ describe('Test geo interactions', function() {
                         done();
                     }
 
-                    gd.calcdata = undefined;
-                    Plotly.plot(gd);
+                    gd.layout.datarevision = String(i);
+                    Plotly.react(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1277,8 +1308,8 @@ describe('Test geo interactions', function() {
                         done();
                     }
 
-                    gd.calcdata = undefined;
-                    Plotly.plot(gd);
+                    gd.layout.datarevision = String(i);
+                    Plotly.react(gd, gd.data, gd.layout);
                     i++;
                 }, INTERVAL);
             });
@@ -1292,8 +1323,9 @@ describe('Test geo interactions', function() {
                 var trace1 = gd.data[1];
                 trace1.locations.shift();
 
-                gd.calcdata = undefined;
-                Plotly.plot(gd).then(function() {
+                gd.layout.datarevision = '0';
+                Plotly.react(gd, gd.data, gd.layout)
+                .then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
 
@@ -1318,8 +1350,9 @@ describe('Test geo interactions', function() {
                 trace1.locations = locationsQueue;
                 trace1.z = zQueue;
 
-                gd.calcdata = undefined;
-                Plotly.plot(gd).then(function() {
+                gd.layout.datarevision = '0';
+                Plotly.react(gd, gd.data, gd.layout)
+                .then(function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(1);
 
@@ -1344,7 +1377,7 @@ describe('Test geo interactions', function() {
 
         Plotly.newPlot(gd, fig).then(function() {
             mouseEvent('mousemove', 350, 250);
-            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+            expect(d3SelectAll('g.hovertext').size()).toEqual(1);
         })
         .then(done, done.fail);
     });
@@ -1354,12 +1387,12 @@ describe('Test geo interactions', function() {
         var fig = Lib.extendDeep({}, require('@mocks/geo_orthographic.json'));
 
         function _assert(msg, hoverLabelCnt) {
-            expect(d3.selectAll('g.hovertext').size())
+            expect(d3SelectAll('g.hovertext').size())
                 .toBe(hoverLabelCnt, msg);
         }
 
-        var px = 390;
-        var py = 290;
+        var px = 200;
+        var py = 200;
         var cnt = 0;
 
         Plotly.newPlot(gd, fig).then(function() {
@@ -1370,14 +1403,14 @@ describe('Test geo interactions', function() {
 
             return new Promise(function(resolve) {
                 var interval = setInterval(function() {
-                    px += 2;
+                    py -= 2;
                     mouseEvent('mousemove', px, py);
 
-                    if(px < 402) {
-                        _assert('- px ' + px, 1);
+                    if(py > 175) {
+                        _assert('- py ' + py, 1);
                         expect(cnt).toBe(0, 'no plotly_unhover event so far');
                     } else {
-                        _assert('- px ' + px, 0);
+                        _assert('- py ' + py, 0);
                         expect(cnt).toBe(1, 'plotly_unhover event count');
 
                         clearInterval(interval);
@@ -1402,7 +1435,7 @@ describe('Test geo interactions', function() {
             var invert = gd._fullLayout.geo._subplot.projection.invert;
             var lonlat = invert(p);
 
-            expect(d3.selectAll('g.hovertext').size())
+            expect(d3SelectAll('g.hovertext').size())
                 .toBe(hoverLabelCnt, 'for ' + lonlat);
 
             Lib.clearThrottle();
@@ -1417,66 +1450,6 @@ describe('Test geo interactions', function() {
         .then(done, done.fail);
     });
 
-    it('should plot to scope defaults when user setting lead to NaN map bounds', function(done) {
-        var gd = createGraphDiv();
-
-        spyOn(Lib, 'warn');
-
-        Plotly.newPlot(gd, [{
-            type: 'scattergeo',
-            lon: [0],
-            lat: [0]
-        }], {
-            geo: {
-                projection: {
-                    type: 'kavrayskiy7',
-                    rotation: {
-                        lat: 38.794799,
-                        lon: -81.622334,
-                    }
-                },
-                center: {
-                    lat: -81
-                },
-                lataxis: {
-                    range: [38.794799, 45.122292]
-                },
-                lonaxis: {
-                    range: [-82.904731, -81.622334]
-                }
-            },
-            width: 700,
-            heigth: 500
-        })
-        .then(function() {
-            var geoLayout = gd._fullLayout.geo;
-            var geo = geoLayout._subplot;
-
-            expect(geoLayout.projection.rotation).toEqual({
-                lon: 0, lat: 0, roll: 0,
-            });
-            expect(geoLayout.center).toEqual({
-                lon: 0, lat: 0
-            });
-            expect(geoLayout.lonaxis.range).toEqual([-180, 180]);
-            expect(geoLayout.lataxis.range).toEqual([-90, 90]);
-
-            expect(geo.viewInitial).toEqual({
-                'fitbounds': false,
-                'projection.rotation.lon': 0,
-                'center.lon': 0,
-                'center.lat': 0,
-                'projection.scale': 1
-            });
-
-            expect(Lib.warn).toHaveBeenCalledTimes(1);
-            expect(Lib.warn).toHaveBeenCalledWith(
-                'Invalid geo settings, relayout\'ing to default view.'
-            );
-        })
-        .then(done, done.fail);
-    });
-
     it('should get hover right for choropleths involving landmasses that cross antimeridian', function(done) {
         var gd = createGraphDiv();
 
@@ -1485,7 +1458,7 @@ describe('Test geo interactions', function() {
             var px = projection(lonlat);
 
             mouseEvent('mousemove', px[0], px[1]);
-            expect(d3.selectAll('g.hovertext').size()).toBe(hoverLabelCnt, msg);
+            expect(d3SelectAll('g.hovertext').size()).toBe(hoverLabelCnt, msg);
 
             Lib.clearThrottle();
         }
@@ -1816,11 +1789,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
                 'location', 'text', 'marker.size'
-            ]);
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1874,11 +1847,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             // var pt = futureData.points[0],
             //     evt = futureData.event;
 
-            // expect(Object.keys(pt)).toEqual([
-            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            // expect(Object.keys(pt).sort()).toEqual([
+            //     'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
             //     'lon', 'lat',
             //     'location', 'text', 'marker.size'
-            // ]);
+            // ].sort());
 
             // expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             // expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1920,11 +1893,11 @@ describe('Test event property of interactions on a geo plot:', function() {
             var pt = futureData.points[0];
             var evt = futureData.event;
 
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+            expect(Object.keys(pt).sort()).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                 'lon', 'lat',
                 'location', 'text', 'marker.size'
-            ]);
+            ].sort());
 
             expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
             expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -1961,11 +1934,11 @@ describe('Test event property of interactions on a geo plot:', function() {
                 var pt = futureData.points[0];
                 var evt = futureData.event;
 
-                expect(Object.keys(pt)).toEqual([
-                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex',
+                expect(Object.keys(pt).sort()).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber', 'pointIndex', 'bbox',
                     'lon', 'lat',
                     'location', 'text', 'marker.size'
-                ]);
+                ].sort());
 
                 expect(pt.curveNumber).toEqual(0, 'points[0].curveNumber');
                 expect(typeof pt.data).toEqual(typeof {}, 'points[0].data');
@@ -2001,7 +1974,7 @@ describe('Test geo base layers', function() {
 
             expect(Object.keys(subplot.layers).length).toEqual(layers.length, '# of layers');
 
-            d3.select(gd).selectAll('.geo > .layer').each(function(d, i) {
+            d3Select(gd).selectAll('.geo > .layer').each(function(d, i) {
                 expect(d).toBe(layers[i], 'layer ' + d + ' at position ' + i);
             });
         }
@@ -2048,7 +2021,7 @@ describe('Test geo base layers', function() {
 
     it('should be able to relayout axis grid *tick0* / *dtick*', function(done) {
         function findGridPath(axisName) {
-            return d3.select(gd).select(axisName + ' > path').attr('d');
+            return d3Select(gd).select(axisName + ' > path').attr('d');
         }
 
         function first(parts) {
@@ -2108,16 +2081,16 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     var eventData;
     var dblClickCnt = 0;
 
+    beforeEach(function() { gd = createGraphDiv(); });
+
     afterEach(destroyGraphDiv);
 
-    function plot(fig) {
-        gd = createGraphDiv();
-
+    var newPlot = function(fig) {
         return Plotly.newPlot(gd, fig).then(function() {
             gd.on('plotly_relayout', function(d) { eventData = d; });
             gd.on('plotly_doubleclick', function() { dblClickCnt++; });
         });
-    }
+    };
 
     function assertEventData(msg, eventKeys) {
         if(eventKeys === 'dblclick') {
@@ -2196,7 +2169,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         }
 
         it('- base case', function(done) {
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [-90, 0], [-90, 0], 1
                 ], [
@@ -2261,7 +2234,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         it('- fitbounds case', function(done) {
             fig.layout.geo.fitbounds = 'locations';
 
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [undefined, 0], [undefined, undefined], undefined
                 ], [
@@ -2345,7 +2318,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         }
 
         it('- base case', function(done) {
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [-75, 45], 1
                 ], [
@@ -2408,7 +2381,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         it('- fitbounds case', function(done) {
             fig.layout.geo.fitbounds = 'locations';
 
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [undefined, undefined], undefined
                 ], [
@@ -2496,7 +2469,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         }
 
         it('- base case', function(done) {
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [15, 57.5], 1,
                 ], [
@@ -2549,7 +2522,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         it('- fitbounds case', function(done) {
             fig.layout.geo.fitbounds = 'locations';
 
-            plot(fig).then(function() {
+            newPlot(fig).then(function() {
                 _assert('base', [
                     [undefined, undefined], undefined,
                 ], [
@@ -2631,7 +2604,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             assertEventData(msg, eventKeys);
         }
 
-        plot(fig).then(function() {
+        newPlot(fig).then(function() {
             _assert('base', [
                 [-96.6, 38.7], 1,
             ], [
@@ -2689,7 +2662,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         fig.layout.width = 700;
         fig.layout.height = 500;
 
-        plot(fig)
+        newPlot(fig)
         .then(function() { return scroll([131, 159], [-200, 200]); })
         .then(function() {
             // scrolling outside subplot frame should log errors,
@@ -2719,7 +2692,7 @@ describe('Test geo zoom/pan/drag interactions:', function() {
             assertEventData(msg, eventKeys);
         }
 
-        plot(fig)
+        newPlot(fig)
         .then(function() {
             _assert('base', [1], [101.9], undefined);
         })
@@ -2730,12 +2703,24 @@ describe('Test geo zoom/pan/drag interactions:', function() {
                 ['geo.projection.rotation.lon', 'geo.center.lon', 'geo.center.lat', 'geo.projection.scale']
             );
         })
-        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: false}); })
+        .then(function() {
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: false}
+            });
+        })
         .then(function() { return scroll([200, 250], [-200, -200]); })
         .then(function() {
             _assert('with scrollZoom:false', [1.3], [134.4], undefined);
         })
-        .then(function() { return Plotly.plot(gd, [], {}, {scrollZoom: 'geo'}); })
+        .then(function() {
+            return newPlot({
+                data: gd.data,
+                layout: gd.layout,
+                config: {scrollZoom: 'geo'}
+            });
+        })
         .then(function() { return scroll([200, 250], [-200, -200]); })
         .then(function() {
             _assert('with scrollZoom:geo',
@@ -2745,44 +2730,59 @@ describe('Test geo zoom/pan/drag interactions:', function() {
         })
         .then(done, done.fail);
     });
+});
 
-    describe('plotly_relayouting', function() {
-        var mocks = {
-            'non-clipped': require('@mocks/geo_winkel-tripel'),
-            'clipped': require('@mocks/geo_orthographic'),
-            'scoped': require('@mocks/geo_europe-bubbles')
-        };
-        ['non-clipped', 'clipped', 'scoped'].forEach(function(zoomHandler) {
-            ['pan'].forEach(function(dragmode) {
-                it('should emit events on ' + dragmode + ' for ' + zoomHandler, function(done) {
-                    var events = []; var path = [[300, 300], [350, 300], [350, 400]];
-                    var relayoutCnt = 0; var relayoutEvent;
-                    var fig = Lib.extendDeep({}, mocks[zoomHandler]);
-                    fig.layout.dragmode = dragmode;
-                    fig.layout.width = 700;
-                    fig.layout.height = 500;
+describe('plotly_relayouting', function() {
+    var gd;
+    var events;
+    var relayoutCnt;
+    var relayoutEvent;
 
-                    gd = createGraphDiv();
-                    Plotly.newPlot(gd, fig)
-                    .then(function() {
-                        gd.on('plotly_relayout', function(e) {
-                            relayoutCnt++;
-                            relayoutEvent = e;
-                        });
-                        gd.on('plotly_relayouting', function(e) {
-                            events.push(e);
-                        });
-                        return drag({path: path, noCover: true});
-                    })
-                    .then(function() {
-                        expect(events.length).toEqual(path.length - 1);
-                        expect(relayoutCnt).toEqual(1);
-                        Object.keys(relayoutEvent).sort().forEach(function(key) {
-                            expect(Object.keys(events[0])).toContain(key);
-                        });
-                    })
-                    .then(done, done.fail);
-                });
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    var newPlot = function(fig) {
+        events = [];
+        relayoutCnt = 0;
+
+        return Plotly.newPlot(gd, fig).then(function() {
+            gd.on('plotly_relayout', function(e) {
+                relayoutCnt++;
+                relayoutEvent = e;
+            });
+            gd.on('plotly_relayouting', function(e) {
+                events.push(e);
+            });
+        });
+    };
+
+    var mocks = {
+        'non-clipped': require('@mocks/geo_winkel-tripel'),
+        'clipped': require('@mocks/geo_orthographic'),
+        'scoped': require('@mocks/geo_europe-bubbles')
+    };
+    ['non-clipped', 'clipped', 'scoped'].forEach(function(zoomHandler) {
+        ['pan'].forEach(function(dragmode) {
+            it('should emit events on ' + dragmode + ' for ' + zoomHandler, function(done) {
+                var path = [[300, 300], [350, 300], [350, 400]];
+                var fig = Lib.extendDeep({}, mocks[zoomHandler]);
+                fig.layout.dragmode = dragmode;
+                fig.layout.width = 700;
+                fig.layout.height = 500;
+
+                newPlot(fig)
+                .then(function() {
+                    return drag({path: path, noCover: true});
+                })
+                .then(function() {
+                    expect(events.length).toEqual(path.length - 1);
+                    expect(relayoutCnt).toEqual(1);
+                    Object.keys(relayoutEvent).sort().forEach(function(key) {
+                        expect(Object.keys(events[0])).toContain(key);
+                    });
+                })
+                .then(done, done.fail);
             });
         });
     });

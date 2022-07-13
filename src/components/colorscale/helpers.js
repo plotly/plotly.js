@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -50,7 +42,7 @@ var letterAttrs = ['min', 'max', 'mid', 'auto'];
 /**
  * Extract 'c' / 'z', trace / color axis colorscale options
  *
- * Note that it would be nice to replace all z* with c* equivalents in v2
+ * Note that it would be nice to replace all z* with c* equivalents in v3
  *
  * @param {object} cont : attribute container
  * @return {object}:

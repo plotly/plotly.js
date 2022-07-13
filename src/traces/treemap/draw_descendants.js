@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -131,6 +123,12 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
 
     updateSlices.each(function(pt) {
         var isHeader = helpers.isHeader(pt, trace);
+
+        // for bbox
+        pt._x0 = viewX(pt.x0);
+        pt._x1 = viewX(pt.x1);
+        pt._y0 = viewY(pt.y0);
+        pt._y1 = viewY(pt.y1);
 
         pt._hoverX = viewX(pt.x1 - trace.marker.pad.r),
         pt._hoverY = hasBottom ?

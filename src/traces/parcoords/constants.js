@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 
@@ -19,7 +11,6 @@ module.exports = {
     layers: ['contextLineLayer', 'focusLineLayer', 'pickLineLayer'],
     axisTitleOffset: 28,
     axisExtentOffset: 10,
-    deselectedLineColor: '#777',
     bar: {
         width: 4, // Visible width of the filter bar
         captureWidth: 10, // Mouse-sensitive width for interaction (Fitts law)
@@ -28,7 +19,6 @@ module.exports = {
         snapDuration: 150, // tween duration in ms for brush snap for ordinal axes
         snapRatio: 0.25, // ratio of bar extension relative to the distance between two adjacent ordinal values
         snapClose: 0.01, // fraction of inter-value distance to snap to the closer one, even if you're not over it
-        strokeColor: 'white', // Color of the filter bar side lines
         strokeOpacity: 1, // Filter bar side stroke opacity
         strokeWidth: 1, // Filter bar side stroke width in pixels
         handleHeight: 8, // Height of the filter bar vertical resize areas on top and bottom

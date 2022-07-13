@@ -7,7 +7,7 @@ var RangeSlider = require('@src/components/rangeslider');
 var constants = require('@src/components/rangeslider/constants');
 var mock = require('../../image/mocks/range_slider.json');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
@@ -201,7 +201,7 @@ describe('Visible rangesliders', function() {
         Plotly.newPlot(gd, mockCopy.data, mockCopy.layout, { staticPlot: true })
             .then(function() {
                 // Try move minimum handle
-                var minHandle = d3.select('.' + constants.grabberMinClassName).node();
+                var minHandle = d3Select('.' + constants.grabberMinClassName).node();
                 expect(minHandle).not.toEqual(null);
                 var minHandleRect = minHandle.getBoundingClientRect();
                 var x = minHandleRect.x + minHandleRect.width / 2;
@@ -210,7 +210,7 @@ describe('Visible rangesliders', function() {
             })
             .then(function() {
                 // Try move maximum handle
-                var maxHandle = d3.select('.' + constants.grabberMaxClassName).node();
+                var maxHandle = d3Select('.' + constants.grabberMaxClassName).node();
                 expect(maxHandle).not.toEqual(null);
                 var maxHandleRect = maxHandle.getBoundingClientRect();
                 var x = maxHandleRect.x + maxHandleRect.width / 2;
@@ -219,7 +219,7 @@ describe('Visible rangesliders', function() {
             })
             .then(function() {
                 // Slidebox should not exist
-                var slidebox = d3.select('.' + constants.slideBoxClassName).node();
+                var slidebox = d3Select('.' + constants.slideBoxClassName).node();
                 expect(slidebox).toEqual(null);
             })
             .then(function() {
@@ -548,7 +548,7 @@ describe('Rangeslider visibility property', function() {
 
     it('should clear traces in range plot when needed', function(done) {
         function count(query) {
-            return d3.select(getRangeSlider()).selectAll(query).size();
+            return d3Select(getRangeSlider()).selectAll(query).size();
         }
 
         Plotly.newPlot(gd, [{

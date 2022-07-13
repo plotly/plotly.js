@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -152,7 +144,7 @@ function convertTickWidth(gd, xa, trace) {
                 var origX = xa.makeCalcdata(tracei, 'x');
                 tracei._origX = origX;
 
-                var xcalc = alignPeriod(trace, xa, 'x', origX);
+                var xcalc = alignPeriod(trace, xa, 'x', origX).vals;
                 tracei._xcalc = xcalc;
 
                 var _minDiff = Lib.distinctVals(xcalc).minDiff;

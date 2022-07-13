@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -18,6 +10,7 @@ var cn = require('./constants.js');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../../plots/cartesian/prefix_suffix_defaults');
 
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
@@ -70,6 +63,8 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
         coerce('delta.decreasing.symbol');
         coerce('delta.decreasing.color');
         coerce('delta.position');
+        coerce('delta.prefix');
+        coerce('delta.suffix');
         deltaFontSize = traceOut.delta.font.size;
     }
     traceOut._scaleNumbers = (!traceOut._hasNumber || auto[0]) && (!traceOut._hasDelta || auto[1]) || false;
@@ -136,6 +131,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
         var opts = {outerTicks: true};
         handleTickValueDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear');
+        handlePrefixSuffixDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
         handleTickLabelDefaults(axisIn, axisOut, coerceGaugeAxis, 'linear', opts);
         handleTickMarkDefaults(axisIn, axisOut, coerceGaugeAxis, opts);
     } else {

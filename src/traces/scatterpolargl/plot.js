@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var cluster = require('@plotly/point-cluster');
@@ -18,6 +10,8 @@ var convert = require('../scattergl/convert');
 var Lib = require('../../lib');
 
 var TOO_MANY_POINTS = require('../scattergl/constants').TOO_MANY_POINTS;
+
+var reglPrecompiled = {};
 
 module.exports = function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
@@ -134,3 +128,5 @@ module.exports = function plot(gd, subplot, cdata) {
 
     return scatterglPlot(gd, subplot, cdata);
 };
+
+module.exports.reglPrecompiled = reglPrecompiled;

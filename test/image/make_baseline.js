@@ -1,20 +1,11 @@
-var fs = require('fs');
 var minimist = require('minimist');
+var path = require('path');
+var spawn = require('child_process').spawn;
 
 var getMockList = require('./assets/get_mock_list');
-var getRequestOpts = require('./assets/get_image_request_options');
-var getImagePaths = require('./assets/get_image_paths');
-
-// packages inside the image server docker
-var request = require('request');
-
-// wait time between each baseline generation
-var QUEUE_WAIT = 10;
 
 /**
  *  Baseline image generation script.
- *
- *  Called by `tasks/baseline.sh in `npm run baseline`.
  *
  *  CLI arguments:
  *
@@ -22,7 +13,7 @@ var QUEUE_WAIT = 10;
  *
  *  Examples:
  *
- *  Generate or (re-generate) all baselines (in queue):
+ *  Generate or (re-generate) all baselines:
  *
  *      npm run baseline
  *
@@ -30,60 +21,60 @@ var QUEUE_WAIT = 10;
  *
  *      npm run baseline -- contour_nolines
  *
- *  Generate or (re-generate) all gl3d baseline (in queue):
+ *  Generate or (re-generate) all gl3d baseline:
  *
  *      npm run baseline -- gl3d_*
+ *
+ *  Generate or (re-generate) baselines using mathjax3:
+ *
+ *      npm run baseline mathjax3
  *
  */
 
 var argv = minimist(process.argv.slice(2), {});
 
 var allMockList = [];
+var mathjax3;
 argv._.forEach(function(pattern) {
-    var mockList = getMockList(pattern);
+    if(pattern === 'mathjax3') {
+        mathjax3 = true;
+    } else {
+        var mockList = getMockList(pattern);
 
-    if(mockList.length === 0) {
-        throw new Error('No mocks found with pattern ' + pattern);
+        if(mockList.length === 0) {
+            throw new Error('No mocks found with pattern ' + pattern);
+        }
+
+        allMockList = allMockList.concat(mockList);
     }
-
-    allMockList = allMockList.concat(mockList);
 });
 
-// main
-runInQueue(allMockList);
-
-function runInQueue(mockList) {
-    var index = 0;
-
-    run(mockList[index]);
-
-    function run(mockName) {
-        makeBaseline(mockName, function() {
-            console.log('generated ' + mockName + ' successfully');
-
-            index++;
-            if(index < mockList.length) {
-                setTimeout(function() {
-                    run(mockList[index]);
-                }, QUEUE_WAIT);
-            }
-        });
-    }
+if(mathjax3) {
+    allMockList = [
+        'legend_mathjax_title_and_items',
+        'mathjax',
+        'parcats_grid_subplots',
+        'table_latex_multitrace_scatter',
+        'table_plain_birds',
+        'table_wrapped_birds',
+        'ternary-mathjax'
+    ];
 }
 
-function makeBaseline(mockName, cb) {
-    var requestOpts = getRequestOpts({ mockName: mockName });
-    var imagePaths = getImagePaths(mockName);
-    var saveImageStream = fs.createWriteStream(imagePaths.baseline);
+if(allMockList.length) console.log(allMockList);
+console.log('Please wait for the process to complete.');
 
-    function checkFormat(err, res) {
-        if(err) throw err;
-        if(res.headers['content-type'] !== 'image/png') {
-            throw new Error('Generated image is not a valid png');
-        }
-    }
-
-    request(requestOpts, checkFormat)
-        .pipe(saveImageStream)
-        .on('close', cb);
+var p = spawn(
+    'python3', [
+        path.join('test', 'image', 'make_baseline.py'),
+        (mathjax3 ? 'mathjax3' : '') + '= ' + allMockList.join(' ')
+    ]
+);
+try {
+    p.stdout.on('data', function(data) {
+        console.log(data.toString());
+    });
+} catch(e) {
+    console.error(e.stack);
+    p.exit(1);
 }

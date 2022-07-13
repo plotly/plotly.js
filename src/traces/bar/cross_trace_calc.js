@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -180,7 +172,7 @@ function setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts) {
         var calcTrace = calcTraces[i];
 
         var sieve = new Sieve([calcTrace], {
-            unitMinDiff: opts.xCat || opts.yCat,
+            posAxis: pa,
             sepNegVal: false,
             overlapNoMerge: !opts.norm
         });
@@ -204,6 +196,7 @@ function setGroupPositionsInOverlayMode(pa, sa, calcTraces, opts) {
 
 function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces, opts) {
     var sieve = new Sieve(calcTraces, {
+        posAxis: pa,
         sepNegVal: false,
         overlapNoMerge: !opts.norm
     });
@@ -213,7 +206,7 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces, opts) {
 
     // relative-stack bars within the same trace that would otherwise
     // be hidden
-    unhideBarsWithinTrace(sieve);
+    unhideBarsWithinTrace(sieve, pa);
 
     // set bar bases and sizes, and update size axis
     if(opts.norm) {
@@ -226,6 +219,7 @@ function setGroupPositionsInGroupMode(gd, pa, sa, calcTraces, opts) {
 
 function setGroupPositionsInStackOrRelativeMode(gd, pa, sa, calcTraces, opts) {
     var sieve = new Sieve(calcTraces, {
+        posAxis: pa,
         sepNegVal: opts.mode === 'relative',
         overlapNoMerge: !(opts.norm || opts.mode === 'stack' || opts.mode === 'relative')
     });
@@ -618,7 +612,7 @@ function sieveBars(sieve) {
     }
 }
 
-function unhideBarsWithinTrace(sieve) {
+function unhideBarsWithinTrace(sieve, pa) {
     var calcTraces = sieve.traces;
 
     for(var i = 0; i < calcTraces.length; i++) {
@@ -627,6 +621,7 @@ function unhideBarsWithinTrace(sieve) {
 
         if(fullTrace.base === undefined) {
             var inTraceSieve = new Sieve([calcTrace], {
+                posAxis: pa,
                 sepNegVal: true,
                 overlapNoMerge: true
             });

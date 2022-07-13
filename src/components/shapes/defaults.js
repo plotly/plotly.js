@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -35,7 +26,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var path = coerce('path');
     var dfltType = path ? 'path' : 'rect';
     var shapeType = coerce('type', dfltType);
-    if(shapeOut.type !== 'path') delete shapeOut.path;
+    var noPath = shapeType !== 'path';
+    if(noPath) delete shapeOut.path;
 
     coerce('editable');
     coerce('layer');
@@ -77,11 +69,11 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
 
         // Coerce x0, x1, y0, y1
-        if(shapeType !== 'path') {
+        if(noPath) {
             var dflt0 = 0.25;
             var dflt1 = 0.75;
 
-            // hack until V2.0 when log has regular range behavior - make it look like other
+            // hack until V3.0 when log has regular range behavior - make it look like other
             // ranges to send to coerce, then put it back after
             // this is all to give reasonable default position behavior on log axes, which is
             // a pretty unimportant edge case so we could just ignore this.
@@ -121,9 +113,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
     }
 
-    if(shapeType === 'path') {
-        coerce('path');
-    } else {
+    if(noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 }

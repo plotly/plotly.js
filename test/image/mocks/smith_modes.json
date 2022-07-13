@@ -1,0 +1,134 @@
+{
+  "data": [
+    {
+      "type": "scattersmith",
+      "real": [0, 1, 0, 1],
+      "imag": [0, 0, 1, 1],
+      "mode": "markers",
+      "marker": {
+        "symbol": ["arrow-left", "arrow-down", "arrow-up", "arrow-right"],
+        "color": ["#F70", "red", "green", "blue"],
+        "size": 20
+      }
+    },
+    {
+      "type": "scattersmith",
+      "real": [0, 1, 0, 1],
+      "imag": [0, 0, 1, 1],
+      "text": ["A", "B", "C", "D"],
+      "mode": "markers+lines+text",
+      "marker": {
+        "size": 20,
+        "opacity": 0.5
+      },
+      "line": {
+        "width": 3,
+        "dash": "dot"
+      },
+      "cliponaxis": true,
+      "subplot": "smith2"
+    },
+    {
+      "type": "scattersmith",
+      "real": [],
+      "imag": [],
+      "subplot": "smith3"
+    },
+    {
+      "type": "scattersmith",
+      "real": [0, 1, 0, 1],
+      "imag": [0, 0, 1, 1],
+      "mode": "markers+text",
+      "marker": {
+        "symbol": "x",
+        "size": 10
+      },
+      "textposition": ["right", "top", "bottom", "left"],
+      "texttemplate": "[%{real}, %{imag}]",
+      "textfont": { "size": 20 },
+      "subplot": "smith4"
+    }
+  ],
+  "layout": {
+    "smith": {
+      "domain": {
+        "x": [
+          0,
+          0.46
+        ],
+        "y": [
+          0.56,
+          1
+        ]
+      }
+    },
+    "smith2": {
+      "domain": {
+        "x": [
+          0,
+          0.46
+        ],
+        "y": [
+          0,
+          0.44
+        ]
+      }
+    },
+    "smith3": {
+      "domain": {
+        "x": [
+          0.54,
+          1
+        ],
+        "y": [
+          0.56,
+          1
+        ]
+      },
+      "realaxis": {
+        "side": "bottom",
+        "ticks": "bottom",
+        "tickfont": {
+          "color": "white"
+        },
+        "gridcolor": "blue",
+        "linecolor": "white",
+        "linewidth": 3,
+        "gridwidth": 2
+      },
+      "imaginaryaxis": {
+        "ticks": "inside",
+        "tickcolor": "white",
+        "gridcolor": "darkred",
+        "linecolor": "red",
+        "linewidth": 3,
+        "gridwidth": 2
+      },
+      "bgcolor": "black"
+    },
+    "smith4": {
+      "domain": {
+        "x": [
+          0.54,
+          1
+        ],
+        "y": [
+          0,
+          0.44
+        ]
+      },
+      "realaxis": {
+        "showticklabels": false
+      }
+    },
+    "showlegend": false,
+    "margin": {
+      "t": 40,
+      "b": 40,
+      "r": 40,
+      "l": 40
+    },
+    "width": 540,
+    "height": 540
+  }
+}

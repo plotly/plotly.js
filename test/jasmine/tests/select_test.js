@@ -1,4 +1,5 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
@@ -49,9 +50,9 @@ function drag(path, options) {
 function assertSelectionNodes(cornerCnt, outlineCnt, _msg) {
     var msg = _msg ? ' - ' + _msg : '';
 
-    expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+    expect(d3SelectAll('.zoomlayer > .zoombox-corners').size())
         .toBe(cornerCnt, 'selection corner count' + msg);
-    expect(d3.selectAll('.zoomlayer > .select-outline').size())
+    expect(d3SelectAll('.zoomlayer > .select-outline').size())
         .toBe(outlineCnt, 'selection outline count' + msg);
 }
 
@@ -114,7 +115,7 @@ function assertEventCounts(selecting, selected, deselect, msg) {
     expect(deselectCnt).toBe(deselect, 'plotly_deselect call count: ' + msg);
 }
 
-// TODO: in v2, when we get rid of the `plotly_selected->undefined` event, these will
+// TODO: in v3, when we get rid of the `plotly_selected->undefined` event, these will
 // change to BOXEVENTS = [1, 1, 1], LASSOEVENTS = [4, 1, 1]. See also _run down below
 //
 // events for box or lasso select mouse moves then a doubleclick
@@ -718,9 +719,9 @@ describe('Click-to-select', function() {
             assertSelectionCleared();
         })
         .then(function() {
-            d3.select(gd).select('g.plot').each(function() {
-                d3.select(this).selectAll('g.errorbar').selectAll('path').each(function() {
-                    expect(d3.select(this).attr('style'))
+            d3Select(gd).select('g.plot').each(function() {
+                d3Select(this).selectAll('g.errorbar').selectAll('path').each(function() {
+                    expect(d3Select(this).attr('style'))
                         .toBe('vector-effect: non-scaling-stroke; stroke-width: 2px; stroke: rgb(68, 68, 68); stroke-opacity: 1; opacity: 1; fill: rgb(255, 255, 0); fill-opacity: 1;', 'to be visible'
                     );
                 });
@@ -1419,7 +1420,7 @@ describe('Test select box and lasso in general:', function() {
         .then(done, done.fail);
     });
 
-    it('should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
+    it('@flaky should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/0.json'));
 
@@ -1591,7 +1592,7 @@ describe('Test select box and lasso in general:', function() {
         }
 
         function _assert(msg, exp) {
-            var outline = d3.select(gd).select('.zoomlayer').select('.select-outline-1');
+            var outline = d3Select(gd).select('.zoomlayer').select('.select-outline-1');
 
             if(exp.outline) {
                 expect(outline2coords(outline)).toBeCloseTo2DArray(exp.outline, 2, msg);
@@ -1836,7 +1837,7 @@ describe('Test select box and lasso per trace:', function() {
         return (eventCounts[0] ? selectedPromise : Promise.resolve())
             .then(afterDragFn)
             .then(function() {
-                // TODO: in v2 when we remove the `plotly_selecting->undefined` the Math.max(...)
+                // TODO: in v3 when we remove the `plotly_selecting->undefined` the Math.max(...)
                 // in the middle here will turn into just eventCounts[1].
                 // It's just here because one of the selected events is generated during
                 // doubleclick so hasn't happened yet when we're testing this.
@@ -2009,7 +2010,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('@noCI @gl should work on choroplethmapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@gl should work on choroplethmapbox traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['location', 'z']);
             var assertRanges = makeAssertRanges('mapbox');
             var assertLassoPoints = makeAssertLassoPoints('mapbox');
@@ -2033,7 +2034,7 @@ describe('Test select box and lasso per trace:', function() {
                     [[150, 150], [300, 300]],
                     function() {
                         assertPoints([['NY', 10]]);
-                        assertRanges([[-83.29, 46.13], [-73.97, 39.29]]);
+                        assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
                         assertSelectedPoints({0: [0]});
                     },
                     null, BOXEVENTS, 'choroplethmapbox select'
@@ -2049,8 +2050,8 @@ describe('Test select box and lasso per trace:', function() {
                         assertPoints([['MA', 20]]);
                         assertSelectedPoints({0: [1]});
                         assertLassoPoints([
-                            [-73.97, 43.936], [-73.97, 39.293], [-67.756, 39.293],
-                            [-67.756, 43.936], [-73.971, 43.936]
+                            [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
+                            [-67.84, 43.936], [-74.06, 43.936]
                         ]);
                     },
                     null, LASSOEVENTS, 'choroplethmapbox lasso'
@@ -2068,11 +2069,11 @@ describe('Test select box and lasso per trace:', function() {
             var assertLassoPoints = makeAssertLassoPoints('geo');
 
             function assertNodeOpacity(exp) {
-                var traces = d3.select(gd).selectAll('.scatterlayer > .trace');
+                var traces = d3Select(gd).selectAll('.scatterlayer > .trace');
                 expect(traces.size()).toBe(Object.keys(exp).length, 'correct # of trace <g>');
 
                 traces.each(function(_, i) {
-                    d3.select(this).selectAll('path.point').each(function(_, j) {
+                    d3Select(this).selectAll('path.point').each(function(_, j) {
                         expect(Number(this.style.opacity))
                             .toBe(exp[i][j], 'node opacity - trace ' + i + ' pt ' + j);
                     });
@@ -2198,6 +2199,47 @@ describe('Test select box and lasso per trace:', function() {
                     },
                     [200, 200],
                     LASSOEVENTS, 'scatterpolar lasso'
+                );
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    [false, true].forEach(function(hasCssTransform) {
+        it('should work on scattersmith traces, hasCssTransform: ' + hasCssTransform, function(done) {
+            var assertPoints = makeAssertPoints(['real', 'imag']);
+            var assertSelectedPoints = makeAssertSelectedPoints();
+
+            var fig = Lib.extendDeep({}, require('@mocks/smith_basic.json'));
+            fig.layout.dragmode = 'select';
+            addInvisible(fig);
+
+            Plotly.newPlot(gd, fig)
+            .then(function() {
+                if(hasCssTransform) transformPlot(gd, cssTransform);
+
+                return _run(hasCssTransform,
+                    [[260, 260], [460, 460]],
+                    function() {
+                        assertPoints([[1, 0]]);
+                        assertSelectedPoints({0: [2]});
+                    },
+                    [360, 360],
+                    BOXEVENTS, 'scattersmith select'
+                );
+            })
+            .then(function() {
+                return Plotly.relayout(gd, 'dragmode', 'lasso');
+            })
+            .then(function() {
+                return _run(hasCssTransform,
+                    [[260, 260], [260, 460], [460, 460], [460, 260], [260, 260]],
+                    function() {
+                        assertPoints([[1, 0]]);
+                        assertSelectedPoints({0: [2]});
+                    },
+                    [360, 360],
+                    LASSOEVENTS, 'scattersmith lasso'
                 );
             })
             .then(done, done.fail);
@@ -2455,7 +2497,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false].forEach(function(hasCssTransform) {
-        it('should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@flaky should work for bar traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2868,7 +2910,7 @@ describe('Test select box and lasso per trace:', function() {
 
                 function countUnSelectedPaths(selector) {
                     var unselected = 0;
-                    d3.select(gd).selectAll(selector).each(function() {
+                    d3Select(gd).selectAll(selector).each(function() {
                         var opacity = this.style.opacity;
                         if(opacity < 1) unselected++;
                     });
@@ -2977,7 +3019,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertSelectedPoints = makeAssertSelectedPoints();
 
             function assertFillOpacity(exp, msg) {
-                var txtPts = d3.select(gd).select('g.plot').selectAll('text');
+                var txtPts = d3Select(gd).select('g.plot').selectAll('text');
 
                 expect(txtPts.size()).toBe(exp.length, '# of text nodes: ' + msg);
 
@@ -3096,7 +3138,7 @@ describe('Test that selections persist:', function() {
     afterEach(destroyGraphDiv);
 
     function assertPtOpacity(selector, expected) {
-        d3.selectAll(selector).each(function(_, i) {
+        d3SelectAll(selector).each(function(_, i) {
             var style = Number(this.style.opacity);
             expect(style).toBe(expected.style[i], 'style for pt ' + i);
         });
@@ -3238,7 +3280,7 @@ describe('Test that selection styles propagate to range-slider plot:', function(
 
     function makeAssertFn(query) {
         return function(msg, expected) {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var mainPlot3 = gd3.select('.cartesianlayer');
             var rangePlot3 = gd3.select('.rangeslider-rangeplot');
 

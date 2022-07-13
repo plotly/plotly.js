@@ -1,15 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
+var formatLocale = require('d3-format').formatLocale;
 var isNumeric = require('fast-isnumeric');
 
 var Registry = require('../registry');
@@ -57,15 +50,9 @@ plots.hasSimpleAPICommandBindings = commandModule.hasSimpleAPICommandBindings;
 plots.redrawText = function(gd) {
     gd = Lib.getGraphDiv(gd);
 
-    var fullLayout = gd._fullLayout || {};
-    var hasPolar = fullLayout._has && fullLayout._has('polar');
-    var hasLegacyPolar = !hasPolar && gd.data && gd.data[0] && gd.data[0].r;
-
-    // do not work if polar is present
-    if(hasLegacyPolar) return;
-
     return new Promise(function(resolve) {
         setTimeout(function() {
+            if(!gd._fullLayout) return;
             Registry.getComponentMethod('annotations', 'draw')(gd);
             Registry.getComponentMethod('legend', 'draw')(gd);
             Registry.getComponentMethod('colorbar', 'draw')(gd);
@@ -131,7 +118,7 @@ plots.previousPromises = function(gd) {
 
 /**
  * Adds the 'Edit chart' link.
- * Note that now Plotly.plot() calls this so it can regenerate whenever it replots
+ * Note that now _doPlot calls this so it can regenerate whenever it replots
  *
  * Add source links to your graph inside the 'showSources' config argument.
  */
@@ -468,15 +455,6 @@ plots.supplyDefaults = function(gd, opts) {
         newFullLayout.images.length === 0
     );
 
-    // TODO remove in v2.0.0
-    // add has-plot-type refs to fullLayout for backward compatibility
-    newFullLayout._hasCartesian = newFullLayout._has('cartesian');
-    newFullLayout._hasGeo = newFullLayout._has('geo');
-    newFullLayout._hasGL3D = newFullLayout._has('gl3d');
-    newFullLayout._hasGL2D = newFullLayout._has('gl2d');
-    newFullLayout._hasTernary = newFullLayout._has('ternary');
-    newFullLayout._hasPie = newFullLayout._has('pie');
-
     // relink / initialize subplot axis objects
     plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
@@ -711,7 +689,7 @@ function getFormatObj(gd, formatKeys) {
 /**
  * getFormatter: combine the final separators with the locale formatting object
  * we pulled earlier to generate number and time formatters
- * TODO: remove separators in v2, only use locale, so we don't need this step?
+ * TODO: remove separators in v3, only use locale, so we don't need this step?
  *
  * @param {object} formatObj: d3.locale format object
  * @param {string} separators: length-2 string to override decimal and thousands
@@ -725,7 +703,18 @@ function getFormatter(formatObj, separators) {
     formatObj.thousands = separators.charAt(1);
 
     return {
-        numberFormat: d3.locale(formatObj).numberFormat,
+        numberFormat: function(formatStr) {
+            try {
+                formatStr = formatLocale(formatObj).format(
+                    Lib.adjustFormat(formatStr)
+                );
+            } catch(e) {
+                Lib.warnBadFormat(formatStr);
+                return Lib.noFormat;
+            }
+
+            return formatStr;
+        },
         timeFormat: timeFormatLocale(formatObj).utcFormat
     };
 }
@@ -1332,6 +1321,8 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
             );
 
             coerce('legendgroup');
+            coerce('legendgrouptitle.text');
+            coerce('legendrank');
 
             traceOut._dfltShowLegend = true;
         } else {
@@ -1478,16 +1469,14 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('autotypenumbers');
 
-    var globalFont = Lib.coerceFont(coerce, 'font');
+    var font = Lib.coerceFont(coerce, 'font');
+    var fontSize = font.size;
+
+    Lib.coerceFont(coerce, 'title.font', Lib.extendFlat({}, font, {
+        size: Math.round(fontSize * 1.4)
+    }));
 
     coerce('title.text', layoutOut._dfltTitle.plot);
-
-    Lib.coerceFont(coerce, 'title.font', {
-        family: globalFont.family,
-        size: Math.round(globalFont.size * 1.4),
-        color: globalFont.color
-    });
-
     coerce('title.xref');
     coerce('title.yref');
     coerce('title.x');
@@ -1512,7 +1501,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     // layouts with no set width and height were set temporary set to 'initial'
     // to pass through the autosize routine
     //
-    // This behavior is subject to change in v2.
+    // This behavior is subject to change in v3.
     coerce('autosize', !(layoutIn.width && layoutIn.height));
 
     coerce('width');
@@ -1540,12 +1529,10 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     coerce('editrevision', uirevision);
     coerce('selectionrevision', uirevision);
 
-    coerce('modebar.orientation');
-    coerce('modebar.bgcolor', Color.addOpacity(layoutOut.paper_bgcolor, 0.5));
-    var modebarDefaultColor = Color.contrast(Color.rgb(layoutOut.modebar.bgcolor));
-    coerce('modebar.color', Color.addOpacity(modebarDefaultColor, 0.3));
-    coerce('modebar.activecolor', Color.addOpacity(modebarDefaultColor, 0.7));
-    coerce('modebar.uirevision', uirevision);
+    Registry.getComponentMethod(
+        'modebar',
+        'supplyLayoutDefaults'
+    )(layoutIn, layoutOut);
 
     Registry.getComponentMethod(
         'shapes',
@@ -1756,7 +1743,6 @@ plots.purge = function(gd) {
     delete gd._fullData;
     delete gd._fullLayout;
     delete gd.calcdata;
-    delete gd.framework;
     delete gd.empty;
 
     delete gd.fid;
@@ -1766,7 +1752,7 @@ plots.purge = function(gd) {
     delete gd.autoplay; // are we doing an action that doesn't go in undo queue?
     delete gd.changed;
 
-    // these get recreated on Plotly.plot anyway, but just to be safe
+    // these get recreated on _doPlot anyway, but just to be safe
     // (and to have a record of them...)
     delete gd._promises;
     delete gd._redrawTimer;
@@ -2093,24 +2079,28 @@ plots.doAutoMargin = function(gd) {
         var maxNumberOfRedraws = 3 * (1 + Object.keys(pushMarginIds).length);
 
         if(fullLayout._redrawFromAutoMarginCount < maxNumberOfRedraws) {
-            return Registry.call('plot', gd);
+            return Registry.call('_doPlot', gd);
         } else {
             fullLayout._size = oldMargins;
             Lib.warn('Too many auto-margin redraws.');
         }
     }
 
-    hideOutOfRangeInsideTickLabels(gd);
+    refineTicks(gd);
 };
 
-function hideOutOfRangeInsideTickLabels(gd) {
+function refineTicks(gd) {
     var axList = axisIDs.list(gd, '', true);
-    for(var i = 0; i < axList.length; i++) {
-        var ax = axList[i];
 
-        var hideFn = ax._hideOutOfRangeInsideTickLabels;
-        if(hideFn) hideFn();
-    }
+    [
+        '_adjustTickLabelsOverflow',
+        '_hideCounterAxisInsideTickLabels'
+    ].forEach(function(k) {
+        for(var i = 0; i < axList.length; i++) {
+            var hideFn = axList[i][k];
+            if(hideFn) hideFn();
+        }
+    });
 }
 
 var marginKeys = ['l', 'r', 't', 'b', 'p', 'w', 'h'];
@@ -2250,8 +2240,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             };
         }
     }
-
-    if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     if(frames) obj.frames = stripObj(frames);
 
@@ -2747,6 +2735,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionAxes() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 if(basePlotModules[j].transitionAxes) {
                     basePlotModules[j].transitionAxes(gd, axEdits, axisTransitionOpts, makeCallback);
@@ -2755,6 +2744,7 @@ plots.transitionFromReact = function(gd, restyleFlags, relayoutFlags, oldFullLay
         }
 
         function transitionTraces() {
+            if(!gd._fullLayout) return;
             for(var j = 0; j < basePlotModules.length; j++) {
                 basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
             }
@@ -2949,10 +2939,11 @@ plots.doCalcdata = function(gd, traces) {
     gd._hmpixcount = 0;
     gd._hmlumcount = 0;
 
-    // for sharing colors across pies / sunbursts / treemap / funnelarea (and for legend)
+    // for sharing colors across pies / sunbursts / treemap / icicle / funnelarea (and for legend)
     fullLayout._piecolormap = {};
     fullLayout._sunburstcolormap = {};
     fullLayout._treemapcolormap = {};
+    fullLayout._iciclecolormap = {};
     fullLayout._funnelareacolormap = {};
 
     // If traces were specified and this trace was not included,

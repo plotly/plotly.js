@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var createScatter = require('regl-scatter2d');
@@ -22,19 +14,28 @@ var linkTraces = require('../scatter/link_traces');
 
 var styleTextSelection = require('./edit_style').styleTextSelection;
 
-function getViewport(fullLayout, xaxis, yaxis) {
+var reglPrecompiled = {};
+
+function getViewport(fullLayout, xaxis, yaxis, plotGlPixelRatio) {
     var gs = fullLayout._size;
-    var width = fullLayout.width;
-    var height = fullLayout.height;
+    var width = fullLayout.width * plotGlPixelRatio;
+    var height = fullLayout.height * plotGlPixelRatio;
+
+    var l = gs.l * plotGlPixelRatio;
+    var b = gs.b * plotGlPixelRatio;
+    var r = gs.r * plotGlPixelRatio;
+    var t = gs.t * plotGlPixelRatio;
+    var w = gs.w * plotGlPixelRatio;
+    var h = gs.h * plotGlPixelRatio;
     return [
-        gs.l + xaxis.domain[0] * gs.w,
-        gs.b + yaxis.domain[0] * gs.h,
-        (width - gs.r) - (1 - xaxis.domain[1]) * gs.w,
-        (height - gs.t) - (1 - yaxis.domain[1]) * gs.h
+        l + xaxis.domain[0] * w,
+        b + yaxis.domain[0] * h,
+        (width - r) - (1 - xaxis.domain[1]) * w,
+        (height - t) - (1 - yaxis.domain[1]) * h
     ];
 }
 
-module.exports = function plot(gd, subplot, cdata) {
+var exports = module.exports = function plot(gd, subplot, cdata) {
     if(!cdata.length) return;
 
     var fullLayout = gd._fullLayout;
@@ -46,7 +47,7 @@ module.exports = function plot(gd, subplot, cdata) {
     // we may have more subplots than initialized data due to Axes.getSubplots method
     if(!scene) return;
 
-    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint']);
+    var success = prepareRegl(gd, ['ANGLE_instanced_arrays', 'OES_element_index_uint'], reglPrecompiled);
     if(!success) {
         scene.init();
         return;
@@ -67,7 +68,7 @@ module.exports = function plot(gd, subplot, cdata) {
             scene.line2d = createLine(regl);
         }
         if(scene.scatter2d === true) {
-            scene.scatter2d = createScatter(regl, { constPointSize: true });
+            scene.scatter2d = createScatter(regl);
         }
         if(scene.fill2d === true) {
             scene.fill2d = createLine(regl);
@@ -338,7 +339,7 @@ module.exports = function plot(gd, subplot, cdata) {
 
     // provide viewport and range
     var vpRange0 = {
-        viewport: getViewport(fullLayout, xaxis, yaxis),
+        viewport: getViewport(fullLayout, xaxis, yaxis, gd._context.plotGlPixelRatio),
         // TODO do we need those fallbacks?
         range: [
             (xaxis._rl || xaxis.range)[0],
@@ -369,3 +370,5 @@ module.exports = function plot(gd, subplot, cdata) {
         scene.glText.forEach(function(text) { text.update(vpRange0); });
     }
 };
+
+exports.reglPrecompiled = reglPrecompiled;

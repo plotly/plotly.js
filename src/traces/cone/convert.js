@@ -1,15 +1,7 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var conePlot = require('gl-cone3d');
-var createConeMesh = require('gl-cone3d').createConeMesh;
+var conePlot = require('../../../stackgl_modules').gl_cone3d;
+var createConeMesh = require('../../../stackgl_modules').gl_cone3d.createConeMesh;
 
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;

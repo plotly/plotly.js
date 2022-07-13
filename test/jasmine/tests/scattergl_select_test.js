@@ -1,7 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -13,7 +13,7 @@ var readPixel = require('../assets/read_pixel');
 
 function drag(gd, path) {
     var len = path.length;
-    var el = d3.select(gd).select('rect.nsewdrag').node();
+    var el = d3Select(gd).select('rect.nsewdrag').node();
     var opts = {element: el};
 
     Lib.clearThrottle();
@@ -349,6 +349,53 @@ describe('Test gl2d lasso/select:', function() {
         })
         .then(done, done.fail);
     });
+
+    ['x', 'y'].forEach(function(ax) {
+        [
+          ['linear', [1, 2, 3]],
+          ['log', [1, 2, 3]],
+          ['category', ['A', 'B', 'C']],
+          ['date', ['1900-01-01', '2000-01-01', '2100-01-01']]
+        ].forEach(function(test) {
+            var axType = test[0];
+
+            it('@gl should return the same eventData as scatter on ' + axType + ' ' + ax + ' axis', function(done) {
+                var _mock = {
+                    data: [{type: 'scatter', x: [1, 2, 3], y: [6, 5, 4]}],
+                    layout: {dragmode: 'select', width: 400, height: 400, xaxis: {}, yaxis: {}}
+                };
+                _mock.data[0][ax] = test[1];
+                _mock.layout[ax + 'axis'].type = axType;
+                gd = createGraphDiv();
+                var scatterEventData = {};
+                var selectPath = [[150, 150], [250, 250]];
+
+                Plotly.newPlot(gd, _mock)
+                .then(delay(20))
+                .then(function() {
+                    expect(gd._fullLayout[ax + 'axis'].type).toEqual(test[0]);
+                    return select(gd, selectPath);
+                })
+                .then(delay(20))
+                .then(function(eventData) {
+                    scatterEventData = eventData;
+                    // Make sure we selected a point
+                    expect(eventData.points.length).toBe(1);
+                    return Plotly.restyle(gd, 'type', 'scattergl');
+                })
+                .then(delay(20))
+                .then(function() {
+                    expect(gd._fullLayout[ax + 'axis'].type).toEqual(test[0]);
+                    return select(gd, selectPath);
+                })
+                .then(delay(20))
+                .then(function(eventData) {
+                    assertEventData(eventData, scatterEventData);
+                })
+                .then(done, done.fail);
+            });
+        });
+    });
 });
 
 describe('Test displayed selections:', function() {
@@ -432,6 +479,7 @@ describe('Test displayed selections:', function() {
         }
 
         var mock = {
+            config: { plotGlPixelRatio: 1 },
             data: [{
                 x: x, y: y, type: 'scattergl', mode: 'markers'
             }],
@@ -475,6 +523,7 @@ describe('Test displayed selections:', function() {
         }
 
         var mock = {
+            config: { plotGlPixelRatio: 1 },
             data: [{
                 x: x, y: y, type: 'scattergl', mode: 'markers',
                 marker: {symbol: symbol, size: size, color: color}

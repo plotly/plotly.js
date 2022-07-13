@@ -2,7 +2,7 @@
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 
 // Test utilities
 var createGraphDiv = require('../assets/create_graph_div');
@@ -195,7 +195,7 @@ describe('pointcloud traces', function() {
         Plotly.newPlot(gd, _mock)
         .then(delay(20))
         .then(function() {
-            var canvas = d3.select('.gl-canvas-context').node();
+            var canvas = d3Select('.gl-canvas-context').node();
 
             var RGBA = readPixel(canvas, canvas.width / 2 - 1, canvas.height / 2 - 1, 1, 1);
 

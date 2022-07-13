@@ -1,15 +1,9 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var c = require('./constants');
 var d3 = require('@plotly/d3');
+var Lib = require('../../lib');
+var numberFormat = Lib.numberFormat;
 var gup = require('../../lib/gup');
 var Drawing = require('../../components/drawing');
 var svgUtil = require('../../lib/svg_text_utils');
@@ -536,7 +530,7 @@ function populateCellText(cellText, tableControlView, allColumnBlock, gd) {
             var suffix = latex ? '' : gridPick(d.calcdata.cells.suffix, col, row) || '';
             var format = latex ? null : gridPick(d.calcdata.cells.format, col, row) || null;
 
-            var prefixSuffixedText = prefix + (format ? d3.format(format)(d.value) : d.value) + suffix;
+            var prefixSuffixedText = prefix + (format ? numberFormat(format)(d.value) : d.value) + suffix;
 
             var hasWrapSplitCharacter;
             d.wrappingNeeded = !d.wrapped && !userBrokenText && !latex && (hasWrapSplitCharacter = hasWrapCharacter(prefixSuffixedText));

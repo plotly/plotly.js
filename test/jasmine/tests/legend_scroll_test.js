@@ -4,7 +4,7 @@ var Drawing = require('@src/components/drawing');
 var constants = require('@src/components/legend/constants');
 var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
 
@@ -31,24 +31,24 @@ describe('The legend', function() {
     }
 
     function getLegendHeight(gd) {
-        var bg = d3.select('g.legend').select('.bg').node();
+        var bg = d3Select('g.legend').select('.bg').node();
         return gd._fullLayout.legend.borderwidth + getBBox(bg).height;
     }
 
     function getLegend() {
-        return d3.select('g.legend').node();
+        return d3Select('g.legend').node();
     }
 
     function getScrollBox() {
-        return d3.select('g.legend').select('.scrollbox').node();
+        return d3Select('g.legend').select('.scrollbox').node();
     }
 
     function getScrollBar() {
-        return d3.select('g.legend').select('.scrollbar').node();
+        return d3Select('g.legend').select('.scrollbar').node();
     }
 
     function getToggle() {
-        return d3.select('g.legend').select('.legendtoggle').node();
+        return d3Select('g.legend').select('.legendtoggle').node();
     }
 
     function getScroll(gd) {

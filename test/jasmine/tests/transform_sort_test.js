@@ -2,7 +2,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -264,7 +264,7 @@ describe('Test sort transform interactions:', function() {
     afterEach(destroyGraphDiv);
 
     function _assertFirst(p) {
-        var parts = d3.select('.point').attr('d').split(',').slice(0, 3).join(',');
+        var parts = d3Select('.point').attr('d').split(',').slice(0, 3).join(',');
         expect(parts).toEqual(p);
     }
 

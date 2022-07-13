@@ -1,7 +1,8 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -225,10 +226,10 @@ describe('Plotly.Snapshot', function() {
 
         it('should force *visibility: visible* for text elements with *visibility: inherit*', function(done) {
             // we've gotten rid of visibility almost entirely, using display instead
-            d3.select(gd).style('visibility', 'inherit');
+            d3Select(gd).style('visibility', 'inherit');
 
             Plotly.newPlot(gd, subplotMock.data, subplotMock.layout).then(function() {
-                d3.select(gd).selectAll('text').each(function() {
+                d3Select(gd).selectAll('text').each(function() {
                     var thisStyle = window.getComputedStyle(this);
                     expect(thisStyle.visibility).toEqual('visible');
                     expect(thisStyle.display).toEqual('block');
@@ -269,11 +270,11 @@ describe('Plotly.Snapshot', function() {
                     showlegend: true
                 })
                 .then(function() {
-                    d3.selectAll('text').each(function() {
+                    d3SelectAll('text').each(function() {
                         expect(this.style.fontFamily).toEqual('\"Times New Roman\"');
                     });
 
-                    d3.selectAll('.point,.scatterpts').each(function() {
+                    d3SelectAll('.point,.scatterpts').each(function() {
                         checkURL(this.style.fill);
                     });
 

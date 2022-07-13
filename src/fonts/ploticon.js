@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 module.exports = {
@@ -173,6 +165,33 @@ module.exports = {
     },
     'newplotlylogo': {
         'name': 'newplotlylogo',
-        'svg': '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'><defs><style>.cls-1 {fill: #3f4f75;} .cls-2 {fill: #80cfbe;} .cls-3 {fill: #fff;}</style></defs><title>plotly-logomark</title><g id=\'symbol\'><rect class=\'cls-1\' width=\'132\' height=\'132\' rx=\'6\' ry=\'6\'/><circle class=\'cls-2\' cx=\'78\' cy=\'54\' r=\'6\'/><circle class=\'cls-2\' cx=\'102\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'78\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'54\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'30\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'30\' cy=\'54\' r=\'6\'/><path class=\'cls-3\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/><path class=\'cls-3\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/><path class=\'cls-3\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/><path class=\'cls-3\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/></g></svg>'
+        'svg': [
+            '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'>',
+            '<defs>',
+            ' <style>',
+            '  .cls-0{fill:#000;}',
+            '  .cls-1{fill:#FFF;}',
+            '  .cls-2{fill:#F26;}',
+            '  .cls-3{fill:#D69;}',
+            '  .cls-4{fill:#BAC;}',
+            '  .cls-5{fill:#9EF;}',
+            ' </style>',
+            '</defs>',
+            ' <title>plotly-logomark</title>',
+            ' <g id=\'symbol\'>',
+            '  <rect class=\'cls-0\' x=\'0\' y=\'0\' width=\'132\' height=\'132\' rx=\'18\' ry=\'18\'/>',
+            '  <circle class=\'cls-5\' cx=\'102\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-4\' cx=\'78\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-4\' cx=\'78\' cy=\'54\' r=\'6\'/>',
+            '  <circle class=\'cls-3\' cx=\'54\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-2\' cx=\'30\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-2\' cx=\'30\' cy=\'54\' r=\'6\'/>',
+            '  <path class=\'cls-1\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/>',
+            '  <path class=\'cls-1\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/>',
+            '  <path class=\'cls-1\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/>',
+            '  <path class=\'cls-1\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/>',
+            ' </g>',
+            '</svg>'
+        ].join('')
     }
 };

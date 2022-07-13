@@ -20,7 +20,8 @@ var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var WATERFALL_TEXT_SELECTOR = '.bars .bartext';
 
@@ -115,8 +116,17 @@ describe('Waterfall.supplyDefaults', function() {
         expect(traceOut.width).toBeUndefined();
     });
 
-    it('should coerce textposition to none', function() {
+    it('should coerce textposition to auto', function() {
         traceIn = {
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor, {});
+        expect(traceOut.textposition).toBe('auto');
+    });
+
+    it('should not coerce text styling attributes when textposition is set to none', function() {
+        traceIn = {
+            textposition: 'none',
             y: [1, 2, 3]
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
@@ -129,6 +139,7 @@ describe('Waterfall.supplyDefaults', function() {
 
     it('should not coerce textinfo when textposition is none', function() {
         traceIn = {
+            textposition: 'none',
             y: [1, 2, 3],
             textinfo: 'text'
         };
@@ -139,7 +150,6 @@ describe('Waterfall.supplyDefaults', function() {
     it('should coerce textinfo when textposition is not none', function() {
         traceIn = {
             y: [1, 2, 3],
-            textposition: 'auto',
             textinfo: 'text'
         };
         supplyDefaults(traceIn, traceOut, defaultColor, {});
@@ -652,7 +662,7 @@ describe('A waterfall plot', function() {
 
     function assertTextFontColors(expFontColors, label) {
         return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
+            var selection = d3SelectAll(WATERFALL_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
 
             selection.each(function(d, i) {
@@ -731,7 +741,6 @@ describe('A waterfall plot', function() {
         y: [20, 14, 23, 10, 59, 15],
         text: [20, 14, 23, 10, 59, 15],
         type: 'waterfall',
-        textposition: 'auto',
         marker: {
             color: ['#ee1', '#eee', '#333', '#9467bd', '#dda', '#922'],
         }
@@ -761,7 +770,7 @@ describe('A waterfall plot', function() {
           .then(done, done.fail);
     });
 
-    it('should be able to restyle', function(done) {
+    it('@noCI should be able to restyle', function(done) {
         var mock = {
             data: [
                 {
@@ -774,7 +783,6 @@ describe('A waterfall plot', function() {
                 }, {
                     width: [0.4, 0.6, 0.8, 1],
                     text: ['Three', 2, 'inside text', 0],
-                    textposition: 'auto',
                     textfont: { size: [10] },
                     y: [3, 2, 1, 0],
                     x: [1, 2, 3, 4],
@@ -788,7 +796,6 @@ describe('A waterfall plot', function() {
                     type: 'waterfall'
                 }, {
                     text: [0, 'outside text', -3, -2],
-                    textposition: 'auto',
                     y: [0, -0.25, -3, -2],
                     x: [1, 2, 3, 4],
                     type: 'waterfall'
@@ -943,7 +950,7 @@ describe('A waterfall plot', function() {
 
     it('should be able to add/remove connector nodes on restyle', function(done) {
         function _assertNumberOfWaterfallConnectorNodes(cnt) {
-            var sel = d3.select(gd).select('.waterfalllayer').selectAll('.line');
+            var sel = d3Select(gd).select('.waterfalllayer').selectAll('.line');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1050,7 +1057,7 @@ describe('A waterfall plot', function() {
             y: [10, 20, 30, 40],
             type: 'waterfall',
             text: ['T1P1', 'T1P2', 13, 14],
-            textposition: ['inside', 'outside', 'auto', 'BADVALUE'],
+            textposition: ['inside', 'outside', 'BADVALUE', 'none'],
             textfont: {
                 family: ['"comic sans"'],
                 color: ['red', 'green'],
@@ -1074,7 +1081,7 @@ describe('A waterfall plot', function() {
             y: [10, 20, 30, 40],
             type: 'waterfall',
             text: ['T1P1', 'T1P2', '13', '14'],
-            textposition: ['inside', 'outside', 'none'],
+            textposition: ['inside', 'outside', 'auto', 'none'],
             textfont: {
                 family: ['"comic sans"', 'arial'],
                 color: ['red', 'green'],
@@ -1130,7 +1137,7 @@ describe('A waterfall plot', function() {
 
     it('should be able to add/remove text node on restyle', function(done) {
         function _assertNumberOfWaterfallTextNodes(cnt) {
-            var sel = d3.select(gd).select('.waterfalllayer').selectAll('text');
+            var sel = d3Select(gd).select('.waterfalllayer').selectAll('text');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1139,7 +1146,6 @@ describe('A waterfall plot', function() {
             x: ['Product A', 'Product B', 'Product C'],
             y: [20, 14, 23],
             text: [20, 14, 23],
-            textposition: 'auto'
         }])
         .then(function() {
             _assertNumberOfWaterfallTextNodes(3);
@@ -1228,7 +1234,7 @@ describe('A waterfall plot', function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var path = waterfallNodes[0].querySelector('path');
-            var d = d3.select(path).attr('d');
+            var d = d3Select(path).attr('d');
             expect(d).toBe('M11.33,321V268.33H102V321Z');
         })
         .then(function() {
@@ -1241,7 +1247,7 @@ describe('A waterfall plot', function() {
             var traceNodes = getAllTraceNodes(gd);
             var waterfallNodes = getAllWaterfallNodes(traceNodes[0]);
             var path = waterfallNodes[0].querySelector('path');
-            var d = d3.select(path).attr('d');
+            var d = d3Select(path).attr('d');
             expect(d).toBe('M11.33,325V264.33H102V325Z');
         })
         .then(done, done.fail);
@@ -1339,7 +1345,7 @@ describe('waterfall hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Waterfall.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Waterfall.hoverPoints(pointData, xval, yval, hovermode, {});
         if(!pts) return false;
 
         var pt = pts[0];
@@ -1454,7 +1460,7 @@ describe('waterfall hover', function() {
             Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
-                expect(d3.selectAll('g.hovertext').size()).toBe(0);
+                expect(d3SelectAll('g.hovertext').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -1468,6 +1474,7 @@ describe('waterfall hover', function() {
                 t.base = 1000;
                 t.hoverinfo = 'all';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1498,6 +1505,7 @@ describe('waterfall hover', function() {
                 t.type = 'waterfall';
                 t.hovertemplate = 'Value: %{y}<br>SUM: %{final}<br>START: %{initial}<br>DIFF: %{delta}<extra></extra>';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1529,7 +1537,7 @@ describe('waterfall hover', function() {
                     y: [0, -1.1, 2.2, -3.3, 4.4],
                     type: 'waterfall'
                 }],
-                layout: {width: 400, height: 400}
+                layout: {width: 400, height: 400, hovermode: 'x'}
             })
             .then(function() {
                 var evt = { xpx: 200, ypx: 350 };
@@ -1780,7 +1788,7 @@ describe('waterfall uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(WATERFALL_TEXT_SELECTOR);
+            var selection = d3SelectAll(WATERFALL_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');

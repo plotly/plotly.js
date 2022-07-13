@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -352,9 +344,10 @@ function plotTextLines(slices, trace) {
 
 function attachFxHandlers(sliceTop, gd, cd) {
     var cd0 = cd[0];
-    var trace = cd0.trace;
     var cx = cd0.cx;
     var cy = cd0.cy;
+    var trace = cd0.trace;
+    var isFunnelArea = trace.type === 'funnelarea';
 
     // hover state vars
     // have we drawn a hover label, so it should be cleared later
@@ -412,11 +405,16 @@ function attachFxHandlers(sliceTop, gd, cd) {
             var hoverLabel = trace2.hoverlabel;
             var hoverFont = hoverLabel.font;
 
+            var bbox = [];
             Fx.loneHover({
                 trace: trace,
                 x0: hoverCenterX - rInscribed * cd0.r,
                 x1: hoverCenterX + rInscribed * cd0.r,
                 y: hoverCenterY,
+                _x0: isFunnelArea ? cx + pt.TL[0] : hoverCenterX - rInscribed * cd0.r,
+                _x1: isFunnelArea ? cx + pt.TR[0] : hoverCenterX + rInscribed * cd0.r,
+                _y0: isFunnelArea ? cy + pt.TL[1] : hoverCenterY - rInscribed * cd0.r,
+                _y1: isFunnelArea ? cy + pt.BL[1] : hoverCenterY + rInscribed * cd0.r,
                 text: text.join('<br>'),
                 name: (trace2.hovertemplate || hoverinfo.indexOf('name') !== -1) ? trace2.name : undefined,
                 idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right',
@@ -433,8 +431,10 @@ function attachFxHandlers(sliceTop, gd, cd) {
             }, {
                 container: fullLayout2._hoverlayer.node(),
                 outerContainer: fullLayout2._paper.node(),
-                gd: gd
+                gd: gd,
+                inOut_bbox: bbox
             });
+            pt.bbox = bbox[0];
 
             trace._hasHoverLabel = true;
         }

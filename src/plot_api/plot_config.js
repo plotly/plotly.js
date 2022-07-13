@@ -1,16 +1,8 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 /**
  * This will be transferred over to gd and overridden by
- * config args to Plotly.plot.
+ * config args to Plotly.newPlot.
  *
  * The defaults are the appropriate settings for plotly.js,
  * so we get the right experience without any config argument.
@@ -27,6 +19,15 @@ var configAttributes = {
         description: [
             'Determines whether the graphs are interactive or not.',
             'If *false*, no interactivity, for export or image generation.'
+        ].join(' ')
+    },
+
+    typesetMath: {
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'Determines whether math should be typeset or not,',
+            'when MathJax (either v2 or v3) is present on the page.'
         ].join(' ')
     },
 
@@ -126,7 +127,7 @@ var configAttributes = {
         dflt: false,
         description: [
             'Determines whether to change the layout size when window is resized.',
-            'In v2, this option will be removed and will always be true.'
+            'In v3, this option will be removed and will always be true.'
         ].join(' ')
     },
     fillFrame: {
@@ -295,7 +296,13 @@ var configAttributes = {
         dflt: [],
         description: [
             'Add mode bar button using config objects',
-            'See ./components/modebar/buttons.js for list of arguments.'
+            'See ./components/modebar/buttons.js for list of arguments.',
+            'To enable predefined modebar buttons e.g. shape drawing, hover and spikelines,',
+            'simply provide their string name(s). This could include:',
+            '*v1hovermode*, *hoverclosest*, *hovercompare*, *togglehover*, *togglespikelines*,',
+            '*drawline*, *drawopenpath*, *drawclosedpath*, *drawcircle*, *drawrect* and *eraseshape*.',
+            'Please note that these predefined buttons will only be shown if they are compatible',
+            'with all trace types used in a graph.'
         ].join(' ')
     },
     modeBarButtons: {

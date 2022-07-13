@@ -1,19 +1,11 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
+var fontAttrs = require('./font_attributes');
 var fxAttrs = require('../components/fx/attributes');
 
 module.exports = {
     type: {
         valType: 'enumerated',
-        role: 'info',
         values: [],     // listed dynamically
         dflt: 'scatter',
         editType: 'calc+clearAxisTypes',
@@ -22,7 +14,6 @@ module.exports = {
     visible: {
         valType: 'enumerated',
         values: [true, false, 'legendonly'],
-        role: 'info',
         dflt: true,
         editType: 'calc',
         description: [
@@ -34,7 +25,6 @@ module.exports = {
     },
     showlegend: {
         valType: 'boolean',
-        role: 'info',
         dflt: true,
         editType: 'style',
         description: [
@@ -44,7 +34,6 @@ module.exports = {
     },
     legendgroup: {
         valType: 'string',
-        role: 'info',
         dflt: '',
         editType: 'style',
         description: [
@@ -53,9 +42,38 @@ module.exports = {
             'when toggling legend items.'
         ].join(' ')
     },
+    legendgrouptitle: {
+        text: {
+            valType: 'string',
+            dflt: '',
+            editType: 'style',
+            description: [
+                'Sets the title of the legend group.'
+            ].join(' ')
+        },
+        font: fontAttrs({
+            editType: 'style',
+            description: [
+                'Sets this legend group\'s title font.'
+            ].join(' '),
+        }),
+        editType: 'style',
+    },
+    legendrank: {
+        valType: 'number',
+        dflt: 1000,
+        editType: 'style',
+        description: [
+            'Sets the legend rank for this trace.',
+            'Items and groups with smaller ranks are presented on top/left side while',
+            'with `*reversed* `legend.traceorder` they are on bottom/right side.',
+            'The default legendrank is 1000,',
+            'so that you can use ranks less than 1000 to place certain items before all unranked items,',
+            'and ranks greater than 1000 to go after all unranked items.'
+        ].join(' ')
+    },
     opacity: {
         valType: 'number',
-        role: 'style',
         min: 0,
         max: 1,
         dflt: 1,
@@ -64,7 +82,6 @@ module.exports = {
     },
     name: {
         valType: 'string',
-        role: 'info',
         editType: 'style',
         description: [
             'Sets the trace name.',
@@ -73,7 +90,6 @@ module.exports = {
     },
     uid: {
         valType: 'string',
-        role: 'info',
         editType: 'plot',
         anim: true,
         description: [
@@ -105,7 +121,6 @@ module.exports = {
     meta: {
         valType: 'any',
         arrayOk: true,
-        role: 'info',
         editType: 'plot',
         description: [
             'Assigns extra meta information associated with this trace',
@@ -129,7 +144,6 @@ module.exports = {
     // https://github.com/plotly/plotly.js/issues/1894
     selectedpoints: {
         valType: 'any',
-        role: 'info',
         editType: 'calc',
         description: [
             'Array containing integer indices of selected points.',
@@ -142,7 +156,6 @@ module.exports = {
 
     hoverinfo: {
         valType: 'flaglist',
-        role: 'info',
         flags: ['x', 'y', 'z', 'text', 'name'],
         extras: ['all', 'none', 'skip'],
         arrayOk: true,
@@ -160,7 +173,6 @@ module.exports = {
             valType: 'string',
             noBlank: true,
             strict: true,
-            role: 'info',
             editType: 'calc',
             description: [
                 'The stream id number links a data trace on a plot with a stream.',
@@ -172,7 +184,6 @@ module.exports = {
             min: 0,
             max: 10000,
             dflt: 500,
-            role: 'info',
             editType: 'calc',
             description: [
                 'Sets the maximum number of points to keep on the plots from an',
@@ -187,13 +198,13 @@ module.exports = {
         _isLinkedToArray: 'transform',
         editType: 'calc',
         description: [
+            'WARNING: All transforms are deprecated and may be removed from the API in next major version.',
             'An array of operations that manipulate the trace data,',
             'for example filtering or sorting the data arrays.'
         ].join(' ')
     },
     uirevision: {
         valType: 'any',
-        role: 'info',
         editType: 'none',
         description: [
             'Controls persistence of some user-driven changes to the trace:',

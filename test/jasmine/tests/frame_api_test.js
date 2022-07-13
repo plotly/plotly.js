@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Queue = require('@src/lib/queue');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -181,7 +182,7 @@ describe('Test frame api', function() {
                 expect(f[7]).toEqual({name: 'frame7', data: [2]});
                 expect(f[10]).toEqual({name: 'frame10', data: [3]});
 
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             })
             .then(validate)
             .then(done, done.fail);
@@ -207,7 +208,7 @@ describe('Test frame api', function() {
                 expect(f[7]).toEqual({name: 'frame7', data: [2]});
                 expect(f[10]).toEqual({name: 'frame10', data: [3]});
 
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             })
             .then(validate)
             .then(done, done.fail);
@@ -220,12 +221,12 @@ describe('Test frame api', function() {
             }
 
             Plotly.addFrames(gd, [{name: 'frame 0'}, {name: 'frame 1'}]).then(validate).then(function() {
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             }).then(function() {
                 expect(f).toEqual([]);
                 expect(h).toEqual({});
 
-                return Plotly.Queue.redo(gd);
+                return Queue.redo(gd);
             })
             .then(validate)
             .then(done, done.fail);
@@ -242,12 +243,12 @@ describe('Test frame api', function() {
                 expect(f).toEqual([{name: 'test1'}, {name: 'test2'}, {name: 'test3'}]);
                 expect(Object.keys(h)).toEqual(['test1', 'test2', 'test3']);
 
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             }).then(function() {
                 expect(f).toEqual([{name: 'test1', data: ['y']}, {name: 'test2'}]);
                 expect(Object.keys(h)).toEqual(['test1', 'test2']);
 
-                return Plotly.Queue.redo(gd);
+                return Queue.redo(gd);
             }).then(function() {
                 expect(f).toEqual([{name: 'test1'}, {name: 'test2'}, {name: 'test3'}]);
                 expect(Object.keys(h)).toEqual(['test1', 'test2', 'test3']);
@@ -267,11 +268,11 @@ describe('Test frame api', function() {
                 expect(f).toEqual([]);
                 expect(Object.keys(h)).toEqual([]);
 
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             }).then(function() {
                 expect(f).toEqual([{name: 'frame1'}]);
 
-                return Plotly.Queue.redo(gd);
+                return Queue.redo(gd);
             }).then(function() {
                 expect(f).toEqual([]);
                 expect(Object.keys(h)).toEqual([]);
@@ -297,13 +298,13 @@ describe('Test frame api', function() {
             Plotly.addFrames(gd, frames).then(function() {
                 return Plotly.deleteFrames(gd, [2, 8, 4, 6]);
             }).then(validate).then(function() {
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             }).then(function() {
                 for(i = 0; i < 10; i++) {
                     expect(f[i]).toEqual({name: 'frame' + i});
                 }
 
-                return Plotly.Queue.redo(gd);
+                return Queue.redo(gd);
             })
             .then(validate)
             .then(done, done.fail);
@@ -328,13 +329,13 @@ describe('Test frame api', function() {
                 return Plotly.deleteFrames(gd);
             }).then(validateCount(0)).then(function() {
                 // Restore:
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             }).then(validateCount(n)).then(function() {
                 // Delete with null arg:
                 return Plotly.deleteFrames(gd, null);
             }).then(validateCount(0)).then(function() {
                 // Restore:
-                return Plotly.Queue.undo(gd);
+                return Queue.undo(gd);
             }).then(validateCount(n)).then(function() {
                 // Delete with undefined:
                 return Plotly.deleteFrames(gd, undefined);

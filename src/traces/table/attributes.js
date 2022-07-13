@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var annAttrs = require('../../components/annotations/attributes');
@@ -13,8 +5,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var overrideAll = require('../../plot_api/edit_types').overrideAll;
 var fontAttrs = require('../../plots/font_attributes');
 var domainAttrs = require('../../plots/domain').attributes;
-
-var FORMAT_LINK = require('../../constants/docs').FORMAT_LINK;
+var descriptionOnlyNumbers = require('../../plots/cartesian/axis_format_attributes').descriptionOnlyNumbers;
 
 var attrs = module.exports = overrideAll({
     domain: domainAttrs({name: 'table', trace: true}),
@@ -23,7 +14,6 @@ var attrs = module.exports = overrideAll({
         valType: 'number',
         arrayOk: true,
         dflt: null,
-        role: 'style',
         description: [
             'The width of columns expressed as a ratio. Columns fill the available width',
             'in proportion of their specified column widths.'
@@ -32,7 +22,6 @@ var attrs = module.exports = overrideAll({
 
     columnorder: {
         valType: 'data_array',
-        role: 'info',
         description: [
             'Specifies the rendered order of the data columns; for example, a value `2` at position `0`',
             'means that column index `0` in the data will be rendered as the',
@@ -44,7 +33,6 @@ var attrs = module.exports = overrideAll({
 
         values: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: [
                 'Header cell values. `values[m][n]` represents the value of the `n`th point in column `m`,',
@@ -55,20 +43,14 @@ var attrs = module.exports = overrideAll({
 
         format: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
-            description: [
-                'Sets the cell value formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('cell value')
         },
 
         prefix: {
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Prefix for cell values.'
         },
 
@@ -76,14 +58,12 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Suffix for cell values.'
         },
 
         height: {
             valType: 'number',
             dflt: 28,
-            role: 'style',
             description: 'The height of cells.'
         },
 
@@ -94,13 +74,11 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 arrayOk: true,
                 dflt: 1,
-                role: 'style'
             },
             color: {
                 valType: 'color',
                 arrayOk: true,
                 dflt: 'grey',
-                role: 'style'
             }
         },
 
@@ -109,11 +87,10 @@ var attrs = module.exports = overrideAll({
                 valType: 'color',
                 arrayOk: true,
                 dflt: 'white',
-                role: 'style',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
-                    ' or an array of colors or a 2D array of colors.'
-                ].join('')
+                    'or an array of colors or a 2D array of colors.'
+                ].join(' ')
             }
         },
 
@@ -124,7 +101,6 @@ var attrs = module.exports = overrideAll({
 
         values: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
             description: [
                 'Cell values. `values[m][n]` represents the value of the `n`th point in column `m`,',
@@ -135,20 +111,14 @@ var attrs = module.exports = overrideAll({
 
         format: {
             valType: 'data_array',
-            role: 'info',
             dflt: [],
-            description: [
-                'Sets the cell value formatting rule using d3 formatting mini-language',
-                'which is similar to those of Python. See',
-                FORMAT_LINK
-            ].join(' ')
+            description: descriptionOnlyNumbers('cell value')
         },
 
         prefix: {
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Prefix for cell values.'
         },
 
@@ -156,14 +126,12 @@ var attrs = module.exports = overrideAll({
             valType: 'string',
             arrayOk: true,
             dflt: null,
-            role: 'style',
             description: 'Suffix for cell values.'
         },
 
         height: {
             valType: 'number',
             dflt: 20,
-            role: 'style',
             description: 'The height of cells.'
         },
 
@@ -174,13 +142,11 @@ var attrs = module.exports = overrideAll({
                 valType: 'number',
                 arrayOk: true,
                 dflt: 1,
-                role: 'style'
             },
             color: {
                 valType: 'color',
                 arrayOk: true,
                 dflt: 'grey',
-                role: 'style'
             }
         },
 
@@ -188,12 +154,11 @@ var attrs = module.exports = overrideAll({
             color: {
                 valType: 'color',
                 arrayOk: true,
-                role: 'style',
                 dflt: 'white',
                 description: [
                     'Sets the cell fill color. It accepts either a specific color',
-                    ' or an array of colors or a 2D array of colors.'
-                ].join('')
+                    'or an array of colors or a 2D array of colors.'
+                ].join(' ')
             }
         },
 

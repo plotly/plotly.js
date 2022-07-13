@@ -1,10 +1,11 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 var Axes = require('@src/plots/cartesian/axes');
 var SUBPLOT_PATTERN = require('@src/plots/cartesian/constants').SUBPLOT_PATTERN;
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -745,7 +746,7 @@ describe('Test splom interactions:', function() {
 
         function _assert(exp) {
             var msg = ' - call #' + cnt;
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             var subplots = gd3.selectAll('g.cartesianlayer > g.subplot');
             var bgs = gd3.selectAll('.bglayer > rect.bg');
 
@@ -806,7 +807,7 @@ describe('Test splom interactions:', function() {
         .then(function() {
             _assert({
                 subplotCnt: 25,
-                innerSubplotNodeCnt: 17,
+                innerSubplotNodeCnt: 18,
                 hasSplomGrid: false,
                 bgCnt: 0
             });
@@ -814,7 +815,7 @@ describe('Test splom interactions:', function() {
             // make sure 'new' subplot layers are in order
             var gridIndex = -1;
             var xaxisIndex = -1;
-            var subplot0 = d3.select('g.cartesianlayer > g.subplot').node();
+            var subplot0 = d3Select('g.cartesianlayer > g.subplot').node();
             for(var i in subplot0.children) {
                 var cl = subplot0.children[i].classList;
                 if(cl) {
@@ -825,8 +826,8 @@ describe('Test splom interactions:', function() {
             // from large -> small splom:
             // grid layer would be above xaxis layer,
             // if we didn't clear subplot children.
-            expect(gridIndex).toBe(1, '<g.gridlayer> index');
-            expect(xaxisIndex).toBe(14, '<g.xaxislayer-above> index');
+            expect(gridIndex).toBe(2, '<g.gridlayer> index');
+            expect(xaxisIndex).toBe(15, '<g.xaxislayer-above> index');
 
             return Plotly.restyle(gd, 'dimensions', [dimsLarge]);
         })
@@ -838,7 +839,7 @@ describe('Test splom interactions:', function() {
                 // new subplots though have reduced number of children.
                 innerSubplotNodeCnt: function(d) {
                     var p = d.match(SUBPLOT_PATTERN);
-                    return (p[1] > 5 || p[2] > 5) ? 4 : 17;
+                    return (p[1] > 5 || p[2] > 5) ? 4 : 18;
                 },
                 hasSplomGrid: true,
                 bgCnt: 0
@@ -851,7 +852,7 @@ describe('Test splom interactions:', function() {
         var fig = Lib.extendDeep({}, require('@mocks/splom_upper-nodiag.json'));
 
         function _assert(exp) {
-            var g = d3.select(gd).select('g.cartesianlayer');
+            var g = d3Select(gd).select('g.cartesianlayer');
             for(var k in exp) {
                 // all ticks are set to same position,
                 // only check first one
@@ -944,8 +945,8 @@ describe('Test splom interactions:', function() {
 
         function assertDims(msg, w, h) {
             var canvas = gd._fullLayout._glcanvas;
-            expect(canvas.node().width).toBe(w, msg + '| canvas width');
-            expect(canvas.node().height).toBe(h, msg + '| canvas height');
+            expect(canvas.node().width / 2).toBe(w, msg + '| canvas width');
+            expect(canvas.node().height / 2).toBe(h, msg + '| canvas height');
 
             var gl = canvas.data()[0].regl._gl;
             if(/Chrome\/78/.test(window.navigator.userAgent)) {
@@ -953,8 +954,8 @@ describe('Test splom interactions:', function() {
                 expect(gl.drawingBufferWidth).toBe(Math.min(w, 4096), msg + '| drawingBufferWidth');
                 expect(gl.drawingBufferHeight).toBe(Math.min(h, 4096), msg + '| drawingBufferHeight');
             } else {
-                expect(gl.drawingBufferWidth).toBe(w, msg + '| drawingBufferWidth');
-                expect(gl.drawingBufferHeight).toBe(h, msg + '| drawingBufferHeight');
+                expect(gl.drawingBufferWidth / 2).toBe(w, msg + '| drawingBufferWidth');
+                expect(gl.drawingBufferHeight / 2).toBe(h, msg + '| drawingBufferHeight');
             }
         }
 
@@ -1221,7 +1222,7 @@ describe('Test splom update switchboard:', function() {
 
             expect(toPlainArray(scene.matrixOptions.color))
                 .toBeCloseToArray([31, 119, 180, 255], 1, 'base color');
-            expect(scene.matrixOptions.size).toBe(3, 'base size');
+            expect(scene.matrixOptions.size).toBe(6, 'base size');
             expect(fullLayout.xaxis.range).toBeCloseToArray([0.851, 3.148], 1, 'base xrng');
 
             return Plotly.restyle(gd, 'marker.color', 'black');
@@ -1301,7 +1302,7 @@ describe('Test splom update switchboard:', function() {
                 ['draw', 1]
             ]);
 
-            expect(scene.matrixOptions.size).toBe(10, msg);
+            expect(scene.matrixOptions.size).toBe(20, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.753, 3.246], 1, 'xrng ' + msg);
 
@@ -1319,7 +1320,7 @@ describe('Test splom update switchboard:', function() {
                 ['draw', 1]
             ]);
 
-            expect(scene.matrixOptions.sizes).toBeCloseToArray([2, 5, 10], 1, msg);
+            expect(scene.matrixOptions.sizes).toBeCloseToArray([4, 10, 20], 1, msg);
             expect(gd._fullLayout.xaxis.range)
                 .toBeCloseToArray([0.853, 3.235], 1, 'xrng ' + msg);
 
@@ -1397,16 +1398,16 @@ describe('Test splom hover:', function() {
 
     var specs = [{
         desc: 'basic',
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         nums: '7.7',
         name: 'Virginica',
         axis: '2.6',
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
     }, {
         desc: 'hovermode closest',
-        patch: function(fig) {
-            fig.layout.hovermode = 'closest';
-            return fig;
-        },
         nums: '(2.6, 7.7)',
         name: 'Virginica',
         evtPts: [{x: 2.6, y: 7.7, pointNumber: 18, curveNumber: 2}]
@@ -1414,6 +1415,7 @@ describe('Test splom hover:', function() {
         desc: 'skipping over visible false dims',
         patch: function(fig) {
             fig.data[0].dimensions[0].visible = false;
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: '7.7',
@@ -1427,6 +1429,7 @@ describe('Test splom hover:', function() {
             fig.layout.margin = {t: 0, l: 0, b: 0, r: 0};
             fig.layout.width = 400;
             fig.layout.height = 400;
+            fig.layout.hovermode = 'x';
             return fig;
         },
         pos: [20, 380],
@@ -1438,6 +1441,7 @@ describe('Test splom hover:', function() {
         mock: require('@mocks/splom_dates.json'),
         patch: function(fig) {
             fig.layout = {
+                hovermode: 'x',
                 margin: {t: 0, l: 0, b: 0, r: 0},
                 width: 400,
                 height: 400
@@ -1455,7 +1459,6 @@ describe('Test splom hover:', function() {
                 t.hovertext = 'LOOK';
                 t.text = 'NOP';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '(2.6, 7.7)\nLOOK',
@@ -1467,7 +1470,6 @@ describe('Test splom hover:', function() {
             fig.data.forEach(function(t) {
                 t.hovertemplate = '%{x}|%{y}<extra>pt %{pointNumber}</extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '2.6|7.7',
@@ -1495,7 +1497,7 @@ describe('Test splom drag:', function() {
     });
 
     function _drag(p0, p1) {
-        var node = d3.select('.nsewdrag[data-subplot="xy"]').node();
+        var node = d3Select('.nsewdrag[data-subplot="xy"]').node();
         var dx = p1[0] - p0[0];
         var dy = p1[1] - p0[1];
         return drag({node: node, dpos: [dx, dy], pos0: p0});
@@ -1584,7 +1586,7 @@ describe('Test splom select:', function() {
 
             var to = setTimeout(function() {
                 reject('fail: plotly_selected not emitter');
-            }, 200);
+            }, 700);
 
             gd.once('plotly_selected', function(d) {
                 clearTimeout(to);
@@ -1622,7 +1624,7 @@ describe('Test splom select:', function() {
 
             expect(subplot).toBe(otherExp.subplot, 'subplot of selection' + msg);
 
-            expect(d3.selectAll('.zoomlayer > .select-outline').size())
+            expect(d3SelectAll('.zoomlayer > .select-outline').size())
                 .toBe(otherExp.selectionOutlineCnt, 'selection outline cnt' + msg);
         }
 
@@ -1824,7 +1826,7 @@ describe('Test splom select:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to select and then clear using API', function(done) {
+    it('@gl should be able to select and then clear using API', function(done) {
         function _assert(msg, exp) {
             return function() {
                 var uid = gd._fullData[0].uid;

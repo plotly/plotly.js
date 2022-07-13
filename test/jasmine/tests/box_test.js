@@ -1,10 +1,10 @@
-var Plotly = require('@lib');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = require('@src/plots/plots');
 
 var Box = require('@src/traces/box');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -739,8 +739,12 @@ describe('Test box hover:', function() {
 
     [{
         desc: 'base',
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with mean',
@@ -748,10 +752,11 @@ describe('Test box hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.boxmean = true;
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45'],
-        name: ['radishes', '', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7', 'mean: 0.45'],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with sd',
@@ -759,37 +764,54 @@ describe('Test box hover:', function() {
             fig.data.forEach(function(trace) {
                 trace.boxmean = 'sd';
             });
+            fig.layout.hovermode = 'x';
             return fig;
         },
         nums: [
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
+            'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7',
             'mean ± σ: 0.45 ± 0.2362908'
         ],
-        name: ['radishes', '', '', '', '', ''],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with boxpoints fences',
         mock: require('@mocks/boxplots_outliercolordflt.json'),
+        patch: function(fig) {
+            fig.layout.hovermode = 'x';
+            return fig;
+        },
         pos: [350, 200],
         nums: [
+            '23.25',
             'median: 8.15', 'min: 0.75', 'q1: 6.8',
             'q3: 10.25', 'max: 23.25', 'lower fence: 5.25', 'upper fence: 12'
         ],
-        name: ['', '', '', '', '', '', ''],
+        name: ['', '', '', '', '', '', '', ''],
         axis: 'trace 0'
     }, {
         desc: 'with overlaid boxes',
         patch: function(fig) {
+            fig.layout.hovermode = 'x';
             fig.layout.boxmode = 'overlay';
             return fig;
         },
         nums: [
-            'q1: 0.3', 'median: 0.45', 'q3: 0.6', 'max: 1', 'median: 0.55', 'min: 0', 'q1: 0.1',
-            'q3: 0.6', 'max: 0.7', 'median: 0.45', 'q1: 0.2', 'q3: 0.6', 'max: 0.9'
+            'median: 0.45', 'median: 0.45', 'median: 0.55',
+            'min: 0', 'min: 0.1', 'min: 0.2',
+            'lower fence: 0', 'lower fence: 0.1', 'lower fence: 0.2',
+            'q1: 0.1', 'q1: 0.2', 'q1: 0.3',
+            'q3: 0.6', 'q3: 0.6', 'q3: 0.6',
+            'upper fence: 0.7', 'upper fence: 0.9', 'upper fence: 1',
+            'max: 0.7', 'max: 0.9', 'max: 1'
         ],
         name: [
-            '', 'kale', '', '', 'radishes', '', '',
-            '', '', 'carrots', '', '', ''
+            'carrots', 'kale', 'radishes',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', ''
         ],
         axis: 'day 1'
     }, {
@@ -799,7 +821,6 @@ describe('Test box hover:', function() {
                 trace.boxpoints = 'all';
                 trace.hoveron = 'points';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -831,8 +852,8 @@ describe('Test box hover:', function() {
             return fig;
         },
         pos: [215, 200],
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'lower fence: 0', 'upper fence: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'hoveron boxes+points | hovermode x (box AND closest point)',
@@ -845,8 +866,8 @@ describe('Test box hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['0.6', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', 'radishes', '', '', '', ''],
+        nums: ['0.6', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'lower fence: 0', 'upper fence: 0.7'],
+        name: ['radishes', 'radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'text items on hover',
@@ -856,7 +877,6 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -871,7 +891,6 @@ describe('Test box hover:', function() {
                 trace.text = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -887,7 +906,6 @@ describe('Test box hover:', function() {
                 trace.hovertext = trace.y.map(function(v) { return 'look:' + v; });
                 trace.hoverinfo = 'text';
             });
-            fig.layout.hovermode = 'closest';
             fig.layout.xaxis = {range: [-0.565, 1.5]};
             return fig;
         },
@@ -896,26 +914,38 @@ describe('Test box hover:', function() {
     }, {
         desc: 'orientation:h | hovermode:y',
         mock: require('@mocks/box_grouped_horz.json'),
-        pos: [430, 130],
-        nums: [
-            'max: 1', 'mean ± σ: 0.6833333 ± 0.2409472', 'min: 0.3',
-            'q1: 0.5', 'q3: 0.9', 'median: 0.7'],
-        name: ['', '', '', '', '', 'carrots'],
-        axis: 'day 2',
-        hOrder: [0, 4, 5, 1, 3, 2]
-    }, {
-        desc: 'orientation:h | hovermode:closest',
-        mock: require('@mocks/box_grouped_horz.json'),
         patch: function(fig) {
-            fig.layout.hovermode = 'closest';
+            fig.layout.hovermode = 'y';
             return fig;
         },
         pos: [430, 130],
         nums: [
-            '(max: 1, day 2)', '(mean ± σ: 0.6833333 ± 0.2409472, day 2)', '(min: 0.3, day 2)',
-            '(q1: 0.5, day 2)', '(q3: 0.9, day 2)', '(median: 0.7, day 2)'],
-        name: ['', '', '', '', '', 'carrots'],
-        hOrder: [0, 4, 5, 1, 3, 2]
+            'median: 0.7',
+            'min: 0.3',
+            'q1: 0.5',
+            'q3: 0.9',
+            'max: 1',
+            'lower fence: 0.3',
+            'upper fence: 1',
+            'mean ± σ: 0.6833333 ± 0.2409472',
+        ],
+        name: ['carrots', '', '', '', '', '', '', ''],
+        axis: 'day 2'
+    }, {
+        desc: 'orientation:h | hovermode:closest',
+        mock: require('@mocks/box_grouped_horz.json'),
+        pos: [430, 130],
+        nums: [
+            '(median: 0.7, day 2)',
+            '(min: 0.3, day 2)',
+            '(q1: 0.5, day 2)',
+            '(q3: 0.9, day 2)',
+            '(max: 1, day 2)',
+            '(lower fence: 0.3, day 2)',
+            '(upper fence: 1, day 2)',
+            '(mean ± σ: 0.6833333 ± 0.2409472, day 2)'
+        ],
+        name: ['carrots', '', '', '', '', '', '', ''],
     }, {
         desc: 'on boxpoints with numeric positions | hovermode:closest',
         mock: {
@@ -927,7 +957,6 @@ describe('Test box hover:', function() {
                 y: [13.1, 14.2, 14, 13, 13.3]
             }],
             layout: {
-                hovermode: 'closest',
                 xaxis: {range: [1.3775, 2.5]}
             }
         },
@@ -942,7 +971,6 @@ describe('Test box hover:', function() {
                 trace.hoveron = 'points';
                 trace.hovertemplate = '%{y}<extra>pt #%{pointNumber}</extra>';
             });
-            fig.layout.hovermode = 'closest';
             return fig;
         },
         nums: '0.6',
@@ -955,14 +983,15 @@ describe('Test box hover:', function() {
                 y: [1, 2, 2, 3]
             }],
             layout: {
+                hovermode: 'x',
                 yaxis: {range: [1.6, 2.4]},
                 width: 400,
                 height: 400
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1'],
-        name: ['', '', '', '', ''],
+        nums: ['median: 2', 'q1: 1.5', 'q3: 2.5', 'max: 3', 'min: 1', 'lower fence: 1', 'upper fence: 3'],
+        name: ['', '', '', '', '', '', ''],
         axis: 'trace 0'
     }, {
         desc: 'q1/median/q3 signature on boxes',
@@ -975,13 +1004,14 @@ describe('Test box hover:', function() {
                 q3: [3]
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400
             }
         },
         pos: [200, 200],
-        nums: ['median: 2', 'q1: 1', 'q3: 3'],
-        name: ['', '', ''],
+        nums: ['median: 2', 'min: 1', 'q1: 1', 'q3: 3', 'max: 3', 'lower fence: 1', 'upper fence: 3'],
+        name: ['', '', '', '', '', '', ''],
         axis: 'A'
     }, {
         desc: 'q1/median/q3 signature on points',
@@ -997,6 +1027,7 @@ describe('Test box hover:', function() {
                 pointpos: 0
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400,
                 margin: {l: 0, t: 0, b: 0, r: 0}
@@ -1021,6 +1052,7 @@ describe('Test box hover:', function() {
                 hovertemplate: '%{x} | %{y}<extra>%{pointNumber[0]} | %{pointNumber[1]}</extra>'
             }],
             layout: {
+                hovermode: 'x',
                 width: 400,
                 height: 400,
                 margin: {l: 0, t: 0, b: 0, r: 0}
@@ -1087,7 +1119,7 @@ describe('Test box restyle:', function() {
         }
 
         function _assert(msg, exp) {
-            var trace3 = d3.select(gd).select('.boxlayer > .trace');
+            var trace3 = d3Select(gd).select('.boxlayer > .trace');
             _assertOne(msg, exp, trace3, 'boxCnt', 'path.box');
             _assertOne(msg, exp, trace3, 'meanlineCnt', 'path.mean');
             _assertOne(msg, exp, trace3, 'ptsCnt', 'path.point');

@@ -1,12 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
-
 'use strict';
 
 var d3 = require('@plotly/d3');
@@ -111,6 +102,7 @@ function drawGridLines(xaxis, yaxis, layer, axis, axisLetter, gridlines) {
         el.attr('d', path)
             .style('stroke-width', gridline.width)
             .style('stroke', gridline.color)
+            .style('stroke-dasharray', Drawing.dashStyle(gridline.dash, gridline.width))
             .style('fill', 'none');
     });
 

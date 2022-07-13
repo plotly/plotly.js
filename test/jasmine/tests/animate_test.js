@@ -1,9 +1,10 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Registry = require('@src/registry');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
@@ -749,7 +750,7 @@ describe('Animating multiple axes', function() {
         .then(done, done.fail);
     });
 
-    it('updates ranges of secondary axes (date + category case)', function(done) {
+    it('@flaky updates ranges of secondary axes (date + category case)', function(done) {
         Plotly.newPlot(gd, [
             {x: ['2018-01-01', '2019-01-01', '2020-01-01'], y: [1, 2, 3]},
             {x: ['a', 'b', 'c'], y: [1, 2, 3], xaxis: 'x2', yaxis: 'y2'}
@@ -915,7 +916,7 @@ describe('animating scatter traces', function() {
             y: [4, 5, 6],
             opacity: 1
         }]).then(function() {
-            trace = Plotly.d3.selectAll('g.scatter.trace');
+            trace = d3SelectAll('g.scatter.trace');
             // d3 style getter is disallowed by strict-d3
             expect(trace.node().style.opacity).toEqual('1');
 
@@ -949,10 +950,10 @@ describe('animating scatter traces', function() {
         }).then(done, done.fail);
     });
 
-    it('should animate axis ranges using the less number of steps', function(done) {
+    it('@flaky should animate axis ranges using the less number of steps', function(done) {
         // sanity-check that scatter points and bars are still there
         function _assertNodeCnt() {
-            var gd3 = d3.select(gd);
+            var gd3 = d3Select(gd);
             expect(gd3.select('.scatterlayer').selectAll('.point').size())
                 .toBe(3, '# of pts on graph');
             expect(gd3.select('.barlayer').selectAll('.point').size())
@@ -961,7 +962,7 @@ describe('animating scatter traces', function() {
 
         // assert what Cartesian.transitionAxes does
         function getSubplotTranslate() {
-            var sp = d3.select(gd).select('.subplot.xy > .plot');
+            var sp = d3Select(gd).select('.subplot.xy > .plot');
             return sp.attr('transform')
                 .split('translate(')[1].split(')')[0]
                 .split(',')

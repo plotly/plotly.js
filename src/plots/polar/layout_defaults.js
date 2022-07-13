@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -18,6 +10,7 @@ var getSubplotData = require('../get_data').getSubplotData;
 var handleTickValueDefaults = require('../cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
+var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
 var autoType = require('../cartesian/axis_autotype');
@@ -69,14 +62,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
         coerceAxis('uirevision', contOut.uirevision);
 
-        var dfltColor;
-        var dfltFontColor;
-
-        if(visible) {
-            dfltColor = coerceAxis('color');
-            dfltFontColor = (dfltColor === axIn.color) ? dfltColor : opts.font.color;
-        }
-
         // We don't want to make downstream code call ax.setScale,
         // as both radial and angular axes don't have a set domain.
         // Furthermore, angular axes don't have a set range.
@@ -98,18 +83,6 @@ function handleDefaults(contIn, contOut, coerce, opts) {
 
                 coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
-
-                if(visible) {
-                    coerceAxis('side');
-                    coerceAxis('angle', sector[0]);
-
-                    coerceAxis('title.text');
-                    Lib.coerceFont(coerceAxis, 'title.font', {
-                        family: opts.font.family,
-                        size: Math.round(opts.font.size * 1.2),
-                        color: dfltFontColor
-                    });
-                }
                 break;
 
             case 'angularaxis':
@@ -144,23 +117,32 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 break;
         }
 
+        handlePrefixSuffixDefaults(axIn, axOut, coerceAxis, axOut.type, {
+            tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
+        });
+
         if(visible) {
+            var dfltColor;
+            var dfltFontColor;
+            var dfltFontSize;
+            var dfltFontFamily;
+            var font = opts.font || {};
+
+            dfltColor = coerceAxis('color');
+            dfltFontColor = (dfltColor === axIn.color) ? dfltColor : font.color;
+            dfltFontSize = font.size;
+            dfltFontFamily = font.family;
+
             handleTickValueDefaults(axIn, axOut, coerceAxis, axOut.type);
             handleTickLabelDefaults(axIn, axOut, coerceAxis, axOut.type, {
-                tickSuffixDflt: axOut.thetaunit === 'degrees' ? '°' : undefined
+                font: {
+                    color: dfltFontColor,
+                    size: dfltFontSize,
+                    family: dfltFontFamily
+                }
             });
-            handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
 
-            var showTickLabels = coerceAxis('showticklabels');
-            if(showTickLabels) {
-                Lib.coerceFont(coerceAxis, 'tickfont', {
-                    family: opts.font.family,
-                    size: opts.font.size,
-                    color: dfltFontColor
-                });
-                coerceAxis('tickangle');
-                coerceAxis('tickformat');
-            }
+            handleTickMarkDefaults(axIn, axOut, coerceAxis, {outerTicks: true});
 
             handleLineGridDefaults(axIn, axOut, coerceAxis, {
                 dfltColor: dfltColor,
@@ -175,6 +157,18 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             });
 
             coerceAxis('layer');
+
+            if(axName === 'radialaxis') {
+                coerceAxis('side');
+                coerceAxis('angle', sector[0]);
+
+                coerceAxis('title.text');
+                Lib.coerceFont(coerceAxis, 'title.font', {
+                    color: dfltFontColor,
+                    size: Lib.bigFont(dfltFontSize),
+                    family: dfltFontFamily
+                });
+            }
         }
 
         if(axType !== 'category') coerceAxis('hoverformat');

@@ -1,4 +1,4 @@
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
 
 var Plotly = require('@lib/index');
 var Colorbar = require('@src/components/colorbar');
@@ -101,7 +101,7 @@ describe('Test colorbar:', function() {
             var cbTop = opts.top;
             var cbHeight = opts.height;
             var multiFill = opts.multiFill;
-            var colorbars = d3.select(gd).selectAll('.colorbar');
+            var colorbars = d3Select(gd).selectAll('.colorbar');
             expect(colorbars.size()).toBe(present ? 1 : 0);
 
             // check that the displayed object has the right size,
@@ -326,10 +326,10 @@ describe('Test colorbar:', function() {
         // also tests impliedEdits for colorbars in containers
         it('can show and hide parcoords colorbars', function(done) {
             function assertParcoordsCB(present, expandedMargin) {
-                var colorbars = d3.select(gd).selectAll('.colorbar');
+                var colorbars = d3Select(gd).selectAll('.colorbar');
                 expect(colorbars.size()).toBe(present ? 1 : 0);
 
-                var yAxes = d3.select(gd).selectAll('.parcoords .y-axis');
+                var yAxes = d3Select(gd).selectAll('.parcoords .y-axis');
                 expect(yAxes.size()).toBe(2);
                 var transform = yAxes[0][1].getAttribute('transform');
                 if(expandedMargin) expect(transform).not.toBe('translate(400,0)');
@@ -458,7 +458,7 @@ describe('Test colorbar:', function() {
             }
 
             function _assert(msg, exp) {
-                var gd3 = d3.select(gd);
+                var gd3 = d3Select(gd);
                 var cb0 = gd3.select('.cbtrace0');
                 var cb1 = gd3.select('.cbcoloraxis');
 
@@ -517,7 +517,7 @@ describe('Test colorbar:', function() {
         it('creates the same colorbars attributes in newPlot and react', function(done) {
             function getCBFillAttributes() {
                 var attrs = [];
-                var colorbars = d3.select(gd).selectAll('.colorbar');
+                var colorbars = d3Select(gd).selectAll('.colorbar');
                 colorbars.selectAll('.cbfill').each(function() {
                     var attrsForElem = {};
                     for(var i = 0; i < this.attributes.length; i++) {

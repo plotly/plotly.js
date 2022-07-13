@@ -1,11 +1,3 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
 var Lib = require('../../lib');
@@ -42,7 +34,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
     if(isAlbersUsa) scope = geoLayoutOut.scope = 'usa';
 
     var isScoped = geoLayoutOut._isScoped = (scope !== 'world');
-    var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1;
+    var isSatellite = geoLayoutOut._isSatellite = projType === 'satellite';
+    var isConic = geoLayoutOut._isConic = projType.indexOf('conic') !== -1 || projType === 'albers';
     var isClipped = geoLayoutOut._isClipped = !!constants.lonaxisSpan[projType];
 
     if(geoLayoutIn.visible === false) {
@@ -94,6 +87,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
         if(show) {
             coerce(axisName + '.gridcolor');
             coerce(axisName + '.gridwidth');
+            coerce(axisName + '.griddash');
         }
 
         // mock axis for autorange computations
@@ -155,6 +149,11 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce, opts) {
 
     coerce('center.lon', centerLonDflt);
     coerce('center.lat', centerLatDflt);
+
+    if(isSatellite) {
+        coerce('projection.tilt');
+        coerce('projection.distance');
+    }
 
     if(isConic) {
         var dfltProjParallels = scopeParams.projParallels || [0, 60];

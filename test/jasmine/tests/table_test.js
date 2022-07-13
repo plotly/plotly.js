@@ -1,10 +1,15 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var Registry = require('@src/registry');
+function _doPlot(gd, data, layout) {
+    return Registry.call('_doPlot', gd, data, layout);
+}
+
 var Table = require('@src/traces/table');
 var attributes = require('@src/traces/table/attributes');
 var cn = require('@src/traces/table/constants').cn;
 
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -203,8 +208,8 @@ describe('table', function() {
             var gd = createGraphDiv();
 
             function _assert(msg, exp) {
-                expect(d3.selectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
-                expect(d3.selectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
+                expect(d3SelectAll('.' + cn.scrollbarCaptureZone).size()).toBe(exp.captureZone, msg);
+                expect(d3SelectAll('.' + cn.scrollbarGlyph).size()).toBe(exp.glyph, msg);
             }
 
             // more info in: https://github.com/plotly/streambed/issues/11618
@@ -299,13 +304,13 @@ describe('table', function() {
             expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7);
         });
 
-        it('Calling `Plotly.plot` again should add the new table trace', function(done) {
+        it('Calling _doPlot again should add the new table trace', function(done) {
             var reversedMockCopy = Lib.extendDeep({}, mockCopy);
             reversedMockCopy.data[0].header.values = reversedMockCopy.data[0].header.values.slice().reverse();
             reversedMockCopy.data[0].cells.values = reversedMockCopy.data[0].cells.values.slice().reverse();
             reversedMockCopy.data[0].domain.y = [0, 0.3];
 
-            Plotly.plot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
+            _doPlot(gd, reversedMockCopy.data, reversedMockCopy.layout).then(function() {
                 expect(gd.data.length).toEqual(2);
                 expect(document.querySelectorAll('.' + cn.yColumn).length).toEqual(7 * 2);
             })

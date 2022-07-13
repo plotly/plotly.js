@@ -9,6 +9,7 @@ var isCI = Boolean(process.env.CI);
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
     'boolean': [
+        'mathjax3',
         'info',
         'nowatch', 'randomize',
         'failFast', 'doNotFailOnEmptyTestSuite',
@@ -48,9 +49,6 @@ if(argv.info) {
         'Run all tests with the `noCI` tag on Firefox in a 1500px wide window:',
         '  $ npm run test-jasmine -- --tags=noCI --FF --width=1500',
         '',
-        'Run the `ie9_test.js` bundle test with the verbose reporter:',
-        '  $ npm run test-jasmine -- --bundleTest=ie9 --verbose',
-        '',
         'Arguments:',
         '  - All non-flagged arguments corresponds to the test suites in `test/jasmine/tests/` to be run.',
         '    No need to add the `_test.js` suffix, we expand them correctly here.',
@@ -63,6 +61,7 @@ if(argv.info) {
         '',
         'Other options:',
         '  - `--info`: show this info message',
+        '  - `--mathjax3`: to load mathjax v3 in relevant test',
         '  - `--Chrome` (alias `--chrome`): run test in (our custom) Chrome browser',
         '  - `--Firefox` (alias `--FF`, `--firefox`): run test in (our custom) Firefox browser',
         '  - `--IE11` (alias -- `ie11`)`: run test in IE11 browser',
@@ -122,10 +121,11 @@ if(isFullSuite) {
 var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
 var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d3.js');
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
-var pathToIE9mock = path.join(__dirname, 'assets', 'ie9_mock.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
-var pathToMathJax = path.join(constants.pathToDist, 'extras', 'mathjax');
+var pathToSaneTopojsonDist = path.join(__dirname, '..', '..', 'node_modules', 'sane-topojson', 'dist');
+var pathToMathJax2 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v2');
+var pathToMathJax3 = path.join(__dirname, '..', '..', 'node_modules', 'mathjax-v3');
 
 var reporters = [];
 if(argv['report-progress'] || argv['report-spec'] || argv['report-dots']) {
@@ -183,11 +183,12 @@ func.defaultConfig = {
     files: [
         pathToCustomMatchers,
         pathToUnpolyfill,
-        // available to fetch from /base/path/to/mathjax
+        // available to fetch from /base/node_modules/mathjax-v2/
         // more info: http://karma-runner.github.io/3.0/config/files.html
-        {pattern: pathToMathJax + '/**', included: false, watched: false, served: true},
-        // available to fetch local topojson files
-        {pattern: constants.pathToTopojsonDist + '/**', included: false, watched: false, served: true}
+        {pattern: pathToMathJax2 + '/**', included: false, watched: false, served: true},
+        {pattern: pathToMathJax3 + '/**', included: false, watched: false, served: true},
+        // available to fetch from /base/node_modules/sane-topojson/dist/
+        {pattern: pathToSaneTopojsonDist + '/**', included: false, watched: false, served: true}
     ],
 
     // list of files / pattern to exclude
@@ -221,7 +222,10 @@ func.defaultConfig = {
     singleRun: argv.nowatch,
 
     // how long will Karma wait for a message from a browser before disconnecting (30 ms)
-    browserNoActivityTimeout: 30000,
+    browserNoActivityTimeout: 60000,
+
+    // how long does Karma wait for a browser to reconnect (in ms).
+    browserDisconnectTimeout: 60000,
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
@@ -285,6 +289,8 @@ func.defaultConfig = {
         tagPrefix: '@',
         skipTags: isCI ? 'noCI' : null,
 
+        mathjaxVersion: argv.mathjax3 ? 3 : 2,
+
         // See https://jasmine.github.io/api/3.4/Configuration.html
         jasmine: {
             random: argv.randomize,
@@ -307,40 +313,19 @@ func.defaultConfig = {
 };
 
 func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
+func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
-        case 'requirejs':
-            // browserified custom_matchers doesn't work with this route
-            // so clear them out of the files and preprocessors
-            func.defaultConfig.files = [
-                constants.pathToRequireJS,
-                constants.pathToRequireJSFixture
-            ];
-            delete func.defaultConfig.preprocessors[pathToCustomMatchers];
-            break;
         case 'minified_bundle':
-            func.defaultConfig.files.push(constants.pathToPlotlyDistMin);
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
-            break;
-        case 'ie9':
-            // load ie9_mock.js before plotly.js+test bundle
-            // to catch reference errors that could occur
-            // when plotly.js is first loaded.
-            func.defaultConfig.files.push(pathToIE9mock);
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+            func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
             break;
         case 'plotschema':
             func.defaultConfig.browserify.ignoreTransform = './tasks/compress_attributes.js';
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
-            break;
-        default:
-            func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
             break;
     }
 } else {
     func.defaultConfig.files.push(pathToJQuery);
-    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 }
 
 // lastly, load test file glob

@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
 var Registry = require('@src/registry');
-var Plots = Plotly.Plots;
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');

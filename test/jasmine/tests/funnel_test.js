@@ -20,7 +20,8 @@ var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
 var Fx = require('@src/components/fx');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 
 var FUNNEL_TEXT_SELECTOR = '.bars .bartext';
 
@@ -620,7 +621,7 @@ describe('A funnel plot', function() {
 
     function assertTextFontColors(expFontColors, label) {
         return function() {
-            var selection = d3.selectAll(FUNNEL_TEXT_SELECTOR);
+            var selection = d3SelectAll(FUNNEL_TEXT_SELECTOR);
             expect(selection.size()).toBe(expFontColors.length);
 
             selection.each(function(d, i) {
@@ -760,7 +761,7 @@ describe('A funnel plot', function() {
           .then(done, done.fail);
     });
 
-    it('should be able to restyle', function(done) {
+    it('@noCI should be able to restyle', function(done) {
         var mock = {
             data: [
                 {
@@ -956,7 +957,7 @@ describe('A funnel plot', function() {
 
     it('should be able to add/remove connector line nodes on restyle', function(done) {
         function _assertNumberOfFunnelConnectorNodes(cnt) {
-            var sel = d3.select(gd).select('.funnellayer').selectAll('.line');
+            var sel = d3Select(gd).select('.funnellayer').selectAll('.line');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -998,7 +999,7 @@ describe('A funnel plot', function() {
 
     it('should be able to add/remove connector region nodes on restyle', function(done) {
         function _assertNumberOfFunnelConnectorNodes(cnt) {
-            var sel = d3.select(gd).select('.funnellayer').selectAll('.region');
+            var sel = d3Select(gd).select('.funnellayer').selectAll('.region');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1188,7 +1189,7 @@ describe('A funnel plot', function() {
 
     it('should be able to add/remove text node on restyle', function(done) {
         function _assertNumberOfFunnelTextNodes(cnt) {
-            var sel = d3.select(gd).select('.funnellayer').selectAll('text');
+            var sel = d3Select(gd).select('.funnellayer').selectAll('text');
             expect(sel.size()).toBe(cnt);
         }
 
@@ -1308,7 +1309,7 @@ describe('funnel hover', function() {
 
     function _hover(gd, xval, yval, hovermode) {
         var pointData = getPointData(gd);
-        var pts = Funnel.hoverPoints(pointData, xval, yval, hovermode);
+        var pts = Funnel.hoverPoints(pointData, xval, yval, hovermode, {});
         if(!pts) return false;
 
         var pt = pts[0];
@@ -1408,7 +1409,7 @@ describe('funnel hover', function() {
             Plotly.newPlot(gd, mock)
             .then(_hover)
             .then(function() {
-                expect(d3.selectAll('g.hovertext').size()).toBe(0);
+                expect(d3SelectAll('g.hovertext').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -1422,6 +1423,7 @@ describe('funnel hover', function() {
                 t.orientation = 'v';
                 t.hoverinfo = 'all';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1453,6 +1455,7 @@ describe('funnel hover', function() {
                 t.orientation = 'v';
                 t.hovertemplate = 'Value: %{y}<br>Total percentage: %{percentTotal}<br>Initial percentage: %{percentInitial}<br>Previous percentage: %{percentPrevious}<extra></extra>';
             });
+            mock.layout.hovermode = 'x';
 
             function _hover() {
                 var evt = { xpx: 125, ypx: 150 };
@@ -1487,6 +1490,7 @@ describe('funnel hover', function() {
                         type: 'funnel'
                     }],
                     layout: {
+                        hovermode: 'x',
                         yaxis: {
                             visible: false,
                             tickprefix: '$',
@@ -1652,7 +1656,7 @@ describe('funnel uniformtext', function() {
 
     function assertTextSizes(msg, opts) {
         return function() {
-            var selection = d3.selectAll(FUNNEL_TEXT_SELECTOR);
+            var selection = d3SelectAll(FUNNEL_TEXT_SELECTOR);
             var size = selection.size();
             ['fontsizes', 'scales'].forEach(function(e) {
                 expect(size).toBe(opts[e].length, 'length for ' + e + ' does not match with the number of elements');

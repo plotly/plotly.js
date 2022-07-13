@@ -4,14 +4,14 @@ var Color = require('@src/components/color');
 
 var Scatter3D = require('@src/traces/scatter3d');
 
-var d3 = require('@plotly/d3');
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var delay = require('../assets/delay');
 
 function countCanvases() {
-    return d3.selectAll('canvas').size();
+    return d3SelectAll('canvas').size();
 }
 
 describe('Scatter3D defaults', function() {
@@ -306,6 +306,26 @@ describe('Test scatter3d interactions:', function() {
             for(var i = 4; i < AllTextpositions.length; i++) {
                 expect(AllTextpositions[i]).toBe('middle center', 'is not middle center');
             }
+        })
+        .then(done, done.fail);
+    });
+
+    it('@gl should change marker opacity when restyle is called', function(done) {
+        Plotly.newPlot(
+            gd,
+            [
+                {
+                    type: 'scatter3d',
+                    x: [0],
+                    y: [0],
+                    z: [0],
+                    mode: 'markers',
+                },
+            ]
+        ).then(function() {
+            Plotly.restyle(gd, 'opacity', 0.5).then(function() {
+                expect(gd._fullLayout.scene._scene.glplot.objects[0].hasAlpha).toEqual(true);
+            });
         })
         .then(done, done.fail);
     });

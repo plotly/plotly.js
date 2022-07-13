@@ -1,14 +1,6 @@
-/**
-* Copyright 2012-2021, Plotly, Inc.
-* All rights reserved.
-*
-* This source code is licensed under the MIT license found in the
-* LICENSE file in the root directory of this source tree.
-*/
-
 'use strict';
 
-var mapboxgl = require('mapbox-gl');
+var mapboxgl = require('mapbox-gl/dist/mapbox-gl-unminified');
 
 var Lib = require('../../lib');
 var geoUtils = require('../../lib/geo_location_utils');
@@ -730,11 +722,14 @@ proto.project = function(v) {
 proto.getView = function() {
     var map = this.map;
     var mapCenter = map.getCenter();
-    var center = { lon: mapCenter.lng, lat: mapCenter.lat };
+    var lon = mapCenter.lng;
+    var lat = mapCenter.lat;
+    var center = { lon: lon, lat: lat };
 
     var canvas = map.getCanvas();
-    var w = canvas.width;
-    var h = canvas.height;
+    var w = parseInt(canvas.style.width);
+    var h = parseInt(canvas.style.height);
+
     return {
         center: center,
         zoom: map.getZoom(),

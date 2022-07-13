@@ -1110,7 +1110,7 @@ describe('Test histogram', function() {
 
         it('should update autobins correctly when restyling', function(done) {
             // note: I'm *not* testing what this does to gd.data, as that's
-            // really a matter of convenience and will perhaps change later (v2?)
+            // really a matter of convenience and will perhaps change later (v3?)
             var data1 = [1.5, 2, 2, 3, 3, 3, 4, 4, 5];
             Plotly.newPlot(gd, [{x: data1, type: 'histogram' }])
             .then(function() {

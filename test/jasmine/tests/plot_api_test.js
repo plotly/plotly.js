@@ -13,7 +13,8 @@ var manageArrays = require('@src/plot_api/manage_arrays');
 var helpers = require('@src/plot_api/helpers');
 var editTypes = require('@src/plot_api/edit_types');
 
-var d3 = require('@plotly/d3');
+var d3Select = require('../../strict-d3').select;
+var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -120,7 +121,7 @@ describe('Test plot api', function() {
             // some of these tests use the undo/redo queue
             // OK, this is weird... the undo/redo queue length is a global config only.
             // It's ignored on the plot, even though the queue itself is per-plot.
-            // We may ditch this later, but probably not until v2
+            // We may ditch this later, but probably not until v3
             Plotly.setPlotConfig({queueLength: 3});
         });
 
@@ -277,15 +278,15 @@ describe('Test plot api', function() {
             }
 
             function getAnnotationPos() {
-                return getPos(d3.select('.annotation'));
+                return getPos(d3Select('.annotation'));
             }
 
             function getShapePos() {
-                return getPos(d3.select('.layer-above').select('.shapelayer').select('path'));
+                return getPos(d3Select('.layer-above').select('.shapelayer').select('path'));
             }
 
             function getImagePos() {
-                return getPos(d3.select('.layer-above').select('.imagelayer').select('image'));
+                return getPos(d3Select('.layer-above').select('.imagelayer').select('image'));
             }
 
             Plotly.newPlot(gd, [{
@@ -446,7 +447,7 @@ describe('Test plot api', function() {
             .then(function() {
                 // Ideally we should change this to xaxis.autorange: 'reversed'
                 // but that's a weird disappearing setting used just to force
-                // an initial reversed autorange. Proposed v2 change at:
+                // an initial reversed autorange. Proposed v3 change at:
                 // https://github.com/plotly/plotly.js/issues/420#issuecomment-323435082
                 return Plotly.relayout(gd, 'xaxis.reverse', true);
             })
@@ -759,7 +760,7 @@ describe('Test plot api', function() {
 
     describe('Plotly.restyle subroutines switchboard', function() {
         beforeEach(function() {
-            spyOn(plotApi, 'plot');
+            spyOn(plotApi, '_doPlot');
             spyOn(Plots, 'previousPromises');
             spyOn(Scatter, 'arraysToCalcdata');
             spyOn(Bar, 'arraysToCalcdata');
@@ -786,7 +787,7 @@ describe('Test plot api', function() {
                 expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
                 expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
                 expect(Plots.style).toHaveBeenCalled();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
                 // "docalc" deletes gd.calcdata - make sure this didn't happen
                 expect(gd.calcdata).toBeDefined();
             })
@@ -804,7 +805,7 @@ describe('Test plot api', function() {
                 expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
                 expect(Bar.arraysToCalcdata).toHaveBeenCalled();
                 expect(Plots.style).toHaveBeenCalled();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
                 expect(gd.calcdata).toBeDefined();
             })
             .then(done, done.fail);
@@ -820,31 +821,31 @@ describe('Test plot api', function() {
             Plotly.restyle(gd, 'marker.color', [['red', 'green', 'blue']])
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', 'yellow');
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', 'blue');
             })
             .then(function() {
                 expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'marker.color', [['red', 'blue', 'green']]);
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -859,31 +860,31 @@ describe('Test plot api', function() {
             Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'green', 'blue']])
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'yellow');
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', 'blue');
             })
             .then(function() {
                 expect(gd.calcdata).toBeDefined();
-                expect(plotApi.plot).not.toHaveBeenCalled();
+                expect(plotApi._doPlot).not.toHaveBeenCalled();
 
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 return Plotly.restyle(gd, 'hoverlabel.bgcolor', [['red', 'blue', 'green']]);
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -905,7 +906,7 @@ describe('Test plot api', function() {
             })
             .then(function() {
                 expect(gd.calcdata).toBeUndefined();
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
             })
             .then(done, done.fail);
         });
@@ -919,12 +920,12 @@ describe('Test plot api', function() {
             mockDefaultsAndCalc(gd);
             Plotly.restyle(gd, {'xgap': 2})
             .then(function() {
-                expect(plotApi.plot).toHaveBeenCalled();
+                expect(plotApi._doPlot).toHaveBeenCalled();
 
                 return Plotly.restyle(gd, {'ygap': 2});
             })
             .then(function() {
-                expect(plotApi.plot.calls.count()).toEqual(2);
+                expect(plotApi._doPlot.calls.count()).toEqual(2);
             })
             .then(done, done.fail);
         });
@@ -946,19 +947,19 @@ describe('Test plot api', function() {
         ].forEach(function(gd) {
             it('should clear calcdata when restyling \'zmin\' and \'zmax\' on ' + gd.data.type + ' traces', function(done) {
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 Plotly.restyle(gd, 'zmin', 0)
                 .then(function() {
                     expect(gd.calcdata).toBeUndefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmax', 10);
                 })
                 .then(function() {
                     expect(gd.calcdata).toBeUndefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
                 })
                 .then(done, done.fail);
             });
@@ -981,22 +982,22 @@ describe('Test plot api', function() {
         ].forEach(function(gd) {
             it('should not clear calcdata when restyling \'zmin\' and \'zmax\' on ' + gd.data.type + ' traces', function(done) {
                 mockDefaultsAndCalc(gd);
-                plotApi.plot.calls.reset();
+                plotApi._doPlot.calls.reset();
                 Plotly.restyle(gd, 'zmin', 0)
                 .then(function() {
                     expect(gd.calcdata).toBeDefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmax', 10);
                 })
                 .then(function() {
                     expect(gd.calcdata).toBeDefined();
-                    expect(plotApi.plot).toHaveBeenCalled();
+                    expect(plotApi._doPlot).toHaveBeenCalled();
 
                     mockDefaultsAndCalc(gd);
-                    plotApi.plot.calls.reset();
+                    plotApi._doPlot.calls.reset();
                     return Plotly.restyle(gd, 'zmin', 0);
                 })
                 .then(done, done.fail);
@@ -1099,7 +1100,7 @@ describe('Test plot api', function() {
             // some of these tests use the undo/redo queue
             // OK, this is weird... the undo/redo queue length is a global config only.
             // It's ignored on the plot, even though the queue itself is per-plot.
-            // We may ditch this later, but probably not until v2
+            // We may ditch this later, but probably not until v3
             Plotly.setPlotConfig({queueLength: 3});
         });
 
@@ -1496,17 +1497,17 @@ describe('Test plot api', function() {
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'marker.colorbar.tickfont.color': 'rgb(255, 0, 0)'});
             })
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'marker.showscale': false});
             })
             .then(function() {
-                expect(d3.select('.cbaxis').size()).toBe(0);
+                expect(d3Select('.cbaxis').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -1514,17 +1515,17 @@ describe('Test plot api', function() {
         it('updates colorbars when editing gl3d plots', function(done) {
             Plotly.newPlot(gd, [{z: [[1, 2], [3, 6]], type: 'surface'}])
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).not.toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'colorbar.tickfont.color': 'rgb(255, 0, 0)'});
             })
             .then(function() {
-                expect(d3.select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
+                expect(d3Select('.cbaxis text').node().style.fill).toBe('rgb(255, 0, 0)');
 
                 return Plotly.restyle(gd, {'showscale': false});
             })
             .then(function() {
-                expect(d3.select('.cbaxis').size()).toBe(0);
+                expect(d3Select('.cbaxis').size()).toBe(0);
             })
             .then(done, done.fail);
         });
@@ -1897,16 +1898,8 @@ describe('Test plot api', function() {
                 ]
             };
 
-            if(!Plotly.Queue) {
-                Plotly.Queue = {
-                    add: function() {},
-                    startSequence: function() {},
-                    endSequence: function() {}
-                };
-            }
-
             spyOn(plotApi, 'redraw');
-            spyOn(Plotly.Queue, 'add');
+            spyOn(Queue, 'add');
         });
 
         it('should throw an error when gd.data isn\'t an array.', function() {
@@ -2053,9 +2046,9 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.prependTraces.apply(null, undoArgs);
 
@@ -2070,9 +2063,9 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.extendTraces.apply(null, undoArgs);
 
@@ -2088,9 +2081,9 @@ describe('Test plot api', function() {
             }, [0, 1], maxPoints);
 
             expect(gd.data).not.toEqual(cachedData);
-            expect(Plotly.Queue.add).toHaveBeenCalled();
+            expect(Queue.add).toHaveBeenCalled();
 
-            var undoArgs = Plotly.Queue.add.calls.first().args[2];
+            var undoArgs = Queue.add.calls.first().args[2];
 
             Plotly.prependTraces.apply(null, undoArgs);
 
@@ -2147,12 +2140,12 @@ describe('Test plot api', function() {
                 }, [0, 1], args.maxp);
 
                 expect(plotApi.redraw).toHaveBeenCalled();
-                expect(Plotly.Queue.add).toHaveBeenCalled();
+                expect(Queue.add).toHaveBeenCalled();
 
                 expect(gd.data[0].x).toEqual(expectations.newArray);
                 expect(gd.data[1].x).toEqual(new Float32Array(expectations.newArray));
 
-                var cont = Plotly.Queue.add.calls.first().args[2][1].x;
+                var cont = Queue.add.calls.first().args[2][1].x;
                 expect(cont[0]).toEqual(expectations.remainder);
                 expect(cont[1]).toEqual(new Float32Array(expectations.remainder));
             }
@@ -2316,7 +2309,7 @@ describe('Test plot api', function() {
                 return Plotly.redraw(gd);
             })
             .then(function() {
-                expect(d3.selectAll('g.trace.scatter').size()).toEqual(3);
+                expect(d3SelectAll('g.trace.scatter').size()).toEqual(3);
             })
             .then(done, done.fail);
         });
@@ -2694,7 +2687,7 @@ describe('Test plot api', function() {
                     var modebars = document.getElementsByClassName('modebar-container');
                     expect(modebars.length).toBe(1, msg + ' # of modebar container');
                     var groups = document.getElementsByClassName('modebar-group');
-                    expect(groups.length).toBe(5, msg + ' # of modebar button groups');
+                    expect(groups.length).toBe(4, msg + ' # of modebar button groups');
                 };
             }
 
@@ -2884,8 +2877,7 @@ describe('plot_api edit_types', function() {
 
         editTypes.update(flags, {
             valType: 'boolean',
-            dflt: true,
-            role: 'style'
+            dflt: true
         });
 
         expect(flags).toEqual({calc: false, style: true});
@@ -2905,8 +2897,7 @@ describe('plot_api edit_types', function() {
         editTypes.update(flags, {
             editType: 'calc+style',
             valType: 'number',
-            dflt: 1,
-            role: 'style'
+            dflt: 1
         });
 
         expect(flags).toEqual({calc: true, legend: true, style: true});
