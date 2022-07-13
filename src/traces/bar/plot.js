@@ -243,7 +243,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
             }
 
             appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCompleteCallback);
-            if(fullLayout.displaytotal) {
+            if(fullLayout.barshowtotal) {
                 appendBarTotal(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCompleteCallback);
             }
 
