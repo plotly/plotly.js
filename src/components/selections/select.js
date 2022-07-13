@@ -433,10 +433,6 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         throttle.done(throttleID).then(function() {
             throttle.clear(throttleID);
 
-            // Only points selected by the new selection are presented in eventData here
-            // Should we provide all the selected points instead?
-            dragOptions.gd.emit('plotly_selected', eventData);
-
             if(!immediateSelect && currentPolygon && dragOptions.selectionDefs) {
                 // save last polygons
                 currentPolygon.subtract = subtract;
@@ -454,6 +450,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             if(dragOptions.doneFnCompleted) {
                 dragOptions.doneFnCompleted(selection);
             }
+
+            eventData.selections = gd.layout.selections;
+            dragOptions.gd.emit('plotly_selected', eventData);
         }).catch(Lib.error);
     };
 }
@@ -531,6 +530,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             }
 
             if(sendEvents) {
+                eventData.selections = gd.layout.selections;
                 gd.emit('plotly_selected', eventData);
             }
         }
@@ -1195,6 +1195,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
                 fillRangeItems(eventData, poly);
             }
 
+            eventData.selections = gd.layout.selections;
             gd.emit('plotly_selected', eventData);
         }
 
@@ -1215,6 +1216,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
 
         if(sendEvents) {
             if(eventData.points.length) {
+                eventData.selections = gd.layout.selections;
                 gd.emit('plotly_selected', eventData);
             } else {
                 gd.emit('plotly_deselect', null);
