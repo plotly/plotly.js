@@ -19,6 +19,7 @@ var shapeHelpers = require('../shapes/helpers');
 var shapeConstants = require('../shapes/constants');
 
 var displayOutlines = require('../shapes/display_outlines');
+var clearOutline = require('../shapes/handle_outline').clearOutline;
 
 var newShapeHelpers = require('../shapes/draw_newshape/helpers');
 var handleEllipse = newShapeHelpers.handleEllipse;
@@ -43,8 +44,6 @@ var MINSELECT = constants.MINSELECT;
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
-
-var clearOutline = require('../shapes/handle_outline').clearOutline;
 
 var helpers = require('./helpers');
 var p2r = helpers.p2r;
@@ -144,9 +143,43 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var searchTraces = determineSearchTraces(gd, dragOptions.xaxes,
       dragOptions.yaxes, dragOptions.subplot);
 
+    if(immediateSelect && !evt.shiftKey) {
+        dragOptions._clearSubplotSelections = function() {
+            var xRef = xAxis._id;
+            var yRef = yAxis._id;
+            deselectSubplot(gd, xRef, yRef, searchTraces);
+
+            var selections = (gd.layout || {}).selections || [];
+            var list = [];
+            var selectionErased = false;
+            for(var q = 0; q < selections.length; q++) {
+                var s = fullLayout.selections[q];
+                if(
+                    s.xref !== xRef ||
+                    s.yref !== yRef
+                ) {
+                    list.push(selections[q]);
+                } else {
+                    selectionErased = true;
+                }
+            }
+
+            if(selectionErased) {
+                Registry.call('_guiRelayout', gd, {
+                    selections: list
+                });
+            }
+        };
+    }
+
     var fillRangeItems = getFillRangeItems(dragOptions);
 
     dragOptions.moveFn = function(dx0, dy0) {
+        if(dragOptions._clearSubplotSelections) {
+            dragOptions._clearSubplotSelections();
+            dragOptions._clearSubplotSelections = undefined;
+        }
+
         x1 = Math.max(0, Math.min(pw, scaleX * dx0 + x0));
         y1 = Math.max(0, Math.min(ph, scaleY * dy0 + y0));
 
@@ -1176,34 +1209,8 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
         xRef = deselect.xref;
         yRef = deselect.yref;
 
-        var foundSubplot = false;
-        for(var q = 0; q < allSearchTraces.length; q++) {
-            var a = allSearchTraces[q];
-            if(
-                (a.xaxis && a.xaxis._id === xRef) &&
-                (a.yaxis && a.yaxis._id === yRef)
-            ) {
-                foundSubplot = true;
-                break;
-            }
-        }
-
-        if(!foundSubplot) {
-            // deselect traces in this subplot
-
-            searchTraces = determineSearchTraces(
-                gd,
-                [getFromId(gd, xRef, 'x')],
-                [getFromId(gd, yRef, 'y')],
-                xRef + yRef
-            );
-
-            for(var k = 0; k < searchTraces.length; k++) {
-                var searchInfo = searchTraces[k];
-                searchInfo._module.selectPoints(searchInfo, false);
-            }
-
-            updateSelectedState(gd, searchTraces);
+        if(!subplotSelected(xRef, yRef, allSearchTraces)) {
+            deselectSubplot(gd, xRef, yRef, searchTraces);
         }
 
         if(sendEvents) {
@@ -1238,6 +1245,35 @@ function epmtySplomSelectionBatch(gd) {
             }
         }
     }
+}
+
+function subplotSelected(xRef, yRef, searchTraces) {
+    for(var i = 0; i < searchTraces.length; i++) {
+        var s = searchTraces[i];
+        if(
+            (s.xaxis && s.xaxis._id === xRef) &&
+            (s.yaxis && s.yaxis._id === yRef)
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function deselectSubplot(gd, xRef, yRef, searchTraces) {
+    searchTraces = determineSearchTraces(
+        gd,
+        [getFromId(gd, xRef, 'x')],
+        [getFromId(gd, yRef, 'y')],
+        xRef + yRef
+    );
+
+    for(var k = 0; k < searchTraces.length; k++) {
+        var searchInfo = searchTraces[k];
+        searchInfo._module.selectPoints(searchInfo, false);
+    }
+
+    updateSelectedState(gd, searchTraces);
 }
 
 function addTester(layoutPolygons, xRef, yRef, selectionTesters) {
