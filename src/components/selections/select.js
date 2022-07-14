@@ -350,7 +350,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
                     fillRangeItems(eventData, poly);
 
-                    dragOptions.gd.emit('plotly_selecting', eventData);
+                    gd.emit('plotly_selecting', eventData);
                 }
             );
         }
@@ -452,7 +452,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             }
 
             eventData.selections = gd.layout.selections;
-            dragOptions.gd.emit('plotly_selected', eventData);
+            gd.emit('plotly_selected', eventData);
         }).catch(Lib.error);
     };
 }
