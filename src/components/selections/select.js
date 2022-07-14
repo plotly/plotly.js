@@ -350,7 +350,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
                     fillRangeItems(eventData, poly);
 
-                    gd.emit('plotly_selecting', eventData);
+                    emitSelecting(gd, eventData);
                 }
             );
         }
@@ -381,7 +381,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
                 clearSelectionsCache(dragOptions);
 
-                gd.emit('plotly_deselect', null);
+                emitDeselect(gd);
 
                 if(searchTraces.length) {
                     var clickedXaxis = searchTraces[0].xaxis;
@@ -419,7 +419,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                     // but in case anyone depends on it we don't want to break it now.
                     // Note that click-to-select introduced pre v3 also emitts proper
                     // event data when clickmode is having 'select' in its flag list.
-                    gd.emit('plotly_selected', undefined);
+                    emitSelected(gd, undefined);
                 }
             }
 
@@ -452,7 +452,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             }
 
             eventData.selections = gd.layout.selections;
-            gd.emit('plotly_selected', eventData);
+            emitSelected(gd, eventData);
         }).catch(Lib.error);
     };
 }
@@ -491,7 +491,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             clearSelectionsCache(dragOptions);
 
             if(sendEvents) {
-                gd.emit('plotly_deselect', null);
+                emitDeselect(gd);
             }
         } else {
             subtract = evt.shiftKey &&
@@ -531,7 +531,7 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
 
             if(sendEvents) {
                 eventData.selections = gd.layout.selections;
-                gd.emit('plotly_selected', eventData);
+                emitSelected(gd, eventData);
             }
         }
     }
@@ -1196,7 +1196,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
             }
 
             eventData.selections = gd.layout.selections;
-            gd.emit('plotly_selected', eventData);
+            emitSelected(gd, eventData);
         }
 
         fullLayout._reselect = false;
@@ -1217,7 +1217,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
         if(sendEvents) {
             if(eventData.points.length) {
                 eventData.selections = gd.layout.selections;
-                gd.emit('plotly_selected', eventData);
+                emitSelected(gd, eventData);
             } else {
                 gd.emit('plotly_deselect', null);
             }
@@ -1506,6 +1506,17 @@ function getFillRangeItems(dragOptions) {
     );
 }
 
+function emitSelecting(gd, eventData) {
+    gd.emit('plotly_selecting', eventData);
+}
+
+function emitSelected(gd, eventData) {
+    gd.emit('plotly_selected', eventData);
+}
+
+function emitDeselect(gd) {
+    gd.emit('plotly_deselect', null);
+}
 
 module.exports = {
     reselect: reselect,
