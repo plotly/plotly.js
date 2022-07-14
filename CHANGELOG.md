@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.13.1] -- 2022-07-14
+
+### Fixed
+ - Avoid attaching `selections` to undefined eventData (regression introduced in 2.13.0) [[#6260](https://github.com/plotly/plotly.js/pull/6260)]
+
+
 ## [2.13.0] -- 2022-07-14
 
 ### Added
