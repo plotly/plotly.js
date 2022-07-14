@@ -1503,10 +1503,13 @@ function getFillRangeItems(dragOptions) {
 }
 
 function emitSelecting(gd, eventData) {
+    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_selecting', eventData);
 }
 
 function emitSelected(gd, eventData) {
+    if(drawMode(gd._fullLayout.dragmode)) return;
+
     if(eventData) {
         eventData.selections = (gd.layout || {}).selections || [];
     }
@@ -1515,6 +1518,7 @@ function emitSelected(gd, eventData) {
 }
 
 function emitDeselect(gd) {
+    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_deselect', null);
 }
 
