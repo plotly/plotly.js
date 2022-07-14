@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.13.0
+* plotly.js (basic) v2.13.1
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -36993,7 +36993,6 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 dragOptions.doneFnCompleted(selection);
             }
 
-            eventData.selections = gd.layout.selections;
             emitSelected(gd, eventData);
         }).catch(Lib.error);
     };
@@ -37072,7 +37071,6 @@ function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutli
             }
 
             if(sendEvents) {
-                eventData.selections = gd.layout.selections;
                 emitSelected(gd, eventData);
             }
         }
@@ -37737,7 +37735,6 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
                 fillRangeItems(eventData, poly);
             }
 
-            eventData.selections = gd.layout.selections;
             emitSelected(gd, eventData);
         }
 
@@ -37758,7 +37755,6 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
 
         if(sendEvents) {
             if(eventData.points.length) {
-                eventData.selections = gd.layout.selections;
                 emitSelected(gd, eventData);
             } else {
                 gd.emit('plotly_deselect', null);
@@ -38049,14 +38045,22 @@ function getFillRangeItems(dragOptions) {
 }
 
 function emitSelecting(gd, eventData) {
+    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_selecting', eventData);
 }
 
 function emitSelected(gd, eventData) {
+    if(drawMode(gd._fullLayout.dragmode)) return;
+
+    if(eventData) {
+        eventData.selections = (gd.layout || {}).selections || [];
+    }
+
     gd.emit('plotly_selected', eventData);
 }
 
 function emitDeselect(gd) {
+    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_deselect', null);
 }
 
@@ -84666,7 +84670,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.13.0';
+exports.version = '2.13.1';
 
 },{}]},{},[8])(8)
 });
