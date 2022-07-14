@@ -10,7 +10,6 @@ var dragElement = require('../../components/dragelement');
 
 var Fx = require('../../components/fx');
 var dragHelpers = require('../../components/dragelement/helpers');
-var rectMode = dragHelpers.rectMode;
 var drawMode = dragHelpers.drawMode;
 var selectMode = dragHelpers.selectMode;
 
@@ -550,20 +549,18 @@ proto.updateFx = function(fullLayout) {
     var dragMode = fullLayout.dragmode;
     var fillRangeItems;
 
-    if(rectMode(dragMode)) {
-        fillRangeItems = function(eventData, poly) {
+    fillRangeItems = function(eventData, poly) {
+        if(poly.isRect) {
             var ranges = eventData.range = {};
             ranges[self.id] = [
                 invert([poly.xmin, poly.ymin]),
                 invert([poly.xmax, poly.ymax])
             ];
-        };
-    } else {
-        fillRangeItems = function(eventData, pts) {
+        } else {
             var dataPts = eventData.lassoPoints = {};
-            dataPts[self.id] = pts.map(invert);
-        };
-    }
+            dataPts[self.id] = poly.map(invert);
+        }
+    };
 
     // Note: dragOptions is needed to be declared for all dragmodes because
     // it's the object that holds persistent selection state.

@@ -429,22 +429,18 @@ proto.updateFx = function(fullLayout, geoLayout) {
         ]);
     }
 
-    var fillRangeItems;
-
-    if(dragMode === 'select') {
-        fillRangeItems = function(eventData, poly) {
+    var fillRangeItems = function(eventData, poly) {
+        if(poly.isRect) {
             var ranges = eventData.range = {};
             ranges[_this.id] = [
                 invert([poly.xmin, poly.ymin]),
                 invert([poly.xmax, poly.ymax])
             ];
-        };
-    } else if(dragMode === 'lasso') {
-        fillRangeItems = function(eventData, poly) {
+        } else {
             var dataPts = eventData.lassoPoints = {};
             dataPts[_this.id] = poly.map(invert);
-        };
-    }
+        }
+    };
 
     // Note: dragOptions is needed to be declared for all dragmodes because
     // it's the object that holds persistent selection state.
