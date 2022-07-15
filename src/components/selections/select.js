@@ -56,7 +56,7 @@ function hasSubplot(dragOptions) {
 }
 
 function prepSelect(evt, startX, startY, dragOptions, mode) {
-    var isCartesian = hasSubplot(dragOptions);
+    var isCartesian = !hasSubplot(dragOptions);
 
     var isFreeMode = freeMode(mode);
     var isRectMode = rectMode(mode);
@@ -71,7 +71,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var gd = dragOptions.gd;
     var fullLayout = gd._fullLayout;
     var immediateSelect = isSelectMode && fullLayout.newselection.mode === 'immediate' &&
-        !isCartesian; // N.B. only cartesian subplots have persistent selection
+        isCartesian; // N.B. only cartesian subplots have persistent selection
 
     var zoomLayer = fullLayout._zoomlayer;
     var dragBBox = dragOptions.element.getBoundingClientRect();
@@ -152,7 +152,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
     if(immediateSelect && !evt.shiftKey) {
         dragOptions._clearSubplotSelections = function() {
-            if(isCartesian) return;
+            if(!isCartesian) return;
 
             var xRef = xAxis._id;
             var yRef = yAxis._id;
