@@ -5,7 +5,9 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     var selection = [];
     var fullData = cd[0].trace;
 
-    var nodes = fullData._sankey.graph.nodes;
+    var sankey = fullData._sankey;
+    if(!sankey) return [];
+    var nodes = sankey.graph.nodes;
 
     for(var i = 0; i < nodes.length; i++) {
         var node = nodes[i];

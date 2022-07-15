@@ -793,6 +793,8 @@ function switchToSankeyFormat(nodes) {
 
 // scene graph
 module.exports = function(gd, svg, calcData, layout, callbacks) {
+    var cartesian = gd._fullLayout._subplots.cartesian;
+
     // To prevent animation on first render
     var firstRender = false;
     Lib.ensureSingle(gd._fullLayout._infolayer, 'g', 'first-render', function() {
@@ -822,24 +824,26 @@ module.exports = function(gd, svg, calcData, layout, callbacks) {
         .style('pointer-events', 'auto')
         .attr('transform', sankeyTransform);
 
-    sankey.each(function(d, i) {
-        gd._fullData[i]._sankey = d;
-        // Create dragbox if missing
-        var dragboxClassName = 'bgsankey-' + d.trace.uid + '-' + i;
-        Lib.ensureSingle(gd._fullLayout._draggers, 'rect', dragboxClassName);
+    if(cartesian.indexOf('xy') === -1) {
+        sankey.each(function(d, i) {
+            gd._fullData[i]._sankey = d;
+            // Create dragbox if missing
+            var dragboxClassName = 'bgsankey-' + d.trace.uid + '-' + i;
+            Lib.ensureSingle(gd._fullLayout._draggers, 'rect', dragboxClassName);
 
-        gd._fullData[i]._bgRect = d3.select('.' + dragboxClassName);
+            gd._fullData[i]._bgRect = d3.select('.' + dragboxClassName);
 
-        // Style dragbox
-        gd._fullData[i]._bgRect
-          .style('pointer-events', 'all')
-          .attr('width', d.width)
-          .attr('height', d.height)
-          .attr('x', d.translateX)
-          .attr('y', d.translateY)
-          .classed('bgsankey', true)
-          .style({fill: 'transparent', 'stroke-width': 0});
-    });
+            // Style dragbox
+            gd._fullData[i]._bgRect
+            .style('pointer-events', 'all')
+            .attr('width', d.width)
+            .attr('height', d.height)
+            .attr('x', d.translateX)
+            .attr('y', d.translateY)
+            .classed('bgsankey', true)
+            .style({fill: 'transparent', 'stroke-width': 0});
+        });
+    }
 
     sankey.transition()
         .ease(c.ease).duration(c.duration)
