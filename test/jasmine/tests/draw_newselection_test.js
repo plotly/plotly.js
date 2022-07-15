@@ -651,3 +651,80 @@ describe('Activate and edit selections', function() {
         .then(done, done.fail);
     });
 });
+
+
+describe('emit plotly_selected event on editing selections in various dragmodes', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    ['zoom', 'pan', 'drawrect', 'drawclosedpath', 'drawcircle'].forEach(function(dragmode) {
+        it('get eventData for editing selections using ' + dragmode + ' dragmode', function(done) {
+            var fig = {
+                data: [
+                    {
+                        x: [0, 1, 2],
+                        y: [1, 2, 3]
+                    }
+                ],
+                layout: {
+                    width: 800,
+                    height: 600,
+                    margin: {
+                        t: 100,
+                        b: 50,
+                        l: 100,
+                        r: 50
+                    },
+                    selections: [{ x0: 0.5, x1: 1.5, y0: 1.5, y1: 2.5}],
+                    dragmode: dragmode
+                }
+            };
+
+            var range;
+            var points;
+            var lassoPoints;
+            var selections;
+
+            Plotly.newPlot(gd, fig)
+
+            .then(function() {
+                gd.on('plotly_selected', function(d) {
+                    lassoPoints = d.lassoPoints;
+                    range = d.range;
+                    points = d.points;
+                    selections = d.selections;
+                });
+            })
+
+            .then(function() { click(400, 300); }) // activate selection
+            .then(function() { drag([[400, 300], [600, 100]]); }) // move selection
+            .then(function() {
+                expect(range).not.toBeUndefined();
+                expect(range.x).toBeCloseToArray([1.1926580086580088, 2.1926580086580088], 3);
+                expect(range.y).toBeCloseToArray([2.5062641509433967, 3.5062641509433967], 3);
+
+                expect(lassoPoints).toBeUndefined();
+
+                expect(points).not.toBeUndefined();
+                expect(points.length).toEqual(1);
+                expect(points[0].fullData).not.toBeUndefined();
+                expect(points[0].data).not.toBeUndefined();
+                expect(points[0].data.selectedpoints).toEqual([2]);
+
+                expect(selections).not.toBeUndefined();
+                expect(selections.length).toEqual(1);
+                expect(selections[0]).not.toBeUndefined();
+                expect(selections[0].x0).toBeCloseTo(1.1926580086580088, 3);
+                expect(selections[0].x1).toBeCloseTo(2.1926580086580088, 3);
+                expect(selections[0].y0).toBeCloseTo(2.5062641509433967, 3);
+                expect(selections[0].y1).toBeCloseTo(3.5062641509433967, 3);
+            })
+            .then(done, done.fail);
+        });
+    });
+});

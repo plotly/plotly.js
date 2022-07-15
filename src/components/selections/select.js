@@ -451,7 +451,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 dragOptions.doneFnCompleted(selection);
             }
 
-            emitSelected(gd, eventData);
+            if(isSelectMode) {
+                emitSelected(gd, eventData);
+            }
         }).catch(Lib.error);
     };
 }
@@ -673,15 +675,23 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
     }
 }
 
+function hasActiveShape(gd) {
+    return gd._fullLayout._activeShapeIndex >= 0;
+}
+
+function hasActiveSelection(gd) {
+    return gd._fullLayout._activeSelectionIndex >= 0;
+}
+
 function clearSelectionsCache(dragOptions, immediateSelect) {
     var dragmode = dragOptions.dragmode;
     var plotinfo = dragOptions.plotinfo;
 
     var gd = dragOptions.gd;
-    if(gd._fullLayout._activeShapeIndex >= 0) {
+    if(hasActiveShape(gd)) {
         gd._fullLayout._deactivateShape(gd);
     }
-    if(gd._fullLayout._activeSelectionIndex >= 0) {
+    if(hasActiveSelection(gd)) {
         gd._fullLayout._deactivateSelection(gd);
     }
 
@@ -1503,13 +1513,10 @@ function getFillRangeItems(dragOptions) {
 }
 
 function emitSelecting(gd, eventData) {
-    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_selecting', eventData);
 }
 
 function emitSelected(gd, eventData) {
-    if(drawMode(gd._fullLayout.dragmode)) return;
-
     if(eventData) {
         eventData.selections = (gd.layout || {}).selections || [];
     }
@@ -1518,7 +1525,6 @@ function emitSelected(gd, eventData) {
 }
 
 function emitDeselect(gd) {
-    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_deselect', null);
 }
 
