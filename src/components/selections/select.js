@@ -50,7 +50,14 @@ var p2r = helpers.p2r;
 var axValue = helpers.axValue;
 var getTransform = helpers.getTransform;
 
+function hasSubplot(dragOptions) {
+    // N.B. subplot may be falsy e.g zero sankey index!
+    return dragOptions.subplot !== undefined;
+}
+
 function prepSelect(evt, startX, startY, dragOptions, mode) {
+    var isCartesian = !hasSubplot(dragOptions);
+
     var isFreeMode = freeMode(mode);
     var isRectMode = rectMode(mode);
     var isOpenMode = openMode(mode);
@@ -64,7 +71,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var gd = dragOptions.gd;
     var fullLayout = gd._fullLayout;
     var immediateSelect = isSelectMode && fullLayout.newselection.mode === 'immediate' &&
-        !dragOptions.subplot; // N.B. only cartesian subplots have persistent selection
+        isCartesian; // N.B. only cartesian subplots have persistent selection
 
     var zoomLayer = fullLayout._zoomlayer;
     var dragBBox = dragOptions.element.getBoundingClientRect();
@@ -112,9 +119,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             opacity: isDrawMode ? newStyle.opacity / 2 : 1,
             fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
             stroke: newStyle.line.color || (
-                dragOptions.subplot !== undefined ?
-                    '#7f7f7f' : // non-cartesian subplot
-                    Color.contrast(gd._fullLayout.plot_bgcolor) // cartesian subplot
+                isCartesian ?
+                    Color.contrast(gd._fullLayout.plot_bgcolor) :
+                    '#7f7f7f' // non-cartesian subplot
             ),
             'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
             'stroke-width': newStyle.line.width + 'px',
@@ -145,6 +152,8 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
     if(immediateSelect && !evt.shiftKey) {
         dragOptions._clearSubplotSelections = function() {
+            if(!isCartesian) return;
+
             var xRef = xAxis._id;
             var yRef = yAxis._id;
             deselectSubplot(gd, xRef, yRef, searchTraces);
@@ -719,7 +728,7 @@ function clearSelectionsCache(dragOptions, immediateSelect) {
             var selections;
             if(
                 isSelectMode &&
-                !dragOptions.subplot // only allow cartesian - no mapbox for now
+                !hasSubplot(dragOptions) // only allow cartesian - no mapbox for now
             ) {
                 selections = newSelections(outlines, dragOptions);
             }
@@ -758,7 +767,10 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
 
         if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
-        if(subplot && (trace.subplot === subplot || trace.geo === subplot)) {
+        if(
+            hasSubplot({subplot: subplot}) &&
+            (trace.subplot === subplot || trace.geo === subplot)
+        ) {
             searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
         } else if(trace.type === 'splom') {
             // FIXME: make sure we don't have more than single axis for splom
