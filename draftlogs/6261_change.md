@@ -1,0 +1,2 @@
+- Change dateMonth format for `nl` locale to confirm with expected nl format
+- Add new dutch translations to the dictionary
