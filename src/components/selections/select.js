@@ -120,8 +120,8 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
             stroke: newStyle.line.color || (
                 isCartesian ?
-                    '#7f7f7f' : // non-cartesian subplot
-                    Color.contrast(gd._fullLayout.plot_bgcolor) // cartesian subplot
+                    Color.contrast(gd._fullLayout.plot_bgcolor) :
+                    '#7f7f7f' // non-cartesian subplot
             ),
             'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
             'stroke-width': newStyle.line.width + 'px',
