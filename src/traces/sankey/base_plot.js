@@ -48,6 +48,7 @@ function subplotUpdateFx(gd, index) {
     var dragMode = fullLayout.dragmode;
     var cursor = fullLayout.dragmode === 'pan' ? 'move' : 'crosshair';
     var bgRect = trace._bgRect;
+    if(!bgRect) return;
 
     if(dragMode === 'pan' || dragMode === 'zoom') return;
 
