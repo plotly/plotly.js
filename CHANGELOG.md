@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.13.2] -- 2022-07-21
+
+### Fixed
+ - Fix `sankey` select error (regression introduced in 2.13.0) [[#6265](https://github.com/plotly/plotly.js/pull/6265)]
+ - Handle missing drag layer of invisible `sankey` traces to fix select error [[#6267](https://github.com/plotly/plotly.js/pull/6267)]
+ - Emit selection event in shape drawing `dragmode`s when an existing selection is modified [[#6262](https://github.com/plotly/plotly.js/pull/6262)]
+
+
 ## [2.13.1] -- 2022-07-14
 
 ### Fixed
