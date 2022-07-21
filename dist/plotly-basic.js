@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.13.1
+* plotly.js (basic) v2.13.2
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -36592,7 +36592,14 @@ var p2r = helpers.p2r;
 var axValue = helpers.axValue;
 var getTransform = helpers.getTransform;
 
+function hasSubplot(dragOptions) {
+    // N.B. subplot may be falsy e.g zero sankey index!
+    return dragOptions.subplot !== undefined;
+}
+
 function prepSelect(evt, startX, startY, dragOptions, mode) {
+    var isCartesian = !hasSubplot(dragOptions);
+
     var isFreeMode = freeMode(mode);
     var isRectMode = rectMode(mode);
     var isOpenMode = openMode(mode);
@@ -36606,7 +36613,7 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var gd = dragOptions.gd;
     var fullLayout = gd._fullLayout;
     var immediateSelect = isSelectMode && fullLayout.newselection.mode === 'immediate' &&
-        !dragOptions.subplot; // N.B. only cartesian subplots have persistent selection
+        isCartesian; // N.B. only cartesian subplots have persistent selection
 
     var zoomLayer = fullLayout._zoomlayer;
     var dragBBox = dragOptions.element.getBoundingClientRect();
@@ -36654,9 +36661,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             opacity: isDrawMode ? newStyle.opacity / 2 : 1,
             fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
             stroke: newStyle.line.color || (
-                dragOptions.subplot !== undefined ?
-                    '#7f7f7f' : // non-cartesian subplot
-                    Color.contrast(gd._fullLayout.plot_bgcolor) // cartesian subplot
+                isCartesian ?
+                    Color.contrast(gd._fullLayout.plot_bgcolor) :
+                    '#7f7f7f' // non-cartesian subplot
             ),
             'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
             'stroke-width': newStyle.line.width + 'px',
@@ -36687,6 +36694,8 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
 
     if(immediateSelect && !evt.shiftKey) {
         dragOptions._clearSubplotSelections = function() {
+            if(!isCartesian) return;
+
             var xRef = xAxis._id;
             var yRef = yAxis._id;
             deselectSubplot(gd, xRef, yRef, searchTraces);
@@ -36993,7 +37002,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                 dragOptions.doneFnCompleted(selection);
             }
 
-            emitSelected(gd, eventData);
+            if(isSelectMode) {
+                emitSelected(gd, eventData);
+            }
         }).catch(Lib.error);
     };
 }
@@ -37215,15 +37226,23 @@ function coerceSelectionsCache(evt, gd, dragOptions) {
     }
 }
 
+function hasActiveShape(gd) {
+    return gd._fullLayout._activeShapeIndex >= 0;
+}
+
+function hasActiveSelection(gd) {
+    return gd._fullLayout._activeSelectionIndex >= 0;
+}
+
 function clearSelectionsCache(dragOptions, immediateSelect) {
     var dragmode = dragOptions.dragmode;
     var plotinfo = dragOptions.plotinfo;
 
     var gd = dragOptions.gd;
-    if(gd._fullLayout._activeShapeIndex >= 0) {
+    if(hasActiveShape(gd)) {
         gd._fullLayout._deactivateShape(gd);
     }
-    if(gd._fullLayout._activeSelectionIndex >= 0) {
+    if(hasActiveSelection(gd)) {
         gd._fullLayout._deactivateSelection(gd);
     }
 
@@ -37251,7 +37270,7 @@ function clearSelectionsCache(dragOptions, immediateSelect) {
             var selections;
             if(
                 isSelectMode &&
-                !dragOptions.subplot // only allow cartesian - no mapbox for now
+                !hasSubplot(dragOptions) // only allow cartesian - no mapbox for now
             ) {
                 selections = newSelections(outlines, dragOptions);
             }
@@ -37290,7 +37309,10 @@ function determineSearchTraces(gd, xAxes, yAxes, subplot) {
 
         if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
 
-        if(subplot && (trace.subplot === subplot || trace.geo === subplot)) {
+        if(
+            hasSubplot({subplot: subplot}) &&
+            (trace.subplot === subplot || trace.geo === subplot)
+        ) {
             searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
         } else if(trace.type === 'splom') {
             // FIXME: make sure we don't have more than single axis for splom
@@ -38045,13 +38067,10 @@ function getFillRangeItems(dragOptions) {
 }
 
 function emitSelecting(gd, eventData) {
-    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_selecting', eventData);
 }
 
 function emitSelected(gd, eventData) {
-    if(drawMode(gd._fullLayout.dragmode)) return;
-
     if(eventData) {
         eventData.selections = (gd.layout || {}).selections || [];
     }
@@ -38060,7 +38079,6 @@ function emitSelected(gd, eventData) {
 }
 
 function emitDeselect(gd) {
-    if(drawMode(gd._fullLayout.dragmode)) return;
     gd.emit('plotly_deselect', null);
 }
 
@@ -84670,7 +84688,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.13.1';
+exports.version = '2.13.2';
 
 },{}]},{},[8])(8)
 });
