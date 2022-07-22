@@ -260,3 +260,64 @@ describe('Test selections:', function() {
         });
     });
 });
+
+describe('Emit plotly_selected when plot a graph that has selections', function() {
+    'use strict';
+
+    var gd;
+    var points;
+    var selections;
+    var selectedCnt = 0;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('emit plotly_selected on react calls', function(done) {
+        var data = [{y: [1, 2, 3]}];
+
+        Plotly.newPlot(gd, data, {})
+        .then(function() {
+            gd.on('plotly_selected', function(d) {
+                points = d.points;
+                selections = d.selections;
+                selectedCnt++;
+            });
+        })
+        .then(function() {
+            return Plotly.react(gd, data, {
+                selections: [{ x0: 0.5, x1: 1.5, y0: 1.5, y1: 2.5}]
+            });
+        })
+        .then(function() {
+            expect(selectedCnt).toEqual(1);
+            expect(points).not.toBeUndefined();
+            expect(selections).not.toBeUndefined();
+            expect(selections.length).toEqual(1);
+            expect(selections[0].x0).toEqual(0.5);
+        })
+        .then(function() {
+            return Plotly.react(gd, data, {
+                selections: [{ x0: 0.5, x1: 1.5, y0: 1.5, y1: 2.5}] // same selections
+            });
+        })
+        .then(function() {
+            expect(selectedCnt).toEqual(1);
+        })
+        .then(function() {
+            return Plotly.react(gd, data, {
+                selections: [{ x0: 0.25, x1: 1.75, y0: 1.25, y1: 2.25}] // different selections
+            });
+        })
+        .then(function() {
+            expect(selectedCnt).toEqual(2);
+            expect(points).not.toBeUndefined();
+            expect(selections).not.toBeUndefined();
+            expect(selections.length).toEqual(1);
+            expect(selections[0].x0).toEqual(0.25);
+        })
+        .then(done, done.fail);
+    });
+});

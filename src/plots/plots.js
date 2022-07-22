@@ -3364,7 +3364,16 @@ plots.redrag = function(gd) {
 };
 
 plots.reselect = function(gd) {
-    Registry.getComponentMethod('selections', 'reselect')(gd);
+    var fullLayout = gd._fullLayout;
+
+    var A = (gd.layout || {}).selections;
+    var B = fullLayout._previousSelections;
+    fullLayout._previousSelections = A;
+
+    var mayEmitSelected = fullLayout._reselect ||
+        JSON.stringify(A) !== JSON.stringify(B);
+
+    Registry.getComponentMethod('selections', 'reselect')(gd, mayEmitSelected);
 };
 
 plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {
