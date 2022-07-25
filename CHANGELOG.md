@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.13.3] -- 2022-07-25
+
+### Fixed
+ - Emit plotly_selected event on plot API calls and GUI edits [[#6277](https://github.com/plotly/plotly.js/pull/6277)]
+
+
 ## [2.13.2] -- 2022-07-21
 
 ### Fixed
