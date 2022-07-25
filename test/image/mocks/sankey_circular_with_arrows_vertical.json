@@ -2,6 +2,7 @@
     "data": [
         {
             "type": "sankey",
+            "orientation": "v",
             "node": {
                 "pad": 5,
                 "label": ["0", "1", "2", "3", "4", "5", "6"]

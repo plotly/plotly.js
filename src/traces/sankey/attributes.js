@@ -168,12 +168,12 @@ var attrs = module.exports = overrideAll({
     },
 
     link: {
-        arrowwidth: {
+        arrowlen: {
             valType: 'number',
             min: 0,
             dflt: 0,
             description: [
-                'Sets the width (in px) of the links arrow, if 0 no arrow will be drawn.'
+                'Sets the length (in px) of the links arrow, if 0 no arrow will be drawn.'
             ].join(' ')
         },
         label: {
