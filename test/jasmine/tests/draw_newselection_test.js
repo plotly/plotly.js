@@ -425,12 +425,27 @@ describe('Activate and edit selections', function() {
 
     ['mouse'].forEach(function(device) {
         it('reactangle using ' + device, function(done) {
+            var range;
+            var lassoPoints;
+            var points;
+            var _selections;
+            var selectedCnt = 0;
+
             var i = 0; // selection index
 
             Plotly.newPlot(gd, {
                 data: fig.data,
                 layout: fig.layout,
                 config: fig.config
+            })
+            .then(function() {
+                gd.on('plotly_selected', function(d) {
+                    range = d.range;
+                    lassoPoints = d.lassoPoints;
+                    points = d.points;
+                    _selections = d.selections;
+                    selectedCnt++;
+                });
             })
 
             // selection between 175, 160 and 255, 230
@@ -454,6 +469,8 @@ describe('Activate and edit selections', function() {
                     'x1': 75,
                     'y1': 75
                 });
+
+                expect(selectedCnt).toEqual(0);
             })
             .then(function() { drag([[255, 230], [300, 200]]); }) // move vertex
             .then(function() {
@@ -475,6 +492,12 @@ describe('Activate and edit selections', function() {
                     'x1': 102.90852713178295,
                     'y1': 53.63323442136499
                 });
+
+                expect(selectedCnt).toEqual(1);
+                expect(points).not.toBeUndefined();
+                expect(_selections).not.toBeUndefined();
+                expect(range).not.toBeUndefined();
+                expect(lassoPoints).toBeUndefined();
             })
             .then(function() { drag([[300, 200], [255, 230]]); }) // move vertex back
             .then(function() {
@@ -496,6 +519,12 @@ describe('Activate and edit selections', function() {
                     'x1': 75,
                     'y1': 75
                 });
+
+                expect(selectedCnt).toEqual(2);
+                expect(points).not.toBeUndefined();
+                expect(_selections).not.toBeUndefined();
+                expect(range).not.toBeUndefined();
+                expect(lassoPoints).toBeUndefined();
             })
             .then(function() { drag([[215, 195], [300, 200]]); }) // move selection
             .then(function() {
@@ -517,6 +546,12 @@ describe('Activate and edit selections', function() {
                     'x1': 127.71472868217053,
                     'y1': 74.99821958456974
                 });
+
+                expect(selectedCnt).toEqual(3);
+                expect(points).not.toBeUndefined();
+                expect(_selections).not.toBeUndefined();
+                expect(range).not.toBeUndefined();
+                expect(lassoPoints).toBeUndefined();
             })
             .then(function() { drag([[300, 200], [215, 195]]); }) // move selection back
             .then(function() {
@@ -538,18 +573,40 @@ describe('Activate and edit selections', function() {
                     'x1': 75,
                     'y1': 75
                 });
+
+                expect(selectedCnt).toEqual(4);
+                expect(points).not.toBeUndefined();
+                expect(_selections).not.toBeUndefined();
+                expect(range).not.toBeUndefined();
+                expect(lassoPoints).toBeUndefined();
             })
 
             .then(done, done.fail);
         });
 
         it('closed-path using ' + device, function(done) {
+            var range;
+            var lassoPoints;
+            var points;
+            var _selections;
+            var selectedCnt = 0;
+
             var i = 1; // selection index
 
             Plotly.newPlot(gd, {
                 data: fig.data,
                 layout: fig.layout,
                 config: fig.config
+            })
+
+            .then(function() {
+                gd.on('plotly_selected', function(d) {
+                    range = d.range;
+                    lassoPoints = d.lassoPoints;
+                    points = d.points;
+                    _selections = d.selections;
+                    selectedCnt++;
+                });
             })
 
             // next selection
@@ -562,6 +619,8 @@ describe('Activate and edit selections', function() {
                 var obj = selections[id]._input;
                 print(obj);
                 assertPos(obj.path, 'M250,25L225,75L275,75Z');
+
+                expect(selectedCnt).toEqual(0);
             })
             .then(function() { drag([[540, 160], [500, 120]]); }) // move vertex
             .then(function() {
@@ -572,6 +631,12 @@ describe('Activate and edit selections', function() {
                 var obj = selections[id]._input;
                 print(obj);
                 assertPos(obj.path, 'M225.1968992248062,-3.4896142433234463L225,75L275,75Z');
+
+                expect(selectedCnt).toEqual(1);
+                expect(points).not.toBeUndefined();
+                expect(_selections).not.toBeUndefined();
+                expect(lassoPoints).not.toBeUndefined();
+                expect(range).toBeUndefined();
             })
             .then(function() { drag([[500, 120], [540, 160]]); }) // move vertex back
             .then(function() {
@@ -582,6 +647,12 @@ describe('Activate and edit selections', function() {
                 var obj = selections[id]._input;
                 print(obj);
                 assertPos(obj.path, 'M250,25L225,75L275,75Z');
+
+                expect(selectedCnt).toEqual(2);
+                expect(points).not.toBeUndefined();
+                expect(_selections).not.toBeUndefined();
+                expect(lassoPoints).not.toBeUndefined();
+                expect(range).toBeUndefined();
             })
 
             .then(done, done.fail);
