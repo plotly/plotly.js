@@ -271,6 +271,7 @@ function sankeyModel(layout, d, traceIndex) {
         nodeLineWidth: trace.node.line.width,
         linkLineColor: trace.link.line.color,
         linkLineWidth: trace.link.line.width,
+        linkArrowWidth: trace.link.arrowwidth,
         valueFormat: trace.valueformat,
         valueSuffix: trace.valuesuffix,
         textFont: trace.textfont,
@@ -309,6 +310,7 @@ function linkModel(d, l, i) {
         linkPath: linkPath,
         linkLineColor: d.linkLineColor,
         linkLineWidth: d.linkLineWidth,
+        linkArrowWidth: d.linkArrowWidth,
         valueFormat: d.valueFormat,
         valueSuffix: d.valueSuffix,
         sankey: d.sankey,
@@ -318,7 +320,7 @@ function linkModel(d, l, i) {
     };
 }
 
-function createCircularClosedPathString(link) {
+function createCircularClosedPathString(link, arrowWidth) {
     // Using coordinates computed by d3-sankey-circular
     var pathString = '';
     var offset = link.width / 2;
@@ -328,17 +330,17 @@ function createCircularClosedPathString(link) {
         pathString =
           // start at the left of the target node
           'M ' +
-          coords.targetX + ' ' + (coords.targetY + offset) + ' ' +
+          (coords.targetX - arrowWidth) + ' ' + (coords.targetY + offset) + ' ' +
           'L' +
-          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.targetY + offset) +
           'A' +
           (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 1 ' +
-          (coords.rightFullExtent - offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+          (coords.rightFullExtent - offset - arrowWidth) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
           'L' +
-          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
+          (coords.rightFullExtent - offset - arrowWidth) + ' ' + coords.verticalRightInnerExtent +
           'A' +
           (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 1 ' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.verticalFullExtent - offset) +
           'L' +
           coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
           'A' +
@@ -366,34 +368,35 @@ function createCircularClosedPathString(link) {
           (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 0 ' +
           coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
           'L' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.verticalFullExtent + offset) +
           'A' +
           (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 0 ' +
-          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
+          (coords.rightFullExtent + offset - arrowWidth) + ' ' + coords.verticalRightInnerExtent +
           'L' +
-          (coords.rightFullExtent + offset) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
+          (coords.rightFullExtent + offset - arrowWidth) + ' ' + (coords.targetY - coords.rightSmallArcRadius) +
           'A' +
           (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 0 ' +
-          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.targetY - offset) +
           'L' +
-          coords.targetX + ' ' + (coords.targetY - offset) +
+          (coords.targetX - arrowWidth) + ' ' + (coords.targetY - offset) +
+          (arrowWidth > 0 ? 'L' + coords.targetX + ' ' + (coords.targetY) : '') +
           'Z';
     } else {
         // Bottom path
         pathString =
           // start at the left of the target node
           'M ' +
-          coords.targetX + ' ' + (coords.targetY - offset) + ' ' +
+          (coords.targetX - arrowWidth) + ' ' + (coords.targetY - offset) + ' ' +
           'L' +
-          coords.rightInnerExtent + ' ' + (coords.targetY - offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.targetY - offset) +
           'A' +
           (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightSmallArcRadius + offset) + ' 0 0 0 ' +
-          (coords.rightFullExtent - offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+          (coords.rightFullExtent - offset - arrowWidth) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
           'L' +
-          (coords.rightFullExtent - offset) + ' ' + coords.verticalRightInnerExtent +
+          (coords.rightFullExtent - offset - arrowWidth) + ' ' + coords.verticalRightInnerExtent +
           'A' +
           (coords.rightLargeArcRadius + offset) + ' ' + (coords.rightLargeArcRadius + offset) + ' 0 0 0 ' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.verticalFullExtent + offset) +
           'L' +
           coords.leftInnerExtent + ' ' + (coords.verticalFullExtent + offset) +
           'A' +
@@ -421,17 +424,18 @@ function createCircularClosedPathString(link) {
           (coords.leftLargeArcRadius - offset) + ' ' + (coords.leftLargeArcRadius - offset) + ' 0 0 1 ' +
           coords.leftInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
           'L' +
-          coords.rightInnerExtent + ' ' + (coords.verticalFullExtent - offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.verticalFullExtent - offset) +
           'A' +
           (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightLargeArcRadius - offset) + ' 0 0 1 ' +
-          (coords.rightFullExtent + offset) + ' ' + coords.verticalRightInnerExtent +
+          (coords.rightFullExtent + offset - arrowWidth) + ' ' + coords.verticalRightInnerExtent +
           'L' +
-          (coords.rightFullExtent + offset) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
+          (coords.rightFullExtent + offset - arrowWidth) + ' ' + (coords.targetY + coords.rightSmallArcRadius) +
           'A' +
           (coords.rightLargeArcRadius - offset) + ' ' + (coords.rightSmallArcRadius - offset) + ' 0 0 1 ' +
-          coords.rightInnerExtent + ' ' + (coords.targetY + offset) +
+          (coords.rightInnerExtent - arrowWidth) + ' ' + (coords.targetY + offset) +
           'L' +
-          coords.targetX + ' ' + (coords.targetY + offset) +
+          (coords.targetX - arrowWidth) + ' ' + (coords.targetY + offset) +
+          (arrowWidth > 0 ? 'L' + coords.targetX + ' ' + (coords.targetY) : '') +
           'Z';
     }
     return pathString;
@@ -441,10 +445,11 @@ function linkPath() {
     var curvature = 0.5;
     function path(d) {
         if(d.link.circular) {
-            return createCircularClosedPathString(d.link);
+            return createCircularClosedPathString(d.link, d.linkArrowWidth);
         } else {
+            var arrowWidth = d.linkArrowWidth;
             var x0 = d.link.source.x1;
-            var x1 = d.link.target.x0;
+            var x1 = d.link.target.x0 - arrowWidth;
             var xi = interpolateNumber(x0, x1);
             var x2 = xi(curvature);
             var x3 = xi(1 - curvature);
@@ -452,15 +457,17 @@ function linkPath() {
             var y0b = d.link.y0 + d.link.width / 2;
             var y1a = d.link.y1 - d.link.width / 2;
             var y1b = d.link.y1 + d.link.width / 2;
-            return 'M' + x0 + ',' + y0a +
-                 'C' + x2 + ',' + y0a +
-                 ' ' + x3 + ',' + y1a +
-                 ' ' + x1 + ',' + y1a +
-                 'L' + x1 + ',' + y1b +
-                 'C' + x3 + ',' + y1b +
-                 ' ' + x2 + ',' + y0b +
-                 ' ' + x0 + ',' + y0b +
-                 'Z';
+            var start = 'M' + x0 + ',' + y0a;
+            var upperCurve = 'C' + x2 + ',' + y0a +
+                ' ' + x3 + ',' + y1a +
+                ' ' + x1 + ',' + y1a;
+            var lowerCurve = 'C' + x3 + ',' + y1b +
+                ' ' + x2 + ',' + y0b +
+                ' ' + x0 + ',' + y0b;
+
+            var rightEnd = arrowWidth > 0 ? 'L' + (x1 + arrowWidth) + ',' + (y1a + d.link.width / 2) : '';
+            rightEnd += 'L' + x1 + ',' + y1b;
+            return start + upperCurve + rightEnd + lowerCurve + 'Z';
         }
     }
     return path;

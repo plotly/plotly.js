@@ -52,6 +52,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(linkIn, linkOut, attributes.link, attr, dflt);
     }
     coerceLink('label');
+    coerceLink('arrowwidth');
     coerceLink('source');
     coerceLink('target');
     coerceLink('value');
