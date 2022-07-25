@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.13.2
+* plotly.js (geo) v2.13.3
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -50469,6 +50469,8 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
             }
 
             if(selectionErased) {
+                gd._fullLayout._noEmitSelectedAtStart = true;
+
                 Registry.call('_guiRelayout', gd, {
                     selections: list
                 });
@@ -50610,10 +50612,10 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
 
         if(isSelectMode) {
-            var _res = reselect(gd);
+            var _res = reselect(gd, false);
             var extraPoints = _res.eventData ? _res.eventData.points.slice() : [];
 
-            _res = reselect(gd, selectionTesters, searchTraces, dragOptions);
+            _res = reselect(gd, false, selectionTesters, searchTraces, dragOptions);
             selectionTesters = _res.selectionTesters;
             eventData = _res.eventData;
 
@@ -50707,9 +50709,13 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
                             }
                         }
 
-                        Registry.call('_guiRelayout', gd, {
-                            selections: subSelections
-                        });
+                        if(subSelections.length < allSelections.length) {
+                            gd._fullLayout._noEmitSelectedAtStart = true;
+
+                            Registry.call('_guiRelayout', gd, {
+                                selections: subSelections
+                            });
+                        }
                     }
                 }
             } else {
@@ -51028,6 +51034,8 @@ function clearSelectionsCache(dragOptions, immediateSelect) {
                 selections = newSelections(outlines, dragOptions);
             }
             if(selections) {
+                gd._fullLayout._noEmitSelectedAtStart = true;
+
                 Registry.call('_guiRelayout', gd, {
                     selections: selections
                 }).then(function() {
@@ -51365,7 +51373,7 @@ function _doSelect(selectionTesters, searchTraces) {
     return allSelections;
 }
 
-function reselect(gd, selectionTesters, searchTraces, dragOptions) {
+function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptions) {
     var hadSearchTraces = !!searchTraces;
     var plotinfo, xRef, yRef;
     if(dragOptions) {
@@ -51488,15 +51496,15 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
     updateSelectedState(gd, allSearchTraces, eventData);
 
     var clickmode = fullLayout.clickmode;
-    var sendEvents = clickmode.indexOf('event') > -1;
+    var sendEvents = clickmode.indexOf('event') > -1 && mayEmitSelected;
 
     if(
         !plotinfo && // get called from plot_api & plots
-        fullLayout._reselect
+        mayEmitSelected
     ) {
-        if(sendEvents) {
-            var activePolygons = getLayoutPolygons(gd, true);
+        var activePolygons = getLayoutPolygons(gd, true);
 
+        if(activePolygons.length) {
             var xref = activePolygons[0].xref;
             var yref = activePolygons[0].yref;
             if(xref && yref) {
@@ -51509,8 +51517,12 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
 
                 fillRangeItems(eventData, poly);
             }
+        }
 
-            emitSelected(gd, eventData);
+        if(gd._fullLayout._noEmitSelectedAtStart) {
+            gd._fullLayout._noEmitSelectedAtStart = false;
+        } else {
+            if(sendEvents) emitSelected(gd, eventData);
         }
 
         fullLayout._reselect = false;
@@ -51532,7 +51544,7 @@ function reselect(gd, selectionTesters, searchTraces, dragOptions) {
             if(eventData.points.length) {
                 emitSelected(gd, eventData);
             } else {
-                gd.emit('plotly_deselect', null);
+                emitDeselect(gd);
             }
         }
 
@@ -90858,7 +90870,16 @@ plots.redrag = function(gd) {
 };
 
 plots.reselect = function(gd) {
-    Registry.getComponentMethod('selections', 'reselect')(gd);
+    var fullLayout = gd._fullLayout;
+
+    var A = (gd.layout || {}).selections;
+    var B = fullLayout._previousSelections;
+    fullLayout._previousSelections = A;
+
+    var mayEmitSelected = fullLayout._reselect ||
+        JSON.stringify(A) !== JSON.stringify(B);
+
+    Registry.getComponentMethod('selections', 'reselect')(gd, mayEmitSelected);
 };
 
 plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {
@@ -97434,7 +97455,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.13.2';
+exports.version = '2.13.3';
 
 },{}]},{},[8])(8)
 });
