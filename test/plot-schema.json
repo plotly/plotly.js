@@ -42051,6 +42051,13 @@
      "valType": "number"
     },
     "link": {
+     "arrowlen": {
+      "description": "Sets the length (in px) of the links arrow, if 0 no arrow will be drawn.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "number"
+     },
      "color": {
       "arrayOk": true,
       "description": "Sets the `link` color. It can be a single value, or an array for specifying color for each `link`. If `link.color` is omitted, then by default, a translucent grey link will be used.",
