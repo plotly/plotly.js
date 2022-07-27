@@ -4,6 +4,7 @@ var fontAttrs = require('./font_attributes');
 var animationAttrs = require('./animation_attributes');
 var colorAttrs = require('../components/color/attributes');
 var drawNewShapeAttrs = require('../components/shapes/draw_newshape/attributes');
+var drawNewSelectionAttrs = require('../components/selections/draw_newselection/attributes');
 var padAttrs = require('./pad_attributes');
 var extendFlat = require('../lib/extend').extendFlat;
 
@@ -392,6 +393,9 @@ module.exports = {
 
     newshape: drawNewShapeAttrs.newshape,
     activeshape: drawNewShapeAttrs.activeshape,
+
+    newselection: drawNewSelectionAttrs.newselection,
+    activeselection: drawNewSelectionAttrs.activeselection,
 
     meta: {
         valType: 'any',

@@ -443,10 +443,10 @@ describe('Test violin hover:', function() {
             return fig;
         },
         nums: [
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7',
+            'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7',
             'y: 0.9266848, kde: 0.182'
         ],
-        name: ['radishes', '', '', '', '', ''],
+        name: ['radishes', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with mean',
@@ -458,26 +458,41 @@ describe('Test violin hover:', function() {
             return fig;
         },
         nums: [
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7', 'mean: 0.45',
+            'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7', 'mean: 0.45',
             'y: 0.9266848, kde: 0.182'
         ],
-        name: ['radishes', '', '', '', '', '', ''],
+        name: ['radishes', '', '', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'with overlaid violins',
         patch: function(fig) {
             fig.layout.violinmode = 'overlay';
             fig.layout.hovermode = 'x';
+            fig.layout.height = 700;
+
             return fig;
         },
         nums: [
-            'q3: 0.6', 'median: 0.45', 'q3: 0.6', 'max: 1', 'y: 0.9266848, kde: 0.383',
-            'median: 0.55', 'min: 0', 'q1: 0.3', 'q1: 0.2', 'max: 0.7', 'y: 0.9266848, kde: 0.182',
-            'median: 0.45', 'q1: 0.1', 'q3: 0.6', 'max: 0.9', 'y: 0.9266848, kde: 0.435'
+            'median: 0.45', 'median: 0.45', 'median: 0.55',
+            'min: 0', 'min: 0.1', 'min: 0.2',
+            'lower fence: 0', 'lower fence: 0.1', 'lower fence: 0.2',
+            'q1: 0.1', 'q1: 0.2', 'q1: 0.3',
+            'q3: 0.6', 'q3: 0.6', 'q3: 0.6',
+            'upper fence: 0.7', 'upper fence: 0.9', 'upper fence: 1',
+            'max: 0.7', 'max: 0.9', 'max: 1',
+            'y: 1.211363, kde: 0.119',
+            'y: 1.211363, kde: 0.168'
         ],
         name: [
-            '', 'kale', '', '', '', 'radishes', '', '', '', '',
-            '', 'carrots', '', '', '', ''
+            'carrots', 'kale', 'radishes',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '', '', '',
+            '',
+            '',
         ],
         axis: 'day 1'
     }, {
@@ -516,8 +531,8 @@ describe('Test violin hover:', function() {
             fig.layout.hovermode = 'x';
             return fig;
         },
-        nums: ['median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', '', '', '', ''],
+        nums: ['median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7'],
+        name: ['radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'hoveron violins+points | hovermode x (violin AND closest point)',
@@ -531,8 +546,8 @@ describe('Test violin hover:', function() {
             return fig;
         },
         pos: [207, 240],
-        nums: ['0.7', 'median: 0.55', 'min: 0', 'q1: 0.3', 'q3: 0.6', 'max: 0.7'],
-        name: ['radishes', 'radishes', '', '', '', ''],
+        nums: ['0.7', 'median: 0.55', 'min: 0', 'lower fence: 0', 'q1: 0.3', 'q3: 0.6', 'upper fence: 0.7', 'max: 0.7'],
+        name: ['radishes', 'radishes', '', '', '', '', '', ''],
         axis: 'day 1'
     }, {
         desc: 'text items on hover',
@@ -608,14 +623,19 @@ describe('Test violin hover:', function() {
             return fig;
         },
         nums: [
-            'max: 50.81', 'median: 18.24', 'min: 3.07',
-            'q1: 13.8575', 'q3: 24.975', 'upper fence: 39.42'
+            'max: 50.81', 'min: 3.07', 'median: 18.24',
+            'q1: 13.8575', 'q3: 24.975', 'upper fence: 39.42', 'lower fence: 3.07'
         ],
-        name: ['', '', '', '', '', ''],
+        name: ['', '', '', '', '', '', ''],
         axis: 'Sat',
         hoverLabelPos: [
-            [364, 270], [352, 270], [339, 270],
-            [346, 270], [349, 270], [387, 270]
+            [338, 270],
+            [377, 270],
+            [351, 270],
+            [363, 270],
+            [345, 270],
+            [385, 270],
+            [347, 270]
         ]
     }, {
         desc: 'single horizontal violin',
@@ -625,10 +645,9 @@ describe('Test violin hover:', function() {
             return fig;
         },
         pos: [310, 160],
-        nums: ['median: C', 'min: A', 'q1: B', 'q3: D', 'max: G', 'upper fence: D', 'x: C, kde: 1.005'],
-        name: ['categories', '', '', '', '', '', ''],
+        nums: ['median: C', 'min: A', 'q1: B', 'q3: D', 'max: G', 'upper fence: D', 'lower fence: A', 'x: C, kde: 1.005'],
+        name: ['categories', '', '', '', '', '', '', ''],
         axis: 'categories',
-        hOrder: [4, 5, 3, 6, 0, 2, 1],
         isRotated: true
     }, {
         desc: 'multiple horizontal violins',
@@ -642,10 +661,9 @@ describe('Test violin hover:', function() {
             fig.layout.hovermode = 'y';
             return fig;
         },
-        nums: ['median: 0.4', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'max: 0.9'],
-        name: ['kale', '', '', '', ''],
+        nums: ['median: 0.4', 'min: 0.1', 'lower fence: 0.1', 'q1: 0.2', 'q3: 0.7', 'upper fence: 0.9', 'max: 0.9'],
+        name: ['kale', '', '', '', '', '', ''],
         axis: 'day 2',
-        hOrder: [4, 3, 0, 2, 1],
         isRotated: true
     }, {
         desc: 'multiple horizontal violins (under hovermode:closest)',
@@ -660,11 +678,10 @@ describe('Test violin hover:', function() {
         },
         pos: [200, 175],
         nums: [
-            '(median: 0.7, day 2)', '(min: 0.2, day 2)', '(q1: 0.5, day 2)',
-            '(q3: 0.8, day 2)', '(max: 0.9, day 2)'
+            '(median: 0.7, day 2)', '(min: 0.2, day 2)', '(lower fence: 0.2, day 2)', '(q1: 0.5, day 2)',
+            '(q3: 0.8, day 2)', '(upper fence: 0.9, day 2)', '(max: 0.9, day 2)'
         ],
-        name: ['radishes', '', '', '', ''],
-        hOrder: [4, 3, 0, 2, 1],
+        name: ['radishes', '', '', '', '', '', ''],
         isRotated: true
     }, {
         desc: 'hovering over single pt on horizontal violin should not rotate labels',
@@ -693,10 +710,9 @@ describe('Test violin hover:', function() {
             return fig;
         },
         pos: [430, 130],
-        nums: ['max: 0.9', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'median: 0.4'],
-        name: ['', '', '', '', 'kale'],
+        nums: ['upper fence: 0.9', 'lower fence: 0.1', 'max: 0.9', 'min: 0.1', 'q1: 0.2', 'q3: 0.7', 'median: 0.4'],
+        name: ['', '', '', '', '', '', 'kale'],
         axis: '2018 - day 2',
-        hOrder: [0, 3, 4, 2, 1]
     }, {
         desc: 'orientation:h | hovermode:closest',
         mock: require('@mocks/violin_grouped_horz-multicategory.json'),
@@ -709,12 +725,12 @@ describe('Test violin hover:', function() {
         },
         pos: [430, 130],
         nums: [
+            '(upper fence: 0.9, 2018 - day 2)', '(lower fence: 0.1, 2018 - day 2)',
             '(max: 0.9, 2018 - day 2)', '(min: 0.1, 2018 - day 2)',
             '(q1: 0.2, 2018 - day 2)', '(q3: 0.7, 2018 - day 2)',
             '(median: 0.4, 2018 - day 2)'
         ],
-        name: ['', '', '', '', 'kale'],
-        hOrder: [0, 3, 4, 2, 1]
+        name: ['', '', '', '', '', '', 'kale']
     }, {
         desc: 'on points with numeric positions | orientation:h | hovermode:closest',
         mock: {
@@ -822,7 +838,7 @@ describe('Test violin hover:', function() {
 
             actual = actual.sort(function(a, b) { return a[1].top - b[1].top; });
 
-            expect(actual.length).toBe(8, '# of value hover labels');
+            expect(actual.length).toBe(9, '# of value hover labels');
 
             for(var i = 0; i < actual.length - 1; i++) {
                 var a = actual[i];

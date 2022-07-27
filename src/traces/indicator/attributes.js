@@ -248,6 +248,22 @@ module.exports = {
                 'Set the font used to display the delta'
             ].join(' ')
         }),
+        prefix: {
+            valType: 'string',
+            dflt: '',
+            editType: 'plot',
+            description: [
+                'Sets a prefix appearing before the delta.'
+            ].join(' ')
+        },
+        suffix: {
+            valType: 'string',
+            dflt: '',
+            editType: 'plot',
+            description: [
+                'Sets a suffix appearing next to the delta.'
+            ].join(' ')
+        },
         editType: 'calc'
     },
     gauge: {

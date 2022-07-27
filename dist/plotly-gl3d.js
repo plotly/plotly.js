@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.12.1
+* plotly.js (gl3d) v2.13.3
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -55,9 +55,6 @@ var rules = {
     "X [data-title]:after": "content:attr(data-title);background:#69738a;color:#fff;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
     "X .vertical [data-title]:before,X .vertical [data-title]:after": "top:0%;right:200%;",
     "X .vertical [data-title]:before": "border:6px solid rgba(0,0,0,0);border-left-color:#69738a;margin-top:8px;margin-right:-30px;",
-    "X .select-outline": "fill:none;stroke-width:1;shape-rendering:crispEdges;",
-    "X .select-outline-1": "stroke:#fff;",
-    "X .select-outline-2": "stroke:#000;stroke-dasharray:2px 2px;",
     Y: "font-family:\"Open Sans\",verdana,arial,sans-serif;position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;",
     "Y p": "margin:0;",
     "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,.9);color:#fff;padding:10px;overflow-wrap:break-word;word-wrap:break-word;-ms-hyphens:auto;-webkit-hyphens:auto;hyphens:auto;",
@@ -72,37 +69,37 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":252}],2:[function(_dereq_,module,exports){
+},{"../src/lib":264}],2:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/aggregate');
 
-},{"../src/transforms/aggregate":429}],3:[function(_dereq_,module,exports){
+},{"../src/transforms/aggregate":438}],3:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/components/calendars');
 
-},{"../src/components/calendars":117}],4:[function(_dereq_,module,exports){
+},{"../src/components/calendars":118}],4:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/cone');
 
-},{"../src/traces/cone":365}],5:[function(_dereq_,module,exports){
+},{"../src/traces/cone":374}],5:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/core');
 
-},{"../src/core":233}],6:[function(_dereq_,module,exports){
+},{"../src/core":245}],6:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/filter');
 
-},{"../src/transforms/filter":430}],7:[function(_dereq_,module,exports){
+},{"../src/transforms/filter":439}],7:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/groupby');
 
-},{"../src/transforms/groupby":431}],8:[function(_dereq_,module,exports){
+},{"../src/transforms/groupby":440}],8:[function(_dereq_,module,exports){
 'use strict';
 
 var Plotly = _dereq_('./core');
@@ -134,37 +131,37 @@ module.exports = Plotly;
 
 module.exports = _dereq_('../src/traces/isosurface');
 
-},{"../src/traces/isosurface":372}],10:[function(_dereq_,module,exports){
+},{"../src/traces/isosurface":381}],10:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/mesh3d');
 
-},{"../src/traces/mesh3d":377}],11:[function(_dereq_,module,exports){
+},{"../src/traces/mesh3d":386}],11:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/scatter3d');
 
-},{"../src/traces/scatter3d":414}],12:[function(_dereq_,module,exports){
+},{"../src/traces/scatter3d":423}],12:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/transforms/sort');
 
-},{"../src/transforms/sort":433}],13:[function(_dereq_,module,exports){
+},{"../src/transforms/sort":442}],13:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/streamtube');
 
-},{"../src/traces/streamtube":419}],14:[function(_dereq_,module,exports){
+},{"../src/traces/streamtube":428}],14:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/surface');
 
-},{"../src/traces/surface":424}],15:[function(_dereq_,module,exports){
+},{"../src/traces/surface":433}],15:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = _dereq_('../src/traces/volume');
 
-},{"../src/traces/volume":428}],16:[function(_dereq_,module,exports){
+},{"../src/traces/volume":437}],16:[function(_dereq_,module,exports){
 !function() {
   var d3 = {
     version: "3.8.0"
@@ -11329,7 +11326,7 @@ function getBoundingClientOffset (element) {
 });
 
 }).call(this)}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},_dereq_("timers").setImmediate)
-},{"timers":82}],71:[function(_dereq_,module,exports){
+},{"timers":83}],71:[function(_dereq_,module,exports){
 /*
 object-assign
 (c) Sindre Sorhus
@@ -11481,6 +11478,26 @@ function parseValues(args) {
 }
 
 },{}],73:[function(_dereq_,module,exports){
+// ray-casting algorithm based on
+// https://wrf.ecse.rpi.edu/Research/Short_Notes/pnpoly.html
+
+module.exports = function pointInPolygonNested (point, vs, start, end) {
+    var x = point[0], y = point[1];
+    var inside = false;
+    if (start === undefined) start = 0;
+    if (end === undefined) end = vs.length;
+    var len = end - start;
+    for (var i = 0, j = len - 1; i < len; j = i++) {
+        var xi = vs[i+start][0], yi = vs[i+start][1];
+        var xj = vs[j+start][0], yj = vs[j+start][1];
+        var intersect = ((yi > y) !== (yj > y))
+            && (x < (xj - xi) * (y - yi) / (yj - yi) + xi);
+        if (intersect) inside = !inside;
+    }
+    return inside;
+};
+
+},{}],74:[function(_dereq_,module,exports){
 /*
  * @copyright 2016 Sean Connelly (@voidqk), http://syntheti.cc
  * @license MIT
@@ -11608,7 +11625,7 @@ if (typeof window === 'object')
 
 module.exports = PolyBool;
 
-},{"./lib/build-log":74,"./lib/epsilon":75,"./lib/geojson":76,"./lib/intersecter":77,"./lib/segment-chainer":79,"./lib/segment-selector":80}],74:[function(_dereq_,module,exports){
+},{"./lib/build-log":75,"./lib/epsilon":76,"./lib/geojson":77,"./lib/intersecter":78,"./lib/segment-chainer":80,"./lib/segment-selector":81}],75:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -11723,7 +11740,7 @@ function BuildLog(){
 
 module.exports = BuildLog;
 
-},{}],75:[function(_dereq_,module,exports){
+},{}],76:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -11895,7 +11912,7 @@ function Epsilon(eps){
 
 module.exports = Epsilon;
 
-},{}],76:[function(_dereq_,module,exports){
+},{}],77:[function(_dereq_,module,exports){
 // (c) Copyright 2017, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12085,7 +12102,7 @@ var GeoJSON = {
 
 module.exports = GeoJSON;
 
-},{}],77:[function(_dereq_,module,exports){
+},{}],78:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12592,7 +12609,7 @@ function Intersecter(selfIntersection, eps, buildLog){
 
 module.exports = Intersecter;
 
-},{"./linked-list":78}],78:[function(_dereq_,module,exports){
+},{"./linked-list":79}],79:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12675,7 +12692,7 @@ var LinkedList = {
 
 module.exports = LinkedList;
 
-},{}],79:[function(_dereq_,module,exports){
+},{}],80:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -12929,7 +12946,7 @@ function SegmentChainer(segments, eps, buildLog){
 
 module.exports = SegmentChainer;
 
-},{}],80:[function(_dereq_,module,exports){
+},{}],81:[function(_dereq_,module,exports){
 // (c) Copyright 2016, Sean Connelly (@voidqk), http://syntheti.cc
 // MIT License
 // Project Home: https://github.com/voidqk/polybooljs
@@ -13097,7 +13114,7 @@ var SegmentSelector = {
 
 module.exports = SegmentSelector;
 
-},{}],81:[function(_dereq_,module,exports){
+},{}],82:[function(_dereq_,module,exports){
 // shim for using process in browser
 var process = module.exports = {};
 
@@ -13283,7 +13300,7 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],82:[function(_dereq_,module,exports){
+},{}],83:[function(_dereq_,module,exports){
 (function (setImmediate,clearImmediate){(function (){
 var nextTick = _dereq_('process/browser.js').nextTick;
 var apply = Function.prototype.apply;
@@ -13362,7 +13379,7 @@ exports.clearImmediate = typeof clearImmediate === "function" ? clearImmediate :
   delete immediateIds[id];
 };
 }).call(this)}).call(this,_dereq_("timers").setImmediate,_dereq_("timers").clearImmediate)
-},{"process/browser.js":81,"timers":82}],83:[function(_dereq_,module,exports){
+},{"process/browser.js":82,"timers":83}],84:[function(_dereq_,module,exports){
 // TinyColor v1.4.2
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -14559,14 +14576,14 @@ else {
 
 })(Math);
 
-},{}],84:[function(_dereq_,module,exports){
+},{}],85:[function(_dereq_,module,exports){
 var getContext = _dereq_('get-canvas-context')
 
 module.exports = function getWebGLContext (opt) {
   return getContext('webgl', opt)
 }
 
-},{"get-canvas-context":32}],85:[function(_dereq_,module,exports){
+},{"get-canvas-context":32}],86:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15299,7 +15316,7 @@ function toSolar(yearOrDate, monthOrResult, day, isIntercalaryOrResult, result) 
 }
 
 
-},{"../main":99,"object-assign":71}],86:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],87:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15483,7 +15500,7 @@ assign(CopticCalendar.prototype, {
 main.calendars.coptic = CopticCalendar;
 
 
-},{"../main":99,"object-assign":71}],87:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],88:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15711,7 +15728,7 @@ var centuries = {
 main.calendars.discworld = DiscworldCalendar;
 
 
-},{"../main":99,"object-assign":71}],88:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],89:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -15895,7 +15912,7 @@ assign(EthiopianCalendar.prototype, {
 main.calendars.ethiopian = EthiopianCalendar;
 
 
-},{"../main":99,"object-assign":71}],89:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],90:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16169,7 +16186,7 @@ function mod(a, b) {
 main.calendars.hebrew = HebrewCalendar;
 
 
-},{"../main":99,"object-assign":71}],90:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],91:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16350,7 +16367,7 @@ assign(IslamicCalendar.prototype, {
 main.calendars.islamic = IslamicCalendar;
 
 
-},{"../main":99,"object-assign":71}],91:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],92:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16533,7 +16550,7 @@ assign(JulianCalendar.prototype, {
 main.calendars.julian = JulianCalendar;
 
 
-},{"../main":99,"object-assign":71}],92:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],93:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -16828,7 +16845,7 @@ function amod(a, b) {
 main.calendars.mayan = MayanCalendar;
 
 
-},{"../main":99,"object-assign":71}],93:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],94:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17008,7 +17025,7 @@ assign(NanakshahiCalendar.prototype, {
 main.calendars.nanakshahi = NanakshahiCalendar;
 
 
-},{"../main":99,"object-assign":71}],94:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],95:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17431,7 +17448,7 @@ assign(NepaliCalendar.prototype, {
 main.calendars.nepali = NepaliCalendar;
 
 
-},{"../main":99,"object-assign":71}],95:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],96:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17621,7 +17638,7 @@ main.calendars.persian = PersianCalendar;
 main.calendars.jalali = PersianCalendar;
 
 
-},{"../main":99,"object-assign":71}],96:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],97:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17807,7 +17824,7 @@ assign(TaiwanCalendar.prototype, {
 main.calendars.taiwan = TaiwanCalendar;
 
 
-},{"../main":99,"object-assign":71}],97:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],98:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -17993,7 +18010,7 @@ assign(ThaiCalendar.prototype, {
 main.calendars.thai = ThaiCalendar;
 
 
-},{"../main":99,"object-assign":71}],98:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],99:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -18358,7 +18375,7 @@ var ummalqura_dat = [
     79990];
 
 
-},{"../main":99,"object-assign":71}],99:[function(_dereq_,module,exports){
+},{"../main":100,"object-assign":71}],100:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -19263,7 +19280,7 @@ _exports.baseCalendar = BaseCalendar;
 _exports.calendars.gregorian = GregorianCalendar;
 
 
-},{"object-assign":71}],100:[function(_dereq_,module,exports){
+},{"object-assign":71}],101:[function(_dereq_,module,exports){
 /*
  * World Calendars
  * https://github.com/alexcjohnson/world-calendars
@@ -19765,7 +19782,7 @@ assign(main.baseCalendar.prototype, {
 });
 
 
-},{"./main":99,"object-assign":71}],101:[function(_dereq_,module,exports){
+},{"./main":100,"object-assign":71}],102:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -19828,7 +19845,7 @@ module.exports = [
     }
 ];
 
-},{}],102:[function(_dereq_,module,exports){
+},{}],103:[function(_dereq_,module,exports){
 'use strict';
 
 var ARROWPATHS = _dereq_('./arrow_paths');
@@ -20116,7 +20133,7 @@ module.exports = templatedArray('annotation', {
     }
 });
 
-},{"../../constants/axis_placeable_objects":225,"../../plot_api/plot_template":290,"../../plots/cartesian/constants":308,"../../plots/font_attributes":332,"./arrow_paths":101}],103:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":237,"../../plot_api/plot_template":302,"../../plots/cartesian/constants":320,"../../plots/font_attributes":341,"./arrow_paths":102}],104:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20198,7 +20215,7 @@ function calcAxisExpansion(ann, ax) {
     ann._extremes[axId] = extremes;
 }
 
-},{"../../lib":252,"../../plots/cartesian/axes":301,"./draw":108}],104:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/cartesian/axes":313,"./draw":109}],105:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20328,7 +20345,7 @@ function clickData2r(d, ax) {
     return ax.type === 'log' ? ax.l2r(d) : ax.d2r(d);
 }
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../../registry":352}],105:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../../registry":361}],106:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20399,7 +20416,7 @@ module.exports = function handleAnnotationCommonDefaults(annIn, annOut, fullLayo
     coerce('captureevents', !!hoverText);
 };
 
-},{"../../lib":252,"../color":119}],106:[function(_dereq_,module,exports){
+},{"../../lib":264,"../color":120}],107:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -20453,7 +20470,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":279,"fast-isnumeric":31}],107:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":291,"fast-isnumeric":31}],108:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -20552,7 +20569,7 @@ function handleAnnotationDefaults(annIn, annOut, fullLayout) {
     }
 }
 
-},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"./attributes":102,"./common_defaults":105}],108:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/array_container_defaults":308,"../../plots/cartesian/axes":313,"./attributes":103,"./common_defaults":106}],109:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -21305,7 +21322,7 @@ function drawRaw(gd, options, index, subplotId, xa, ya) {
     } else annText.call(textLayout);
 }
 
-},{"../../lib":252,"../../lib/setcursor":272,"../../lib/svg_text_utils":277,"../../plot_api/plot_template":290,"../../plots/cartesian/axes":301,"../../plots/plots":349,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"../fx":159,"./draw_arrow_head":109,"@plotly/d3":16}],109:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../lib/setcursor":284,"../../lib/svg_text_utils":289,"../../plot_api/plot_template":302,"../../plots/cartesian/axes":313,"../../plots/plots":358,"../../registry":361,"../color":120,"../dragelement":139,"../drawing":142,"../fx":160,"./draw_arrow_head":110,"@plotly/d3":16}],110:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -21452,7 +21469,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if(doEnd) drawhead(headStyle, end, endRot, scale);
 };
 
-},{"../../lib":252,"../color":119,"./arrow_paths":101,"@plotly/d3":16}],110:[function(_dereq_,module,exports){
+},{"../../lib":264,"../color":120,"./arrow_paths":102,"@plotly/d3":16}],111:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -21477,7 +21494,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":314,"./attributes":102,"./calc_autorange":103,"./click":104,"./convert_coords":106,"./defaults":107,"./draw":108}],111:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":324,"./attributes":103,"./calc_autorange":104,"./click":105,"./convert_coords":107,"./defaults":108,"./draw":109}],112:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -21546,7 +21563,7 @@ module.exports = overrideAll(templatedArray('annotation', {
     // zref: 'z'
 }), 'calc', 'from-root');
 
-},{"../../plot_api/edit_types":283,"../../plot_api/plot_template":290,"../annotations/attributes":102}],112:[function(_dereq_,module,exports){
+},{"../../plot_api/edit_types":295,"../../plot_api/plot_template":302,"../annotations/attributes":103}],113:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -21603,7 +21620,7 @@ function mockAnnAxes(ann, scene) {
     };
 }
 
-},{"../../lib":252,"../../plots/cartesian/axes":301}],113:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/cartesian/axes":313}],114:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -21671,7 +21688,7 @@ function handleAnnotationDefaults(annIn, annOut, sceneLayout, opts) {
     }
 }
 
-},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"../annotations/common_defaults":105,"./attributes":111}],114:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/array_container_defaults":308,"../../plots/cartesian/axes":313,"../annotations/common_defaults":106,"./attributes":112}],115:[function(_dereq_,module,exports){
 'use strict';
 
 var drawRaw = _dereq_('../annotations/draw').drawRaw;
@@ -21715,7 +21732,7 @@ module.exports = function draw(scene) {
     }
 };
 
-},{"../../plots/gl3d/project":344,"../annotations/draw":108}],115:[function(_dereq_,module,exports){
+},{"../../plots/gl3d/project":353,"../annotations/draw":109}],116:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -21755,7 +21772,7 @@ function includeGL3D(layoutIn, layoutOut) {
     }
 }
 
-},{"../../lib":252,"../../registry":352,"./attributes":111,"./convert":112,"./defaults":113,"./draw":114}],116:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361,"./attributes":112,"./convert":113,"./defaults":114,"./draw":115}],117:[function(_dereq_,module,exports){
 'use strict';
 
 // a trimmed down version of:
@@ -21780,7 +21797,7 @@ _dereq_('world-calendars/dist/calendars/taiwan');
 _dereq_('world-calendars/dist/calendars/thai');
 _dereq_('world-calendars/dist/calendars/ummalqura');
 
-},{"world-calendars/dist/calendars/chinese":85,"world-calendars/dist/calendars/coptic":86,"world-calendars/dist/calendars/discworld":87,"world-calendars/dist/calendars/ethiopian":88,"world-calendars/dist/calendars/hebrew":89,"world-calendars/dist/calendars/islamic":90,"world-calendars/dist/calendars/julian":91,"world-calendars/dist/calendars/mayan":92,"world-calendars/dist/calendars/nanakshahi":93,"world-calendars/dist/calendars/nepali":94,"world-calendars/dist/calendars/persian":95,"world-calendars/dist/calendars/taiwan":96,"world-calendars/dist/calendars/thai":97,"world-calendars/dist/calendars/ummalqura":98,"world-calendars/dist/main":99,"world-calendars/dist/plus":100}],117:[function(_dereq_,module,exports){
+},{"world-calendars/dist/calendars/chinese":86,"world-calendars/dist/calendars/coptic":87,"world-calendars/dist/calendars/discworld":88,"world-calendars/dist/calendars/ethiopian":89,"world-calendars/dist/calendars/hebrew":90,"world-calendars/dist/calendars/islamic":91,"world-calendars/dist/calendars/julian":92,"world-calendars/dist/calendars/mayan":93,"world-calendars/dist/calendars/nanakshahi":94,"world-calendars/dist/calendars/nepali":95,"world-calendars/dist/calendars/persian":96,"world-calendars/dist/calendars/taiwan":97,"world-calendars/dist/calendars/thai":98,"world-calendars/dist/calendars/ummalqura":99,"world-calendars/dist/main":100,"world-calendars/dist/plus":101}],118:[function(_dereq_,module,exports){
 'use strict';
 
 var calendars = _dereq_('./calendars');
@@ -22046,7 +22063,7 @@ module.exports = {
     worldCalFmt: worldCalFmt
 };
 
-},{"../../constants/numerical":231,"../../lib":252,"./calendars":116}],118:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264,"./calendars":117}],119:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -22078,7 +22095,7 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],119:[function(_dereq_,module,exports){
+},{}],120:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
@@ -22244,7 +22261,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"../../lib/array":237,"./attributes":118,"fast-isnumeric":31,"tinycolor2":83}],120:[function(_dereq_,module,exports){
+},{"../../lib/array":249,"./attributes":119,"fast-isnumeric":31,"tinycolor2":84}],121:[function(_dereq_,module,exports){
 'use strict';
 
 var axesAttrs = _dereq_('../../plots/cartesian/layout_attributes');
@@ -22391,7 +22408,7 @@ module.exports = overrideAll({
     }
 }, 'colorbars', 'from-root');
 
-},{"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/cartesian/layout_attributes":316,"../../plots/font_attributes":332}],121:[function(_dereq_,module,exports){
+},{"../../lib/extend":257,"../../plot_api/edit_types":295,"../../plots/cartesian/layout_attributes":326,"../../plots/font_attributes":341}],122:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -22411,7 +22428,7 @@ module.exports = {
     }
 };
 
-},{}],122:[function(_dereq_,module,exports){
+},{}],123:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -22505,7 +22522,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('title.side', isVertical ? 'top' : 'right');
 };
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/cartesian/prefix_suffix_defaults":320,"../../plots/cartesian/tick_label_defaults":325,"../../plots/cartesian/tick_mark_defaults":326,"../../plots/cartesian/tick_value_defaults":327,"./attributes":120}],123:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../../plots/cartesian/prefix_suffix_defaults":330,"../../plots/cartesian/tick_label_defaults":334,"../../plots/cartesian/tick_mark_defaults":335,"../../plots/cartesian/tick_value_defaults":336,"./attributes":121}],124:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -23490,7 +23507,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":224,"../../lib":252,"../../lib/extend":245,"../../lib/setcursor":272,"../../lib/svg_text_utils":277,"../../plots/cartesian/axes":301,"../../plots/cartesian/axis_defaults":303,"../../plots/cartesian/layout_attributes":316,"../../plots/cartesian/position_defaults":319,"../../plots/plots":349,"../../registry":352,"../color":119,"../colorscale/helpers":130,"../dragelement":138,"../drawing":141,"../titles":217,"./constants":121,"@plotly/d3":16,"tinycolor2":83}],124:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../lib":264,"../../lib/extend":257,"../../lib/setcursor":284,"../../lib/svg_text_utils":289,"../../plots/cartesian/axes":313,"../../plots/cartesian/axis_defaults":315,"../../plots/cartesian/layout_attributes":326,"../../plots/cartesian/position_defaults":329,"../../plots/plots":358,"../../registry":361,"../color":120,"../colorscale/helpers":131,"../dragelement":139,"../drawing":142,"../titles":229,"./constants":122,"@plotly/d3":16,"tinycolor2":84}],125:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -23500,7 +23517,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":252}],125:[function(_dereq_,module,exports){
+},{"../../lib":264}],126:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -23514,7 +23531,7 @@ module.exports = {
     hasColorbar: _dereq_('./has_colorbar')
 };
 
-},{"./attributes":120,"./defaults":122,"./draw":123,"./has_colorbar":124}],126:[function(_dereq_,module,exports){
+},{"./attributes":121,"./defaults":123,"./draw":124,"./has_colorbar":125}],127:[function(_dereq_,module,exports){
 'use strict';
 
 var colorbarAttrs = _dereq_('../colorbar/attributes');
@@ -23695,7 +23712,7 @@ module.exports = function colorScaleAttrs(context, opts) {
     return attrs;
 };
 
-},{"../../lib/regex":268,"../../lib/sort_object_keys":274,"../colorbar/attributes":120,"./scales.js":134}],127:[function(_dereq_,module,exports){
+},{"../../lib/regex":280,"../../lib/sort_object_keys":286,"../colorbar/attributes":121,"./scales.js":135}],128:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -23766,7 +23783,7 @@ module.exports = function calc(gd, trace, opts) {
     }
 };
 
-},{"../../lib":252,"./helpers":130,"fast-isnumeric":31}],128:[function(_dereq_,module,exports){
+},{"../../lib":264,"./helpers":131,"fast-isnumeric":31}],129:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -23835,7 +23852,7 @@ module.exports = function crossTraceDefaults(fullData, fullLayout) {
     }
 };
 
-},{"../../lib":252,"./helpers":130}],129:[function(_dereq_,module,exports){
+},{"../../lib":264,"./helpers":131}],130:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -23952,7 +23969,7 @@ module.exports = function colorScaleDefaults(parentContIn, parentContOut, layout
     }
 };
 
-},{"../../lib":252,"../../registry":352,"../colorbar/defaults":122,"../colorbar/has_colorbar":124,"./scales":134,"fast-isnumeric":31}],130:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361,"../colorbar/defaults":123,"../colorbar/has_colorbar":125,"./scales":135,"fast-isnumeric":31}],131:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -24184,7 +24201,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: makeColorScaleFuncFromTrace
 };
 
-},{"../../lib":252,"../color":119,"./scales":134,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":83}],131:[function(_dereq_,module,exports){
+},{"../../lib":264,"../color":120,"./scales":135,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":84}],132:[function(_dereq_,module,exports){
 'use strict';
 
 var scales = _dereq_('./scales');
@@ -24218,7 +24235,7 @@ module.exports = {
     makeColorScaleFuncFromTrace: helpers.makeColorScaleFuncFromTrace
 };
 
-},{"./attributes":126,"./calc":127,"./cross_trace_defaults":128,"./defaults":129,"./helpers":130,"./layout_attributes":132,"./layout_defaults":133,"./scales":134}],132:[function(_dereq_,module,exports){
+},{"./attributes":127,"./calc":128,"./cross_trace_defaults":129,"./defaults":130,"./helpers":131,"./layout_attributes":133,"./layout_defaults":134,"./scales":135}],133:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../../lib/extend').extendFlat;
@@ -24264,7 +24281,7 @@ module.exports = {
     }))
 };
 
-},{"../../lib/extend":245,"./attributes":126,"./scales":134}],133:[function(_dereq_,module,exports){
+},{"../../lib/extend":257,"./attributes":127,"./scales":135}],134:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -24307,7 +24324,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 };
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"./defaults":129,"./layout_attributes":132}],134:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"./defaults":130,"./layout_attributes":133}],135:[function(_dereq_,module,exports){
 'use strict';
 
 var tinycolor = _dereq_('tinycolor2');
@@ -24503,7 +24520,7 @@ module.exports = {
     isValid: isValidScale
 };
 
-},{"tinycolor2":83}],135:[function(_dereq_,module,exports){
+},{"tinycolor2":84}],136:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -24527,7 +24544,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],136:[function(_dereq_,module,exports){
+},{}],137:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -24556,7 +24573,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":252}],137:[function(_dereq_,module,exports){
+},{"../../lib":264}],138:[function(_dereq_,module,exports){
 'use strict';
 
 exports.selectMode = function(dragmode) {
@@ -24607,7 +24624,7 @@ exports.selectingOrDrawing = function(dragmode) {
     );
 };
 
-},{}],138:[function(_dereq_,module,exports){
+},{}],139:[function(_dereq_,module,exports){
 'use strict';
 
 var mouseOffset = _dereq_('mouse-event-offset');
@@ -24891,7 +24908,7 @@ function pointerOffset(e) {
     );
 }
 
-},{"../../lib":252,"../../plots/cartesian/constants":308,"./align":135,"./cursor":136,"./unhover":139,"has-hover":63,"has-passive-events":64,"mouse-event-offset":69}],139:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/cartesian/constants":320,"./align":136,"./cursor":137,"./unhover":140,"has-hover":63,"has-passive-events":64,"mouse-event-offset":69}],140:[function(_dereq_,module,exports){
 'use strict';
 
 var Events = _dereq_('../../lib/events');
@@ -24938,7 +24955,7 @@ unhover.raw = function raw(gd, evt) {
     }
 };
 
-},{"../../lib/dom":243,"../../lib/events":244,"../../lib/throttle":278,"../fx/constants":153}],140:[function(_dereq_,module,exports){
+},{"../../lib/dom":255,"../../lib/events":256,"../../lib/throttle":290,"../fx/constants":154}],141:[function(_dereq_,module,exports){
 'use strict';
 
 exports.dash = {
@@ -25000,7 +25017,7 @@ exports.pattern = {
     editType: 'style',
 };
 
-},{}],141:[function(_dereq_,module,exports){
+},{}],142:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -26451,7 +26468,7 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
-},{"../../components/fx/helpers":155,"../../constants/alignment":224,"../../constants/interactions":230,"../../constants/xmlns_namespaces":232,"../../lib":252,"../../lib/svg_text_utils":277,"../../registry":352,"../../traces/scatter/make_bubble_size_func":398,"../../traces/scatter/subtypes":406,"../color":119,"../colorscale":131,"./symbol_defs":142,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":83}],142:[function(_dereq_,module,exports){
+},{"../../components/fx/helpers":156,"../../constants/alignment":236,"../../constants/interactions":242,"../../constants/xmlns_namespaces":244,"../../lib":264,"../../lib/svg_text_utils":289,"../../registry":361,"../../traces/scatter/make_bubble_size_func":407,"../../traces/scatter/subtypes":415,"../color":120,"../colorscale":132,"./symbol_defs":143,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":84}],143:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -27006,7 +27023,7 @@ module.exports = {
     }
 };
 
-},{"@plotly/d3":16}],143:[function(_dereq_,module,exports){
+},{"@plotly/d3":16}],144:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -27089,7 +27106,7 @@ module.exports = {
     }
 };
 
-},{}],144:[function(_dereq_,module,exports){
+},{}],145:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -27167,7 +27184,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     baseExtremes.max = baseExtremes.max.concat(extremes.max);
 }
 
-},{"../../lib":252,"../../plots/cartesian/axes":301,"../../registry":352,"./compute_error":145,"fast-isnumeric":31}],145:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/cartesian/axes":313,"../../registry":361,"./compute_error":146,"fast-isnumeric":31}],146:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -27259,7 +27276,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],146:[function(_dereq_,module,exports){
+},{}],147:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -27326,7 +27343,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../../registry":352,"./attributes":143,"fast-isnumeric":31}],147:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../../registry":361,"./attributes":144,"fast-isnumeric":31}],148:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -27387,7 +27404,7 @@ function hoverInfo(calcPoint, trace, hoverPoint) {
     }
 }
 
-},{"../../lib":252,"../../plot_api/edit_types":283,"./attributes":143,"./calc":144,"./compute_error":145,"./defaults":146,"./plot":148,"./style":149}],148:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/edit_types":295,"./attributes":144,"./calc":145,"./compute_error":146,"./defaults":147,"./plot":149,"./style":150}],149:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -27550,7 +27567,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":406,"../drawing":141,"@plotly/d3":16,"fast-isnumeric":31}],149:[function(_dereq_,module,exports){
+},{"../../traces/scatter/subtypes":415,"../drawing":142,"@plotly/d3":16,"fast-isnumeric":31}],150:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -27578,7 +27595,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":119,"@plotly/d3":16}],150:[function(_dereq_,module,exports){
+},{"../color":120,"@plotly/d3":16}],151:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -27603,7 +27620,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":245,"../../plots/font_attributes":332,"./layout_attributes":160}],151:[function(_dereq_,module,exports){
+},{"../../lib/extend":257,"../../plots/font_attributes":341,"./layout_attributes":161}],152:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -27654,7 +27671,7 @@ function paste(traceAttr, cd, cdAttr, fn) {
     }
 }
 
-},{"../../lib":252,"../../registry":352}],152:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361}],153:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -27683,7 +27700,7 @@ module.exports = function click(gd, evt, subplot) {
     }
 };
 
-},{"../../registry":352,"./hover":156}],153:[function(_dereq_,module,exports){
+},{"../../registry":361,"./hover":157}],154:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -27707,7 +27724,7 @@ module.exports = {
     HOVERID: '-hover'
 };
 
-},{}],154:[function(_dereq_,module,exports){
+},{}],155:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -27725,7 +27742,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleHoverLabelDefaults(traceIn, traceOut, coerce, opts);
 };
 
-},{"../../lib":252,"./attributes":150,"./hoverlabel_defaults":157}],155:[function(_dereq_,module,exports){
+},{"../../lib":264,"./attributes":151,"./hoverlabel_defaults":158}],156:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -27979,7 +27996,7 @@ exports.isXYhover = function(hovermode) {
     return !!xyHoverMode[hovermode];
 };
 
-},{"../../lib":252}],156:[function(_dereq_,module,exports){
+},{"../../lib":264}],157:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -30121,7 +30138,7 @@ function getBoundingClientRect(gd, node) {
     };
 }
 
-},{"../../lib":252,"../../lib/events":244,"../../lib/override_cursor":263,"../../lib/svg_text_utils":277,"../../plots/cartesian/axes":301,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"../legend/defaults":171,"../legend/draw":172,"./constants":153,"./helpers":155,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":83}],157:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../lib/events":256,"../../lib/override_cursor":275,"../../lib/svg_text_utils":289,"../../plots/cartesian/axes":313,"../../registry":361,"../color":120,"../dragelement":139,"../drawing":142,"../legend/defaults":172,"../legend/draw":173,"./constants":154,"./helpers":156,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":84}],158:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30161,7 +30178,7 @@ module.exports = function handleHoverLabelDefaults(contIn, contOut, coerce, opts
     coerce('hoverlabel.align', opts.align);
 };
 
-},{"../../lib":252,"../color":119,"./helpers":155}],158:[function(_dereq_,module,exports){
+},{"../../lib":264,"../color":120,"./helpers":156}],159:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30179,7 +30196,7 @@ module.exports = function handleHoverModeDefaults(layoutIn, layoutOut) {
     return coerce('hovermode');
 };
 
-},{"../../lib":252,"./layout_attributes":160}],159:[function(_dereq_,module,exports){
+},{"../../lib":264,"./layout_attributes":161}],160:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -30250,7 +30267,7 @@ function castHoverinfo(trace, fullLayout, ptNumber) {
     return Lib.castOption(trace, ptNumber, 'hoverinfo', _coerce);
 }
 
-},{"../../lib":252,"../dragelement":138,"./attributes":150,"./calc":151,"./click":152,"./constants":153,"./defaults":154,"./helpers":155,"./hover":156,"./layout_attributes":160,"./layout_defaults":161,"./layout_global_defaults":162,"@plotly/d3":16}],160:[function(_dereq_,module,exports){
+},{"../../lib":264,"../dragelement":139,"./attributes":151,"./calc":152,"./click":153,"./constants":154,"./defaults":155,"./helpers":156,"./hover":157,"./layout_attributes":161,"./layout_defaults":162,"./layout_global_defaults":163,"@plotly/d3":16}],161:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -30344,7 +30361,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/font_attributes":332,"./constants":153}],161:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":341,"./constants":154}],162:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30385,7 +30402,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     Lib.coerceFont(coerce, 'hoverlabel.grouptitlefont', layoutOut.hoverlabel.font);
 };
 
-},{"../../lib":252,"./hoverlabel_defaults":157,"./hovermode_defaults":158,"./layout_attributes":160}],162:[function(_dereq_,module,exports){
+},{"../../lib":264,"./hoverlabel_defaults":158,"./hovermode_defaults":159,"./layout_attributes":161}],163:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30400,7 +30417,7 @@ module.exports = function supplyLayoutGlobalDefaults(layoutIn, layoutOut) {
     handleHoverLabelDefaults(layoutIn, layoutOut, coerce);
 };
 
-},{"../../lib":252,"./hoverlabel_defaults":157,"./layout_attributes":160}],163:[function(_dereq_,module,exports){
+},{"../../lib":264,"./hoverlabel_defaults":158,"./layout_attributes":161}],164:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30743,7 +30760,7 @@ module.exports = {
     contentDefaults: contentDefaults
 };
 
-},{"../../lib":252,"../../lib/regex":268,"../../plot_api/plot_template":290,"../../plots/cartesian/constants":308,"../../plots/domain":331}],164:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../lib/regex":280,"../../plot_api/plot_template":302,"../../plots/cartesian/constants":320,"../../plots/domain":340}],165:[function(_dereq_,module,exports){
 'use strict';
 
 var cartesianConstants = _dereq_('../../plots/cartesian/constants');
@@ -30845,7 +30862,7 @@ module.exports = templatedArray('image', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":225,"../../plot_api/plot_template":290,"../../plots/cartesian/constants":308}],165:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":237,"../../plot_api/plot_template":302,"../../plots/cartesian/constants":320}],166:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -30917,7 +30934,7 @@ module.exports = function convertCoords(gd, ax, newType, doExtra) {
     }
 };
 
-},{"../../lib/to_log_range":279,"fast-isnumeric":31}],166:[function(_dereq_,module,exports){
+},{"../../lib/to_log_range":291,"fast-isnumeric":31}],167:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -30974,7 +30991,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"./attributes":164}],167:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/array_container_defaults":308,"../../plots/cartesian/axes":313,"./attributes":165}],168:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -31224,7 +31241,7 @@ module.exports = function draw(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":232,"../../plots/cartesian/axes":301,"../../plots/cartesian/axis_ids":305,"../drawing":141,"@plotly/d3":16}],168:[function(_dereq_,module,exports){
+},{"../../constants/xmlns_namespaces":244,"../../plots/cartesian/axes":313,"../../plots/cartesian/axis_ids":317,"../drawing":142,"@plotly/d3":16}],169:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -31240,7 +31257,7 @@ module.exports = {
     convertCoords: _dereq_('./convert_coords')
 };
 
-},{"../../plots/cartesian/include_components":314,"./attributes":164,"./convert_coords":165,"./defaults":166,"./draw":167}],169:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":324,"./attributes":165,"./convert_coords":166,"./defaults":167,"./draw":168}],170:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -31369,7 +31386,7 @@ module.exports = {
     editType: 'legend'
 };
 
-},{"../../plots/font_attributes":332,"../color/attributes":118}],170:[function(_dereq_,module,exports){
+},{"../../plots/font_attributes":341,"../color/attributes":119}],171:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -31385,7 +31402,7 @@ module.exports = {
     itemGap: 5
 };
 
-},{}],171:[function(_dereq_,module,exports){
+},{}],172:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -31535,7 +31552,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/attributes":297,"../../plots/layout_attributes":347,"../../registry":352,"./attributes":169,"./helpers":175}],172:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../../plots/attributes":309,"../../plots/layout_attributes":356,"../../registry":361,"./attributes":170,"./helpers":176}],173:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -32374,7 +32391,7 @@ function getYanchor(legendObj) {
         'top';
 }
 
-},{"../../constants/alignment":224,"../../lib":252,"../../lib/events":244,"../../lib/svg_text_utils":277,"../../plots/plots":349,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"./constants":170,"./get_legend_data":173,"./handle_click":174,"./helpers":175,"./style":177,"@plotly/d3":16}],173:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../lib":264,"../../lib/events":256,"../../lib/svg_text_utils":289,"../../plots/plots":358,"../../registry":361,"../color":120,"../dragelement":139,"../drawing":142,"./constants":171,"./get_legend_data":174,"./handle_click":175,"./helpers":176,"./style":178,"@plotly/d3":16}],174:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -32550,7 +32567,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":352,"./helpers":175}],174:[function(_dereq_,module,exports){
+},{"../../registry":361,"./helpers":176}],175:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -32792,7 +32809,7 @@ module.exports = function handleClick(g, gd, numClicks) {
     }
 };
 
-},{"../../lib":252,"../../registry":352}],175:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361}],176:[function(_dereq_,module,exports){
 'use strict';
 
 exports.isGrouped = function isGrouped(legendLayout) {
@@ -32807,7 +32824,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{}],176:[function(_dereq_,module,exports){
+},{}],177:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -32822,7 +32839,7 @@ module.exports = {
     style: _dereq_('./style')
 };
 
-},{"./attributes":169,"./defaults":171,"./draw":172,"./style":177}],177:[function(_dereq_,module,exports){
+},{"./attributes":170,"./defaults":172,"./draw":173,"./style":178}],178:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -33513,7 +33530,7 @@ function dimAttr(v, dflt, max) {
     return v;
 }
 
-},{"../../lib":252,"../../registry":352,"../../traces/pie/helpers":378,"../../traces/pie/style_one":379,"../../traces/scatter/subtypes":406,"../color":119,"../colorscale/helpers":130,"../drawing":141,"./constants":170,"@plotly/d3":16}],178:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361,"../../traces/pie/helpers":387,"../../traces/pie/style_one":388,"../../traces/scatter/subtypes":415,"../color":120,"../colorscale/helpers":131,"../drawing":142,"./constants":171,"@plotly/d3":16}],179:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -33557,7 +33574,7 @@ module.exports = {
     }
 };
 
-},{"./constants":180}],179:[function(_dereq_,module,exports){
+},{"./constants":181}],180:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -34309,7 +34326,7 @@ function resetView(gd, subplotType) {
     Registry.call('_guiRelayout', gd, aObj);
 }
 
-},{"../../fonts/ploticon":234,"../../lib":252,"../../plots/cartesian/axis_ids":305,"../../plots/plots":349,"../../registry":352,"../shapes/draw":203}],180:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":246,"../../lib":264,"../../plots/cartesian/axis_ids":317,"../../plots/plots":358,"../../registry":361,"../shapes/draw":215}],181:[function(_dereq_,module,exports){
 'use strict';
 
 var modeBarButtons = _dereq_('./buttons');
@@ -34352,7 +34369,7 @@ module.exports = {
     foreButtons: foreButtons
 };
 
-},{"./buttons":179}],181:[function(_dereq_,module,exports){
+},{"./buttons":180}],182:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -34378,7 +34395,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('remove');
 };
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../color":119,"./attributes":178}],182:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../color":120,"./attributes":179}],183:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -34391,7 +34408,7 @@ module.exports = {
     manage: _dereq_('./manage')
 };
 
-},{"./attributes":178,"./defaults":181,"./manage":183}],183:[function(_dereq_,module,exports){
+},{"./attributes":179,"./defaults":182,"./manage":184}],184:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIds = _dereq_('../../plots/cartesian/axis_ids');
@@ -34750,7 +34767,7 @@ function fillCustomButton(originalModeBarButtons) {
     return customButtons;
 }
 
-},{"../../lib":252,"../../plots/cartesian/axis_ids":305,"../../registry":352,"../../traces/scatter/subtypes":406,"../fx/helpers":155,"./buttons":179,"./constants":180,"./modebar":184}],184:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/cartesian/axis_ids":317,"../../registry":361,"../../traces/scatter/subtypes":415,"../fx/helpers":156,"./buttons":180,"./constants":181,"./modebar":185}],185:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -35093,7 +35110,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../fonts/ploticon":234,"../../lib":252,"../../version":434,"@plotly/d3":16,"fast-isnumeric":31}],185:[function(_dereq_,module,exports){
+},{"../../fonts/ploticon":246,"../../lib":264,"../../version":443,"@plotly/d3":16,"fast-isnumeric":31}],186:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -35191,7 +35208,7 @@ module.exports = {
     editType: 'plot'
 };
 
-},{"../../plot_api/plot_template":290,"../../plots/font_attributes":332,"../color/attributes":118}],186:[function(_dereq_,module,exports){
+},{"../../plot_api/plot_template":302,"../../plots/font_attributes":341,"../color/attributes":119}],187:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -35212,7 +35229,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],187:[function(_dereq_,module,exports){
+},{}],188:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -35296,7 +35313,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/array_container_defaults":296,"../color":119,"./attributes":185,"./constants":186}],188:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../../plots/array_container_defaults":308,"../color":120,"./attributes":186,"./constants":187}],189:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -35543,7 +35560,7 @@ function reposition(gd, buttons, opts, axName, selector) {
     selector.attr('transform', strTranslate(lx, ly));
 }
 
-},{"../../constants/alignment":224,"../../lib":252,"../../lib/svg_text_utils":277,"../../plots/cartesian/axis_ids":305,"../../plots/plots":349,"../../registry":352,"../color":119,"../drawing":141,"./constants":186,"./get_update_object":189,"@plotly/d3":16}],189:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../lib":264,"../../lib/svg_text_utils":289,"../../plots/cartesian/axis_ids":317,"../../plots/plots":358,"../../registry":361,"../color":120,"../drawing":142,"./constants":187,"./get_update_object":190,"@plotly/d3":16}],190:[function(_dereq_,module,exports){
 'use strict';
 
 var d3Time = _dereq_('d3-time');
@@ -35592,7 +35609,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"../../lib":252,"d3-time":28}],190:[function(_dereq_,module,exports){
+},{"../../lib":264,"d3-time":28}],191:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -35611,7 +35628,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":185,"./defaults":187,"./draw":188}],191:[function(_dereq_,module,exports){
+},{"./attributes":186,"./defaults":188,"./draw":189}],192:[function(_dereq_,module,exports){
 'use strict';
 
 var colorAttributes = _dereq_('../color/attributes');
@@ -35663,7 +35680,7 @@ module.exports = {
     editType: 'calc'
 };
 
-},{"../color/attributes":118}],192:[function(_dereq_,module,exports){
+},{"../color/attributes":119}],193:[function(_dereq_,module,exports){
 'use strict';
 
 var listAxes = _dereq_('../../plots/cartesian/axis_ids').list;
@@ -35689,7 +35706,7 @@ module.exports = function calcAutorange(gd) {
     }
 };
 
-},{"../../plots/cartesian/autorange":300,"../../plots/cartesian/axis_ids":305,"./constants":193}],193:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/autorange":312,"../../plots/cartesian/axis_ids":317,"./constants":194}],194:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -35737,7 +35754,7 @@ module.exports = {
     extraPad: 15
 };
 
-},{}],194:[function(_dereq_,module,exports){
+},{}],195:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -35815,7 +35832,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName) {
     containerOut._input = containerIn;
 };
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../../plots/cartesian/axis_ids":305,"./attributes":191,"./oppaxis_attributes":198}],195:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../../plots/cartesian/axis_ids":317,"./attributes":192,"./oppaxis_attributes":199}],196:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -36451,7 +36468,7 @@ function drawGrabbers(rangeSlider, gd, axisOpts, opts) {
     grabAreaMax.attr('height', opts._height);
 }
 
-},{"../../lib":252,"../../lib/setcursor":272,"../../plots/cartesian":315,"../../plots/cartesian/axis_ids":305,"../../plots/plots":349,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"../titles":217,"./constants":193,"@plotly/d3":16}],196:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../lib/setcursor":284,"../../plots/cartesian":325,"../../plots/cartesian/axis_ids":317,"../../plots/plots":358,"../../registry":361,"../color":120,"../dragelement":139,"../drawing":142,"../titles":229,"./constants":194,"@plotly/d3":16}],197:[function(_dereq_,module,exports){
 'use strict';
 
 var axisIDs = _dereq_('../../plots/cartesian/axis_ids');
@@ -36518,7 +36535,7 @@ exports.autoMarginOpts = function(gd, ax) {
     };
 };
 
-},{"../../constants/alignment":224,"../../lib/svg_text_utils":277,"../../plots/cartesian/axis_ids":305,"./constants":193}],197:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../lib/svg_text_utils":289,"../../plots/cartesian/axis_ids":317,"./constants":194}],198:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -36549,7 +36566,7 @@ module.exports = {
     autoMarginOpts: helpers.autoMarginOpts
 };
 
-},{"../../lib":252,"./attributes":191,"./calc_autorange":192,"./defaults":194,"./draw":195,"./helpers":196,"./oppaxis_attributes":198}],198:[function(_dereq_,module,exports){
+},{"../../lib":264,"./attributes":192,"./calc_autorange":193,"./defaults":195,"./draw":196,"./helpers":197,"./oppaxis_attributes":199}],199:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -36575,7 +36592,2207 @@ module.exports = {
     editType: 'calc'
 };
 
-},{}],199:[function(_dereq_,module,exports){
+},{}],200:[function(_dereq_,module,exports){
+'use strict';
+
+var annAttrs = _dereq_('../annotations/attributes');
+var scatterLineAttrs = _dereq_('../../traces/scatter/attributes').line;
+var dash = _dereq_('../drawing/attributes').dash;
+var extendFlat = _dereq_('../../lib/extend').extendFlat;
+var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
+var templatedArray = _dereq_('../../plot_api/plot_template').templatedArray;
+var axisPlaceableObjs = _dereq_('../../constants/axis_placeable_objects');
+
+module.exports = overrideAll(templatedArray('selection', {
+    type: {
+        valType: 'enumerated',
+        values: ['rect', 'path'],
+    },
+
+    xref: extendFlat({}, annAttrs.xref, {
+    }),
+
+    yref: extendFlat({}, annAttrs.yref, {
+    }),
+
+    x0: {
+        valType: 'any',
+    },
+    x1: {
+        valType: 'any',
+    },
+
+    y0: {
+        valType: 'any',
+    },
+    y1: {
+        valType: 'any',
+    },
+
+    path: {
+        valType: 'string',
+        editType: 'arraydraw',
+    },
+
+    opacity: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0.7,
+        editType: 'arraydraw',
+    },
+
+    line: {
+        color: scatterLineAttrs.color,
+        width: extendFlat({}, scatterLineAttrs.width, {
+            min: 1,
+            dflt: 1
+        }),
+        dash: extendFlat({}, dash, {
+            dflt: 'dot'
+        })
+    },
+}), 'arraydraw', 'from-root');
+
+},{"../../constants/axis_placeable_objects":237,"../../lib/extend":257,"../../plot_api/edit_types":295,"../../plot_api/plot_template":302,"../../traces/scatter/attributes":390,"../annotations/attributes":103,"../drawing/attributes":141}],201:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = {
+    // max pixels off straight before a lasso select line counts as bent
+    BENDPX: 1.5,
+
+    // smallest dimension allowed for a select box
+    MINSELECT: 12,
+
+    // throttling limit (ms) for selectPoints calls
+    SELECTDELAY: 100,
+
+    // cache ID suffix for throttle
+    SELECTID: '-select',
+};
+
+},{}],202:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
+var handleArrayContainerDefaults = _dereq_('../../plots/array_container_defaults');
+
+var attributes = _dereq_('./attributes');
+var helpers = _dereq_('../shapes/helpers');
+
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+    handleArrayContainerDefaults(layoutIn, layoutOut, {
+        name: 'selections',
+        handleItemDefaults: handleSelectionDefaults
+    });
+
+    // Drop rect selections with undefined x0, y0, x1, x1 values.
+    // In future we may accept partially defined rects e.g.
+    // a case with only x0 and x1 may be used to define
+    // [-Infinity, +Infinity] range on the y axis, etc.
+    var selections = layoutOut.selections;
+    for(var i = 0; i < selections.length; i++) {
+        var selection = selections[i];
+        if(!selection) continue;
+        if(selection.path === undefined) {
+            if(
+                selection.x0 === undefined ||
+                selection.x1 === undefined ||
+                selection.y0 === undefined ||
+                selection.y1 === undefined
+            ) {
+                layoutOut.selections[i] = null;
+            }
+        }
+    }
+};
+
+function handleSelectionDefaults(selectionIn, selectionOut, fullLayout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(selectionIn, selectionOut, attributes, attr, dflt);
+    }
+
+    var path = coerce('path');
+    var dfltType = path ? 'path' : 'rect';
+    var selectionType = coerce('type', dfltType);
+    var noPath = selectionType !== 'path';
+    if(noPath) delete selectionOut.path;
+
+    coerce('opacity');
+    coerce('line.color');
+    coerce('line.width');
+    coerce('line.dash');
+
+    // positioning
+    var axLetters = ['x', 'y'];
+    for(var i = 0; i < 2; i++) {
+        var axLetter = axLetters[i];
+        var gdMock = {_fullLayout: fullLayout};
+        var ax;
+        var pos2r;
+        var r2pos;
+
+        // xref, yref
+        var axRef = Axes.coerceRef(selectionIn, selectionOut, gdMock, axLetter);
+
+        // axRefType is 'range' for selections
+        ax = Axes.getFromId(gdMock, axRef);
+        ax._selectionIndices.push(selectionOut._index);
+        r2pos = helpers.rangeToShapePosition(ax);
+        pos2r = helpers.shapePositionToRange(ax);
+
+        // Coerce x0, x1, y0, y1
+        if(noPath) {
+            // hack until V3.0 when log has regular range behavior - make it look like other
+            // ranges to send to coerce, then put it back after
+            // this is all to give reasonable default position behavior on log axes, which is
+            // a pretty unimportant edge case so we could just ignore this.
+            var attr0 = axLetter + '0';
+            var attr1 = axLetter + '1';
+            var in0 = selectionIn[attr0];
+            var in1 = selectionIn[attr1];
+            selectionIn[attr0] = pos2r(selectionIn[attr0], true);
+            selectionIn[attr1] = pos2r(selectionIn[attr1], true);
+
+            Axes.coercePosition(selectionOut, gdMock, coerce, axRef, attr0);
+            Axes.coercePosition(selectionOut, gdMock, coerce, axRef, attr1);
+
+            var p0 = selectionOut[attr0];
+            var p1 = selectionOut[attr1];
+
+            if(p0 !== undefined && p1 !== undefined) {
+                // hack part 2
+                selectionOut[attr0] = r2pos(p0);
+                selectionOut[attr1] = r2pos(p1);
+                selectionIn[attr0] = in0;
+                selectionIn[attr1] = in1;
+            }
+        }
+    }
+
+    if(noPath) {
+        Lib.noneOrAll(selectionIn, selectionOut, ['x0', 'x1', 'y0', 'y1']);
+    }
+}
+
+},{"../../lib":264,"../../plots/array_container_defaults":308,"../../plots/cartesian/axes":313,"../shapes/helpers":222,"./attributes":200}],203:[function(_dereq_,module,exports){
+'use strict';
+
+var readPaths = _dereq_('../shapes/draw_newshape/helpers').readPaths;
+var displayOutlines = _dereq_('../shapes/display_outlines');
+
+var clearOutlineControllers = _dereq_('../shapes/handle_outline').clearOutlineControllers;
+
+var Color = _dereq_('../color');
+var Drawing = _dereq_('../drawing');
+var arrayEditor = _dereq_('../../plot_api/plot_template').arrayEditor;
+
+var helpers = _dereq_('../shapes/helpers');
+var getPathString = helpers.getPathString;
+
+
+// Selections are stored in gd.layout.selections, an array of objects
+// index can point to one item in this array,
+//  or non-numeric to simply add a new one
+//  or -1 to modify all existing
+// opt can be the full options object, or one key (to be set to value)
+//  or undefined to simply redraw
+// if opt is blank, val can be 'add' or a full options object to add a new
+//  annotation at that point in the array, or 'remove' to delete this one
+
+module.exports = {
+    draw: draw,
+    drawOne: drawOne,
+    activateLastSelection: activateLastSelection
+};
+
+function draw(gd) {
+    var fullLayout = gd._fullLayout;
+
+    clearOutlineControllers(gd);
+
+    // Remove previous selections before drawing new selections in fullLayout.selections
+    fullLayout._selectionLayer.selectAll('path').remove();
+
+    for(var k in fullLayout._plots) {
+        var selectionLayer = fullLayout._plots[k].selectionLayer;
+        if(selectionLayer) selectionLayer.selectAll('path').remove();
+    }
+
+    for(var i = 0; i < fullLayout.selections.length; i++) {
+        drawOne(gd, i);
+    }
+}
+
+function drawOne(gd, index) {
+    // remove the existing selection if there is one.
+    // because indices can change, we need to look in all selection layers
+    gd._fullLayout._paperdiv
+        .selectAll('.selectionlayer [data-index="' + index + '"]')
+        .remove();
+
+    var o = helpers.makeSelectionsOptionsAndPlotinfo(gd, index);
+    var options = o.options;
+    var plotinfo = o.plotinfo;
+
+    // this selection is gone - quit now after deleting it
+    // TODO: use d3 idioms instead of deleting and redrawing every time
+    if(!options._input) return;
+
+    drawSelection(gd._fullLayout._selectionLayer);
+
+    function drawSelection(selectionLayer) {
+        var d = getPathString(gd, options);
+        var attrs = {
+            'data-index': index,
+            'fill-rule': 'evenodd',
+            d: d
+        };
+
+        var opacity = options.opacity;
+        var fillColor = 'rgba(0,0,0,0)';
+        var lineColor = options.line.color || Color.contrast(gd._fullLayout.plot_bgcolor);
+        var lineWidth = options.line.width;
+        var lineDash = options.line.dash;
+        if(!lineWidth) {
+            // ensure invisible border to activate the selection
+            lineWidth = 5;
+            lineDash = 'solid';
+        }
+
+        var isActiveSelection =
+            gd._fullLayout._activeSelectionIndex === index;
+
+        if(isActiveSelection) {
+            fillColor = gd._fullLayout.activeselection.fillcolor;
+            opacity = gd._fullLayout.activeselection.opacity;
+        }
+
+        var allPaths = [];
+        for(var sensory = 1; sensory >= 0; sensory--) {
+            var path = selectionLayer.append('path')
+                .attr(attrs)
+                .style('opacity', sensory ? 0.1 : opacity)
+                .call(Color.stroke, lineColor)
+                .call(Color.fill, fillColor)
+                // make it easier to select senory background path
+                .call(Drawing.dashLine,
+                    sensory ? 'solid' : lineDash,
+                    sensory ? 4 + lineWidth : lineWidth
+                );
+
+            setClipPath(path, gd, options);
+
+            if(isActiveSelection) {
+                var editHelpers = arrayEditor(gd.layout, 'selections', options);
+
+                path.style({
+                    'cursor': 'move',
+                });
+
+                var dragOptions = {
+                    element: path.node(),
+                    plotinfo: plotinfo,
+                    gd: gd,
+                    editHelpers: editHelpers,
+                    isActiveSelection: true // i.e. to enable controllers
+                };
+
+                var polygons = readPaths(d, gd);
+                // display polygons on the screen
+                displayOutlines(polygons, path, dragOptions);
+            } else {
+                path.style('pointer-events', sensory ? 'all' : 'none');
+            }
+
+            allPaths[sensory] = path;
+        }
+
+        var forePath = allPaths[0];
+        var backPath = allPaths[1];
+
+        backPath.node().addEventListener('click', function() { return activateSelection(gd, forePath); });
+    }
+}
+
+function setClipPath(selectionPath, gd, selectionOptions) {
+    var clipAxes = selectionOptions.xref + selectionOptions.yref;
+
+    Drawing.setClipUrl(
+        selectionPath,
+        'clip' + gd._fullLayout._uid + clipAxes,
+        gd
+    );
+}
+
+
+function activateSelection(gd, path) {
+    var element = path.node();
+    var id = +element.getAttribute('data-index');
+    if(id >= 0) {
+        // deactivate if already active
+        if(id === gd._fullLayout._activeSelectionIndex) {
+            deactivateSelection(gd);
+            return;
+        }
+
+        gd._fullLayout._activeSelectionIndex = id;
+        gd._fullLayout._deactivateSelection = deactivateSelection;
+        draw(gd);
+    }
+}
+
+function activateLastSelection(gd) {
+    var id = gd._fullLayout.selections.length - 1;
+    gd._fullLayout._activeSelectionIndex = id;
+    gd._fullLayout._deactivateSelection = deactivateSelection;
+    draw(gd);
+}
+
+function deactivateSelection(gd) {
+    var id = gd._fullLayout._activeSelectionIndex;
+    if(id >= 0) {
+        clearOutlineControllers(gd);
+        delete gd._fullLayout._activeSelectionIndex;
+        draw(gd);
+    }
+}
+
+},{"../../plot_api/plot_template":302,"../color":120,"../drawing":142,"../shapes/display_outlines":214,"../shapes/draw_newshape/helpers":219,"../shapes/handle_outline":221,"../shapes/helpers":222}],204:[function(_dereq_,module,exports){
+'use strict';
+
+var dash = _dereq_('../../drawing/attributes').dash;
+var extendFlat = _dereq_('../../../lib/extend').extendFlat;
+
+module.exports = {
+    newselection: {
+        mode: {
+            valType: 'enumerated',
+            values: ['immediate', 'gradual'],
+            dflt: 'immediate',
+            editType: 'none',
+        },
+
+        line: {
+            color: {
+                valType: 'color',
+                editType: 'none',
+            },
+            width: {
+                valType: 'number',
+                min: 1,
+                dflt: 1,
+                editType: 'none',
+            },
+            dash: extendFlat({}, dash, {
+                dflt: 'dot',
+                editType: 'none'
+            }),
+            editType: 'none'
+        },
+
+        // no drawdirection here noting that layout.selectdirection is used instead.
+
+        editType: 'none'
+    },
+
+    activeselection: {
+        fillcolor: {
+            valType: 'color',
+            dflt: 'rgba(0,0,0,0)',
+            editType: 'none',
+        },
+        opacity: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 0.5,
+            editType: 'none',
+        },
+        editType: 'none'
+    }
+};
+
+},{"../../../lib/extend":257,"../../drawing/attributes":141}],205:[function(_dereq_,module,exports){
+'use strict';
+
+module.exports = function supplyDrawNewSelectionDefaults(layoutIn, layoutOut, coerce) {
+    coerce('newselection.mode');
+
+    var newselectionLineWidth = coerce('newselection.line.width');
+    if(newselectionLineWidth) {
+        coerce('newselection.line.color');
+        coerce('newselection.line.dash');
+    }
+
+    coerce('activeselection.fillcolor');
+    coerce('activeselection.opacity');
+};
+
+},{}],206:[function(_dereq_,module,exports){
+'use strict';
+
+var dragHelpers = _dereq_('../../dragelement/helpers');
+var selectMode = dragHelpers.selectMode;
+
+var handleOutline = _dereq_('../../shapes/handle_outline');
+var clearOutline = handleOutline.clearOutline;
+
+var helpers = _dereq_('../../shapes/draw_newshape/helpers');
+var readPaths = helpers.readPaths;
+var writePaths = helpers.writePaths;
+var fixDatesForPaths = helpers.fixDatesForPaths;
+
+module.exports = function newSelections(outlines, dragOptions) {
+    if(!outlines.length) return;
+    var e = outlines[0][0]; // pick first
+    if(!e) return;
+    var d = e.getAttribute('d');
+
+    var gd = dragOptions.gd;
+    var newStyle = gd._fullLayout.newselection;
+
+    var plotinfo = dragOptions.plotinfo;
+    var xaxis = plotinfo.xaxis;
+    var yaxis = plotinfo.yaxis;
+
+    var isActiveSelection = dragOptions.isActiveSelection;
+    var dragmode = dragOptions.dragmode;
+
+    var selections = (gd.layout || {}).selections || [];
+
+    if(!selectMode(dragmode) && isActiveSelection !== undefined) {
+        var id = gd._fullLayout._activeSelectionIndex;
+        if(id < selections.length) {
+            switch(gd._fullLayout.selections[id].type) {
+                case 'rect':
+                    dragmode = 'select';
+                    break;
+                case 'path':
+                    dragmode = 'lasso';
+                    break;
+            }
+        }
+    }
+
+    var polygons = readPaths(d, gd, plotinfo, isActiveSelection);
+
+    var newSelection = {
+        xref: xaxis._id,
+        yref: yaxis._id,
+
+        opacity: newStyle.opacity,
+        line: {
+            color: newStyle.line.color,
+            width: newStyle.line.width,
+            dash: newStyle.line.dash
+        }
+    };
+
+    var cell;
+    // rect can be in one cell
+    // only define cell if there is single cell
+    if(polygons.length === 1) cell = polygons[0];
+
+    if(
+        cell &&
+        cell.length === 5 && // ensure we only have 4 corners for a rect
+        dragmode === 'select'
+    ) {
+        newSelection.type = 'rect';
+        newSelection.x0 = cell[0][1];
+        newSelection.y0 = cell[0][2];
+        newSelection.x1 = cell[2][1];
+        newSelection.y1 = cell[2][2];
+    } else {
+        newSelection.type = 'path';
+        if(xaxis && yaxis) fixDatesForPaths(polygons, xaxis, yaxis);
+        newSelection.path = writePaths(polygons);
+        cell = null;
+    }
+
+    clearOutline(gd);
+
+    var editHelpers = dragOptions.editHelpers;
+    var modifyItem = (editHelpers || {}).modifyItem;
+
+    var allSelections = [];
+    for(var q = 0; q < selections.length; q++) {
+        var beforeEdit = gd._fullLayout.selections[q];
+        if(!beforeEdit) {
+            allSelections[q] = beforeEdit;
+            continue;
+        }
+
+        allSelections[q] = beforeEdit._input;
+
+        if(
+            isActiveSelection !== undefined &&
+            q === gd._fullLayout._activeSelectionIndex
+        ) {
+            var afterEdit = newSelection;
+
+            switch(beforeEdit.type) {
+                case 'rect':
+                    modifyItem('x0', afterEdit.x0);
+                    modifyItem('x1', afterEdit.x1);
+                    modifyItem('y0', afterEdit.y0);
+                    modifyItem('y1', afterEdit.y1);
+                    break;
+
+                case 'path':
+                    modifyItem('path', afterEdit.path);
+                    break;
+            }
+        }
+    }
+
+    if(isActiveSelection === undefined) {
+        allSelections.push(newSelection); // add new selection
+        return allSelections;
+    }
+
+    return editHelpers ? editHelpers.getUpdateObj() : {};
+};
+
+},{"../../dragelement/helpers":138,"../../shapes/draw_newshape/helpers":219,"../../shapes/handle_outline":221}],207:[function(_dereq_,module,exports){
+'use strict';
+
+var strTranslate = _dereq_('../../lib').strTranslate;
+
+// in v3 (once log ranges are fixed),
+// we'll be able to p2r here for all axis types
+function p2r(ax, v) {
+    switch(ax.type) {
+        case 'log':
+            return ax.p2d(v);
+        case 'date':
+            return ax.p2r(v, 0, ax.calendar);
+        default:
+            return ax.p2r(v);
+    }
+}
+
+function r2p(ax, v) {
+    switch(ax.type) {
+        case 'log':
+            return ax.d2p(v);
+        case 'date':
+            return ax.r2p(v, 0, ax.calendar);
+        default:
+            return ax.r2p(v);
+    }
+}
+
+function axValue(ax) {
+    var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
+    return function(v) { return p2r(ax, v[index]); };
+}
+
+function getTransform(plotinfo) {
+    return strTranslate(
+        plotinfo.xaxis._offset,
+        plotinfo.yaxis._offset
+    );
+}
+
+module.exports = {
+    p2r: p2r,
+    r2p: r2p,
+    axValue: axValue,
+    getTransform: getTransform
+};
+
+},{"../../lib":264}],208:[function(_dereq_,module,exports){
+'use strict';
+
+var drawModule = _dereq_('./draw');
+var select = _dereq_('./select');
+
+module.exports = {
+    moduleType: 'component',
+    name: 'selections',
+
+    layoutAttributes: _dereq_('./attributes'),
+    supplyLayoutDefaults: _dereq_('./defaults'),
+    supplyDrawNewSelectionDefaults: _dereq_('./draw_newselection/defaults'),
+    includeBasePlot: _dereq_('../../plots/cartesian/include_components')('selections'),
+
+    draw: drawModule.draw,
+    drawOne: drawModule.drawOne,
+
+    reselect: select.reselect,
+    prepSelect: select.prepSelect,
+    clearOutline: select.clearOutline,
+    clearSelectionsCache: select.clearSelectionsCache,
+    selectOnClick: select.selectOnClick
+};
+
+},{"../../plots/cartesian/include_components":324,"./attributes":200,"./defaults":202,"./draw":203,"./draw_newselection/defaults":205,"./select":209}],209:[function(_dereq_,module,exports){
+'use strict';
+
+var polybool = _dereq_('polybooljs');
+var pointInPolygon = _dereq_('point-in-polygon/nested'); // could we use contains lib/polygon instead?
+
+var Registry = _dereq_('../../registry');
+var dashStyle = _dereq_('../drawing').dashStyle;
+var Color = _dereq_('../color');
+var Fx = _dereq_('../fx');
+var makeEventData = _dereq_('../fx/helpers').makeEventData;
+var dragHelpers = _dereq_('../dragelement/helpers');
+var freeMode = dragHelpers.freeMode;
+var rectMode = dragHelpers.rectMode;
+var drawMode = dragHelpers.drawMode;
+var openMode = dragHelpers.openMode;
+var selectMode = dragHelpers.selectMode;
+
+var shapeHelpers = _dereq_('../shapes/helpers');
+var shapeConstants = _dereq_('../shapes/constants');
+
+var displayOutlines = _dereq_('../shapes/display_outlines');
+var clearOutline = _dereq_('../shapes/handle_outline').clearOutline;
+
+var newShapeHelpers = _dereq_('../shapes/draw_newshape/helpers');
+var handleEllipse = newShapeHelpers.handleEllipse;
+var readPaths = newShapeHelpers.readPaths;
+
+var newShapes = _dereq_('../shapes/draw_newshape/newshapes');
+
+var newSelections = _dereq_('./draw_newselection/newselections');
+var activateLastSelection = _dereq_('./draw').activateLastSelection;
+
+var Lib = _dereq_('../../lib');
+var ascending = Lib.sorterAsc;
+var libPolygon = _dereq_('../../lib/polygon');
+var throttle = _dereq_('../../lib/throttle');
+var getFromId = _dereq_('../../plots/cartesian/axis_ids').getFromId;
+var clearGlCanvases = _dereq_('../../lib/clear_gl_canvases');
+
+var redrawReglTraces = _dereq_('../../plot_api/subroutines').redrawReglTraces;
+
+var constants = _dereq_('./constants');
+var MINSELECT = constants.MINSELECT;
+
+var filteredPolygon = libPolygon.filter;
+var polygonTester = libPolygon.tester;
+
+var helpers = _dereq_('./helpers');
+var p2r = helpers.p2r;
+var axValue = helpers.axValue;
+var getTransform = helpers.getTransform;
+
+function hasSubplot(dragOptions) {
+    // N.B. subplot may be falsy e.g zero sankey index!
+    return dragOptions.subplot !== undefined;
+}
+
+function prepSelect(evt, startX, startY, dragOptions, mode) {
+    var isCartesian = !hasSubplot(dragOptions);
+
+    var isFreeMode = freeMode(mode);
+    var isRectMode = rectMode(mode);
+    var isOpenMode = openMode(mode);
+    var isDrawMode = drawMode(mode);
+    var isSelectMode = selectMode(mode);
+
+    var isLine = mode === 'drawline';
+    var isEllipse = mode === 'drawcircle';
+    var isLineOrEllipse = isLine || isEllipse; // cases with two start & end positions
+
+    var gd = dragOptions.gd;
+    var fullLayout = gd._fullLayout;
+    var immediateSelect = isSelectMode && fullLayout.newselection.mode === 'immediate' &&
+        isCartesian; // N.B. only cartesian subplots have persistent selection
+
+    var zoomLayer = fullLayout._zoomlayer;
+    var dragBBox = dragOptions.element.getBoundingClientRect();
+    var plotinfo = dragOptions.plotinfo;
+    var transform = getTransform(plotinfo);
+    var x0 = startX - dragBBox.left;
+    var y0 = startY - dragBBox.top;
+
+    fullLayout._calcInverseTransform(gd);
+    var transformedCoords = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
+    x0 = transformedCoords[0];
+    y0 = transformedCoords[1];
+    var scaleX = fullLayout._invScaleX;
+    var scaleY = fullLayout._invScaleY;
+
+    var x1 = x0;
+    var y1 = y0;
+    var path0 = 'M' + x0 + ',' + y0;
+    var xAxis = dragOptions.xaxes[0];
+    var yAxis = dragOptions.yaxes[0];
+    var pw = xAxis._length;
+    var ph = yAxis._length;
+
+    var subtract = evt.altKey &&
+        !(drawMode(mode) && isOpenMode);
+
+    var filterPoly, selectionTesters, mergedPolygons, currentPolygon;
+    var i, searchInfo, eventData;
+
+    coerceSelectionsCache(evt, gd, dragOptions);
+
+    if(isFreeMode) {
+        filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
+    }
+
+    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1]);
+    var newStyle = isDrawMode ?
+        fullLayout.newshape :
+        fullLayout.newselection;
+
+    outlines.enter()
+        .append('path')
+        .attr('class', 'select-outline select-outline-' + plotinfo.id)
+        .style({
+            opacity: isDrawMode ? newStyle.opacity / 2 : 1,
+            fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
+            stroke: newStyle.line.color || (
+                isCartesian ?
+                    Color.contrast(gd._fullLayout.plot_bgcolor) :
+                    '#7f7f7f' // non-cartesian subplot
+            ),
+            'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
+            'stroke-width': newStyle.line.width + 'px',
+            'shape-rendering': 'crispEdges'
+        })
+        .attr('fill-rule', 'evenodd')
+        .classed('cursor-move', isDrawMode ? true : false)
+        .attr('transform', transform)
+        .attr('d', path0 + 'Z');
+
+    var corners = zoomLayer.append('path')
+        .attr('class', 'zoombox-corners')
+        .style({
+            fill: Color.background,
+            stroke: Color.defaultLine,
+            'stroke-width': 1
+        })
+        .attr('transform', transform)
+        .attr('d', 'M0,0Z');
+
+
+    var throttleID = fullLayout._uid + constants.SELECTID;
+    var selection = [];
+
+    // find the traces to search for selection points
+    var searchTraces = determineSearchTraces(gd, dragOptions.xaxes,
+      dragOptions.yaxes, dragOptions.subplot);
+
+    if(immediateSelect && !evt.shiftKey) {
+        dragOptions._clearSubplotSelections = function() {
+            if(!isCartesian) return;
+
+            var xRef = xAxis._id;
+            var yRef = yAxis._id;
+            deselectSubplot(gd, xRef, yRef, searchTraces);
+
+            var selections = (gd.layout || {}).selections || [];
+            var list = [];
+            var selectionErased = false;
+            for(var q = 0; q < selections.length; q++) {
+                var s = fullLayout.selections[q];
+                if(
+                    s.xref !== xRef ||
+                    s.yref !== yRef
+                ) {
+                    list.push(selections[q]);
+                } else {
+                    selectionErased = true;
+                }
+            }
+
+            if(selectionErased) {
+                gd._fullLayout._noEmitSelectedAtStart = true;
+
+                Registry.call('_guiRelayout', gd, {
+                    selections: list
+                });
+            }
+        };
+    }
+
+    var fillRangeItems = getFillRangeItems(dragOptions);
+
+    dragOptions.moveFn = function(dx0, dy0) {
+        if(dragOptions._clearSubplotSelections) {
+            dragOptions._clearSubplotSelections();
+            dragOptions._clearSubplotSelections = undefined;
+        }
+
+        x1 = Math.max(0, Math.min(pw, scaleX * dx0 + x0));
+        y1 = Math.max(0, Math.min(ph, scaleY * dy0 + y0));
+
+        var dx = Math.abs(x1 - x0);
+        var dy = Math.abs(y1 - y0);
+
+        if(isRectMode) {
+            var direction;
+            var start, end;
+
+            if(isSelectMode) {
+                var q = fullLayout.selectdirection;
+
+                if(q === 'any') {
+                    if(dy < Math.min(dx * 0.6, MINSELECT)) {
+                        direction = 'h';
+                    } else if(dx < Math.min(dy * 0.6, MINSELECT)) {
+                        direction = 'v';
+                    } else {
+                        direction = 'd';
+                    }
+                } else {
+                    direction = q;
+                }
+
+                switch(direction) {
+                    case 'h':
+                        start = isEllipse ? ph / 2 : 0;
+                        end = ph;
+                        break;
+                    case 'v':
+                        start = isEllipse ? pw / 2 : 0;
+                        end = pw;
+                        break;
+                }
+            }
+
+            if(isDrawMode) {
+                switch(fullLayout.newshape.drawdirection) {
+                    case 'vertical':
+                        direction = 'h';
+                        start = isEllipse ? ph / 2 : 0;
+                        end = ph;
+                        break;
+                    case 'horizontal':
+                        direction = 'v';
+                        start = isEllipse ? pw / 2 : 0;
+                        end = pw;
+                        break;
+                    case 'ortho':
+                        if(dx < dy) {
+                            direction = 'h';
+                            start = y0;
+                            end = y1;
+                        } else {
+                            direction = 'v';
+                            start = x0;
+                            end = x1;
+                        }
+                        break;
+                    default: // i.e. case of 'diagonal'
+                        direction = 'd';
+                }
+            }
+
+            if(direction === 'h') {
+                // horizontal motion
+                currentPolygon = isLineOrEllipse ?
+                    handleEllipse(isEllipse, [x1, start], [x1, end]) : // using x1 instead of x0 allows adjusting the line while drawing
+                    [[x0, start], [x0, end], [x1, end], [x1, start]]; // make a vertical box
+
+                currentPolygon.xmin = isLineOrEllipse ? x1 : Math.min(x0, x1);
+                currentPolygon.xmax = isLineOrEllipse ? x1 : Math.max(x0, x1);
+                currentPolygon.ymin = Math.min(start, end);
+                currentPolygon.ymax = Math.max(start, end);
+                // extras to guide users in keeping a straight selection
+                corners.attr('d', 'M' + currentPolygon.xmin + ',' + (y0 - MINSELECT) +
+                    'h-4v' + (2 * MINSELECT) + 'h4Z' +
+                    'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
+                    'h4v' + (2 * MINSELECT) + 'h-4Z');
+            } else if(direction === 'v') {
+                // vertical motion
+                currentPolygon = isLineOrEllipse ?
+                    handleEllipse(isEllipse, [start, y1], [end, y1]) : // using y1 instead of y0 allows adjusting the line while drawing
+                    [[start, y0], [start, y1], [end, y1], [end, y0]]; // make a horizontal box
+
+                currentPolygon.xmin = Math.min(start, end);
+                currentPolygon.xmax = Math.max(start, end);
+                currentPolygon.ymin = isLineOrEllipse ? y1 : Math.min(y0, y1);
+                currentPolygon.ymax = isLineOrEllipse ? y1 : Math.max(y0, y1);
+                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + currentPolygon.ymin +
+                    'v-4h' + (2 * MINSELECT) + 'v4Z' +
+                    'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
+                    'v4h' + (2 * MINSELECT) + 'v-4Z');
+            } else if(direction === 'd') {
+                // diagonal motion
+                currentPolygon = isLineOrEllipse ?
+                    handleEllipse(isEllipse, [x0, y0], [x1, y1]) :
+                    [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
+
+                currentPolygon.xmin = Math.min(x0, x1);
+                currentPolygon.xmax = Math.max(x0, x1);
+                currentPolygon.ymin = Math.min(y0, y1);
+                currentPolygon.ymax = Math.max(y0, y1);
+                corners.attr('d', 'M0,0Z');
+            }
+        } else if(isFreeMode) {
+            filterPoly.addPt([x1, y1]);
+            currentPolygon = filterPoly.filtered;
+        }
+
+        // create outline & tester
+        if(dragOptions.selectionDefs && dragOptions.selectionDefs.length) {
+            mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
+
+            currentPolygon.subtract = subtract;
+            selectionTesters = multiTester(dragOptions.selectionDefs.concat([currentPolygon]));
+        } else {
+            mergedPolygons = [currentPolygon];
+            selectionTesters = polygonTester(currentPolygon);
+        }
+
+        // display polygons on the screen
+        displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
+
+        if(isSelectMode) {
+            var _res = reselect(gd, false);
+            var extraPoints = _res.eventData ? _res.eventData.points.slice() : [];
+
+            _res = reselect(gd, false, selectionTesters, searchTraces, dragOptions);
+            selectionTesters = _res.selectionTesters;
+            eventData = _res.eventData;
+
+            var poly;
+            if(filterPoly) {
+                poly = filterPoly.filtered;
+            } else {
+                poly = castMultiPolygon(mergedPolygons);
+            }
+
+            throttle.throttle(
+                throttleID,
+                constants.SELECTDELAY,
+                function() {
+                    selection = _doSelect(selectionTesters, searchTraces);
+
+                    var newPoints = selection.slice();
+
+                    for(var w = 0; w < extraPoints.length; w++) {
+                        var p = extraPoints[w];
+                        var found = false;
+                        for(var u = 0; u < newPoints.length; u++) {
+                            if(
+                                newPoints[u].curveNumber === p.curveNumber &&
+                                newPoints[u].pointNumber === p.pointNumber
+                            ) {
+                                found = true;
+                                break;
+                            }
+                        }
+                        if(!found) newPoints.push(p);
+                    }
+
+                    if(newPoints.length) {
+                        if(!eventData) eventData = {};
+                        eventData.points = newPoints;
+                    }
+
+                    fillRangeItems(eventData, poly);
+
+                    emitSelecting(gd, eventData);
+                }
+            );
+        }
+    };
+
+    dragOptions.clickFn = function(numClicks, evt) {
+        corners.remove();
+
+        if(gd._fullLayout._activeShapeIndex >= 0) {
+            gd._fullLayout._deactivateShape(gd);
+            return;
+        }
+        if(isDrawMode) return;
+
+        var clickmode = fullLayout.clickmode;
+
+        throttle.done(throttleID).then(function() {
+            throttle.clear(throttleID);
+            if(numClicks === 2) {
+                // clear selection on doubleclick
+                outlines.remove();
+                for(i = 0; i < searchTraces.length; i++) {
+                    searchInfo = searchTraces[i];
+                    searchInfo._module.selectPoints(searchInfo, false);
+                }
+
+                updateSelectedState(gd, searchTraces);
+
+                clearSelectionsCache(dragOptions);
+
+                emitDeselect(gd);
+
+                if(searchTraces.length) {
+                    var clickedXaxis = searchTraces[0].xaxis;
+                    var clickedYaxis = searchTraces[0].yaxis;
+
+                    if(clickedXaxis && clickedYaxis) {
+                        // drop selections in the clicked subplot
+                        var subSelections = [];
+                        var allSelections = gd._fullLayout.selections;
+                        for(var k = 0; k < allSelections.length; k++) {
+                            var s = allSelections[k];
+                            if(!s) continue; // also drop null selections if any
+
+                            if(
+                                s.xref !== clickedXaxis._id ||
+                                s.yref !== clickedYaxis._id
+                            ) {
+                                subSelections.push(s);
+                            }
+                        }
+
+                        if(subSelections.length < allSelections.length) {
+                            gd._fullLayout._noEmitSelectedAtStart = true;
+
+                            Registry.call('_guiRelayout', gd, {
+                                selections: subSelections
+                            });
+                        }
+                    }
+                }
+            } else {
+                if(clickmode.indexOf('select') > -1) {
+                    selectOnClick(evt, gd, dragOptions.xaxes, dragOptions.yaxes,
+                      dragOptions.subplot, dragOptions, outlines);
+                }
+
+                if(clickmode === 'event') {
+                    // TODO: remove in v3 - this was probably never intended to work as it does,
+                    // but in case anyone depends on it we don't want to break it now.
+                    // Note that click-to-select introduced pre v3 also emitts proper
+                    // event data when clickmode is having 'select' in its flag list.
+                    emitSelected(gd, undefined);
+                }
+            }
+
+            Fx.click(gd, evt);
+        }).catch(Lib.error);
+    };
+
+    dragOptions.doneFn = function() {
+        corners.remove();
+
+        throttle.done(throttleID).then(function() {
+            throttle.clear(throttleID);
+
+            if(!immediateSelect && currentPolygon && dragOptions.selectionDefs) {
+                // save last polygons
+                currentPolygon.subtract = subtract;
+                dragOptions.selectionDefs.push(currentPolygon);
+
+                // we have to keep reference to arrays container
+                dragOptions.mergedPolygons.length = 0;
+                [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
+            }
+
+            if(immediateSelect || isDrawMode) {
+                clearSelectionsCache(dragOptions, immediateSelect);
+            }
+
+            if(dragOptions.doneFnCompleted) {
+                dragOptions.doneFnCompleted(selection);
+            }
+
+            if(isSelectMode) {
+                emitSelected(gd, eventData);
+            }
+        }).catch(Lib.error);
+    };
+}
+
+function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutlines) {
+    var hoverData = gd._hoverdata;
+    var fullLayout = gd._fullLayout;
+    var clickmode = fullLayout.clickmode;
+    var sendEvents = clickmode.indexOf('event') > -1;
+    var selection = [];
+    var searchTraces, searchInfo, currentSelectionDef, selectionTesters, traceSelection;
+    var thisTracesSelection, pointOrBinSelected, subtract, eventData, i;
+
+    if(isHoverDataSet(hoverData)) {
+        coerceSelectionsCache(evt, gd, dragOptions);
+        searchTraces = determineSearchTraces(gd, xAxes, yAxes, subplot);
+        var clickedPtInfo = extractClickedPtInfo(hoverData, searchTraces);
+        var isBinnedTrace = clickedPtInfo.pointNumbers.length > 0;
+
+
+        // Note: potentially costly operation isPointOrBinSelected is
+        // called as late as possible through the use of an assignment
+        // in an if condition.
+        if(isBinnedTrace ?
+            isOnlyThisBinSelected(searchTraces, clickedPtInfo) :
+            isOnlyOnePointSelected(searchTraces) &&
+                (pointOrBinSelected = isPointOrBinSelected(clickedPtInfo))) {
+            if(polygonOutlines) polygonOutlines.remove();
+            for(i = 0; i < searchTraces.length; i++) {
+                searchInfo = searchTraces[i];
+                searchInfo._module.selectPoints(searchInfo, false);
+            }
+
+            updateSelectedState(gd, searchTraces);
+
+            clearSelectionsCache(dragOptions);
+
+            if(sendEvents) {
+                emitDeselect(gd);
+            }
+        } else {
+            subtract = evt.shiftKey &&
+              (pointOrBinSelected !== undefined ?
+                pointOrBinSelected :
+                isPointOrBinSelected(clickedPtInfo));
+            currentSelectionDef = newPointSelectionDef(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
+
+            var allSelectionDefs = dragOptions.selectionDefs.concat([currentSelectionDef]);
+            selectionTesters = multiTester(allSelectionDefs, selectionTesters);
+
+            for(i = 0; i < searchTraces.length; i++) {
+                traceSelection = searchTraces[i]._module.selectPoints(searchTraces[i], selectionTesters);
+                thisTracesSelection = fillSelectionItem(traceSelection, searchTraces[i]);
+
+                if(selection.length) {
+                    for(var j = 0; j < thisTracesSelection.length; j++) {
+                        selection.push(thisTracesSelection[j]);
+                    }
+                } else selection = thisTracesSelection;
+            }
+
+            eventData = {points: selection};
+            updateSelectedState(gd, searchTraces, eventData);
+
+            if(currentSelectionDef && dragOptions) {
+                dragOptions.selectionDefs.push(currentSelectionDef);
+            }
+
+            if(polygonOutlines) {
+                var polygons = dragOptions.mergedPolygons;
+                var isOpenMode = openMode(dragOptions.dragmode);
+
+                // display polygons on the screen
+                displayOutlines(convertPoly(polygons, isOpenMode), polygonOutlines, dragOptions);
+            }
+
+            if(sendEvents) {
+                emitSelected(gd, eventData);
+            }
+        }
+    }
+}
+
+/**
+ * Constructs a new point selection definition object.
+ */
+function newPointSelectionDef(pointNumber, searchInfo, subtract) {
+    return {
+        pointNumber: pointNumber,
+        searchInfo: searchInfo,
+        subtract: !!subtract
+    };
+}
+
+function isPointSelectionDef(o) {
+    return 'pointNumber' in o && 'searchInfo' in o;
+}
+
+/*
+ * Constructs a new point number tester.
+ */
+function newPointNumTester(pointSelectionDef) {
+    return {
+        xmin: 0,
+        xmax: 0,
+        ymin: 0,
+        ymax: 0,
+        pts: [],
+        contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
+            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace._expandedIndex;
+            var idxActualTrace = searchInfo.cd[0].trace._expandedIndex;
+            return idxActualTrace === idxWantedTrace &&
+              pointNumber === pointSelectionDef.pointNumber;
+        },
+        isRect: false,
+        degenerate: false,
+        subtract: !!pointSelectionDef.subtract
+    };
+}
+
+/**
+ * Wraps multiple selection testers.
+ *
+ * @param {Array} list - An array of selection testers.
+ *
+ * @return a selection tester object with a contains function
+ * that can be called to evaluate a point against all wrapped
+ * selection testers that were passed in list.
+ */
+function multiTester(list) {
+    if(!list.length) return;
+
+    var testers = [];
+    var xmin = isPointSelectionDef(list[0]) ? 0 : list[0][0][0];
+    var xmax = xmin;
+    var ymin = isPointSelectionDef(list[0]) ? 0 : list[0][0][1];
+    var ymax = ymin;
+
+    for(var i = 0; i < list.length; i++) {
+        if(isPointSelectionDef(list[i])) {
+            testers.push(newPointNumTester(list[i]));
+        } else {
+            var tester = polygonTester(list[i]);
+            tester.subtract = !!list[i].subtract;
+            testers.push(tester);
+
+            xmin = Math.min(xmin, tester.xmin);
+            xmax = Math.max(xmax, tester.xmax);
+            ymin = Math.min(ymin, tester.ymin);
+            ymax = Math.max(ymax, tester.ymax);
+        }
+    }
+
+    /**
+     * Tests if the given point is within this tester.
+     *
+     * @param {Array} pt - [0] is the x coordinate, [1] is the y coordinate of the point.
+     * @param {*} arg - An optional parameter to pass down to wrapped testers.
+     * @param {number} pointNumber - The point number of the point within the underlying data array.
+     * @param {number} searchInfo - An object identifying the trace the point is contained in.
+     *
+     * @return {boolean} true if point is considered to be selected, false otherwise.
+     */
+    function contains(pt, arg, pointNumber, searchInfo) {
+        var contained = false;
+        for(var i = 0; i < testers.length; i++) {
+            if(testers[i].contains(pt, arg, pointNumber, searchInfo)) {
+                // if contained by subtract tester - exclude the point
+                contained = !testers[i].subtract;
+            }
+        }
+
+        return contained;
+    }
+
+    return {
+        xmin: xmin,
+        xmax: xmax,
+        ymin: ymin,
+        ymax: ymax,
+        pts: [],
+        contains: contains,
+        isRect: false,
+        degenerate: false
+    };
+}
+
+function coerceSelectionsCache(evt, gd, dragOptions) {
+    var fullLayout = gd._fullLayout;
+    var plotinfo = dragOptions.plotinfo;
+    var dragmode = dragOptions.dragmode;
+
+    var selectingOnSameSubplot = (
+        fullLayout._lastSelectedSubplot &&
+        fullLayout._lastSelectedSubplot === plotinfo.id
+    );
+
+    var hasModifierKey = (evt.shiftKey || evt.altKey) &&
+        !(drawMode(dragmode) && openMode(dragmode));
+
+    if(
+        selectingOnSameSubplot &&
+        hasModifierKey &&
+        plotinfo.selection &&
+        plotinfo.selection.selectionDefs &&
+        !dragOptions.selectionDefs
+    ) {
+        // take over selection definitions from prev mode, if any
+        dragOptions.selectionDefs = plotinfo.selection.selectionDefs;
+        dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
+    } else if(!hasModifierKey || !plotinfo.selection) {
+        clearSelectionsCache(dragOptions);
+    }
+
+    // clear selection outline when selecting a different subplot
+    if(!selectingOnSameSubplot) {
+        clearOutline(gd);
+        fullLayout._lastSelectedSubplot = plotinfo.id;
+    }
+}
+
+function hasActiveShape(gd) {
+    return gd._fullLayout._activeShapeIndex >= 0;
+}
+
+function hasActiveSelection(gd) {
+    return gd._fullLayout._activeSelectionIndex >= 0;
+}
+
+function clearSelectionsCache(dragOptions, immediateSelect) {
+    var dragmode = dragOptions.dragmode;
+    var plotinfo = dragOptions.plotinfo;
+
+    var gd = dragOptions.gd;
+    if(hasActiveShape(gd)) {
+        gd._fullLayout._deactivateShape(gd);
+    }
+    if(hasActiveSelection(gd)) {
+        gd._fullLayout._deactivateSelection(gd);
+    }
+
+    var fullLayout = gd._fullLayout;
+    var zoomLayer = fullLayout._zoomlayer;
+
+    var isDrawMode = drawMode(dragmode);
+    var isSelectMode = selectMode(dragmode);
+
+    if(isDrawMode || isSelectMode) {
+        var outlines = zoomLayer.selectAll('.select-outline-' + plotinfo.id);
+        if(outlines && gd._fullLayout._outlining) {
+            // add shape
+            var shapes;
+            if(isDrawMode) {
+                shapes = newShapes(outlines, dragOptions);
+            }
+            if(shapes) {
+                Registry.call('_guiRelayout', gd, {
+                    shapes: shapes
+                });
+            }
+
+            // add selection
+            var selections;
+            if(
+                isSelectMode &&
+                !hasSubplot(dragOptions) // only allow cartesian - no mapbox for now
+            ) {
+                selections = newSelections(outlines, dragOptions);
+            }
+            if(selections) {
+                gd._fullLayout._noEmitSelectedAtStart = true;
+
+                Registry.call('_guiRelayout', gd, {
+                    selections: selections
+                }).then(function() {
+                    if(immediateSelect) { activateLastSelection(gd); }
+                });
+            }
+
+            gd._fullLayout._outlining = false;
+        }
+    }
+
+    plotinfo.selection = {};
+    plotinfo.selection.selectionDefs = dragOptions.selectionDefs = [];
+    plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
+}
+
+function getAxId(ax) {
+    return ax._id;
+}
+
+function determineSearchTraces(gd, xAxes, yAxes, subplot) {
+    if(!gd.calcdata) return [];
+
+    var searchTraces = [];
+    var xAxisIds = xAxes.map(getAxId);
+    var yAxisIds = yAxes.map(getAxId);
+    var cd, trace, i;
+
+    for(i = 0; i < gd.calcdata.length; i++) {
+        cd = gd.calcdata[i];
+        trace = cd[0].trace;
+
+        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
+
+        if(
+            hasSubplot({subplot: subplot}) &&
+            (trace.subplot === subplot || trace.geo === subplot)
+        ) {
+            searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
+        } else if(trace.type === 'splom') {
+            // FIXME: make sure we don't have more than single axis for splom
+            if(trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]) {
+                var info = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
+                info.scene = gd._fullLayout._splomScenes[trace.uid];
+                searchTraces.push(info);
+            }
+        } else if(trace.type === 'sankey') {
+            var sankeyInfo = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
+            searchTraces.push(sankeyInfo);
+        } else {
+            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
+            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
+
+            searchTraces.push(createSearchInfo(trace._module, cd,
+              getFromId(gd, trace.xaxis), getFromId(gd, trace.yaxis)));
+        }
+    }
+
+    return searchTraces;
+}
+
+function createSearchInfo(module, calcData, xaxis, yaxis) {
+    return {
+        _module: module,
+        cd: calcData,
+        xaxis: xaxis,
+        yaxis: yaxis
+    };
+}
+
+function isHoverDataSet(hoverData) {
+    return hoverData &&
+      Array.isArray(hoverData) &&
+      hoverData[0].hoverOnBox !== true;
+}
+
+function extractClickedPtInfo(hoverData, searchTraces) {
+    var hoverDatum = hoverData[0];
+    var pointNumber = -1;
+    var pointNumbers = [];
+    var searchInfo, i;
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
+            // Special case for box (and violin)
+            if(hoverDatum.hoverOnBox === true) {
+                break;
+            }
+
+            // Hint: in some traces like histogram, one graphical element
+            // doesn't correspond to one particular data point, but to
+            // bins of data points. Thus, hoverDatum can have a binNumber
+            // property instead of pointNumber.
+            if(hoverDatum.pointNumber !== undefined) {
+                pointNumber = hoverDatum.pointNumber;
+            } else if(hoverDatum.binNumber !== undefined) {
+                pointNumber = hoverDatum.binNumber;
+                pointNumbers = hoverDatum.pointNumbers;
+            }
+
+            break;
+        }
+    }
+
+    return {
+        pointNumber: pointNumber,
+        pointNumbers: pointNumbers,
+        searchInfo: searchInfo
+    };
+}
+
+function isPointOrBinSelected(clickedPtInfo) {
+    var trace = clickedPtInfo.searchInfo.cd[0].trace;
+    var ptNum = clickedPtInfo.pointNumber;
+    var ptNums = clickedPtInfo.pointNumbers;
+    var ptNumsSet = ptNums.length > 0;
+
+    // When pointsNumbers is set (e.g. histogram's binning),
+    // it is assumed that when the first point of
+    // a bin is selected, all others are as well
+    var ptNumToTest = ptNumsSet ? ptNums[0] : ptNum;
+
+    // TODO potential performance improvement
+    // Primarily we need this function to determine if a click adds
+    // or subtracts from a selection.
+    // In cases `trace.selectedpoints` is a huge array, indexOf
+    // might be slow. One remedy would be to introduce a hash somewhere.
+    return trace.selectedpoints ? trace.selectedpoints.indexOf(ptNumToTest) > -1 : false;
+}
+
+function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
+    var tracesWithSelectedPts = [];
+    var searchInfo, trace, isSameTrace, i;
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        if(searchInfo.cd[0].trace.selectedpoints && searchInfo.cd[0].trace.selectedpoints.length > 0) {
+            tracesWithSelectedPts.push(searchInfo);
+        }
+    }
+
+    if(tracesWithSelectedPts.length === 1) {
+        isSameTrace = tracesWithSelectedPts[0] === clickedPtInfo.searchInfo;
+        if(isSameTrace) {
+            trace = clickedPtInfo.searchInfo.cd[0].trace;
+            if(trace.selectedpoints.length === clickedPtInfo.pointNumbers.length) {
+                for(i = 0; i < clickedPtInfo.pointNumbers.length; i++) {
+                    if(trace.selectedpoints.indexOf(clickedPtInfo.pointNumbers[i]) < 0) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
+function isOnlyOnePointSelected(searchTraces) {
+    var len = 0;
+    var searchInfo, trace, i;
+
+    for(i = 0; i < searchTraces.length; i++) {
+        searchInfo = searchTraces[i];
+        trace = searchInfo.cd[0].trace;
+        if(trace.selectedpoints) {
+            if(trace.selectedpoints.length > 1) return false;
+
+            len += trace.selectedpoints.length;
+            if(len > 1) return false;
+        }
+    }
+
+    return len === 1;
+}
+
+function updateSelectedState(gd, searchTraces, eventData) {
+    var i;
+
+    // before anything else, update preGUI if necessary
+    for(i = 0; i < searchTraces.length; i++) {
+        var fullInputTrace = searchTraces[i].cd[0].trace._fullInput;
+        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid] || {};
+        if(tracePreGUI.selectedpoints === undefined) {
+            tracePreGUI.selectedpoints = fullInputTrace._input.selectedpoints || null;
+        }
+    }
+
+    var trace;
+    if(eventData) {
+        var pts = eventData.points || [];
+        for(i = 0; i < searchTraces.length; i++) {
+            trace = searchTraces[i].cd[0].trace;
+            trace._input.selectedpoints = trace._fullInput.selectedpoints = [];
+            if(trace._fullInput !== trace) trace.selectedpoints = [];
+        }
+
+        for(var k = 0; k < pts.length; k++) {
+            var pt = pts[k];
+            var data = pt.data;
+            var fullData = pt.fullData;
+            var pointIndex = pt.pointIndex;
+            var pointIndices = pt.pointIndices;
+            if(pointIndices) {
+                [].push.apply(data.selectedpoints, pointIndices);
+                if(trace._fullInput !== trace) {
+                    [].push.apply(fullData.selectedpoints, pointIndices);
+                }
+            } else {
+                data.selectedpoints.push(pointIndex);
+                if(trace._fullInput !== trace) {
+                    fullData.selectedpoints.push(pointIndex);
+                }
+            }
+        }
+    } else {
+        for(i = 0; i < searchTraces.length; i++) {
+            trace = searchTraces[i].cd[0].trace;
+            delete trace.selectedpoints;
+            delete trace._input.selectedpoints;
+            if(trace._fullInput !== trace) {
+                delete trace._fullInput.selectedpoints;
+            }
+        }
+    }
+
+    updateReglSelectedState(gd, searchTraces);
+}
+
+function updateReglSelectedState(gd, searchTraces) {
+    var hasRegl = false;
+
+    for(var i = 0; i < searchTraces.length; i++) {
+        var searchInfo = searchTraces[i];
+        var cd = searchInfo.cd;
+
+        if(Registry.traceIs(cd[0].trace, 'regl')) {
+            hasRegl = true;
+        }
+
+        var _module = searchInfo._module;
+        var fn = _module.styleOnSelect || _module.style;
+        if(fn) {
+            fn(gd, cd, cd[0].node3);
+            if(cd[0].nodeRangePlot3) fn(gd, cd, cd[0].nodeRangePlot3);
+        }
+    }
+
+    if(hasRegl) {
+        clearGlCanvases(gd);
+        redrawReglTraces(gd);
+    }
+}
+
+function mergePolygons(list, poly, subtract) {
+    var fn = subtract ?
+        polybool.difference :
+        polybool.union;
+
+    var res = fn({
+        regions: list
+    }, {
+        regions: [poly]
+    });
+
+    var allPolygons = res.regions.reverse();
+
+    for(var i = 0; i < allPolygons.length; i++) {
+        var polygon = allPolygons[i];
+
+        polygon.subtract = getSubtract(polygon, allPolygons.slice(0, i));
+    }
+
+    return allPolygons;
+}
+
+function fillSelectionItem(selection, searchInfo) {
+    if(Array.isArray(selection)) {
+        var cd = searchInfo.cd;
+        var trace = searchInfo.cd[0].trace;
+
+        for(var i = 0; i < selection.length; i++) {
+            selection[i] = makeEventData(selection[i], trace, cd);
+        }
+    }
+
+    return selection;
+}
+
+function convertPoly(polygonsIn, isOpenMode) { // add M and L command to draft positions
+    var polygonsOut = [];
+    for(var i = 0; i < polygonsIn.length; i++) {
+        polygonsOut[i] = [];
+        for(var j = 0; j < polygonsIn[i].length; j++) {
+            polygonsOut[i][j] = [];
+            polygonsOut[i][j][0] = j ? 'L' : 'M';
+            for(var k = 0; k < polygonsIn[i][j].length; k++) {
+                polygonsOut[i][j].push(
+                    polygonsIn[i][j][k]
+                );
+            }
+        }
+
+        if(!isOpenMode) {
+            polygonsOut[i].push([
+                'Z',
+                polygonsOut[i][0][1], // initial x
+                polygonsOut[i][0][2]  // initial y
+            ]);
+        }
+    }
+
+    return polygonsOut;
+}
+
+function _doSelect(selectionTesters, searchTraces) {
+    var allSelections = [];
+
+    var thisSelection;
+    var traceSelections = [];
+    var traceSelection;
+    for(var i = 0; i < searchTraces.length; i++) {
+        var searchInfo = searchTraces[i];
+
+        traceSelection = searchInfo._module.selectPoints(searchInfo, selectionTesters);
+        traceSelections.push(traceSelection);
+
+        thisSelection = fillSelectionItem(traceSelection, searchInfo);
+
+        allSelections = allSelections.concat(thisSelection);
+    }
+
+    return allSelections;
+}
+
+function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptions) {
+    var hadSearchTraces = !!searchTraces;
+    var plotinfo, xRef, yRef;
+    if(dragOptions) {
+        plotinfo = dragOptions.plotinfo;
+        xRef = dragOptions.xaxes[0]._id;
+        yRef = dragOptions.yaxes[0]._id;
+    }
+
+    var allSelections = [];
+    var allSearchTraces = [];
+
+    // select layout.selection polygons
+    var layoutPolygons = getLayoutPolygons(gd);
+
+    // add draft outline polygons to layoutPolygons
+    var fullLayout = gd._fullLayout;
+    if(plotinfo) {
+        var zoomLayer = fullLayout._zoomlayer;
+        var mode = fullLayout.dragmode;
+        var isDrawMode = drawMode(mode);
+        var isSelectMode = selectMode(mode);
+        if(isDrawMode || isSelectMode) {
+            var xaxis = getFromId(gd, xRef, 'x');
+            var yaxis = getFromId(gd, yRef, 'y');
+            if(xaxis && yaxis) {
+                var outlines = zoomLayer.selectAll('.select-outline-' + plotinfo.id);
+                if(outlines && gd._fullLayout._outlining) {
+                    if(outlines.length) {
+                        var e = outlines[0][0]; // pick first
+                        var d = e.getAttribute('d');
+                        var outlinePolys = readPaths(d, gd, plotinfo);
+
+                        var draftPolygons = [];
+                        for(var u = 0; u < outlinePolys.length; u++) {
+                            var p = outlinePolys[u];
+                            var polygon = [];
+                            for(var t = 0; t < p.length; t++) {
+                                polygon.push([
+                                    convert(xaxis, p[t][1]),
+                                    convert(yaxis, p[t][2])
+                                ]);
+                            }
+
+                            polygon.xref = xRef;
+                            polygon.yref = yRef;
+                            polygon.subtract = getSubtract(polygon, draftPolygons);
+
+                            draftPolygons.push(polygon);
+                        }
+
+                        layoutPolygons = layoutPolygons.concat(draftPolygons);
+                    }
+                }
+            }
+        }
+    }
+
+    var subplots = (xRef && yRef) ? [xRef + yRef] :
+        fullLayout._subplots.cartesian;
+
+    epmtySplomSelectionBatch(gd);
+
+    var seenSplom = {};
+
+    for(var i = 0; i < subplots.length; i++) {
+        var subplot = subplots[i];
+        var yAt = subplot.indexOf('y');
+        var _xRef = subplot.slice(0, yAt);
+        var _yRef = subplot.slice(yAt);
+
+        var _selectionTesters = (xRef && yRef) ? selectionTesters : undefined;
+        _selectionTesters = addTester(layoutPolygons, _xRef, _yRef, _selectionTesters);
+
+        if(_selectionTesters) {
+            var _searchTraces = searchTraces;
+            if(!hadSearchTraces) {
+                var _xaxis = getFromId(gd, _xRef, 'x');
+                var _yaxis = getFromId(gd, _yRef, 'y');
+
+                _searchTraces = determineSearchTraces(
+                    gd,
+                    [_xaxis],
+                    [_yaxis],
+                    subplot
+                );
+
+                for(var w = 0; w < _searchTraces.length; w++) {
+                    var s = _searchTraces[w];
+                    var cd0 = s.cd[0];
+                    var trace = cd0.trace;
+
+                    if(s._module.name === 'scattergl' && !cd0.t.xpx) {
+                        var x = trace.x;
+                        var y = trace.y;
+                        var len = trace._length;
+                        // generate stash for scattergl
+                        cd0.t.xpx = [];
+                        cd0.t.ypx = [];
+                        for(var j = 0; j < len; j++) {
+                            cd0.t.xpx[j] = _xaxis.c2p(x[j]);
+                            cd0.t.ypx[j] = _yaxis.c2p(y[j]);
+                        }
+                    }
+
+                    if(s._module.name === 'splom') {
+                        if(!seenSplom[trace.uid]) {
+                            seenSplom[trace.uid] = true;
+                        }
+                    }
+                }
+            }
+            var selection = _doSelect(_selectionTesters, _searchTraces);
+
+            allSelections = allSelections.concat(selection);
+            allSearchTraces = allSearchTraces.concat(_searchTraces);
+        }
+    }
+
+    var eventData = {points: allSelections};
+    updateSelectedState(gd, allSearchTraces, eventData);
+
+    var clickmode = fullLayout.clickmode;
+    var sendEvents = clickmode.indexOf('event') > -1 && mayEmitSelected;
+
+    if(
+        !plotinfo && // get called from plot_api & plots
+        mayEmitSelected
+    ) {
+        var activePolygons = getLayoutPolygons(gd, true);
+
+        if(activePolygons.length) {
+            var xref = activePolygons[0].xref;
+            var yref = activePolygons[0].yref;
+            if(xref && yref) {
+                var poly = castMultiPolygon(activePolygons);
+
+                var fillRangeItems = makeFillRangeItems([
+                    getFromId(gd, xref, 'x'),
+                    getFromId(gd, yref, 'y')
+                ]);
+
+                fillRangeItems(eventData, poly);
+            }
+        }
+
+        if(gd._fullLayout._noEmitSelectedAtStart) {
+            gd._fullLayout._noEmitSelectedAtStart = false;
+        } else {
+            if(sendEvents) emitSelected(gd, eventData);
+        }
+
+        fullLayout._reselect = false;
+    }
+
+    if(
+        !plotinfo && // get called from plot_api & plots
+        fullLayout._deselect
+    ) {
+        var deselect = fullLayout._deselect;
+        xRef = deselect.xref;
+        yRef = deselect.yref;
+
+        if(!subplotSelected(xRef, yRef, allSearchTraces)) {
+            deselectSubplot(gd, xRef, yRef, searchTraces);
+        }
+
+        if(sendEvents) {
+            if(eventData.points.length) {
+                emitSelected(gd, eventData);
+            } else {
+                emitDeselect(gd);
+            }
+        }
+
+        fullLayout._deselect = false;
+    }
+
+    return {
+        eventData: eventData,
+        selectionTesters: selectionTesters
+    };
+}
+
+function epmtySplomSelectionBatch(gd) {
+    var cd = gd.calcdata;
+    if(!cd) return;
+
+    for(var i = 0; i < cd.length; i++) {
+        var cd0 = cd[i][0];
+        var trace = cd0.trace;
+        var splomScenes = gd._fullLayout._splomScenes;
+        if(splomScenes) {
+            var scene = splomScenes[trace.uid];
+            if(scene) {
+                scene.selectBatch = [];
+            }
+        }
+    }
+}
+
+function subplotSelected(xRef, yRef, searchTraces) {
+    for(var i = 0; i < searchTraces.length; i++) {
+        var s = searchTraces[i];
+        if(
+            (s.xaxis && s.xaxis._id === xRef) &&
+            (s.yaxis && s.yaxis._id === yRef)
+        ) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function deselectSubplot(gd, xRef, yRef, searchTraces) {
+    searchTraces = determineSearchTraces(
+        gd,
+        [getFromId(gd, xRef, 'x')],
+        [getFromId(gd, yRef, 'y')],
+        xRef + yRef
+    );
+
+    for(var k = 0; k < searchTraces.length; k++) {
+        var searchInfo = searchTraces[k];
+        searchInfo._module.selectPoints(searchInfo, false);
+    }
+
+    updateSelectedState(gd, searchTraces);
+}
+
+function addTester(layoutPolygons, xRef, yRef, selectionTesters) {
+    var mergedPolygons;
+
+    for(var i = 0; i < layoutPolygons.length; i++) {
+        var currentPolygon = layoutPolygons[i];
+        if(xRef !== currentPolygon.xref || yRef !== currentPolygon.yref) continue;
+
+        if(mergedPolygons) {
+            var subtract = !!currentPolygon.subtract;
+            mergedPolygons = mergePolygons(mergedPolygons, currentPolygon, subtract);
+            selectionTesters = multiTester(mergedPolygons);
+        } else {
+            mergedPolygons = [currentPolygon];
+            selectionTesters = polygonTester(currentPolygon);
+        }
+    }
+
+    return selectionTesters;
+}
+
+function getLayoutPolygons(gd, onlyActiveOnes) {
+    var allPolygons = [];
+
+    var fullLayout = gd._fullLayout;
+    var allSelections = fullLayout.selections;
+    var len = allSelections.length;
+
+    for(var i = 0; i < len; i++) {
+        if(onlyActiveOnes && i !== fullLayout._activeSelectionIndex) continue;
+
+        var selection = allSelections[i];
+        if(!selection) continue;
+
+        var xref = selection.xref;
+        var yref = selection.yref;
+
+        var xaxis = getFromId(gd, xref, 'x');
+        var yaxis = getFromId(gd, yref, 'y');
+
+        var xmin, xmax, ymin, ymax;
+
+        var polygon;
+        if(selection.type === 'rect') {
+            polygon = [];
+
+            var x0 = convert(xaxis, selection.x0);
+            var x1 = convert(xaxis, selection.x1);
+            var y0 = convert(yaxis, selection.y0);
+            var y1 = convert(yaxis, selection.y1);
+            polygon = [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
+
+            xmin = Math.min(x0, x1);
+            xmax = Math.max(x0, x1);
+            ymin = Math.min(y0, y1);
+            ymax = Math.max(y0, y1);
+
+            polygon.xmin = xmin;
+            polygon.xmax = xmax;
+            polygon.ymin = ymin;
+            polygon.ymax = ymax;
+
+            polygon.xref = xref;
+            polygon.yref = yref;
+
+            polygon.subtract = false;
+            polygon.isRect = true;
+
+            allPolygons.push(polygon);
+        } else if(selection.type === 'path') {
+            var segments = selection.path.split('Z');
+
+            var multiPolygons = [];
+            for(var j = 0; j < segments.length; j++) {
+                var path = segments[j];
+                if(!path) continue;
+                path += 'Z';
+
+                var allX = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsX, 'raw');
+                var allY = shapeHelpers.extractPathCoords(path, shapeConstants.paramIsY, 'raw');
+
+                xmin = Infinity;
+                xmax = -Infinity;
+                ymin = Infinity;
+                ymax = -Infinity;
+
+                polygon = [];
+
+                for(var k = 0; k < allX.length; k++) {
+                    var x = convert(xaxis, allX[k]);
+                    var y = convert(yaxis, allY[k]);
+
+                    polygon.push([x, y]);
+
+                    xmin = Math.min(x, xmin);
+                    xmax = Math.max(x, xmax);
+                    ymin = Math.min(y, ymin);
+                    ymax = Math.max(y, ymax);
+                }
+
+                polygon.xmin = xmin;
+                polygon.xmax = xmax;
+                polygon.ymin = ymin;
+                polygon.ymax = ymax;
+
+                polygon.xref = xref;
+                polygon.yref = yref;
+                polygon.subtract = getSubtract(polygon, multiPolygons);
+
+                multiPolygons.push(polygon);
+                allPolygons.push(polygon);
+            }
+        }
+    }
+
+    return allPolygons;
+}
+
+function getSubtract(polygon, previousPolygons) {
+    var subtract = false;
+    for(var i = 0; i < previousPolygons.length; i++) {
+        var previousPolygon = previousPolygons[i];
+
+        // find out if a point of polygon is inside previous polygons
+        for(var k = 0; k < polygon.length; k++) {
+            if(pointInPolygon(polygon[k], previousPolygon)) {
+                subtract = !subtract;
+                break;
+            }
+        }
+    }
+    return subtract;
+}
+
+function convert(ax, d) {
+    if(ax.type === 'date') d = d.replace('_', ' ');
+    return ax.type === 'log' ? ax.c2p(d) : ax.r2p(d, null, ax.calendar);
+}
+
+function castMultiPolygon(allPolygons) {
+    var len = allPolygons.length;
+
+    // descibe multi polygons in one polygon
+    var p = [];
+    for(var i = 0; i < len; i++) {
+        var polygon = allPolygons[i];
+        p = p.concat(polygon);
+
+        // add starting vertex to close
+        // which indicates next polygon
+        p = p.concat([polygon[0]]);
+    }
+
+    return computeRectAndRanges(p);
+}
+
+function computeRectAndRanges(poly) {
+    poly.isRect = poly.length === 5 &&
+        poly[0][0] === poly[4][0] &&
+        poly[0][1] === poly[4][1] &&
+        (
+            poly[0][0] === poly[1][0] &&
+            poly[2][0] === poly[3][0] &&
+            poly[0][1] === poly[3][1] &&
+            poly[1][1] === poly[2][1]
+        ) ||
+        (
+            poly[0][1] === poly[1][1] &&
+            poly[2][1] === poly[3][1] &&
+            poly[0][0] === poly[3][0] &&
+            poly[1][0] === poly[2][0]
+        );
+
+    if(poly.isRect) {
+        poly.xmin = Math.min(poly[0][0], poly[2][0]);
+        poly.xmax = Math.max(poly[0][0], poly[2][0]);
+        poly.ymin = Math.min(poly[0][1], poly[2][1]);
+        poly.ymax = Math.max(poly[0][1], poly[2][1]);
+    }
+
+    return poly;
+}
+
+function makeFillRangeItems(allAxes) {
+    return function(eventData, poly) {
+        var range;
+        var lassoPoints;
+
+        for(var i = 0; i < allAxes.length; i++) {
+            var ax = allAxes[i];
+            var id = ax._id;
+            var axLetter = id.charAt(0);
+
+            if(poly.isRect) {
+                if(!range) range = {};
+                var min = poly[axLetter + 'min'];
+                var max = poly[axLetter + 'max'];
+
+                if(min !== undefined && max !== undefined) {
+                    range[id] = [
+                        p2r(ax, min),
+                        p2r(ax, max)
+                    ].sort(ascending);
+                }
+            } else {
+                if(!lassoPoints) lassoPoints = {};
+                lassoPoints[id] = poly.map(axValue(ax));
+            }
+        }
+
+        if(range) {
+            eventData.range = range;
+        }
+
+        if(lassoPoints) {
+            eventData.lassoPoints = lassoPoints;
+        }
+    };
+}
+
+function getFillRangeItems(dragOptions) {
+    var plotinfo = dragOptions.plotinfo;
+
+    return (
+        plotinfo.fillRangeItems || // allow subplots (i.e. geo, mapbox, sankey) to override fillRangeItems routine
+        makeFillRangeItems(dragOptions.xaxes.concat(dragOptions.yaxes))
+    );
+}
+
+function emitSelecting(gd, eventData) {
+    gd.emit('plotly_selecting', eventData);
+}
+
+function emitSelected(gd, eventData) {
+    if(eventData) {
+        eventData.selections = (gd.layout || {}).selections || [];
+    }
+
+    gd.emit('plotly_selected', eventData);
+}
+
+function emitDeselect(gd) {
+    gd.emit('plotly_deselect', null);
+}
+
+module.exports = {
+    reselect: reselect,
+    prepSelect: prepSelect,
+    clearOutline: clearOutline,
+    clearSelectionsCache: clearSelectionsCache,
+    selectOnClick: selectOnClick
+};
+
+},{"../../lib":264,"../../lib/clear_gl_canvases":251,"../../lib/polygon":276,"../../lib/throttle":290,"../../plot_api/subroutines":303,"../../plots/cartesian/axis_ids":317,"../../registry":361,"../color":120,"../dragelement/helpers":138,"../drawing":142,"../fx":160,"../fx/helpers":156,"../shapes/constants":212,"../shapes/display_outlines":214,"../shapes/draw_newshape/helpers":219,"../shapes/draw_newshape/newshapes":220,"../shapes/handle_outline":221,"../shapes/helpers":222,"./constants":201,"./draw":203,"./draw_newselection/newselections":206,"./helpers":207,"point-in-polygon/nested":73,"polybooljs":74}],210:[function(_dereq_,module,exports){
 'use strict';
 
 var annAttrs = _dereq_('../annotations/attributes');
@@ -36685,7 +38902,7 @@ module.exports = templatedArray('shape', {
     editType: 'arraydraw'
 });
 
-},{"../../constants/axis_placeable_objects":225,"../../lib/extend":245,"../../plot_api/plot_template":290,"../../traces/scatter/attributes":381,"../annotations/attributes":102,"../drawing/attributes":140}],200:[function(_dereq_,module,exports){
+},{"../../constants/axis_placeable_objects":237,"../../lib/extend":257,"../../plot_api/plot_template":302,"../../traces/scatter/attributes":390,"../annotations/attributes":103,"../drawing/attributes":141}],211:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -36797,7 +39014,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../lib":252,"../../plots/cartesian/axes":301,"./constants":201,"./helpers":210}],201:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/cartesian/axes":313,"./constants":212,"./helpers":222}],212:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -36852,7 +39069,7 @@ module.exports = {
     }
 };
 
-},{}],202:[function(_dereq_,module,exports){
+},{}],213:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -36881,7 +39098,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var path = coerce('path');
     var dfltType = path ? 'path' : 'rect';
     var shapeType = coerce('type', dfltType);
-    if(shapeOut.type !== 'path') delete shapeOut.path;
+    var noPath = shapeType !== 'path';
+    if(noPath) delete shapeOut.path;
 
     coerce('editable');
     coerce('layer');
@@ -36923,7 +39141,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
 
         // Coerce x0, x1, y0, y1
-        if(shapeType !== 'path') {
+        if(noPath) {
             var dflt0 = 0.25;
             var dflt1 = 0.75;
 
@@ -36967,14 +39185,415 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
     }
 
-    if(shapeType === 'path') {
-        coerce('path');
-    } else {
+    if(noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 }
 
-},{"../../lib":252,"../../plots/array_container_defaults":296,"../../plots/cartesian/axes":301,"./attributes":199,"./helpers":210}],203:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/array_container_defaults":308,"../../plots/cartesian/axes":313,"./attributes":210,"./helpers":222}],214:[function(_dereq_,module,exports){
+'use strict';
+
+var Lib = _dereq_('../../lib');
+var strTranslate = Lib.strTranslate;
+
+var dragElement = _dereq_('../dragelement');
+var dragHelpers = _dereq_('../dragelement/helpers');
+var drawMode = dragHelpers.drawMode;
+var selectMode = dragHelpers.selectMode;
+
+var Registry = _dereq_('../../registry');
+var Color = _dereq_('../color');
+
+var constants = _dereq_('./draw_newshape/constants');
+var i000 = constants.i000;
+var i090 = constants.i090;
+var i180 = constants.i180;
+var i270 = constants.i270;
+
+var handleOutline = _dereq_('./handle_outline');
+var clearOutlineControllers = handleOutline.clearOutlineControllers;
+
+var helpers = _dereq_('./draw_newshape/helpers');
+var pointsOnRectangle = helpers.pointsOnRectangle;
+var pointsOnEllipse = helpers.pointsOnEllipse;
+var writePaths = helpers.writePaths;
+var newShapes = _dereq_('./draw_newshape/newshapes');
+var newSelections = _dereq_('../selections/draw_newselection/newselections');
+
+module.exports = function displayOutlines(polygons, outlines, dragOptions, nCalls) {
+    if(!nCalls) nCalls = 0;
+
+    var gd = dragOptions.gd;
+
+    function redraw() {
+        // recursive call
+        displayOutlines(polygons, outlines, dragOptions, nCalls++);
+
+        if(pointsOnEllipse(polygons[0])) {
+            update({redrawing: true});
+        }
+    }
+
+    function update(opts) {
+        var updateObject = {};
+
+        if(dragOptions.isActiveShape !== undefined) {
+            dragOptions.isActiveShape = false; // i.e. to disable shape controllers
+            updateObject = newShapes(outlines, dragOptions);
+        }
+
+        if(dragOptions.isActiveSelection !== undefined) {
+            dragOptions.isActiveSelection = false; // i.e. to disable selection controllers
+            updateObject = newSelections(outlines, dragOptions);
+
+            gd._fullLayout._reselect = true;
+        }
+
+        if(Object.keys(updateObject).length) {
+            Registry.call((opts || {}).redrawing ? 'relayout' : '_guiRelayout', gd, updateObject);
+        }
+    }
+
+    var fullLayout = gd._fullLayout;
+    var zoomLayer = fullLayout._zoomlayer;
+
+    var dragmode = dragOptions.dragmode;
+    var isDrawMode = drawMode(dragmode);
+    var isSelectMode = selectMode(dragmode);
+
+    if(isDrawMode || isSelectMode) {
+        gd._fullLayout._outlining = true;
+    }
+
+    clearOutlineControllers(gd);
+
+    // make outline
+    outlines.attr('d', writePaths(polygons));
+
+    // add controllers
+    var vertexDragOptions;
+    var groupDragOptions;
+    var indexI; // cell index
+    var indexJ; // vertex or cell-controller index
+    var copyPolygons;
+
+    if(!nCalls && (
+        dragOptions.isActiveShape ||
+        dragOptions.isActiveSelection
+    )) {
+        copyPolygons = recordPositions([], polygons);
+
+        var g = zoomLayer.append('g').attr('class', 'outline-controllers');
+        addVertexControllers(g);
+        addGroupControllers();
+    }
+
+    function startDragVertex(evt) {
+        indexI = +evt.srcElement.getAttribute('data-i');
+        indexJ = +evt.srcElement.getAttribute('data-j');
+
+        vertexDragOptions[indexI][indexJ].moveFn = moveVertexController;
+    }
+
+    function moveVertexController(dx, dy) {
+        if(!polygons.length) return;
+
+        var x0 = copyPolygons[indexI][indexJ][1];
+        var y0 = copyPolygons[indexI][indexJ][2];
+
+        var cell = polygons[indexI];
+        var len = cell.length;
+        if(pointsOnRectangle(cell)) {
+            var _dx = dx;
+            var _dy = dy;
+            if(dragOptions.isActiveSelection) {
+                // handle an edge contoller for rect selections
+                var nextPoint = getNextPoint(cell, indexJ);
+                if(nextPoint[1] === cell[indexJ][1]) { // a vertical edge
+                    _dy = 0;
+                } else { // a horizontal edge
+                    _dx = 0;
+                }
+            }
+
+            for(var q = 0; q < len; q++) {
+                if(q === indexJ) continue;
+
+                // move other corners of rectangle
+                var pos = cell[q];
+
+                if(pos[1] === cell[indexJ][1]) {
+                    pos[1] = x0 + _dx;
+                }
+
+                if(pos[2] === cell[indexJ][2]) {
+                    pos[2] = y0 + _dy;
+                }
+            }
+            // move the corner
+            cell[indexJ][1] = x0 + _dx;
+            cell[indexJ][2] = y0 + _dy;
+
+            if(!pointsOnRectangle(cell)) {
+                // reject result to rectangles with ensure areas
+                for(var j = 0; j < len; j++) {
+                    for(var k = 0; k < cell[j].length; k++) {
+                        cell[j][k] = copyPolygons[indexI][j][k];
+                    }
+                }
+            }
+        } else { // other polylines
+            cell[indexJ][1] = x0 + dx;
+            cell[indexJ][2] = y0 + dy;
+        }
+
+        redraw();
+    }
+
+    function endDragVertexController() {
+        update();
+    }
+
+    function removeVertex() {
+        if(!polygons.length) return;
+        if(!polygons[indexI]) return;
+        if(!polygons[indexI].length) return;
+
+        var newPolygon = [];
+        for(var j = 0; j < polygons[indexI].length; j++) {
+            if(j !== indexJ) {
+                newPolygon.push(
+                    polygons[indexI][j]
+                );
+            }
+        }
+
+        if(newPolygon.length > 1 && !(
+            newPolygon.length === 2 && newPolygon[1][0] === 'Z')
+        ) {
+            if(indexJ === 0) {
+                newPolygon[0][0] = 'M';
+            }
+
+            polygons[indexI] = newPolygon;
+
+            redraw();
+            update();
+        }
+    }
+
+    function clickVertexController(numClicks, evt) {
+        if(numClicks === 2) {
+            indexI = +evt.srcElement.getAttribute('data-i');
+            indexJ = +evt.srcElement.getAttribute('data-j');
+
+            var cell = polygons[indexI];
+            if(
+                !pointsOnRectangle(cell) &&
+                !pointsOnEllipse(cell)
+            ) {
+                removeVertex();
+            }
+        }
+    }
+
+    function addVertexControllers(g) {
+        vertexDragOptions = [];
+
+        for(var i = 0; i < polygons.length; i++) {
+            var cell = polygons[i];
+
+            var onRect = pointsOnRectangle(cell);
+            var onEllipse = !onRect && pointsOnEllipse(cell);
+
+            vertexDragOptions[i] = [];
+            var len = cell.length;
+            for(var j = 0; j < len; j++) {
+                if(cell[j][0] === 'Z') continue;
+
+                if(onEllipse &&
+                    j !== i000 &&
+                    j !== i090 &&
+                    j !== i180 &&
+                    j !== i270
+                ) {
+                    continue;
+                }
+
+                var rectSelection = onRect && dragOptions.isActiveSelection;
+                var nextPoint;
+                if(rectSelection) nextPoint = getNextPoint(cell, j);
+
+                var x = cell[j][1];
+                var y = cell[j][2];
+
+                var vertex = g.append(rectSelection ? 'rect' : 'circle')
+                    .attr('data-i', i)
+                    .attr('data-j', j)
+                    .style({
+                        fill: Color.background,
+                        stroke: Color.defaultLine,
+                        'stroke-width': 1,
+                        'shape-rendering': 'crispEdges',
+                    });
+
+                if(rectSelection) {
+                    // convert a vertex controller to an edge controller for rect selections
+                    var dx = nextPoint[1] - x;
+                    var dy = nextPoint[2] - y;
+
+                    var width = dy ? 5 : Math.max(Math.min(25, Math.abs(dx) - 5), 5);
+                    var height = dx ? 5 : Math.max(Math.min(25, Math.abs(dy) - 5), 5);
+
+                    vertex.classed(dy ? 'cursor-ew-resize' : 'cursor-ns-resize', true)
+                        .attr('width', width)
+                        .attr('height', height)
+                        .attr('x', x - width / 2)
+                        .attr('y', y - height / 2)
+                        .attr('transform', strTranslate(dx / 2, dy / 2));
+                } else {
+                    vertex.classed('cursor-grab', true)
+                        .attr('r', 5)
+                        .attr('cx', x)
+                        .attr('cy', y);
+                }
+
+                vertexDragOptions[i][j] = {
+                    element: vertex.node(),
+                    gd: gd,
+                    prepFn: startDragVertex,
+                    doneFn: endDragVertexController,
+                    clickFn: clickVertexController
+                };
+
+                dragElement.init(vertexDragOptions[i][j]);
+            }
+        }
+    }
+
+    function moveGroup(dx, dy) {
+        if(!polygons.length) return;
+
+        for(var i = 0; i < polygons.length; i++) {
+            for(var j = 0; j < polygons[i].length; j++) {
+                for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
+                    polygons[i][j][k + 1] = copyPolygons[i][j][k + 1] + dx;
+                    polygons[i][j][k + 2] = copyPolygons[i][j][k + 2] + dy;
+                }
+            }
+        }
+    }
+
+    function moveGroupController(dx, dy) {
+        moveGroup(dx, dy);
+
+        redraw();
+    }
+
+    function startDragGroupController(evt) {
+        indexI = +evt.srcElement.getAttribute('data-i');
+        if(!indexI) indexI = 0; // ensure non-existing move button get zero index
+
+        groupDragOptions[indexI].moveFn = moveGroupController;
+    }
+
+    function endDragGroupController() {
+        update();
+    }
+
+    function clickGroupController(numClicks) {
+        if(numClicks === 2) {
+            eraseActiveSelection(gd);
+        }
+    }
+
+    function addGroupControllers() {
+        groupDragOptions = [];
+
+        if(!polygons.length) return;
+
+        var i = 0;
+        groupDragOptions[i] = {
+            element: outlines[0][0],
+            gd: gd,
+            prepFn: startDragGroupController,
+            doneFn: endDragGroupController,
+            clickFn: clickGroupController
+        };
+
+        dragElement.init(groupDragOptions[i]);
+    }
+};
+
+function recordPositions(polygonsOut, polygonsIn) {
+    for(var i = 0; i < polygonsIn.length; i++) {
+        var cell = polygonsIn[i];
+        polygonsOut[i] = [];
+        for(var j = 0; j < cell.length; j++) {
+            polygonsOut[i][j] = [];
+            for(var k = 0; k < cell[j].length; k++) {
+                polygonsOut[i][j][k] = cell[j][k];
+            }
+        }
+    }
+    return polygonsOut;
+}
+
+function getNextPoint(cell, j) {
+    var x = cell[j][1];
+    var y = cell[j][2];
+    var len = cell.length;
+    var nextJ, nextX, nextY;
+    nextJ = (j + 1) % len;
+    nextX = cell[nextJ][1];
+    nextY = cell[nextJ][2];
+
+    // avoid potential double points (closing points)
+    if(nextX === x && nextY === y) {
+        nextJ = (j + 2) % len;
+        nextX = cell[nextJ][1];
+        nextY = cell[nextJ][2];
+    }
+
+    return [nextJ, nextX, nextY];
+}
+
+function eraseActiveSelection(gd) {
+    // Do not allow removal of selections on other dragmodes.
+    // This ensures the user could still double click to
+    // deselect all trace.selectedpoints,
+    // if that's what they wanted.
+    // Also double click to zoom back won't result in
+    // any surprising selection removal.
+    if(!selectMode(gd._fullLayout.dragmode)) return;
+
+    clearOutlineControllers(gd);
+
+    var id = gd._fullLayout._activeSelectionIndex;
+    var selections = (gd.layout || {}).selections || [];
+    if(id < selections.length) {
+        var list = [];
+        for(var q = 0; q < selections.length; q++) {
+            if(q !== id) {
+                list.push(selections[q]);
+            }
+        }
+
+        delete gd._fullLayout._activeSelectionIndex;
+
+        var erasedSelection = gd._fullLayout.selections[id];
+        gd._fullLayout._deselect = {
+            xref: erasedSelection.xref,
+            yref: erasedSelection.yref
+        };
+
+        Registry.call('_guiRelayout', gd, {
+            selections: list
+        });
+    }
+}
+
+},{"../../lib":264,"../../registry":361,"../color":120,"../dragelement":139,"../dragelement/helpers":138,"../selections/draw_newselection/newselections":206,"./draw_newshape/constants":217,"./draw_newshape/helpers":219,"./draw_newshape/newshapes":220,"./handle_outline":221}],215:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -36982,9 +39601,9 @@ var Lib = _dereq_('../../lib');
 var Axes = _dereq_('../../plots/cartesian/axes');
 
 var readPaths = _dereq_('./draw_newshape/helpers').readPaths;
-var displayOutlines = _dereq_('./draw_newshape/display_outlines');
+var displayOutlines = _dereq_('./display_outlines');
 
-var clearOutlineControllers = _dereq_('../../plots/cartesian/handle_outline').clearOutlineControllers;
+var clearOutlineControllers = _dereq_('./handle_outline').clearOutlineControllers;
 
 var Color = _dereq_('../color');
 var Drawing = _dereq_('../drawing');
@@ -36995,6 +39614,7 @@ var setCursor = _dereq_('../../lib/setcursor');
 
 var constants = _dereq_('./constants');
 var helpers = _dereq_('./helpers');
+var getPathString = helpers.getPathString;
 
 
 // Shapes are stored in gd.layout.shapes, an array of objects
@@ -37035,7 +39655,7 @@ function draw(gd) {
 }
 
 function shouldSkipEdits(gd) {
-    return !!gd._fullLayout._drawing;
+    return !!gd._fullLayout._outlining;
 }
 
 function couldHaveActiveShape(gd) {
@@ -37050,7 +39670,7 @@ function drawOne(gd, index) {
         .selectAll('.shapelayer [data-index="' + index + '"]')
         .remove();
 
-    var o = helpers.makeOptionsAndPlotinfo(gd, index);
+    var o = helpers.makeShapesOptionsAndPlotinfo(gd, index);
     var options = o.options;
     var plotinfo = o.plotinfo;
 
@@ -37555,115 +40175,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     }
 }
 
-function getPathString(gd, options) {
-    var type = options.type;
-    var xRefType = Axes.getRefType(options.xref);
-    var yRefType = Axes.getRefType(options.yref);
-    var xa = Axes.getFromId(gd, options.xref);
-    var ya = Axes.getFromId(gd, options.yref);
-    var gs = gd._fullLayout._size;
-    var x2r, x2p, y2r, y2p;
-    var x0, x1, y0, y1;
-
-    if(xa) {
-        if(xRefType === 'domain') {
-            x2p = function(v) { return xa._offset + xa._length * v; };
-        } else {
-            x2r = helpers.shapePositionToRange(xa);
-            x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
-        }
-    } else {
-        x2p = function(v) { return gs.l + gs.w * v; };
-    }
-
-    if(ya) {
-        if(yRefType === 'domain') {
-            y2p = function(v) { return ya._offset + ya._length * (1 - v); };
-        } else {
-            y2r = helpers.shapePositionToRange(ya);
-            y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
-        }
-    } else {
-        y2p = function(v) { return gs.t + gs.h * (1 - v); };
-    }
-
-    if(type === 'path') {
-        if(xa && xa.type === 'date') x2p = helpers.decodeDate(x2p);
-        if(ya && ya.type === 'date') y2p = helpers.decodeDate(y2p);
-        return convertPath(options, x2p, y2p);
-    }
-
-    if(options.xsizemode === 'pixel') {
-        var xAnchorPos = x2p(options.xanchor);
-        x0 = xAnchorPos + options.x0;
-        x1 = xAnchorPos + options.x1;
-    } else {
-        x0 = x2p(options.x0);
-        x1 = x2p(options.x1);
-    }
-
-    if(options.ysizemode === 'pixel') {
-        var yAnchorPos = y2p(options.yanchor);
-        y0 = yAnchorPos - options.y0;
-        y1 = yAnchorPos - options.y1;
-    } else {
-        y0 = y2p(options.y0);
-        y1 = y2p(options.y1);
-    }
-
-    if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
-    if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
-
-    // circle
-    var cx = (x0 + x1) / 2;
-    var cy = (y0 + y1) / 2;
-    var rx = Math.abs(cx - x0);
-    var ry = Math.abs(cy - y0);
-    var rArc = 'A' + rx + ',' + ry;
-    var rightPt = (cx + rx) + ',' + cy;
-    var topPt = cx + ',' + (cy - ry);
-    return 'M' + rightPt + rArc + ' 0 1,1 ' + topPt +
-        rArc + ' 0 0,1 ' + rightPt + 'Z';
-}
-
-
-function convertPath(options, x2p, y2p) {
-    var pathIn = options.path;
-    var xSizemode = options.xsizemode;
-    var ySizemode = options.ysizemode;
-    var xAnchor = options.xanchor;
-    var yAnchor = options.yanchor;
-
-    return pathIn.replace(constants.segmentRE, function(segment) {
-        var paramNumber = 0;
-        var segmentType = segment.charAt(0);
-        var xParams = constants.paramIsX[segmentType];
-        var yParams = constants.paramIsY[segmentType];
-        var nParams = constants.numParams[segmentType];
-
-        var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
-            if(xParams[paramNumber]) {
-                if(xSizemode === 'pixel') param = x2p(xAnchor) + Number(param);
-                else param = x2p(param);
-            } else if(yParams[paramNumber]) {
-                if(ySizemode === 'pixel') param = y2p(yAnchor) - Number(param);
-                else param = y2p(param);
-            }
-            paramNumber++;
-
-            if(paramNumber > nParams) param = 'X';
-            return param;
-        });
-
-        if(paramNumber > nParams) {
-            paramString = paramString.replace(/[\s,]*X.*/, '');
-            Lib.log('Ignoring extra params in segment ' + segment);
-        }
-
-        return segmentType + paramString;
-    });
-}
-
 function movePath(pathIn, moveX, moveY) {
     return pathIn.replace(constants.segmentRE, function(segment) {
         var paramNumber = 0;
@@ -37724,22 +40235,22 @@ function eraseActiveShape(gd) {
     var id = gd._fullLayout._activeShapeIndex;
     var shapes = (gd.layout || {}).shapes || [];
     if(id < shapes.length) {
-        var newShapes = [];
+        var list = [];
         for(var q = 0; q < shapes.length; q++) {
             if(q !== id) {
-                newShapes.push(shapes[q]);
+                list.push(shapes[q]);
             }
         }
 
         delete gd._fullLayout._activeShapeIndex;
 
         Registry.call('_guiRelayout', gd, {
-            shapes: newShapes
+            shapes: list
         });
     }
 }
 
-},{"../../lib":252,"../../lib/setcursor":272,"../../plot_api/plot_template":290,"../../plots/cartesian/axes":301,"../../plots/cartesian/handle_outline":312,"../../registry":352,"../color":119,"../dragelement":138,"../drawing":141,"./constants":201,"./draw_newshape/display_outlines":207,"./draw_newshape/helpers":208,"./helpers":210}],204:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../lib/setcursor":284,"../../plot_api/plot_template":302,"../../plots/cartesian/axes":313,"../../registry":361,"../color":120,"../dragelement":139,"../drawing":142,"./constants":212,"./display_outlines":214,"./draw_newshape/helpers":219,"./handle_outline":221,"./helpers":222}],216:[function(_dereq_,module,exports){
 'use strict';
 
 var dash = _dereq_('../../drawing/attributes').dash;
@@ -37815,7 +40326,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":245,"../../drawing/attributes":140}],205:[function(_dereq_,module,exports){
+},{"../../../lib/extend":257,"../../drawing/attributes":141}],217:[function(_dereq_,module,exports){
 'use strict';
 
 var CIRCLE_SIDES = 32;  // should be divisible by 4
@@ -37831,7 +40342,7 @@ module.exports = {
     SQRT2: Math.sqrt(2)
 };
 
-},{}],206:[function(_dereq_,module,exports){
+},{}],218:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../color');
@@ -37854,293 +40365,7 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
     coerce('activeshape.opacity');
 };
 
-},{"../../color":119}],207:[function(_dereq_,module,exports){
-'use strict';
-
-var dragElement = _dereq_('../../dragelement');
-var dragHelpers = _dereq_('../../dragelement/helpers');
-var drawMode = dragHelpers.drawMode;
-
-var Registry = _dereq_('../../../registry');
-
-var constants = _dereq_('./constants');
-var i000 = constants.i000;
-var i090 = constants.i090;
-var i180 = constants.i180;
-var i270 = constants.i270;
-
-var handleOutline = _dereq_('../../../plots/cartesian/handle_outline');
-var clearOutlineControllers = handleOutline.clearOutlineControllers;
-
-var helpers = _dereq_('./helpers');
-var pointsShapeRectangle = helpers.pointsShapeRectangle;
-var pointsShapeEllipse = helpers.pointsShapeEllipse;
-var writePaths = helpers.writePaths;
-var newShapes = _dereq_('./newshapes');
-
-module.exports = function displayOutlines(polygons, outlines, dragOptions, nCalls) {
-    if(!nCalls) nCalls = 0;
-
-    var gd = dragOptions.gd;
-
-    function redraw() {
-        // recursive call
-        displayOutlines(polygons, outlines, dragOptions, nCalls++);
-
-        if(pointsShapeEllipse(polygons[0])) {
-            update({redrawing: true});
-        }
-    }
-
-    function update(opts) {
-        dragOptions.isActiveShape = false; // i.e. to disable controllers
-
-        var updateObject = newShapes(outlines, dragOptions);
-        if(Object.keys(updateObject).length) {
-            Registry.call((opts || {}).redrawing ? 'relayout' : '_guiRelayout', gd, updateObject);
-        }
-    }
-
-
-    var isActiveShape = dragOptions.isActiveShape;
-    var fullLayout = gd._fullLayout;
-    var zoomLayer = fullLayout._zoomlayer;
-
-    var dragmode = dragOptions.dragmode;
-    var isDrawMode = drawMode(dragmode);
-
-    if(isDrawMode) gd._fullLayout._drawing = true;
-    else if(gd._fullLayout._activeShapeIndex >= 0) clearOutlineControllers(gd);
-
-    // make outline
-    outlines.attr('d', writePaths(polygons));
-
-    // add controllers
-    var vertexDragOptions;
-    var shapeDragOptions;
-    var indexI; // cell index
-    var indexJ; // vertex or cell-controller index
-    var copyPolygons;
-
-    if(isActiveShape && !nCalls) {
-        copyPolygons = recordPositions([], polygons);
-
-        var g = zoomLayer.append('g').attr('class', 'outline-controllers');
-        addVertexControllers(g);
-        addShapeControllers();
-    }
-
-    function startDragVertex(evt) {
-        indexI = +evt.srcElement.getAttribute('data-i');
-        indexJ = +evt.srcElement.getAttribute('data-j');
-
-        vertexDragOptions[indexI][indexJ].moveFn = moveVertexController;
-    }
-
-    function moveVertexController(dx, dy) {
-        if(!polygons.length) return;
-
-        var x0 = copyPolygons[indexI][indexJ][1];
-        var y0 = copyPolygons[indexI][indexJ][2];
-
-        var cell = polygons[indexI];
-        var len = cell.length;
-        if(pointsShapeRectangle(cell)) {
-            for(var q = 0; q < len; q++) {
-                if(q === indexJ) continue;
-
-                // move other corners of rectangle
-                var pos = cell[q];
-
-                if(pos[1] === cell[indexJ][1]) {
-                    pos[1] = x0 + dx;
-                }
-
-                if(pos[2] === cell[indexJ][2]) {
-                    pos[2] = y0 + dy;
-                }
-            }
-            // move the corner
-            cell[indexJ][1] = x0 + dx;
-            cell[indexJ][2] = y0 + dy;
-
-            if(!pointsShapeRectangle(cell)) {
-                // reject result to rectangles with ensure areas
-                for(var j = 0; j < len; j++) {
-                    for(var k = 0; k < cell[j].length; k++) {
-                        cell[j][k] = copyPolygons[indexI][j][k];
-                    }
-                }
-            }
-        } else { // other polylines
-            cell[indexJ][1] = x0 + dx;
-            cell[indexJ][2] = y0 + dy;
-        }
-
-        redraw();
-    }
-
-    function endDragVertexController() {
-        update();
-    }
-
-    function removeVertex() {
-        if(!polygons.length) return;
-        if(!polygons[indexI]) return;
-        if(!polygons[indexI].length) return;
-
-        var newPolygon = [];
-        for(var j = 0; j < polygons[indexI].length; j++) {
-            if(j !== indexJ) {
-                newPolygon.push(
-                    polygons[indexI][j]
-                );
-            }
-        }
-
-        if(newPolygon.length > 1 && !(
-            newPolygon.length === 2 && newPolygon[1][0] === 'Z')
-        ) {
-            if(indexJ === 0) {
-                newPolygon[0][0] = 'M';
-            }
-
-            polygons[indexI] = newPolygon;
-
-            redraw();
-            update();
-        }
-    }
-
-    function clickVertexController(numClicks, evt) {
-        if(numClicks === 2) {
-            indexI = +evt.srcElement.getAttribute('data-i');
-            indexJ = +evt.srcElement.getAttribute('data-j');
-
-            var cell = polygons[indexI];
-            if(
-                !pointsShapeRectangle(cell) &&
-                !pointsShapeEllipse(cell)
-            ) {
-                removeVertex();
-            }
-        }
-    }
-
-    function addVertexControllers(g) {
-        vertexDragOptions = [];
-
-        for(var i = 0; i < polygons.length; i++) {
-            var cell = polygons[i];
-
-            var onRect = pointsShapeRectangle(cell);
-            var onEllipse = !onRect && pointsShapeEllipse(cell);
-
-            vertexDragOptions[i] = [];
-            for(var j = 0; j < cell.length; j++) {
-                if(cell[j][0] === 'Z') continue;
-
-                if(onEllipse &&
-                    j !== i000 &&
-                    j !== i090 &&
-                    j !== i180 &&
-                    j !== i270
-                ) {
-                    continue;
-                }
-
-                var x = cell[j][1];
-                var y = cell[j][2];
-
-                var vertex = g.append('circle')
-                    .classed('cursor-grab', true)
-                    .attr('data-i', i)
-                    .attr('data-j', j)
-                    .attr('cx', x)
-                    .attr('cy', y)
-                    .attr('r', 4)
-                    .style({
-                        'mix-blend-mode': 'luminosity',
-                        fill: 'black',
-                        stroke: 'white',
-                        'stroke-width': 1
-                    });
-
-                vertexDragOptions[i][j] = {
-                    element: vertex.node(),
-                    gd: gd,
-                    prepFn: startDragVertex,
-                    doneFn: endDragVertexController,
-                    clickFn: clickVertexController
-                };
-
-                dragElement.init(vertexDragOptions[i][j]);
-            }
-        }
-    }
-
-    function moveShape(dx, dy) {
-        if(!polygons.length) return;
-
-        for(var i = 0; i < polygons.length; i++) {
-            for(var j = 0; j < polygons[i].length; j++) {
-                for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
-                    polygons[i][j][k + 1] = copyPolygons[i][j][k + 1] + dx;
-                    polygons[i][j][k + 2] = copyPolygons[i][j][k + 2] + dy;
-                }
-            }
-        }
-    }
-
-    function moveShapeController(dx, dy) {
-        moveShape(dx, dy);
-
-        redraw();
-    }
-
-    function startDragShapeController(evt) {
-        indexI = +evt.srcElement.getAttribute('data-i');
-        if(!indexI) indexI = 0; // ensure non-existing move button get zero index
-
-        shapeDragOptions[indexI].moveFn = moveShapeController;
-    }
-
-    function endDragShapeController() {
-        update();
-    }
-
-    function addShapeControllers() {
-        shapeDragOptions = [];
-
-        if(!polygons.length) return;
-
-        var i = 0;
-        shapeDragOptions[i] = {
-            element: outlines[0][0],
-            gd: gd,
-            prepFn: startDragShapeController,
-            doneFn: endDragShapeController
-        };
-
-        dragElement.init(shapeDragOptions[i]);
-    }
-};
-
-function recordPositions(polygonsOut, polygonsIn) {
-    for(var i = 0; i < polygonsIn.length; i++) {
-        var cell = polygonsIn[i];
-        polygonsOut[i] = [];
-        for(var j = 0; j < cell.length; j++) {
-            polygonsOut[i][j] = [];
-            for(var k = 0; k < cell[j].length; k++) {
-                polygonsOut[i][j][k] = cell[j][k];
-            }
-        }
-    }
-    return polygonsOut;
-}
-
-},{"../../../plots/cartesian/handle_outline":312,"../../../registry":352,"../../dragelement":138,"../../dragelement/helpers":137,"./constants":205,"./helpers":208,"./newshapes":209}],208:[function(_dereq_,module,exports){
+},{"../../color":120}],219:[function(_dereq_,module,exports){
 'use strict';
 
 var parseSvgPath = _dereq_('parse-svg-path');
@@ -38149,7 +40374,7 @@ var constants = _dereq_('./constants');
 var CIRCLE_SIDES = constants.CIRCLE_SIDES;
 var SQRT2 = constants.SQRT2;
 
-var cartesianHelpers = _dereq_('../../../plots/cartesian/helpers');
+var cartesianHelpers = _dereq_('../../selections/helpers');
 var p2r = cartesianHelpers.p2r;
 var r2p = cartesianHelpers.r2p;
 
@@ -38364,7 +40589,7 @@ function dist(a, b) {
     );
 }
 
-exports.pointsShapeRectangle = function(cell) {
+exports.pointsOnRectangle = function(cell) {
     var len = cell.length;
     if(len !== 5) return false;
 
@@ -38392,7 +40617,7 @@ exports.pointsShapeRectangle = function(cell) {
     );
 };
 
-exports.pointsShapeEllipse = function(cell) {
+exports.pointsOnEllipse = function(cell) {
     var len = cell.length;
     if(len !== CIRCLE_SIDES + 1) return false;
 
@@ -38469,7 +40694,24 @@ exports.ellipseOver = function(pos) {
     };
 };
 
-},{"../../../plots/cartesian/helpers":313,"./constants":205,"parse-svg-path":72}],209:[function(_dereq_,module,exports){
+exports.fixDatesForPaths = function(polygons, xaxis, yaxis) {
+    var xIsDate = xaxis.type === 'date';
+    var yIsDate = yaxis.type === 'date';
+    if(!xIsDate && !yIsDate) return polygons;
+
+    for(var i = 0; i < polygons.length; i++) {
+        for(var j = 0; j < polygons[i].length; j++) {
+            for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
+                if(xIsDate) polygons[i][j][k + 1] = polygons[i][j][k + 1].replace(' ', '_');
+                if(yIsDate) polygons[i][j][k + 2] = polygons[i][j][k + 2].replace(' ', '_');
+            }
+        }
+    }
+
+    return polygons;
+};
+
+},{"../../selections/helpers":207,"./constants":217,"parse-svg-path":72}],220:[function(_dereq_,module,exports){
 'use strict';
 
 var dragHelpers = _dereq_('../../dragelement/helpers');
@@ -38484,18 +40726,18 @@ var i270 = constants.i270;
 var cos45 = constants.cos45;
 var sin45 = constants.sin45;
 
-var cartesianHelpers = _dereq_('../../../plots/cartesian/helpers');
+var cartesianHelpers = _dereq_('../../selections/helpers');
 var p2r = cartesianHelpers.p2r;
 var r2p = cartesianHelpers.r2p;
 
-var handleOutline = _dereq_('../../../plots/cartesian/handle_outline');
-var clearSelect = handleOutline.clearSelect;
+var handleOutline = _dereq_('.././handle_outline');
+var clearOutline = handleOutline.clearOutline;
 
 var helpers = _dereq_('./helpers');
 var readPaths = helpers.readPaths;
 var writePaths = helpers.writePaths;
 var ellipseOver = helpers.ellipseOver;
-
+var fixDatesForPaths = helpers.fixDatesForPaths;
 
 module.exports = function newShapes(outlines, dragOptions) {
     if(!outlines.length) return;
@@ -38504,7 +40746,7 @@ module.exports = function newShapes(outlines, dragOptions) {
     var d = e.getAttribute('d');
 
     var gd = dragOptions.gd;
-    var drwStyle = gd._fullLayout.newshape;
+    var newStyle = gd._fullLayout.newshape;
 
     var plotinfo = dragOptions.plotinfo;
     var xaxis = plotinfo.xaxis;
@@ -38552,18 +40794,18 @@ module.exports = function newShapes(outlines, dragOptions) {
         xref: xPaper ? 'paper' : xaxis._id,
         yref: yPaper ? 'paper' : yaxis._id,
 
-        layer: drwStyle.layer,
-        opacity: drwStyle.opacity,
+        layer: newStyle.layer,
+        opacity: newStyle.opacity,
         line: {
-            color: drwStyle.line.color,
-            width: drwStyle.line.width,
-            dash: drwStyle.line.dash
+            color: newStyle.line.color,
+            width: newStyle.line.width,
+            dash: newStyle.line.dash
         }
     };
 
     if(!isOpenMode) {
-        newShape.fillcolor = drwStyle.fillcolor;
-        newShape.fillrule = drwStyle.fillrule;
+        newShape.fillcolor = newStyle.fillcolor;
+        newShape.fillrule = newStyle.fillrule;
     }
 
     var cell;
@@ -38573,6 +40815,7 @@ module.exports = function newShapes(outlines, dragOptions) {
 
     if(
         cell &&
+        cell.length === 5 && // ensure we only have 4 corners for a rect
         dragmode === 'drawrect'
     ) {
         newShape.type = 'rect';
@@ -38661,7 +40904,7 @@ module.exports = function newShapes(outlines, dragOptions) {
         cell = null;
     }
 
-    clearSelect(gd);
+    clearOutline(gd);
 
     var editHelpers = dragOptions.editHelpers;
     var modifyItem = (editHelpers || {}).modifyItem;
@@ -38702,29 +40945,40 @@ module.exports = function newShapes(outlines, dragOptions) {
     return editHelpers ? editHelpers.getUpdateObj() : {};
 };
 
-function fixDatesForPaths(polygons, xaxis, yaxis) {
-    var xIsDate = xaxis.type === 'date';
-    var yIsDate = yaxis.type === 'date';
-    if(!xIsDate && !yIsDate) return polygons;
+},{"../../dragelement/helpers":138,"../../selections/helpers":207,".././handle_outline":221,"./constants":217,"./helpers":219}],221:[function(_dereq_,module,exports){
+'use strict';
 
-    for(var i = 0; i < polygons.length; i++) {
-        for(var j = 0; j < polygons[i].length; j++) {
-            for(var k = 0; k + 2 < polygons[i][j].length; k += 2) {
-                if(xIsDate) polygons[i][j][k + 1] = polygons[i][j][k + 1].replace(' ', '_');
-                if(yIsDate) polygons[i][j][k + 2] = polygons[i][j][k + 2].replace(' ', '_');
-            }
-        }
+function clearOutlineControllers(gd) {
+    var zoomLayer = gd._fullLayout._zoomlayer;
+    if(zoomLayer) {
+        zoomLayer.selectAll('.outline-controllers').remove();
     }
-
-    return polygons;
 }
 
-},{"../../../plots/cartesian/handle_outline":312,"../../../plots/cartesian/helpers":313,"../../dragelement/helpers":137,"./constants":205,"./helpers":208}],210:[function(_dereq_,module,exports){
+function clearOutline(gd) {
+    var zoomLayer = gd._fullLayout._zoomlayer;
+    if(zoomLayer) {
+        // until we get around to persistent selections, remove the outline
+        // here. The selection itself will be removed when the plot redraws
+        // at the end.
+        zoomLayer.selectAll('.select-outline').remove();
+    }
+
+    gd._fullLayout._outlining = false;
+}
+
+module.exports = {
+    clearOutlineControllers: clearOutlineControllers,
+    clearOutline: clearOutline
+};
+
+},{}],222:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
 
 var Lib = _dereq_('../../lib');
+var Axes = _dereq_('../../plots/cartesian/axes');
 
 // special position conversion functions... category axis positions can't be
 // specified by their data values, because they don't make a continuous mapping.
@@ -38754,7 +41008,7 @@ exports.encodeDate = function(convertToDate) {
     return function(v) { return convertToDate(v).replace(' ', '_'); };
 };
 
-exports.extractPathCoords = function(path, paramsToUse) {
+exports.extractPathCoords = function(path, paramsToUse, isRaw) {
     var extractedCoordinates = [];
 
     var segments = path.match(constants.segmentRE);
@@ -38765,7 +41019,10 @@ exports.extractPathCoords = function(path, paramsToUse) {
         var params = segment.substr(1).match(constants.paramRE);
         if(!params || params.length < relevantParamIdx) return;
 
-        extractedCoordinates.push(Lib.cleanNumber(params[relevantParamIdx]));
+        var str = params[relevantParamIdx];
+        var pos = isRaw ? str : Lib.cleanNumber(str);
+
+        extractedCoordinates.push(pos);
     });
 
     return extractedCoordinates;
@@ -38844,7 +41101,7 @@ exports.roundPositionForSharpStrokeRendering = function(pos, strokeWidth) {
     return strokeWidthIsOdd ? posValAsInt + 0.5 : posValAsInt;
 };
 
-exports.makeOptionsAndPlotinfo = function(gd, index) {
+exports.makeShapesOptionsAndPlotinfo = function(gd, index) {
     var options = gd._fullLayout.shapes[index] || {};
 
     var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
@@ -38868,7 +41125,137 @@ exports.makeOptionsAndPlotinfo = function(gd, index) {
     };
 };
 
-},{"../../lib":252,"./constants":201}],211:[function(_dereq_,module,exports){
+// TODO: move to selections helpers?
+exports.makeSelectionsOptionsAndPlotinfo = function(gd, index) {
+    var options = gd._fullLayout.selections[index] || {};
+
+    var plotinfo = gd._fullLayout._plots[options.xref + options.yref];
+    var hasPlotinfo = !!plotinfo;
+    if(hasPlotinfo) {
+        plotinfo._hadPlotinfo = true;
+    } else {
+        plotinfo = {};
+        if(options.xref) plotinfo.xaxis = gd._fullLayout[options.xref + 'axis'];
+        if(options.yref) plotinfo.yaxis = gd._fullLayout[options.yref + 'axis'];
+    }
+
+    return {
+        options: options,
+        plotinfo: plotinfo
+    };
+};
+
+
+exports.getPathString = function(gd, options) {
+    var type = options.type;
+    var xRefType = Axes.getRefType(options.xref);
+    var yRefType = Axes.getRefType(options.yref);
+    var xa = Axes.getFromId(gd, options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+    var gs = gd._fullLayout._size;
+    var x2r, x2p, y2r, y2p;
+    var x0, x1, y0, y1;
+
+    if(xa) {
+        if(xRefType === 'domain') {
+            x2p = function(v) { return xa._offset + xa._length * v; };
+        } else {
+            x2r = exports.shapePositionToRange(xa);
+            x2p = function(v) { return xa._offset + xa.r2p(x2r(v, true)); };
+        }
+    } else {
+        x2p = function(v) { return gs.l + gs.w * v; };
+    }
+
+    if(ya) {
+        if(yRefType === 'domain') {
+            y2p = function(v) { return ya._offset + ya._length * (1 - v); };
+        } else {
+            y2r = exports.shapePositionToRange(ya);
+            y2p = function(v) { return ya._offset + ya.r2p(y2r(v, true)); };
+        }
+    } else {
+        y2p = function(v) { return gs.t + gs.h * (1 - v); };
+    }
+
+    if(type === 'path') {
+        if(xa && xa.type === 'date') x2p = exports.decodeDate(x2p);
+        if(ya && ya.type === 'date') y2p = exports.decodeDate(y2p);
+        return convertPath(options, x2p, y2p);
+    }
+
+    if(options.xsizemode === 'pixel') {
+        var xAnchorPos = x2p(options.xanchor);
+        x0 = xAnchorPos + options.x0;
+        x1 = xAnchorPos + options.x1;
+    } else {
+        x0 = x2p(options.x0);
+        x1 = x2p(options.x1);
+    }
+
+    if(options.ysizemode === 'pixel') {
+        var yAnchorPos = y2p(options.yanchor);
+        y0 = yAnchorPos - options.y0;
+        y1 = yAnchorPos - options.y1;
+    } else {
+        y0 = y2p(options.y0);
+        y1 = y2p(options.y1);
+    }
+
+    if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
+    if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
+
+    // circle
+    var cx = (x0 + x1) / 2;
+    var cy = (y0 + y1) / 2;
+    var rx = Math.abs(cx - x0);
+    var ry = Math.abs(cy - y0);
+    var rArc = 'A' + rx + ',' + ry;
+    var rightPt = (cx + rx) + ',' + cy;
+    var topPt = cx + ',' + (cy - ry);
+    return 'M' + rightPt + rArc + ' 0 1,1 ' + topPt +
+        rArc + ' 0 0,1 ' + rightPt + 'Z';
+};
+
+
+function convertPath(options, x2p, y2p) {
+    var pathIn = options.path;
+    var xSizemode = options.xsizemode;
+    var ySizemode = options.ysizemode;
+    var xAnchor = options.xanchor;
+    var yAnchor = options.yanchor;
+
+    return pathIn.replace(constants.segmentRE, function(segment) {
+        var paramNumber = 0;
+        var segmentType = segment.charAt(0);
+        var xParams = constants.paramIsX[segmentType];
+        var yParams = constants.paramIsY[segmentType];
+        var nParams = constants.numParams[segmentType];
+
+        var paramString = segment.substr(1).replace(constants.paramRE, function(param) {
+            if(xParams[paramNumber]) {
+                if(xSizemode === 'pixel') param = x2p(xAnchor) + Number(param);
+                else param = x2p(param);
+            } else if(yParams[paramNumber]) {
+                if(ySizemode === 'pixel') param = y2p(yAnchor) - Number(param);
+                else param = y2p(param);
+            }
+            paramNumber++;
+
+            if(paramNumber > nParams) param = 'X';
+            return param;
+        });
+
+        if(paramNumber > nParams) {
+            paramString = paramString.replace(/[\s,]*X.*/, '');
+            Lib.log('Ignoring extra params in segment ' + segment);
+        }
+
+        return segmentType + paramString;
+    });
+}
+
+},{"../../lib":264,"../../plots/cartesian/axes":313,"./constants":212}],223:[function(_dereq_,module,exports){
 'use strict';
 
 var drawModule = _dereq_('./draw');
@@ -38887,7 +41274,7 @@ module.exports = {
     drawOne: drawModule.drawOne
 };
 
-},{"../../plots/cartesian/include_components":314,"./attributes":199,"./calc_autorange":200,"./defaults":202,"./draw":203,"./draw_newshape/defaults":206}],212:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/include_components":324,"./attributes":210,"./calc_autorange":211,"./defaults":213,"./draw":215,"./draw_newshape/defaults":218}],224:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -39061,7 +41448,7 @@ module.exports = overrideAll(templatedArray('slider', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plot_api/plot_template":290,"../../plots/animation_attributes":295,"../../plots/font_attributes":332,"../../plots/pad_attributes":348,"./constants":213}],213:[function(_dereq_,module,exports){
+},{"../../lib/extend":257,"../../plot_api/edit_types":295,"../../plot_api/plot_template":302,"../../plots/animation_attributes":307,"../../plots/font_attributes":341,"../../plots/pad_attributes":357,"./constants":225}],225:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -39146,7 +41533,7 @@ module.exports = {
     currentValueInset: 0,
 };
 
-},{}],214:[function(_dereq_,module,exports){
+},{}],226:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -39253,7 +41640,7 @@ function stepDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../lib":252,"../../plots/array_container_defaults":296,"./attributes":212,"./constants":213}],215:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/array_container_defaults":308,"./attributes":224,"./constants":225}],227:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -39887,7 +42274,7 @@ function drawRail(sliderGroup, sliderOpts) {
     );
 }
 
-},{"../../constants/alignment":224,"../../lib":252,"../../lib/svg_text_utils":277,"../../plot_api/plot_template":290,"../../plots/plots":349,"../color":119,"../drawing":141,"./constants":213,"@plotly/d3":16}],216:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../lib":264,"../../lib/svg_text_utils":289,"../../plot_api/plot_template":302,"../../plots/plots":358,"../color":120,"../drawing":142,"./constants":225,"@plotly/d3":16}],228:[function(_dereq_,module,exports){
 'use strict';
 
 var constants = _dereq_('./constants');
@@ -39902,7 +42289,7 @@ module.exports = {
     draw: _dereq_('./draw')
 };
 
-},{"./attributes":212,"./constants":213,"./defaults":214,"./draw":215}],217:[function(_dereq_,module,exports){
+},{"./attributes":224,"./constants":225,"./defaults":226,"./draw":227}],229:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -40167,7 +42554,7 @@ module.exports = {
     draw: draw
 };
 
-},{"../../constants/alignment":224,"../../constants/interactions":230,"../../lib":252,"../../lib/svg_text_utils":277,"../../plots/plots":349,"../../registry":352,"../color":119,"../drawing":141,"@plotly/d3":16,"fast-isnumeric":31}],218:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../constants/interactions":242,"../../lib":264,"../../lib/svg_text_utils":289,"../../plots/plots":358,"../../registry":361,"../color":120,"../drawing":142,"@plotly/d3":16,"fast-isnumeric":31}],230:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../../plots/font_attributes');
@@ -40290,7 +42677,7 @@ module.exports = overrideAll(templatedArray('updatemenu', {
     }
 }), 'arraydraw', 'from-root');
 
-},{"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plot_api/plot_template":290,"../../plots/font_attributes":332,"../../plots/pad_attributes":348,"../color/attributes":118}],219:[function(_dereq_,module,exports){
+},{"../../lib/extend":257,"../../plot_api/edit_types":295,"../../plot_api/plot_template":302,"../../plots/font_attributes":341,"../../plots/pad_attributes":357,"../color/attributes":119}],231:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -40362,7 +42749,7 @@ module.exports = {
     }
 };
 
-},{}],220:[function(_dereq_,module,exports){
+},{}],232:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -40437,7 +42824,7 @@ function buttonDefaults(buttonIn, buttonOut) {
     }
 }
 
-},{"../../lib":252,"../../plots/array_container_defaults":296,"./attributes":218,"./constants":219}],221:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plots/array_container_defaults":308,"./attributes":230,"./constants":231}],233:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -41079,9 +43466,9 @@ function removeAllButtons(gButton, newMenuIndexAttr) {
         .selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
 
-},{"../../constants/alignment":224,"../../lib":252,"../../lib/svg_text_utils":277,"../../plot_api/plot_template":290,"../../plots/plots":349,"../color":119,"../drawing":141,"./constants":219,"./scrollbox":223,"@plotly/d3":16}],222:[function(_dereq_,module,exports){
-arguments[4][216][0].apply(exports,arguments)
-},{"./attributes":218,"./constants":219,"./defaults":220,"./draw":221,"dup":216}],223:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../lib":264,"../../lib/svg_text_utils":289,"../../plot_api/plot_template":302,"../../plots/plots":358,"../color":120,"../drawing":142,"./constants":231,"./scrollbox":235,"@plotly/d3":16}],234:[function(_dereq_,module,exports){
+arguments[4][228][0].apply(exports,arguments)
+},{"./attributes":230,"./constants":231,"./defaults":232,"./draw":233,"dup":228}],235:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = ScrollBox;
@@ -41538,7 +43925,7 @@ ScrollBox.prototype.setTranslate = function setTranslate(translateX, translateY)
     }
 };
 
-},{"../../lib":252,"../color":119,"../drawing":141,"@plotly/d3":16}],224:[function(_dereq_,module,exports){
+},{"../../lib":264,"../color":120,"../drawing":142,"@plotly/d3":16}],236:[function(_dereq_,module,exports){
 'use strict';
 
 // fraction of some size to get to a named position
@@ -41595,7 +43982,7 @@ module.exports = {
     }
 };
 
-},{}],225:[function(_dereq_,module,exports){
+},{}],237:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41618,7 +44005,7 @@ module.exports = {
     }
 };
 
-},{}],226:[function(_dereq_,module,exports){
+},{}],238:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41626,7 +44013,7 @@ module.exports = {
     DATE_FORMAT_LINK: 'https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format'
 };
 
-},{}],227:[function(_dereq_,module,exports){
+},{}],239:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41656,7 +44043,7 @@ module.exports = {
     }
 };
 
-},{}],228:[function(_dereq_,module,exports){
+},{}],240:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41668,7 +44055,7 @@ module.exports = {
     longdashdot: [[0.5, 0.7, 0.8, 1], 10]
 };
 
-},{}],229:[function(_dereq_,module,exports){
+},{}],241:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -41682,7 +44069,7 @@ module.exports = {
     x: '❌'
 };
 
-},{}],230:[function(_dereq_,module,exports){
+},{}],242:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -41697,7 +44084,7 @@ module.exports = {
     DESELECTDIM: 0.2
 };
 
-},{}],231:[function(_dereq_,module,exports){
+},{}],243:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -41762,7 +44149,7 @@ module.exports = {
     MINUS_SIGN: '\u2212'
 };
 
-},{}],232:[function(_dereq_,module,exports){
+},{}],244:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -41777,7 +44164,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],233:[function(_dereq_,module,exports){
+},{}],245:[function(_dereq_,module,exports){
 'use strict';
 
 exports.version = _dereq_('./version').version;
@@ -41815,6 +44202,7 @@ register([
     _dereq_('./components/fx'), // fx needs to come after legend
     _dereq_('./components/annotations'),
     _dereq_('./components/annotations3d'),
+    _dereq_('./components/selections'),
     _dereq_('./components/shapes'),
     _dereq_('./components/images'),
     _dereq_('./components/updatemenus'),
@@ -41861,7 +44249,7 @@ exports.Fx = {
 exports.Snapshot = _dereq_('./snapshot');
 exports.PlotSchema = _dereq_('./plot_api/plot_schema');
 
-},{"../build/plotcss":1,"./components/annotations":110,"./components/annotations3d":115,"./components/colorbar":125,"./components/colorscale":131,"./components/errorbars":147,"./components/fx":159,"./components/grid":163,"./components/images":168,"./components/legend":176,"./components/modebar":182,"./components/rangeselector":190,"./components/rangeslider":197,"./components/shapes":211,"./components/sliders":216,"./components/updatemenus":222,"./fonts/ploticon":234,"./locale-en":281,"./locale-en-us":280,"./plot_api":285,"./plot_api/plot_schema":289,"./plots/plots":349,"./registry":352,"./snapshot":357,"./traces/scatter":393,"./version":434,"native-promise-only":70}],234:[function(_dereq_,module,exports){
+},{"../build/plotcss":1,"./components/annotations":111,"./components/annotations3d":116,"./components/colorbar":126,"./components/colorscale":132,"./components/errorbars":148,"./components/fx":160,"./components/grid":164,"./components/images":169,"./components/legend":177,"./components/modebar":183,"./components/rangeselector":191,"./components/rangeslider":198,"./components/selections":208,"./components/shapes":223,"./components/sliders":228,"./components/updatemenus":234,"./fonts/ploticon":246,"./locale-en":293,"./locale-en-us":292,"./plot_api":297,"./plot_api/plot_schema":301,"./plots/plots":358,"./registry":361,"./snapshot":366,"./traces/scatter":402,"./version":443,"native-promise-only":70}],246:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -42029,11 +44417,38 @@ module.exports = {
     },
     'newplotlylogo': {
         'name': 'newplotlylogo',
-        'svg': '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'><defs><style>.cls-1 {fill: #3f4f75;} .cls-2 {fill: #80cfbe;} .cls-3 {fill: #fff;}</style></defs><title>plotly-logomark</title><g id=\'symbol\'><rect class=\'cls-1\' width=\'132\' height=\'132\' rx=\'6\' ry=\'6\'/><circle class=\'cls-2\' cx=\'78\' cy=\'54\' r=\'6\'/><circle class=\'cls-2\' cx=\'102\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'78\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'54\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'30\' cy=\'30\' r=\'6\'/><circle class=\'cls-2\' cx=\'30\' cy=\'54\' r=\'6\'/><path class=\'cls-3\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/><path class=\'cls-3\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/><path class=\'cls-3\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/><path class=\'cls-3\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/></g></svg>'
+        'svg': [
+            '<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'>',
+            '<defs>',
+            ' <style>',
+            '  .cls-0{fill:#000;}',
+            '  .cls-1{fill:#FFF;}',
+            '  .cls-2{fill:#F26;}',
+            '  .cls-3{fill:#D69;}',
+            '  .cls-4{fill:#BAC;}',
+            '  .cls-5{fill:#9EF;}',
+            ' </style>',
+            '</defs>',
+            ' <title>plotly-logomark</title>',
+            ' <g id=\'symbol\'>',
+            '  <rect class=\'cls-0\' x=\'0\' y=\'0\' width=\'132\' height=\'132\' rx=\'18\' ry=\'18\'/>',
+            '  <circle class=\'cls-5\' cx=\'102\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-4\' cx=\'78\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-4\' cx=\'78\' cy=\'54\' r=\'6\'/>',
+            '  <circle class=\'cls-3\' cx=\'54\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-2\' cx=\'30\' cy=\'30\' r=\'6\'/>',
+            '  <circle class=\'cls-2\' cx=\'30\' cy=\'54\' r=\'6\'/>',
+            '  <path class=\'cls-1\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/>',
+            '  <path class=\'cls-1\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/>',
+            '  <path class=\'cls-1\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/>',
+            '  <path class=\'cls-1\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/>',
+            ' </g>',
+            '</svg>'
+        ].join('')
     }
 };
 
-},{}],235:[function(_dereq_,module,exports){
+},{}],247:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -42088,7 +44503,7 @@ exports.isBottomAnchor = function isBottomAnchor(opts) {
     );
 };
 
-},{}],236:[function(_dereq_,module,exports){
+},{}],248:[function(_dereq_,module,exports){
 'use strict';
 
 var modModule = _dereq_('./mod');
@@ -42321,7 +44736,7 @@ module.exports = {
     pathAnnulus: pathAnnulus
 };
 
-},{"./mod":259}],237:[function(_dereq_,module,exports){
+},{"./mod":271}],249:[function(_dereq_,module,exports){
 'use strict';
 
 var isArray = Array.isArray;
@@ -42463,7 +44878,7 @@ function _rowLength(z, fn, len0) {
     return 0;
 }
 
-},{}],238:[function(_dereq_,module,exports){
+},{}],250:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -42487,7 +44902,7 @@ module.exports = function cleanNumber(v) {
     return BADNUM;
 };
 
-},{"../constants/numerical":231,"fast-isnumeric":31}],239:[function(_dereq_,module,exports){
+},{"../constants/numerical":243,"fast-isnumeric":31}],251:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -42507,7 +44922,7 @@ module.exports = function clearGlCanvases(gd) {
     }
 };
 
-},{}],240:[function(_dereq_,module,exports){
+},{}],252:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -42522,7 +44937,7 @@ module.exports = function clearResponsive(gd) {
     }
 };
 
-},{}],241:[function(_dereq_,module,exports){
+},{}],253:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -42653,12 +45068,12 @@ exports.valObjectMeta = {
     },
     flaglist: {
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(typeof v !== 'string') {
-                propOut.set(dflt);
-                return;
-            }
             if((opts.extras || []).indexOf(v) !== -1) {
                 propOut.set(v);
+                return;
+            }
+            if(typeof v !== 'string') {
+                propOut.set(dflt);
                 return;
             }
             var vParts = v.split('+');
@@ -42967,7 +45382,7 @@ function validate(value, opts) {
 }
 exports.validate = validate;
 
-},{"../components/color":119,"../components/colorscale/scales":134,"../constants/interactions":230,"../plots/attributes":297,"./array":237,"./mod":259,"./nested_property":260,"./regex":268,"fast-isnumeric":31,"tinycolor2":83}],242:[function(_dereq_,module,exports){
+},{"../components/color":120,"../components/colorscale/scales":135,"../constants/interactions":242,"../plots/attributes":309,"./array":249,"./mod":271,"./nested_property":272,"./regex":280,"fast-isnumeric":31,"tinycolor2":84}],254:[function(_dereq_,module,exports){
 'use strict';
 
 var timeFormat = _dereq_('d3-time-format').timeFormat;
@@ -43571,7 +45986,7 @@ exports.findExactDates = function(data, calendar) {
     };
 };
 
-},{"../constants/numerical":231,"../registry":352,"./loggers":256,"./mod":259,"d3-time-format":26,"fast-isnumeric":31}],243:[function(_dereq_,module,exports){
+},{"../constants/numerical":243,"../registry":361,"./loggers":268,"./mod":271,"d3-time-format":26,"fast-isnumeric":31}],255:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -43741,7 +46156,7 @@ module.exports = {
     equalDomRects: equalDomRects
 };
 
-},{"./loggers":256,"./matrix":258,"@plotly/d3":16,"gl-mat4":48}],244:[function(_dereq_,module,exports){
+},{"./loggers":268,"./matrix":270,"@plotly/d3":16,"gl-mat4":48}],256:[function(_dereq_,module,exports){
 'use strict';
 
 /* global jQuery:false */
@@ -43905,7 +46320,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":17}],245:[function(_dereq_,module,exports){
+},{"events":17}],257:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('./is_plain_object.js');
@@ -44010,7 +46425,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":253}],246:[function(_dereq_,module,exports){
+},{"./is_plain_object.js":265}],258:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -44052,7 +46467,7 @@ module.exports = function filterUnique(array) {
     return out;
 };
 
-},{}],247:[function(_dereq_,module,exports){
+},{}],259:[function(_dereq_,module,exports){
 'use strict';
 
 /** Filter out object items with visible !== true
@@ -44092,7 +46507,7 @@ function isCalcData(cont) {
     );
 }
 
-},{}],248:[function(_dereq_,module,exports){
+},{}],260:[function(_dereq_,module,exports){
 'use strict';
 
 var mod = _dereq_('./mod').mod;
@@ -44328,7 +46743,7 @@ exports.findPointOnPath = function findPointOnPath(path, val, coord, opts) {
     return pt;
 };
 
-},{"./mod":259}],249:[function(_dereq_,module,exports){
+},{"./mod":271}],261:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -44421,7 +46836,7 @@ module.exports = {
     parseColorScale: parseColorScale
 };
 
-},{"../components/color/attributes":118,"../components/colorscale":131,"./array":237,"color-normalize":20,"fast-isnumeric":31,"tinycolor2":83}],250:[function(_dereq_,module,exports){
+},{"../components/color/attributes":119,"../components/colorscale":132,"./array":249,"color-normalize":20,"fast-isnumeric":31,"tinycolor2":84}],262:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -44429,7 +46844,7 @@ module.exports = {
 
 module.exports = function identity(d) { return d; };
 
-},{}],251:[function(_dereq_,module,exports){
+},{}],263:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function incrementNumeric(x, delta) {
@@ -44462,7 +46877,7 @@ module.exports = function incrementNumeric(x, delta) {
     return newX;
 };
 
-},{}],252:[function(_dereq_,module,exports){
+},{}],264:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -45850,7 +48265,7 @@ lib.getPositionFromD3Event = function() {
     }
 };
 
-},{"../constants/numerical":231,"./anchor_utils":235,"./angles":236,"./array":237,"./clean_number":238,"./clear_responsive":240,"./coerce":241,"./dates":242,"./dom":243,"./extend":245,"./filter_unique":246,"./filter_visible":247,"./geometry2d":248,"./identity":250,"./increment":251,"./is_plain_object":253,"./keyed_container":254,"./localize":255,"./loggers":256,"./make_trace_groups":257,"./matrix":258,"./mod":259,"./nested_property":260,"./noop":261,"./notifier":262,"./preserve_drawing_buffer":265,"./push_unique":266,"./regex":268,"./relative_attr":269,"./relink_private":270,"./search":271,"./sort_object_keys":274,"./stats":275,"./throttle":278,"./to_log_range":279,"@plotly/d3":16,"d3-format":25,"d3-time-format":26,"fast-isnumeric":31}],253:[function(_dereq_,module,exports){
+},{"../constants/numerical":243,"./anchor_utils":247,"./angles":248,"./array":249,"./clean_number":250,"./clear_responsive":252,"./coerce":253,"./dates":254,"./dom":255,"./extend":257,"./filter_unique":258,"./filter_visible":259,"./geometry2d":260,"./identity":262,"./increment":263,"./is_plain_object":265,"./keyed_container":266,"./localize":267,"./loggers":268,"./make_trace_groups":269,"./matrix":270,"./mod":271,"./nested_property":272,"./noop":273,"./notifier":274,"./preserve_drawing_buffer":277,"./push_unique":278,"./regex":280,"./relative_attr":281,"./relink_private":282,"./search":283,"./sort_object_keys":286,"./stats":287,"./throttle":290,"./to_log_range":291,"@plotly/d3":16,"d3-format":25,"d3-time-format":26,"fast-isnumeric":31}],265:[function(_dereq_,module,exports){
 'use strict';
 
 // more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
@@ -45869,7 +48284,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],254:[function(_dereq_,module,exports){
+},{}],266:[function(_dereq_,module,exports){
 'use strict';
 
 var nestedProperty = _dereq_('./nested_property');
@@ -46054,7 +48469,7 @@ module.exports = function keyedContainer(baseObj, path, keyName, valueName) {
     return obj;
 };
 
-},{"./nested_property":260}],255:[function(_dereq_,module,exports){
+},{"./nested_property":272}],267:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -46101,7 +48516,7 @@ module.exports = function localize(gd, s) {
     return s;
 };
 
-},{"../registry":352}],256:[function(_dereq_,module,exports){
+},{"../registry":361}],268:[function(_dereq_,module,exports){
 'use strict';
 
 /* eslint-disable no-console */
@@ -46178,7 +48593,7 @@ loggers.error = function() {
     }
 };
 
-},{"../plot_api/plot_config":288,"./notifier":262}],257:[function(_dereq_,module,exports){
+},{"../plot_api/plot_config":300,"./notifier":274}],269:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -46213,7 +48628,7 @@ module.exports = function makeTraceGroups(traceLayer, cdModule, cls) {
     return traces;
 };
 
-},{"@plotly/d3":16}],258:[function(_dereq_,module,exports){
+},{"@plotly/d3":16}],270:[function(_dereq_,module,exports){
 'use strict';
 
 var mat4X4 = _dereq_('gl-mat4');
@@ -46356,7 +48771,7 @@ exports.inverseTransformMatrix = function(m) {
     ];
 };
 
-},{"gl-mat4":48}],259:[function(_dereq_,module,exports){
+},{"gl-mat4":48}],271:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -46383,7 +48798,7 @@ module.exports = {
     modHalf: modHalf
 };
 
-},{}],260:[function(_dereq_,module,exports){
+},{}],272:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -46620,7 +49035,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./array":237,"fast-isnumeric":31}],261:[function(_dereq_,module,exports){
+},{"./array":249,"fast-isnumeric":31}],273:[function(_dereq_,module,exports){
 'use strict';
 
 // Simple helper functions
@@ -46628,7 +49043,7 @@ function badContainer(container, propStr, propParts) {
 
 module.exports = function noop() {};
 
-},{}],262:[function(_dereq_,module,exports){
+},{}],274:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -46707,7 +49122,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"@plotly/d3":16,"fast-isnumeric":31}],263:[function(_dereq_,module,exports){
+},{"@plotly/d3":16,"fast-isnumeric":31}],275:[function(_dereq_,module,exports){
 'use strict';
 
 var setCursor = _dereq_('./setcursor');
@@ -46746,7 +49161,7 @@ module.exports = function overrideCursor(el3, csr) {
     }
 };
 
-},{"./setcursor":272}],264:[function(_dereq_,module,exports){
+},{"./setcursor":284}],276:[function(_dereq_,module,exports){
 'use strict';
 
 var dot = _dereq_('./matrix').dot;
@@ -46778,7 +49193,14 @@ polygon.tester = function tester(ptsIn) {
     var ymax = ymin;
     var i;
 
-    pts.push(pts[0]);
+    if(
+        pts[pts.length - 1][0] !== pts[0][0] ||
+        pts[pts.length - 1][1] !== pts[0][1]
+    ) {
+        // close the polygon
+        pts.push(pts[0]);
+    }
+
     for(i = 1; i < pts.length; i++) {
         xmin = Math.min(xmin, pts[i][0]);
         xmax = Math.max(xmax, pts[i][0]);
@@ -46989,7 +49411,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"../constants/numerical":231,"./matrix":258}],265:[function(_dereq_,module,exports){
+},{"../constants/numerical":243,"./matrix":270}],277:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -47051,7 +49473,7 @@ function getUserAgent() {
     return ua;
 }
 
-},{"fast-isnumeric":31,"is-mobile":66}],266:[function(_dereq_,module,exports){
+},{"fast-isnumeric":31,"is-mobile":66}],278:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -47081,7 +49503,7 @@ module.exports = function pushUnique(array, item) {
     return array;
 };
 
-},{}],267:[function(_dereq_,module,exports){
+},{}],279:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -47273,7 +49695,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":252,"../plot_api/plot_config":288}],268:[function(_dereq_,module,exports){
+},{"../lib":264,"../plot_api/plot_config":300}],280:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -47295,7 +49717,7 @@ exports.counter = function(head, tail, openEnded, matchBeginning) {
     return new RegExp(startWithPrefix + head + '([2-9]|[1-9][0-9]+)?' + fullTail);
 };
 
-},{}],269:[function(_dereq_,module,exports){
+},{}],281:[function(_dereq_,module,exports){
 'use strict';
 
 // ASCEND: chop off the last nesting level - either [<n>] or .<key> - to ascend
@@ -47339,7 +49761,7 @@ module.exports = function(baseAttr, relativeAttr) {
     return baseAttr + relativeAttr;
 };
 
-},{}],270:[function(_dereq_,module,exports){
+},{}],282:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('./array').isArrayOrTypedArray;
@@ -47387,7 +49809,7 @@ module.exports = function relinkPrivateKeys(toContainer, fromContainer) {
     }
 };
 
-},{"./array":237,"./is_plain_object":253}],271:[function(_dereq_,module,exports){
+},{"./array":249,"./is_plain_object":265}],283:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -47579,7 +50001,7 @@ exports.findIndexOfMin = function(arr, fn) {
     return ind;
 };
 
-},{"../constants/numerical":231,"./identity":250,"./loggers":256,"fast-isnumeric":31}],272:[function(_dereq_,module,exports){
+},{"../constants/numerical":243,"./identity":262,"./loggers":268,"fast-isnumeric":31}],284:[function(_dereq_,module,exports){
 'use strict';
 
 // works with our CSS cursor classes (see css/_cursor.scss)
@@ -47593,7 +50015,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],273:[function(_dereq_,module,exports){
+},{}],285:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../components/color');
@@ -47648,14 +50070,14 @@ module.exports = function showNoWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":119}],274:[function(_dereq_,module,exports){
+},{"../components/color":120}],286:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function sortObjectKeys(obj) {
     return Object.keys(obj).sort();
 };
 
-},{}],275:[function(_dereq_,module,exports){
+},{}],287:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -47735,7 +50157,7 @@ exports.median = function(data) {
 /**
  * interp() computes a percentile (quantile) for a given distribution.
  * We interpolate the distribution (to compute quantiles, we follow method #10 here:
- * http://www.amstat.org/publications/jse/v14n3/langford.html).
+ * http://jse.amstat.org/v14n3/langford.html).
  * Typically the index or rank (n * arr.length) may be non-integer.
  * For reference: ends are clipped to the extreme values in the array;
  * For box plots: index you get is half a point too high (see
@@ -47756,7 +50178,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"./array":237,"fast-isnumeric":31}],276:[function(_dereq_,module,exports){
+},{"./array":249,"fast-isnumeric":31}],288:[function(_dereq_,module,exports){
 'use strict';
 
 var rgba = _dereq_('color-normalize');
@@ -47768,7 +50190,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"color-normalize":20}],277:[function(_dereq_,module,exports){
+},{"color-normalize":20}],289:[function(_dereq_,module,exports){
 'use strict';
 
 /* global MathJax:false */
@@ -48784,7 +51206,7 @@ exports.makeEditable = function(context, options) {
     return d3.rebind(context, dispatch, 'on');
 };
 
-},{"../constants/alignment":224,"../constants/xmlns_namespaces":232,"../lib":252,"@plotly/d3":16}],278:[function(_dereq_,module,exports){
+},{"../constants/alignment":236,"../constants/xmlns_namespaces":244,"../lib":264,"@plotly/d3":16}],290:[function(_dereq_,module,exports){
 'use strict';
 
 var timerCache = {};
@@ -48879,7 +51301,7 @@ function _clearTimeout(cache) {
     }
 }
 
-},{}],279:[function(_dereq_,module,exports){
+},{}],291:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -48899,7 +51321,7 @@ module.exports = function toLogRange(val, range) {
     return newVal;
 };
 
-},{"fast-isnumeric":31}],280:[function(_dereq_,module,exports){
+},{"fast-isnumeric":31}],292:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -48913,7 +51335,7 @@ module.exports = {
     }
 };
 
-},{}],281:[function(_dereq_,module,exports){
+},{}],293:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -48948,7 +51370,7 @@ module.exports = {
     }
 };
 
-},{}],282:[function(_dereq_,module,exports){
+},{}],294:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -48997,7 +51419,7 @@ module.exports = function containerArrayMatch(astr) {
     return {array: arrayStr, index: Number(match[1]), property: match[3] || ''};
 };
 
-},{"../registry":352}],283:[function(_dereq_,module,exports){
+},{"../registry":361}],295:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -49112,7 +51534,7 @@ function overrideOne(attr, editTypeOverride, overrideContainers, key) {
     }
 }
 
-},{"../lib":252}],284:[function(_dereq_,module,exports){
+},{"../lib":264}],296:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -49806,7 +52228,7 @@ exports.clearAxisTypes = function(gd, traces, layoutUpdate) {
     }
 };
 
-},{"../components/color":119,"../lib":252,"../plots/cartesian/axis_ids":305,"../plots/plots":349,"../registry":352,"fast-isnumeric":31,"gl-mat4/fromQuat":38}],285:[function(_dereq_,module,exports){
+},{"../components/color":120,"../lib":264,"../plots/cartesian/axis_ids":317,"../plots/plots":358,"../registry":361,"fast-isnumeric":31,"gl-mat4/fromQuat":38}],297:[function(_dereq_,module,exports){
 'use strict';
 
 var main = _dereq_('./plot_api');
@@ -49841,7 +52263,7 @@ var templateApi = _dereq_('./template_api');
 exports.makeTemplate = templateApi.makeTemplate;
 exports.validateTemplate = templateApi.validateTemplate;
 
-},{"../snapshot/download":354,"./plot_api":287,"./template_api":292,"./to_image":293,"./validate":294}],286:[function(_dereq_,module,exports){
+},{"../snapshot/download":363,"./plot_api":299,"./template_api":304,"./to_image":305,"./validate":306}],298:[function(_dereq_,module,exports){
 'use strict';
 
 var isPlainObject = _dereq_('../lib/is_plain_object');
@@ -50045,7 +52467,7 @@ exports.applyContainerArrayChanges = function applyContainerArrayChanges(gd, np,
     return true;
 };
 
-},{"../lib/is_plain_object":253,"../lib/loggers":256,"../lib/noop":261,"../lib/search":271,"../registry":352,"./container_array_match":282}],287:[function(_dereq_,module,exports){
+},{"../lib/is_plain_object":265,"../lib/loggers":268,"../lib/noop":273,"../lib/search":283,"../registry":361,"./container_array_match":294}],299:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -50067,7 +52489,7 @@ var Drawing = _dereq_('../components/drawing');
 var Color = _dereq_('../components/color');
 var initInteractions = _dereq_('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = _dereq_('../constants/xmlns_namespaces');
-var clearSelect = _dereq_('../plots/cartesian/select').clearSelect;
+var clearOutline = _dereq_('../components/selections').clearOutline;
 
 var dfltConfig = _dereq_('./plot_config').dfltConfig;
 var manageArrays = _dereq_('./manage_arrays');
@@ -50417,6 +52839,7 @@ function _doPlot(gd, data, layout, config) {
         Plots.addLinks,
         Plots.rehover,
         Plots.redrag,
+        Plots.reselect,
         // TODO: doAutoMargin is only needed here for axis automargin, which
         // happens outside of marginPushers where all the other automargins are
         // calculated. Would be much better to separate margin calculations from
@@ -51347,7 +53770,11 @@ function restyle(gd, astr, val, _traces) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover, Plots.redrag);
+    seq.push(
+        Plots.rehover,
+        Plots.redrag,
+        Plots.reselect
+    );
 
     Queue.add(gd,
         restyle, [gd, specs.undoit, specs.traces],
@@ -51849,7 +54276,11 @@ function relayout(gd, astr, val) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover, Plots.redrag);
+    seq.push(
+        Plots.rehover,
+        Plots.redrag,
+        Plots.reselect
+    );
 
     Queue.add(gd,
         relayout, [gd, specs.undoit],
@@ -51938,7 +54369,7 @@ function addAxRangeSequence(seq, rangesAltered) {
         };
 
     seq.push(
-        clearSelect,
+        clearOutline,
         subroutines.doAutoRangeAndConstraints,
         drawAxes,
         subroutines.drawData,
@@ -52362,7 +54793,11 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover, Plots.redrag);
+    seq.push(
+        Plots.rehover,
+        Plots.redrag,
+        Plots.reselect
+    );
 
     Queue.add(gd,
         update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
@@ -52798,7 +55233,11 @@ function react(gd, data, layout, config) {
             seq.push(emitAfterPlot);
         }
 
-        seq.push(Plots.rehover, Plots.redrag);
+        seq.push(
+            Plots.rehover,
+            Plots.redrag,
+            Plots.reselect
+        );
 
         plotDone = Lib.syncOrAsync(seq, gd);
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
@@ -53849,6 +56288,7 @@ function makePlotFramework(gd) {
     fullLayout._shapeUpperLayer = layerAbove.append('g')
         .classed('shapelayer', true);
 
+    fullLayout._selectionLayer = fullLayout._toppaper.append('g').classed('selectionlayer', true);
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
@@ -53893,7 +56333,7 @@ exports._guiUpdate = guiEdit(update);
 
 exports._storeDirectGUIEdit = _storeDirectGUIEdit;
 
-},{"../components/color":119,"../components/drawing":141,"../constants/xmlns_namespaces":232,"../lib":252,"../lib/events":244,"../lib/queue":267,"../plots/cartesian/axes":301,"../plots/cartesian/constants":308,"../plots/cartesian/graph_interact":311,"../plots/cartesian/select":322,"../plots/plots":349,"../registry":352,"./edit_types":283,"./helpers":284,"./manage_arrays":286,"./plot_config":288,"./plot_schema":289,"./subroutines":291,"@plotly/d3":16,"fast-isnumeric":31,"has-hover":63}],288:[function(_dereq_,module,exports){
+},{"../components/color":120,"../components/drawing":142,"../components/selections":208,"../constants/xmlns_namespaces":244,"../lib":264,"../lib/events":256,"../lib/queue":279,"../plots/cartesian/axes":313,"../plots/cartesian/constants":320,"../plots/cartesian/graph_interact":323,"../plots/plots":358,"../registry":361,"./edit_types":295,"./helpers":296,"./manage_arrays":298,"./plot_config":300,"./plot_schema":301,"./subroutines":303,"@plotly/d3":16,"fast-isnumeric":31,"has-hover":63}],300:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -54159,7 +56599,7 @@ module.exports = {
     dfltConfig: dfltConfig
 };
 
-},{}],289:[function(_dereq_,module,exports){
+},{}],301:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -54824,7 +57264,7 @@ function insertAttrs(baseAttrs, newAttrs, astr) {
     np.set(extendDeepAll(np.get() || {}, newAttrs));
 }
 
-},{"../lib":252,"../plots/animation_attributes":295,"../plots/attributes":297,"../plots/frame_attributes":333,"../plots/layout_attributes":347,"../registry":352,"./edit_types":283,"./plot_config":288}],290:[function(_dereq_,module,exports){
+},{"../lib":264,"../plots/animation_attributes":307,"../plots/attributes":309,"../plots/frame_attributes":342,"../plots/layout_attributes":356,"../registry":361,"./edit_types":295,"./plot_config":300}],302:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -55123,7 +57563,7 @@ exports.arrayEditor = function(parentIn, containerStr, itemOut) {
     };
 };
 
-},{"../lib":252,"../plots/attributes":297}],291:[function(_dereq_,module,exports){
+},{"../lib":264,"../plots/attributes":309}],303:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -55718,6 +58158,7 @@ exports.drawData = function(gd) {
 
     // draw components that can be drawn on axes,
     // and that do not push the margins
+    Registry.getComponentMethod('selections', 'draw')(gd);
     Registry.getComponentMethod('shapes', 'draw')(gd);
     Registry.getComponentMethod('annotations', 'draw')(gd);
     Registry.getComponentMethod('images', 'draw')(gd);
@@ -55839,7 +58280,7 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('colorbar', 'draw')(gd);
 };
 
-},{"../components/color":119,"../components/drawing":141,"../components/modebar":182,"../components/titles":217,"../constants/alignment":224,"../lib":252,"../lib/clear_gl_canvases":239,"../plots/cartesian/autorange":300,"../plots/cartesian/axes":301,"../plots/cartesian/constraints":309,"../plots/plots":349,"../registry":352,"@plotly/d3":16}],292:[function(_dereq_,module,exports){
+},{"../components/color":120,"../components/drawing":142,"../components/modebar":183,"../components/titles":229,"../constants/alignment":236,"../lib":264,"../lib/clear_gl_canvases":251,"../plots/cartesian/autorange":312,"../plots/cartesian/axes":313,"../plots/cartesian/constraints":321,"../plots/plots":358,"../registry":361,"@plotly/d3":16}],304:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -56292,7 +58733,7 @@ function format(opts) {
     return opts;
 }
 
-},{"../lib":252,"../plots/attributes":297,"../plots/plots":349,"./plot_config":288,"./plot_schema":289,"./plot_template":290}],293:[function(_dereq_,module,exports){
+},{"../lib":264,"../plots/attributes":309,"../plots/plots":358,"./plot_config":300,"./plot_schema":301,"./plot_template":302}],305:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -56499,7 +58940,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":252,"../plots/plots":349,"../snapshot/helpers":356,"../snapshot/svgtoimg":358,"../snapshot/tosvg":360,"../version":434,"./plot_api":287,"fast-isnumeric":31}],294:[function(_dereq_,module,exports){
+},{"../lib":264,"../plots/plots":358,"../snapshot/helpers":365,"../snapshot/svgtoimg":367,"../snapshot/tosvg":369,"../version":443,"./plot_api":299,"fast-isnumeric":31}],306:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -56922,7 +59363,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":252,"../plots/plots":349,"./plot_config":288,"./plot_schema":289}],295:[function(_dereq_,module,exports){
+},{"../lib":264,"../plots/plots":358,"./plot_config":300,"./plot_schema":301}],307:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -57010,7 +59451,7 @@ module.exports = {
     }
 };
 
-},{}],296:[function(_dereq_,module,exports){
+},{}],308:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -57097,7 +59538,7 @@ module.exports = function handleArrayContainerDefaults(parentObjIn, parentObjOut
     return contOut;
 };
 
-},{"../lib":252,"../plot_api/plot_template":290}],297:[function(_dereq_,module,exports){
+},{"../lib":264,"../plot_api/plot_template":302}],309:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
@@ -57219,7 +59660,7 @@ module.exports = {
     }
 };
 
-},{"../components/fx/attributes":150,"./font_attributes":332}],298:[function(_dereq_,module,exports){
+},{"../components/fx/attributes":151,"./font_attributes":341}],310:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -57314,7 +59755,7 @@ module.exports = function alignPeriod(trace, ax, axLetter, vals) {
     };
 };
 
-},{"../../constants/numerical":231,"../../lib":252,"fast-isnumeric":31}],299:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264,"fast-isnumeric":31}],311:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -57331,7 +59772,7 @@ module.exports = {
     }
 };
 
-},{}],300:[function(_dereq_,module,exports){
+},{}],312:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -57958,7 +60399,7 @@ function goodNumber(v) {
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
-},{"../../components/drawing":141,"../../constants/numerical":231,"../../lib":252,"../../registry":352,"./axis_ids":305,"@plotly/d3":16,"fast-isnumeric":31}],301:[function(_dereq_,module,exports){
+},{"../../components/drawing":142,"../../constants/numerical":243,"../../lib":264,"../../registry":361,"./axis_ids":317,"@plotly/d3":16,"fast-isnumeric":31}],313:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -58000,6 +60441,14 @@ var GRID_PATH = { K: 'gridline', L: 'path' };
 var MINORGRID_PATH = { K: 'minor-gridline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
 var TICK_TEXT = { K: 'tick', L: 'text' };
+var MARGIN_MAPPING = {
+    width: ['x', 'r', 'l', 'xl', 'xr'],
+    height: ['y', 't', 'b', 'yt', 'yb'],
+    right: ['r', 'xr'],
+    left: ['l', 'xl'],
+    top: ['t', 'yt'],
+    bottom: ['b', 'yb']
+};
 
 var alignmentConstants = _dereq_('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
@@ -58166,6 +60615,7 @@ axes.redrawComponents = function(gd, axIds) {
     _redrawOneComp('annotations', 'drawOne', '_annIndices');
     _redrawOneComp('shapes', 'drawOne', '_shapeIndices');
     _redrawOneComp('images', 'draw', '_imgIndices', true);
+    _redrawOneComp('selections', 'drawOne', '_selectionIndices');
 };
 
 var getDataConversions = axes.getDataConversions = function(gd, trace, target, targetArray) {
@@ -60583,6 +63033,11 @@ axes.drawOne = function(gd, ax, opts) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
 
+        if(typeof ax.automargin === 'string') {
+            filterPush(push, ax.automargin);
+            filterPush(mirrorPush, ax.automargin);
+        }
+
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
         Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
@@ -60596,6 +63051,23 @@ axes.drawOne = function(gd, ax, opts) {
 
     return Lib.syncOrAsync(seq);
 };
+
+function filterPush(push, automargin) {
+    if(!push) return;
+
+    var keepMargin = Object.keys(MARGIN_MAPPING).reduce(function(data, nextKey) {
+        if(automargin.indexOf(nextKey) !== -1) {
+            MARGIN_MAPPING[nextKey].forEach(function(key) { data[key] = 1;});
+        }
+        return data;
+    }, {});
+    Object.keys(push).forEach(function(key) {
+        if(!keepMargin[key]) {
+            if(key.length === 1) push[key] = 0;
+            else delete push[key];
+        }
+    });
+}
 
 function getBoundaryVals(ax, vals) {
     var out = [];
@@ -62142,7 +64614,7 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
     }
 }
 
-},{"../../components/color":119,"../../components/drawing":141,"../../components/titles":217,"../../constants/alignment":224,"../../constants/numerical":231,"../../lib":252,"../../lib/svg_text_utils":277,"../../plots/plots":349,"../../registry":352,"./autorange":300,"./axis_autotype":302,"./axis_ids":305,"./clean_ticks":307,"./layout_attributes":316,"./set_convert":323,"@plotly/d3":16,"fast-isnumeric":31}],302:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../components/drawing":142,"../../components/titles":229,"../../constants/alignment":236,"../../constants/numerical":243,"../../lib":264,"../../lib/svg_text_utils":289,"../../plots/plots":358,"../../registry":361,"./autorange":312,"./axis_autotype":314,"./axis_ids":317,"./clean_ticks":319,"./layout_attributes":326,"./set_convert":332,"@plotly/d3":16,"fast-isnumeric":31}],314:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -62264,7 +64736,7 @@ function multiCategory(a) {
     return isArrayOrTypedArray(a[0]) && isArrayOrTypedArray(a[1]);
 }
 
-},{"../../constants/numerical":231,"../../lib":252,"fast-isnumeric":31}],303:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264,"fast-isnumeric":31}],315:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -62607,7 +65079,7 @@ function indexOfDay(v) {
     ];
 }
 
-},{"../../lib":252,"../../plot_api/plot_template":290,"../../registry":352,"../array_container_defaults":296,"./category_order_defaults":306,"./constants":308,"./layout_attributes":316,"./line_grid_defaults":318,"./prefix_suffix_defaults":320,"./set_convert":323,"./tick_label_defaults":325,"./tick_mark_defaults":326,"./tick_value_defaults":327,"fast-isnumeric":31}],304:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../plot_api/plot_template":302,"../../registry":361,"../array_container_defaults":308,"./category_order_defaults":318,"./constants":320,"./layout_attributes":326,"./line_grid_defaults":328,"./prefix_suffix_defaults":330,"./set_convert":332,"./tick_label_defaults":334,"./tick_mark_defaults":335,"./tick_value_defaults":336,"fast-isnumeric":31}],316:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../../constants/docs');
@@ -62656,7 +65128,7 @@ module.exports = {
     descriptionWithDates: descriptionWithDates
 };
 
-},{"../../constants/docs":226}],305:[function(_dereq_,module,exports){
+},{"../../constants/docs":238}],317:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -62804,7 +65276,7 @@ exports.isLinked = function(fullLayout, axId) {
     );
 };
 
-},{"../../registry":352,"./constants":308}],306:[function(_dereq_,module,exports){
+},{"../../registry":361,"./constants":320}],318:[function(_dereq_,module,exports){
 'use strict';
 
 function findCategories(ax, opts) {
@@ -62890,7 +65362,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],307:[function(_dereq_,module,exports){
+},{}],319:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -62974,7 +65446,7 @@ exports.tick0 = function(tick0, axType, calendar, dtick) {
     return isNumeric(tick0) ? Number(tick0) : 0;
 };
 
-},{"../../constants/numerical":231,"../../lib":252,"fast-isnumeric":31}],308:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264,"fast-isnumeric":31}],320:[function(_dereq_,module,exports){
 'use strict';
 
 var counterRegex = _dereq_('../../lib/regex').counter;
@@ -63006,26 +65478,14 @@ module.exports = {
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,
 
-    // smallest dimension allowed for a select box
-    MINSELECT: 12,
-
     // smallest dimension allowed for a zoombox
     MINZOOM: 20,
 
     // width of axis drag regions
     DRAGGERSIZE: 20,
 
-    // max pixels off straight before a lasso select line counts as bent
-    BENDPX: 1.5,
-
     // delay before a redraw (relayout) after smooth panning and zooming
     REDRAWDELAY: 50,
-
-    // throttling limit (ms) for selectPoints calls
-    SELECTDELAY: 100,
-
-    // cache ID suffix for throttle
-    SELECTID: '-select',
 
     // last resort axis ranges for x and y axes if we have no data
     DFLTRANGEX: [-1, 6],
@@ -63058,7 +65518,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/regex":268}],309:[function(_dereq_,module,exports){
+},{"../../lib/regex":280}],321:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -63701,7 +66161,7 @@ function updateDomain(ax, factor) {
     ax.setScale();
 }
 
-},{"../../constants/alignment":224,"../../constants/numerical":231,"../../lib":252,"./autorange":300,"./axis_ids":305,"./layout_attributes":316,"./scale_zoom":321,"./set_convert":323}],310:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236,"../../constants/numerical":243,"../../lib":264,"./autorange":312,"./axis_ids":317,"./layout_attributes":326,"./scale_zoom":331,"./set_convert":332}],322:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -63730,9 +66190,9 @@ var redrawReglTraces = _dereq_('../../plot_api/subroutines').redrawReglTraces;
 var Plots = _dereq_('../plots');
 
 var getFromId = _dereq_('./axis_ids').getFromId;
-var prepSelect = _dereq_('./select').prepSelect;
-var clearSelect = _dereq_('./select').clearSelect;
-var selectOnClick = _dereq_('./select').selectOnClick;
+var prepSelect = _dereq_('../../components/selections').prepSelect;
+var clearOutline = _dereq_('../../components/selections').clearOutline;
+var selectOnClick = _dereq_('../../components/selections').selectOnClick;
 var scaleZoom = _dereq_('./scale_zoom');
 
 var constants = _dereq_('./constants');
@@ -63935,9 +66395,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     updateSubplots([0, 0, pw, ph]);
                     dragOptions.moveFn(dragDataNow.dx, dragDataNow.dy);
                 }
-
-                // TODO should we try to "re-select" under select/lasso modes?
-                // probably best to wait for https://github.com/plotly/plotly.js/issues/1851
             }
         };
     };
@@ -63946,7 +66403,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // clear selection polygon cache (if any)
         dragOptions.plotinfo.selection = false;
         // clear selection outlines
-        clearSelect(gd);
+        clearOutline(gd);
     }
 
     function clickFn(numClicks, evt) {
@@ -65033,7 +67490,7 @@ module.exports = {
     attachWheelEventHandler: attachWheelEventHandler
 };
 
-},{"../../components/color":119,"../../components/dragelement":138,"../../components/dragelement/helpers":137,"../../components/drawing":141,"../../components/fx":159,"../../constants/alignment":224,"../../lib":252,"../../lib/clear_gl_canvases":239,"../../lib/setcursor":272,"../../lib/svg_text_utils":277,"../../plot_api/subroutines":291,"../../registry":352,"../plots":349,"./axes":301,"./axis_ids":305,"./constants":308,"./scale_zoom":321,"./select":322,"@plotly/d3":16,"has-passive-events":64,"tinycolor2":83}],311:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../components/dragelement":139,"../../components/dragelement/helpers":138,"../../components/drawing":142,"../../components/fx":160,"../../components/selections":208,"../../constants/alignment":236,"../../lib":264,"../../lib/clear_gl_canvases":251,"../../lib/setcursor":284,"../../lib/svg_text_utils":289,"../../plot_api/subroutines":303,"../../registry":361,"../plots":358,"./axes":313,"./axis_ids":317,"./constants":320,"./scale_zoom":331,"@plotly/d3":16,"has-passive-events":64,"tinycolor2":84}],323:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -65192,82 +67649,7 @@ exports.updateFx = function(gd) {
     setCursor(fullLayout._draggers, cursor);
 };
 
-},{"../../components/dragelement":138,"../../components/fx":159,"../../lib/setcursor":272,"./constants":308,"./dragbox":310,"@plotly/d3":16}],312:[function(_dereq_,module,exports){
-'use strict';
-
-function clearOutlineControllers(gd) {
-    var zoomLayer = gd._fullLayout._zoomlayer;
-    if(zoomLayer) {
-        zoomLayer.selectAll('.outline-controllers').remove();
-    }
-}
-
-function clearSelect(gd) {
-    var zoomLayer = gd._fullLayout._zoomlayer;
-    if(zoomLayer) {
-        // until we get around to persistent selections, remove the outline
-        // here. The selection itself will be removed when the plot redraws
-        // at the end.
-        zoomLayer.selectAll('.select-outline').remove();
-    }
-
-    gd._fullLayout._drawing = false;
-}
-
-module.exports = {
-    clearOutlineControllers: clearOutlineControllers,
-    clearSelect: clearSelect
-};
-
-},{}],313:[function(_dereq_,module,exports){
-'use strict';
-
-var strTranslate = _dereq_('../../lib').strTranslate;
-
-// in v3 (once log ranges are fixed),
-// we'll be able to p2r here for all axis types
-function p2r(ax, v) {
-    switch(ax.type) {
-        case 'log':
-            return ax.p2d(v);
-        case 'date':
-            return ax.p2r(v, 0, ax.calendar);
-        default:
-            return ax.p2r(v);
-    }
-}
-
-function r2p(ax, v) {
-    switch(ax.type) {
-        case 'log':
-            return ax.d2p(v);
-        case 'date':
-            return ax.r2p(v, 0, ax.calendar);
-        default:
-            return ax.r2p(v);
-    }
-}
-
-function axValue(ax) {
-    var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
-    return function(v) { return p2r(ax, v[index]); };
-}
-
-function getTransform(plotinfo) {
-    return strTranslate(
-        plotinfo.xaxis._offset,
-        plotinfo.yaxis._offset
-    );
-}
-
-module.exports = {
-    p2r: p2r,
-    r2p: r2p,
-    axValue: axValue,
-    getTransform: getTransform
-};
-
-},{"../../lib":252}],314:[function(_dereq_,module,exports){
+},{"../../components/dragelement":139,"../../components/fx":160,"../../lib/setcursor":284,"./constants":320,"./dragbox":322,"@plotly/d3":16}],324:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -65336,7 +67718,7 @@ module.exports = function makeIncludeComponents(containerArrayName) {
     };
 };
 
-},{"../../lib":252,"../../registry":352,"./axis_ids":305}],315:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361,"./axis_ids":317}],325:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -65953,7 +68335,7 @@ exports.toSVG = function(gd) {
 
 exports.updateFx = _dereq_('./graph_interact').updateFx;
 
-},{"../../components/drawing":141,"../../constants/xmlns_namespaces":232,"../../lib":252,"../../registry":352,"../get_data":334,"../plots":349,"./attributes":299,"./axis_ids":305,"./constants":308,"./graph_interact":311,"./layout_attributes":316,"./layout_defaults":317,"./transition_axes":328,"@plotly/d3":16}],316:[function(_dereq_,module,exports){
+},{"../../components/drawing":142,"../../constants/xmlns_namespaces":244,"../../lib":264,"../../registry":361,"../get_data":343,"../plots":358,"./attributes":311,"./axis_ids":317,"./constants":320,"./graph_interact":323,"./layout_attributes":326,"./layout_defaults":327,"./transition_axes":337,"@plotly/d3":16}],326:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('../font_attributes');
@@ -66301,7 +68683,9 @@ module.exports = {
         editType: 'ticks',
     },
     automargin: {
-        valType: 'boolean',
+        valType: 'flaglist',
+        flags: ['height', 'width', 'left', 'right', 'top', 'bottom'],
+        extras: [true, false],
         dflt: false,
         editType: 'ticks',
     },
@@ -66585,7 +68969,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":118,"../../components/drawing/attributes":140,"../../constants/numerical":231,"../../lib/extend":245,"../../plot_api/plot_template":290,"../../plots/cartesian/axis_format_attributes":304,"../font_attributes":332,"./constants":308}],317:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":119,"../../components/drawing/attributes":141,"../../constants/numerical":243,"../../lib/extend":257,"../../plot_api/plot_template":302,"../../plots/cartesian/axis_format_attributes":316,"../font_attributes":341,"./constants":320}],327:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -66734,6 +69118,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         axLayoutOut._traceIndices = traces.map(function(t) { return t._expandedIndex; });
         axLayoutOut._annIndices = [];
         axLayoutOut._shapeIndices = [];
+        axLayoutOut._selectionIndices = [];
         axLayoutOut._imgIndices = [];
         axLayoutOut._subplotsWith = [];
         axLayoutOut._counterAxes = [];
@@ -66964,7 +69349,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":119,"../../components/fx/helpers":155,"../../components/fx/hovermode_defaults":158,"../../lib":252,"../../plot_api/plot_template":290,"../../registry":352,"../layout_attributes":347,"./axis_defaults":303,"./axis_ids":305,"./constants":308,"./constraints":309,"./layout_attributes":316,"./position_defaults":319,"./type_defaults":329}],318:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../components/fx/helpers":156,"../../components/fx/hovermode_defaults":159,"../../lib":264,"../../plot_api/plot_template":302,"../../registry":361,"../layout_attributes":356,"./axis_defaults":315,"./axis_ids":317,"./constants":320,"./constraints":321,"./layout_attributes":326,"./position_defaults":329,"./type_defaults":338}],328:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
@@ -67045,7 +69430,7 @@ module.exports = function handleLineGridDefaults(containerIn, containerOut, coer
     }
 };
 
-},{"../../components/color/attributes":118,"../../lib":252,"tinycolor2":83}],319:[function(_dereq_,module,exports){
+},{"../../components/color/attributes":119,"../../lib":264,"tinycolor2":84}],329:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -67124,7 +69509,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":252,"fast-isnumeric":31}],320:[function(_dereq_,module,exports){
+},{"../../lib":264,"fast-isnumeric":31}],330:[function(_dereq_,module,exports){
 'use strict';
 
 var getShowAttrDflt = _dereq_('./show_dflt');
@@ -67142,7 +69527,7 @@ module.exports = function handlePrefixSuffixDefaults(containerIn, containerOut, 
     if(tickSuffix) coerce('showticksuffix', showAttrDflt);
 };
 
-},{"./show_dflt":324}],321:[function(_dereq_,module,exports){
+},{"./show_dflt":333}],331:[function(_dereq_,module,exports){
 'use strict';
 
 var FROM_BL = _dereq_('../../constants/alignment').FROM_BL;
@@ -67162,941 +69547,7 @@ module.exports = function scaleZoom(ax, factor, centerFraction) {
     ax.setScale();
 };
 
-},{"../../constants/alignment":224}],322:[function(_dereq_,module,exports){
-'use strict';
-
-var polybool = _dereq_('polybooljs');
-
-var Registry = _dereq_('../../registry');
-var dashStyle = _dereq_('../../components/drawing').dashStyle;
-var Color = _dereq_('../../components/color');
-var Fx = _dereq_('../../components/fx');
-var makeEventData = _dereq_('../../components/fx/helpers').makeEventData;
-var dragHelpers = _dereq_('../../components/dragelement/helpers');
-var freeMode = dragHelpers.freeMode;
-var rectMode = dragHelpers.rectMode;
-var drawMode = dragHelpers.drawMode;
-var openMode = dragHelpers.openMode;
-var selectMode = dragHelpers.selectMode;
-
-var displayOutlines = _dereq_('../../components/shapes/draw_newshape/display_outlines');
-var handleEllipse = _dereq_('../../components/shapes/draw_newshape/helpers').handleEllipse;
-var newShapes = _dereq_('../../components/shapes/draw_newshape/newshapes');
-
-var Lib = _dereq_('../../lib');
-var polygon = _dereq_('../../lib/polygon');
-var throttle = _dereq_('../../lib/throttle');
-var getFromId = _dereq_('./axis_ids').getFromId;
-var clearGlCanvases = _dereq_('../../lib/clear_gl_canvases');
-
-var redrawReglTraces = _dereq_('../../plot_api/subroutines').redrawReglTraces;
-
-var constants = _dereq_('./constants');
-var MINSELECT = constants.MINSELECT;
-
-var filteredPolygon = polygon.filter;
-var polygonTester = polygon.tester;
-
-var clearSelect = _dereq_('./handle_outline').clearSelect;
-
-var helpers = _dereq_('./helpers');
-var p2r = helpers.p2r;
-var axValue = helpers.axValue;
-var getTransform = helpers.getTransform;
-
-function prepSelect(e, startX, startY, dragOptions, mode) {
-    var isFreeMode = freeMode(mode);
-    var isRectMode = rectMode(mode);
-    var isOpenMode = openMode(mode);
-    var isDrawMode = drawMode(mode);
-    var isSelectMode = selectMode(mode);
-
-    var isLine = mode === 'drawline';
-    var isEllipse = mode === 'drawcircle';
-    var isLineOrEllipse = isLine || isEllipse; // cases with two start & end positions
-
-    var gd = dragOptions.gd;
-    var fullLayout = gd._fullLayout;
-    var zoomLayer = fullLayout._zoomlayer;
-    var dragBBox = dragOptions.element.getBoundingClientRect();
-    var plotinfo = dragOptions.plotinfo;
-    var transform = getTransform(plotinfo);
-    var x0 = startX - dragBBox.left;
-    var y0 = startY - dragBBox.top;
-
-    fullLayout._calcInverseTransform(gd);
-    var transformedCoords = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
-    x0 = transformedCoords[0];
-    y0 = transformedCoords[1];
-    var scaleX = fullLayout._invScaleX;
-    var scaleY = fullLayout._invScaleY;
-
-    var x1 = x0;
-    var y1 = y0;
-    var path0 = 'M' + x0 + ',' + y0;
-    var pw = dragOptions.xaxes[0]._length;
-    var ph = dragOptions.yaxes[0]._length;
-    var allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
-    var subtract = e.altKey &&
-        !(drawMode(mode) && isOpenMode);
-
-    var filterPoly, selectionTester, mergedPolygons, currentPolygon;
-    var i, searchInfo, eventData;
-
-    coerceSelectionsCache(e, gd, dragOptions);
-
-    if(isFreeMode) {
-        filterPoly = filteredPolygon([[x0, y0]], constants.BENDPX);
-    }
-
-    var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data(isDrawMode ? [0] : [1, 2]);
-    var drwStyle = fullLayout.newshape;
-
-    outlines.enter()
-        .append('path')
-        .attr('class', function(d) { return 'select-outline select-outline-' + d + ' select-outline-' + plotinfo.id; })
-        .style(isDrawMode ? {
-            opacity: drwStyle.opacity / 2,
-            fill: isOpenMode ? undefined : drwStyle.fillcolor,
-            stroke: drwStyle.line.color,
-            'stroke-dasharray': dashStyle(drwStyle.line.dash, drwStyle.line.width),
-            'stroke-width': drwStyle.line.width + 'px'
-        } : {})
-        .attr('fill-rule', drwStyle.fillrule)
-        .classed('cursor-move', isDrawMode ? true : false)
-        .attr('transform', transform)
-        .attr('d', path0 + 'Z');
-
-    var corners = zoomLayer.append('path')
-        .attr('class', 'zoombox-corners')
-        .style({
-            fill: Color.background,
-            stroke: Color.defaultLine,
-            'stroke-width': 1
-        })
-        .attr('transform', transform)
-        .attr('d', 'M0,0Z');
-
-
-    var throttleID = fullLayout._uid + constants.SELECTID;
-    var selection = [];
-
-    // find the traces to search for selection points
-    var searchTraces = determineSearchTraces(gd, dragOptions.xaxes,
-      dragOptions.yaxes, dragOptions.subplot);
-
-    function ascending(a, b) { return a - b; }
-
-    // allow subplots to override fillRangeItems routine
-    var fillRangeItems;
-
-    if(plotinfo.fillRangeItems) {
-        fillRangeItems = plotinfo.fillRangeItems;
-    } else {
-        if(isRectMode) {
-            fillRangeItems = function(eventData, poly) {
-                var ranges = eventData.range = {};
-
-                for(i = 0; i < allAxes.length; i++) {
-                    var ax = allAxes[i];
-                    var axLetter = ax._id.charAt(0);
-
-                    ranges[ax._id] = [
-                        p2r(ax, poly[axLetter + 'min']),
-                        p2r(ax, poly[axLetter + 'max'])
-                    ].sort(ascending);
-                }
-            };
-        } else { // case of isFreeMode
-            fillRangeItems = function(eventData, poly, filterPoly) {
-                var dataPts = eventData.lassoPoints = {};
-
-                for(i = 0; i < allAxes.length; i++) {
-                    var ax = allAxes[i];
-                    dataPts[ax._id] = filterPoly.filtered.map(axValue(ax));
-                }
-            };
-        }
-    }
-
-    dragOptions.moveFn = function(dx0, dy0) {
-        x1 = Math.max(0, Math.min(pw, scaleX * dx0 + x0));
-        y1 = Math.max(0, Math.min(ph, scaleY * dy0 + y0));
-
-        var dx = Math.abs(x1 - x0);
-        var dy = Math.abs(y1 - y0);
-
-        if(isRectMode) {
-            var direction;
-            var start, end;
-
-            if(isSelectMode) {
-                var q = fullLayout.selectdirection;
-
-                if(q === 'any') {
-                    if(dy < Math.min(dx * 0.6, MINSELECT)) {
-                        direction = 'h';
-                    } else if(dx < Math.min(dy * 0.6, MINSELECT)) {
-                        direction = 'v';
-                    } else {
-                        direction = 'd';
-                    }
-                } else {
-                    direction = q;
-                }
-
-                switch(direction) {
-                    case 'h':
-                        start = isEllipse ? ph / 2 : 0;
-                        end = ph;
-                        break;
-                    case 'v':
-                        start = isEllipse ? pw / 2 : 0;
-                        end = pw;
-                        break;
-                }
-            }
-
-            if(isDrawMode) {
-                switch(fullLayout.newshape.drawdirection) {
-                    case 'vertical':
-                        direction = 'h';
-                        start = isEllipse ? ph / 2 : 0;
-                        end = ph;
-                        break;
-                    case 'horizontal':
-                        direction = 'v';
-                        start = isEllipse ? pw / 2 : 0;
-                        end = pw;
-                        break;
-                    case 'ortho':
-                        if(dx < dy) {
-                            direction = 'h';
-                            start = y0;
-                            end = y1;
-                        } else {
-                            direction = 'v';
-                            start = x0;
-                            end = x1;
-                        }
-                        break;
-                    default: // i.e. case of 'diagonal'
-                        direction = 'd';
-                }
-            }
-
-            if(direction === 'h') {
-                // horizontal motion
-                currentPolygon = isLineOrEllipse ?
-                    handleEllipse(isEllipse, [x1, start], [x1, end]) : // using x1 instead of x0 allows adjusting the line while drawing
-                    [[x0, start], [x0, end], [x1, end], [x1, start]]; // make a vertical box
-
-                currentPolygon.xmin = isLineOrEllipse ? x1 : Math.min(x0, x1);
-                currentPolygon.xmax = isLineOrEllipse ? x1 : Math.max(x0, x1);
-                currentPolygon.ymin = Math.min(start, end);
-                currentPolygon.ymax = Math.max(start, end);
-                // extras to guide users in keeping a straight selection
-                corners.attr('d', 'M' + currentPolygon.xmin + ',' + (y0 - MINSELECT) +
-                    'h-4v' + (2 * MINSELECT) + 'h4Z' +
-                    'M' + (currentPolygon.xmax - 1) + ',' + (y0 - MINSELECT) +
-                    'h4v' + (2 * MINSELECT) + 'h-4Z');
-            } else if(direction === 'v') {
-                // vertical motion
-                currentPolygon = isLineOrEllipse ?
-                    handleEllipse(isEllipse, [start, y1], [end, y1]) : // using y1 instead of y0 allows adjusting the line while drawing
-                    [[start, y0], [start, y1], [end, y1], [end, y0]]; // make a horizontal box
-
-                currentPolygon.xmin = Math.min(start, end);
-                currentPolygon.xmax = Math.max(start, end);
-                currentPolygon.ymin = isLineOrEllipse ? y1 : Math.min(y0, y1);
-                currentPolygon.ymax = isLineOrEllipse ? y1 : Math.max(y0, y1);
-                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + currentPolygon.ymin +
-                    'v-4h' + (2 * MINSELECT) + 'v4Z' +
-                    'M' + (x0 - MINSELECT) + ',' + (currentPolygon.ymax - 1) +
-                    'v4h' + (2 * MINSELECT) + 'v-4Z');
-            } else if(direction === 'd') {
-                // diagonal motion
-                currentPolygon = isLineOrEllipse ?
-                    handleEllipse(isEllipse, [x0, y0], [x1, y1]) :
-                    [[x0, y0], [x0, y1], [x1, y1], [x1, y0]];
-
-                currentPolygon.xmin = Math.min(x0, x1);
-                currentPolygon.xmax = Math.max(x0, x1);
-                currentPolygon.ymin = Math.min(y0, y1);
-                currentPolygon.ymax = Math.max(y0, y1);
-                corners.attr('d', 'M0,0Z');
-            }
-        } else if(isFreeMode) {
-            filterPoly.addPt([x1, y1]);
-            currentPolygon = filterPoly.filtered;
-        }
-
-        // create outline & tester
-        if(dragOptions.selectionDefs && dragOptions.selectionDefs.length) {
-            mergedPolygons = mergePolygons(dragOptions.mergedPolygons, currentPolygon, subtract);
-            currentPolygon.subtract = subtract;
-            selectionTester = multiTester(dragOptions.selectionDefs.concat([currentPolygon]));
-        } else {
-            mergedPolygons = [currentPolygon];
-            selectionTester = polygonTester(currentPolygon);
-        }
-
-        // display polygons on the screen
-        displayOutlines(convertPoly(mergedPolygons, isOpenMode), outlines, dragOptions);
-
-        if(isSelectMode) {
-            throttle.throttle(
-                throttleID,
-                constants.SELECTDELAY,
-                function() {
-                    selection = [];
-
-                    var thisSelection;
-                    var traceSelections = [];
-                    var traceSelection;
-                    for(i = 0; i < searchTraces.length; i++) {
-                        searchInfo = searchTraces[i];
-
-                        traceSelection = searchInfo._module.selectPoints(searchInfo, selectionTester);
-                        traceSelections.push(traceSelection);
-
-                        thisSelection = fillSelectionItem(traceSelection, searchInfo);
-
-                        if(selection.length) {
-                            for(var j = 0; j < thisSelection.length; j++) {
-                                selection.push(thisSelection[j]);
-                            }
-                        } else selection = thisSelection;
-                    }
-
-                    eventData = {points: selection};
-                    updateSelectedState(gd, searchTraces, eventData);
-                    fillRangeItems(eventData, currentPolygon, filterPoly);
-                    dragOptions.gd.emit('plotly_selecting', eventData);
-                }
-            );
-        }
-    };
-
-    dragOptions.clickFn = function(numClicks, evt) {
-        corners.remove();
-
-        if(gd._fullLayout._activeShapeIndex >= 0) {
-            gd._fullLayout._deactivateShape(gd);
-            return;
-        }
-        if(isDrawMode) return;
-
-        var clickmode = fullLayout.clickmode;
-
-        throttle.done(throttleID).then(function() {
-            throttle.clear(throttleID);
-            if(numClicks === 2) {
-                // clear selection on doubleclick
-                outlines.remove();
-                for(i = 0; i < searchTraces.length; i++) {
-                    searchInfo = searchTraces[i];
-                    searchInfo._module.selectPoints(searchInfo, false);
-                }
-
-                updateSelectedState(gd, searchTraces);
-
-                clearSelectionsCache(dragOptions);
-
-                gd.emit('plotly_deselect', null);
-            } else {
-                if(clickmode.indexOf('select') > -1) {
-                    selectOnClick(evt, gd, dragOptions.xaxes, dragOptions.yaxes,
-                      dragOptions.subplot, dragOptions, outlines);
-                }
-
-                if(clickmode === 'event') {
-                    // TODO: remove in v3 - this was probably never intended to work as it does,
-                    // but in case anyone depends on it we don't want to break it now.
-                    // Note that click-to-select introduced pre v3 also emitts proper
-                    // event data when clickmode is having 'select' in its flag list.
-                    gd.emit('plotly_selected', undefined);
-                }
-            }
-
-            Fx.click(gd, evt);
-        }).catch(Lib.error);
-    };
-
-    dragOptions.doneFn = function() {
-        corners.remove();
-
-        throttle.done(throttleID).then(function() {
-            throttle.clear(throttleID);
-            dragOptions.gd.emit('plotly_selected', eventData);
-
-            if(currentPolygon && dragOptions.selectionDefs) {
-                // save last polygons
-                currentPolygon.subtract = subtract;
-                dragOptions.selectionDefs.push(currentPolygon);
-
-                // we have to keep reference to arrays container
-                dragOptions.mergedPolygons.length = 0;
-                [].push.apply(dragOptions.mergedPolygons, mergedPolygons);
-            }
-
-            if(dragOptions.doneFnCompleted) {
-                dragOptions.doneFnCompleted(selection);
-            }
-        }).catch(Lib.error);
-
-        if(isDrawMode) {
-            clearSelectionsCache(dragOptions);
-        }
-    };
-}
-
-function selectOnClick(evt, gd, xAxes, yAxes, subplot, dragOptions, polygonOutlines) {
-    var hoverData = gd._hoverdata;
-    var fullLayout = gd._fullLayout;
-    var clickmode = fullLayout.clickmode;
-    var sendEvents = clickmode.indexOf('event') > -1;
-    var selection = [];
-    var searchTraces, searchInfo, currentSelectionDef, selectionTester, traceSelection;
-    var thisTracesSelection, pointOrBinSelected, subtract, eventData, i;
-
-    if(isHoverDataSet(hoverData)) {
-        coerceSelectionsCache(evt, gd, dragOptions);
-        searchTraces = determineSearchTraces(gd, xAxes, yAxes, subplot);
-        var clickedPtInfo = extractClickedPtInfo(hoverData, searchTraces);
-        var isBinnedTrace = clickedPtInfo.pointNumbers.length > 0;
-
-
-        // Note: potentially costly operation isPointOrBinSelected is
-        // called as late as possible through the use of an assignment
-        // in an if condition.
-        if(isBinnedTrace ?
-            isOnlyThisBinSelected(searchTraces, clickedPtInfo) :
-            isOnlyOnePointSelected(searchTraces) &&
-                (pointOrBinSelected = isPointOrBinSelected(clickedPtInfo))) {
-            if(polygonOutlines) polygonOutlines.remove();
-            for(i = 0; i < searchTraces.length; i++) {
-                searchInfo = searchTraces[i];
-                searchInfo._module.selectPoints(searchInfo, false);
-            }
-
-            updateSelectedState(gd, searchTraces);
-
-            clearSelectionsCache(dragOptions);
-
-            if(sendEvents) {
-                gd.emit('plotly_deselect', null);
-            }
-        } else {
-            subtract = evt.shiftKey &&
-              (pointOrBinSelected !== undefined ?
-                pointOrBinSelected :
-                isPointOrBinSelected(clickedPtInfo));
-            currentSelectionDef = newPointSelectionDef(clickedPtInfo.pointNumber, clickedPtInfo.searchInfo, subtract);
-
-            var allSelectionDefs = dragOptions.selectionDefs.concat([currentSelectionDef]);
-            selectionTester = multiTester(allSelectionDefs);
-
-            for(i = 0; i < searchTraces.length; i++) {
-                traceSelection = searchTraces[i]._module.selectPoints(searchTraces[i], selectionTester);
-                thisTracesSelection = fillSelectionItem(traceSelection, searchTraces[i]);
-
-                if(selection.length) {
-                    for(var j = 0; j < thisTracesSelection.length; j++) {
-                        selection.push(thisTracesSelection[j]);
-                    }
-                } else selection = thisTracesSelection;
-            }
-
-            eventData = {points: selection};
-            updateSelectedState(gd, searchTraces, eventData);
-
-            if(currentSelectionDef && dragOptions) {
-                dragOptions.selectionDefs.push(currentSelectionDef);
-            }
-
-            if(polygonOutlines) {
-                var polygons = dragOptions.mergedPolygons;
-                var isOpenMode = openMode(dragOptions.dragmode);
-
-                // display polygons on the screen
-                displayOutlines(convertPoly(polygons, isOpenMode), polygonOutlines, dragOptions);
-            }
-
-            if(sendEvents) {
-                gd.emit('plotly_selected', eventData);
-            }
-        }
-    }
-}
-
-/**
- * Constructs a new point selection definition object.
- */
-function newPointSelectionDef(pointNumber, searchInfo, subtract) {
-    return {
-        pointNumber: pointNumber,
-        searchInfo: searchInfo,
-        subtract: subtract
-    };
-}
-
-function isPointSelectionDef(o) {
-    return 'pointNumber' in o && 'searchInfo' in o;
-}
-
-/*
- * Constructs a new point number tester.
- */
-function newPointNumTester(pointSelectionDef) {
-    return {
-        xmin: 0,
-        xmax: 0,
-        ymin: 0,
-        ymax: 0,
-        pts: [],
-        contains: function(pt, omitFirstEdge, pointNumber, searchInfo) {
-            var idxWantedTrace = pointSelectionDef.searchInfo.cd[0].trace._expandedIndex;
-            var idxActualTrace = searchInfo.cd[0].trace._expandedIndex;
-            return idxActualTrace === idxWantedTrace &&
-              pointNumber === pointSelectionDef.pointNumber;
-        },
-        isRect: false,
-        degenerate: false,
-        subtract: pointSelectionDef.subtract
-    };
-}
-
-/**
- * Wraps multiple selection testers.
- *
- * @param {Array} list - An array of selection testers.
- *
- * @return a selection tester object with a contains function
- * that can be called to evaluate a point against all wrapped
- * selection testers that were passed in list.
- */
-function multiTester(list) {
-    var testers = [];
-    var xmin = isPointSelectionDef(list[0]) ? 0 : list[0][0][0];
-    var xmax = xmin;
-    var ymin = isPointSelectionDef(list[0]) ? 0 : list[0][0][1];
-    var ymax = ymin;
-
-    for(var i = 0; i < list.length; i++) {
-        if(isPointSelectionDef(list[i])) {
-            testers.push(newPointNumTester(list[i]));
-        } else {
-            var tester = polygon.tester(list[i]);
-            tester.subtract = list[i].subtract;
-            testers.push(tester);
-            xmin = Math.min(xmin, tester.xmin);
-            xmax = Math.max(xmax, tester.xmax);
-            ymin = Math.min(ymin, tester.ymin);
-            ymax = Math.max(ymax, tester.ymax);
-        }
-    }
-
-    /**
-     * Tests if the given point is within this tester.
-     *
-     * @param {Array} pt - [0] is the x coordinate, [1] is the y coordinate of the point.
-     * @param {*} arg - An optional parameter to pass down to wrapped testers.
-     * @param {number} pointNumber - The point number of the point within the underlying data array.
-     * @param {number} searchInfo - An object identifying the trace the point is contained in.
-     *
-     * @return {boolean} true if point is considered to be selected, false otherwise.
-     */
-    function contains(pt, arg, pointNumber, searchInfo) {
-        var contained = false;
-        for(var i = 0; i < testers.length; i++) {
-            if(testers[i].contains(pt, arg, pointNumber, searchInfo)) {
-                // if contained by subtract tester - exclude the point
-                contained = testers[i].subtract === false;
-            }
-        }
-
-        return contained;
-    }
-
-    return {
-        xmin: xmin,
-        xmax: xmax,
-        ymin: ymin,
-        ymax: ymax,
-        pts: [],
-        contains: contains,
-        isRect: false,
-        degenerate: false
-    };
-}
-
-function coerceSelectionsCache(evt, gd, dragOptions) {
-    gd._fullLayout._drawing = false;
-
-    var fullLayout = gd._fullLayout;
-    var plotinfo = dragOptions.plotinfo;
-    var dragmode = dragOptions.dragmode;
-
-    var selectingOnSameSubplot = (
-        fullLayout._lastSelectedSubplot &&
-        fullLayout._lastSelectedSubplot === plotinfo.id
-    );
-
-    var hasModifierKey = (evt.shiftKey || evt.altKey) &&
-        !(drawMode(dragmode) && openMode(dragmode));
-
-    if(selectingOnSameSubplot && hasModifierKey &&
-      (plotinfo.selection && plotinfo.selection.selectionDefs) && !dragOptions.selectionDefs) {
-        // take over selection definitions from prev mode, if any
-        dragOptions.selectionDefs = plotinfo.selection.selectionDefs;
-        dragOptions.mergedPolygons = plotinfo.selection.mergedPolygons;
-    } else if(!hasModifierKey || !plotinfo.selection) {
-        clearSelectionsCache(dragOptions);
-    }
-
-    // clear selection outline when selecting a different subplot
-    if(!selectingOnSameSubplot) {
-        clearSelect(gd);
-        fullLayout._lastSelectedSubplot = plotinfo.id;
-    }
-}
-
-function clearSelectionsCache(dragOptions) {
-    var dragmode = dragOptions.dragmode;
-    var plotinfo = dragOptions.plotinfo;
-
-    var gd = dragOptions.gd;
-    if(gd._fullLayout._activeShapeIndex >= 0) {
-        gd._fullLayout._deactivateShape(gd);
-    }
-
-    if(drawMode(dragmode)) {
-        var fullLayout = gd._fullLayout;
-        var zoomLayer = fullLayout._zoomlayer;
-
-        var outlines = zoomLayer.selectAll('.select-outline-' + plotinfo.id);
-        if(outlines && gd._fullLayout._drawing) {
-            // add shape
-            var shapes = newShapes(outlines, dragOptions);
-            if(shapes) {
-                Registry.call('_guiRelayout', gd, {
-                    shapes: shapes
-                });
-            }
-
-            gd._fullLayout._drawing = false;
-        }
-    }
-
-    plotinfo.selection = {};
-    plotinfo.selection.selectionDefs = dragOptions.selectionDefs = [];
-    plotinfo.selection.mergedPolygons = dragOptions.mergedPolygons = [];
-}
-
-function determineSearchTraces(gd, xAxes, yAxes, subplot) {
-    var searchTraces = [];
-    var xAxisIds = xAxes.map(function(ax) { return ax._id; });
-    var yAxisIds = yAxes.map(function(ax) { return ax._id; });
-    var cd, trace, i;
-
-    for(i = 0; i < gd.calcdata.length; i++) {
-        cd = gd.calcdata[i];
-        trace = cd[0].trace;
-
-        if(trace.visible !== true || !trace._module || !trace._module.selectPoints) continue;
-
-        if(subplot && (trace.subplot === subplot || trace.geo === subplot)) {
-            searchTraces.push(createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]));
-        } else if(
-          trace.type === 'splom' &&
-          // FIXME: make sure we don't have more than single axis for splom
-          trace._xaxes[xAxisIds[0]] && trace._yaxes[yAxisIds[0]]
-        ) {
-            var info = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
-            info.scene = gd._fullLayout._splomScenes[trace.uid];
-            searchTraces.push(info);
-        } else if(
-          trace.type === 'sankey'
-        ) {
-            var sankeyInfo = createSearchInfo(trace._module, cd, xAxes[0], yAxes[0]);
-            searchTraces.push(sankeyInfo);
-        } else {
-            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
-            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
-
-            searchTraces.push(createSearchInfo(trace._module, cd,
-              getFromId(gd, trace.xaxis), getFromId(gd, trace.yaxis)));
-        }
-    }
-
-    return searchTraces;
-
-    function createSearchInfo(module, calcData, xaxis, yaxis) {
-        return {
-            _module: module,
-            cd: calcData,
-            xaxis: xaxis,
-            yaxis: yaxis
-        };
-    }
-}
-
-function isHoverDataSet(hoverData) {
-    return hoverData &&
-      Array.isArray(hoverData) &&
-      hoverData[0].hoverOnBox !== true;
-}
-
-function extractClickedPtInfo(hoverData, searchTraces) {
-    var hoverDatum = hoverData[0];
-    var pointNumber = -1;
-    var pointNumbers = [];
-    var searchInfo, i;
-
-    for(i = 0; i < searchTraces.length; i++) {
-        searchInfo = searchTraces[i];
-        if(hoverDatum.fullData._expandedIndex === searchInfo.cd[0].trace._expandedIndex) {
-            // Special case for box (and violin)
-            if(hoverDatum.hoverOnBox === true) {
-                break;
-            }
-
-            // Hint: in some traces like histogram, one graphical element
-            // doesn't correspond to one particular data point, but to
-            // bins of data points. Thus, hoverDatum can have a binNumber
-            // property instead of pointNumber.
-            if(hoverDatum.pointNumber !== undefined) {
-                pointNumber = hoverDatum.pointNumber;
-            } else if(hoverDatum.binNumber !== undefined) {
-                pointNumber = hoverDatum.binNumber;
-                pointNumbers = hoverDatum.pointNumbers;
-            }
-
-            break;
-        }
-    }
-
-    return {
-        pointNumber: pointNumber,
-        pointNumbers: pointNumbers,
-        searchInfo: searchInfo
-    };
-}
-
-function isPointOrBinSelected(clickedPtInfo) {
-    var trace = clickedPtInfo.searchInfo.cd[0].trace;
-    var ptNum = clickedPtInfo.pointNumber;
-    var ptNums = clickedPtInfo.pointNumbers;
-    var ptNumsSet = ptNums.length > 0;
-
-    // When pointsNumbers is set (e.g. histogram's binning),
-    // it is assumed that when the first point of
-    // a bin is selected, all others are as well
-    var ptNumToTest = ptNumsSet ? ptNums[0] : ptNum;
-
-    // TODO potential performance improvement
-    // Primarily we need this function to determine if a click adds
-    // or subtracts from a selection.
-    // In cases `trace.selectedpoints` is a huge array, indexOf
-    // might be slow. One remedy would be to introduce a hash somewhere.
-    return trace.selectedpoints ? trace.selectedpoints.indexOf(ptNumToTest) > -1 : false;
-}
-
-function isOnlyThisBinSelected(searchTraces, clickedPtInfo) {
-    var tracesWithSelectedPts = [];
-    var searchInfo, trace, isSameTrace, i;
-
-    for(i = 0; i < searchTraces.length; i++) {
-        searchInfo = searchTraces[i];
-        if(searchInfo.cd[0].trace.selectedpoints && searchInfo.cd[0].trace.selectedpoints.length > 0) {
-            tracesWithSelectedPts.push(searchInfo);
-        }
-    }
-
-    if(tracesWithSelectedPts.length === 1) {
-        isSameTrace = tracesWithSelectedPts[0] === clickedPtInfo.searchInfo;
-        if(isSameTrace) {
-            trace = clickedPtInfo.searchInfo.cd[0].trace;
-            if(trace.selectedpoints.length === clickedPtInfo.pointNumbers.length) {
-                for(i = 0; i < clickedPtInfo.pointNumbers.length; i++) {
-                    if(trace.selectedpoints.indexOf(clickedPtInfo.pointNumbers[i]) < 0) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-        }
-    }
-
-    return false;
-}
-
-function isOnlyOnePointSelected(searchTraces) {
-    var len = 0;
-    var searchInfo, trace, i;
-
-    for(i = 0; i < searchTraces.length; i++) {
-        searchInfo = searchTraces[i];
-        trace = searchInfo.cd[0].trace;
-        if(trace.selectedpoints) {
-            if(trace.selectedpoints.length > 1) return false;
-
-            len += trace.selectedpoints.length;
-            if(len > 1) return false;
-        }
-    }
-
-    return len === 1;
-}
-
-function updateSelectedState(gd, searchTraces, eventData) {
-    var i, searchInfo, cd, trace;
-
-    // before anything else, update preGUI if necessary
-    for(i = 0; i < searchTraces.length; i++) {
-        var fullInputTrace = searchTraces[i].cd[0].trace._fullInput;
-        var tracePreGUI = gd._fullLayout._tracePreGUI[fullInputTrace.uid] || {};
-        if(tracePreGUI.selectedpoints === undefined) {
-            tracePreGUI.selectedpoints = fullInputTrace._input.selectedpoints || null;
-        }
-    }
-
-    if(eventData) {
-        var pts = eventData.points || [];
-
-        for(i = 0; i < searchTraces.length; i++) {
-            trace = searchTraces[i].cd[0].trace;
-            trace._input.selectedpoints = trace._fullInput.selectedpoints = [];
-            if(trace._fullInput !== trace) trace.selectedpoints = [];
-        }
-
-        for(i = 0; i < pts.length; i++) {
-            var pt = pts[i];
-            var data = pt.data;
-            var fullData = pt.fullData;
-
-            if(pt.pointIndices) {
-                [].push.apply(data.selectedpoints, pt.pointIndices);
-                if(trace._fullInput !== trace) {
-                    [].push.apply(fullData.selectedpoints, pt.pointIndices);
-                }
-            } else {
-                data.selectedpoints.push(pt.pointIndex);
-                if(trace._fullInput !== trace) {
-                    fullData.selectedpoints.push(pt.pointIndex);
-                }
-            }
-        }
-    } else {
-        for(i = 0; i < searchTraces.length; i++) {
-            trace = searchTraces[i].cd[0].trace;
-            delete trace.selectedpoints;
-            delete trace._input.selectedpoints;
-            if(trace._fullInput !== trace) {
-                delete trace._fullInput.selectedpoints;
-            }
-        }
-    }
-
-    var hasRegl = false;
-
-    for(i = 0; i < searchTraces.length; i++) {
-        searchInfo = searchTraces[i];
-        cd = searchInfo.cd;
-        trace = cd[0].trace;
-
-        if(Registry.traceIs(trace, 'regl')) {
-            hasRegl = true;
-        }
-
-        var _module = searchInfo._module;
-        var fn = _module.styleOnSelect || _module.style;
-        if(fn) {
-            fn(gd, cd, cd[0].node3);
-            if(cd[0].nodeRangePlot3) fn(gd, cd, cd[0].nodeRangePlot3);
-        }
-    }
-
-    if(hasRegl) {
-        clearGlCanvases(gd);
-        redrawReglTraces(gd);
-    }
-}
-
-function mergePolygons(list, poly, subtract) {
-    var res;
-
-    if(subtract) {
-        res = polybool.difference({
-            regions: list,
-            inverted: false
-        }, {
-            regions: [poly],
-            inverted: false
-        });
-
-        return res.regions;
-    }
-
-    res = polybool.union({
-        regions: list,
-        inverted: false
-    }, {
-        regions: [poly],
-        inverted: false
-    });
-
-    return res.regions;
-}
-
-function fillSelectionItem(selection, searchInfo) {
-    if(Array.isArray(selection)) {
-        var cd = searchInfo.cd;
-        var trace = searchInfo.cd[0].trace;
-
-        for(var i = 0; i < selection.length; i++) {
-            selection[i] = makeEventData(selection[i], trace, cd);
-        }
-    }
-
-    return selection;
-}
-
-function convertPoly(polygonsIn, isOpenMode) { // add M and L command to draft positions
-    var polygonsOut = [];
-    for(var i = 0; i < polygonsIn.length; i++) {
-        polygonsOut[i] = [];
-        for(var j = 0; j < polygonsIn[i].length; j++) {
-            polygonsOut[i][j] = [];
-            polygonsOut[i][j][0] = j ? 'L' : 'M';
-            for(var k = 0; k < polygonsIn[i][j].length; k++) {
-                polygonsOut[i][j].push(
-                    polygonsIn[i][j][k]
-                );
-            }
-        }
-
-        if(!isOpenMode) {
-            polygonsOut[i].push([
-                'Z',
-                polygonsOut[i][0][1], // initial x
-                polygonsOut[i][0][2]  // initial y
-            ]);
-        }
-    }
-
-    return polygonsOut;
-}
-
-module.exports = {
-    prepSelect: prepSelect,
-    clearSelect: clearSelect,
-    clearSelectionsCache: clearSelectionsCache,
-    selectOnClick: selectOnClick
-};
-
-},{"../../components/color":119,"../../components/dragelement/helpers":137,"../../components/drawing":141,"../../components/fx":159,"../../components/fx/helpers":155,"../../components/shapes/draw_newshape/display_outlines":207,"../../components/shapes/draw_newshape/helpers":208,"../../components/shapes/draw_newshape/newshapes":209,"../../lib":252,"../../lib/clear_gl_canvases":239,"../../lib/polygon":264,"../../lib/throttle":278,"../../plot_api/subroutines":291,"../../registry":352,"./axis_ids":305,"./constants":308,"./handle_outline":312,"./helpers":313,"polybooljs":73}],323:[function(_dereq_,module,exports){
+},{"../../constants/alignment":236}],332:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -69061,7 +70512,7 @@ module.exports = function setConvert(ax, fullLayout) {
     delete ax._forceTick0;
 };
 
-},{"../../constants/numerical":231,"../../lib":252,"./axis_ids":305,"./constants":308,"@plotly/d3":16,"d3-time-format":26,"fast-isnumeric":31}],324:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264,"./axis_ids":317,"./constants":320,"@plotly/d3":16,"d3-time-format":26,"fast-isnumeric":31}],333:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -69092,7 +70543,7 @@ module.exports = function getShowAttrDflt(containerIn) {
     }
 };
 
-},{}],325:[function(_dereq_,module,exports){
+},{}],334:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -69167,7 +70618,7 @@ function tickformatstopDefaults(valueIn, valueOut) {
     }
 }
 
-},{"../../components/color":119,"../../lib":252,"../array_container_defaults":296,"./layout_attributes":316,"./show_dflt":324}],326:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../lib":264,"../array_container_defaults":308,"./layout_attributes":326,"./show_dflt":333}],335:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -69199,7 +70650,7 @@ module.exports = function handleTickMarkDefaults(containerIn, containerOut, coer
     }
 };
 
-},{"../../lib":252,"./layout_attributes":316}],327:[function(_dereq_,module,exports){
+},{"../../lib":264,"./layout_attributes":326}],336:[function(_dereq_,module,exports){
 'use strict';
 
 var cleanTicks = _dereq_('./clean_ticks');
@@ -69245,7 +70696,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"../../lib":252,"./clean_ticks":307}],328:[function(_dereq_,module,exports){
+},{"../../lib":264,"./clean_ticks":319}],337:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -69450,7 +70901,7 @@ module.exports = function transitionAxes(gd, edits, transitionOpts, makeOnComple
     return Promise.resolve();
 };
 
-},{"../../components/drawing":141,"../../lib":252,"../../registry":352,"./axes":301,"@plotly/d3":16}],329:[function(_dereq_,module,exports){
+},{"../../components/drawing":142,"../../lib":264,"../../registry":361,"./axes":313,"@plotly/d3":16}],338:[function(_dereq_,module,exports){
 'use strict';
 
 var traceIs = _dereq_('../../registry').traceIs;
@@ -69582,7 +71033,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     );
 }
 
-},{"../../registry":352,"./axis_autotype":302}],330:[function(_dereq_,module,exports){
+},{"../../registry":361,"./axis_autotype":314}],339:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -70001,7 +71452,7 @@ function crawl(attrs, callback, path, depth) {
     });
 }
 
-},{"../lib":252,"../registry":352}],331:[function(_dereq_,module,exports){
+},{"../lib":264,"../registry":361}],340:[function(_dereq_,module,exports){
 'use strict';
 
 var extendFlat = _dereq_('../lib/extend').extendFlat;
@@ -70098,7 +71549,7 @@ exports.defaults = function(containerOut, layout, coerce, dfltDomains) {
     if(!(y[0] < y[1])) containerOut.domain.y = dfltY.slice();
 };
 
-},{"../lib/extend":245}],332:[function(_dereq_,module,exports){
+},{"../lib/extend":257}],341:[function(_dereq_,module,exports){
 'use strict';
 
 /*
@@ -70153,7 +71604,7 @@ module.exports = function(opts) {
     return attrs;
 };
 
-},{}],333:[function(_dereq_,module,exports){
+},{}],342:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -70179,7 +71630,7 @@ module.exports = {
     }
 };
 
-},{}],334:[function(_dereq_,module,exports){
+},{}],343:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -70300,7 +71751,7 @@ exports.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-},{"../registry":352,"./cartesian/constants":308}],335:[function(_dereq_,module,exports){
+},{"../registry":361,"./cartesian/constants":320}],344:[function(_dereq_,module,exports){
 'use strict';
 
 var overrideAll = _dereq_('../../plot_api/edit_types').overrideAll;
@@ -70451,7 +71902,7 @@ exports.updateFx = function(gd) {
     }
 };
 
-},{"../../components/fx/layout_attributes":160,"../../constants/xmlns_namespaces":232,"../../lib":252,"../../plot_api/edit_types":283,"../get_data":334,"./layout/attributes":336,"./layout/defaults":340,"./layout/layout_attributes":341,"./scene":345}],336:[function(_dereq_,module,exports){
+},{"../../components/fx/layout_attributes":161,"../../constants/xmlns_namespaces":244,"../../lib":264,"../../plot_api/edit_types":295,"../get_data":343,"./layout/attributes":345,"./layout/defaults":349,"./layout/layout_attributes":350,"./scene":354}],345:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -70463,7 +71914,7 @@ module.exports = {
     }
 };
 
-},{}],337:[function(_dereq_,module,exports){
+},{}],346:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../../components/color');
@@ -70565,7 +72016,7 @@ module.exports = overrideAll({
     }
 }, 'plot', 'from-root');
 
-},{"../../../components/color":119,"../../../lib/extend":245,"../../../plot_api/edit_types":283,"../../cartesian/layout_attributes":316}],338:[function(_dereq_,module,exports){
+},{"../../../components/color":120,"../../../lib/extend":257,"../../../plot_api/edit_types":295,"../../cartesian/layout_attributes":326}],347:[function(_dereq_,module,exports){
 'use strict';
 
 var colorMix = _dereq_('tinycolor2').mix;
@@ -70635,7 +72086,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../lib":252,"../../../plot_api/plot_template":290,"../../cartesian/axis_defaults":303,"../../cartesian/type_defaults":329,"./axis_attributes":337,"tinycolor2":83}],339:[function(_dereq_,module,exports){
+},{"../../../lib":264,"../../../plot_api/plot_template":302,"../../cartesian/axis_defaults":315,"../../cartesian/type_defaults":338,"./axis_attributes":346,"tinycolor2":84}],348:[function(_dereq_,module,exports){
 'use strict';
 
 var str2RgbaArray = _dereq_('../../../lib/str2rgbarray');
@@ -70792,7 +72243,7 @@ function createAxesOptions(fullLayout, sceneLayout) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib":252,"../../../lib/str2rgbarray":276}],340:[function(_dereq_,module,exports){
+},{"../../../lib":264,"../../../lib/str2rgbarray":288}],349:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../../lib');
@@ -70933,7 +72384,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     coerce('hovermode', opts.getDfltFromLayout('hovermode'));
 }
 
-},{"../../../components/color":119,"../../../lib":252,"../../../registry":352,"../../get_data":334,"../../subplot_defaults":350,"./axis_defaults":338,"./layout_attributes":341}],341:[function(_dereq_,module,exports){
+},{"../../../components/color":120,"../../../lib":264,"../../../registry":361,"../../get_data":343,"../../subplot_defaults":359,"./axis_defaults":347,"./layout_attributes":350}],350:[function(_dereq_,module,exports){
 'use strict';
 
 var gl3dAxisAttrs = _dereq_('./axis_attributes');
@@ -71052,7 +72503,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib":252,"../../../lib/extend":245,"../../domain":331,"./axis_attributes":337}],342:[function(_dereq_,module,exports){
+},{"../../../lib":264,"../../../lib/extend":257,"../../domain":340,"./axis_attributes":346}],351:[function(_dereq_,module,exports){
 'use strict';
 
 var str2RGBArray = _dereq_('../../../lib/str2rgbarray');
@@ -71095,7 +72546,7 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":276}],343:[function(_dereq_,module,exports){
+},{"../../../lib/str2rgbarray":288}],352:[function(_dereq_,module,exports){
 /* eslint block-scoped-var: 0*/
 /* eslint no-redeclare: 0*/
 
@@ -71188,7 +72639,7 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib":252,"../../cartesian/axes":301}],344:[function(_dereq_,module,exports){
+},{"../../../lib":264,"../../cartesian/axes":313}],353:[function(_dereq_,module,exports){
 'use strict';
 
 function xformMatrix(m, v) {
@@ -71213,7 +72664,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],345:[function(_dereq_,module,exports){
+},{}],354:[function(_dereq_,module,exports){
 'use strict';
 
 var glPlot3d = _dereq_('../../../stackgl_modules').gl_plot3d;
@@ -72348,7 +73799,7 @@ proto.make4thDimension = function() {
 
 module.exports = Scene;
 
-},{"../../../stackgl_modules":435,"../../components/fx":159,"../../lib":252,"../../lib/show_no_webgl_msg":273,"../../lib/str2rgbarray":276,"../../plots/cartesian/axes":301,"../../registry":352,"./layout/convert":339,"./layout/spikes":342,"./layout/tick_marks":343,"./project":344,"has-passive-events":64,"webgl-context":84}],346:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/fx":160,"../../lib":264,"../../lib/show_no_webgl_msg":285,"../../lib/str2rgbarray":288,"../../plots/cartesian/axes":313,"../../registry":361,"./layout/convert":348,"./layout/spikes":351,"./layout/tick_marks":352,"./project":353,"has-passive-events":64,"webgl-context":85}],355:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = function zip3(x, y, z, len) {
@@ -72361,13 +73812,14 @@ module.exports = function zip3(x, y, z, len) {
     return result;
 };
 
-},{}],347:[function(_dereq_,module,exports){
+},{}],356:[function(_dereq_,module,exports){
 'use strict';
 
 var fontAttrs = _dereq_('./font_attributes');
 var animationAttrs = _dereq_('./animation_attributes');
 var colorAttrs = _dereq_('../components/color/attributes');
 var drawNewShapeAttrs = _dereq_('../components/shapes/draw_newshape/attributes');
+var drawNewSelectionAttrs = _dereq_('../components/selections/draw_newselection/attributes');
 var padAttrs = _dereq_('./pad_attributes');
 var extendFlat = _dereq_('../lib/extend').extendFlat;
 
@@ -72569,6 +74021,9 @@ module.exports = {
     newshape: drawNewShapeAttrs.newshape,
     activeshape: drawNewShapeAttrs.activeshape,
 
+    newselection: drawNewSelectionAttrs.newselection,
+    activeselection: drawNewSelectionAttrs.activeselection,
+
     meta: {
         valType: 'any',
         arrayOk: true,
@@ -72589,7 +74044,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":118,"../components/shapes/draw_newshape/attributes":204,"../lib/extend":245,"./animation_attributes":295,"./font_attributes":332,"./pad_attributes":348}],348:[function(_dereq_,module,exports){
+},{"../components/color/attributes":119,"../components/selections/draw_newselection/attributes":204,"../components/shapes/draw_newshape/attributes":216,"../lib/extend":257,"./animation_attributes":307,"./font_attributes":341,"./pad_attributes":357}],357:[function(_dereq_,module,exports){
 'use strict';
 
 /**
@@ -72628,7 +74083,7 @@ module.exports = function(opts) {
     };
 };
 
-},{}],349:[function(_dereq_,module,exports){
+},{}],358:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -72644,7 +74099,7 @@ var Color = _dereq_('../components/color');
 var BADNUM = _dereq_('../constants/numerical').BADNUM;
 
 var axisIDs = _dereq_('./cartesian/axis_ids');
-var clearSelect = _dereq_('./cartesian/handle_outline').clearSelect;
+var clearOutline = _dereq_('../components/shapes/handle_outline').clearOutline;
 
 var animationAttrs = _dereq_('./animation_attributes');
 var frameAttrs = _dereq_('./frame_attributes');
@@ -73112,7 +74567,7 @@ plots.supplyDefaults = function(gd, opts) {
     // we should try to come up with a better solution when implementing
     // https://github.com/plotly/plotly.js/issues/1851
     if(oldFullLayout._zoomlayer && !gd._dragging) {
-        clearSelect({ // mock old gd
+        clearOutline({ // mock old gd
             _fullLayout: oldFullLayout
         });
     }
@@ -74168,6 +75623,11 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
     Registry.getComponentMethod(
         'shapes',
         'supplyDrawNewShapeDefaults'
+    )(layoutIn, layoutOut, coerce);
+
+    Registry.getComponentMethod(
+        'selections',
+        'supplyDrawNewSelectionDefaults'
     )(layoutIn, layoutOut, coerce);
 
     coerce('meta');
@@ -75532,6 +76992,7 @@ function _transition(gd, transitionOpts, opts) {
         interruptPreviousTransitions,
         opts.prepareFn,
         plots.rehover,
+        plots.reselect,
         executeTransitions
     ];
 
@@ -75988,6 +77449,19 @@ plots.redrag = function(gd) {
     }
 };
 
+plots.reselect = function(gd) {
+    var fullLayout = gd._fullLayout;
+
+    var A = (gd.layout || {}).selections;
+    var B = fullLayout._previousSelections;
+    fullLayout._previousSelections = A;
+
+    var mayEmitSelected = fullLayout._reselect ||
+        JSON.stringify(A) !== JSON.stringify(B);
+
+    Registry.getComponentMethod('selections', 'reselect')(gd, mayEmitSelected);
+};
+
 plots.generalUpdatePerTraceModule = function(gd, subplot, subplotCalcData, subplotLayout) {
     var traceHashOld = subplot.traceHash;
     var traceHash = {};
@@ -76046,7 +77520,7 @@ plots.cleanBasePlot = function(desiredType, newFullData, newFullLayout, oldFullD
     }
 };
 
-},{"../components/color":119,"../constants/numerical":231,"../lib":252,"../plot_api/plot_schema":289,"../plot_api/plot_template":290,"../plots/get_data":334,"../registry":352,"./animation_attributes":295,"./attributes":297,"./cartesian/axis_ids":305,"./cartesian/handle_outline":312,"./command":330,"./font_attributes":332,"./frame_attributes":333,"./layout_attributes":347,"@plotly/d3":16,"d3-format":25,"d3-time-format":26,"fast-isnumeric":31}],350:[function(_dereq_,module,exports){
+},{"../components/color":120,"../components/shapes/handle_outline":221,"../constants/numerical":243,"../lib":264,"../plot_api/plot_schema":301,"../plot_api/plot_template":302,"../plots/get_data":343,"../registry":361,"./animation_attributes":307,"./attributes":309,"./cartesian/axis_ids":317,"./command":339,"./font_attributes":341,"./frame_attributes":342,"./layout_attributes":356,"@plotly/d3":16,"d3-format":25,"d3-time-format":26,"fast-isnumeric":31}],359:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -76118,7 +77592,7 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     }
 };
 
-},{"../lib":252,"../plot_api/plot_template":290,"./domain":331}],351:[function(_dereq_,module,exports){
+},{"../lib":264,"../plot_api/plot_template":302,"./domain":340}],360:[function(_dereq_,module,exports){
 'use strict';
 
 var docs = _dereq_('../constants/docs');
@@ -76199,7 +77673,7 @@ exports.texttemplateAttrs = function(opts, extra) {
     return texttemplate;
 };
 
-},{"../constants/docs":226}],352:[function(_dereq_,module,exports){
+},{"../constants/docs":238}],361:[function(_dereq_,module,exports){
 'use strict';
 
 var Loggers = _dereq_('./lib/loggers');
@@ -76657,7 +78131,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib/dom":243,"./lib/extend":245,"./lib/is_plain_object":253,"./lib/loggers":256,"./lib/noop":261,"./lib/push_unique":266,"./plots/attributes":297,"./plots/layout_attributes":347}],353:[function(_dereq_,module,exports){
+},{"./lib/dom":255,"./lib/extend":257,"./lib/is_plain_object":265,"./lib/loggers":268,"./lib/noop":273,"./lib/push_unique":278,"./plots/attributes":309,"./plots/layout_attributes":356}],362:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -76817,7 +78291,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":252,"../registry":352}],354:[function(_dereq_,module,exports){
+},{"../lib":264,"../registry":361}],363:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -76881,7 +78355,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":252,"../plot_api/to_image":293,"./filesaver":355,"./helpers":356}],355:[function(_dereq_,module,exports){
+},{"../lib":264,"../plot_api/to_image":305,"./filesaver":364,"./helpers":365}],364:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -76949,7 +78423,7 @@ function fileSaver(url, name, format) {
 
 module.exports = fileSaver;
 
-},{"../lib":252,"./helpers":356}],356:[function(_dereq_,module,exports){
+},{"../lib":264,"./helpers":365}],365:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../registry');
@@ -77018,7 +78492,7 @@ exports.IMAGE_URL_PREFIX = /^data:image\/\w+;base64,/;
 
 exports.MSG_IE_BAD_FORMAT = 'Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.';
 
-},{"../registry":352}],357:[function(_dereq_,module,exports){
+},{"../registry":361}],366:[function(_dereq_,module,exports){
 'use strict';
 
 var helpers = _dereq_('./helpers');
@@ -77035,7 +78509,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":353,"./download":354,"./helpers":356,"./svgtoimg":358,"./toimage":359,"./tosvg":360}],358:[function(_dereq_,module,exports){
+},{"./cloneplot":362,"./download":363,"./helpers":365,"./svgtoimg":367,"./toimage":368,"./tosvg":369}],367:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -77154,7 +78628,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":252,"./helpers":356,"events":17}],359:[function(_dereq_,module,exports){
+},{"../lib":264,"./helpers":365,"events":17}],368:[function(_dereq_,module,exports){
 'use strict';
 
 var EventEmitter = _dereq_('events').EventEmitter;
@@ -77223,7 +78697,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":252,"../registry":352,"./cloneplot":353,"./helpers":356,"./svgtoimg":358,"./tosvg":360,"events":17}],360:[function(_dereq_,module,exports){
+},{"../lib":264,"../registry":361,"./cloneplot":362,"./helpers":365,"./svgtoimg":367,"./tosvg":369,"events":17}],369:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -77397,7 +78871,7 @@ module.exports = function toSVG(gd, format, scale) {
     return s;
 };
 
-},{"../components/color":119,"../components/drawing":141,"../constants/xmlns_namespaces":232,"../lib":252,"@plotly/d3":16}],361:[function(_dereq_,module,exports){
+},{"../components/color":120,"../components/drawing":142,"../constants/xmlns_namespaces":244,"../lib":264,"@plotly/d3":16}],370:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -77541,7 +79015,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../mesh3d/attributes":373}],362:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":127,"../../lib/extend":257,"../../plots/attributes":309,"../../plots/cartesian/axis_format_attributes":316,"../../plots/template_attributes":360,"../mesh3d/attributes":382}],371:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -77577,7 +79051,7 @@ module.exports = function calc(gd, trace) {
     });
 };
 
-},{"../../components/colorscale/calc":127}],363:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":128}],372:[function(_dereq_,module,exports){
 'use strict';
 
 var conePlot = _dereq_('../../../stackgl_modules').gl_cone3d;
@@ -77716,7 +79190,7 @@ function createConeTrace(scene, data) {
 
 module.exports = createConeTrace;
 
-},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib":252,"../../lib/gl_format_color":249,"../../plots/gl3d/zip3":346}],364:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/colorscale":132,"../../lib":264,"../../lib/gl_format_color":261,"../../plots/gl3d/zip3":355}],373:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -77775,7 +79249,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":129,"../../lib":252,"./attributes":361}],365:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":130,"../../lib":264,"./attributes":370}],374:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -77801,7 +79275,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":335,"./attributes":361,"./calc":362,"./convert":363,"./defaults":364}],366:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":344,"./attributes":370,"./calc":371,"./convert":372,"./defaults":373}],375:[function(_dereq_,module,exports){
 'use strict';
 
 var maxRowLength = _dereq_('../../lib').maxRowLength;
@@ -77898,7 +79372,7 @@ module.exports = function findEmpties(z) {
     return empties.sort(function(a, b) { return b[2] - a[2]; });
 };
 
-},{"../../lib":252}],367:[function(_dereq_,module,exports){
+},{"../../lib":264}],376:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -78023,7 +79497,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../lib":252}],368:[function(_dereq_,module,exports){
+},{"../../lib":264}],377:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -78177,7 +79651,7 @@ attrs.flatshading.dflt = true; attrs.lighting.facenormalsepsilon.dflt = 0;
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../mesh3d/attributes":373}],369:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":127,"../../lib/extend":257,"../../plot_api/edit_types":295,"../../plots/attributes":309,"../../plots/cartesian/axis_format_attributes":316,"../../plots/template_attributes":360,"../mesh3d/attributes":382}],378:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -78224,7 +79698,7 @@ module.exports = function calc(gd, trace) {
     });
 };
 
-},{"../../components/colorscale/calc":127,"../streamtube/calc":416}],370:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":128,"../streamtube/calc":425}],379:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('../../../stackgl_modules').gl_mesh3d;
@@ -79272,7 +80746,7 @@ module.exports = {
     createIsosurfaceTrace: createIsosurfaceTrace,
 };
 
-},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/gl3d/zip3":346}],371:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/colorscale":132,"../../lib/gl_format_color":261,"../../lib/str2rgbarray":288,"../../plots/gl3d/zip3":355}],380:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -79384,7 +80858,7 @@ module.exports = {
     supplyIsoDefaults: supplyIsoDefaults
 };
 
-},{"../../components/colorscale/defaults":129,"../../lib":252,"../../registry":352,"./attributes":368}],372:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":130,"../../lib":264,"../../registry":361,"./attributes":377}],381:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -79405,7 +80879,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":335,"./attributes":368,"./calc":369,"./convert":370,"./defaults":371}],373:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":344,"./attributes":377,"./calc":378,"./convert":379,"./defaults":380}],382:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -79553,7 +81027,7 @@ colorScaleAttrs('', {
     showlegend: extendFlat({}, baseAttrs.showlegend, {dflt: false})
 });
 
-},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../surface/attributes":420}],374:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":127,"../../lib/extend":257,"../../plots/attributes":309,"../../plots/cartesian/axis_format_attributes":316,"../../plots/template_attributes":360,"../surface/attributes":429}],383:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -79568,7 +81042,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":127}],375:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":128}],384:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('../../../stackgl_modules').gl_mesh3d;
@@ -79763,7 +81237,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/gl3d/zip3":346}],376:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/colorscale":132,"../../lib/gl_format_color":261,"../../lib/str2rgbarray":288,"../../plots/gl3d/zip3":355}],385:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -79859,7 +81333,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":129,"../../lib":252,"../../registry":352,"./attributes":373}],377:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":130,"../../lib":264,"../../registry":361,"./attributes":382}],386:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -79880,7 +81354,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":335,"./attributes":373,"./calc":374,"./convert":375,"./defaults":376}],378:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":344,"./attributes":382,"./calc":383,"./convert":384,"./defaults":385}],387:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -79920,7 +81394,7 @@ exports.getRotationAngle = function(rotation) {
     return (rotation === 'auto' ? 0 : rotation) * Math.PI / 180;
 };
 
-},{"../../lib":252}],379:[function(_dereq_,module,exports){
+},{"../../lib":264}],388:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -79936,7 +81410,7 @@ module.exports = function styleOne(s, pt, trace) {
         .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":119,"./helpers":378}],380:[function(_dereq_,module,exports){
+},{"../../components/color":120,"./helpers":387}],389:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -79979,7 +81453,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
     }
 };
 
-},{"../../lib":252}],381:[function(_dereq_,module,exports){
+},{"../../lib":264}],390:[function(_dereq_,module,exports){
 'use strict';
 
 var axisHoverFormat = _dereq_('../../plots/cartesian/axis_format_attributes').axisHoverFormat;
@@ -80331,7 +81805,7 @@ module.exports = {
     }),
 };
 
-},{"../../components/colorscale/attributes":126,"../../components/drawing":141,"../../components/drawing/attributes":140,"../../lib/extend":245,"../../plots/cartesian/axis_format_attributes":304,"../../plots/font_attributes":332,"../../plots/template_attributes":351,"./constants":385}],382:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":127,"../../components/drawing":142,"../../components/drawing/attributes":141,"../../lib/extend":257,"../../plots/cartesian/axis_format_attributes":316,"../../plots/font_attributes":341,"../../plots/template_attributes":360,"./constants":394}],391:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -80628,7 +82102,7 @@ module.exports = {
     getStackOpts: getStackOpts
 };
 
-},{"../../constants/numerical":231,"../../lib":252,"../../plots/cartesian/align_period":298,"../../plots/cartesian/axes":301,"./arrays_to_calcdata":380,"./calc_selection":383,"./colorscale_calc":384,"./subtypes":406,"fast-isnumeric":31}],383:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264,"../../plots/cartesian/align_period":310,"../../plots/cartesian/axes":313,"./arrays_to_calcdata":389,"./calc_selection":392,"./colorscale_calc":393,"./subtypes":415,"fast-isnumeric":31}],392:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -80639,7 +82113,7 @@ module.exports = function calcSelection(cd, trace) {
     }
 };
 
-},{"../../lib":252}],384:[function(_dereq_,module,exports){
+},{"../../lib":264}],393:[function(_dereq_,module,exports){
 'use strict';
 
 var hasColorscale = _dereq_('../../components/colorscale/helpers').hasColorscale;
@@ -80674,7 +82148,7 @@ module.exports = function calcMarkerColorscale(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":127,"../../components/colorscale/helpers":130,"./subtypes":406}],385:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":128,"../../components/colorscale/helpers":131,"./subtypes":415}],394:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -80694,7 +82168,7 @@ module.exports = {
     eventDataKeys: []
 };
 
-},{}],386:[function(_dereq_,module,exports){
+},{}],395:[function(_dereq_,module,exports){
 'use strict';
 
 var calc = _dereq_('./calc');
@@ -80866,7 +82340,7 @@ function getInterp(calcTrace, index, position, posAttr) {
     return pt0.s + (pt1.s - pt0.s) * (position - pt0[posAttr]) / (pt1[posAttr] - pt0[posAttr]);
 }
 
-},{"./calc":382}],387:[function(_dereq_,module,exports){
+},{"./calc":391}],396:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -80896,7 +82370,7 @@ module.exports = function crossTraceDefaults(fullData) {
     }
 };
 
-},{}],388:[function(_dereq_,module,exports){
+},{}],397:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -80985,7 +82459,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     Lib.coerceSelectionMarkerOpacity(traceOut, coerce);
 };
 
-},{"../../lib":252,"../../registry":352,"./attributes":381,"./constants":385,"./fillcolor_defaults":389,"./line_defaults":394,"./line_shape_defaults":396,"./marker_defaults":400,"./period_defaults":401,"./stack_defaults":404,"./subtypes":406,"./text_defaults":407,"./xy_defaults":408}],389:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361,"./attributes":390,"./constants":394,"./fillcolor_defaults":398,"./line_defaults":403,"./line_shape_defaults":405,"./marker_defaults":409,"./period_defaults":410,"./stack_defaults":413,"./subtypes":415,"./text_defaults":416,"./xy_defaults":417}],398:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -81013,7 +82487,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":119,"../../lib":252}],390:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../lib":264}],399:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../../plots/cartesian/axes');
@@ -81031,7 +82505,7 @@ module.exports = function formatLabels(cdi, trace, fullLayout) {
     return labels;
 };
 
-},{"../../plots/cartesian/axes":301}],391:[function(_dereq_,module,exports){
+},{"../../plots/cartesian/axes":313}],400:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -81071,7 +82545,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":119,"./subtypes":406}],392:[function(_dereq_,module,exports){
+},{"../../components/color":120,"./subtypes":415}],401:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -81282,7 +82756,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":119,"../../components/fx":159,"../../lib":252,"../../registry":352,"./get_trace_color":391}],393:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../components/fx":160,"../../lib":264,"../../registry":361,"./get_trace_color":400}],402:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -81319,7 +82793,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian":315,"./arrays_to_calcdata":380,"./attributes":381,"./calc":382,"./cross_trace_calc":386,"./cross_trace_defaults":387,"./defaults":388,"./format_labels":390,"./hover":392,"./marker_colorbar":399,"./plot":402,"./select":403,"./style":405,"./subtypes":406}],394:[function(_dereq_,module,exports){
+},{"../../plots/cartesian":325,"./arrays_to_calcdata":389,"./attributes":390,"./calc":391,"./cross_trace_calc":395,"./cross_trace_defaults":396,"./defaults":397,"./format_labels":399,"./hover":401,"./marker_colorbar":408,"./plot":411,"./select":412,"./style":414,"./subtypes":415}],403:[function(_dereq_,module,exports){
 'use strict';
 
 var isArrayOrTypedArray = _dereq_('../../lib').isArrayOrTypedArray;
@@ -81342,7 +82816,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     if(!(opts || {}).noDash) coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":129,"../../components/colorscale/helpers":130,"../../lib":252}],395:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":130,"../../components/colorscale/helpers":131,"../../lib":264}],404:[function(_dereq_,module,exports){
 'use strict';
 
 var numConstants = _dereq_('../../constants/numerical');
@@ -81794,7 +83268,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../constants/numerical":231,"../../lib":252,"./constants":385}],396:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264,"./constants":394}],405:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -81804,7 +83278,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],397:[function(_dereq_,module,exports){
+},{}],406:[function(_dereq_,module,exports){
 'use strict';
 
 var LINKEDFILLS = {tonextx: 1, tonexty: 1, tonext: 1};
@@ -81886,7 +83360,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     return cdscatterSorted;
 };
 
-},{}],398:[function(_dereq_,module,exports){
+},{}],407:[function(_dereq_,module,exports){
 'use strict';
 
 var isNumeric = _dereq_('fast-isnumeric');
@@ -81922,7 +83396,7 @@ module.exports = function makeBubbleSizeFn(trace, factor) {
     };
 };
 
-},{"fast-isnumeric":31}],399:[function(_dereq_,module,exports){
+},{"fast-isnumeric":31}],408:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -81931,7 +83405,7 @@ module.exports = {
     max: 'cmax'
 };
 
-},{}],400:[function(_dereq_,module,exports){
+},{}],409:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -82004,7 +83478,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":119,"../../components/colorscale/defaults":129,"../../components/colorscale/helpers":130,"./subtypes":406}],401:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../components/colorscale/defaults":130,"../../components/colorscale/helpers":131,"./subtypes":415}],410:[function(_dereq_,module,exports){
 'use strict';
 
 var dateTick0 = _dereq_('../../lib').dateTick0;
@@ -82043,7 +83517,7 @@ module.exports = function handlePeriodDefaults(traceIn, traceOut, layout, coerce
     }
 };
 
-},{"../../constants/numerical":231,"../../lib":252}],402:[function(_dereq_,module,exports){
+},{"../../constants/numerical":243,"../../lib":264}],411:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -82595,7 +84069,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":141,"../../lib":252,"../../lib/polygon":264,"../../registry":352,"./line_points":395,"./link_traces":397,"./subtypes":406,"@plotly/d3":16}],403:[function(_dereq_,module,exports){
+},{"../../components/drawing":142,"../../lib":264,"../../lib/polygon":276,"../../registry":361,"./line_points":404,"./link_traces":406,"./subtypes":415,"@plotly/d3":16}],412:[function(_dereq_,module,exports){
 'use strict';
 
 var subtypes = _dereq_('./subtypes');
@@ -82640,7 +84114,7 @@ module.exports = function selectPoints(searchInfo, selectionTester) {
     return selection;
 };
 
-},{"./subtypes":406}],404:[function(_dereq_,module,exports){
+},{"./subtypes":415}],413:[function(_dereq_,module,exports){
 'use strict';
 
 var perStackAttrs = ['orientation', 'groupnorm', 'stackgaps'];
@@ -82737,7 +84211,7 @@ module.exports = function handleStackDefaults(traceIn, traceOut, layout, coerce)
     }
 };
 
-},{}],405:[function(_dereq_,module,exports){
+},{}],414:[function(_dereq_,module,exports){
 'use strict';
 
 var d3 = _dereq_('@plotly/d3');
@@ -82799,7 +84273,7 @@ module.exports = {
     styleOnSelect: styleOnSelect
 };
 
-},{"../../components/drawing":141,"../../registry":352,"@plotly/d3":16}],406:[function(_dereq_,module,exports){
+},{"../../components/drawing":142,"../../registry":361,"@plotly/d3":16}],415:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -82829,7 +84303,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":252}],407:[function(_dereq_,module,exports){
+},{"../../lib":264}],416:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -82850,7 +84324,7 @@ module.exports = function(traceIn, traceOut, layout, coerce, opts) {
     }
 };
 
-},{"../../lib":252}],408:[function(_dereq_,module,exports){
+},{"../../lib":264}],417:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -82886,7 +84360,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, layout, coerce) {
     return len;
 };
 
-},{"../../lib":252,"../../registry":352}],409:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361}],418:[function(_dereq_,module,exports){
 'use strict';
 
 var scatterAttrs = _dereq_('../scatter/attributes');
@@ -83014,7 +84488,7 @@ var attrs = module.exports = overrideAll({
 
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 
-},{"../../components/colorscale/attributes":126,"../../constants/gl3d_dashes":228,"../../constants/gl3d_markers":229,"../../lib/extend":245,"../../lib/sort_object_keys":274,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../scatter/attributes":381}],410:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":127,"../../constants/gl3d_dashes":240,"../../constants/gl3d_markers":241,"../../lib/extend":257,"../../lib/sort_object_keys":286,"../../plot_api/edit_types":295,"../../plots/attributes":309,"../../plots/cartesian/axis_format_attributes":316,"../../plots/template_attributes":360,"../scatter/attributes":390}],419:[function(_dereq_,module,exports){
 'use strict';
 
 var arraysToCalcdata = _dereq_('../scatter/arrays_to_calcdata');
@@ -83034,7 +84508,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":380,"../scatter/colorscale_calc":384}],411:[function(_dereq_,module,exports){
+},{"../scatter/arrays_to_calcdata":389,"../scatter/colorscale_calc":393}],420:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -83113,7 +84587,7 @@ function calculateErrors(data, scaleFactor, sceneLayout) {
 
 module.exports = calculateErrors;
 
-},{"../../registry":352}],412:[function(_dereq_,module,exports){
+},{"../../registry":361}],421:[function(_dereq_,module,exports){
 'use strict';
 
 var createLinePlot = _dereq_('../../../stackgl_modules').gl_line3d;
@@ -83658,7 +85132,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../../stackgl_modules":435,"../../components/fx/helpers":155,"../../constants/gl3d_dashes":228,"../../constants/gl3d_markers":229,"../../lib":252,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/cartesian/axes":301,"../scatter/make_bubble_size_func":398,"./calc_errors":411}],413:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/fx/helpers":156,"../../constants/gl3d_dashes":240,"../../constants/gl3d_markers":241,"../../lib":264,"../../lib/gl_format_color":261,"../../lib/str2rgbarray":288,"../../plots/cartesian/axes":313,"../scatter/make_bubble_size_func":407,"./calc_errors":420}],422:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -83742,7 +85216,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce, layout) {
     return len;
 }
 
-},{"../../lib":252,"../../registry":352,"../scatter/line_defaults":394,"../scatter/marker_defaults":400,"../scatter/subtypes":406,"../scatter/text_defaults":407,"./attributes":409}],414:[function(_dereq_,module,exports){
+},{"../../lib":264,"../../registry":361,"../scatter/line_defaults":403,"../scatter/marker_defaults":409,"../scatter/subtypes":415,"../scatter/text_defaults":416,"./attributes":418}],423:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -83771,7 +85245,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl3d_markers":229,"../../plots/gl3d":335,"./attributes":409,"./calc":410,"./convert":412,"./defaults":413}],415:[function(_dereq_,module,exports){
+},{"../../constants/gl3d_markers":241,"../../plots/gl3d":344,"./attributes":418,"./calc":419,"./convert":421,"./defaults":422}],424:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -83903,7 +85377,7 @@ attrs.transforms = undefined;
 
 module.exports = attrs;
 
-},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351,"../mesh3d/attributes":373}],416:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":127,"../../lib/extend":257,"../../plots/attributes":309,"../../plots/cartesian/axis_format_attributes":316,"../../plots/template_attributes":360,"../mesh3d/attributes":382}],425:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -84151,7 +85625,7 @@ module.exports = {
     processGrid: processGrid
 };
 
-},{"../../components/colorscale/calc":127,"../../lib":252}],417:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":128,"../../lib":264}],426:[function(_dereq_,module,exports){
 'use strict';
 
 var tube2mesh = _dereq_('../../../stackgl_modules').gl_streamtube3d;
@@ -84369,7 +85843,7 @@ function createStreamtubeTrace(scene, data) {
 
 module.exports = createStreamtubeTrace;
 
-},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib":252,"../../lib/gl_format_color":249,"../../plots/gl3d/zip3":346}],418:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/colorscale":132,"../../lib":264,"../../lib/gl_format_color":261,"../../plots/gl3d/zip3":355}],427:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -84432,7 +85906,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     traceOut._length = null;
 };
 
-},{"../../components/colorscale/defaults":129,"../../lib":252,"./attributes":415}],419:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":130,"../../lib":264,"./attributes":424}],428:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -84473,7 +85947,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":335,"./attributes":415,"./calc":416,"./convert":417,"./defaults":418}],420:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":344,"./attributes":424,"./calc":425,"./convert":426,"./defaults":427}],429:[function(_dereq_,module,exports){
 'use strict';
 
 var Color = _dereq_('../../components/color');
@@ -84689,7 +86163,7 @@ colorScaleAttrs('', {
 attrs.x.editType = attrs.y.editType = attrs.z.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/color":119,"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../../plots/cartesian/axis_format_attributes":304,"../../plots/template_attributes":351}],421:[function(_dereq_,module,exports){
+},{"../../components/color":120,"../../components/colorscale/attributes":127,"../../lib/extend":257,"../../plot_api/edit_types":295,"../../plots/attributes":309,"../../plots/cartesian/axis_format_attributes":316,"../../plots/template_attributes":360}],430:[function(_dereq_,module,exports){
 'use strict';
 
 var colorscaleCalc = _dereq_('../../components/colorscale/calc');
@@ -84712,7 +86186,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":127}],422:[function(_dereq_,module,exports){
+},{"../../components/colorscale/calc":128}],431:[function(_dereq_,module,exports){
 'use strict';
 
 var createSurface = _dereq_('../../../stackgl_modules').gl_surface3d;
@@ -85403,7 +86877,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib":252,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../heatmap/find_empties":366,"../heatmap/interp2d":367}],423:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/colorscale":132,"../../lib":264,"../../lib/gl_format_color":261,"../../lib/str2rgbarray":288,"../heatmap/find_empties":375,"../heatmap/interp2d":376}],432:[function(_dereq_,module,exports){
 'use strict';
 
 var Registry = _dereq_('../../registry');
@@ -85572,7 +87046,7 @@ module.exports = {
     opacityscaleDefaults: opacityscaleDefaults
 };
 
-},{"../../components/colorscale/defaults":129,"../../lib":252,"../../registry":352,"./attributes":420}],424:[function(_dereq_,module,exports){
+},{"../../components/colorscale/defaults":130,"../../lib":264,"../../registry":361,"./attributes":429}],433:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -85593,7 +87067,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":335,"./attributes":420,"./calc":421,"./convert":422,"./defaults":423}],425:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":344,"./attributes":429,"./calc":430,"./convert":431,"./defaults":432}],434:[function(_dereq_,module,exports){
 'use strict';
 
 var colorScaleAttrs = _dereq_('../../components/colorscale/attributes');
@@ -85658,7 +87132,7 @@ colorScaleAttrs('', {
 attrs.x.editType = attrs.y.editType = attrs.z.editType = attrs.value.editType = 'calc+clearAxisTypes';
 attrs.transforms = undefined;
 
-},{"../../components/colorscale/attributes":126,"../../lib/extend":245,"../../plot_api/edit_types":283,"../../plots/attributes":297,"../isosurface/attributes":368,"../surface/attributes":420}],426:[function(_dereq_,module,exports){
+},{"../../components/colorscale/attributes":127,"../../lib/extend":257,"../../plot_api/edit_types":295,"../../plots/attributes":309,"../isosurface/attributes":377,"../surface/attributes":429}],435:[function(_dereq_,module,exports){
 'use strict';
 
 var createMesh = _dereq_('../../../stackgl_modules').gl_mesh3d;
@@ -85783,7 +87257,7 @@ function createVolumeTrace(scene, data) {
 
 module.exports = createVolumeTrace;
 
-},{"../../../stackgl_modules":435,"../../components/colorscale":131,"../../lib/gl_format_color":249,"../../lib/str2rgbarray":276,"../../plots/gl3d/zip3":346,"../isosurface/convert":370}],427:[function(_dereq_,module,exports){
+},{"../../../stackgl_modules":444,"../../components/colorscale":132,"../../lib/gl_format_color":261,"../../lib/str2rgbarray":288,"../../plots/gl3d/zip3":355,"../isosurface/convert":379}],436:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../../lib');
@@ -85801,7 +87275,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     opacityscaleDefaults(traceIn, traceOut, layout, coerce);
 };
 
-},{"../../lib":252,"../isosurface/defaults":371,"../surface/defaults":423,"./attributes":425}],428:[function(_dereq_,module,exports){
+},{"../../lib":264,"../isosurface/defaults":380,"../surface/defaults":432,"./attributes":434}],437:[function(_dereq_,module,exports){
 'use strict';
 
 module.exports = {
@@ -85822,7 +87296,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/gl3d":335,"../isosurface/calc":369,"./attributes":425,"./convert":426,"./defaults":427}],429:[function(_dereq_,module,exports){
+},{"../../plots/gl3d":344,"../isosurface/calc":378,"./attributes":434,"./convert":435,"./defaults":436}],438:[function(_dereq_,module,exports){
 'use strict';
 
 var Axes = _dereq_('../plots/cartesian/axes');
@@ -86226,7 +87700,7 @@ function last(array, indices) {
     return array[indices[indices.length - 1]];
 }
 
-},{"../constants/numerical":231,"../lib":252,"../plot_api/plot_schema":289,"../plots/cartesian/axes":301,"./helpers":432}],430:[function(_dereq_,module,exports){
+},{"../constants/numerical":243,"../lib":264,"../plot_api/plot_schema":301,"../plots/cartesian/axes":313,"./helpers":441}],439:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -86486,7 +87960,7 @@ function getFilterFunc(opts, d2c, targetCalendar) {
     }
 }
 
-},{"../constants/filter_ops":227,"../lib":252,"../plots/cartesian/axes":301,"../registry":352,"./helpers":432}],431:[function(_dereq_,module,exports){
+},{"../constants/filter_ops":239,"../lib":264,"../plots/cartesian/axes":313,"../registry":361,"./helpers":441}],440:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -86730,7 +88204,7 @@ function transformOne(trace, state) {
     return newData;
 }
 
-},{"../lib":252,"../plot_api/plot_schema":289,"../plots/plots":349,"./helpers":432}],432:[function(_dereq_,module,exports){
+},{"../lib":264,"../plot_api/plot_schema":301,"../plots/plots":358,"./helpers":441}],441:[function(_dereq_,module,exports){
 'use strict';
 
 exports.pointsAccessorFunction = function(transforms, opts) {
@@ -86748,7 +88222,7 @@ exports.pointsAccessorFunction = function(transforms, opts) {
     return originalPointsAccessor;
 };
 
-},{}],433:[function(_dereq_,module,exports){
+},{}],442:[function(_dereq_,module,exports){
 'use strict';
 
 var Lib = _dereq_('../lib');
@@ -86886,13 +88360,13 @@ function getSortFunc(opts, d2c) {
     }
 }
 
-},{"../constants/numerical":231,"../lib":252,"../plots/cartesian/axes":301,"./helpers":432}],434:[function(_dereq_,module,exports){
+},{"../constants/numerical":243,"../lib":264,"../plots/cartesian/axes":313,"./helpers":441}],443:[function(_dereq_,module,exports){
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.12.1';
+exports.version = '2.13.3';
 
-},{}],435:[function(_dereq_,module,exports){
+},{}],444:[function(_dereq_,module,exports){
 (function (global){(function (){
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.stackgl = f()}})(function(){var define,module,exports;return (function(){function r(e,n,t){function o(i,f){if(!n[i]){if(!e[i]){var c="function"==typeof _dereq_&&_dereq_;if(!f&&c)return c(i,!0);if(u)return u(i,!0);var a=new Error("Cannot find module '"+i+"'");throw a.code="MODULE_NOT_FOUND",a}var p=n[i]={exports:{}};e[i][0].call(p.exports,function(r){var n=e[i][1][r];return o(n||r)},p,p.exports,r,e,n,t)}return n[i].exports}for(var u="function"==typeof _dereq_&&_dereq_,i=0;i<t.length;i++)o(t[i]);return o}return r})()({1:[function(_glvis_,module,exports){
 'use strict'

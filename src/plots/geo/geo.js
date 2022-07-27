@@ -18,9 +18,9 @@ var Plots = require('../plots');
 var Axes = require('../cartesian/axes');
 var getAutoRange = require('../cartesian/autorange').getAutoRange;
 var dragElement = require('../../components/dragelement');
-var prepSelect = require('../cartesian/select').prepSelect;
-var clearSelect = require('../cartesian/select').clearSelect;
-var selectOnClick = require('../cartesian/select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearOutline = require('../../components/selections').clearOutline;
+var selectOnClick = require('../../components/selections').selectOnClick;
 
 var createGeoZoom = require('./zoom');
 var constants = require('./constants');
@@ -429,22 +429,18 @@ proto.updateFx = function(fullLayout, geoLayout) {
         ]);
     }
 
-    var fillRangeItems;
-
-    if(dragMode === 'select') {
-        fillRangeItems = function(eventData, poly) {
+    var fillRangeItems = function(eventData, poly) {
+        if(poly.isRect) {
             var ranges = eventData.range = {};
             ranges[_this.id] = [
                 invert([poly.xmin, poly.ymin]),
                 invert([poly.xmax, poly.ymax])
             ];
-        };
-    } else if(dragMode === 'lasso') {
-        fillRangeItems = function(eventData, poly, pts) {
+        } else {
             var dataPts = eventData.lassoPoints = {};
-            dataPts[_this.id] = pts.filtered.map(invert);
-        };
-    }
+            dataPts[_this.id] = poly.map(invert);
+        }
+    };
 
     // Note: dragOptions is needed to be declared for all dragmodes because
     // it's the object that holds persistent selection state.
@@ -462,7 +458,7 @@ proto.updateFx = function(fullLayout, geoLayout) {
         subplot: _this.id,
         clickFn: function(numClicks) {
             if(numClicks === 2) {
-                clearSelect(gd);
+                clearOutline(gd);
             }
         }
     };

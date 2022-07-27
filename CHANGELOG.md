@@ -9,6 +9,51 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.13.3] -- 2022-07-25
+
+### Fixed
+ - Emit plotly_selected event on plot API calls and GUI edits [[#6277](https://github.com/plotly/plotly.js/pull/6277)]
+
+
+## [2.13.2] -- 2022-07-21
+
+### Fixed
+ - Fix `sankey` select error (regression introduced in 2.13.0) [[#6265](https://github.com/plotly/plotly.js/pull/6265)]
+ - Handle missing drag layer of invisible `sankey` traces to fix select error [[#6267](https://github.com/plotly/plotly.js/pull/6267)]
+ - Emit selection event in shape drawing `dragmode`s when an existing selection is modified [[#6262](https://github.com/plotly/plotly.js/pull/6262)]
+
+
+## [2.13.1] -- 2022-07-14
+
+### Fixed
+ - Avoid attaching `selections` to undefined eventData (regression introduced in 2.13.0) [[#6260](https://github.com/plotly/plotly.js/pull/6260)]
+
+
+## [2.13.0] -- 2022-07-14
+
+### Added
+ - Add `selections`, `newselection` and `activeselection` layout attributes to have
+   persistent and editable selections over cartesian subplots [[#6243](https://github.com/plotly/plotly.js/pull/6243)]
+ - Add `unselected.line.color` and `unselected.line.opacity` options to `parcoords` trace [[#6216](https://github.com/plotly/plotly.js/pull/6216), [#6236](https://github.com/plotly/plotly.js/pull/6236)]
+ - Add "exclusive" and "inclusive" quartile-computing algorithm to `violin` trace
+   via `quartilemethod` attribute [[#6187](https://github.com/plotly/plotly.js/pull/6187)]
+ - Add flaglist options including "left", "right", "top", "bottom", "width" and "height"
+   to control the direction of `automargin` on cartesian axes [[#6193](https://github.com/plotly/plotly.js/pull/6193)]
+ - Add `delta.prefix` and `delta.suffix` to `indicator` trace [[#6246](https://github.com/plotly/plotly.js/pull/6246)],
+   with thanks to @paulovieira for the contribution!
+ - Add official Chinese (Taiwan) translation (locale `zh-tw`) [[#6247](https://github.com/plotly/plotly.js/pull/6247)],
+   with thanks to @sec2 for the contribution!
+ - Add official Sinhala translation (locale `si`) [[#6238](https://github.com/plotly/plotly.js/pull/6238)],
+   with thanks to @sujithranga for the contribution!
+
+### Changed
+ - Display Plotly's new logo in the modebar [[#6232](https://github.com/plotly/plotly.js/pull/6232)]
+
+### Fixed
+ - Fix undesirable missing hover labels of `box` & `violin` traces [[#6189](https://github.com/plotly/plotly.js/pull/6189)]
+ - Fix `xref` description of `shapes` [[#6194](https://github.com/plotly/plotly.js/pull/6194)]
+
+
 ## [2.12.1] -- 2022-05-09
 
 ### Fixed

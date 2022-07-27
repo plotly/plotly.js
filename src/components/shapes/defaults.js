@@ -26,7 +26,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var path = coerce('path');
     var dfltType = path ? 'path' : 'rect';
     var shapeType = coerce('type', dfltType);
-    if(shapeOut.type !== 'path') delete shapeOut.path;
+    var noPath = shapeType !== 'path';
+    if(noPath) delete shapeOut.path;
 
     coerce('editable');
     coerce('layer');
@@ -68,7 +69,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
 
         // Coerce x0, x1, y0, y1
-        if(shapeType !== 'path') {
+        if(noPath) {
             var dflt0 = 0.25;
             var dflt1 = 0.75;
 
@@ -112,9 +113,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         }
     }
 
-    if(shapeType === 'path') {
-        coerce('path');
-    } else {
+    if(noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 }

@@ -2,6 +2,11 @@
     "data": [
         {
             "type": "parcoords",
+            "unselected": {
+                "line": {
+                    "color": "blue"
+                }
+            },
             "line": {
                 "colorscale": [
                     [

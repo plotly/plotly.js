@@ -35,6 +35,7 @@ register([
     require('./components/fx'), // fx needs to come after legend
     require('./components/annotations'),
     require('./components/annotations3d'),
+    require('./components/selections'),
     require('./components/shapes'),
     require('./components/images'),
     require('./components/updatemenus'),
