@@ -600,7 +600,8 @@ proto.updateFx = function(fullLayout) {
         map.dragPan.enable();
         map.off('zoomstart', self.clearSelect);
         self.div.onmousedown = null;
-
+        self.div.ontouchstart = null;
+        self.div.removeEventListener('touchstart', self.div._ontouchstart);
         // TODO: this does not support right-click. If we want to support it, we
         // would likely need to change mapbox to use dragElement instead of straight
         // mapbox event binding. Or perhaps better, make a simple wrapper with the
