@@ -74,11 +74,18 @@ module.exports = {
             'Sets the amount of vertical space (in px) between legend groups.'
         ].join(' ')
     },
-    legendtextwidth: {
+    entrywidth: {
         valType: 'number',
         min: 0,
         editType: 'legend',
-        description: 'Sets the width (in px) of the legend.',
+        description: 'Sets the width (in px or fraction) of the legend.',
+    },
+    widthmode: {
+        valType: 'enumerated',
+        values: ['fraction', 'pixels'],
+        dflt: 'pixels',
+        editType: 'legend',
+        description: 'Determines what entrywidth means.',
     },
     itemsizing: {
         valType: 'enumerated',

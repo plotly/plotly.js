@@ -72,11 +72,11 @@ module.exports = {
             'and ranks greater than 1000 to go after all unranked items.'
         ].join(' ')
     },
-    legendtextwidth: {
+    legendwidth: {
         valType: 'number',
         min: 0,
         editType: 'style',
-        description: 'Sets the width (in px) of the legend for this trace.',
+        description: 'Sets the width (in px or fraction) of the legend for this trace.',
     },
     opacity: {
         valType: 'number',

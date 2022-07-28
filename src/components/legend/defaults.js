@@ -122,7 +122,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('traceorder', defaultOrder);
     if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
-    coerce('legendtextwidth');
+    coerce('entrywidth');
+    coerce('widthmode');
     coerce('itemsizing');
     coerce('itemwidth');
 

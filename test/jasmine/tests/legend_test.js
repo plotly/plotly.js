@@ -2347,7 +2347,7 @@ describe('legend with custom doubleClickDelay', function() {
     }, 3 * jasmine.DEFAULT_TIMEOUT_INTERVAL);
 });
 
-describe('legend with custom legendtextwidth', function() {
+describe('legend with custom legendwidth', function() {
     var gd;
 
     var data = [
@@ -2379,10 +2379,10 @@ describe('legend with custom legendtextwidth', function() {
         });
     }
 
-    it('should change width when trace has legendtextwidth', function(done) {
+    it('should change width when trace has legendwidth', function(done) {
         var extendedData = Lib.extendDeep([], data);
         extendedData.forEach(function(trace, index) {
-            trace.legendtextwidth = (index + 1) * 50;
+            trace.legendwidth = (index + 1) * 50;
         });
 
         var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
@@ -2392,10 +2392,10 @@ describe('legend with custom legendtextwidth', function() {
         }).then(done);
     });
 
-    it('should change width when legend has legendtextwidth', function(done) {
+    it('should change width when legend has entrywidth', function(done) {
         var extendedLayout = Lib.extendDeep([], layout);
         var width = 50;
-        extendedLayout.legend.legendtextwidth = width;
+        extendedLayout.legend.entrywidth = width;
 
         var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
 
@@ -2404,12 +2404,12 @@ describe('legend with custom legendtextwidth', function() {
         }).then(done);
     });
 
-    it('should change group width when trace has legendtextwidth', function(done) {
+    it('should change group width when trace has legendwidth', function(done) {
         var extendedLayout = Lib.extendDeep([], layout);
         extendedLayout.legend.traceorder = 'grouped';
 
         var extendedData = Lib.extendDeep([], data);
-        extendedData[0].legendtextwidth = 100;
+        extendedData[0].legendwidth = 100;
         extendedData[0].legendgroup = 'test';
         extendedData[1].legendgroup = 'test';
 
@@ -2420,20 +2420,15 @@ describe('legend with custom legendtextwidth', function() {
         }).then(done);
     });
 
-    it('should prefer group legendtextwidth to the legend legendtextwidth', function(done) {
+
+
+    it('should change width when legend has entrywidth and widthmode is fraction', function(done) {
         var extendedLayout = Lib.extendDeep([], layout);
-        extendedLayout.legend.traceorder = 'grouped';
-        extendedLayout.legend.legendtextwidth = 50;
+        extendedLayout.legend.widthmode = 'fraction';
+        extendedLayout.legend.entrywidth = 0.3;
 
-        var extendedData = Lib.extendDeep([], data);
-        extendedData[0].legendtextwidth = 100;
-        extendedData[0].legendgroup = 'test';
-        extendedData[1].legendgroup = 'test';
-
-        var textGap = 30 + constants.itemGap * 2 + constants.itemGap / 2;
-
-        Plotly.newPlot(gd, {data: extendedData, layout: extendedLayout}).then(function() {
-            assertLegendTextWidth([100 + textGap, 100 + textGap, 50 + textGap]);
+        Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {
+            assertLegendTextWidth([162, 162, 162]);
         }).then(done);
     });
 });

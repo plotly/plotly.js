@@ -1320,7 +1320,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
                 'showlegend'
             );
 
-            coerce('legendtextwidth');
+            coerce('legendwidth');
             coerce('legendgroup');
             coerce('legendgrouptitle.text');
             coerce('legendrank');
