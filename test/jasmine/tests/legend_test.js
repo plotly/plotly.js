@@ -2420,8 +2420,6 @@ describe('legend with custom legendwidth', function() {
         }).then(done);
     });
 
-
-
     it('should change width when legend has entrywidth and widthmode is fraction', function(done) {
         var extendedLayout = Lib.extendDeep([], layout);
         extendedLayout.legend.widthmode = 'fraction';
