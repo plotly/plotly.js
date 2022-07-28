@@ -2750,6 +2750,12 @@
      "valType": "number"
     },
     "editType": "legend",
+    "entrywidth": {
+     "description": "Sets the width (in px or fraction) of the legend.",
+     "editType": "legend",
+     "min": 0,
+     "valType": "number"
+    },
     "font": {
      "color": {
       "editType": "legend",
@@ -2841,12 +2847,6 @@
      "min": 30,
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend.",
-     "editType": "legend",
-     "min": 0,
-     "valType": "number"
-    },
     "orientation": {
      "description": "Sets the orientation of the legend.",
      "dflt": "v",
@@ -2932,6 +2932,16 @@
       "top",
       "middle",
       "bottom"
+     ]
+    },
+    "widthmode": {
+     "description": "Determines what entrywidth means.",
+     "dflt": "pixels",
+     "editType": "legend",
+     "valType": "enumerated",
+     "values": [
+      "fraction",
+      "pixels"
      ]
     },
     "x": {
@@ -12616,8 +12626,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -14137,8 +14147,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -15437,8 +15447,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -16762,8 +16772,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -18264,8 +18274,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -19118,8 +19128,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -20111,8 +20121,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -21133,8 +21143,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -22331,8 +22341,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -23575,8 +23585,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -24530,8 +24540,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -25067,8 +25077,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -26494,8 +26504,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -27570,8 +27580,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -28701,8 +28711,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -29494,8 +29504,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -31452,8 +31462,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -32718,8 +32728,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -33475,8 +33485,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -34690,8 +34700,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -35555,8 +35565,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -36588,8 +36598,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -37871,8 +37881,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -38499,8 +38509,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -38998,8 +39008,8 @@
       "valType": "string"
      }
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -39961,8 +39971,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -41162,8 +41172,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -41760,8 +41770,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -42224,8 +42234,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -43419,8 +43429,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -45682,8 +45692,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -47671,8 +47681,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -49498,8 +49508,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -51504,8 +51514,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -53409,8 +53419,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -54580,8 +54590,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -56429,8 +56439,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -58245,8 +58255,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -60092,8 +60102,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -61941,8 +61951,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -64099,8 +64109,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -64805,8 +64815,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -66727,8 +66737,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -67626,8 +67636,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -68038,8 +68048,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -69361,8 +69371,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -71151,8 +71161,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
@@ -71996,8 +72006,8 @@
      "editType": "style",
      "valType": "number"
     },
-    "legendtextwidth": {
-     "description": "Sets the width (in px) of the legend for this trace.",
+    "legendwidth": {
+     "description": "Sets the width (in px or fraction) of the legend for this trace.",
      "editType": "style",
      "min": 0,
      "valType": "number"
