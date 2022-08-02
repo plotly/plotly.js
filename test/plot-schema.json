@@ -199,6 +199,11 @@
     "valType": "boolean"
    }
   },
+  "editSelection": {
+   "description": "Disables moving selections.",
+   "dflt": true,
+   "valType": "boolean"
+  },
   "fillFrame": {
    "description": "When `layout.autosize` is turned on, determines whether the graph fills the container (the default) or the screen (if set to *true*).",
    "dflt": false,
