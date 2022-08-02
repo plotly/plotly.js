@@ -200,7 +200,7 @@
    }
   },
   "editSelection": {
-   "description": "Disables moving selections.",
+   "description": "Enables moving selections.",
    "dflt": true,
    "valType": "boolean"
   },
