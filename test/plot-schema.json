@@ -2756,6 +2756,16 @@
      "min": 0,
      "valType": "number"
     },
+    "entrywidthmode": {
+     "description": "Determines what entrywidth means.",
+     "dflt": "pixels",
+     "editType": "legend",
+     "valType": "enumerated",
+     "values": [
+      "fraction",
+      "pixels"
+     ]
+    },
     "font": {
      "color": {
       "editType": "legend",
@@ -2932,16 +2942,6 @@
       "top",
       "middle",
       "bottom"
-     ]
-    },
-    "widthmode": {
-     "description": "Determines what entrywidth means.",
-     "dflt": "pixels",
-     "editType": "legend",
-     "valType": "enumerated",
-     "values": [
-      "fraction",
-      "pixels"
      ]
     },
     "x": {
