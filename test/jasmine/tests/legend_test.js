@@ -2420,9 +2420,9 @@ describe('legend with custom legendwidth', function() {
         }).then(done);
     });
 
-    it('should change width when legend has entrywidth and widthmode is fraction', function(done) {
+    it('should change width when legend has entrywidth and entrywidthmode is fraction', function(done) {
         var extendedLayout = Lib.extendDeep([], layout);
-        extendedLayout.legend.widthmode = 'fraction';
+        extendedLayout.legend.entrywidthmode = 'fraction';
         extendedLayout.legend.entrywidth = 0.3;
 
         Plotly.newPlot(gd, {data: data, layout: extendedLayout}).then(function() {

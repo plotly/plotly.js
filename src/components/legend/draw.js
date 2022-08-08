@@ -358,7 +358,7 @@ function getTraceWidth(trace, legendObj, textGap) {
     var traceLegendWidth = legendItem.trace.legendwidth || legendObj.entrywidth;
 
     if(traceLegendWidth) {
-        if(legendObj.widthmode === 'pixels') {
+        if(legendObj.entrywidthmode === 'pixels') {
             return traceLegendWidth + textGap;
         } else {
             return legendObj._maxWidth * traceLegendWidth;
@@ -772,7 +772,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 var w = getTraceWidth(d, legendObj, textGap, isGrouped);
                 var next = (oneRowLegend ? w : maxItemWidth);
 
-                if(legendObj.widthmode !== 'fraction') {
+                if(legendObj.entrywidthmode !== 'fraction') {
                     next += itemGap;
                 }
 
@@ -831,7 +831,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             traceWidth = legendGroupWidths[legendgroup];
         }
         var w = isEditable ? textGap : (toggleRectWidth || traceWidth);
-        if(!isVertical && legendObj.widthmode !== 'fraction') {
+        if(!isVertical && legendObj.entrywidthmode !== 'fraction') {
             w += itemGap / 2;
         }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);

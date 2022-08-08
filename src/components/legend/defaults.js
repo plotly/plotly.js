@@ -123,7 +123,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
     coerce('entrywidth');
-    coerce('widthmode');
+    coerce('entrywidthmode');
     coerce('itemsizing');
     coerce('itemwidth');
 

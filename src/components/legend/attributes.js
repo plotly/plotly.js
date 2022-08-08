@@ -80,7 +80,7 @@ module.exports = {
         editType: 'legend',
         description: 'Sets the width (in px or fraction) of the legend.',
     },
-    widthmode: {
+    entrywidthmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
         dflt: 'pixels',
