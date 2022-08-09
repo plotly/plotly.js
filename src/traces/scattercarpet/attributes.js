@@ -87,6 +87,8 @@ module.exports = {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
+        angle: scatterMarkerAttrs.angle,
+        angleref: scatterMarkerAttrs.angleref,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,

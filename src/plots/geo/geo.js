@@ -80,7 +80,10 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
         }
     }
     for(var i = 0; i < geoCalcData.length; i++) {
-        if(geoCalcData[0][0].trace.locationmode) {
+        var trace = geoCalcData[0][0].trace;
+        trace._geo = _this;
+
+        if(trace.locationmode) {
             needsTopojson = true;
             break;
         }

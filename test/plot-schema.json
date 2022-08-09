@@ -15451,6 +15451,13 @@
      "valType": "string"
     },
     "marker": {
+     "angle": {
+      "arrayOk": false,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
      "color": {
       "arrayOk": false,
       "description": "Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set.",
@@ -15993,7 +16000,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      }
     },
@@ -43312,6 +43331,30 @@
      }
     },
     "marker": {
+     "angle": {
+      "anim": false,
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "anim": false,
+      "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -44540,7 +44583,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -47540,6 +47595,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -48763,7 +48840,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -49375,6 +49464,29 @@
      "valType": "string"
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up. With *north* the angles are based on the current positions of points towards north.",
+      "dflt": "up",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up",
+       "north"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -50591,7 +50703,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -52539,7 +52663,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -54425,6 +54561,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -55648,7 +55806,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -57446,7 +57616,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -58078,6 +58260,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -59301,7 +59505,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -59919,6 +60135,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -61142,7 +61380,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -62897,7 +63147,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      },
      "symbolsrc": {
@@ -69114,6 +69376,13 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": false,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
      "color": {
       "arrayOk": false,
       "description": "Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set.",
@@ -69656,7 +69925,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-narrow",
+       154,
+       "154",
+       "arrow-narrow-open"
       ]
      }
     },

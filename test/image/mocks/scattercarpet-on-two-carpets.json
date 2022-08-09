@@ -47,7 +47,12 @@
         "smoothing": 1,
         "color": "blue"
       },
-      "mode": "lines",
+      "mode": "lines+markers",
+      "marker": {
+        "size": 15,
+        "symbol": "arrow",
+        "angleref": "previous"
+      },
       "carpet": "c0"
     },
     {
@@ -59,7 +64,13 @@
         "smoothing": 1,
         "color": "red"
       },
-      "mode": "lines",
+      "mode": "lines+markers",
+      "marker": {
+        "size": 15,
+        "symbol": "arrow",
+        "angle": 90,
+        "angleref": "previous"
+      },
       "carpet": "c1"
     }
   ]

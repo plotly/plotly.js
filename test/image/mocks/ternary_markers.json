@@ -72,9 +72,10 @@
                 "color": "#DB7365"
             },
             "marker": {
-                "symbol": 100,
+                "symbol": "arrow",
+                "angleref": "previous",
                 "color": "#DB7365",
-                "size": 14,
+                "size": 10,
                 "line": {
                     "width": 2
                 }

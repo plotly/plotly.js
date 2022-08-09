@@ -115,6 +115,8 @@ module.exports = {
     marker: extendFlat({
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
+        angle: scatterMarkerAttrs.angle,
+        angleref: scatterMarkerAttrs.angleref,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,

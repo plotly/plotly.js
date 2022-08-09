@@ -389,6 +389,28 @@ module.exports = {
             anim: true,
             description: 'Sets the marker opacity.'
         },
+        angle: {
+            valType: 'angle',
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: false, // TODO: possibly set to true in future
+            description: [
+                'Sets the marker angle in respect to `angleref`.'
+            ].join(' ')
+        },
+        angleref: {
+            valType: 'enumerated',
+            values: ['previous', 'up'],
+            dflt: 'up',
+            editType: 'plot',
+            anim: false,
+            description: [
+                'Sets the reference for marker angle.',
+                'With *previous* the angles are based on the previous position of points on a line.',
+                'With *up* the angles are based on the current positions of points towards up.',
+            ].join(' ')
+        },
         size: {
             valType: 'number',
             min: 0,

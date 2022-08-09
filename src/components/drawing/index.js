@@ -287,9 +287,9 @@ drawing.symbolNumber = function(v) {
         0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumber, r) {
+function makePointPath(symbolNumber, r, t) {
     var base = symbolNumber % 100;
-    return drawing.symbolFuncs[base](r) + (symbolNumber >= 200 ? DOTPATH : '');
+    return drawing.symbolFuncs[base](r, t) + (symbolNumber >= 200 ? DOTPATH : '');
 }
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
@@ -649,7 +649,9 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         // because that impacts how to handle colors
         d.om = x % 200 >= 100;
 
-        sel.attr('d', makePointPath(x, r));
+        var angle = getMarkerAngle(d, trace);
+
+        sel.attr('d', makePointPath(x, r, angle));
     }
 
     var perPointGradient = false;
@@ -898,7 +900,7 @@ drawing.selectedPointStyle = function(s, trace) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
 
-            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2));
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace)));
 
             // save for Drawing.selectedTextStyle
             d.mrc2 = mrc2;
@@ -1447,3 +1449,111 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
         el.attr('transform', transforms.join(''));
     });
 };
+
+var atan2 = Math.atan2;
+var cos = Math.cos;
+var sin = Math.sin;
+
+function rotate(t, xy) {
+    var x = xy[0];
+    var y = xy[1];
+    return [
+        x * cos(t) - y * sin(t),
+        x * sin(t) + y * cos(t)
+    ];
+}
+
+var previousX;
+var previousY;
+var previousI;
+var previousTraceUid;
+
+function getMarkerAngle(d, trace) {
+    var angle = d.ma;
+
+    if(angle === undefined) {
+        angle = trace.marker.angle || 0;
+    }
+
+    var x, y;
+    var ref = trace.marker.angleref;
+    if(ref === 'previous' || ref === 'north') {
+        if(trace._geo) {
+            var p = trace._geo.project(d.lonlat);
+            x = p[0];
+            y = p[1];
+        } else {
+            var xa = trace._xA;
+            var ya = trace._yA;
+            if(xa && ya) {
+                x = xa.c2p(d.x);
+                y = ya.c2p(d.y);
+            } else {
+                // case of legends
+                return 90;
+            }
+        }
+
+        if(ref === 'north') {
+            var lon = d.lonlat[0];
+            var lat = d.lonlat[1];
+
+            var north = trace._geo.project([
+                lon,
+                lat + 1e-5 // epsilon
+            ]);
+
+            var east = trace._geo.project([
+                lon + 1e-5, // epsilon
+                lat
+            ]);
+
+            var u = atan2(
+                east[1] - y,
+                east[0] - x
+            );
+
+            var v = atan2(
+                north[1] - y,
+                north[0] - x
+            );
+
+            var t = angle / 180 * Math.PI;
+            // To use counter-clockwise angles i.e.
+            // East: 90, West: -90
+            // to facilitate wind visualisations
+            // in future we should use t = -t here.
+
+            var A = rotate(u, [cos(t), 0]);
+            var B = rotate(v, [sin(t), 0]);
+
+            angle = atan2(
+                A[1] + B[1],
+                A[0] + B[0]
+            ) / Math.PI * 180;
+        }
+
+        if(ref === 'previous') {
+            if(
+                previousTraceUid === trace.uid &&
+                d.i === previousI + 1 &&
+                isNumeric(x) &&
+                isNumeric(y)
+            ) {
+                angle += atan2(
+                    y - previousY,
+                    x - previousX
+                ) / Math.PI * 180 + 90;
+            } else {
+                angle = null;
+            }
+        }
+    }
+
+    previousX = x;
+    previousY = y;
+    previousI = d.i;
+    previousTraceUid = trace.uid;
+
+    return angle;
+}

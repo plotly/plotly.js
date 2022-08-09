@@ -251,6 +251,8 @@ function handlePointsDefaults(traceIn, traceOut, coerce, opts) {
         coerce('marker.symbol');
         coerce('marker.opacity');
         coerce('marker.size');
+        coerce('marker.angle');
+
         coerce('marker.color', traceOut.line.color);
         coerce('marker.line.color');
         coerce('marker.line.width');
