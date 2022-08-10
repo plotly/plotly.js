@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.13.3
+* plotly.js (gl3d) v2.14.0
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -36825,6 +36825,10 @@ function draw(gd) {
     }
 }
 
+function couldHaveActiveSelection(gd) {
+    return gd._context.editSelection;
+}
+
 function drawOne(gd, index) {
     // remove the existing selection if there is one.
     // because indices can change, we need to look in all selection layers
@@ -36861,7 +36865,7 @@ function drawOne(gd, index) {
             lineDash = 'solid';
         }
 
-        var isActiveSelection =
+        var isActiveSelection = couldHaveActiveSelection(gd) &&
             gd._fullLayout._activeSelectionIndex === index;
 
         if(isActiveSelection) {
@@ -36928,6 +36932,8 @@ function setClipPath(selectionPath, gd, selectionOptions) {
 
 
 function activateSelection(gd, path) {
+    if(!couldHaveActiveSelection(gd)) return;
+
     var element = path.node();
     var id = +element.getAttribute('data-index');
     if(id >= 0) {
@@ -36944,6 +36950,8 @@ function activateSelection(gd, path) {
 }
 
 function activateLastSelection(gd) {
+    if(!couldHaveActiveSelection(gd)) return;
+
     var id = gd._fullLayout.selections.length - 1;
     gd._fullLayout._activeSelectionIndex = id;
     gd._fullLayout._deactivateSelection = deactivateSelection;
@@ -36951,6 +36959,8 @@ function activateLastSelection(gd) {
 }
 
 function deactivateSelection(gd) {
+    if(!couldHaveActiveSelection(gd)) return;
+
     var id = gd._fullLayout._activeSelectionIndex;
     if(id >= 0) {
         clearOutlineControllers(gd);
@@ -56409,6 +56419,11 @@ var configAttributes = {
             valType: 'boolean',
             dflt: false,
         }
+    },
+
+    editSelection: {
+        valType: 'boolean',
+        dflt: true,
     },
 
     autosizable: {
@@ -88364,7 +88379,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.13.3';
+exports.version = '2.14.0';
 
 },{}],444:[function(_dereq_,module,exports){
 (function (global){(function (){
