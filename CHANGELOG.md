@@ -9,6 +9,18 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.14.0] -- 2022-08-10
+
+### Added
+ - Add support for sankey links with arrows [[#6276](https://github.com/plotly/plotly.js/pull/6276)],
+   with thanks to @Andy2003 for the contribution!
+ - Add `editSelection` option to config [[#6285](https://github.com/plotly/plotly.js/pull/6285)]
+
+### Changed
+ - Update dutch translations and fix dateMonth format for `nl` locale to confirm with expected nl format [[#6261](https://github.com/plotly/plotly.js/pull/6261)],
+   with thanks to @eirvandelden for the contribution!
+
+
 ## [2.13.3] -- 2022-07-25
 
 ### Fixed
