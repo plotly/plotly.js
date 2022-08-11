@@ -20,6 +20,8 @@ var eventData = require('./event_data');
 var isValidTextValue = require('../../lib').isValidTextValue;
 
 function plot(gd, cdModule) {
+    var isStatic = gd._context.staticPlot;
+
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
 
@@ -71,7 +73,7 @@ function plot(gd, cdModule) {
 
                 slicePath.enter().append('path')
                     .classed('surface', true)
-                    .style({'pointer-events': 'all'});
+                    .style({'pointer-events': isStatic ? 'none' : 'all'});
 
                 sliceTop.call(attachFxHandlers, gd, cd);
 
