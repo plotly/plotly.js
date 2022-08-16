@@ -463,11 +463,10 @@ module.exports = {
             var r1 = round(r / 2, 2);
             var r2 = round(r, 2);
 
-            // TODO: fix me! The following path does not align correctly having 'm' commands
             return align(angle, 'M' + r1 + ',' + r2 + 'V-' + r2 +
-                'm-' + r2 + ',0V' + r2 +
+                'M' + (r1 - r2) + ',-' + r2 + 'V' + r2 +
                 'M' + r2 + ',' + r1 + 'H-' + r2 +
-                'm0,-' + r2 + 'H' + r2);
+                'M-' + r2 + ',' + (r1 - r2) + 'H' + r2);
         },
         needLine: true,
         noFill: true
