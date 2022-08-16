@@ -15456,7 +15456,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "color": {
       "arrayOk": false,
@@ -43337,7 +43339,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "angleref": {
       "anim": false,
@@ -47600,7 +47604,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
@@ -49469,7 +49475,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up. With *north* the angles are based on the current positions of points towards north.",
@@ -54566,7 +54574,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
@@ -58265,7 +58275,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
@@ -60140,7 +60152,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous* the angles are based on the previous position of points on a line. With *up* the angles are based on the current positions of points towards up.",
@@ -69381,7 +69395,9 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "valType": "angle"
+      "max": 360,
+      "min": -360,
+      "valType": "number"
      },
      "color": {
       "arrayOk": false,
