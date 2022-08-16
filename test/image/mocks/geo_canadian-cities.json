@@ -44,7 +44,7 @@
                 "dash": "dot"
             },
             "marker": {
-                "symbol": "arrow",
+                "symbol": "arrow-wide",
                 "angleref": "previous",
                 "size": 10,
                 "color": [

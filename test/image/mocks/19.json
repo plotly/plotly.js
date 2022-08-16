@@ -3,7 +3,7 @@
         {
             "marker": {
                 "size": 10,
-                "symbol": "arrow",
+                "symbol": "arrow-wide",
                 "angleref": "previous"
             },
             "x": [

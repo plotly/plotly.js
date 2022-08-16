@@ -10,7 +10,7 @@
                 "FRA"
             ],
             "marker": {
-                "symbol": "arrow-narrow",
+                "symbol": "arrow",
                 "angleref": "north",
                 "angle": [0, -90, 180, 90, 0],
                 "color": [

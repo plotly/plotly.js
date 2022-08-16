@@ -76,7 +76,7 @@
           "arrow-bar-left",
           "arrow-bar-right",
           "arrow",
-          "arrow-narrow"
+          "arrow-wide"
         ],
         "color": "blue",
         "size": 20,
@@ -140,7 +140,7 @@
         "marker symbol: arrow-bar-left<br>number: 51",
         "marker symbol: arrow-bar-right<br>number: 52",
         "marker symbol: arrow<br>number: 53",
-        "marker symbol: arrow-narrow<br>number: 54"
+        "marker symbol: arrow-wide<br>number: 54"
       ],
       "hoverinfo": "text"
     },
@@ -220,7 +220,7 @@
           "arrow-bar-left-open",
           "arrow-bar-right-open",
           "arrow-open",
-          "arrow-narrow-open"
+          "arrow-wide-open"
         ],
         "color": "blue",
         "size": 20,
@@ -284,7 +284,7 @@
         "marker symbol: arrow-bar-left-open<br>number: 151",
         "marker symbol: arrow-bar-right-open<br>number: 152",
         "marker symbol: arrow-open<br>number: 153",
-        "marker symbol: arrow-narrow-open<br>number: 154"
+        "marker symbol: arrow-wide-open<br>number: 154"
       ],
       "hoverinfo": "text"
     },
@@ -364,7 +364,7 @@
           "arrow-bar-left-dot",
           "arrow-bar-right-dot",
           "arrow-dot",
-          "arrow-narrow-dot"
+          "arrow-wide-dot"
         ],
         "color": "blue",
         "size": 20,
@@ -428,7 +428,7 @@
         "marker symbol: arrow-bar-left-dot<br>number: 251",
         "marker symbol: arrow-bar-right-dot<br>number: 252",
         "marker symbol: arrow-dot<br>number: 253",
-        "marker symbol: arrow-narrow-dot<br>number: 254"
+        "marker symbol: arrow-wide-dot<br>number: 254"
       ],
       "hoverinfo": "text"
     },
@@ -508,7 +508,7 @@
           "arrow-bar-left-open-dot",
           "arrow-bar-right-open-dot",
           "arrow-open-dot",
-          "arrow-narrow-open-dot"
+          "arrow-wide-open-dot"
         ],
         "color": "blue",
         "size": 20,
@@ -573,7 +573,7 @@
         "marker symbol: arrow-bar-left-open-dot<br>number: 351",
         "marker symbol: arrow-bar-right-open-dot<br>number: 352",
         "marker symbol: arrow-open-dot<br>number: 353",
-        "marker symbol: arrow-narrow-open-dot<br>number: 354"
+        "marker symbol: arrow-wide-open-dot<br>number: 354"
       ],
       "hoverinfo": "text"
     }

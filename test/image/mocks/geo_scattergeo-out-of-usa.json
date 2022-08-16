@@ -20009,10 +20009,11 @@
             ],
             "mode": "markers",
             "marker": {
-                "symbol": "arrow-narrow",
+                "symbol": "arrow",
                 "angleref": "north",
                 "angle": -90,
                 "size": 12,
+                "opacity": 0.1,
                 "color": "blue"
             },
             "type": "scattergeo"

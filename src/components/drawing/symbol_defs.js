@@ -673,9 +673,13 @@ module.exports = {
         f: function(r, angle) {
             if(skipAngle(angle)) return emptyPath;
 
+            var headAngle = PI / 2.5; // 36 degrees - golden ratio
+            var x = 2 * r * cos(headAngle);
+            var y = 2 * r * sin(headAngle);
+
             var t = (angle || 0) / 180 * PI;
-            var A = rotate(t, [-r, 2 * r]);
-            var B = rotate(t, [r, 2 * r]);
+            var A = rotate(t, [-x, y]);
+            var B = rotate(t, [x, y]);
 
             return (
                 'M0,0' +
@@ -686,14 +690,18 @@ module.exports = {
         },
         noDot: true
     },
-    'arrow-narrow': {
+    'arrow-wide': {
         n: 54,
         f: function(r, angle) {
             if(skipAngle(angle)) return emptyPath;
 
+            var headAngle = PI / 5; // 72 degrees - golden ratio
+            var x = 2 * r * cos(headAngle);
+            var y = 2 * r * sin(headAngle);
+
             var t = (angle || 0) / 180 * PI;
-            var A = rotate(t, [-r / 2, 2 * r]);
-            var B = rotate(t, [r / 2, 2 * r]);
+            var A = rotate(t, [-x, y]);
+            var B = rotate(t, [x, y]);
 
             return (
                 'M0,0' +
