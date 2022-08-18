@@ -80112,10 +80112,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     xAxisBoundViolated = true;
                 else
                 {
-                    if (xaxes[i].getCategoriesLength() == 0)
-                        zoomWheelOneAxis(xaxes[i], xfrac, zoom, xaxes[i].getCategoriesLength() - 2, true, false);
+                    categoryArrayLength = 0;
+                    if (xaxes[i].categoryarray)
+                        categoryArrayLength = xaxes[i].categoryarray.length;
+                    
+                    if (categoryArrayLength == 0)
+                        zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, false);
                     else
-                        xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, xaxes[i].getCategoriesLength() - 2, true, true);
+                        xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, true);
                 }
             }
             updateMatchedAxRange('x');
@@ -83468,13 +83472,6 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl0 = ax.r2l(ax.range[0]);
         var rl1 = ax.r2l(ax.range[1]);
         return (ax.r2l(v) - rl0) / (rl1 - rl0);
-    };
-
-    ax.getCategoriesLength = function() {
-        if (ax._categories)
-            return ax._categories.length;
-        else 
-            return 0;
     };
 
     ax.getCategoryAtIndex = function(idx) {

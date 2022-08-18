@@ -539,10 +539,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     xAxisBoundViolated = true;
                 else
                 {
-                    if (xaxes[i].getCategoriesLength() == 0)
-                        zoomWheelOneAxis(xaxes[i], xfrac, zoom, xaxes[i].getCategoriesLength() - 2, true, false);
+                    categoryArrayLength = 0;
+                    if (xaxes[i].categoryarray)
+                        categoryArrayLength = xaxes[i].categoryarray.length;
+                    
+                    if (categoryArrayLength == 0)
+                        zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, false);
                     else
-                        xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, xaxes[i].getCategoriesLength() - 2, true, true);
+                        xAxisBoundViolated = zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, true);
                 }
             }
             updateMatchedAxRange('x');
