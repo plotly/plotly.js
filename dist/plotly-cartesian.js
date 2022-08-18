@@ -75287,9 +75287,24 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if (lowRange < 0)
                 lowRange = 0;
 
-            if (highRange > ax.getCategoriesLength())
-                highRange = ax.getCategoriesLength() - 1;
+            let categoryArrayLength = 0;
+            if (ax.categoryarray)
+                categoryArrayLength = ax.categoryarray.length;
 
+            if (highRange > categoryArrayLength)
+                highRange = categoryArrayLength - 1;
+
+            let lowIdxInt = Math.round(lowRange);
+            let highIdxInt = Math.round(highRange);
+
+            let lowIdxCategory = null;
+            let highIdxCategory = null;
+
+            if (lowIdxInt >= 0 && lowIdxInt < categoryArrayLength)
+                lowIdxCategory = ax.categoryarray[lowIdxInt];
+            if (highIdxInt >= 0 && highIdxInt < categoryArrayLength)
+                highIdxCategory = ax.categoryarray[highIdxInt];
+            
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
             updates[ax._name + '.value[0]'] = ax.getCategoryAtIndex(lowRange);
@@ -78378,13 +78393,6 @@ module.exports = function setConvert(ax, fullLayout) {
         var rl0 = ax.r2l(ax.range[0]);
         var rl1 = ax.r2l(ax.range[1]);
         return (ax.r2l(v) - rl0) / (rl1 - rl0);
-    };
-
-    ax.getCategoryAtIndex = function(idx) {
-        var idxInt = Math.round(idx);
-        if (idxInt >= 0 && idxInt < ax._categories.length)
-            return ax._categories[idxInt];
-        else return null;
     };
 
     /*

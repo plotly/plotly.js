@@ -432,13 +432,6 @@ module.exports = function setConvert(ax, fullLayout) {
         return (ax.r2l(v) - rl0) / (rl1 - rl0);
     };
 
-    ax.getCategoryAtIndex = function(idx) {
-        var idxInt = Math.round(idx);
-        if (idxInt >= 0 && idxInt < ax._categories.length)
-            return ax._categories[idxInt];
-        else return null;
-    };
-
     /*
      * cleanRange: make sure range is a couplet of valid & distinct values
      * keep numbers away from the limits of floating point numbers,

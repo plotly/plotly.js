@@ -808,9 +808,24 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             if (lowRange < 0)
                 lowRange = 0;
 
-            if (highRange > ax.getCategoriesLength())
-                highRange = ax.getCategoriesLength() - 1;
+            let categoryArrayLength = 0;
+            if (ax.categoryarray)
+                categoryArrayLength = ax.categoryarray.length;
 
+            if (highRange > categoryArrayLength)
+                highRange = categoryArrayLength - 1;
+
+            let lowIdxInt = Math.round(lowRange);
+            let highIdxInt = Math.round(highRange);
+
+            let lowIdxCategory = null;
+            let highIdxCategory = null;
+
+            if (lowIdxInt >= 0 && lowIdxInt < categoryArrayLength)
+                lowIdxCategory = ax.categoryarray[lowIdxInt];
+            if (highIdxInt >= 0 && highIdxInt < categoryArrayLength)
+                highIdxCategory = ax.categoryarray[highIdxInt];
+            
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
             updates[ax._name + '.value[0]'] = ax.getCategoryAtIndex(lowRange);
