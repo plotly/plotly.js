@@ -91,7 +91,7 @@ The `basic` partial bundle contains trace modules `bar`, `pie` and `scatter`.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.8 MB | 999.4 kB | 325 kB |
+| 2.8 MB | 999.3 kB | 325 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-basic-2.14.0.js
@@ -114,7 +114,7 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.4 MB | 1.2 MB | 398 kB |
+| 3.4 MB | 1.2 MB | 397.9 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-cartesian-2.14.0.js

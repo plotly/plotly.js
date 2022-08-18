@@ -66724,10 +66724,10 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     xAxisBoundViolated = true;
                 else
                 {
-                    categoryArrayLength = 0;
+                    let categoryArrayLength = 0;
                     if (xaxes[i].categoryarray)
                         categoryArrayLength = xaxes[i].categoryarray.length;
-                    
+
                     if (categoryArrayLength == 0)
                         zoomWheelOneAxis(xaxes[i], xfrac, zoom, categoryArrayLength - 2, true, false);
                     else
