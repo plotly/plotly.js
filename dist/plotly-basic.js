@@ -66137,8 +66137,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             
             updates[ax._name + '.range[0]'] = ax.range[0];
             updates[ax._name + '.range[1]'] = ax.range[1];
-            updates[ax._name + '.value[0]'] = ax.getCategoryAtIndex(lowRange);
-            updates[ax._name + '.value[1]'] = ax.getCategoryAtIndex(highRange);
+            updates[ax._name + '.value[0]'] = lowIdxCategory;
+            updates[ax._name + '.value[1]'] = highIdxCategory;
         }
 
         Axes.redrawComponents(gd, activeAxIds);

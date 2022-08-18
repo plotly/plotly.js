@@ -114,7 +114,7 @@ The `cartesian` partial bundle contains trace modules `bar`, `box`, `contour`, `
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 3.4 MB | 1.2 MB | 398 kB |
+| 3.4 MB | 1.2 MB | 397.9 kB |
 
 #### CDN links
 > https://cdn.plot.ly/plotly-cartesian-2.14.0.js
