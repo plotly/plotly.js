@@ -727,7 +727,7 @@ function skipAngle(angle) {
 }
 
 function align(angle, path) {
-    if(!angle) return path;
+    if(angle % 360 === 0) return path;
 
     var t = angle / 180 * PI;
 
