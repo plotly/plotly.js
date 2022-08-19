@@ -51488,6 +51488,20 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "max": 360,
+      "min": -360,
+      "valType": "number"
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -56443,6 +56457,20 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "max": 360,
+      "min": -360,
+      "valType": "number"
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -61978,6 +62006,20 @@
      "valType": "number"
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "max": 360,
+      "min": -360,
+      "valType": "number"
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,

@@ -11,7 +11,7 @@ module.exports = function editStyle(gd, cd0) {
     if(scene) {
         calcColorscale(gd, trace);
 
-        Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(trace));
+        Lib.extendFlat(scene.matrixOptions, convertMarkerStyle(gd, trace));
         // TODO [un]selected styles?
 
         var opts = Lib.extendFlat({}, scene.matrixOptions, scene.viewOpts);

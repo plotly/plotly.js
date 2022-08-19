@@ -1557,3 +1557,5 @@ function getMarkerAngle(d, trace) {
 
     return angle;
 }
+
+drawing.getMarkerAngle = getMarkerAngle;

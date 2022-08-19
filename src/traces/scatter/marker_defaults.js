@@ -27,7 +27,9 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.size');
     if(!opts.noAngle) {
         coerce('marker.angle');
-        coerce('marker.angleref');
+        if(!opts.noAngleRef) {
+            coerce('marker.angleref');
+        }
     }
 
     coerce('marker.color', defaultColor);
