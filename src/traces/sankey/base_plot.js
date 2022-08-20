@@ -84,6 +84,7 @@ function subplotUpdateFx(gd, index) {
         yaxes: [yaxis],
         doneFnCompleted: function(selection) {
             var traceNow = gd._fullData[index];
+            if(!traceNow.node) return;
             var newGroups;
             var oldGroups = traceNow.node.groups.slice();
             var newGroup = [];
