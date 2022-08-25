@@ -287,9 +287,9 @@ drawing.symbolNumber = function(v) {
         0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumber, r, t) {
+function makePointPath(symbolNumber, r, t, s) {
     var base = symbolNumber % 100;
-    return drawing.symbolFuncs[base](r, t) + (symbolNumber >= 200 ? DOTPATH : '');
+    return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
@@ -650,8 +650,9 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         d.om = x % 200 >= 100;
 
         var angle = getMarkerAngle(d, trace);
+        var standoff = getMarkerStandoff(d, trace);
 
-        sel.attr('d', makePointPath(x, r, angle));
+        sel.attr('d', makePointPath(x, r, angle, standoff));
     }
 
     var perPointGradient = false;
@@ -900,7 +901,7 @@ drawing.selectedPointStyle = function(s, trace) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
 
-            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace)));
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace)));
 
             // save for Drawing.selectedTextStyle
             d.mrc2 = mrc2;
@@ -1449,6 +1450,16 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
         el.attr('transform', transforms.join(''));
     });
 };
+
+function getMarkerStandoff(d, trace) {
+    var standoff = d.mf;
+
+    if(standoff === undefined) {
+        standoff = trace.marker.standoff || 0;
+    }
+
+    return standoff;
+}
 
 var atan2 = Math.atan2;
 var cos = Math.cos;

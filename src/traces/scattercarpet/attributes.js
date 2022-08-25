@@ -89,6 +89,7 @@ module.exports = {
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
         angle: scatterMarkerAttrs.angle,
         angleref: scatterMarkerAttrs.angleref,
+        standoff: scatterMarkerAttrs.standoff,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,

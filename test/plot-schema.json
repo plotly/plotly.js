@@ -44107,6 +44107,20 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "anim": true,
+      "arrayOk": true,
+      "description": "Sets the marker standoff in the direction of `angle` (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -48366,6 +48380,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Sets the marker standoff in the direction of `angle` (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -50228,6 +50255,19 @@
      },
      "sizesrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Sets the marker standoff in the direction of `angle` (in px).",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
       "editType": "none",
       "valType": "string"
      },
@@ -55350,6 +55390,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Sets the marker standoff in the direction of `angle` (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -59065,6 +59118,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Sets the marker standoff in the direction of `angle` (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -60939,6 +61005,19 @@
      },
      "sizesrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Sets the marker standoff in the direction of `angle` (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
       "editType": "none",
       "valType": "string"
      },

@@ -25,6 +25,7 @@ module.exports = function arraysToCalcdata(cd, trace) {
         Lib.mergeArrayCastPositive(marker.opacity, cd, 'mo');
         Lib.mergeArray(marker.symbol, cd, 'mx');
         Lib.mergeArray(marker.angle, cd, 'ma');
+        Lib.mergeArray(marker.standoff, cd, 'mf');
         Lib.mergeArray(marker.color, cd, 'mc');
 
         var markerLine = marker.line;

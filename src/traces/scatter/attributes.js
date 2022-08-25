@@ -413,6 +413,15 @@ module.exports = {
                 'With *up* the angles are based on the current positions of points towards up.',
             ].join(' ')
         },
+        standoff: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: true,
+            description: 'Sets the marker standoff in the direction of `angle` (in px).'
+        },
         size: {
             valType: 'number',
             min: 0,

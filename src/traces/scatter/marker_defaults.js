@@ -30,6 +30,10 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
         if(!opts.noAngleRef) {
             coerce('marker.angleref');
         }
+
+        if(!opts.noStandOff) {
+            coerce('marker.standoff');
+        }
     }
 
     coerce('marker.color', defaultColor);

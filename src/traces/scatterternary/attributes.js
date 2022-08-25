@@ -117,6 +117,7 @@ module.exports = {
         opacity: scatterMarkerAttrs.opacity,
         angle: scatterMarkerAttrs.angle,
         angleref: scatterMarkerAttrs.angleref,
+        standoff: scatterMarkerAttrs.standoff,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,

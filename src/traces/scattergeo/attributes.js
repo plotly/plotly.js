@@ -124,6 +124,7 @@ module.exports = overrideAll({
                 'With *north* the angles are based on the current positions of points towards north.',
             ].join(' ')
         }),
+        standoff: scatterMarkerAttrs.standoff,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
