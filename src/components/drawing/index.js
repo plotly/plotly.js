@@ -1540,10 +1540,16 @@ function getMarkerAngle(d, trace) {
                 isNumeric(x) &&
                 isNumeric(y)
             ) {
-                angle += atan2(
-                    y - previousY,
-                    x - previousX
-                ) / Math.PI * 180 + 90;
+                var dX = x - previousX;
+                var dY = y - previousY;
+
+                var shape = trace.line ? trace.line.shape || '' : '';
+
+                var lastShapeChar = shape.slice(shape.length - 1);
+                if(lastShapeChar === 'h') dY = 0;
+                if(lastShapeChar === 'v') dX = 0;
+
+                angle += atan2(dY, dX) / Math.PI * 180 + 90;
             } else {
                 angle = null;
             }
