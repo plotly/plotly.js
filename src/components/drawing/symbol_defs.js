@@ -689,14 +689,14 @@ module.exports = {
         f: function(r, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
 
-            var headAngle = PI / 5; // 72 degrees - golden ratio
+            var headAngle = PI / 4; // 90 degrees
             var x = 2 * r * cos(headAngle);
             var y = 2 * r * sin(headAngle);
 
             return align(angle, standoff,
                 'M0,0' +
                 'L' + -x + ',' + y +
-                'L' + x + ',' + y +
+                'A ' + 2 * r + ',' + 2 * r + ' 0 0 1 ' + x + ',' + y +
                 'Z'
             );
         },
