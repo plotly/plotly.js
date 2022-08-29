@@ -65,6 +65,7 @@
             "text": "multiple y-axes example"
         },
         "width": 800,
+        "height": 600,
         "yaxis": {
             "title": {
                 "text": "yaxis title"
