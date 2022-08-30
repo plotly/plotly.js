@@ -708,8 +708,21 @@ function skipAngle(angle) {
     return angle === null;
 }
 
+var lastPathIn, lastPathOut;
+var lastAngle, lastStandoff;
+
 function align(angle, standoff, path) {
     if((!angle || angle % 360 === 0) && !standoff) return path;
+
+    if(
+        lastAngle === angle &&
+        lastStandoff === standoff &&
+        lastPathIn === path
+    ) return lastPathOut;
+
+    lastAngle = angle;
+    lastStandoff = standoff;
+    lastPathIn = path;
 
     function rotate(t, xy) {
         var cosT = cos(t);
@@ -786,6 +799,8 @@ function align(angle, standoff, path) {
 
         str += cmdI[0] + cmdI.slice(1).join(',');
     }
+
+    lastPathOut = str;
 
     return str;
 }
