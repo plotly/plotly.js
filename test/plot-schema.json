@@ -41129,9 +41129,7 @@
      "description": "Instead of the first slice starting at 12 o'clock, rotate to some other angle.",
      "dflt": 0,
      "editType": "calc",
-     "max": 360,
-     "min": -360,
-     "valType": "number"
+     "valType": "angle"
     },
     "scalegroup": {
      "description": "If there are multiple pie charts that should be sized according to their totals, link them by providing a non-empty group id here shared by every trace in the same group.",

@@ -276,9 +276,7 @@ module.exports = {
         ].join(' ')
     },
     rotation: {
-        valType: 'number',
-        min: -360,
-        max: 360,
+        valType: 'angle',
         dflt: 0,
         editType: 'calc',
         description: [
