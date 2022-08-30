@@ -435,7 +435,8 @@
    "angle": {
     "description": "A number (in degree) between -180 and 180.",
     "otherOpts": [
-     "dflt"
+     "dflt",
+     "arrayOk"
     ],
     "requiredOpts": []
    },
@@ -15456,9 +15457,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "color": {
       "arrayOk": false,
@@ -43339,9 +43338,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "angleref": {
       "anim": false,
@@ -47618,9 +47615,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
@@ -49502,9 +49497,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen. With *north*, angle 0 points north based on the current map projection.",
@@ -51533,9 +51526,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "anglesrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
@@ -54628,9 +54619,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
@@ -56515,9 +56504,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "anglesrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
@@ -58356,9 +58343,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
@@ -60246,9 +60231,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "angleref": {
       "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
@@ -62090,9 +62073,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "plot",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "anglesrc": {
       "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
@@ -69516,9 +69497,7 @@
       "description": "Sets the marker angle in respect to `angleref`.",
       "dflt": 0,
       "editType": "calc",
-      "max": 360,
-      "min": -360,
-      "valType": "number"
+      "valType": "angle"
      },
      "color": {
       "arrayOk": false,

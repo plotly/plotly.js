@@ -390,9 +390,7 @@ module.exports = {
             description: 'Sets the marker opacity.'
         },
         angle: {
-            valType: 'number',
-            min: -360,
-            max: 360,
+            valType: 'angle',
             dflt: 0,
             arrayOk: true,
             editType: 'plot',
