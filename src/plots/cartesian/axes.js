@@ -2541,6 +2541,7 @@ axes.drawOne = function(gd, ax, opts) {
         var s = ax.side.charAt(0);
         var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
         var pos = axes.getPxPosition(gd, ax);
+        console.log(pos)
         var outsideTickLen = outsideTicks ? ax.ticklen : 0;
         var llbbox;
 
@@ -3766,9 +3767,13 @@ function drawDividers(gd, ax, opts) {
  */
 axes.getPxPosition = function(gd, ax) {
     var gs = gd._fullLayout._size;
+    console.log("PRINTING...")
+    //console.log(gd._fullLayout._size)
     var axLetter = ax._id.charAt(0);
     var side = ax.side;
     var anchorAxis;
+    console.log(side)
+    console.log(axLetter)
 
     if(ax.anchor !== 'free') {
         anchorAxis = ax._anchorAxis;

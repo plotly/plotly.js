@@ -228,6 +228,20 @@ module.exports = {
                 'between the plotting area and the axis lines'
             ].join(' ')
         },
+        minreducedwidth: {
+            valType: 'number',
+            min: 0,
+            dflt: 64,
+            editType: 'plot',
+            description: 'TODO'
+        },
+        minreducedheight: {
+            valType: 'number',
+            min: 0,
+            dflt: 64,
+            editType: 'plot',
+            description: 'TODO'
+        },
         autoexpand: {
             valType: 'boolean',
             dflt: true,
