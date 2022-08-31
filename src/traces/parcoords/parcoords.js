@@ -435,6 +435,8 @@ function extremeText(d, isTop) {
 
 
 module.exports = function parcoords(gd, cdModule, layout, callbacks) {
+    var isStatic = gd._context.staticPlot;
+
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
@@ -469,7 +471,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
     // emit hover / unhover event
     pickLayer
-        .style('pointer-events', 'auto')
+        .style('pointer-events', isStatic ? 'none' : 'auto')
         .on('mousemove', function(d) {
             if(state.linePickActive() && d.lineLayer && callbacks && callbacks.hover) {
                 var event = d3.event;
@@ -674,7 +676,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.axisTitle, true)
         .attr('text-anchor', 'middle')
         .style('cursor', 'ew-resize')
-        .style('pointer-events', 'auto');
+        .style('pointer-events', isStatic ? 'none' : 'auto');
 
     axisTitle
         .text(function(d) { return d.label; })
@@ -758,5 +760,5 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .text(function(d) { return extremeText(d, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
-    brush.ensureAxisBrush(axisOverlays, paperColor);
+    brush.ensureAxisBrush(axisOverlays, paperColor, gd);
 };
