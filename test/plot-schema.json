@@ -43272,6 +43272,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "anim": true,
       "description": "Sets the line color.",
@@ -43309,8 +43322,7 @@
       ]
      },
      "simplify": {
-      "description": "Simplifies lines by removing nearly-collinear points. When transitioning lines, it may be desirable to disable this so that the number of points along the resulting SVG path is unaffected.",
-      "dflt": true,
+      "description": "Simplifies lines by removing nearly-collinear points. When transitioning lines, it may be desirable to disable this so that the number of points along the resulting SVG path is unaffected. Defaults to *false* when `backoff` is set, otherwise defaults to *true*.",
       "editType": "plot",
       "valType": "boolean"
      },
@@ -47562,6 +47574,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",
@@ -54566,6 +54591,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",
@@ -58290,6 +58328,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",
@@ -60178,6 +60229,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",

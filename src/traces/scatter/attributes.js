@@ -292,14 +292,26 @@ module.exports = {
             ].join(' ')
         },
         dash: extendFlat({}, dash, {editType: 'style'}),
+        backoff: { // TODO: do we want to have a similar option for the start of the line? If so what the name should be?
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            description: [
+                'Sets the line back off from the end point of the nth line segment (in px).',
+                'This option is useful e.g. to avoid overlap with arrowhead markers.',
+            ].join(' ')
+        },
         simplify: {
             valType: 'boolean',
-            dflt: true,
             editType: 'plot',
             description: [
                 'Simplifies lines by removing nearly-collinear points. When transitioning',
                 'lines, it may be desirable to disable this so that the number of points',
-                'along the resulting SVG path is unaffected.'
+                'along the resulting SVG path is unaffected.',
+                'Defaults to *false* when `backoff` is set,',
+                'otherwise defaults to *true*.'
             ].join(' ')
         },
         editType: 'plot'

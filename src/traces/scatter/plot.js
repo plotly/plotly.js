@@ -212,6 +212,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
+            backoff: line.backoff,
             simplify: line.simplify,
             fill: trace.fill
         });

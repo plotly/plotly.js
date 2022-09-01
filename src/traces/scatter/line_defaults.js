@@ -5,6 +5,8 @@ var hasColorscale = require('../../components/colorscale/helpers').hasColorscale
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+    if(!opts) opts = {};
+
     var markerColor = (traceIn.marker || {}).color;
 
     coerce('line.color', defaultColor);
@@ -17,5 +19,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     }
 
     coerce('line.width');
-    if(!(opts || {}).noDash) coerce('line.dash');
+
+    if(!opts.noDash) coerce('line.dash');
+    if(opts.backoff) coerce('line.backoff');
 };
