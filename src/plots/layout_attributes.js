@@ -233,14 +233,14 @@ module.exports = {
             min: 0,
             dflt: 64,
             editType: 'plot',
-            description: 'TODO'
+            description: 'Minimum width of the plot with automargin applied.'
         },
         minreducedheight: {
             valType: 'number',
             min: 0,
             dflt: 64,
             editType: 'plot',
-            description: 'TODO'
+            description: 'Minimum height of the plot with automargin applied.'
         },
         autoexpand: {
             valType: 'boolean',
