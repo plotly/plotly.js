@@ -1458,6 +1458,12 @@ function getMarkerStandoff(d, trace) {
         standoff = trace.marker.standoff || 0;
     }
 
+    if(!trace._geo && !trace._xA) {
+        // case of legends
+        return -standoff;
+    }
+
+
     return standoff;
 }
 
