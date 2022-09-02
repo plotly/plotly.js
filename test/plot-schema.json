@@ -3352,6 +3352,20 @@
      "min": 0,
      "valType": "number"
     },
+    "minreducedheight": {
+     "description": "Minimum height of the plot with automargin applied (in px)",
+     "dflt": 64,
+     "editType": "plot",
+     "min": 2,
+     "valType": "number"
+    },
+    "minreducedwidth": {
+     "description": "Minimum width of the plot with automargin applied (in px)",
+     "dflt": 64,
+     "editType": "plot",
+     "min": 2,
+     "valType": "number"
+    },
     "pad": {
      "description": "Sets the amount of padding (in px) between the plotting area and the axis lines",
      "dflt": 0,
