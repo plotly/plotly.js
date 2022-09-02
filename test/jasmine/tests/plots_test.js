@@ -237,7 +237,9 @@ describe('Test Plots', function() {
                 t: 100,
                 b: 80,
                 pad: 0,
-                autoexpand: true
+                autoexpand: true,
+                minreducedwidth: 64, 
+                minreducedheight: 64
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut);
@@ -261,7 +263,9 @@ describe('Test Plots', function() {
                 t: 187,
                 b: 311,
                 pad: 0,
-                autoexpand: true
+                autoexpand: true,
+                minreducedwidth: 64, 
+                minreducedheight: 64
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut);
