@@ -1346,11 +1346,17 @@ describe('Test Plots with automargin and minreducedwidth/height', function() {
             expect(xy.getAttribute(attr)).toEqual(exp);
         }
 
+        function assert_close(attr, exp) {
+            var xy = d3Select('rect.nsewdrag')[0][0];
+            expect(xy.getAttribute(attr)).toBeCloseTo(exp, -1);
+        }
+
         var fig = require('@mocks/z-automargin-minreducedheight.json');
 
         Plotly.newPlot(gd, fig)
         .then(function() {
-            assert('height', '55');
+            assert_close('height', '55');
+            
         })
         .then(function() {
             return Plotly.relayout(gd, 'margin.minreducedheight', 100);
