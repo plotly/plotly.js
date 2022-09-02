@@ -238,7 +238,7 @@ describe('Test Plots', function() {
                 b: 80,
                 pad: 0,
                 autoexpand: true,
-                minreducedwidth: 64, 
+                minreducedwidth: 64,
                 minreducedheight: 64
             };
 
@@ -264,7 +264,7 @@ describe('Test Plots', function() {
                 b: 311,
                 pad: 0,
                 autoexpand: true,
-                minreducedwidth: 64, 
+                minreducedwidth: 64,
                 minreducedheight: 64
             };
 
