@@ -221,6 +221,7 @@ var SYMBOLDEFS = require('./symbol_defs');
 
 drawing.symbolNames = [];
 drawing.symbolFuncs = [];
+drawing.symbolBackOffs = [];
 drawing.symbolNeedLines = {};
 drawing.symbolNoDot = {};
 drawing.symbolNoFill = {};
@@ -240,6 +241,7 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     );
     drawing.symbolNames[n] = k;
     drawing.symbolFuncs[n] = symDef.f;
+    drawing.symbolBackOffs[n] = symDef.backoff || 0;
 
     if(symDef.needLine) {
         drawing.symbolNeedLines[n] = true;
@@ -1072,6 +1074,26 @@ drawing.smoothclosed = function(pts, smoothness) {
     return path;
 };
 
+var lastDrawnX, lastDrawnY;
+
+function roundEnd(pt, isY, isLastPoint) {
+    if(isLastPoint) pt = applyBackoff(pt);
+
+    return isY ? roundY(pt[1]) : roundX(pt[0]);
+}
+
+function roundX(p) {
+    var v = d3.round(p, 2);
+    lastDrawnX = v;
+    return v;
+}
+
+function roundY(p) {
+    var v = d3.round(p, 2);
+    lastDrawnY = v;
+    return v;
+}
+
 function makeTangent(prevpt, thispt, nextpt, smoothness) {
     var d1x = prevpt[0] - thispt[0];
     var d1y = prevpt[1] - thispt[1];
@@ -1085,11 +1107,11 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
     var denom2 = 3 * d1a * (d1a + d2a);
     return [
         [
-            d3.round(thispt[0] + (denom1 && numx / denom1), 2),
-            d3.round(thispt[1] + (denom1 && numy / denom1), 2)
+            roundX(thispt[0] + (denom1 && numx / denom1)),
+            roundY(thispt[1] + (denom1 && numy / denom1))
         ], [
-            d3.round(thispt[0] - (denom2 && numx / denom2), 2),
-            d3.round(thispt[1] - (denom2 && numy / denom2), 2)
+            roundX(thispt[0] - (denom2 && numx / denom2)),
+            roundY(thispt[1] - (denom2 && numy / denom2))
         ]
     ];
 }
@@ -1097,34 +1119,93 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
 // step paths - returns a generator function for paths
 // with the given step shape
 var STEPPATH = {
-    hv: function(p0, p1) {
-        return 'H' + d3.round(p1[0], 2) + 'V' + d3.round(p1[1], 2);
+    hv: function(p0, p1, isLastPoint) {
+        return 'H' +
+            roundX(p1[0]) + 'V' +
+            roundEnd(p1, 1, isLastPoint);
     },
-    vh: function(p0, p1) {
-        return 'V' + d3.round(p1[1], 2) + 'H' + d3.round(p1[0], 2);
+    vh: function(p0, p1, isLastPoint) {
+        return 'V' +
+            roundY(p1[1]) + 'H' +
+            roundEnd(p1, 0, isLastPoint);
     },
-    hvh: function(p0, p1) {
-        return 'H' + d3.round((p0[0] + p1[0]) / 2, 2) + 'V' +
-            d3.round(p1[1], 2) + 'H' + d3.round(p1[0], 2);
+    hvh: function(p0, p1, isLastPoint) {
+        return 'H' +
+            roundX((p0[0] + p1[0]) / 2) + 'V' +
+            roundY(p1[1]) + 'H' +
+            roundEnd(p1, 0, isLastPoint);
     },
-    vhv: function(p0, p1) {
-        return 'V' + d3.round((p0[1] + p1[1]) / 2, 2) + 'H' +
-            d3.round(p1[0], 2) + 'V' + d3.round(p1[1], 2);
+    vhv: function(p0, p1, isLastPoint) {
+        return 'V' +
+            roundY((p0[1] + p1[1]) / 2) + 'H' +
+            roundX(p1[0]) + 'V' +
+            roundEnd(p1, 1, isLastPoint);
     }
 };
-var STEPLINEAR = function(p0, p1) {
-    return 'L' + d3.round(p1[0], 2) + ',' + d3.round(p1[1], 2);
+var STEPLINEAR = function(p0, p1, isLastPoint) {
+    return 'L' +
+        roundEnd(p1, 0, isLastPoint) + ',' +
+        roundEnd(p1, 1, isLastPoint);
 };
 drawing.steps = function(shape) {
     var onestep = STEPPATH[shape] || STEPLINEAR;
     return function(pts) {
-        var path = 'M' + d3.round(pts[0][0], 2) + ',' + d3.round(pts[0][1], 2);
-        for(var i = 1; i < pts.length; i++) {
-            path += onestep(pts[i - 1], pts[i]);
+        var path = 'M' + roundX(pts[0][0]) + ',' + roundY(pts[0][1]);
+        var len = pts.length;
+        for(var i = 1; i < len; i++) {
+            path += onestep(pts[i - 1], pts[i], i === len - 1);
         }
         return path;
     };
 };
+
+function applyBackoff(pt, start) {
+    var backoff = pt.backoff;
+    var trace = pt.trace;
+    var d = pt.d;
+    var i = pt.i;
+
+    if(backoff && trace && trace.marker && trace.marker.angle === 0) {
+        var arrayBackoff = Lib.isArrayOrTypedArray(backoff);
+        var end = pt;
+
+        var x1 = start ? start[0] : lastDrawnX || 0;
+        var y1 = start ? start[1] : lastDrawnY || 0;
+
+        var x2 = end[0];
+        var y2 = end[1];
+
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+
+        var t = Math.atan2(dy, dx);
+
+        var b = arrayBackoff ? backoff[i] : backoff;
+
+        if(b === 'auto') {
+            var endI = end.i;
+            if(trace.type === 'scatter') endI--; // Why we need this hack?
+
+            var endMarker = end.marker;
+            b = endMarker ? drawing.symbolBackOffs[drawing.symbolNumber(endMarker.symbol)] * endMarker.size : 0;
+            b += drawing.getMarkerStandoff(d[endI], trace) || 0;
+        }
+
+        var x = x2 - b * Math.cos(t);
+        var y = y2 - b * Math.sin(t);
+
+        if(
+            ((x <= x2 && x >= x1) || (x >= x2 && x <= x1)) &&
+            ((y <= y2 && y >= y1) || (y >= y2 && y <= y1))
+        ) {
+            pt = [x, y];
+        }
+    }
+
+    return pt;
+}
+
+drawing.applyBackoff = applyBackoff;
 
 // off-screen svg render testing element, shared by the whole page
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
@@ -1452,10 +1533,12 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
 };
 
 function getMarkerStandoff(d, trace) {
-    var standoff = d.mf;
+    var standoff;
+
+    if(d) standoff = d.mf;
 
     if(standoff === undefined) {
-        standoff = trace.marker.standoff || 0;
+        standoff = trace.marker ? trace.marker.standoff || 0 : 0;
     }
 
     if(!trace._geo && !trace._xA) {
@@ -1466,6 +1549,8 @@ function getMarkerStandoff(d, trace) {
 
     return standoff;
 }
+
+drawing.getMarkerStandoff = getMarkerStandoff;
 
 var atan2 = Math.atan2;
 var cos = Math.cos;

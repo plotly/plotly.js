@@ -295,12 +295,13 @@ module.exports = {
         backoff: { // TODO: do we want to have a similar option for the start of the line? If so what the name should be?
             valType: 'number',
             min: 0,
-            dflt: 0,
+            dflt: 'auto',
             arrayOk: true,
             editType: 'plot',
             description: [
                 'Sets the line back off from the end point of the nth line segment (in px).',
                 'This option is useful e.g. to avoid overlap with arrowhead markers.',
+                'With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.'
             ].join(' ')
         },
         simplify: {

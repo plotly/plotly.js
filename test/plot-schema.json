@@ -43274,8 +43274,8 @@
     "line": {
      "backoff": {
       "arrayOk": true,
-      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
-      "dflt": 0,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
       "editType": "plot",
       "min": 0,
       "valType": "number"
@@ -47576,8 +47576,8 @@
     "line": {
      "backoff": {
       "arrayOk": true,
-      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
-      "dflt": 0,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
       "editType": "plot",
       "min": 0,
       "valType": "number"
@@ -54593,8 +54593,8 @@
     "line": {
      "backoff": {
       "arrayOk": true,
-      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
-      "dflt": 0,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
       "editType": "plot",
       "min": 0,
       "valType": "number"
@@ -58330,8 +58330,8 @@
     "line": {
      "backoff": {
       "arrayOk": true,
-      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
-      "dflt": 0,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
       "editType": "plot",
       "min": 0,
       "valType": "number"
@@ -60231,8 +60231,8 @@
     "line": {
      "backoff": {
       "arrayOk": true,
-      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers.",
-      "dflt": 0,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
       "editType": "plot",
       "min": 0,
       "valType": "number"

@@ -682,6 +682,7 @@ module.exports = {
                 'Z'
             );
         },
+        backoff: 0.95,
         noDot: true
     },
     'arrow-wide': {
@@ -700,6 +701,7 @@ module.exports = {
                 'Z'
             );
         },
+        backoff: 0.4,
         noDot: true
     }
 };

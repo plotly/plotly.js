@@ -209,6 +209,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         segments = linePoints(cdscatter, {
             xaxis: xa,
             yaxis: ya,
+            trace: trace,
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
