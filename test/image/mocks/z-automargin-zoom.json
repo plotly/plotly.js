@@ -50,11 +50,10 @@
     "height": 400,
     "width": 700,
     "xaxis": {
-      "title": "Revision",
+      "title": {"text": "Revision"},
       "automargin": true
     },
     "yaxis": {
-      "title": "Value",
       "automargin": true
     }
   }
