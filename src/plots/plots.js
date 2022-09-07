@@ -1506,14 +1506,15 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('width');
     coerce('height');
+    coerce('minreducedwidth');
+    coerce('minreducedheight');
+
     coerce('margin.l');
     coerce('margin.r');
     coerce('margin.t');
     coerce('margin.b');
     coerce('margin.pad');
     coerce('margin.autoexpand');
-    coerce('margin.minreducedwidth');
-    coerce('margin.minreducedheight');
 
     if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
@@ -1883,17 +1884,19 @@ plots.autoMargin = function(gd, id, o) {
     var width = fullLayout.width;
     var height = fullLayout.height;
     var margin = fullLayout.margin;
+    var minreducedwidth = fullLayout.minreducedwidth;
+    var minreducedheight = fullLayout.minreducedheight;
 
     var minFinalWidth = Lib.constrain(
         width - margin.l - margin.r,
         MIN_SPECIFIED_WIDTH,
-        margin.minreducedwidth
+        minreducedwidth
     );
 
     var minFinalHeight = Lib.constrain(
         height - margin.t - margin.b,
         MIN_SPECIFIED_HEIGHT,
-        margin.minreducedheight
+        minreducedheight
     );
 
     var maxSpaceW = Math.max(0, width - minFinalWidth);
@@ -1972,6 +1975,8 @@ plots.doAutoMargin = function(gd) {
     var mb = margin.b;
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
+    var minreducedwidth = fullLayout.minreducedwidth;
+    var minreducedheight = fullLayout.minreducedheight;
 
     if(fullLayout.margin.autoexpand !== false) {
         for(var k in pushMargin) {
@@ -2030,13 +2035,13 @@ plots.doAutoMargin = function(gd) {
     var minFinalWidth = Lib.constrain(
         width - margin.l - margin.r,
         MIN_SPECIFIED_WIDTH,
-        margin.minreducedwidth
+        minreducedwidth
     );
 
     var minFinalHeight = Lib.constrain(
         height - margin.t - margin.b,
         MIN_SPECIFIED_HEIGHT,
-        margin.minreducedheight
+        minreducedheight
     );
 
     var maxSpaceW = Math.max(0, width - minFinalWidth);

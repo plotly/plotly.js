@@ -237,9 +237,7 @@ describe('Test Plots', function() {
                 t: 100,
                 b: 80,
                 pad: 0,
-                autoexpand: true,
-                minreducedwidth: 64,
-                minreducedheight: 64
+                autoexpand: true
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut);
@@ -263,9 +261,7 @@ describe('Test Plots', function() {
                 t: 187,
                 b: 311,
                 pad: 0,
-                autoexpand: true,
-                minreducedwidth: 64,
-                minreducedheight: 64
+                autoexpand: true
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut);
@@ -1358,13 +1354,13 @@ describe('Test Plots with automargin and minreducedwidth/height', function() {
             assertClose('height', '55');
         })
         .then(function() {
-            return Plotly.relayout(gd, 'margin.minreducedheight', 100);
+            return Plotly.relayout(gd, 'minreducedheight', 100);
         })
         .then(function() {
             assert('height', '100');
         })
         .then(function() {
-            return Plotly.relayout(gd, 'margin.minreducedwidth', 100);
+            return Plotly.relayout(gd, 'minreducedwidth', 100);
         })
         .then(function() {
             assert('width', '100');

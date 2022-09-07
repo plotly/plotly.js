@@ -189,6 +189,20 @@ module.exports = {
             'Sets the plot\'s height (in px).'
         ].join(' ')
     },
+    minreducedwidth: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+        description: 'Minimum width of the plot with margin.automargin applied (in px)'
+    },
+    minreducedheight: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+        description: 'Minimum height of the plot with margin.automargin applied (in px)'
+    },
     margin: {
         l: {
             valType: 'number',
@@ -227,20 +241,6 @@ module.exports = {
                 'Sets the amount of padding (in px)',
                 'between the plotting area and the axis lines'
             ].join(' ')
-        },
-        minreducedwidth: {
-            valType: 'number',
-            min: 2,
-            dflt: 64,
-            editType: 'plot',
-            description: 'Minimum width of the plot with automargin applied (in px)'
-        },
-        minreducedheight: {
-            valType: 'number',
-            min: 2,
-            dflt: 64,
-            editType: 'plot',
-            description: 'Minimum height of the plot with automargin applied (in px)'
         },
         autoexpand: {
             valType: 'boolean',

@@ -38,12 +38,12 @@
         },
         "width": 240,
         "height": 200,
+        "minreducedwidth": 55,
         "margin": {
             "t": 80,
             "b": 20,
             "l": 20,
-            "r": 20,
-            "minreducedwidth": 55
+            "r": 20
         },
         "xaxis": {
             "type": "date",

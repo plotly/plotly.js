@@ -37,12 +37,12 @@
         },
         "width": 240,
         "height": 300,
+        "minreducedheight": 55,
         "margin": {
             "t": 80,
             "b": 20,
             "l": 20,
-            "r": 20,
-            "minreducedheight": 55
+            "r": 20
         },
         "yaxis": {
             "type": "date",
