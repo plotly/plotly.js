@@ -1326,3 +1326,46 @@ describe('grids', function() {
         .then(done, done.fail);
     });
 });
+
+describe('Test Plots with automargin and minreducedwidth/height', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should resize the plot area when tweaking min-reduced width & height', function(done) {
+        function assert(attr, exp) {
+            var xy = d3Select('rect.nsewdrag')[0][0];
+            expect(xy.getAttribute(attr)).toEqual(exp);
+        }
+
+        function assertClose(attr, exp) {
+            var xy = d3Select('rect.nsewdrag')[0][0];
+            expect(xy.getAttribute(attr)).toBeCloseTo(exp, -1);
+        }
+
+        var fig = require('@mocks/z-automargin-minreducedheight.json');
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            assertClose('height', '55');
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'minreducedheight', 100);
+        })
+        .then(function() {
+            assert('height', '100');
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'minreducedwidth', 100);
+        })
+        .then(function() {
+            assert('width', '100');
+            assert('height', '100');
+        })
+        .then(done, done.fail);
+    });
+});
