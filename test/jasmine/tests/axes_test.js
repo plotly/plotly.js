@@ -4382,24 +4382,28 @@ describe('Test axes', function() {
                 return d3Select(gd).select(sel).node().getBoundingClientRect()
             }
 
-            function assert_layout() {
-                var title_top = getPos(gd, '.xtitle').top;
-                var tick_bottom = getPos(gd, '.xtick').bottom;
-                expect(title_top).toBeLessThan(tick_bottom);
+            function assertLayout() {
+                var titleTop = getPos(gd, '.xtitle').top;
+                var tickBottom = getPos(gd, '.xtick').bottom;
+                expect(tickBottom).toBeLessThan(titleTop);
             }
             // TODO: This is failing now. 
             // Is it maybe because there's overlap in these elements because of some padding?
             // I'm also not sure that I've accessed the correct properties
             var fig = require('@mocks/z-automargin-zoom.json');
+            
             Plotly.newPlot(gd, fig)
+            console.log(d3Select(gd).select('.xtitle').node().getBoundingClientRect().top)
+            console.log(d3Select(gd).select('.xtitle').node().getBoundingClientRect().bottom)
+
             .then(function() {
-                assert_layout(); 
+                assertLayout(); 
             })
             .then(function() {
                 return Plotly.relayout(gd, {'xaxis.range': [6, 14]});
             })
             .then(function() {
-                assert_layout();
+                assertLayout();
             })
             .then(done, done.fail);
         });
