@@ -4386,7 +4386,7 @@ describe('Test axes', function() {
             function assertLayout() {
                 var titleTop = getPos(gd, '.xtitle').top;
                 var tickBottom = getPos(gd, '.xtick').bottom;
-                expect(tickBottom).toBeLessThan(titleTop);
+                expect(tickBottom).toBeLessThan(titleTop + 2); // allow two pixels tolerance
             }
 
             var fig = require('@mocks/z-automargin-zoom.json');
