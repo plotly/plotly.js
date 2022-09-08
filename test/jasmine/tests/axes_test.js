@@ -4377,27 +4377,23 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
         it('should respect axis title placement on relayout', function(done) {
-
             function getPos(gd, sel) {
-                return d3Select(gd).select(sel).node().getBoundingClientRect()
+                return d3Select(gd).select(sel).node().getBoundingClientRect();
             }
 
+            // Tick position is < title position since 0 is at the top of the graph,
+            // rather than at the bottom. We're checking that the ticks and title don't overlap
             function assertLayout() {
                 var titleTop = getPos(gd, '.xtitle').top;
                 var tickBottom = getPos(gd, '.xtick').bottom;
                 expect(tickBottom).toBeLessThan(titleTop);
             }
-            // TODO: This is failing now. 
-            // Is it maybe because there's overlap in these elements because of some padding?
-            // I'm also not sure that I've accessed the correct properties
+
             var fig = require('@mocks/z-automargin-zoom.json');
-            
             Plotly.newPlot(gd, fig)
-            console.log(d3Select(gd).select('.xtitle').node().getBoundingClientRect().top)
-            console.log(d3Select(gd).select('.xtitle').node().getBoundingClientRect().bottom)
 
             .then(function() {
-                assertLayout(); 
+                assertLayout();
             })
             .then(function() {
                 return Plotly.relayout(gd, {'xaxis.range': [6, 14]});
