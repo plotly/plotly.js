@@ -4376,6 +4376,33 @@ describe('Test axes', function() {
             })
             .then(done, done.fail);
         });
+        it('should respect axis title placement on relayout', function(done) {
+
+            function getPos(gd, sel) {
+                return d3Select(gd).select(sel).node().getBoundingClientRect()
+            }
+
+            function assert_layout() {
+                var title_top = getPos(gd, '.xtitle').top;
+                var tick_bottom = getPos(gd, '.xtick').bottom;
+                expect(title_top).toBeLessThan(tick_bottom);
+            }
+            // TODO: This is failing now. 
+            // Is it maybe because there's overlap in these elements because of some padding?
+            // I'm also not sure that I've accessed the correct properties
+            var fig = require('@mocks/z-automargin-zoom.json');
+            Plotly.newPlot(gd, fig)
+            .then(function() {
+                assert_layout(); 
+            })
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.range': [6, 14]});
+            })
+            .then(function() {
+                assert_layout();
+            })
+            .then(done, done.fail);
+        });
     });
 
     describe('zeroline visibility logic', function() {
