@@ -1346,7 +1346,7 @@ describe('sankey tests', function() {
 
                           nodes = document.getElementsByClassName('sankey-node');
                           node = nodes.item(nodes.length - 1); // Dragged node is now the last one
-                          return drag({node: node, dpos: move});
+                          return drag({node: node, dpos: move, timeDelay: arrangement === 'snap' ? 200 : 0});
                       })
                       .then(function() {
                           x1 = gd._fullData[0].node.x.slice();
