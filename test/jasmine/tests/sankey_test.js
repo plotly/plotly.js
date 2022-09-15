@@ -1318,7 +1318,7 @@ describe('sankey tests', function() {
                       .then(done, done.fail);
                 });
 
-                it('@flaky should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
+                it('should persist the position of every nodes after drag in attributes nodes.(x|y)', function(done) {
                     mockCopy.data[0].arrangement = arrangement;
                     var move = [50, -50];
                     var nodes;
@@ -1346,7 +1346,7 @@ describe('sankey tests', function() {
 
                           nodes = document.getElementsByClassName('sankey-node');
                           node = nodes.item(nodes.length - 1); // Dragged node is now the last one
-                          return drag({node: node, dpos: move, timeDelay: arrangement === 'snap' ? 200 : 0});
+                          return drag({node: node, dpos: move, timeDelay: arrangement === 'snap' ? 200 : 0}); // Wait for animation to finish
                       })
                       .then(function() {
                           x1 = gd._fullData[0].node.x.slice();
