@@ -1888,8 +1888,6 @@ function addAxRangeSequence(seq, rangesAltered) {
                         }
                     }
                 }
-
-                if(ax.automargin) skipTitle = false;
             }
 
             return Axes.draw(gd, axIds, {skipTitle: skipTitle});
