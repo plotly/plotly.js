@@ -713,3 +713,15 @@ exports.drawMarginPushers = function(gd) {
     Registry.getComponentMethod('updatemenus', 'draw')(gd);
     Registry.getComponentMethod('colorbar', 'draw')(gd);
 };
+
+// function getAxDepth(ax) {
+//     var depth = null;
+//     if (ax.type == 'multicategory') {
+//         depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+
+//     } else if(ax.title.hasOwnProperty('standoff')) {
+//         depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
+//     }
+
+// }
+    

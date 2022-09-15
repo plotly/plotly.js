@@ -1,0 +1,56 @@
+{
+    "data": [
+        {
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                4,
+                5,
+                6
+            ],
+            "name": "yaxis1 data",
+            "type": "scatter"
+        },
+        {
+            "x": [
+                2,
+                3,
+                4
+            ],
+            "y": [
+                40,
+                50,
+                60
+            ],
+            "name": "yaxis2 data",
+            "yaxis": "y2",
+            "type": "scatter"
+        }
+    ],
+    "layout": {
+        "title": {
+            "text": "multiple y-axes example"
+        },
+        "width": 800,
+        "xaxis": {
+            "domain": [
+                0.5,
+                1
+            ]
+        },
+        "yaxis": {
+            "title": {"text": "yaxis title"},
+            "automargin": true,
+            "anchor": "free"
+        },
+        "yaxis2": {
+            "title": {"text": "yaxis2 title"},
+            "anchor": "free",
+            "overlaying": "y",
+            "automargin": true
+        }
+    }
+}

@@ -2248,16 +2248,23 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
+    var allDepths = [0] // Or dict w keys/values?
+
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
-            var axDone = axes.drawOne(gd, ax, opts);
+            var axDone = axes.drawOne(gd, ax, opts, allDepths);
 
+            var depth = ax._depth 
+            console.log(depth)
+            //var depthPrev = allDepths.pop
+            allDepths.push(depth)
+            
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
-
+            //debugger;
             return axDone;
         };
     }));
@@ -2290,11 +2297,12 @@ axes.draw = function(gd, arg, opts) {
  * - ax._depth (when required only):
  * - and calls ax.setScale
  */
-axes.drawOne = function(gd, ax, opts) {
+axes.drawOne = function(gd, ax, opts, allDepths) {
+    //debugger;
     opts = opts || {};
 
     var i, sp, plotinfo;
-
+    console.log(allDepths)
     ax.setScale();
 
     var fullLayout = gd._fullLayout;
@@ -2541,6 +2549,7 @@ axes.drawOne = function(gd, ax, opts) {
         var s = ax.side.charAt(0);
         var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
         var pos = axes.getPxPosition(gd, ax);
+        console.log(pos)
         var outsideTickLen = outsideTicks ? ax.ticklen : 0;
         var llbbox;
 
@@ -2646,7 +2655,7 @@ axes.drawOne = function(gd, ax, opts) {
     ) {
         seq.push(function() { return drawTitle(gd, ax); });
     }
-
+    console.log(seq)
     return Lib.syncOrAsync(seq);
 };
 
@@ -3764,7 +3773,7 @@ function drawDividers(gd, ax, opts) {
  *  - {number} position
  * @return {number}
  */
-axes.getPxPosition = function(gd, ax) {
+axes.getPxPosition = function(gd, ax, offset) {
     var gs = gd._fullLayout._size;
     var axLetter = ax._id.charAt(0);
     var side = ax.side;

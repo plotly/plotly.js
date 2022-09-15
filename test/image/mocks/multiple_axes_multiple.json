@@ -80,7 +80,8 @@
                     "color": "#1f77b4"
                 },
                 "text": "yaxis title"
-            }
+            },
+            "automargin": true
         },
         "yaxis2": {
             "title": {
@@ -95,7 +96,8 @@
             "anchor": "free",
             "side": "left",
             "position": 0.15,
-            "overlaying": "y"
+            "overlaying": "y",
+            "automargin": true
         },
         "yaxis3": {
             "title": {
@@ -109,7 +111,8 @@
             },
             "anchor": "x",
             "side": "right",
-            "overlaying": "y"
+            "overlaying": "y",
+            "automargin": true
         },
         "yaxis4": {
             "title": {
@@ -124,7 +127,8 @@
             "anchor": "free",
             "side": "right",
             "position": 0.85,
-            "overlaying": "y"
+            "overlaying": "y",
+            "automargin": true
         }
     }
 }
