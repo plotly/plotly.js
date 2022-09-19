@@ -2248,7 +2248,7 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    var allDepths = [0] // Or dict w keys/values?
+    var allDepths = [] 
 
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
@@ -2257,8 +2257,11 @@ axes.draw = function(gd, arg, opts) {
             var ax = axes.getFromId(gd, axId);
             var axDone = axes.drawOne(gd, ax, opts, allDepths);
 
-            var depth = ax._depth > 0 ? (ax._depth + 50) : ax._depth; // Add offset to account for title size 
-            allDepths.push(depth)
+            // If we've just drawn a y axis, then keep track of its width so that we can push 
+            // out additional y axes if needed
+            if (ax._id.charAt(0) == 'y') {
+                allDepths.push(ax._depth + ax._titleDepth);
+            }
             
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -2295,12 +2298,9 @@ axes.draw = function(gd, arg, opts) {
  * - and calls ax.setScale
  */
 axes.drawOne = function(gd, ax, opts, allDepths) {
-    //debugger;
     opts = opts || {};
 
     var i, sp, plotinfo;
-    //('All depths:')
-    //console.log(allDepths)
     
     ax.setScale();
     
@@ -2337,8 +2337,15 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     // (touching either the tick label or ticks)
     // depth can be expansive to compute, so we only do so when required
     ax._depth = null;
-    // Shift the sum of existing axes depth
-    ax._xshift = allDepths.reduce((a, b) => a + b)
+    // If drawing another y-axis, then look at the sum of the depths of existing axes
+    // to determine how much to shift this one out by
+    // TODO: Also need to account for the expected depth of the current axis
+    // (if drawing from the left inwards)
+    if (axLetter == 'y' & allDepths.length > 0) {
+        ax._xshift = allDepths.reduce((a, b) => a + b);
+    } else {
+        ax._xshift = null;
+    }
 
     // calcLabelLevelBbox can be expensive,
     // so make sure to not call it twice during the same Axes.drawOne call
@@ -3841,7 +3848,6 @@ function approxTitleDepth(ax) {
  *  - {boolean} showticklabels
  */
 function drawTitle(gd, ax) {
-    debugger;
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
@@ -3878,7 +3884,7 @@ function drawTitle(gd, ax) {
             }
         }
     }
-
+    ax._titleDepth = titleStandoff
     var pos = axes.getPxPosition(gd, ax);
     var transform, x, y;
 
@@ -3890,7 +3896,6 @@ function drawTitle(gd, ax) {
         x = (ax.side === 'right') ? pos + titleStandoff : pos - titleStandoff;
         transform = {rotate: '-90', offset: 0};
     }
-    debugger;
     var avoid;
 
     if(ax.type !== 'multicategory') {

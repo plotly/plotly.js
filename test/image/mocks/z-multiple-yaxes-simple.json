@@ -62,7 +62,7 @@
     ],
     "layout": {
         "title": {
-            "text": "multiple y-axes example"
+            "text": "multiple y-axes example - uniform formatting"
         },
         "width": 800,
         "xaxis": {
@@ -71,8 +71,12 @@
                 1
             ]
         },
+        
         "yaxis": {
-            "title": {"text": "yaxis title"},
+            "title": {
+                "text": "yaxis title"
+
+            },
             "automargin": true,
             "anchor": "free"
         },
@@ -83,14 +87,20 @@
             "automargin": true
         },
         "yaxis3": {
-            "title": {"text": "yaxis3 title"},
+            "title": {
+                "text": "yaxis3 title"
+
+            },
             "anchor": "free",
             "overlaying": "y",
             "automargin": true
         },
         "yaxis4": {
-            "title": {"text": "yaxis4 title"},
             "anchor": "free",
+            "title": {
+                "text": "yaxis4 title"
+
+            },
             "overlaying": "y",
             "automargin": true
         }
