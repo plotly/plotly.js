@@ -75,8 +75,8 @@ describe('Visible rangesliders', function() {
             expect(+bg.getAttribute('width')).toEqual(expectedWidth);
             expect(+bg.getAttribute('height')).toEqual(66);
 
-            expect(bg.getAttribute('fill')).toBe('#fafafa');
-            expect(bg.getAttribute('stroke')).toBe('black');
+            expect(bg.getAttribute('fill')).toBe('rgb(250, 250, 250)');
+            expect(bg.getAttribute('stroke')).toBe('rgb(0, 0, 0)');
             expect(+bg.getAttribute('stroke-width')).toBe(2);
 
             return Plotly.relayout(gd, {
@@ -91,8 +91,8 @@ describe('Visible rangesliders', function() {
 
             expect(+bg.getAttribute('height')).toEqual(32);
 
-            expect(bg.getAttribute('fill')).toBe('#ffff80');
-            expect(bg.getAttribute('stroke')).toBe('#404040');
+            expect(bg.getAttribute('fill')).toBe('rgb(255, 255, 128)');
+            expect(bg.getAttribute('stroke')).toBe('rgb(64, 64, 64)');
             expect(+bg.getAttribute('stroke-width')).toBe(1);
         })
         .then(done, done.fail);
@@ -366,8 +366,8 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
             expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-            expect(bg.getAttribute('fill')).toBe('red');
-            expect(bg.getAttribute('stroke')).toBe('black');
+            expect(bg.getAttribute('fill')).toBe('rgb(255, 0, 0)');
+            expect(bg.getAttribute('stroke')).toBe('rgb(0, 0, 0)');
             expect(bg.getAttribute('stroke-width')).toBe('2');
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.bordercolor', 'blue');
@@ -376,8 +376,8 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
             expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-            expect(bg.getAttribute('fill')).toBe('red');
-            expect(bg.getAttribute('stroke')).toBe('blue');
+            expect(bg.getAttribute('fill')).toBe('rgb(255, 0, 0)');
+            expect(bg.getAttribute('stroke')).toBe('rgb(0, 0, 255)');
             expect(bg.getAttribute('stroke-width')).toBe('2');
 
             return Plotly.relayout(gd, 'xaxis.rangeslider.borderwidth', 3);
@@ -386,8 +386,8 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
             expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
 
-            expect(bg.getAttribute('fill')).toBe('red');
-            expect(bg.getAttribute('stroke')).toBe('blue');
+            expect(bg.getAttribute('fill')).toBe('rgb(255, 0, 0)');
+            expect(bg.getAttribute('stroke')).toBe('rgb(0, 0, 255)');
             expect(bg.getAttribute('stroke-width')).toBe('3');
         })
         .then(done, done.fail);

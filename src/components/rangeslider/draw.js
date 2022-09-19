@@ -1,5 +1,6 @@
 'use strict';
 
+var tinycolor = require('tinycolor2');
 var d3 = require('@plotly/d3');
 
 var Registry = require('../../registry');
@@ -395,12 +396,22 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
     var offsetShift = -opts._offsetShift;
     var lw = Drawing.crispRound(gd, opts.borderwidth);
 
+    var fillColor = tinycolor(opts.bgcolor);
+    var fillAlpha = fillColor.getAlpha();
+    var fillRGB = Color.tinyRGB(fillColor);
+
+    var strokeColor = tinycolor(opts.bordercolor);
+    var strokeAlpha = strokeColor.getAlpha();
+    var strokeRGB = Color.tinyRGB(strokeColor);
+
     bg.attr({
         width: opts._width + borderCorrect,
         height: opts._height + borderCorrect,
         transform: strTranslate(offsetShift, offsetShift),
-        fill: opts.bgcolor,
-        stroke: opts.bordercolor,
+        fill: fillRGB,
+        'fill-opacity': fillAlpha,
+        stroke: strokeRGB,
+        'stroke-opacity': strokeAlpha,
         'stroke-width': lw
     });
 }
