@@ -414,6 +414,7 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
     var fgC = tinycolor(fgcolor);
     var fgRGB = Color.tinyRGB(fgC);
     var fgAlpha = fgC.getAlpha();
+    var opacity = fgopacity * fgAlpha;
 
     switch(shape) {
         case '/':
@@ -426,9 +427,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
+                'opacity': opacity,
                 'stroke': fgRGB,
-                'stroke-opacity': fgAlpha,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -442,9 +442,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
+                'opacity': opacity,
                 'stroke': fgRGB,
-                'stroke-opacity': fgAlpha,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -461,9 +460,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
+                'opacity': opacity,
                 'stroke': fgRGB,
-                'stroke-opacity': fgAlpha,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -476,9 +474,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
+                'opacity': opacity,
                 'stroke': fgRGB,
-                'stroke-opacity': fgAlpha,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -491,9 +488,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
+                'opacity': opacity,
                 'stroke': fgRGB,
-                'stroke-opacity': fgAlpha,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -507,9 +503,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
+                'opacity': opacity,
                 'stroke': fgRGB,
-                'stroke-opacity': fgAlpha,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -526,8 +521,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 'cx': width / 2,
                 'cy': height / 2,
                 'r': radius,
-                'opacity': fgopacity,
-                'fill': fgcolor
+                'opacity': opacity,
+                'fill': fgRGB
             };
             break;
     }
