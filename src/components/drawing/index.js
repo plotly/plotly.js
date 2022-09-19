@@ -1546,7 +1546,6 @@ function getMarkerStandoff(d, trace) {
         return -standoff;
     }
 
-
     return standoff;
 }
 

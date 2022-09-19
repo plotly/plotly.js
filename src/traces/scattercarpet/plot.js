@@ -19,13 +19,17 @@ module.exports = function plot(gd, plotinfoproxy, data, layer) {
         plot: plotinfoproxy.plot,
     };
 
-    scatterPlot(gd, plotinfo, data, layer);
-
     for(i = 0; i < data.length; i++) {
         trace = data[i][0].trace;
 
         trace._xA = xaxis;
         trace._yA = yaxis;
+    }
+
+    scatterPlot(gd, plotinfo, data, layer);
+
+    for(i = 0; i < data.length; i++) {
+        trace = data[i][0].trace;
 
         // Note: .select is adequate but seems to mutate the node data,
         // which is at least a bit surprising and causes problems elsewhere
