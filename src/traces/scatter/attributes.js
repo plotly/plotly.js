@@ -431,7 +431,11 @@ module.exports = {
             arrayOk: true,
             editType: 'plot',
             anim: true,
-            description: 'Sets the marker standoff in the direction of `angle` (in px).'
+            description: [
+                'Moves the marker away from the data point in the direction of `angle` (in px).',
+                'This can be useful for example if you have another marker at this',
+                'location and you want to point an arrowhead marker at it.'
+            ].join(' ')
         },
         size: {
             valType: 'number',
