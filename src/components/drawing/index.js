@@ -556,6 +556,10 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             });
 
             if(bgcolor) {
+                var bgC = tinycolor(bgcolor);
+                var bgRGB = Color.tinyRGB(bgC);
+                var bgAlpha = bgC.getAlpha();
+
                 var rects = el.selectAll('rect').data([0]);
                 rects.exit().remove();
                 rects.enter()
@@ -563,7 +567,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                     .attr({
                         'width': width + 'px',
                         'height': height + 'px',
-                        'fill': bgcolor
+                        'fill': bgRGB,
+                        'fill-opacity': bgAlpha,
                     });
             }
 
