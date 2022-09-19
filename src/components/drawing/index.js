@@ -410,6 +410,11 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
     var path, linewidth, radius;
     var patternTag;
     var patternAttrs = {};
+
+    var fgC = tinycolor(fgcolor);
+    var fgStroke = Color.tinyRGB(fgC);
+    var fgStrokeOpacity = fgC.getAlpha();
+
     switch(shape) {
         case '/':
             width = size * Math.sqrt(2);
@@ -422,7 +427,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternAttrs = {
                 'd': path,
                 'opacity': fgopacity,
-                'stroke': fgcolor,
+                'stroke': fgStroke,
+                'stroke-opacity': fgStrokeOpacity,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -437,7 +443,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternAttrs = {
                 'd': path,
                 'opacity': fgopacity,
-                'stroke': fgcolor,
+                'stroke': fgStroke,
+                'stroke-opacity': fgStrokeOpacity,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -455,7 +462,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternAttrs = {
                 'd': path,
                 'opacity': fgopacity,
-                'stroke': fgcolor,
+                'stroke': fgStroke,
+                'stroke-opacity': fgStrokeOpacity,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -469,7 +477,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternAttrs = {
                 'd': path,
                 'opacity': fgopacity,
-                'stroke': fgcolor,
+                'stroke': fgStroke,
+                'stroke-opacity': fgStrokeOpacity,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -483,7 +492,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternAttrs = {
                 'd': path,
                 'opacity': fgopacity,
-                'stroke': fgcolor,
+                'stroke': fgStroke,
+                'stroke-opacity': fgStrokeOpacity,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -498,7 +508,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternAttrs = {
                 'd': path,
                 'opacity': fgopacity,
-                'stroke': fgcolor,
+                'stroke': fgStroke,
+                'stroke-opacity': fgStrokeOpacity,
                 'stroke-width': linewidth + 'px'
             };
             break;
