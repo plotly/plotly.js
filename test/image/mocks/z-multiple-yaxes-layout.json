@@ -28,6 +28,36 @@
             "name": "yaxis2 data",
             "yaxis": "y2",
             "type": "scatter"
+        },
+        {
+            "x": [
+                3,
+                4,
+                5
+            ],
+            "y": [
+                400,
+                500,
+                600
+            ],
+            "name": "yaxis3 data",
+            "yaxis": "y3",
+            "type": "scatter"
+        },
+        {
+            "x": [
+                4,
+                5,
+                6
+            ],
+            "y": [
+                4000,
+                5000,
+                6000
+            ],
+            "name": "yaxis4 data",
+            "yaxis": "y4",
+            "type": "scatter"
         }
     ],
     "layout": {
@@ -48,6 +78,18 @@
         },
         "yaxis2": {
             "title": {"text": "yaxis2 title"},
+            "anchor": "free",
+            "overlaying": "y",
+            "automargin": true
+        },
+        "yaxis3": {
+            "title": {"text": "yaxis3 title"},
+            "anchor": "free",
+            "overlaying": "y",
+            "automargin": true
+        },
+        "yaxis4": {
+            "title": {"text": "yaxis4 title"},
             "anchor": "free",
             "overlaying": "y",
             "automargin": true

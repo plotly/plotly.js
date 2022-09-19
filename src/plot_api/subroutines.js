@@ -69,6 +69,7 @@ function lsInner(gd) {
 
     function getLinePosition(ax, counterAx, side) {
         var lwHalf = ax._lw / 2;
+        var xshift = ax.position > 0 ? 0 : ax._xshift; 
 
         if(ax._id.charAt(0) === 'x') {
             if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);
@@ -76,7 +77,7 @@ function lsInner(gd) {
             return counterAx._offset + counterAx._length + pad + lwHalf;
         }
 
-        if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1);
+        if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1) + xshift;
         else if(side === 'right') return counterAx._offset + counterAx._length + pad + lwHalf;
         return counterAx._offset - pad - lwHalf;
     }

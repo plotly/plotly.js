@@ -2257,14 +2257,11 @@ axes.draw = function(gd, arg, opts) {
             var ax = axes.getFromId(gd, axId);
             var axDone = axes.drawOne(gd, ax, opts, allDepths);
 
-            var depth = ax._depth 
-            console.log(depth)
-            //var depthPrev = allDepths.pop
+            var depth = ax._depth > 0 ? (ax._depth + 50) : ax._depth; // Add offset to account for title size 
             allDepths.push(depth)
             
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
-            //debugger;
             return axDone;
         };
     }));
@@ -2302,9 +2299,11 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     opts = opts || {};
 
     var i, sp, plotinfo;
-    console.log(allDepths)
+    //('All depths:')
+    //console.log(allDepths)
+    
     ax.setScale();
-
+    
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
@@ -2338,6 +2337,8 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     // (touching either the tick label or ticks)
     // depth can be expansive to compute, so we only do so when required
     ax._depth = null;
+    // Shift the sum of existing axes depth
+    ax._xshift = allDepths.reduce((a, b) => a + b)
 
     // calcLabelLevelBbox can be expensive,
     // so make sure to not call it twice during the same Axes.drawOne call
@@ -2549,7 +2550,6 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
         var s = ax.side.charAt(0);
         var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
         var pos = axes.getPxPosition(gd, ax);
-        console.log(pos)
         var outsideTickLen = outsideTicks ? ax.ticklen : 0;
         var llbbox;
 
@@ -2655,7 +2655,6 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     ) {
         seq.push(function() { return drawTitle(gd, ax); });
     }
-    console.log(seq)
     return Lib.syncOrAsync(seq);
 };
 
@@ -3773,12 +3772,14 @@ function drawDividers(gd, ax, opts) {
  *  - {number} position
  * @return {number}
  */
-axes.getPxPosition = function(gd, ax, offset) {
+axes.getPxPosition = function(gd, ax) {
+
     var gs = gd._fullLayout._size;
     var axLetter = ax._id.charAt(0);
     var side = ax.side;
     var anchorAxis;
 
+    var xshift = ax.position > 0 ? 0 : ax._xshift; 
     if(ax.anchor !== 'free') {
         anchorAxis = ax._anchorAxis;
     } else if(axLetter === 'x') {
@@ -3788,16 +3789,15 @@ axes.getPxPosition = function(gd, ax, offset) {
         };
     } else if(axLetter === 'y') {
         anchorAxis = {
-            _offset: gs.l + (ax.position || 0) * gs.w,
+            _offset: (gs.l + (ax.position || 0)  * gs.w) + xshift,
             _length: 0
         };
     }
-
     if(side === 'top' || side === 'left') {
         return anchorAxis._offset;
     } else if(side === 'bottom' || side === 'right') {
         return anchorAxis._offset + anchorAxis._length;
-    }
+    }  
 };
 
 /**
@@ -3841,6 +3841,7 @@ function approxTitleDepth(ax) {
  *  - {boolean} showticklabels
  */
 function drawTitle(gd, ax) {
+    debugger;
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
@@ -3889,7 +3890,7 @@ function drawTitle(gd, ax) {
         x = (ax.side === 'right') ? pos + titleStandoff : pos - titleStandoff;
         transform = {rotate: '-90', offset: 0};
     }
-
+    debugger;
     var avoid;
 
     if(ax.type !== 'multicategory') {
