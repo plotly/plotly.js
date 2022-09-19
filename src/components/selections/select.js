@@ -1,5 +1,6 @@
 'use strict';
 
+var tinycolor = require('tinycolor2');
 var polybool = require('polybooljs');
 var pointInPolygon = require('point-in-polygon/nested'); // could we use contains lib/polygon instead?
 
@@ -112,17 +113,30 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         fullLayout.newshape :
         fullLayout.newselection;
 
+    var fillC = (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'rgba(0,0,0,0)';
+    var fillColor = tinycolor(fillC);
+    var fillAlpha = fillColor.getAlpha();
+    var fillRGB = Color.tinyRGB(fillColor);
+
+    var strokeC = newStyle.line.color || (
+        isCartesian ?
+            Color.contrast(gd._fullLayout.plot_bgcolor) :
+            '#7f7f7f' // non-cartesian subplot
+    );
+
+    var strokeColor = tinycolor(strokeC);
+    var strokeAlpha = strokeColor.getAlpha();
+    var strokeRGB = Color.tinyRGB(strokeColor);
+
     outlines.enter()
         .append('path')
         .attr('class', 'select-outline select-outline-' + plotinfo.id)
         .style({
             opacity: isDrawMode ? newStyle.opacity / 2 : 1,
-            fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
-            stroke: newStyle.line.color || (
-                isCartesian ?
-                    Color.contrast(gd._fullLayout.plot_bgcolor) :
-                    '#7f7f7f' // non-cartesian subplot
-            ),
+            fill: fillRGB,
+            'fill-opacity': fillAlpha,
+            stroke: strokeRGB,
+            'stroke-opacity': strokeAlpha,
             'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
             'stroke-width': newStyle.line.width + 'px',
             'shape-rendering': 'crispEdges'
