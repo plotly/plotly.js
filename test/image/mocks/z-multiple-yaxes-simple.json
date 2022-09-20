@@ -90,7 +90,8 @@
             "title": {
                 "text": "yaxis title"
 
-            }
+            },
+            "automargin": true
         },
         "yaxis2": {
             "title": {"text": "yaxis2 title"},

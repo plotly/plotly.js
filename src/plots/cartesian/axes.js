@@ -2663,7 +2663,6 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
         Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
     });
-
     if(!opts.skipTitle &&
         !(hasRangeSlider && ax.side === 'bottom')
     ) {

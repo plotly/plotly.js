@@ -77,14 +77,11 @@
                 "text": "yaxis title"
 
             },
-            "automargin": true,
-            "anchor": "free"
+            "automargin": true
         },
         "yaxis2": {
             "title": {"text": "yaxis2 title"},
-            "anchor": "free",
             "overlaying": "y",
-            "automargin": true,
             "ticklen":25
             
         },
@@ -94,19 +91,15 @@
                 "font": {"size": 28}
             },
             "tickfont": {"size": 28},
-            "anchor": "free",
-            "overlaying": "y",
-            "automargin": true
+            "overlaying": "y"
         },
         "yaxis4": {
-            "anchor": "free",
             "title": {
                 "text": "yaxis4 title",
                 "font": {"size": 8}
             },
             "tickfont": {"size": 8},
-            "overlaying": "y",
-            "automargin": true
+            "overlaying": "y"
         }
     }
 }
