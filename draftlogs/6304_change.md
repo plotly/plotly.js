@@ -1,0 +1,1 @@
+ - Use valType of `angle` for `rotation` in `pie` [[#6304](https://github.com/plotly/plotly.js/pull/6304)]
