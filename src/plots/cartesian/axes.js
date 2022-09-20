@@ -2248,7 +2248,7 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    var multAxisDepths = {'left': 0, 'right': 0}
+    var multAxisDepths = {'left': 0, 'right': 0};
 
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
@@ -2257,17 +2257,16 @@ axes.draw = function(gd, arg, opts) {
             var ax = axes.getFromId(gd, axId);
             var axDone = axes.drawOne(gd, ax, opts, multAxisDepths);
 
-            // If we've just drawn a y axis, then keep track of its width so that we can push 
+            // If we've just drawn a y axis, then keep track of its width so that we can push
             // out additional y axes if needed
-            if (ax._id.charAt(0) === 'y') {
-                if (ax.side === 'left') {
-                    multAxisDepths['left'] += 75
-                }
-                else if (ax.side === 'right') {
-                    multAxisDepths['right'] += 75
+            if(ax._id.charAt(0) === 'y') {
+                if(ax.side === 'left') {
+                    multAxisDepths.left += 75;
+                } else if(ax.side === 'right') {
+                    multAxisDepths.right += 75;
                 }
             }
-            
+
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
             return axDone;
@@ -2306,9 +2305,9 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     opts = opts || {};
 
     var i, sp, plotinfo;
-    
+
     ax.setScale();
-    
+
     var fullLayout = gd._fullLayout;
     var axId = ax._id;
     var axLetter = axId.charAt(0);
@@ -2346,13 +2345,11 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     // to determine how much to shift this one out by
     // TODO: Also need to account for the expected depth of the current axis
     // (if drawing from the left inwards)
-    if (axLetter == 'y') {
+    if(axLetter === 'y') {
         ax._xshift = allDepths[ax.side];
     } else {
         ax._xshift = null;
     }
-    console.log(ax._id);
-    console.log(ax._xshift);
 
     // calcLabelLevelBbox can be expensive,
     // so make sure to not call it twice during the same Axes.drawOne call
@@ -3786,7 +3783,6 @@ function drawDividers(gd, ax, opts) {
  * @return {number}
  */
 axes.getPxPosition = function(gd, ax) {
-
     var gs = gd._fullLayout._size;
     var axLetter = ax._id.charAt(0);
     var side = ax.side;
@@ -3798,14 +3794,14 @@ axes.getPxPosition = function(gd, ax) {
     xshift = side === 'left' ? xshift : -xshift;
 
     if(ax.anchor !== 'free') {
-        if (axLetter === 'y') {
+        if(axLetter === 'y') {
             anchorAxis = {
-                _offset: ax._anchorAxis._offset - xshift, 
+                _offset: ax._anchorAxis._offset - xshift,
                 _length: ax._anchorAxis._length
-            }
+            };
         } else {
             anchorAxis = ax._anchorAxis;
-        }    
+        }
     } else if(axLetter === 'x') {
         anchorAxis = {
             _offset: gs.t + (1 - (ax.position || 0)) * gs.h,
@@ -3813,17 +3809,16 @@ axes.getPxPosition = function(gd, ax) {
         };
     } else if(axLetter === 'y') {
         anchorAxis = {
-            _offset: (gs.l + (ax.position || 0)  * gs.w) + xshift,
+            _offset: (gs.l + (ax.position || 0) * gs.w) + xshift,
             _length: 0
         };
     }
-    
-    //console.log(anchorAxis._offset);
+
     if(side === 'top' || side === 'left') {
         return anchorAxis._offset;
     } else if(side === 'bottom' || side === 'right') {
         return anchorAxis._offset + anchorAxis._length;
-    }  
+    }
 };
 
 /**
@@ -3903,7 +3898,7 @@ function drawTitle(gd, ax) {
             }
         }
     }
-    ax._titleDepth = titleStandoff
+    ax._titleDepth = titleStandoff;
     var pos = axes.getPxPosition(gd, ax);
     var transform, x, y;
 
