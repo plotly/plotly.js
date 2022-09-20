@@ -76,7 +76,7 @@ function lsInner(gd) {
             else if(side === 'top') return counterAx._offset - pad - lwHalf;
             return counterAx._offset + counterAx._length + pad + lwHalf;
         }
-
+        console.log('xshift : ' + xshift)
         if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1) + xshift;
         else if(side === 'right') return counterAx._offset + counterAx._length + pad + lwHalf;
         return counterAx._offset - pad - lwHalf;

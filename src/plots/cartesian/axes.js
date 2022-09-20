@@ -2248,19 +2248,24 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    var allDepths = [] 
+    var multAxisDepths = {'left': 0, 'right': 0}
 
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
-            var axDone = axes.drawOne(gd, ax, opts, allDepths);
+            var axDone = axes.drawOne(gd, ax, opts, multAxisDepths);
 
             // If we've just drawn a y axis, then keep track of its width so that we can push 
             // out additional y axes if needed
-            if (ax._id.charAt(0) == 'y') {
-                allDepths.push(ax._depth + ax._titleDepth);
+            if (ax._id.charAt(0) === 'y') {
+                if (ax.side === 'left') {
+                    multAxisDepths['left'] += 75
+                }
+                else if (ax.side === 'right') {
+                    multAxisDepths['right'] += 75
+                }
             }
             
             ax._r = ax.range.slice();
@@ -2341,11 +2346,13 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     // to determine how much to shift this one out by
     // TODO: Also need to account for the expected depth of the current axis
     // (if drawing from the left inwards)
-    if (axLetter == 'y' & allDepths.length > 0) {
-        ax._xshift = allDepths.reduce((a, b) => a + b);
+    if (axLetter == 'y') {
+        ax._xshift = allDepths[ax.side];
     } else {
         ax._xshift = null;
     }
+    console.log(ax._id);
+    console.log(ax._xshift);
 
     // calcLabelLevelBbox can be expensive,
     // so make sure to not call it twice during the same Axes.drawOne call
@@ -3786,9 +3793,20 @@ axes.getPxPosition = function(gd, ax) {
     var side = ax.side;
     var anchorAxis;
 
-    var xshift = ax.position > 0 ? 0 : ax._xshift; 
+    // Shift in the opposite direction depending on which side the axis is on
+    // But don't shift if 'position' is specified
+    var xshift = ax.position > 0 ? 0 : ax._xshift;
+    xshift = side === 'left' ? xshift : -xshift;
+
     if(ax.anchor !== 'free') {
-        anchorAxis = ax._anchorAxis;
+        if (axLetter === 'y') {
+            anchorAxis = {
+                _offset: ax._anchorAxis._offset - xshift, 
+                _length: ax._anchorAxis._length
+            }
+        } else {
+            anchorAxis = ax._anchorAxis;
+        }    
     } else if(axLetter === 'x') {
         anchorAxis = {
             _offset: gs.t + (1 - (ax.position || 0)) * gs.h,
@@ -3800,6 +3818,8 @@ axes.getPxPosition = function(gd, ax) {
             _length: 0
         };
     }
+    
+    //console.log(anchorAxis._offset);
     if(side === 'top' || side === 'left') {
         return anchorAxis._offset;
     } else if(side === 'bottom' || side === 'right') {
