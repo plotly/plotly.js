@@ -412,9 +412,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
     var patternAttrs = {};
 
     var fgC = tinycolor(fgcolor);
+    var fgRGB = Color.tinyRGB(fgC);
     var fgAlpha = fgC.getAlpha();
-    var fgRGB = fgAlpha === 1 ? fgcolor : Color.tinyRGB(fgC);
-
     var opacity = fgopacity * fgAlpha;
 
     switch(shape) {
@@ -558,8 +557,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
 
             if(bgcolor) {
                 var bgC = tinycolor(bgcolor);
+                var bgRGB = Color.tinyRGB(bgC);
                 var bgAlpha = bgC.getAlpha();
-                var bgRGB = bgAlpha === 1 ? bgcolor : Color.tinyRGB(bgC);
 
                 var rects = el.selectAll('rect').data([0]);
                 rects.exit().remove();
