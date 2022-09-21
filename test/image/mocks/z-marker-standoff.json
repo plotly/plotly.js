@@ -51,7 +51,7 @@
             "mode": "markers+lines",
             "line": { "width": 5 },
             "marker": {
-                "standoff": [5, 20, 10],
+                "standoff": [5, 20, 10, 2.5],
                 "angleref": "previous",
                 "symbol": "arrow-wide",
                 "size": 20
@@ -59,12 +59,14 @@
             "lon": [
                 -30,
                 0,
-                30
+                30,
+                15
             ],
             "lat": [
                 20,
                 -5,
-                10
+                10,
+                -20
             ]
         },
         {
@@ -72,19 +74,21 @@
             "mode": "markers+text",
             "marker": {
                 "opacity": 1,
-                "size": [10, 40, 20]
+                "size": [10, 40, 20, 5]
             },
-            "text": [10, 40, 20],
-            "textposition": ["right", "center", "top"],
+            "text": [10, 40, 20, 5],
+            "textposition": ["right", "center", "top", "bottom"],
             "lon": [
                 -30,
                 0,
-                30
+                30,
+                15
             ],
             "lat": [
                 20,
                 -5,
-                10
+                10,
+                -20
             ]
         },
         {

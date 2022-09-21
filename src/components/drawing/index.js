@@ -1564,6 +1564,8 @@ function rotate(t, xy) {
     ];
 }
 
+var previousLon;
+var previousLat;
 var previousX;
 var previousY;
 var previousI;
@@ -1595,7 +1597,7 @@ function getMarkerAngle(d, trace) {
             }
         }
 
-        if(ref === 'north') {
+        if(trace._geo) {
             var lon = d.lonlat[0];
             var lat = d.lonlat[1];
 
@@ -1619,11 +1621,32 @@ function getMarkerAngle(d, trace) {
                 north[0] - x
             );
 
-            var t = angle / 180 * Math.PI;
-            // To use counter-clockwise angles i.e.
-            // East: 90, West: -90
-            // to facilitate wind visualisations
-            // in future we should use t = -t here.
+            var t;
+            if(ref === 'north') {
+                t = angle / 180 * Math.PI;
+                // To use counter-clockwise angles i.e.
+                // East: 90, West: -90
+                // to facilitate wind visualisations
+                // in future we should use t = -t here.
+            } else if(ref === 'previous') {
+                var lon1 = lon / 180 * Math.PI;
+                var lat1 = lat / 180 * Math.PI;
+                var lon2 = previousLon / 180 * Math.PI;
+                var lat2 = previousLat / 180 * Math.PI;
+
+                var dLon = lon2 - lon1;
+
+                var deltaY = cos(lat2) * sin(dLon);
+                var deltaX = sin(lat2) * cos(lat1) - cos(lat2) * sin(lat1) * cos(dLon);
+
+                t = -atan2(
+                    deltaY,
+                    deltaX
+                ) - Math.PI;
+
+                previousLon = lon;
+                previousLat = lat;
+            }
 
             var A = rotate(u, [cos(t), 0]);
             var B = rotate(v, [sin(t), 0]);
@@ -1632,9 +1655,16 @@ function getMarkerAngle(d, trace) {
                 A[1] + B[1],
                 A[0] + B[0]
             ) / Math.PI * 180;
+
+            if(ref === 'previous' && !(
+                previousTraceUid === trace.uid &&
+                d.i === previousI + 1
+            )) {
+                angle = null;
+            }
         }
 
-        if(ref === 'previous') {
+        if(ref === 'previous' && !trace._geo) {
             if(
                 previousTraceUid === trace.uid &&
                 d.i === previousI + 1 &&
