@@ -1,27 +1,61 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Plotly.js Devtools</title>
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:600,400,300,200|Droid+Sans|PT+Sans+Narrow|Gravitas+One|Droid+Sans+Mono|Droid+Serif|Raleway|Old+Standard+TT"/>
-  <link rel="stylesheet" type="text/css" href="./style.css">
-</head>
-<body>
-  <header>
-    <img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" onClick="Tabs.reload();" />
-    <span id="reload-time"></span>
+  <head>
+    <title>Plotly.js Devtools</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="//fonts.googleapis.com/css?family=Open+Sans:600,400,300,200|Droid+Sans|PT+Sans+Narrow|Gravitas+One|Droid+Sans+Mono|Droid+Serif|Raleway|Old+Standard+TT"
+    />
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+  </head>
+  <body>
+    <header>
+      <img
+        src="http://images.plot.ly/logo/plotlyjs-logo@2x.png"
+        onClick="Tabs.reload();"
+      />
+      <span id="reload-time"></span>
 
-    <input id="mocks-search" type="text" placeholder="mocks search" />
-    <input id="css-transform" type="text" placeholder="css transform" />
-  </header>
+      <input id="mocks-search" type="text" placeholder="mocks search" />
+      <input id="css-transform" type="text" placeholder="css transform" />
+    </header>
 
-  <section id="mocks-list"></section>
-  <div id="plots">
-    <div id="graph"></div>
-  </div>
-  <div id="snapshot"></div>
+    <section id="mocks-list"></section>
+    <div id="plots">
+      <div id="graph">
+        <div id="tester" style="width: 600px; height: 250px"></div>
+      </div>
+    </div>
+    <div id="snapshot"></div>
 
-  <script src="../../node_modules/mathjax-v2/MathJax.js?config=TeX-AMS-MML_SVG"></script>
-  <script charset="utf-8" id="source" src="../../build/plotly.js" type="module"></script>
-  <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
-</body>
+    <script src="../../node_modules/mathjax-v2/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+    <script charset="utf-8" id="source" src="../../build/plotly.js">
+      // type="module"
+      // import Plotly from "../../build/plotly.js"
+    </script>
+    <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
+    <script>
+      TESTER = document.getElementById("tester");
+      Plotly.newPlot(
+        TESTER,
+        [
+          {
+            x: [
+              ["EE", "EE"],
+              //  "DD", "DD", "DD", "DD", "BB", "BB"],
+              ["HH", "AA"],
+              //  "ZZ", "BB", "AA", "VV", "MM", "AA"],
+            ],
+            y: [8, 9.5],
+            //  14, 17, 8, 10, 10, 9],
+            // type: "bar",
+          },
+        ],
+        {
+          margin: { t: 0 },
+        }
+      );
+    </script>
+  </body>
 </html>

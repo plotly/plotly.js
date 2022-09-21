@@ -2529,6 +2529,33 @@ axes.drawOne = function(gd, ax, opts) {
                 transFn: transTickFn
             });
         });
+        // ///////////////////////////////////////////////////////////////////////////////////////////////
+        // seq.push(function() {
+        //     var bboxKey = {x: 'height', y: 'width'}[axLetter];
+        //     var standoff = 2 * (getLabelLevelBbox()[bboxKey] + 2 * pad +
+        //         (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0));
+
+        //     return axes.drawLabels(gd, ax, {
+        //         vals: getSecondaryLabelVals(ax, vals),
+        //         layer: mainAxLayer,
+        //         cls: axId + 'tick3',
+        //         repositionOnUpdate: true,
+        //         secondary: true,
+        //         transFn: transTickFn,
+        //         labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
+        //     });
+        // });
+
+        // seq.push(function() {
+        //     ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+
+        //     return drawDividers(gd, ax, {
+        //         vals: dividerVals,
+        //         layer: mainAxLayer,
+        //         path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
+        //         transFn: transTickFn
+        //     });
+        // });
     } else if(ax.title.hasOwnProperty('standoff')) {
         seq.push(function() {
             ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
