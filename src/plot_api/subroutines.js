@@ -70,6 +70,7 @@ function lsInner(gd) {
     function getLinePosition(ax, counterAx, side) {
         var lwHalf = ax._lw / 2;
         var xshift = ax.position > 0 ? 0 : ax._xshift;
+        xshift = (xshift == undefined) ? 0 : xshift;
 
         if(ax._id.charAt(0) === 'x') {
             if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);

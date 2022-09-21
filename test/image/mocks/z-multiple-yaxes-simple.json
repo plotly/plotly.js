@@ -91,18 +91,20 @@
                 "text": "yaxis title"
 
             },
-            "automargin": true
+            "showline": true
         },
         "yaxis2": {
             "title": {"text": "yaxis2 title"},
-            "overlaying": "y"
+            "overlaying": "y",
+            "showline": true
         },
         "yaxis3": {
             "title": {
                 "text": "yaxis3 title"
 
             },
-            "overlaying": "y"
+            "overlaying": "y",
+            "showline": true
         },
         "yaxis4": {
             "title": {
@@ -110,7 +112,8 @@
 
             },
             "overlaying": "y",
-            "side": "right"
+            "side": "right",
+            "showline": true
         },
         "yaxis5": {
             "title": {
@@ -118,7 +121,8 @@
 
             },
             "overlaying": "y",
-            "side": "right"
+            "side": "right",
+            "showline": true
         }
     }
 }

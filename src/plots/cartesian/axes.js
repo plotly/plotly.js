@@ -2318,7 +2318,6 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     if(!mainPlotinfo) return;
 
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
-    var mainLinePosition = ax._mainLinePosition;
     var mainMirrorPosition = ax._mainMirrorPosition;
 
     var vals = ax._vals = axes.calcTicks(ax);
@@ -2345,12 +2344,20 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     // to determine how much to shift this one out by
     // TODO: Also need to account for the expected depth of the current axis
     // (if drawing from the left inwards)
-    if(axLetter === 'y') {
+    if(axLetter === 'y' & !ax.position > 0) {
         ax._xshift = allDepths[ax.side];
     } else {
-        ax._xshift = null;
+        ax._xshift = 0;
     }
 
+    var mainLinePosition; 
+    if (ax._xshift > 0){
+        // Calculate main line position from function
+        mainLinePosition = getLinePosition(ax, ax._anchorAxis, ax.side)
+    } else {
+        mainLinePosition = ax._mainLinePosition;
+    }
+    
     // calcLabelLevelBbox can be expensive,
     // so make sure to not call it twice during the same Axes.drawOne call
     // by stashing label-level bounding boxes per tick-label class
@@ -4239,4 +4246,22 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
             ax._hideCounterAxisInsideTickLabels(opts);
         }
     }
+}
+
+// Copied over from subroutines.js since I want to calculate the line position when 
+// drawing each y-axis if there is an xshift to be applied
+// TODO: Possible to reference this from subroutines.js directly or put the function in some general utils file?
+function getLinePosition(ax, counterAx, side) {
+    var lwHalf = ax._lw / 2;
+    var xshift = ax.position > 0 ? 0 : ax._xshift;
+    xshift = (xshift == undefined) ? 0 : xshift;
+
+    if(ax._id.charAt(0) === 'x') {
+        if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);
+        else if(side === 'top') return counterAx._offset - lwHalf;
+        return counterAx._offset + counterAx._length + lwHalf;
+    }
+    if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1) + xshift;
+    else if(side === 'right') return counterAx._offset + counterAx._length + lwHalf + xshift;
+    return counterAx._offset - lwHalf - xshift;
 }
