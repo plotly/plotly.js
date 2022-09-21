@@ -1819,17 +1819,21 @@ function formatCategory(ax, out) {
 
 function formatMultiCategory(ax, out, hover) {
     var v = Math.round(out.x);
-    var cats = ax._categories[v] || [];
-    var tt = cats[1] === undefined ? '' : String(cats[1]);
-    var tt2 = cats[0] === undefined ? '' : String(cats[0]);
+    var cats = ax._categories[v].map(function(cat) {return cat;}) || [];
+    var texts = cats.reverse().map(function(cat) {
+        return cat === undefined ? '' : String(cat);
+    });
+    ax.levels = cats.length;
 
     if(hover) {
         // TODO is this what we want?
-        out.text = tt2 + ' - ' + tt;
+        // out.text = tt2 + ' - ' + tt;
+        out.text = texts.at(-1) + ' - ' + texts.at(-2);
     } else {
         // setup for secondary labels
-        out.text = tt;
-        out.text2 = tt2;
+        out.text = texts[0];
+        // out.text2 = tt2;
+        out.texts = texts;
     }
 }
 
@@ -2509,7 +2513,7 @@ axes.drawOne = function(gd, ax, opts) {
                 (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
 
             return axes.drawLabels(gd, ax, {
-                vals: getSecondaryLabelVals(ax, vals),
+                vals: getSecondaryLabelVals(ax, vals, 1),
                 layer: mainAxLayer,
                 cls: axId + 'tick2',
                 repositionOnUpdate: true,
@@ -2530,32 +2534,32 @@ axes.drawOne = function(gd, ax, opts) {
             });
         });
         // ///////////////////////////////////////////////////////////////////////////////////////////////
-        // seq.push(function() {
-        //     var bboxKey = {x: 'height', y: 'width'}[axLetter];
-        //     var standoff = 2 * (getLabelLevelBbox()[bboxKey] + 2 * pad +
-        //         (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0));
+        seq.push(function() {
+            var bboxKey = {x: 'height', y: 'width'}[axLetter];
+            var standoff = 2 * (getLabelLevelBbox()[bboxKey] + pad +
+                (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0));
 
-        //     return axes.drawLabels(gd, ax, {
-        //         vals: getSecondaryLabelVals(ax, vals),
-        //         layer: mainAxLayer,
-        //         cls: axId + 'tick3',
-        //         repositionOnUpdate: true,
-        //         secondary: true,
-        //         transFn: transTickFn,
-        //         labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
-        //     });
-        // });
+            return axes.drawLabels(gd, ax, {
+                vals: getSecondaryLabelVals(ax, vals, 2),
+                layer: mainAxLayer,
+                cls: axId + 'tick3',
+                repositionOnUpdate: true,
+                secondary: true,
+                transFn: transTickFn,
+                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
+            });
+        });
 
-        // seq.push(function() {
-        //     ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+        seq.push(function() {
+            ax._depth = 3 * (majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition));
 
-        //     return drawDividers(gd, ax, {
-        //         vals: dividerVals,
-        //         layer: mainAxLayer,
-        //         path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
-        //         transFn: transTickFn
-        //     });
-        // });
+            return drawDividers(gd, ax, {
+                vals: dividerVals,
+                layer: mainAxLayer,
+                path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
+                transFn: transTickFn
+            });
+        });
     } else if(ax.title.hasOwnProperty('standoff')) {
         seq.push(function() {
             ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
@@ -2717,16 +2721,17 @@ function getBoundaryVals(ax, vals) {
     return out;
 }
 
-function getSecondaryLabelVals(ax, vals) {
+function getSecondaryLabelVals(ax, vals, level) {
     var out = [];
     var lookup = {};
 
     for(var i = 0; i < vals.length; i++) {
         var d = vals[i];
-        if(lookup[d.text2]) {
-            lookup[d.text2].push(d.x);
+        var text = d.texts[level];
+        if(lookup[text]) {
+            lookup[text].push(d.x);
         } else {
-            lookup[d.text2] = [d.x];
+            lookup[text] = [d.x];
         }
     }
 
