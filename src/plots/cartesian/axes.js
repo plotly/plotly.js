@@ -2260,11 +2260,7 @@ axes.draw = function(gd, arg, opts) {
             // If we've just drawn a y axis, then keep track of its width so that we can push
             // out additional y axes if needed
             if(ax._id.charAt(0) === 'y') {
-                if(ax.side === 'left') {
-                    multAxisDepths.left += 75;
-                } else if(ax.side === 'right') {
-                    multAxisDepths.right += 75;
-                }
+                multAxisDepths[ax.side] += 75
             }
 
             ax._r = ax.range.slice();
