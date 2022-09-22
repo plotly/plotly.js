@@ -67,8 +67,13 @@ module.exports = function createGeo(opts) {
     return new Geo(opts);
 };
 
-proto.plot = function(geoCalcData, fullLayout, promises) {
+proto.plot = function(geoCalcData, fullLayout, promises, replot) {
     var _this = this;
+    if(replot) return _this.update(geoCalcData, fullLayout, true);
+
+    _this._geoCalcData = geoCalcData;
+    _this._fullLayout = fullLayout;
+
     var geoLayout = fullLayout[this.id];
     var geoPromises = [];
 
@@ -79,15 +84,24 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
             break;
         }
     }
+
+    var hasMarkerAngles = false;
     for(var i = 0; i < geoCalcData.length; i++) {
         var trace = geoCalcData[0][0].trace;
         trace._geo = _this;
 
         if(trace.locationmode) {
             needsTopojson = true;
-            break;
+        }
+
+        var marker = trace.marker;
+        if(marker) {
+            var angle = marker.angle;
+            var angleref = marker.angleref;
+            if(angle || angleref === 'north' || angleref === 'previous') hasMarkerAngles = true;
         }
     }
+    this._hasMarkerAngles = hasMarkerAngles;
 
     if(needsTopojson) {
         var topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
@@ -140,7 +154,7 @@ proto.fetchTopojson = function() {
     });
 };
 
-proto.update = function(geoCalcData, fullLayout) {
+proto.update = function(geoCalcData, fullLayout, replot) {
     var geoLayout = fullLayout[this.id];
 
     // important: maps with choropleth traces have a different layer order
@@ -158,11 +172,13 @@ proto.update = function(geoCalcData, fullLayout) {
         }
     }
 
-    var hasInvalidBounds = this.updateProjection(geoCalcData, fullLayout);
-    if(hasInvalidBounds) return;
+    if(!replot) {
+        var hasInvalidBounds = this.updateProjection(geoCalcData, fullLayout);
+        if(hasInvalidBounds) return;
 
-    if(!this.viewInitial || this.scope !== geoLayout.scope) {
-        this.saveViewInitial(geoLayout);
+        if(!this.viewInitial || this.scope !== geoLayout.scope) {
+            this.saveViewInitial(geoLayout);
+        }
     }
     this.scope = geoLayout.scope;
 
@@ -180,7 +196,7 @@ proto.update = function(geoCalcData, fullLayout) {
     var choroplethLayer = this.layers.backplot.select('.choroplethlayer');
     this.dataPaths.choropleth = choroplethLayer.selectAll('path');
 
-    this.render();
+    this._render();
 };
 
 proto.updateProjection = function(geoCalcData, fullLayout) {
@@ -594,8 +610,16 @@ proto.saveViewInitial = function(geoLayout) {
     Lib.extendFlat(this.viewInitial, extra);
 };
 
+proto.render = function(mayRedrawOnUpdates) {
+    if(this._hasMarkerAngles && mayRedrawOnUpdates) {
+        this.plot(this._geoCalcData, this._fullLayout, [], true);
+    } else {
+        this._render();
+    }
+};
+
 // [hot code path] (re)draw all paths which depend on the projection
-proto.render = function() {
+proto._render = function() {
     var projection = this.projection;
     var pathFn = projection.getPath();
     var k;
@@ -622,7 +646,7 @@ proto.render = function() {
     for(k in this.dataPoints) {
         this.dataPoints[k]
             .attr('display', hideShowPoints)
-            .attr('transform', translatePoints);
+            .attr('transform', translatePoints); // TODO: need to redraw points with marker angle instead of calling translatePoints
     }
 };
 
