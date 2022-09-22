@@ -2507,33 +2507,37 @@ axes.drawOne = function(gd, ax, opts) {
     if(ax.type === 'multicategory') {
         var pad = {x: 2, y: 10}[axLetter];
 
-        seq.push(function() {
-            var bboxKey = {x: 'height', y: 'width'}[axLetter];
-            var standoff = getLabelLevelBbox()[bboxKey] + pad +
-                (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
+        for(var level = 1; level < ax.levels; level++){
 
-            return axes.drawLabels(gd, ax, {
-                vals: getSecondaryLabelVals(ax, vals, 1),
-                layer: mainAxLayer,
-                cls: axId + 'tick2',
-                repositionOnUpdate: true,
-                secondary: true,
-                transFn: transTickFn,
-                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
+
+            seq.push(function() {
+                var bboxKey = {x: 'height', y: 'width'}[axLetter];
+                var standoff = getLabelLevelBbox()[bboxKey] + pad +
+                    (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
+
+                return axes.drawLabels(gd, ax, {
+                    vals: getSecondaryLabelVals(ax, vals, 1),
+                    layer: mainAxLayer,
+                    cls: axId + 'tick2',
+                    repositionOnUpdate: true,
+                    secondary: true,
+                    transFn: transTickFn,
+                    labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
+                });
             });
-        });
 
-        seq.push(function() {
-            ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+            seq.push(function() {
+                ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
 
-            return drawDividers(gd, ax, {
-                vals: dividerVals,
-                layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
-                transFn: transTickFn
-            });
-        });
-        // ///////////////////////////////////////////////////////////////////////////////////////////////
+                return drawDividers(gd, ax, {
+                  vals: dividerVals,
+                  layer: mainAxLayer,
+                  path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
+                  transFn: transTickFn
+                });
+              });
+            }
+          // ///////////////////////////////////////////////////////////////////////////////////////////////
         seq.push(function() {
             var bboxKey = {x: 'height', y: 'width'}[axLetter];
             var standoff = 2 * (getLabelLevelBbox()[bboxKey] + pad +
@@ -2742,7 +2746,7 @@ function getSecondaryLabelVals(ax, vals, level) {
     return out;
 }
 
-function getDividerVals(ax, vals) {
+function getDividerVals(ax, vals, level=0) {
     var out = [];
     var i, current;
 
@@ -2760,10 +2764,13 @@ function getDividerVals(ax, vals) {
     if(ax.showdividers && vals.length) {
         for(i = 0; i < vals.length; i++) {
             var d = vals[i];
-            if(d.text2 !== current) {
+            console.log(d.texts)
+            if(d.texts.at(-1) !== current) {
+              console.log('pushed', d.texts[level]);
                 _push(d, reversed ? 1 : 0);
             }
-            current = d.text2;
+            current = d.texts.at(-1);
+            // text2
         }
         _push(vals[i - 1], reversed ? 0 : 1);
     }

@@ -156,9 +156,13 @@ module.exports = function setConvert(ax, fullLayout) {
         var arrayOut = new Array(len);
 
         for(var i = 0; i < len; i++) {
-            var v0 = (arrayIn[0] || [])[i];
-            var v1 = (arrayIn[1] || [])[i];
-            arrayOut[i] = getCategoryIndex([v0, v1]);
+            var vs = [];
+            for(var j = 0; j < arrayIn.length; j++) {
+                vs.push((arrayIn[j] || [])[i]);
+            }
+            // var v0 = (arrayIn[0] || [])[i];
+            // var v1 = (arrayIn[1] || [])[i];
+            arrayOut[i] = getCategoryIndex(vs);
         }
 
         return arrayOut;
