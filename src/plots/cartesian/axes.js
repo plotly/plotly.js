@@ -2260,7 +2260,7 @@ axes.draw = function(gd, arg, opts) {
             // If we've just drawn a y axis, then keep track of its width so that we can push
             // out additional y axes if needed
             if(ax._id.charAt(0) === 'y') {
-                multAxisDepths[ax.side] += 75
+                multAxisDepths[ax.side] += 75;
             }
 
             ax._r = ax.range.slice();
@@ -2346,14 +2346,15 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
         ax._xshift = 0;
     }
 
-    var mainLinePosition; 
-    if (ax._xshift > 0){
+    var mainLinePosition;
+
+    if(ax._xshift > 0 & ax.anchor !== 'free') {
         // Calculate main line position from function
-        mainLinePosition = getLinePosition(ax, ax._anchorAxis, ax.side)
+        mainLinePosition = getLinePosition(ax, ax._anchorAxis, ax.side);
     } else {
         mainLinePosition = ax._mainLinePosition;
     }
-    
+
     // calcLabelLevelBbox can be expensive,
     // so make sure to not call it twice during the same Axes.drawOne call
     // by stashing label-level bounding boxes per tick-label class
@@ -2363,7 +2364,6 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
         if(!llbboxes[cls]) llbboxes[cls] = calcLabelLevelBbox(ax, cls);
         return llbboxes[cls];
     }
-
     if(!ax.visible) return;
 
     var transTickFn = axes.makeTransTickFn(ax);
@@ -4244,7 +4244,7 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
     }
 }
 
-// Copied over from subroutines.js since I want to calculate the line position when 
+// Copied over from subroutines.js since I want to calculate the line position when
 // drawing each y-axis if there is an xshift to be applied
 // TODO: Possible to reference this from subroutines.js directly or put the function in some general utils file?
 function getLinePosition(ax, counterAx, side) {
