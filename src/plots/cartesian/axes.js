@@ -2340,7 +2340,11 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     // to determine how much to shift this one out by
     // TODO: Also need to account for the expected depth of the current axis
     // (if drawing from the left inwards)
-    if(axLetter === 'y' & !ax.position > 0) {
+    console.log("New axis!!")
+    console.log(ax._id)
+    console.log(ax.overlaying)
+    if(axLetter === 'y' & !(ax.position > 0) & ax.overlaying) {
+        console.log('here')
         ax._xshift = allDepths[ax.side];
     } else {
         ax._xshift = 0;
@@ -2354,6 +2358,10 @@ axes.drawOne = function(gd, ax, opts, allDepths) {
     } else {
         mainLinePosition = ax._mainLinePosition;
     }
+
+    
+    console.log(ax._xshift)
+    console.log(mainLinePosition)
 
     // calcLabelLevelBbox can be expensive,
     // so make sure to not call it twice during the same Axes.drawOne call
