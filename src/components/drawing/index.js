@@ -410,6 +410,12 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
     var path, linewidth, radius;
     var patternTag;
     var patternAttrs = {};
+
+    var fgC = tinycolor(fgcolor);
+    var fgRGB = Color.tinyRGB(fgC);
+    var fgAlpha = fgC.getAlpha();
+    var opacity = fgopacity * fgAlpha;
+
     switch(shape) {
         case '/':
             width = size * Math.sqrt(2);
@@ -421,8 +427,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -436,8 +442,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -454,8 +460,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -468,8 +474,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -482,8 +488,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -497,8 +503,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -515,8 +521,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 'cx': width / 2,
                 'cy': height / 2,
                 'r': radius,
-                'opacity': fgopacity,
-                'fill': fgcolor
+                'opacity': opacity,
+                'fill': fgRGB
             };
             break;
     }
@@ -550,6 +556,10 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             });
 
             if(bgcolor) {
+                var bgC = tinycolor(bgcolor);
+                var bgRGB = Color.tinyRGB(bgC);
+                var bgAlpha = bgC.getAlpha();
+
                 var rects = el.selectAll('rect').data([0]);
                 rects.exit().remove();
                 rects.enter()
@@ -557,7 +567,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                     .attr({
                         'width': width + 'px',
                         'height': height + 'px',
-                        'fill': bgcolor
+                        'fill': bgRGB,
+                        'fill-opacity': bgAlpha,
                     });
             }
 
