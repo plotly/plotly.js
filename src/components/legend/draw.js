@@ -351,8 +351,8 @@ function _draw(gd, legendObj) {
         }], gd);
 }
 
-function getTraceWidth(trace, legendObj, textGap) {
-    var legendItem = trace[0];
+function getTraceWidth(d, legendObj, textGap) {
+    var legendItem = d[0];
     var legendWidth = legendItem.width;
 
     var traceLegendWidth = legendItem.trace.legendwidth || legendObj.entrywidth;
