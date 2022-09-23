@@ -1823,8 +1823,6 @@ function formatMultiCategory(ax, out, hover) {
     var texts = cats.reverse().map(function(cat) {
         return cat === undefined ? '' : String(cat);
     });
-    ax.levelNr = cats.length;
-    ax.levels = cats.map(function(cat){return null});
 
     if(hover) {
         // TODO is this what we want?
@@ -1835,6 +1833,7 @@ function formatMultiCategory(ax, out, hover) {
         out.text = texts[0];
         // out.text2 = tt2;
         out.texts = texts;
+        console.log('texts', texts)
     }
 }
 
@@ -2506,38 +2505,37 @@ axes.drawOne = function(gd, ax, opts) {
     });
 
     if(ax.type === 'multicategory') {
-        var pad = {x: 2, y: 10}[axLetter];
 
         // https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
-        ax.levels.slice(0, ax.levelNr - 1).map(function(_, _lvl) {
-          _lvl += 1
+        ax.levels.reverse().slice(0, ax.levelNr - 1).map(function(_lvl) {
+            var pad = {x: 0 * _lvl, y: 10}[axLetter];
+        //   _lvl += 1
           // for(var _lvl = 1; _lvl < ax.levels; _lvl++){
             console.log('LEVEL', _lvl);
             seq.push(function() {
                 var bboxKey = {x: 'height', y: 'width'}[axLetter];
-                    var standoff = _lvl * (getLabelLevelBbox()[bboxKey] + pad +
+                    var standoff = (_lvl * getLabelLevelBbox()[bboxKey] + pad +
                     (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0));
-                    console.log('LEVEL', _lvl);
+
                     return axes.drawLabels(gd, ax, {
                         vals: getSecondaryLabelVals(ax, vals, _lvl),
                         layer: mainAxLayer,
-                        cls: axId + 'tick' + String(_lvl + 1),
+                        cls: axId + 'tick' + String(_lvl),
                         repositionOnUpdate: true,
                         secondary: true,
                         transFn: transTickFn,
                         labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
                 });
             });
-            // }.bind(this, _lvl));
 
             seq.push(function() {
-                ax._depth = (_lvl + 1) * (majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition));
+                ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick' + String(_lvl))[ax.side] - mainLinePosition);
 
                 return drawDividers(gd, ax, {
-                  vals: dividerVals,
-                  layer: mainAxLayer,
-                  path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
-                  transFn: transTickFn
+                    vals: dividerVals,
+                    layer: mainAxLayer,
+                    path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: 2 * (ax._depth / ax.levelNr) }),
+                    transFn: transTickFn
                 });
             });
                 // }.bind(this, _lvl));
@@ -2735,6 +2733,7 @@ function getSecondaryLabelVals(ax, vals, level) {
     var out = [];
     var lookup = {};
 
+    console.log('LEVEL', level);
     for(var i = 0; i < vals.length; i++) {
         var d = vals[i];
         var text = d.texts[level];
@@ -2748,7 +2747,7 @@ function getSecondaryLabelVals(ax, vals, level) {
     for(var k in lookup) {
         out.push(tickTextObj(ax, Lib.interp(lookup[k], 0.5), k));
     }
-
+    console.log(out);
     return out;
 }
 

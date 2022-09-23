@@ -157,7 +157,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
         for(var i = 0; i < len; i++) {
             var vs = [];
-            for(var j = 0; j < arrayIn.length; j++) {
+            for(var j = 0; j < ax.levelNr; j++) {
                 vs.push((arrayIn[j] || [])[i]);
             }
             // var v0 = (arrayIn[0] || [])[i];
@@ -379,6 +379,8 @@ module.exports = function setConvert(ax, fullLayout) {
             var cols = [];
             var xs = [];
 
+            console.log(fullData);
+
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
 
@@ -406,7 +408,12 @@ module.exports = function setConvert(ax, fullLayout) {
                     }
                 }
             }
-            console.table(xs)
+            ax.levelNr = xs[0].length;
+            ax.levels = xs[0].map(function(_, idx) {return idx;});
+
+            console.log('levelNr', ax.levelNr);
+            console.table(xs);
+            console.log('xs', xs);
             for(i = 0; i < xs.length; i++) {
                 setCategoryIndex(xs[i]);
             }
