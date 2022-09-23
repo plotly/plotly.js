@@ -636,6 +636,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
 
     var isVertical = helpers.isVertical(legendObj);
     var isGrouped = helpers.isGrouped(legendObj);
+    var isFraction = legendObj.entrywidthmode === 'fraction';
 
     var bw = legendObj.borderwidth;
     var bw2 = 2 * bw;
@@ -767,7 +768,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 var w = getTraceWidth(d, legendObj, textGap, isGrouped);
                 var next = (oneRowLegend ? w : maxItemWidth);
 
-                if(legendObj.entrywidthmode !== 'fraction') {
+                if(!isFraction) {
                     next += itemGap;
                 }
 
@@ -826,7 +827,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             traceWidth = legendGroupWidths[legendgroup];
         }
         var w = isEditable ? textGap : (toggleRectWidth || traceWidth);
-        if(!isVertical && legendObj.entrywidthmode !== 'fraction') {
+        if(!isVertical && !isFraction) {
             w += itemGap / 2;
         }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
