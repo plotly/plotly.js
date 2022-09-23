@@ -2734,13 +2734,16 @@ function getSecondaryLabelVals(ax, vals, level) {
     var lookup = {};
     var appearences = {};
     var current;
+    var currentParent = null;
+    var parent = null;
 
     console.log('LEVEL', level);
     for (var i = 0; i < vals.length; i++) {
         var d = vals[i];
         var text = d.texts[level];
+        parent = d.texts[level + 1]
         if (lookup[text]) {
-            if (d.texts[level] === current) {
+            if (d.texts[level] === current & parent === currentParent) {
                 lookup[text][appearences[text]].push(d.x);
             } else {
                 appearences[text] = appearences[text] + 1
@@ -2751,12 +2754,14 @@ function getSecondaryLabelVals(ax, vals, level) {
             lookup[text] = [[d.x]];
         }
         current = d.texts[level]
+        currentParent = d.texts[level + 1]
     }
 
 
     console.log('lookup', lookup);
     for(var k in lookup) {
         lookup[k].forEach(function(pos) {
+            console.log(lookup);
             out.push(tickTextObj(ax, Lib.interp(pos, 0.5), k));
         })
     }
