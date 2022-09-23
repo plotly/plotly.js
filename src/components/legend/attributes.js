@@ -78,7 +78,11 @@ module.exports = {
         valType: 'number',
         min: 0,
         editType: 'legend',
-        description: 'Sets the width (in px or fraction) of the legend.',
+        description: [
+            'Sets the width (in px or fraction) of the legend.',
+            'Use 0 to size the entry based on the text width,',
+            'when `entrywidthmode` is set to *pixels*.'
+        ].join(' ')
     },
     entrywidthmode: {
         valType: 'enumerated',
