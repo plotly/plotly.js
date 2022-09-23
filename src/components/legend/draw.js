@@ -354,18 +354,13 @@ function _draw(gd, legendObj) {
 function getTraceWidth(d, legendObj, textGap) {
     var legendItem = d[0];
     var legendWidth = legendItem.width;
+    var mode = legendObj.entrywidthmode;
 
     var traceLegendWidth = legendItem.trace.legendwidth || legendObj.entrywidth;
 
-    if(traceLegendWidth) {
-        if(legendObj.entrywidthmode === 'pixels') {
-            return traceLegendWidth + textGap;
-        } else {
-            return legendObj._maxWidth * traceLegendWidth;
-        }
-    }
+    if(mode === 'fraction') return legendObj._maxWidth * traceLegendWidth;
 
-    return legendWidth + textGap;
+    return textGap + (traceLegendWidth || legendWidth);
 }
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
