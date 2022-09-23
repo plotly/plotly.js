@@ -2528,12 +2528,13 @@ axes.drawOne = function(gd, ax, opts) {
             });
 
             seq.push(function() {
-                ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick' + String(_lvl))[ax.side] - mainLinePosition);
+                ax._depth = ax.levelNr * (majorTickSigns[4] * (getLabelLevelBbox('tick' + String(_lvl))[ax.side] - mainLinePosition));
 
                 return drawDividers(gd, ax, {
                     vals: dividerVals,
+                    // vals: [],
                     layer: mainAxLayer,
-                    path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: 2 * (ax._depth / ax.levelNr) }),
+                    path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
                     transFn: transTickFn
                 });
             });
@@ -2786,7 +2787,8 @@ function getDividerVals(ax, vals) {
     };
     var _lvl = 2;
     if(ax.showdividers && vals.length) {
-        // ax.levels.reverse().slice(1, ax.levelNr).forEach(function(_lvl) {
+        // ax.levels.reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
+            // TODO DIVIDERS
         for(i = 0; i < vals.length; i++) {
             var d = vals[i];
             if(d.texts[_lvl] !== current) {
