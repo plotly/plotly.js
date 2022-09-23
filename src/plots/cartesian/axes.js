@@ -2733,15 +2733,18 @@ function getSecondaryLabelVals(ax, vals, level) {
     var out = [];
     var lookup = {};
     var appearences = {};
+    var current;
 
     console.log('LEVEL', level);
-    for(var i = 0; i < vals.length; i++) {
+    for (var i = 0; i < vals.length; i++) {
         var d = vals[i];
         var text = d.texts[level];
-        if(lookup[text]) {
-            lookup[text][appearences[text]].push(d.x);
-            if(d.texts[level] === current) {
-                appearences[current] = appearences[current] + 1
+        if (lookup[text]) {
+            if (d.texts[level] === current) {
+                lookup[text][appearences[text]].push(d.x);
+            } else {
+                appearences[text] = appearences[text] + 1
+                lookup[text].push([d.x]);
             }
         } else {
             appearences[text] = 0
@@ -2749,16 +2752,13 @@ function getSecondaryLabelVals(ax, vals, level) {
         }
         current = d.texts[level]
     }
-    if(level === 1) {
-        out.push(tickTextObj(ax, Lib.interp([0], 0.5), 'CC'));
-        out.push(tickTextObj(ax, Lib.interp([1], 0.5), 'DD'));
-        out.push(tickTextObj(ax, Lib.interp([2], 0.5), 'CC'));
-        out.push(tickTextObj(ax, Lib.interp([3], 0.5), 'DD'));
-    }else {
-        console.log('lookup', lookup);
-        for(var k in lookup) {
-            out.push(tickTextObj(ax, Lib.interp(lookup[k], 0.5), k));
-        }
+
+
+    console.log('lookup', lookup);
+    for(var k in lookup) {
+        lookup[k].forEach(function(pos) {
+            out.push(tickTextObj(ax, Lib.interp(pos, 0.5), k));
+        })
     }
 
     console.log('out', out);
