@@ -1833,7 +1833,6 @@ function formatMultiCategory(ax, out, hover) {
         out.text = texts[0];
         // out.text2 = tt2;
         out.texts = texts;
-        console.log('texts', texts)
     }
 }
 
@@ -2506,11 +2505,8 @@ axes.drawOne = function(gd, ax, opts) {
 
     if(ax.type === 'multicategory') {
         // https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
-        ax.levels.reverse().slice(0, ax.levelNr - 1).map(function(_lvl) {
+        ax.levels.slice().reverse().slice(0, ax.levelNr - 1).map(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
-        //   _lvl += 1
-          // for(var _lvl = 1; _lvl < ax.levels; _lvl++){
-            console.log('LEVEL', _lvl);
             seq.push(function() {
                 var bboxKey = {x: 'height', y: 'width'}[axLetter];
                 var standoff = (_lvl * getLabelLevelBbox()[bboxKey] + pad +
@@ -2528,46 +2524,27 @@ axes.drawOne = function(gd, ax, opts) {
             });
 
             seq.push(function() {
-                ax._depth = ax.levelNr * (majorTickSigns[4] * (getLabelLevelBbox('tick' + String(_lvl))[ax.side] - mainLinePosition));
+                ax._depth = (majorTickSigns[4] * (getLabelLevelBbox('tick' + String(_lvl))[ax.side] - mainLinePosition));
+
+                console.log('dividers', dividerVals);
+
+                var levelDividers = dividerVals.filter(function(divider) {
+                    console.log('div', divider);
+                    return divider.level === _lvl;
+                    // return true
+                });
+
+                console.log('levelDividers', levelDividers);
 
                 return drawDividers(gd, ax, {
-                    vals: dividerVals,
+                    vals: levelDividers,
                     // vals: [],
                     layer: mainAxLayer,
                     path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
                     transFn: transTickFn
                 });
             });
-                // }.bind(this, _lvl));
-        })
-            // }
-              // ///////////////////////////////////////////////////////////////////////////////////////////////
-        // seq.push(function() {
-        //     var bboxKey = {x: 'height', y: 'width'}[axLetter];
-        //     var standoff = 2 * (getLabelLevelBbox()[bboxKey] + pad +
-        //         (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0));
-
-        //     return axes.drawLabels(gd, ax, {
-        //         vals: getSecondaryLabelVals(ax, vals, 2),
-        //         layer: mainAxLayer,
-        //         cls: axId + 'tick3',
-        //         repositionOnUpdate: true,
-        //         secondary: true,
-        //         transFn: transTickFn,
-        //         labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
-        //     });
-        // });
-
-        // seq.push(function() {
-        //     ax._depth = 3 * (majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition));
-
-        //     return drawDividers(gd, ax, {
-        //         vals: dividerVals,
-        //         layer: mainAxLayer,
-        //         path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
-        //         transFn: transTickFn
-        //     });
-        // });
+        });
     } else if(ax.title.hasOwnProperty('standoff')) {
         seq.push(function() {
             ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
@@ -2737,13 +2714,12 @@ function getSecondaryLabelVals(ax, vals, level) {
     var currentParent = null;
     var parent = null;
 
-    console.log('LEVEL', level);
-    for (var i = 0; i < vals.length; i++) {
+    for(var i = 0; i < vals.length; i++) {
         var d = vals[i];
         var text = d.texts[level];
         parent = d.texts[level + 1];
         if(lookup[text]) {
-            if (d.texts[level] === current & parent === currentParent) {
+            if(d.texts[level] === current & parent === currentParent) {
                 lookup[text][appearences[text]].push(d.x);
             } else {
                 appearences[text] = appearences[text] + 1;
@@ -2757,50 +2733,51 @@ function getSecondaryLabelVals(ax, vals, level) {
         currentParent = d.texts[level + 1];
     }
 
-
-    // console.log('lookup', lookup);
     Object.keys(lookup).forEach(function(key) {
         lookup[key].forEach(function(pos) {
-            // console.log(lookup);
             out.push(tickTextObj(ax, Lib.interp(pos, 0.5), key));
         });
     });
-    // }
 
-    console.log('out', out);
     return out;
 }
 
 function getDividerVals(ax, vals) {
     var out = [];
-    var k, i, current;
+    var i, current;
 
     var reversed = (vals.length && vals[vals.length - 1].x < vals[0].x);
 
     // never used for labels;
     // no need to worry about the other tickTextObj keys
-    var _push = function(d, bndIndex) {
+    var _push = function(d, bndIndex, level) {
         var xb = d.xbnd[bndIndex];
         if(xb !== null) {
-            out.push(Lib.extendFlat({}, d, {x: xb}));
+            var _out = Lib.extendFlat({}, d, {x: xb});
+            _out.level = level;
+            out.push(_out);
         }
     };
-    var _lvl = 2;
+    // var _lvl = 0;
     if(ax.showdividers && vals.length) {
-        // ax.levels.reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
+        ax.levels.forEach(function(_lvl) {
+            // _lvl = _lvl;
+            console.log('lvlDivForEach', _lvl);
+            current = undefined;
             // TODO DIVIDERS
-        for(i = 0; i < vals.length; i++) {
-            var d = vals[i];
+            for(i = 0; i < vals.length; i++) {
+                var d = vals[i];
+                console.log('lvlDivForEachTexts', d.texts);
             if(d.texts[_lvl] !== current) {
-                _push(d, reversed ? 1 : 0);
+                _push(d, reversed ? 1 : 0, _lvl);
             }
             current = d.texts[_lvl];
         // text2
         }
         _push(vals[i - 1], reversed ? 0 : 1);
-        // })
+        });
     }
-    console.log('dividersOut', out)
+    console.log('dividersOut', out);
     return out;
 }
 
