@@ -2505,7 +2505,6 @@ axes.drawOne = function(gd, ax, opts) {
     });
 
     if(ax.type === 'multicategory') {
-
         // https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
         ax.levels.reverse().slice(0, ax.levelNr - 1).map(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
@@ -2514,17 +2513,17 @@ axes.drawOne = function(gd, ax, opts) {
             console.log('LEVEL', _lvl);
             seq.push(function() {
                 var bboxKey = {x: 'height', y: 'width'}[axLetter];
-                    var standoff = (_lvl * getLabelLevelBbox()[bboxKey] + pad +
-                    (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0));
+                var standoff = (_lvl * getLabelLevelBbox()[bboxKey] + pad +
+                (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0));
 
-                    return axes.drawLabels(gd, ax, {
-                        vals: getSecondaryLabelVals(ax, vals, _lvl),
-                        layer: mainAxLayer,
-                        cls: axId + 'tick' + String(_lvl),
-                        repositionOnUpdate: true,
-                        secondary: true,
-                        transFn: transTickFn,
-                        labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
+                return axes.drawLabels(gd, ax, {
+                    vals: getSecondaryLabelVals(ax, vals, _lvl),
+                    layer: mainAxLayer,
+                    cls: axId + 'tick' + String(_lvl),
+                    repositionOnUpdate: true,
+                    secondary: true,
+                    transFn: transTickFn,
+                    labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
                 });
             });
 
@@ -2741,38 +2740,39 @@ function getSecondaryLabelVals(ax, vals, level) {
     for (var i = 0; i < vals.length; i++) {
         var d = vals[i];
         var text = d.texts[level];
-        parent = d.texts[level + 1]
-        if (lookup[text]) {
+        parent = d.texts[level + 1];
+        if(lookup[text]) {
             if (d.texts[level] === current & parent === currentParent) {
                 lookup[text][appearences[text]].push(d.x);
             } else {
-                appearences[text] = appearences[text] + 1
+                appearences[text] = appearences[text] + 1;
                 lookup[text].push([d.x]);
             }
         } else {
-            appearences[text] = 0
+            appearences[text] = 0;
             lookup[text] = [[d.x]];
         }
-        current = d.texts[level]
-        currentParent = d.texts[level + 1]
+        current = d.texts[level];
+        currentParent = d.texts[level + 1];
     }
 
 
-    console.log('lookup', lookup);
-    for(var k in lookup) {
-        lookup[k].forEach(function(pos) {
-            console.log(lookup);
-            out.push(tickTextObj(ax, Lib.interp(pos, 0.5), k));
-        })
-    }
+    // console.log('lookup', lookup);
+    Object.keys(lookup).forEach(function(key) {
+        lookup[key].forEach(function(pos) {
+            // console.log(lookup);
+            out.push(tickTextObj(ax, Lib.interp(pos, 0.5), key));
+        });
+    });
+    // }
 
     console.log('out', out);
     return out;
 }
 
-function getDividerVals(ax, vals, level=0) {
+function getDividerVals(ax, vals) {
     var out = [];
-    var i, current;
+    var k, i, current;
 
     var reversed = (vals.length && vals[vals.length - 1].x < vals[0].x);
 
@@ -2784,21 +2784,21 @@ function getDividerVals(ax, vals, level=0) {
             out.push(Lib.extendFlat({}, d, {x: xb}));
         }
     };
-
+    var _lvl = 2;
     if(ax.showdividers && vals.length) {
+        // ax.levels.reverse().slice(1, ax.levelNr).forEach(function(_lvl) {
         for(i = 0; i < vals.length; i++) {
             var d = vals[i];
-            console.log(d.texts)
-            if(d.texts.at(-1) !== current) {
-              console.log('pushed', d.texts[level]);
+            if(d.texts[_lvl] !== current) {
                 _push(d, reversed ? 1 : 0);
             }
-            current = d.texts.at(-1);
-            // text2
+            current = d.texts[_lvl];
+        // text2
         }
         _push(vals[i - 1], reversed ? 0 : 1);
+        // })
     }
-
+    console.log('dividersOut', out)
     return out;
 }
 
