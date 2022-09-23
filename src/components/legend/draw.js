@@ -351,21 +351,16 @@ function _draw(gd, legendObj) {
         }], gd);
 }
 
-function getTraceWidth(trace, legendObj, textGap) {
-    var legendItem = trace[0];
+function getTraceWidth(d, legendObj, textGap) {
+    var legendItem = d[0];
     var legendWidth = legendItem.width;
+    var mode = legendObj.entrywidthmode;
 
     var traceLegendWidth = legendItem.trace.legendwidth || legendObj.entrywidth;
 
-    if(traceLegendWidth) {
-        if(legendObj.entrywidthmode === 'pixels') {
-            return traceLegendWidth + textGap;
-        } else {
-            return legendObj._maxWidth * traceLegendWidth;
-        }
-    }
+    if(mode === 'fraction') return legendObj._maxWidth * traceLegendWidth;
 
-    return legendWidth + textGap;
+    return textGap + (traceLegendWidth || legendWidth);
 }
 
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
@@ -641,6 +636,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
 
     var isVertical = helpers.isVertical(legendObj);
     var isGrouped = helpers.isGrouped(legendObj);
+    var isFraction = legendObj.entrywidthmode === 'fraction';
 
     var bw = legendObj.borderwidth;
     var bw2 = 2 * bw;
@@ -772,7 +768,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 var w = getTraceWidth(d, legendObj, textGap, isGrouped);
                 var next = (oneRowLegend ? w : maxItemWidth);
 
-                if(legendObj.entrywidthmode !== 'fraction') {
+                if(!isFraction) {
                     next += itemGap;
                 }
 
@@ -831,7 +827,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             traceWidth = legendGroupWidths[legendgroup];
         }
         var w = isEditable ? textGap : (toggleRectWidth || traceWidth);
-        if(!isVertical && legendObj.entrywidthmode !== 'fraction') {
+        if(!isVertical && !isFraction) {
             w += itemGap / 2;
         }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
