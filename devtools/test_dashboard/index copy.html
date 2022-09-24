@@ -70,11 +70,56 @@
           // type: "bar",
         },
       ];
+      var trace1 = {
+        x: [
+          ["AA", "AA", "AA", "BB"],
+          ["DD", "CC", "DD", "DD"],
+          ["2", "1", "3", "4"],
+        ],
 
+        // y: y0,
+        // y: [12, 10, 13, 14],
+        y: [y0, y1, y2, y3],
+        type: "box",
+      };
       TESTER = document.getElementById("tester");
       // Plotly.newPlot(TESTER, fullData, {
       //   margin: { t: 0 },
       // });
+    </script>
+    <script>
+      var y0 = [];
+      var y1 = [];
+      var y2 = [];
+      var y3 = [];
+
+      for (var i = 0; i < 50; i++) {
+        y0[i] = Math.random();
+        y1[i] = Math.random() * 10;
+        y2[i] = Math.random() * 20;
+        y3[i] = Math.random() * 30;
+      }
+
+      var ys = [y0, y1, y2, y3];
+
+      var spreadYs = [...y0, ...y1, ...y2, ...y3];
+
+      var trace1 = {
+        x: [
+          ["AA", "AA", "AA", "BB"],
+          ["DD", "CC", "DD", "DD"],
+          ["2", "1", "3", "4"],
+        ],
+
+        // y: y0,
+        y: spreadYs,
+        // y: [12, 10, 13, 14],
+        // y: [y0, y1, y2, y3],
+        type: "box",
+      };
+      var data = [trace1];
+
+      // Plotly.newPlot("tester", data);
     </script>
     <script>
       let x1 = [
@@ -112,7 +157,7 @@
 
       var data = [trace1];
 
-      Plotly.newPlot("tester", data);
+      Plotly.newPlot("plot", data);
     </script>
   </body>
 </html>
