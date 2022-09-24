@@ -36,27 +36,24 @@
     </script>
     <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
     <script>
-      TESTER = document.getElementById("tester");
-      Plotly.newPlot(
-        TESTER,
-        [
-          {
-            x: [
-            ["AA", "AA", "AA", 'BB'],
-              //  "DD", "DD", "DD", "DD", "BB", "BB"],
-              ["CC", "DD", "DD", "DD"],
-              ["1", "2", "3", "4"],
-              // "VV", "MM", "AA"],
-            ],
-            y: [8, 10, 11, 12],
-            //  14, 17, 8, 10, 10, 9],
-            // type: "bar",
-          },
-        ],
+      let fullData = [
         {
-          margin: { t: 0 },
-        }
-      );
+          x: [
+            ["AA", "AA", "AA", "BB"],
+            //  "DD", "DD", "DD", "DD", "BB", "BB"],
+            ["DD", "CC", "DD", "DD"],
+            ["2", "1", "3", "4"],
+            // "VV", "MM", "AA"],
+          ],
+          y: [10, 8, 11, 12],
+          //  14, 17, 8, 10, 10, 9],
+          // type: "bar",
+        },
+      ];
+      TESTER = document.getElementById("tester");
+      Plotly.newPlot(TESTER, fullData, {
+        margin: { t: 0 },
+      });
     </script>
   </body>
 </html>

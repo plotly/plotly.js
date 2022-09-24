@@ -63,7 +63,7 @@ function sortedMatrix(list) {
     var xs = [];
     var y = [];
 
-    list.forEach(function(item) {
+    list.slice().forEach(function(item) {
         y.push(item.pop());
         xs.push(item);
     });
@@ -72,3 +72,28 @@ function sortedMatrix(list) {
 }
 
 exports.sortedMatrix = sortedMatrix;
+
+function transpose(matrix) {
+    var width = matrix[0].length;
+    var newMatrix = [];
+
+    // prevent inplace change
+    for(var row = 0; row < matrix.length; row++) {
+        newMatrix.push(matrix[row].slice());
+    }
+
+    for(var i = 0; i < newMatrix.length; i++) {
+        for(var j = 0; j < i; j++) {
+            newMatrix = newMatrix.slice();
+            var temp = newMatrix[i][j];
+            newMatrix[i][j] = newMatrix[j][i];
+            newMatrix[j][i] = temp;
+        }
+    }
+
+    newMatrix = newMatrix.slice(0, width);
+    console.table('sortLib Matrix', newMatrix);
+    return newMatrix;
+}
+
+exports.transpose = transpose;
