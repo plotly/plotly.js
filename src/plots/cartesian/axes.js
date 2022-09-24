@@ -2758,26 +2758,21 @@ function getDividerVals(ax, vals) {
             out.push(_out);
         }
     };
-    // var _lvl = 0;
+
     if(ax.showdividers && vals.length) {
         ax.levels.forEach(function(_lvl) {
-            // _lvl = _lvl;
-            console.log('lvlDivForEach', _lvl);
             current = undefined;
-            // TODO DIVIDERS
             for(i = 0; i < vals.length; i++) {
                 var d = vals[i];
-                console.log('lvlDivForEachTexts', d.texts);
-            if(d.texts[_lvl] !== current) {
-                _push(d, reversed ? 1 : 0, _lvl);
+                if(d.texts[_lvl] !== current) {
+                    _push(d, reversed ? 1 : 0, _lvl);
+                }
+                current = d.texts[_lvl];
+            // text2
             }
-            current = d.texts[_lvl];
-        // text2
-        }
-        _push(vals[i - 1], reversed ? 0 : 1);
+            _push(vals[i - 1], reversed ? 0 : 1);
         });
     }
-    console.log('dividersOut', out);
     return out;
 }
 
