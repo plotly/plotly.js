@@ -2536,6 +2536,7 @@ axes.drawOne = function(gd, ax, opts) {
                 ax._depth = (majorTickSigns[4] * (getLabelLevelBbox(tickNames.slice()[_lvl])[ax.side] - mainLinePosition));
                 console.log('depth', ax._depth);
 
+                // TODO Has to be removed to loop through all dividers?
                 // console.log('dividers', dividerVals);
 
                 var levelDividers = dividerVals.slice().filter(function(divider) {
@@ -3782,7 +3783,7 @@ function drawDividers(gd, ax, opts) {
     var dividers = opts.layer.selectAll('path.' + cls)
         .data(vals, tickDataFn);
 
-    dividers.exit().remove();
+    // dividers.exit().remove();
 
     dividers.enter().insert('path', ':first-child')
         .classed(cls, 1)
