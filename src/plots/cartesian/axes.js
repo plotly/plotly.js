@@ -2531,17 +2531,15 @@ axes.drawOne = function(gd, ax, opts) {
 
         console.log('tickNames', tickNames);
 
-        ax.levels.slice().reverse().forEach(function(_lvl, idx) {
+        ax.levels.slice().forEach(function(_lvl, idx) {
             seq.push(function() {
-                ax._depth = (majorTickSigns[4] * (getLabelLevelBbox(tickNames[_lvl])[ax.side] - mainLinePosition));
+                ax._depth = (majorTickSigns[4] * (getLabelLevelBbox(tickNames.slice()[_lvl])[ax.side] - mainLinePosition));
                 console.log('depth', ax._depth);
 
                 // console.log('dividers', dividerVals);
 
-                var levelDividers = dividerVals.filter(function(divider) {
-                    // console.log('div', divider, '_lvl', _lvl);
-                    return divider.level === _lvl;
-                    // return true
+                var levelDividers = dividerVals.slice().filter(function(divider) {
+                    return divider.level === idx;
                 });
 
                 console.log('levelDividers', levelDividers);
