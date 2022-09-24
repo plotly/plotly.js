@@ -2503,10 +2503,15 @@ axes.drawOne = function(gd, ax, opts) {
         });
     });
 
+    var tickNames = ['tick']
     if(ax.type === 'multicategory') {
         // https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
-        ax.levels.slice().reverse().slice(0, ax.levelNr - 1).map(function(_lvl) {
+        ax.levels.slice().reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
+
+            var tickName = 'tick' + String(_lvl);
+            tickNames.push(tickName);
+
             seq.push(function() {
                 var bboxKey = {x: 'height', y: 'width'}[axLetter];
                 var standoff = (_lvl * getLabelLevelBbox()[bboxKey] + pad +
@@ -2515,21 +2520,26 @@ axes.drawOne = function(gd, ax, opts) {
                 return axes.drawLabels(gd, ax, {
                     vals: getSecondaryLabelVals(ax, vals, _lvl),
                     layer: mainAxLayer,
-                    cls: axId + 'tick' + String(_lvl),
+                    cls: axId + tickName,
                     repositionOnUpdate: true,
                     secondary: true,
                     transFn: transTickFn,
                     labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
                 });
             });
+        });
 
+        console.log('tickNames', tickNames);
+
+        ax.levels.slice().reverse().forEach(function(_lvl, idx) {
             seq.push(function() {
-                ax._depth = (majorTickSigns[4] * (getLabelLevelBbox('tick' + String(_lvl))[ax.side] - mainLinePosition));
+                ax._depth = (majorTickSigns[4] * (getLabelLevelBbox(tickNames[_lvl])[ax.side] - mainLinePosition));
+                console.log('depth', ax._depth);
 
-                console.log('dividers', dividerVals);
+                // console.log('dividers', dividerVals);
 
                 var levelDividers = dividerVals.filter(function(divider) {
-                    console.log('div', divider);
+                    // console.log('div', divider, '_lvl', _lvl);
                     return divider.level === _lvl;
                     // return true
                 });
