@@ -378,12 +378,12 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            var cols = [];
             var xs = [];
             var fullObjectList = [];
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
+                var cols = [];
 
                 if(axLetter in trace) {
                     var arrayIn = trace[axLetter];
@@ -401,7 +401,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
                         var objList = sortLib.matrixToObjectList(arrays, cols);
 
-                        Array.prototype.push.apply(fullObjectList, objList.slice());
+                        Array.prototype.push.apply(fullObjectList, objList);
 
                         var sortedObjectList = sortLib.sortObjectList(cols, objList);
                         var list = sortLib.objectListToList(sortedObjectList);
