@@ -380,7 +380,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
             var cols = [];
             var xs = [];
-            var sortedFullData = [];
+            var fullObjectList = [];
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
@@ -400,6 +400,9 @@ module.exports = function setConvert(ax, fullLayout) {
                         arrays.push(trace.y);
 
                         var objList = sortLib.matrixToObjectList(arrays, cols);
+
+                        Array.prototype.push.apply(fullObjectList, objList.slice());
+
                         var sortedObjectList = sortLib.sortObjectList(cols, objList);
                         var list = sortLib.objectListToList(sortedObjectList);
                         var sortedMatrix = sortLib.sortedMatrix(list);
@@ -412,14 +415,23 @@ module.exports = function setConvert(ax, fullLayout) {
                         var transposedXs = sortLib.transpose(xs);
                         gd._fullData[i].x = transposedXs;
                         gd._fullData[i].y = y;
+                        console.log('trace', i);
+                        console.log('gd', gd._fullData[i]);
                     }
                 }
             }
             ax.levelNr = xs[0].length;
             ax.levels = xs[0].map(function(_, idx) {return idx;});
 
-            for(i = 0; i < xs.length; i++) {
-                setCategoryIndex(xs[i]);
+            console.log(fullObjectList);
+            var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList);
+            var fullList = sortLib.objectListToList(fullSortedObjectList);
+            var fullSortedMatrix = sortLib.sortedMatrix(fullList);
+
+            var fullXs = fullSortedMatrix[0].slice();
+
+            for(i = 0; i < fullXs.length; i++) {
+                setCategoryIndex(fullXs[i]);
             }
         };
     }
