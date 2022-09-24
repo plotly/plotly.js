@@ -39,7 +39,7 @@ function sortObjectList(cols, objList) {
     var sortedObjectList = objList.map(function(e) {
         return e;
     });
-    cols.reverse().forEach(function(key) {
+    cols.slice().reverse().forEach(function(key) {
         sortedObjectList = sortedObjectList.sort(function(a, b) {
             return sortObjecstByKey(a, b, key);
         });

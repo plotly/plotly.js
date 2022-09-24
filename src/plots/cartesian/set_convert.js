@@ -379,18 +379,19 @@ module.exports = function setConvert(ax, fullLayout) {
 
             var xs = [];
             var fullObjectList = [];
+            var cols = [];
+
+            for(var k = 0; k < fullData[traceIndices[0]][axLetter].length; k++) {
+                cols.push('col' + k.toString());
+            }
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
-                var cols = [];
 
                 if(axLetter in trace) {
                     var arrayIn = trace[axLetter];
                     // var arrayIn = trace[axLetter].slice(0, 2);
 
-                    for(var k = 0; k < arrayIn.length; k++) {
-                        cols.push('col' + k.toString());
-                    }
 
                     if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
                         var arrays = arrayIn.map(function(x) {
@@ -423,7 +424,7 @@ module.exports = function setConvert(ax, fullLayout) {
             ax.levels = xs[0].map(function(_, idx) {return idx;});
 
             console.log('fullObjectList', fullObjectList);
-            var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList);
+            var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
             var fullList = sortLib.objectListToList(fullSortedObjectList);
             var fullSortedMatrix = sortLib.sortedMatrix(fullList);
 
