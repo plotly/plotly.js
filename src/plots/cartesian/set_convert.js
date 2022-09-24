@@ -380,10 +380,9 @@ module.exports = function setConvert(ax, fullLayout) {
 
             var cols = [];
             var xs = [];
-            var sortedFullData = []
+            var sortedFullData = [];
 
             for(i = 0; i < traceIndices.length; i++) {
-                console.log(fullData);
                 var trace = fullData[traceIndices[i]];
 
                 if(axLetter in trace) {
@@ -395,7 +394,6 @@ module.exports = function setConvert(ax, fullLayout) {
                     }
 
                     if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
-                        // TODO Multiple traces
                         var arrays = arrayIn.map(function(x) {
                             return x;
                         });
@@ -405,21 +403,15 @@ module.exports = function setConvert(ax, fullLayout) {
                         var sortedObjectList = sortLib.sortObjectList(cols, objList);
                         var list = sortLib.objectListToList(sortedObjectList);
                         var sortedMatrix = sortLib.sortedMatrix(list);
+
                         xs = sortedMatrix[0].slice();
-                        var transposedXs = sortLib.transpose(xs)
                         var y = sortedMatrix[1];
-                        console.log('xs', xs);
-                        console.log('transposedXs', transposedXs);
-                        // console.log('sortedmatrix', sortedMatrix[0]);
-                        // console.log('transposedmatrix', sortLib.transpose(xs.slice()));
-                        console.log('gdTraceIndices', gd._fullData[i]);
-                        // gd._fullData[i]
-                        gd._fullData[i].x = sortLib.transpose(xs.slice());
-                        gd._fullData[i].y = y;
 
                         // Could/should set sorted y axis values for each trace as the sorted values are already available.
                         // Need write access to gd._fullData
-                        // trace.y = sortedMatrix[1];
+                        var transposedXs = sortLib.transpose(xs);
+                        gd._fullData[i].x = transposedXs;
+                        gd._fullData[i].y = y;
                     }
                 }
             }

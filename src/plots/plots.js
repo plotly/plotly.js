@@ -3068,11 +3068,7 @@ plots.doCalcdata = function(gd, traces) {
         calcdata[i] = cd;
     }
 
-    console.log('preSetupAxisCall gddd', Lib.getGraphDiv(gd));
     setupAxisCategories(axList, gd, fullLayout);
-
-
-    // setupAxisCategories(axList, fullData, fullLayout);
 
     // 'transform' loop - must calc container traces first
     // so that if their dependent traces can get transform properly

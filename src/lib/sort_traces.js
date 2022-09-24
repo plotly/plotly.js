@@ -92,7 +92,6 @@ function transpose(matrix) {
     }
 
     newMatrix = newMatrix.slice(0, width);
-    console.table('sortLib Matrix', newMatrix);
     return newMatrix;
 }
 
