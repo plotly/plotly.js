@@ -363,7 +363,6 @@ module.exports = function setConvert(ax, fullLayout) {
         };
 
         ax.setupMultiCategory = function(gd) {
-            console.log(gd)
             var fullData = gd._fullData;
             var traceIndices = ax._traceIndices;
             var i;
@@ -413,17 +412,17 @@ module.exports = function setConvert(ax, fullLayout) {
                         // Could/should set sorted y axis values for each trace as the sorted values are already available.
                         // Need write access to gd._fullData
                         var transposedXs = sortLib.transpose(xs);
-                        // gd._fullData[i].x = transposedXs;
-                        // gd._fullData[i].y = y;
-                        console.log('trace', i);
-                        console.log('gd', gd._fullData[i]);
+                        gd._fullData[i].x = transposedXs;
+                        gd._fullData[i].y = y;
+                        // console.log('trace', i);
+                        // console.log('gd', gd._fullData[i]);
                     }
                 }
             }
             ax.levelNr = xs[0].length;
             ax.levels = xs[0].map(function(_, idx) {return idx;});
 
-            console.log(fullObjectList);
+            console.log('fullObjectList', fullObjectList);
             var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList);
             var fullList = sortLib.objectListToList(fullSortedObjectList);
             var fullSortedMatrix = sortLib.sortedMatrix(fullList);

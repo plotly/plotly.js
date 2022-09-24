@@ -36,6 +36,107 @@
     </script>
     <script charset="utf-8" src="../../build/test_dashboard-bundle.js"></script>
     <script>
+      function zipArrays(arrays) {
+        var zipped = arrays[0].map(function (e, i) {
+          var row = [];
+          arrays.map(function (arr) {
+            row.push(arr[i]);
+          });
+          return row;
+        });
+        return zipped;
+      }
+
+      function sortObjecstByKey(a, b, key) {
+        if (a[key] === b[key]) return 0;
+        if (a[key] < b[key]) return -1;
+        return 1;
+      }
+
+      function matrixToObjectList(matrix, cols) {
+        var zipped = zipArrays(matrix);
+
+        var objList = [];
+
+        zipped.forEach(function (row) {
+          var objRow = {};
+          cols.forEach(function (col, idx) {
+            objRow[col] = row[idx];
+          });
+          objRow.y = row.at(-1);
+          objList.push(objRow);
+        });
+        return objList;
+      }
+
+      exports.matrixToObjectList = matrixToObjectList;
+
+      function sortObjectList(cols, objList) {
+        var sortedObjectList = objList.map(function (e) {
+          return e;
+        });
+        cols.reverse().forEach(function (key) {
+          sortedObjectList = sortedObjectList.sort(function (a, b) {
+            return sortObjecstByKey(a, b, key);
+          });
+        });
+        return sortedObjectList;
+      }
+
+      exports.sortObjectList = sortObjectList;
+
+      function objectListToList(objectList) {
+        var list = [];
+        objectList.forEach(function (item) {
+          list.push(Object.values(item));
+        });
+        return list;
+      }
+
+      exports.objectListToList = objectListToList;
+
+      function sortedMatrix(list) {
+        var xs = [];
+        var y = [];
+
+        list.slice().forEach(function (item) {
+          y.push(item.pop());
+          xs.push(item);
+        });
+
+        return [xs, y];
+      }
+
+      exports.sortedMatrix = sortedMatrix;
+
+      function transpose(matrix) {
+        var width = matrix[0].length;
+        var newMatrix = [];
+
+        // prevent inplace change
+        for (var row = 0; row < matrix.length; row++) {
+          newMatrix.push(matrix[row].slice());
+        }
+
+        for (var i = 0; i < newMatrix.length; i++) {
+          for (var j = 0; j < i; j++) {
+            newMatrix = newMatrix.slice();
+            var temp = newMatrix[i][j];
+            newMatrix[i][j] = newMatrix[j][i];
+            newMatrix[j][i] = temp;
+          }
+        }
+
+        newMatrix = newMatrix.slice(0, width);
+        return newMatrix;
+      }
+
+      function sortTrace(xs) {
+
+
+      }
+    </script>
+    <script>
       let fullData = [
         {
           x: [
@@ -99,18 +200,77 @@
       var trace1 = {
         x: [x1, x2],
 
-        y: y.slice(0, 12),
+        y: y.slice(0, 13),
         type: "box",
       };
 
       var trace2 = {
         x: [x1, x2],
 
-        y: y.slice(12, 24),
+        y: y.slice(12, 25),
         type: "box",
       };
 
       var data = [trace1];
+
+      // Plotly.newPlot("tester", data);
+    </script>
+    <script>
+      var trace1 = {
+        // x: [
+        //   ["SF Zoo", "SF Zoo", "SF Zoo", "LA Zoo"]
+        //   //  "LA Zoo", "LA Zoo"],
+        //   [
+        //     "giraffes",
+        //     "orangutans",
+        //     "monkeys",
+        //     "giraffes"
+        //   ],
+        //     // "orangutans",
+        //     // "monkeys",
+        // ],
+        // y: [20, 14, 23, 12]
+        //  18, 29],
+        // name: "SF Zoo",
+        // type: "bar",
+        x: [
+          ["AA", "AA", "AA", "BB"],
+          ["CC", "DD", "EE", "CC"],
+        ],
+
+        y: [12, 10, 13, 14],
+      };
+
+      trace = {
+        x: [
+          ["AA", "AA", "AA", "BB"],
+          ["DD", "CC", "DD", "DD"],
+        ],
+
+        y: [12, 10, 13, 14],
+      };
+
+      // var trace2 = {
+      //   x: [
+      //     ["LA Zoo", "LA Zoo", "LA Zoo"],
+      //     ["giraffes", "orangutans", "monkeys"],
+      //   ],
+      //   y: [12, 18, 29],
+      //   name: "LA Zoo",
+      //   // type: "bar",
+      // };
+
+      var data = [trace1];
+      var layout = {
+        // showlegend: false,
+        // xaxis: {
+        //   tickson: "boundaries",
+        //   ticklen: 15,
+        //   showdividers: true,
+        //   dividercolor: "grey",
+        //   dividerwidth: 2,
+        // },
+      };
 
       Plotly.newPlot("tester", data);
     </script>
