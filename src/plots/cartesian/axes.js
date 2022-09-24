@@ -2530,6 +2530,7 @@ axes.drawOne = function(gd, ax, opts) {
         });
 
         console.log('tickNames', tickNames);
+        tickNames = tickNames.sort()
 
         ax.levels.slice().forEach(function(_lvl, idx) {
             seq.push(function() {
