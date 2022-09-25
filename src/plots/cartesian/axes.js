@@ -1826,8 +1826,17 @@ function formatMultiCategory(ax, out, hover) {
 
     if(hover) {
         // TODO is this what we want?
-        // out.text = tt2 + ' - ' + tt;
-        out.text = texts.at(-1) + ' - ' + texts.at(-2);
+        var hoverText = '';
+        cats.forEach(function(text, index) {
+            text = String(text);
+            if(index < texts.length) {
+                hoverText = hoverText + ' ' + text + ' - ';
+            } else {
+                return hoverText + ' ' + text;
+            }
+        });
+
+        out.text = hoverText;
     } else {
         // setup for secondary labels
         out.text = texts[0];
