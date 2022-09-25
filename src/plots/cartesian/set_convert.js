@@ -389,6 +389,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 var trace = fullData[traceIndices[i]];
 
                 if(axLetter in trace) {
+                    // debugger;
                     var arrayIn = trace[axLetter];
                     console.log(arrayIn);
                     // var arrayIn = trace[axLetter].slice(0, 2);
