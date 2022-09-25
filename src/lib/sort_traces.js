@@ -73,13 +73,47 @@ function sortedMatrix(list) {
 
 exports.sortedMatrix = sortedMatrix;
 
-function transpose(matrix) {
+function squareMatrix(matrix) {
     var width = matrix[0].length;
+    var height = matrix.length;
+
+    if(width === height) {
+        return matrix;
+    }
+
+    var newMatrix = [];
+
+    if(width > height) {
+        for(var rw = 0; rw < height; rw++) {
+            newMatrix.push(matrix[rw].slice());
+        }
+        for(var i = height; i < width; i++) {
+            newMatrix.push(Array(width));
+        }
+    } else {
+        for(var row = 0; row < height; row++) {
+            var rowExpansion = Array(height - width);
+            var rowSlice = matrix[row].slice();
+            Array.prototype.push.apply(rowSlice, rowExpansion);
+            newMatrix.push(rowSlice);
+        }
+    }
+    return newMatrix;
+}
+
+exports.squareMatrix = squareMatrix;
+
+function transpose(matrix) {
+    var height = matrix.length;
+    var width = matrix[0].length;
+
+    var squaredMatrix = squareMatrix(matrix);
+
     var newMatrix = [];
 
     // prevent inplace change
-    for(var row = 0; row < matrix.length; row++) {
-        newMatrix.push(matrix[row].slice());
+    for(var rw = 0; rw < squaredMatrix.length; rw++) {
+        newMatrix.push(squaredMatrix[rw].slice());
     }
 
     for(var i = 0; i < newMatrix.length; i++) {
@@ -90,8 +124,13 @@ function transpose(matrix) {
             newMatrix[j][i] = temp;
         }
     }
-
-    newMatrix = newMatrix.slice(0, width);
+    if(width > height) {
+        for(var row = 0; row < newMatrix.length; row++) {
+            newMatrix[row] = newMatrix[row].slice(0, height);
+        }
+    } else {
+        newMatrix = newMatrix.slice(0, width);
+    }
     return newMatrix;
 }
 

@@ -389,7 +389,6 @@ module.exports = function setConvert(ax, fullLayout) {
                 var trace = fullData[traceIndices[i]];
 
                 if(axLetter in trace) {
-                    // debugger;
                     var arrayIn = trace[axLetter];
                     console.log(arrayIn);
                     // var arrayIn = trace[axLetter].slice(0, 2);
@@ -414,7 +413,9 @@ module.exports = function setConvert(ax, fullLayout) {
 
                     // Could/should set sorted y axis values for each trace as the sorted values are already available.
                     // Need write access to gd._fullData
+
                     var transposedXs = sortLib.transpose(xs);
+                    // debugger;
                     gd._fullData[i].x = transposedXs;
                     gd._fullData[i].y = y;
                     // console.log('trace', i);
