@@ -390,38 +390,40 @@ module.exports = function setConvert(ax, fullLayout) {
 
                 if(axLetter in trace) {
                     var arrayIn = trace[axLetter];
+                    console.log(arrayIn);
                     // var arrayIn = trace[axLetter].slice(0, 2);
 
 
-                    if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
-                        var arrays = arrayIn.map(function(x) {
-                            return x;
-                        });
-                        arrays.push(trace.y);
+                    // if(isArrayOrTypedArray(arrayIn[0]) && isArrayOrTypedArray(arrayIn[1])) {
+                    var arrays = arrayIn.map(function(x) {
+                        return x;
+                    });
+                    arrays.push(trace.y);
 
-                        var objList = sortLib.matrixToObjectList(arrays, cols);
+                    var objList = sortLib.matrixToObjectList(arrays, cols);
 
-                        Array.prototype.push.apply(fullObjectList, objList);
+                    Array.prototype.push.apply(fullObjectList, objList);
 
-                        var sortedObjectList = sortLib.sortObjectList(cols, objList);
-                        var list = sortLib.objectListToList(sortedObjectList);
-                        var sortedMatrix = sortLib.sortedMatrix(list);
+                    var sortedObjectList = sortLib.sortObjectList(cols, objList);
+                    var matrix = sortLib.objectListToList(sortedObjectList);
+                    var sortedMatrix = sortLib.sortedMatrix(matrix);
 
-                        xs = sortedMatrix[0].slice();
-                        var y = sortedMatrix[1];
+                    xs = sortedMatrix[0].slice();
+                    var y = sortedMatrix[1];
 
-                        // Could/should set sorted y axis values for each trace as the sorted values are already available.
-                        // Need write access to gd._fullData
-                        var transposedXs = sortLib.transpose(xs);
-                        gd._fullData[i].x = transposedXs;
-                        gd._fullData[i].y = y;
-                        // console.log('trace', i);
-                        // console.log('gd', gd._fullData[i]);
-                    }
+                    // Could/should set sorted y axis values for each trace as the sorted values are already available.
+                    // Need write access to gd._fullData
+                    var transposedXs = sortLib.transpose(xs);
+                    gd._fullData[i].x = transposedXs;
+                    gd._fullData[i].y = y;
+                    // console.log('trace', i);
+                    // console.log('gd', gd._fullData[i]);
+                    // }
                 }
             }
             ax.levelNr = xs[0].length;
             ax.levels = xs[0].map(function(_, idx) {return idx;});
+
 
             console.log('fullObjectList', fullObjectList);
             var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
@@ -429,6 +431,7 @@ module.exports = function setConvert(ax, fullLayout) {
             var fullSortedMatrix = sortLib.sortedMatrix(fullList);
 
             var fullXs = fullSortedMatrix[0].slice();
+            console.log('fullXs', fullXs);
 
             for(i = 0; i < fullXs.length; i++) {
                 setCategoryIndex(fullXs[i]);

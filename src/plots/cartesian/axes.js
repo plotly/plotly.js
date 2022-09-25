@@ -1820,7 +1820,7 @@ function formatCategory(ax, out) {
 function formatMultiCategory(ax, out, hover) {
     var v = Math.round(out.x);
     var cats = ax._categories[v].map(function(cat) {return cat;}) || [];
-    var texts = cats.reverse().map(function(cat) {
+    var texts = cats.slice().reverse().map(function(cat) {
         return cat === undefined ? '' : String(cat);
     });
 
@@ -2503,9 +2503,10 @@ axes.drawOne = function(gd, ax, opts) {
         });
     });
 
-    var tickNames = ['tick']
+    var tickNames = ['tick'];
     if(ax.type === 'multicategory') {
         // https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
+        console.log('slice', ax.levels.slice().reverse().slice(0, ax.levelNr - 1));
         ax.levels.slice().reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
 
@@ -2529,8 +2530,8 @@ axes.drawOne = function(gd, ax, opts) {
             });
         });
 
+        tickNames = tickNames.sort();
         console.log('tickNames', tickNames);
-        tickNames = tickNames.sort()
 
         ax.levels.slice().forEach(function(_lvl, idx) {
             seq.push(function() {
@@ -2576,7 +2577,9 @@ axes.drawOne = function(gd, ax, opts) {
 
         if(ax.automargin || hasRangeSlider) {
             if(ax.type === 'multicategory') {
-                llbbox = getLabelLevelBbox('tick2');
+                llbbox = getLabelLevelBbox('tick' + String(ax.levelNr - 1));
+                // hardcoded tick name, breakes only with plotly.py
+                // llbbox = getLabelLevelBbox('tick2');
             } else {
                 llbbox = getLabelLevelBbox();
                 if(axLetter === 'x' && s === 'b') {
