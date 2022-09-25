@@ -1840,7 +1840,6 @@ function formatMultiCategory(ax, out, hover) {
     } else {
         // setup for secondary labels
         out.text = texts[0];
-        // out.text2 = tt2;
         out.texts = texts;
     }
 }
