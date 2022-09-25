@@ -2504,9 +2504,8 @@ axes.drawOne = function(gd, ax, opts) {
     });
 
     var tickNames = ['tick'];
+
     if(ax.type === 'multicategory') {
-        // https://stackoverflow.com/questions/750486/javascript-closure-inside-loops-simple-practical-example
-        console.log('slice', ax.levels.slice().reverse().slice(0, ax.levelNr - 1));
         ax.levels.slice().reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
 
@@ -2531,25 +2530,17 @@ axes.drawOne = function(gd, ax, opts) {
         });
 
         tickNames = tickNames.sort();
-        console.log('tickNames', tickNames);
 
         ax.levels.slice().forEach(function(_lvl, idx) {
             seq.push(function() {
                 ax._depth = (majorTickSigns[4] * (getLabelLevelBbox(tickNames.slice()[_lvl])[ax.side] - mainLinePosition));
-                console.log('depth', ax._depth);
-
-                // TODO Has to be removed to loop through all dividers?
-                // console.log('dividers', dividerVals);
 
                 var levelDividers = dividerVals.slice().filter(function(divider) {
                     return divider.level === idx;
                 });
 
-                console.log('levelDividers', levelDividers);
-
                 return drawDividers(gd, ax, {
                     vals: levelDividers,
-                    // vals: [],
                     layer: mainAxLayer,
                     path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
                     transFn: transTickFn
@@ -3787,6 +3778,7 @@ function drawDividers(gd, ax, opts) {
     var dividers = opts.layer.selectAll('path.' + cls)
         .data(vals, tickDataFn);
 
+    // TODO Has to be removed to loop through all dividers??
     // dividers.exit().remove();
 
     dividers.enter().insert('path', ':first-child')
