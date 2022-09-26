@@ -1829,10 +1829,10 @@ function formatMultiCategory(ax, out, hover) {
         var hoverText = '';
         cats.forEach(function(text, index) {
             text = String(text);
-            if(index < texts.length) {
+            if(index < texts.length - 1) {
                 hoverText = hoverText + ' ' + text + ' - ';
             } else {
-                return hoverText + ' ' + text;
+                hoverText = hoverText + ' ' + text;
             }
         });
 

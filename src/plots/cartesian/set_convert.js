@@ -384,35 +384,37 @@ module.exports = function setConvert(ax, fullLayout) {
             for(var k = 0; k < fullData[traceIndices[0]][axLetter].length; k++) {
                 cols.push('col' + k.toString());
             }
+            // Don't think that the trace should be drawn at all if the lengths don't match. Removing the arrays length check. It is better to fail loudly than silently.
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
 
                 if(axLetter in trace) {
                     var arrayIn = trace[axLetter];
+                    if(isArrayOrTypedArray(arrayIn[0])) {
+                        var arrays = arrayIn.map(function(x) {
+                            return x;
+                        });
+                        arrays.push(trace.y);
 
-                    var arrays = arrayIn.map(function(x) {
-                        return x;
-                    });
-                    arrays.push(trace.y);
+                        var objList = sortLib.matrixToObjectList(arrays, cols);
 
-                    var objList = sortLib.matrixToObjectList(arrays, cols);
+                        Array.prototype.push.apply(fullObjectList, objList);
 
-                    Array.prototype.push.apply(fullObjectList, objList);
+                        // convert the trace data from list to object and sort (backwards, stable sort)
+                        var sortedObjectList = sortLib.sortObjectList(cols, objList);
+                        var matrix = sortLib.objectListToList(sortedObjectList);
+                        var sortedMatrix = sortLib.sortedMatrix(matrix);
 
-                    // convert the trace data from list to object and sort (backwards, stable sort)
-                    var sortedObjectList = sortLib.sortObjectList(cols, objList);
-                    var matrix = sortLib.objectListToList(sortedObjectList);
-                    var sortedMatrix = sortLib.sortedMatrix(matrix);
+                        xs = sortedMatrix[0].slice();
+                        var y = sortedMatrix[1];
 
-                    xs = sortedMatrix[0].slice();
-                    var y = sortedMatrix[1];
-
-                    // Could/should set sorted y axis values for each trace as the sorted values are already available.
-                    // Need write access to gd._fullData, bad?
-                    var transposedXs = sortLib.transpose(xs);
-                    gd._fullData[i].x = transposedXs;
-                    gd._fullData[i].y = y;
+                        // Could/should set sorted y axis values for each trace as the sorted values are already available.
+                        // Need write access to gd._fullData, bad? Should probably be done right at newPlot, or on setting gd._fullData
+                        var transposedXs = sortLib.transpose(xs);
+                        gd._fullData[i].x = transposedXs;
+                        gd._fullData[i].y = y;
+                    }
                 }
             }
             ax.levelNr = xs[0].length;
