@@ -2539,7 +2539,7 @@ axes.drawOne = function(gd, ax, opts) {
 
         tickNames = tickNames.sort();
 
-        ax.levels.slice().forEach(function(_lvl, idx) {
+        ax.levels.forEach(function(_lvl, idx) {
             seq.push(function() {
                 ax._depth = (majorTickSigns[4] * (getLabelLevelBbox(tickNames.slice()[_lvl])[ax.side] - mainLinePosition));
 
@@ -2551,7 +2551,8 @@ axes.drawOne = function(gd, ax, opts) {
                     vals: levelDividers,
                     layer: mainAxLayer,
                     path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
-                    transFn: transTickFn
+                    transFn: transTickFn,
+                    level: _lvl
                 });
             });
         });
@@ -3783,11 +3784,17 @@ function drawDividers(gd, ax, opts) {
     var cls = ax._id + 'divider';
     var vals = opts.vals;
 
-    var dividers = opts.layer.selectAll('path.' + cls)
-        .data(vals, tickDataFn);
 
-    // TODO Has to be removed to loop through all dividers??
-    // dividers.exit().remove();
+    var dividers = opts.layer.selectAll('path.' + cls)
+    .data(vals, tickDataFn);
+
+    if(ax.type === 'multicategory') {
+        if(opts.level === 0) {
+            dividers.exit().remove();
+        }
+    } else {
+        dividers.exit().remove();
+    }
 
     dividers.enter().insert('path', ':first-child')
         .classed(cls, 1)
