@@ -1830,13 +1830,13 @@ function formatMultiCategory(ax, out, hover) {
         cats.forEach(function(text, index) {
             text = String(text);
             if(index < texts.length - 1) {
-                hoverText = hoverText + ' ' + text + ' - ';
+                hoverText = hoverText + text + ' - ';
             } else {
-                hoverText = hoverText + ' ' + text;
+                hoverText = hoverText + text;
             }
         });
 
-        out.text = hoverText.trim();
+        out.text = hoverText;
     } else {
         // setup for secondary labels
         out.text = texts[0];
