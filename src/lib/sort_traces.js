@@ -111,7 +111,7 @@ function transpose(matrix) {
 
     var newMatrix = [];
 
-    // prevent inplace change
+    // prevent inplace change and mantain the main diagonal
     for(var rw = 0; rw < squaredMatrix.length; rw++) {
         newMatrix.push(squaredMatrix[rw].slice());
     }

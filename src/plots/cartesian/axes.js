@@ -2577,9 +2577,9 @@ axes.drawOne = function(gd, ax, opts) {
 
         if(ax.automargin || hasRangeSlider) {
             if(ax.type === 'multicategory') {
-                llbbox = getLabelLevelBbox('tick' + String(ax.levelNr - 1));
-                // hardcoded tick name, breakes only with plotly.py
+                // hardcoded tick name, breakes only with plotly.py. Not sure if this is the right selection
                 // llbbox = getLabelLevelBbox('tick2');
+                llbbox = getLabelLevelBbox('tick' + String(ax.levelNr - 1));
             } else {
                 llbbox = getLabelLevelBbox();
                 if(axLetter === 'x' && s === 'b') {
@@ -3783,7 +3783,6 @@ axes.drawLabels = function(gd, ax, opts) {
 function drawDividers(gd, ax, opts) {
     var cls = ax._id + 'divider';
     var vals = opts.vals;
-
 
     var dividers = opts.layer.selectAll('path.' + cls)
     .data(vals, tickDataFn);
