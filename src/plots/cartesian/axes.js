@@ -1836,7 +1836,7 @@ function formatMultiCategory(ax, out, hover) {
             }
         });
 
-        out.text = hoverText;
+        out.text = hoverText.trim();
     } else {
         // setup for secondary labels
         out.text = texts[0];

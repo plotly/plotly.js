@@ -3897,6 +3897,8 @@ describe('Test axes', function() {
                     x: [['1', '1', '2', '2'], ['a', 'b', 'a', 'b']]
                 }, 'x', 'multicategory');
 
+                console.log(out)
+
                 expect(out).toEqual([0, 1, 2, 3]);
                 expect(ax._categories).toEqual([['1', 'a'], ['1', 'b'], ['2', 'a'], ['2', 'b']]);
                 expect(ax._categoriesMap).toEqual({'1,a': 0, '1,b': 1, '2,a': 2, '2,b': 3});
