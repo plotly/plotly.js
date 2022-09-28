@@ -2519,7 +2519,6 @@ axes.drawOne = function(gd, ax, opts) {
             ax.levelNr = 2;
             ax.levels = [0, 1];
         }
-        // debugger;
         ax.levels.slice().reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
 
@@ -2778,7 +2777,6 @@ function getDividerVals(ax, vals) {
         }
     };
 
-    // debugger
     if(ax.showdividers && vals.length && ax.levels) {
         ax.levels.forEach(function(_lvl) {
             current = undefined;
