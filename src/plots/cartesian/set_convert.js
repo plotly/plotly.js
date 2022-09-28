@@ -377,7 +377,7 @@ module.exports = function setConvert(ax, fullLayout) {
                 }
             }
 
-            var xs = [];
+            var axLabels = [];
             var fullObjectList = [];
             var cols = [];
 
@@ -395,8 +395,20 @@ module.exports = function setConvert(ax, fullLayout) {
                         var arrays = arrayIn.map(function(x) {
                             return x;
                         });
-                        arrays.push(trace.y);
 
+                        var valLetter;
+
+                        if(trace.z) {
+                            if(axLetter === 'x') {
+                                arrays.push(sortLib.transpose(trace.z));
+                            } else {
+                                arrays.push(trace.z);
+                            }
+                            valLetter = 'z';
+                        } else {
+                            arrays.push(trace.y);
+                            valLetter = 'y';
+                        }
                         var objList = sortLib.matrixToObjectList(arrays, cols);
 
                         Array.prototype.push.apply(fullObjectList, objList);
@@ -406,19 +418,23 @@ module.exports = function setConvert(ax, fullLayout) {
                         var matrix = sortLib.objectListToList(sortedObjectList);
                         var sortedMatrix = sortLib.sortedMatrix(matrix);
 
-                        xs = sortedMatrix[0].slice();
-                        var y = sortedMatrix[1];
+                        axLabels = sortedMatrix[0].slice();
+                        var axVals = sortedMatrix[1];
 
+                        if(valLetter === 'z' & axLetter === 'x') {
+                            axVals = sortLib.transpose(axVals);
+                        }
                         // Could/should set sorted y axis values for each trace as the sorted values are already available.
                         // Need write access to gd._fullData, bad? Should probably be done right at newPlot, or on setting gd._fullData
-                        var transposedXs = sortLib.transpose(xs);
-                        gd._fullData[i].x = transposedXs;
-                        gd._fullData[i].y = y;
+                        // debugger;
+                        var transposedAxLabels = sortLib.transpose(axLabels);
+                        gd._fullData[i][axLetter] = transposedAxLabels;
+                        gd._fullData[i][valLetter] = axVals;
                     }
                 }
             }
-            ax.levelNr = xs[0].length;
-            ax.levels = xs[0].map(function(_, idx) {return idx;});
+            ax.levelNr = axLabels[0].length;
+            ax.levels = axLabels[0].map(function(_, idx) {return idx;});
 
 
             var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
@@ -427,6 +443,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
             var fullXs = fullSortedMatrix[0].slice();
 
+            // debugger;
             for(i = 0; i < fullXs.length; i++) {
                 setCategoryIndex(fullXs[i]);
             }
