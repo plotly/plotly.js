@@ -400,8 +400,7 @@ module.exports = function setConvert(ax, fullLayout) {
                             var t = trace;
                             var valsTransform = sortLib.transpose([t.open, t.high, t.low, t.close]);
                             arrays.push(valsTransform);
-                        }
-                        else if(trace.z) {
+                        } else if(trace.z) {
                             if(axLetter === 'x') {
                                 arrays.push(sortLib.transpose(trace.z));
                             } else {
