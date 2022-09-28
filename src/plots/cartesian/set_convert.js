@@ -407,9 +407,12 @@ module.exports = function setConvert(ax, fullLayout) {
                                 arrays.push(trace.z);
                             }
                             valLetter = 'z';
-                        } else {
+                        } else if(trace.y) {
                             arrays.push(trace.y);
                             valLetter = 'y';
+                        } else {
+                            var nullArray = arrayIn.map(function() {return null;});
+                            arrays.push(nullArray);
                         }
                         var objList = sortLib.matrixToObjectList(arrays, cols);
 
