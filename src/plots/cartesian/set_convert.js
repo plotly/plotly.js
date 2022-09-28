@@ -430,7 +430,6 @@ module.exports = function setConvert(ax, fullLayout) {
 
                         if(trace.type === 'ohlc' | trace.type === 'candlestick') {
                             var sortedValsTransform = sortLib.transpose(axVals);
-                            // debugger;
                             gd._fullData[i].open = sortedValsTransform[0];
                             gd._fullData[i].high = sortedValsTransform[1];
                             gd._fullData[i].low = sortedValsTransform[2];
@@ -438,7 +437,6 @@ module.exports = function setConvert(ax, fullLayout) {
                         }
                         // Could/should set sorted y axis values for each trace as the sorted values are already available.
                         // Need write access to gd._fullData, bad? Should probably be done right at newPlot, or on setting gd._fullData
-                        // debugger;
 
                         var transposedAxLabels = sortLib.transpose(axLabels);
                         gd._fullData[i][axLetter] = transposedAxLabels;
@@ -451,14 +449,12 @@ module.exports = function setConvert(ax, fullLayout) {
             ax.levelNr = axLabels[0].length;
             ax.levels = axLabels[0].map(function(_, idx) {return idx;});
 
-            // debugger
             var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
             var fullList = sortLib.objectListToList(fullSortedObjectList);
             var fullSortedMatrix = sortLib.sortedMatrix(fullList);
 
             var fullXs = fullSortedMatrix[0].slice();
 
-            // debugger;
             for(i = 0; i < fullXs.length; i++) {
                 setCategoryIndex(fullXs[i]);
             }
