@@ -395,10 +395,13 @@ module.exports = function setConvert(ax, fullLayout) {
                         var arrays = arrayIn.map(function(x) {
                             return x;
                         });
-
                         var valLetter;
-
-                        if(trace.z) {
+                        if(trace.type === 'ohlc' | trace.type === 'candlestick') {
+                            var t = trace;
+                            var valsTransform = sortLib.transpose([t.open, t.high, t.low, t.close]);
+                            arrays.push(valsTransform);
+                        }
+                        else if(trace.z) {
                             if(axLetter === 'x') {
                                 arrays.push(sortLib.transpose(trace.z));
                             } else {
@@ -424,19 +427,31 @@ module.exports = function setConvert(ax, fullLayout) {
                         if(valLetter === 'z' & axLetter === 'x') {
                             axVals = sortLib.transpose(axVals);
                         }
+
+                        if(trace.type === 'ohlc' | trace.type === 'candlestick') {
+                            var sortedValsTransform = sortLib.transpose(axVals);
+                            // debugger;
+                            gd._fullData[i].open = sortedValsTransform[0];
+                            gd._fullData[i].high = sortedValsTransform[1];
+                            gd._fullData[i].low = sortedValsTransform[2];
+                            gd._fullData[i].close = sortedValsTransform[3];
+                        }
                         // Could/should set sorted y axis values for each trace as the sorted values are already available.
                         // Need write access to gd._fullData, bad? Should probably be done right at newPlot, or on setting gd._fullData
                         // debugger;
+
                         var transposedAxLabels = sortLib.transpose(axLabels);
                         gd._fullData[i][axLetter] = transposedAxLabels;
-                        gd._fullData[i][valLetter] = axVals;
+                        if(valLetter) {
+                            gd._fullData[i][valLetter] = axVals;
+                        }
                     }
                 }
             }
             ax.levelNr = axLabels[0].length;
             ax.levels = axLabels[0].map(function(_, idx) {return idx;});
 
-
+            // debugger
             var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
             var fullList = sortLib.objectListToList(fullSortedObjectList);
             var fullSortedMatrix = sortLib.sortedMatrix(fullList);

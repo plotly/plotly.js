@@ -2514,6 +2514,12 @@ axes.drawOne = function(gd, ax, opts) {
     var tickNames = ['tick'];
 
     if(ax.type === 'multicategory') {
+        // TODO ax.levels is not beeing set for y axis for candlestick plot, because ax.setupMultiCategory is not called for y axis (should not be multicategory)
+        if(!ax.levels) {
+            ax.levelNr = 2;
+            ax.levels = [0, 1];
+        }
+        // debugger;
         ax.levels.slice().reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
 
@@ -2772,7 +2778,8 @@ function getDividerVals(ax, vals) {
         }
     };
 
-    if(ax.showdividers && vals.length) {
+    // debugger
+    if(ax.showdividers && vals.length && ax.levels) {
         ax.levels.forEach(function(_lvl) {
             current = undefined;
             for(i = 0; i < vals.length; i++) {
