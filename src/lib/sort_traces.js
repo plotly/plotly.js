@@ -27,7 +27,7 @@ function matrixToObjectList(matrix, cols) {
         cols.forEach(function(col, idx) {
             objRow[col] = row[idx];
         });
-        objRow.y = row.at(-1);
+        objRow.y = row[row.length - 1];
         objList.push(objRow);
     });
     return objList;
