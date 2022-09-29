@@ -1,12 +1,13 @@
 'use strict';
 
 function zipArrays(arrays) {
-    var zipped = arrays[0].map(function(e, i) {
+    var zipped = [];
+    arrays[0].forEach(function(e, i) {
         var row = [];
-        arrays.map(function(arr) {
+        arrays.forEach(function(arr) {
             row.push(arr[i]);
         });
-        return row;
+        zipped.push(row);
     });
     return zipped;
 }

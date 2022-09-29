@@ -388,8 +388,12 @@ module.exports = function setConvert(ax, fullLayout) {
             for(var k = 0; k < fullData[traceIndices[0]][axLetter].length; k++) {
                 cols.push('col' + k.toString());
             }
+            if(cols.length < 2) {
+                return;
+            }
             // Don't think that the trace should be drawn at all if the lengths don't match. Removing the arrays length check. It is better to fail loudly than silently.
 
+            debugger;
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
 
@@ -454,17 +458,20 @@ module.exports = function setConvert(ax, fullLayout) {
                     }
                 }
             }
-            ax.levelNr = axLabels[0].length;
-            ax.levels = axLabels[0].map(function(_, idx) {return idx;});
 
-            var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
-            var fullList = sortLib.objectListToList(fullSortedObjectList);
-            var fullSortedMatrix = sortLib.sortedMatrix(fullList, true);
+            if(axLabels.length) {
+                ax.levelNr = axLabels[0].length;
+                ax.levels = axLabels[0].map(function(_, idx) {return idx;});
 
-            var fullXs = fullSortedMatrix[0].slice();
+                var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
+                var fullList = sortLib.objectListToList(fullSortedObjectList);
+                var fullSortedMatrix = sortLib.sortedMatrix(fullList, true);
 
-            for(i = 0; i < fullXs.length; i++) {
-                setCategoryIndex(fullXs[i]);
+                var fullXs = fullSortedMatrix[0].slice();
+
+                for(i = 0; i < fullXs.length; i++) {
+                    setCategoryIndex(fullXs[i]);
+                }
             }
         };
     }
