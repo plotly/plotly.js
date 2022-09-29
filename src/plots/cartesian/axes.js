@@ -1819,7 +1819,8 @@ function formatCategory(ax, out) {
 
 function formatMultiCategory(ax, out, hover) {
     var v = Math.round(out.x);
-    var cats = ax._categories[v].map(function(cat) {return cat;}) || [];
+    var cats = ax._categories[v] || [];
+
     var texts = cats.slice().reverse().map(function(cat) {
         return cat === undefined ? '' : String(cat);
     });
