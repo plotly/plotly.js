@@ -292,7 +292,7 @@ module.exports = {
             ].join(' ')
         },
         dash: extendFlat({}, dash, {editType: 'style'}),
-        backoff: { // TODO: do we want to have a similar option for the start of the line? If so what the name should be?
+        backoff: { // we want to have a similar option for the start of the line
             valType: 'number',
             min: 0,
             dflt: 'auto',
