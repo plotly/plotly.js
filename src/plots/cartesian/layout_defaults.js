@@ -265,9 +265,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             delete axLayoutOut.spikemode;
             delete axLayoutOut.spikesnap;
         }
-
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
             letter: axLetter,
+            shift: axLayoutIn.shift,
+            position: axLayoutIn.position,
             counterAxes: counterAxes[axLetter],
             overlayableAxes: getOverlayableAxes(axLetter, axName),
             grid: layoutOut.grid

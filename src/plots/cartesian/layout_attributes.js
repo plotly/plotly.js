@@ -1003,6 +1003,18 @@ module.exports = {
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     },
+    shift: {
+        valType: 'number',
+        dflt: false,
+        editType: 'plot',
+        description: [
+            'Shift the positioning of this axis in pixels relative to where it',
+            'would have been given the default `position`.',
+            'If set to `auto` then the axis will be automatically shifted so as not',
+            'to overlap with other axes with the same `overlaying` value.',
+            'Only has an effect if `anchor` is set to *free*.'
+        ].join(' ')
+    },
     categoryorder: {
         valType: 'enumerated',
         values: [

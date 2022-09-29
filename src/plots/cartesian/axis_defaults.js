@@ -163,7 +163,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // mirror
     if(containerOut.showline || containerOut.ticks) coerce('mirror');
 
-    if(options.automargin) coerce('automargin');
+    // if(options.automargin) coerce('automargin');
 
     var isMultiCategory = axType === 'multicategory';
 

@@ -10,8 +10,9 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     var overlayableAxes = options.overlayableAxes || [];
     var letter = options.letter;
     var grid = options.grid;
+    var shift = options.shift;
 
-    var dfltAnchor, dfltDomain, dfltSide, dfltPosition;
+    var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltShift;
 
     if(grid) {
         dfltDomain = grid._domains[letter][grid._axisMap[containerOut._id]];
@@ -27,6 +28,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     dfltAnchor = dfltAnchor || (isNumeric(containerIn.position) ? 'free' : (counterAxes[0] || 'free'));
     dfltSide = dfltSide || (letter === 'x' ? 'bottom' : 'left');
     dfltPosition = dfltPosition || 0;
+    dfltShift = dfltShift || false;
 
     var anchor = Lib.coerce(containerIn, containerOut, {
         anchor: {
@@ -36,15 +38,39 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         }
     }, 'anchor');
 
-    if(anchor === 'free') coerce('position', dfltPosition);
-
-    Lib.coerce(containerIn, containerOut, {
+    // HANNAH - What does this syntax mean?
+    var side = Lib.coerce(containerIn, containerOut, {
         side: {
             valType: 'enumerated',
             values: letter === 'x' ? ['bottom', 'top'] : ['left', 'right'],
             dflt: dfltSide
         }
     }, 'side');
+
+    if(anchor === 'free') {
+        if(shift === true) {
+            if(containerIn.automargin) {
+                coerce('automargin');
+            } else {
+                coerce('automargin', true);
+            }
+            if(side === 'left') {
+                // TODO: Should really be the left edge of the domain of overlaying axis' anchor
+                coerce('position', 0);
+            } else if(side === 'right') {
+                // TODO: Should really be the left edge of the domain of overlaying axis' anchor
+                coerce('position', 1);
+            }
+        } else {
+            if(containerIn.automargin) coerce('automargin');
+            coerce('position', dfltPosition);
+            coerce('shift', dfltShift);
+            // Moved this over from axis_defaults since we want
+            // the shift val to have an impact on the default automargin
+        }
+    } else {
+        if(containerIn.automargin) coerce('automargin');
+    }
 
     var overlaying = false;
     if(overlayableAxes.length) {
