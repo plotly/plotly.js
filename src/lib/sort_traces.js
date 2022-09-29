@@ -59,12 +59,18 @@ function objectListToList(objectList) {
 
 exports.objectListToList = objectListToList;
 
-function sortedMatrix(list) {
+function sortedMatrix(list, removeNull) {
     var xs = [];
     var y = [];
 
     list.slice().forEach(function(item) {
-        y.push(item.pop());
+        var val = item.pop();
+
+        if(removeNull & item.includes(null)) {
+            return;
+        }
+
+        y.push(val);
         xs.push(item);
     });
 

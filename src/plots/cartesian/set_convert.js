@@ -364,6 +364,10 @@ module.exports = function setConvert(ax, fullLayout) {
 
         ax.setupMultiCategory = function(gd) {
             var fullData = gd._fullData;
+            // axes_test should set up category maps correctly for multicategory axes
+            if(!fullData) {
+                fullData = gd;
+            }
             var traceIndices = ax._traceIndices;
             var i;
 
@@ -411,7 +415,7 @@ module.exports = function setConvert(ax, fullLayout) {
                             arrays.push(trace.y);
                             valLetter = 'y';
                         } else {
-                            var nullArray = arrayIn.map(function() {return null;});
+                            var nullArray = arrayIn[0].map(function() {return null;});
                             arrays.push(nullArray);
                         }
                         var objList = sortLib.matrixToObjectList(arrays, cols);
@@ -441,7 +445,9 @@ module.exports = function setConvert(ax, fullLayout) {
                         // Need write access to gd._fullData, bad? Should probably be done right at newPlot, or on setting gd._fullData
 
                         var transposedAxLabels = sortLib.transpose(axLabels);
-                        gd._fullData[i][axLetter] = transposedAxLabels;
+                        if(gd._fullData) {
+                            gd._fullData[i][axLetter] = transposedAxLabels;
+                        }
                         if(valLetter) {
                             gd._fullData[i][valLetter] = axVals;
                         }
@@ -453,7 +459,7 @@ module.exports = function setConvert(ax, fullLayout) {
 
             var fullSortedObjectList = sortLib.sortObjectList(cols, fullObjectList.slice());
             var fullList = sortLib.objectListToList(fullSortedObjectList);
-            var fullSortedMatrix = sortLib.sortedMatrix(fullList);
+            var fullSortedMatrix = sortLib.sortedMatrix(fullList, true);
 
             var fullXs = fullSortedMatrix[0].slice();
 

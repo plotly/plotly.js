@@ -239,7 +239,17 @@
     </script>
     <script>
       let data3 = [{ x: ["a", "b", "c"], base: [0.2, -0.2, 1], type: "bar" }];
-      Plotly.newPlot("tester", data3);
+      // Plotly.newPlot("tester", data3);
+    </script>
+    <script>
+      let data4 = {
+        x: [
+          ["1", "1", "null", "2"],
+          ["a", "b", "a", "b"],
+        ],
+        y: [1, 2, 3, 4],
+      };
+      Plotly.newPlot("tester", [data4]);
     </script>
   </body>
 </html>
