@@ -393,7 +393,6 @@ module.exports = function setConvert(ax, fullLayout) {
             }
             // Don't think that the trace should be drawn at all if the lengths don't match. Removing the arrays length check. It is better to fail loudly than silently.
 
-            debugger;
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
 
