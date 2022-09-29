@@ -682,7 +682,7 @@ module.exports = {
                 'Z'
             );
         },
-        backoff: 0.95,
+        backoff: 0.9,
         noDot: true
     },
     'arrow-wide': {
