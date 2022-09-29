@@ -306,13 +306,12 @@ module.exports = {
         },
         simplify: {
             valType: 'boolean',
+            dflt: true,
             editType: 'plot',
             description: [
                 'Simplifies lines by removing nearly-collinear points. When transitioning',
                 'lines, it may be desirable to disable this so that the number of points',
-                'along the resulting SVG path is unaffected.',
-                'Defaults to *false* when `backoff` is set,',
-                'otherwise defaults to *true*.'
+                'along the resulting SVG path is unaffected.'
             ].join(' ')
         },
         editType: 'plot'

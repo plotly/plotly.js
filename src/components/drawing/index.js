@@ -1165,7 +1165,12 @@ function applyBackoff(pt, start) {
     var d = pt.d;
     var i = pt.i;
 
-    if(backoff && trace && trace.marker && trace.marker.angle === 0) {
+    if(backoff && trace &&
+        trace.marker &&
+        trace.marker.angle % 360 === 0 &&
+        trace.line &&
+        trace.line.shape !== 'spline'
+    ) {
         var arrayBackoff = Lib.isArrayOrTypedArray(backoff);
         var end = pt;
 

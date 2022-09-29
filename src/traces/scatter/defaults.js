@@ -42,7 +42,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
-        coerce('line.simplify', traceOut.backoff ? false : true);
+        coerce('line.simplify');
     }
 
     if(subTypes.hasMarkers(traceOut)) {
