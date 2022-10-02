@@ -385,7 +385,6 @@ module.exports = function setConvert(ax, fullLayout) {
             var fullObjectList = [];
             var cols = [];
             // Don't think that the trace should be drawn at all if the lengths don't match. Removing the arrays length check. It is better to fail loudly than silently.
-
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
                 cols = [];
@@ -415,6 +414,9 @@ module.exports = function setConvert(ax, fullLayout) {
                                 arrays.push(trace.z);
                             }
                             valLetter = 'z';
+                        } else if(axLetter === 'y' && trace.x) {
+                            arrays.push(trace.x);
+                            valLetter = 'x';
                         } else if(trace.y) {
                             arrays.push(trace.y);
                             valLetter = 'y';
