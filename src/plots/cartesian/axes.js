@@ -2243,6 +2243,7 @@ axes.draw = function(gd, arg, opts) {
 
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
                 plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
+                debugger;
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
                 plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick2').remove();
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
@@ -2523,7 +2524,7 @@ axes.drawOne = function(gd, ax, opts) {
         ax.levels.slice().reverse().slice(0, ax.levelNr - 1).forEach(function(_lvl) {
             var pad = {x: 0 * _lvl, y: 10}[axLetter];
 
-            var tickName = 'tick' + String(_lvl);
+            var tickName = 'tick' + String(_lvl + 1);
             tickNames.push(tickName);
 
             seq.push(function() {
@@ -2585,7 +2586,7 @@ axes.drawOne = function(gd, ax, opts) {
             if(ax.type === 'multicategory') {
                 // hardcoded tick name, breakes only with plotly.py. Not sure if this is the right selection
                 // llbbox = getLabelLevelBbox('tick2');
-                llbbox = getLabelLevelBbox('tick' + String(ax.levelNr - 1));
+                llbbox = getLabelLevelBbox('tick' + String(ax.levelNr));
             } else {
                 llbbox = getLabelLevelBbox();
                 if(axLetter === 'x' && s === 'b') {
