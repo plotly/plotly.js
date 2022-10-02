@@ -384,17 +384,18 @@ module.exports = function setConvert(ax, fullLayout) {
             var axLabels = [];
             var fullObjectList = [];
             var cols = [];
-
-            for(var k = 0; k < fullData[traceIndices[0]][axLetter].length; k++) {
-                cols.push('col' + k.toString());
-            }
-            if(cols.length < 2) {
-                return;
-            }
             // Don't think that the trace should be drawn at all if the lengths don't match. Removing the arrays length check. It is better to fail loudly than silently.
 
             for(i = 0; i < traceIndices.length; i++) {
                 var trace = fullData[traceIndices[i]];
+                cols = [];
+
+                for(var k = 0; k < fullData[traceIndices[0]][axLetter].length; k++) {
+                    cols.push('col' + k.toString());
+                }
+                if(cols.length < 2) {
+                    return;
+                }
 
                 if(axLetter in trace) {
                     var arrayIn = trace[axLetter];

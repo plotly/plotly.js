@@ -2243,7 +2243,6 @@ axes.draw = function(gd, arg, opts) {
 
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick').remove();
                 plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick').remove();
-                debugger;
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'tick2').remove();
                 plotinfo.yaxislayer.selectAll('.' + ya._id + 'tick2').remove();
                 plotinfo.xaxislayer.selectAll('.' + xa._id + 'divider').remove();
