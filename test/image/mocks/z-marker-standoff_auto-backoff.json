@@ -6,9 +6,13 @@
                 "width": 5
             },
             "marker": {
+                "line": {
+                    "width": 2,
+                    "color": "darkblue"
+                },
                 "standoff": [5, 20, null, 20, 10],
                 "angleref": "previous",
-                "symbol": "arrow",
+                "symbol": "arrow-bar-up",
                 "size": 20
             },
             "x": [
@@ -213,7 +217,7 @@
             "marker": {
                 "standoff": [5, 20, null, 20, 10],
                 "angleref": "previous",
-                "symbol": "arrow",
+                "symbol": "arrow-up",
                 "size": 20
             },
             "r": [

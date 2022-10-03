@@ -583,6 +583,7 @@ module.exports = {
             var ry = round(r * 2, 2);
             return align(angle, standoff, 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z');
         },
+        backoff: 1,
         noDot: true
     },
     'arrow-down': {
@@ -627,6 +628,7 @@ module.exports = {
             var ry = round(r * 2, 2);
             return align(angle, standoff, 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z');
         },
+        backoff: 1,
         needLine: true,
         noDot: true
     },
