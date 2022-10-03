@@ -51,9 +51,9 @@
                 6
             ],
             "y": [
-                4000,
-                5000,
-                6000
+                1000,
+                2000,
+                3000
             ],
             "name": "yaxis4 data",
             "yaxis": "y4",
@@ -65,19 +65,22 @@
             "text": "multiple y-axes example - uniform formatting"
         },
         "width": 800,      
-        "yaxis": {"showline": true},
+        "yaxis": {"showline": true, "title": {"text": "yaxis title"}},
         "yaxis2": {
+            "title": {"text": "yaxis2 title"},
             "overlaying": "y",
             "showline": true,
             "side": "right"
         },
         "yaxis3": {
+            "title": {"text": "yaxis3 title"},
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
             "shift": true
         },
         "yaxis4": {
+            "title": {"text": "yaxis4 title"},
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
