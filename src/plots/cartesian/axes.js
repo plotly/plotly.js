@@ -2249,6 +2249,7 @@ axes.draw = function(gd, arg, opts) {
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
     // TODO: Identify axes in the same overlaying group
+    // could be stored be stored in the x axis (ax._counterAx)? - {x: {left: ..., right: ...}}
     var axShifts = {'left': 0, 'right': 0};
     var shiftConstant = 60;
 
@@ -2315,7 +2316,7 @@ axes.drawOne = function(gd, ax, opts, axShifts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
 
-    ax._shift = axShifts[ax.side];
+    ax._shift = axShifts[(ax || {}).side]; // TODO: Error with no axis defined 
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
     // TODO: Why does this work even when the var isn't used?
