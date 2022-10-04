@@ -2248,12 +2248,21 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
+    // TODO: Identify axes in the same overlaying group
+    var axShifts = {'left': 0, 'right': 0};
+    var shiftConstant = 60
+
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
-            var axDone = axes.drawOne(gd, ax, opts);
+            if (ax.shift === true) {
+                var shiftVal = ax.side === 'right' ? shiftConstant : -shiftConstant
+                axShifts[ax.side] += shiftVal
+            }
+
+            var axDone = axes.drawOne(gd, ax, opts, axShifts);
 
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -2290,7 +2299,7 @@ axes.draw = function(gd, arg, opts) {
  * - ax._depth (when required only):
  * - and calls ax.setScale
  */
-axes.drawOne = function(gd, ax, opts) {
+axes.drawOne = function(gd, ax, opts, axShifts) {
     opts = opts || {};
 
     var i, sp, plotinfo;
@@ -2306,8 +2315,11 @@ axes.drawOne = function(gd, ax, opts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
 
+    ax._shift = axShifts[ax.side];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
+    // TODO: Why does this work even when the var isn't used?
+    var mainLinePositionShift = ax.shift === true ? mainLinePosition += ax._shift : mainLinePosition;
     var mainMirrorPosition = ax._mainMirrorPosition;
 
     var vals = ax._vals = axes.calcTicks(ax);
@@ -2562,7 +2574,7 @@ axes.drawOne = function(gd, ax, opts) {
         if(ax.automargin) {
             push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
             var domainIndices = [0, 1];
-
+            var shift = typeof ax._shift === 'number' ? ax._shift : 0;
             if(axLetter === 'x') {
                 if(s === 'b') {
                     push[s] = ax._depth;
@@ -2585,9 +2597,9 @@ axes.drawOne = function(gd, ax, opts) {
                 }
             } else {
                 if(s === 'l') {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen) - shift;
                 } else {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen) + shift;
                     domainIndices.reverse();
                 }
 
@@ -2626,7 +2638,6 @@ axes.drawOne = function(gd, ax, opts) {
                 }
             }
         }
-
         if(hasRangeSlider) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
         }
@@ -3779,7 +3790,7 @@ axes.getPxPosition = function(gd, ax) {
         };
     } else if(axLetter === 'y') {
         anchorAxis = {
-            _offset: gs.l + (ax.position || 0) * gs.w,
+            _offset: (gs.l + (ax.position || 0) * gs.w) + ax._shift,
             _length: 0
         };
     }
