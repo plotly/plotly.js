@@ -2250,16 +2250,16 @@ axes.draw = function(gd, arg, opts) {
 
     // TODO: Identify axes in the same overlaying group
     var axShifts = {'left': 0, 'right': 0};
-    var shiftConstant = 60
+    var shiftConstant = 60;
 
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
-            if (ax.shift === true) {
-                var shiftVal = ax.side === 'right' ? shiftConstant : -shiftConstant
-                axShifts[ax.side] += shiftVal
+            if(ax.shift === true) {
+                var shiftVal = ax.side === 'right' ? shiftConstant : -shiftConstant;
+                axShifts[ax.side] += shiftVal;
             }
 
             var axDone = axes.drawOne(gd, ax, opts, axShifts);
@@ -2326,7 +2326,7 @@ axes.drawOne = function(gd, ax, opts, axShifts) {
 
     // Add a couple of axis properties that should cause us to recreate
     // elements. Used in d3 data function.
-    var axInfo = [ax.mirror, mainLinePosition, mainMirrorPosition].join('_');
+    var axInfo = [ax.mirror, mainLinePositionShift, mainMirrorPosition].join('_');
     for(i = 0; i < vals.length; i++) {
         vals[i].axInfo = axInfo;
     }
@@ -2421,8 +2421,8 @@ axes.drawOne = function(gd, ax, opts, axShifts) {
     var minorTickSigns = axes.getTickSigns(ax, 'minor');
 
     if(ax.ticks || (ax.minor && ax.minor.ticks)) {
-        var majorTickPath = axes.makeTickPath(ax, mainLinePosition, majorTickSigns[2]);
-        var minorTickPath = axes.makeTickPath(ax, mainLinePosition, minorTickSigns[2], { minor: true });
+        var majorTickPath = axes.makeTickPath(ax, mainLinePositionShift, majorTickSigns[2]);
+        var minorTickPath = axes.makeTickPath(ax, mainLinePositionShift, minorTickSigns[2], { minor: true });
 
         var mirrorMajorTickPath;
         var mirrorMinorTickPath;
@@ -2508,7 +2508,7 @@ axes.drawOne = function(gd, ax, opts, axShifts) {
             layer: mainAxLayer,
             plotinfo: plotinfo,
             transFn: transTickLabelFn,
-            labelFns: axes.makeLabelFns(ax, mainLinePosition)
+            labelFns: axes.makeLabelFns(ax, mainLinePositionShift)
         });
     });
 
@@ -2527,23 +2527,23 @@ axes.drawOne = function(gd, ax, opts, axShifts) {
                 repositionOnUpdate: true,
                 secondary: true,
                 transFn: transTickFn,
-                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
+                labelFns: axes.makeLabelFns(ax, mainLinePositionShift + standoff * majorTickSigns[4])
             });
         });
 
         seq.push(function() {
-            ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+            ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePositionShift);
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
                 layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
+                path: axes.makeTickPath(ax, mainLinePositionShift, majorTickSigns[4], { len: ax._depth }),
                 transFn: transTickFn
             });
         });
     } else if(ax.title.hasOwnProperty('standoff')) {
         seq.push(function() {
-            ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
+            ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePositionShift);
         });
     }
 
@@ -3968,7 +3968,7 @@ function anyCounterAxLineAtZero(gd, ax, counterAxis, rng) {
             return typeof pos2 === 'number' && Math.abs(pos2 - zeroPosition) < tolerance;
         }
 
-        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
+        if(closeEnough(ax2._mainLinePositionShift) || closeEnough(ax2._mainMirrorPosition)) {
             return true;
         }
         var linePositions = ax2._linepositions || {};

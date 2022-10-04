@@ -52,13 +52,13 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
             // TODO: Should really be the left edge of the domain of overlaying axis' anchor
             dfltPosition = side === 'left' ? 0 : 1;
             dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
-        } 
+        }
         // Only coerce shift and position if free anchor
-        if (typeof shift !== "undefined") {
+        if(typeof shift !== 'undefined') {
             coerce('shift', shift);
         } else {
-            coerce('shift', dfltShift)
-        }   
+            coerce('shift', dfltShift);
+        }
         coerce('position', dfltPosition);
     }
 
