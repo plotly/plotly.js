@@ -239,10 +239,16 @@ function plot(gd, cdModule) {
                     transform = positionTitleOutside(cd0, gs);
                 }
 
-                titleText.attr('transform',
-                    strTranslate(transform.x, transform.y) +
-                    strScale(Math.min(1, transform.scale)) +
-                    strTranslate(transform.tx, transform.ty));
+                var scale = Math.min(1, transform.scale);
+
+                if(scale) {
+                    titleText.attr('transform',
+                        strTranslate(transform.x, transform.y) +
+                        strScale(scale) +
+                        strTranslate(transform.tx, transform.ty));
+                } else {
+                    titleText.style('display', 'none');
+                }
             });
 
             // now make sure no labels overlap (at least within one pie)
