@@ -435,7 +435,8 @@
    "angle": {
     "description": "A number (in degree) between -180 and 180.",
     "otherOpts": [
-     "dflt"
+     "dflt",
+     "arrayOk"
     ],
     "requiredOpts": []
    },
@@ -15499,6 +15500,13 @@
      "valType": "string"
     },
     "marker": {
+     "angle": {
+      "arrayOk": false,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
      "color": {
       "arrayOk": false,
       "description": "Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set.",
@@ -16041,7 +16049,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      }
     },
@@ -43460,6 +43480,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "anim": true,
       "description": "Sets the line color.",
@@ -43520,6 +43553,30 @@
      }
     },
     "marker": {
+     "angle": {
+      "anim": false,
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "anim": false,
+      "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -44268,6 +44325,20 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "anim": true,
+      "arrayOk": true,
+      "description": "Moves the marker away from the data point in the direction of `angle` (in px). This can be useful for example if you have another marker at this location and you want to point an arrowhead marker at it.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -44748,7 +44819,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -47712,6 +47795,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",
@@ -47760,6 +47856,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -48503,6 +48621,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Moves the marker away from the data point in the direction of `angle` (in px). This can be useful for example if you have another marker at this location and you want to point an arrowhead marker at it.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -48983,7 +49114,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -49601,6 +49744,29 @@
      "valType": "string"
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen. With *north*, angle 0 points north based on the current map projection.",
+      "dflt": "up",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up",
+       "north"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -50337,6 +50503,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Moves the marker away from the data point in the direction of `angle` (in px). This can be useful for example if you have another marker at this location and you want to point an arrowhead marker at it.",
+      "dflt": 0,
+      "editType": "calc",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -50817,7 +50996,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -51588,6 +51779,18 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -52771,7 +52974,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -54621,6 +54836,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",
@@ -54669,6 +54897,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -55412,6 +55662,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Moves the marker away from the data point in the direction of `angle` (in px). This can be useful for example if you have another marker at this location and you want to point an arrowhead marker at it.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -55892,7 +56155,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -56513,6 +56788,18 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -57696,7 +57983,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -58286,6 +58585,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",
@@ -58334,6 +58646,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -59077,6 +59411,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Moves the marker away from the data point in the direction of `angle` (in px). This can be useful for example if you have another marker at this location and you want to point an arrowhead marker at it.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -59557,7 +59904,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -60133,6 +60492,19 @@
      "valType": "number"
     },
     "line": {
+     "backoff": {
+      "arrayOk": true,
+      "description": "Sets the line back off from the end point of the nth line segment (in px). This option is useful e.g. to avoid overlap with arrowhead markers. With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.",
+      "dflt": "auto",
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "backoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `backoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "color": {
       "description": "Sets the line color.",
       "editType": "style",
@@ -60181,6 +60553,28 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "angleref": {
+      "description": "Sets the reference for marker angle. With *previous*, angle 0 points along the line from the previous point to this one. With *up*, angle 0 points toward the top of the screen.",
+      "dflt": "up",
+      "editType": "plot",
+      "valType": "enumerated",
+      "values": [
+       "previous",
+       "up"
+      ]
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -60924,6 +61318,19 @@
       "editType": "none",
       "valType": "string"
      },
+     "standoff": {
+      "arrayOk": true,
+      "description": "Moves the marker away from the data point in the direction of `angle` (in px). This can be useful for example if you have another marker at this location and you want to point an arrowhead marker at it.",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
+     "standoffsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `standoff`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "symbol": {
       "arrayOk": true,
       "description": "Sets the marker symbol type. Adding 100 is equivalent to appending *-open* to a symbol name. Adding 200 is equivalent to appending *-dot* to a symbol name. Adding 300 is equivalent to appending *-open-dot* or *dot-open* to a symbol name.",
@@ -61404,7 +61811,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -61982,6 +62401,18 @@
      "valType": "number"
     },
     "marker": {
+     "angle": {
+      "arrayOk": true,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "plot",
+      "valType": "angle"
+     },
+     "anglesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `angle`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autocolorscale": {
       "description": "Determines whether the colorscale is a default palette (`autocolorscale: true`) or the palette determined by `marker.colorscale`. Has an effect only if in `marker.color` is set to a numerical array. In case `colorscale` is unspecified or `autocolorscale` is true, the default palette will be chosen according to whether numbers in the `color` array are all positive, all negative or mixed.",
       "dflt": true,
@@ -63165,7 +63596,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      },
      "symbolsrc": {
@@ -69418,6 +69861,13 @@
      }
     },
     "marker": {
+     "angle": {
+      "arrayOk": false,
+      "description": "Sets the marker angle in respect to `angleref`.",
+      "dflt": 0,
+      "editType": "calc",
+      "valType": "angle"
+     },
      "color": {
       "arrayOk": false,
       "description": "Sets the marker color. It accepts either a specific color or an array of numbers that are mapped to the colorscale relative to the max and min values of the array or relative to `marker.cmin` and `marker.cmax` if set.",
@@ -69960,7 +70410,19 @@
        "arrow-bar-right",
        152,
        "152",
-       "arrow-bar-right-open"
+       "arrow-bar-right-open",
+       53,
+       "53",
+       "arrow",
+       153,
+       "153",
+       "arrow-open",
+       54,
+       "54",
+       "arrow-wide",
+       154,
+       "154",
+       "arrow-wide-open"
       ]
      }
     },

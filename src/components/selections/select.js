@@ -1155,13 +1155,13 @@ function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptio
         if(_selectionTesters) {
             var _searchTraces = searchTraces;
             if(!hadSearchTraces) {
-                var _xaxis = getFromId(gd, _xRef, 'x');
-                var _yaxis = getFromId(gd, _yRef, 'y');
+                var _xA = getFromId(gd, _xRef, 'x');
+                var _yA = getFromId(gd, _yRef, 'y');
 
                 _searchTraces = determineSearchTraces(
                     gd,
-                    [_xaxis],
-                    [_yaxis],
+                    [_xA],
+                    [_yA],
                     subplot
                 );
 
@@ -1178,8 +1178,8 @@ function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptio
                         cd0.t.xpx = [];
                         cd0.t.ypx = [];
                         for(var j = 0; j < len; j++) {
-                            cd0.t.xpx[j] = _xaxis.c2p(x[j]);
-                            cd0.t.ypx[j] = _yaxis.c2p(y[j]);
+                            cd0.t.xpx[j] = _xA.c2p(x[j]);
+                            cd0.t.ypx[j] = _yA.c2p(y[j]);
                         }
                     }
 
