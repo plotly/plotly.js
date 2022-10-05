@@ -2316,7 +2316,7 @@ axes.drawOne = function(gd, ax, opts, axShifts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
 
-    ax._shift = axShifts[(ax || {}).side]; // TODO: Error with no axis defined 
+    ax._shift = axShifts[(ax || {}).side]; // TODO: Error with no axis defined
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
     // TODO: Why does this work even when the var isn't used?
