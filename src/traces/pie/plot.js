@@ -246,6 +246,8 @@ function plot(gd, cdModule) {
                         strTranslate(transform.x, transform.y) +
                         strScale(scale) +
                         strTranslate(transform.tx, transform.ty));
+
+                    titleText.style('display', null);
                 } else {
                     titleText.style('display', 'none');
                 }
