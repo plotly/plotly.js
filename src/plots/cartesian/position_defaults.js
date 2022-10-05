@@ -54,7 +54,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
             dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
         }
         // Only coerce shift and position if free anchor
-        if(typeof shift !== 'undefined') {
+        if(shift !== undefined) {
             coerce('shift', shift);
         } else {
             coerce('shift', dfltShift);
