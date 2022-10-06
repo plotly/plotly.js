@@ -200,6 +200,9 @@ function plot(gd, cdModule) {
                     cd[i].transform = transform;
 
                     sliceText.attr('transform', Lib.getTextTransform(transform));
+
+                    // hide text for empty slices
+                    sliceText.style('display', transform.scale ? null : 'none');
                 });
             });
 
