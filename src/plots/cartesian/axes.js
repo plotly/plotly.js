@@ -2257,21 +2257,8 @@ axes.draw = function(gd, arg, opts) {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
-            // TODO: Clean up this control flow
             if(ax.shift === true) {
-                var shiftVal = ax.side === 'right' ? shiftConstant : -shiftConstant;
-                if (ax.overlaying in axShifts) {
-                    if (ax.side in axShifts[ax.overlaying]) {
-                        axShifts[ax.overlaying][ax.side] += shiftVal;
-                    } else {
-                        axShifts[ax.overlaying][ax.side] = 0;
-                        axShifts[ax.overlaying][ax.side] += shiftVal
-                    }
-                } else {
-                    axShifts[ax.overlaying] = {};
-                    axShifts[ax.overlaying][ax.side] = 0;
-                    axShifts[ax.overlaying][ax.side] += shiftVal;
-                }
+                axShifts = incrementShift(ax, shiftConstant, axShifts)
             }
 
             if(!opts) opts = {};
@@ -4236,4 +4223,16 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
             ax._hideCounterAxisInsideTickLabels(opts);
         }
     }
+}
+
+function incrementShift(ax, shiftVal, axShifts) {
+    var shiftValAdj = ax.side === 'right' ? shiftVal : -shiftVal;
+    if(!(ax.overlaying in axShifts)){
+        axShifts[ax.overlaying] = {};
+    }
+    if (!(ax.side in axShifts[ax.overlaying])) {
+        axShifts[ax.overlaying][ax.side] = 0;
+    }
+    axShifts[ax.overlaying][ax.side] += shiftValAdj;
+    return axShifts;
 }
