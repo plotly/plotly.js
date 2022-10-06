@@ -431,8 +431,8 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
     recordMinTextSize(trace.type === 'histogram' ? 'bar' : trace.type, transform, fullLayout);
     calcBar.transform = transform;
 
-    transition(textSelection, fullLayout, opts, makeOnCompleteCallback)
-        .attr('transform', Lib.getTextTransform(transform));
+    var s = transition(textSelection, fullLayout, opts, makeOnCompleteCallback);
+    Lib.setTransormAndDisplay(s, transform);
 }
 
 function getRotateFromAngle(angle) {

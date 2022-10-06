@@ -199,10 +199,7 @@ function plot(gd, cdModule) {
                     recordMinTextSize(trace.type, transform, fullLayout);
                     cd[i].transform = transform;
 
-                    sliceText.attr('transform', Lib.getTextTransform(transform));
-
-                    // hide text for empty slices
-                    sliceText.style('display', transform.scale ? null : 'none');
+                    Lib.setTransormAndDisplay(sliceText, transform);
                 });
             });
 
@@ -310,7 +307,7 @@ function plotTextLines(slices, trace) {
         pt.transform.targetX += pt.labelExtraX;
         pt.transform.targetY += pt.labelExtraY;
 
-        sliceText.attr('transform', Lib.getTextTransform(pt.transform));
+        Lib.setTransormAndDisplay(sliceText, pt.transform);
 
         // then add a line to the new location
         var lineStartX = pt.cxFinal + pt.pxmid[0];

@@ -128,7 +128,7 @@ module.exports = function plot(gd, cdModule) {
                     recordMinTextSize(trace.type, transform, fullLayout);
                     cd[i].transform = transform;
 
-                    sliceText.attr('transform', Lib.getTextTransform(transform));
+                    Lib.setTransormAndDisplay(sliceText, transform);
                 });
             });
 
