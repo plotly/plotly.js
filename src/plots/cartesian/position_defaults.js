@@ -11,6 +11,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     var letter = options.letter;
     var grid = options.grid;
     var shift = containerIn.shift;
+    var overlayingDomain = options.overlayingDomain;
 
     var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltShift, dfltAutomargin;
 
@@ -49,8 +50,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
 
     if(anchor === 'free') {
         if(shift === true) {
-            // TODO: Should really be the left edge of the domain of overlaying axis' anchor
-            dfltPosition = side === 'left' ? 0 : 1;
+            dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
             dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
         }
         // Only coerce shift and position if free anchor
