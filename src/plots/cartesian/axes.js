@@ -2248,19 +2248,30 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    // TODO: Identify axes in the same overlaying group
-    // could be stored be stored in the x axis (ax._counterAx)? - {x: {left: ..., right: ...}}
-    var axShifts = {'left': 0, 'right': 0};
+    // TODO: could be stored be stored in the x axis (ax._counterAx)? - {x: {left: ..., right: ...}}
     var shiftConstant = 60;
+    var axShifts = {'false': {'left': 0, 'right': 0}};
 
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
+            // TODO: Clean up this control flow
             if(ax.shift === true) {
                 var shiftVal = ax.side === 'right' ? shiftConstant : -shiftConstant;
-                axShifts[ax.side] += shiftVal;
+                if (ax.overlaying in axShifts) {
+                    if (ax.side in axShifts[ax.overlaying]) {
+                        axShifts[ax.overlaying][ax.side] += shiftVal;
+                    } else {
+                        axShifts[ax.overlaying][ax.side] = 0;
+                        axShifts[ax.overlaying][ax.side] += shiftVal
+                    }
+                } else {
+                    axShifts[ax.overlaying] = {};
+                    axShifts[ax.overlaying][ax.side] = 0;
+                    axShifts[ax.overlaying][ax.side] += shiftVal;
+                }
             }
 
             if(!opts) opts = {};
@@ -2320,11 +2331,9 @@ axes.drawOne = function(gd, ax, opts) {
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
-
-    ax._shift = axShifts[ax.side]; // TODO: Error with no axis defined
+    ax._shift = ax.shift !== true ? 0 : axShifts[ax.overlaying][ax.side];
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
-    // TODO: Why does this work even when the var isn't used?
     var mainLinePositionShift = ax.shift === true ? mainLinePosition += ax._shift : mainLinePosition;
     var mainMirrorPosition = ax._mainMirrorPosition;
 
