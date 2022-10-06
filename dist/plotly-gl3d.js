@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.14.0
+* plotly.js (gl3d) v2.15.0
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -25241,6 +25241,7 @@ var SYMBOLDEFS = _dereq_('./symbol_defs');
 
 drawing.symbolNames = [];
 drawing.symbolFuncs = [];
+drawing.symbolBackOffs = [];
 drawing.symbolNeedLines = {};
 drawing.symbolNoDot = {};
 drawing.symbolNoFill = {};
@@ -25260,6 +25261,7 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     );
     drawing.symbolNames[n] = k;
     drawing.symbolFuncs[n] = symDef.f;
+    drawing.symbolBackOffs[n] = symDef.backoff || 0;
 
     if(symDef.needLine) {
         drawing.symbolNeedLines[n] = true;
@@ -25307,9 +25309,9 @@ drawing.symbolNumber = function(v) {
         0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumber, r) {
+function makePointPath(symbolNumber, r, t, s) {
     var base = symbolNumber % 100;
-    return drawing.symbolFuncs[base](r) + (symbolNumber >= 200 ? DOTPATH : '');
+    return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
@@ -25430,6 +25432,12 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
     var path, linewidth, radius;
     var patternTag;
     var patternAttrs = {};
+
+    var fgC = tinycolor(fgcolor);
+    var fgRGB = Color.tinyRGB(fgC);
+    var fgAlpha = fgC.getAlpha();
+    var opacity = fgopacity * fgAlpha;
+
     switch(shape) {
         case '/':
             width = size * Math.sqrt(2);
@@ -25441,8 +25449,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -25456,8 +25464,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -25474,8 +25482,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -25488,8 +25496,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -25502,8 +25510,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -25517,8 +25525,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             patternTag = 'path';
             patternAttrs = {
                 'd': path,
-                'opacity': fgopacity,
-                'stroke': fgcolor,
+                'opacity': opacity,
+                'stroke': fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -25535,8 +25543,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 'cx': width / 2,
                 'cy': height / 2,
                 'r': radius,
-                'opacity': fgopacity,
-                'fill': fgcolor
+                'opacity': opacity,
+                'fill': fgRGB
             };
             break;
     }
@@ -25570,6 +25578,10 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             });
 
             if(bgcolor) {
+                var bgC = tinycolor(bgcolor);
+                var bgRGB = Color.tinyRGB(bgC);
+                var bgAlpha = bgC.getAlpha();
+
                 var rects = el.selectAll('rect').data([0]);
                 rects.exit().remove();
                 rects.enter()
@@ -25577,7 +25589,8 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                     .attr({
                         'width': width + 'px',
                         'height': height + 'px',
-                        'fill': bgcolor
+                        'fill': bgRGB,
+                        'fill-opacity': bgAlpha,
                     });
             }
 
@@ -25669,7 +25682,10 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         // because that impacts how to handle colors
         d.om = x % 200 >= 100;
 
-        sel.attr('d', makePointPath(x, r));
+        var angle = getMarkerAngle(d, trace);
+        var standoff = getMarkerStandoff(d, trace);
+
+        sel.attr('d', makePointPath(x, r, angle, standoff));
     }
 
     var perPointGradient = false;
@@ -25918,7 +25934,7 @@ drawing.selectedPointStyle = function(s, trace) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
 
-            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2));
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace)));
 
             // save for Drawing.selectedTextStyle
             d.mrc2 = mrc2;
@@ -26089,6 +26105,26 @@ drawing.smoothclosed = function(pts, smoothness) {
     return path;
 };
 
+var lastDrawnX, lastDrawnY;
+
+function roundEnd(pt, isY, isLastPoint) {
+    if(isLastPoint) pt = applyBackoff(pt);
+
+    return isY ? roundY(pt[1]) : roundX(pt[0]);
+}
+
+function roundX(p) {
+    var v = d3.round(p, 2);
+    lastDrawnX = v;
+    return v;
+}
+
+function roundY(p) {
+    var v = d3.round(p, 2);
+    lastDrawnY = v;
+    return v;
+}
+
 function makeTangent(prevpt, thispt, nextpt, smoothness) {
     var d1x = prevpt[0] - thispt[0];
     var d1y = prevpt[1] - thispt[1];
@@ -26102,11 +26138,11 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
     var denom2 = 3 * d1a * (d1a + d2a);
     return [
         [
-            d3.round(thispt[0] + (denom1 && numx / denom1), 2),
-            d3.round(thispt[1] + (denom1 && numy / denom1), 2)
+            roundX(thispt[0] + (denom1 && numx / denom1)),
+            roundY(thispt[1] + (denom1 && numy / denom1))
         ], [
-            d3.round(thispt[0] - (denom2 && numx / denom2), 2),
-            d3.round(thispt[1] - (denom2 && numy / denom2), 2)
+            roundX(thispt[0] - (denom2 && numx / denom2)),
+            roundY(thispt[1] - (denom2 && numy / denom2))
         ]
     ];
 }
@@ -26114,34 +26150,98 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
 // step paths - returns a generator function for paths
 // with the given step shape
 var STEPPATH = {
-    hv: function(p0, p1) {
-        return 'H' + d3.round(p1[0], 2) + 'V' + d3.round(p1[1], 2);
+    hv: function(p0, p1, isLastPoint) {
+        return 'H' +
+            roundX(p1[0]) + 'V' +
+            roundEnd(p1, 1, isLastPoint);
     },
-    vh: function(p0, p1) {
-        return 'V' + d3.round(p1[1], 2) + 'H' + d3.round(p1[0], 2);
+    vh: function(p0, p1, isLastPoint) {
+        return 'V' +
+            roundY(p1[1]) + 'H' +
+            roundEnd(p1, 0, isLastPoint);
     },
-    hvh: function(p0, p1) {
-        return 'H' + d3.round((p0[0] + p1[0]) / 2, 2) + 'V' +
-            d3.round(p1[1], 2) + 'H' + d3.round(p1[0], 2);
+    hvh: function(p0, p1, isLastPoint) {
+        return 'H' +
+            roundX((p0[0] + p1[0]) / 2) + 'V' +
+            roundY(p1[1]) + 'H' +
+            roundEnd(p1, 0, isLastPoint);
     },
-    vhv: function(p0, p1) {
-        return 'V' + d3.round((p0[1] + p1[1]) / 2, 2) + 'H' +
-            d3.round(p1[0], 2) + 'V' + d3.round(p1[1], 2);
+    vhv: function(p0, p1, isLastPoint) {
+        return 'V' +
+            roundY((p0[1] + p1[1]) / 2) + 'H' +
+            roundX(p1[0]) + 'V' +
+            roundEnd(p1, 1, isLastPoint);
     }
 };
-var STEPLINEAR = function(p0, p1) {
-    return 'L' + d3.round(p1[0], 2) + ',' + d3.round(p1[1], 2);
+var STEPLINEAR = function(p0, p1, isLastPoint) {
+    return 'L' +
+        roundEnd(p1, 0, isLastPoint) + ',' +
+        roundEnd(p1, 1, isLastPoint);
 };
 drawing.steps = function(shape) {
     var onestep = STEPPATH[shape] || STEPLINEAR;
     return function(pts) {
-        var path = 'M' + d3.round(pts[0][0], 2) + ',' + d3.round(pts[0][1], 2);
-        for(var i = 1; i < pts.length; i++) {
-            path += onestep(pts[i - 1], pts[i]);
+        var path = 'M' + roundX(pts[0][0]) + ',' + roundY(pts[0][1]);
+        var len = pts.length;
+        for(var i = 1; i < len; i++) {
+            path += onestep(pts[i - 1], pts[i], i === len - 1);
         }
         return path;
     };
 };
+
+function applyBackoff(pt, start) {
+    var backoff = pt.backoff;
+    var trace = pt.trace;
+    var d = pt.d;
+    var i = pt.i;
+
+    if(backoff && trace &&
+        trace.marker &&
+        trace.marker.angle % 360 === 0 &&
+        trace.line &&
+        trace.line.shape !== 'spline'
+    ) {
+        var arrayBackoff = Lib.isArrayOrTypedArray(backoff);
+        var end = pt;
+
+        var x1 = start ? start[0] : lastDrawnX || 0;
+        var y1 = start ? start[1] : lastDrawnY || 0;
+
+        var x2 = end[0];
+        var y2 = end[1];
+
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+
+        var t = Math.atan2(dy, dx);
+
+        var b = arrayBackoff ? backoff[i] : backoff;
+
+        if(b === 'auto') {
+            var endI = end.i;
+            if(trace.type === 'scatter') endI--; // Why we need this hack?
+
+            var endMarker = end.marker;
+            b = endMarker ? drawing.symbolBackOffs[drawing.symbolNumber(endMarker.symbol)] * endMarker.size : 0;
+            b += drawing.getMarkerStandoff(d[endI], trace) || 0;
+        }
+
+        var x = x2 - b * Math.cos(t);
+        var y = y2 - b * Math.sin(t);
+
+        if(
+            ((x <= x2 && x >= x1) || (x >= x2 && x <= x1)) &&
+            ((y <= y2 && y >= y1) || (y >= y2 && y <= y1))
+        ) {
+            pt = [x, y];
+        }
+    }
+
+    return pt;
+}
+
+drawing.applyBackoff = applyBackoff;
 
 // off-screen svg render testing element, shared by the whole page
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
@@ -26468,10 +26568,176 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
     });
 };
 
+function getMarkerStandoff(d, trace) {
+    var standoff;
+
+    if(d) standoff = d.mf;
+
+    if(standoff === undefined) {
+        standoff = trace.marker ? trace.marker.standoff || 0 : 0;
+    }
+
+    if(!trace._geo && !trace._xA) {
+        // case of legends
+        return -standoff;
+    }
+
+    return standoff;
+}
+
+drawing.getMarkerStandoff = getMarkerStandoff;
+
+var atan2 = Math.atan2;
+var cos = Math.cos;
+var sin = Math.sin;
+
+function rotate(t, xy) {
+    var x = xy[0];
+    var y = xy[1];
+    return [
+        x * cos(t) - y * sin(t),
+        x * sin(t) + y * cos(t)
+    ];
+}
+
+var previousLon;
+var previousLat;
+var previousX;
+var previousY;
+var previousI;
+var previousTraceUid;
+
+function getMarkerAngle(d, trace) {
+    var angle = d.ma;
+
+    if(angle === undefined) {
+        angle = trace.marker.angle || 0;
+    }
+
+    var x, y;
+    var ref = trace.marker.angleref;
+    if(ref === 'previous' || ref === 'north') {
+        if(trace._geo) {
+            var p = trace._geo.project(d.lonlat);
+            x = p[0];
+            y = p[1];
+        } else {
+            var xa = trace._xA;
+            var ya = trace._yA;
+            if(xa && ya) {
+                x = xa.c2p(d.x);
+                y = ya.c2p(d.y);
+            } else {
+                // case of legends
+                return 90;
+            }
+        }
+
+        if(trace._geo) {
+            var lon = d.lonlat[0];
+            var lat = d.lonlat[1];
+
+            var north = trace._geo.project([
+                lon,
+                lat + 1e-5 // epsilon
+            ]);
+
+            var east = trace._geo.project([
+                lon + 1e-5, // epsilon
+                lat
+            ]);
+
+            var u = atan2(
+                east[1] - y,
+                east[0] - x
+            );
+
+            var v = atan2(
+                north[1] - y,
+                north[0] - x
+            );
+
+            var t;
+            if(ref === 'north') {
+                t = angle / 180 * Math.PI;
+                // To use counter-clockwise angles i.e.
+                // East: 90, West: -90
+                // to facilitate wind visualisations
+                // in future we should use t = -t here.
+            } else if(ref === 'previous') {
+                var lon1 = lon / 180 * Math.PI;
+                var lat1 = lat / 180 * Math.PI;
+                var lon2 = previousLon / 180 * Math.PI;
+                var lat2 = previousLat / 180 * Math.PI;
+
+                var dLon = lon2 - lon1;
+
+                var deltaY = cos(lat2) * sin(dLon);
+                var deltaX = sin(lat2) * cos(lat1) - cos(lat2) * sin(lat1) * cos(dLon);
+
+                t = -atan2(
+                    deltaY,
+                    deltaX
+                ) - Math.PI;
+
+                previousLon = lon;
+                previousLat = lat;
+            }
+
+            var A = rotate(u, [cos(t), 0]);
+            var B = rotate(v, [sin(t), 0]);
+
+            angle = atan2(
+                A[1] + B[1],
+                A[0] + B[0]
+            ) / Math.PI * 180;
+
+            if(ref === 'previous' && !(
+                previousTraceUid === trace.uid &&
+                d.i === previousI + 1
+            )) {
+                angle = null;
+            }
+        }
+
+        if(ref === 'previous' && !trace._geo) {
+            if(
+                previousTraceUid === trace.uid &&
+                d.i === previousI + 1 &&
+                isNumeric(x) &&
+                isNumeric(y)
+            ) {
+                var dX = x - previousX;
+                var dY = y - previousY;
+
+                var shape = trace.line ? trace.line.shape || '' : '';
+
+                var lastShapeChar = shape.slice(shape.length - 1);
+                if(lastShapeChar === 'h') dY = 0;
+                if(lastShapeChar === 'v') dX = 0;
+
+                angle += atan2(dY, dX) / Math.PI * 180 + 90;
+            } else {
+                angle = null;
+            }
+        }
+    }
+
+    previousX = x;
+    previousY = y;
+    previousI = d.i;
+    previousTraceUid = trace.uid;
+
+    return angle;
+}
+
+drawing.getMarkerAngle = getMarkerAngle;
+
 },{"../../components/fx/helpers":156,"../../constants/alignment":236,"../../constants/interactions":242,"../../constants/xmlns_namespaces":244,"../../lib":264,"../../lib/svg_text_utils":289,"../../registry":361,"../../traces/scatter/make_bubble_size_func":407,"../../traces/scatter/subtypes":415,"../color":120,"../colorscale":132,"./symbol_defs":143,"@plotly/d3":16,"fast-isnumeric":31,"tinycolor2":84}],143:[function(_dereq_,module,exports){
 'use strict';
 
-var d3 = _dereq_('@plotly/d3');
+var parseSvgPath = _dereq_('parse-svg-path');
+var round = _dereq_('@plotly/d3').round;
 
 /** Marker symbol definitions
  * users can specify markers either by number or name
@@ -26481,340 +26747,416 @@ var d3 = _dereq_('@plotly/d3');
  * add both and you get both
  */
 
+
+var emptyPath = 'M0,0Z';
+var sqrt2 = Math.sqrt(2);
+var sqrt3 = Math.sqrt(3);
+var PI = Math.PI;
+var cos = Math.cos;
+var sin = Math.sin;
+
 module.exports = {
     circle: {
         n: 0,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            return 'M' + rs + ',0A' + rs + ',' + rs + ' 0 1,1 0,-' + rs +
-                'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            var circle = 'M' + rs + ',0A' + rs + ',' + rs + ' 0 1,1 0,-' + rs + 'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z';
+            return standoff ? align(angle, standoff, circle) : circle;
         }
     },
     square: {
         n: 1,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            return 'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z');
         }
     },
     diamond: {
         n: 2,
-        f: function(r) {
-            var rd = d3.round(r * 1.3, 2);
-            return 'M' + rd + ',0L0,' + rd + 'L-' + rd + ',0L0,-' + rd + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rd = round(r * 1.3, 2);
+            return align(angle, standoff, 'M' + rd + ',0L0,' + rd + 'L-' + rd + ',0L0,-' + rd + 'Z');
         }
     },
     cross: {
         n: 3,
-        f: function(r) {
-            var rc = d3.round(r * 0.4, 2);
-            var rc2 = d3.round(r * 1.2, 2);
-            return 'M' + rc2 + ',' + rc + 'H' + rc + 'V' + rc2 + 'H-' + rc +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rc = round(r * 0.4, 2);
+            var rc2 = round(r * 1.2, 2);
+            return align(angle, standoff, 'M' + rc2 + ',' + rc + 'H' + rc + 'V' + rc2 + 'H-' + rc +
                 'V' + rc + 'H-' + rc2 + 'V-' + rc + 'H-' + rc + 'V-' + rc2 +
-                'H' + rc + 'V-' + rc + 'H' + rc2 + 'Z';
+                'H' + rc + 'V-' + rc + 'H' + rc2 + 'Z');
         }
     },
     x: {
         n: 4,
-        f: function(r) {
-            var rx = d3.round(r * 0.8 / Math.sqrt(2), 2);
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r * 0.8 / sqrt2, 2);
             var ne = 'l' + rx + ',' + rx;
             var se = 'l' + rx + ',-' + rx;
             var sw = 'l-' + rx + ',-' + rx;
             var nw = 'l-' + rx + ',' + rx;
-            return 'M0,' + rx + ne + se + sw + se + sw + nw + sw + nw + ne + nw + ne + 'Z';
+            return align(angle, standoff, 'M0,' + rx + ne + se + sw + se + sw + nw + sw + nw + ne + nw + ne + 'Z');
         }
     },
     'triangle-up': {
         n: 5,
-        f: function(r) {
-            var rt = d3.round(r * 2 / Math.sqrt(3), 2);
-            var r2 = d3.round(r / 2, 2);
-            var rs = d3.round(r, 2);
-            return 'M-' + rt + ',' + r2 + 'H' + rt + 'L0,-' + rs + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rt = round(r * 2 / sqrt3, 2);
+            var r2 = round(r / 2, 2);
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M-' + rt + ',' + r2 + 'H' + rt + 'L0,-' + rs + 'Z');
         }
     },
     'triangle-down': {
         n: 6,
-        f: function(r) {
-            var rt = d3.round(r * 2 / Math.sqrt(3), 2);
-            var r2 = d3.round(r / 2, 2);
-            var rs = d3.round(r, 2);
-            return 'M-' + rt + ',-' + r2 + 'H' + rt + 'L0,' + rs + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rt = round(r * 2 / sqrt3, 2);
+            var r2 = round(r / 2, 2);
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M-' + rt + ',-' + r2 + 'H' + rt + 'L0,' + rs + 'Z');
         }
     },
     'triangle-left': {
         n: 7,
-        f: function(r) {
-            var rt = d3.round(r * 2 / Math.sqrt(3), 2);
-            var r2 = d3.round(r / 2, 2);
-            var rs = d3.round(r, 2);
-            return 'M' + r2 + ',-' + rt + 'V' + rt + 'L-' + rs + ',0Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rt = round(r * 2 / sqrt3, 2);
+            var r2 = round(r / 2, 2);
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M' + r2 + ',-' + rt + 'V' + rt + 'L-' + rs + ',0Z');
         }
     },
     'triangle-right': {
         n: 8,
-        f: function(r) {
-            var rt = d3.round(r * 2 / Math.sqrt(3), 2);
-            var r2 = d3.round(r / 2, 2);
-            var rs = d3.round(r, 2);
-            return 'M-' + r2 + ',-' + rt + 'V' + rt + 'L' + rs + ',0Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rt = round(r * 2 / sqrt3, 2);
+            var r2 = round(r / 2, 2);
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M-' + r2 + ',-' + rt + 'V' + rt + 'L' + rs + ',0Z');
         }
     },
     'triangle-ne': {
         n: 9,
-        f: function(r) {
-            var r1 = d3.round(r * 0.6, 2);
-            var r2 = d3.round(r * 1.2, 2);
-            return 'M-' + r2 + ',-' + r1 + 'H' + r1 + 'V' + r2 + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var r1 = round(r * 0.6, 2);
+            var r2 = round(r * 1.2, 2);
+            return align(angle, standoff, 'M-' + r2 + ',-' + r1 + 'H' + r1 + 'V' + r2 + 'Z');
         }
     },
     'triangle-se': {
         n: 10,
-        f: function(r) {
-            var r1 = d3.round(r * 0.6, 2);
-            var r2 = d3.round(r * 1.2, 2);
-            return 'M' + r1 + ',-' + r2 + 'V' + r1 + 'H-' + r2 + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var r1 = round(r * 0.6, 2);
+            var r2 = round(r * 1.2, 2);
+            return align(angle, standoff, 'M' + r1 + ',-' + r2 + 'V' + r1 + 'H-' + r2 + 'Z');
         }
     },
     'triangle-sw': {
         n: 11,
-        f: function(r) {
-            var r1 = d3.round(r * 0.6, 2);
-            var r2 = d3.round(r * 1.2, 2);
-            return 'M' + r2 + ',' + r1 + 'H-' + r1 + 'V-' + r2 + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var r1 = round(r * 0.6, 2);
+            var r2 = round(r * 1.2, 2);
+            return align(angle, standoff, 'M' + r2 + ',' + r1 + 'H-' + r1 + 'V-' + r2 + 'Z');
         }
     },
     'triangle-nw': {
         n: 12,
-        f: function(r) {
-            var r1 = d3.round(r * 0.6, 2);
-            var r2 = d3.round(r * 1.2, 2);
-            return 'M-' + r1 + ',' + r2 + 'V-' + r1 + 'H' + r2 + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var r1 = round(r * 0.6, 2);
+            var r2 = round(r * 1.2, 2);
+            return align(angle, standoff, 'M-' + r1 + ',' + r2 + 'V-' + r1 + 'H' + r2 + 'Z');
         }
     },
     pentagon: {
         n: 13,
-        f: function(r) {
-            var x1 = d3.round(r * 0.951, 2);
-            var x2 = d3.round(r * 0.588, 2);
-            var y0 = d3.round(-r, 2);
-            var y1 = d3.round(r * -0.309, 2);
-            var y2 = d3.round(r * 0.809, 2);
-            return 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2 + 'H-' + x2 +
-                'L-' + x1 + ',' + y1 + 'L0,' + y0 + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x1 = round(r * 0.951, 2);
+            var x2 = round(r * 0.588, 2);
+            var y0 = round(-r, 2);
+            var y1 = round(r * -0.309, 2);
+            var y2 = round(r * 0.809, 2);
+            return align(angle, standoff, 'M' + x1 + ',' + y1 + 'L' + x2 + ',' + y2 + 'H-' + x2 +
+                'L-' + x1 + ',' + y1 + 'L0,' + y0 + 'Z');
         }
     },
     hexagon: {
         n: 14,
-        f: function(r) {
-            var y0 = d3.round(r, 2);
-            var y1 = d3.round(r / 2, 2);
-            var x = d3.round(r * Math.sqrt(3) / 2, 2);
-            return 'M' + x + ',-' + y1 + 'V' + y1 + 'L0,' + y0 +
-                'L-' + x + ',' + y1 + 'V-' + y1 + 'L0,-' + y0 + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var y0 = round(r, 2);
+            var y1 = round(r / 2, 2);
+            var x = round(r * sqrt3 / 2, 2);
+            return align(angle, standoff, 'M' + x + ',-' + y1 + 'V' + y1 + 'L0,' + y0 +
+                'L-' + x + ',' + y1 + 'V-' + y1 + 'L0,-' + y0 + 'Z');
         }
     },
     hexagon2: {
         n: 15,
-        f: function(r) {
-            var x0 = d3.round(r, 2);
-            var x1 = d3.round(r / 2, 2);
-            var y = d3.round(r * Math.sqrt(3) / 2, 2);
-            return 'M-' + x1 + ',' + y + 'H' + x1 + 'L' + x0 +
-                ',0L' + x1 + ',-' + y + 'H-' + x1 + 'L-' + x0 + ',0Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x0 = round(r, 2);
+            var x1 = round(r / 2, 2);
+            var y = round(r * sqrt3 / 2, 2);
+            return align(angle, standoff, 'M-' + x1 + ',' + y + 'H' + x1 + 'L' + x0 +
+                ',0L' + x1 + ',-' + y + 'H-' + x1 + 'L-' + x0 + ',0Z');
         }
     },
     octagon: {
         n: 16,
-        f: function(r) {
-            var a = d3.round(r * 0.924, 2);
-            var b = d3.round(r * 0.383, 2);
-            return 'M-' + b + ',-' + a + 'H' + b + 'L' + a + ',-' + b + 'V' + b +
-                'L' + b + ',' + a + 'H-' + b + 'L-' + a + ',' + b + 'V-' + b + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var a = round(r * 0.924, 2);
+            var b = round(r * 0.383, 2);
+            return align(angle, standoff, 'M-' + b + ',-' + a + 'H' + b + 'L' + a + ',-' + b + 'V' + b +
+                'L' + b + ',' + a + 'H-' + b + 'L-' + a + ',' + b + 'V-' + b + 'Z');
         }
     },
     star: {
         n: 17,
-        f: function(r) {
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
             var rs = r * 1.4;
-            var x1 = d3.round(rs * 0.225, 2);
-            var x2 = d3.round(rs * 0.951, 2);
-            var x3 = d3.round(rs * 0.363, 2);
-            var x4 = d3.round(rs * 0.588, 2);
-            var y0 = d3.round(-rs, 2);
-            var y1 = d3.round(rs * -0.309, 2);
-            var y3 = d3.round(rs * 0.118, 2);
-            var y4 = d3.round(rs * 0.809, 2);
-            var y5 = d3.round(rs * 0.382, 2);
-            return 'M' + x1 + ',' + y1 + 'H' + x2 + 'L' + x3 + ',' + y3 +
+            var x1 = round(rs * 0.225, 2);
+            var x2 = round(rs * 0.951, 2);
+            var x3 = round(rs * 0.363, 2);
+            var x4 = round(rs * 0.588, 2);
+            var y0 = round(-rs, 2);
+            var y1 = round(rs * -0.309, 2);
+            var y3 = round(rs * 0.118, 2);
+            var y4 = round(rs * 0.809, 2);
+            var y5 = round(rs * 0.382, 2);
+            return align(angle, standoff, 'M' + x1 + ',' + y1 + 'H' + x2 + 'L' + x3 + ',' + y3 +
                 'L' + x4 + ',' + y4 + 'L0,' + y5 + 'L-' + x4 + ',' + y4 +
                 'L-' + x3 + ',' + y3 + 'L-' + x2 + ',' + y1 + 'H-' + x1 +
-                'L0,' + y0 + 'Z';
+                'L0,' + y0 + 'Z');
         }
     },
     hexagram: {
         n: 18,
-        f: function(r) {
-            var y = d3.round(r * 0.66, 2);
-            var x1 = d3.round(r * 0.38, 2);
-            var x2 = d3.round(r * 0.76, 2);
-            return 'M-' + x2 + ',0l-' + x1 + ',-' + y + 'h' + x2 +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var y = round(r * 0.66, 2);
+            var x1 = round(r * 0.38, 2);
+            var x2 = round(r * 0.76, 2);
+            return align(angle, standoff, 'M-' + x2 + ',0l-' + x1 + ',-' + y + 'h' + x2 +
                 'l' + x1 + ',-' + y + 'l' + x1 + ',' + y + 'h' + x2 +
                 'l-' + x1 + ',' + y + 'l' + x1 + ',' + y + 'h-' + x2 +
-                'l-' + x1 + ',' + y + 'l-' + x1 + ',-' + y + 'h-' + x2 + 'Z';
+                'l-' + x1 + ',' + y + 'l-' + x1 + ',-' + y + 'h-' + x2 + 'Z');
         }
     },
     'star-triangle-up': {
         n: 19,
-        f: function(r) {
-            var x = d3.round(r * Math.sqrt(3) * 0.8, 2);
-            var y1 = d3.round(r * 0.8, 2);
-            var y2 = d3.round(r * 1.6, 2);
-            var rc = d3.round(r * 4, 2);
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x = round(r * sqrt3 * 0.8, 2);
+            var y1 = round(r * 0.8, 2);
+            var y2 = round(r * 1.6, 2);
+            var rc = round(r * 4, 2);
             var aPart = 'A ' + rc + ',' + rc + ' 0 0 1 ';
-            return 'M-' + x + ',' + y1 + aPart + x + ',' + y1 +
-                aPart + '0,-' + y2 + aPart + '-' + x + ',' + y1 + 'Z';
+            return align(angle, standoff, 'M-' + x + ',' + y1 + aPart + x + ',' + y1 +
+                aPart + '0,-' + y2 + aPart + '-' + x + ',' + y1 + 'Z');
         }
     },
     'star-triangle-down': {
         n: 20,
-        f: function(r) {
-            var x = d3.round(r * Math.sqrt(3) * 0.8, 2);
-            var y1 = d3.round(r * 0.8, 2);
-            var y2 = d3.round(r * 1.6, 2);
-            var rc = d3.round(r * 4, 2);
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x = round(r * sqrt3 * 0.8, 2);
+            var y1 = round(r * 0.8, 2);
+            var y2 = round(r * 1.6, 2);
+            var rc = round(r * 4, 2);
             var aPart = 'A ' + rc + ',' + rc + ' 0 0 1 ';
-            return 'M' + x + ',-' + y1 + aPart + '-' + x + ',-' + y1 +
-                aPart + '0,' + y2 + aPart + x + ',-' + y1 + 'Z';
+            return align(angle, standoff, 'M' + x + ',-' + y1 + aPart + '-' + x + ',-' + y1 +
+                aPart + '0,' + y2 + aPart + x + ',-' + y1 + 'Z');
         }
     },
     'star-square': {
         n: 21,
-        f: function(r) {
-            var rp = d3.round(r * 1.1, 2);
-            var rc = d3.round(r * 2, 2);
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rp = round(r * 1.1, 2);
+            var rc = round(r * 2, 2);
             var aPart = 'A ' + rc + ',' + rc + ' 0 0 1 ';
-            return 'M-' + rp + ',-' + rp + aPart + '-' + rp + ',' + rp +
+            return align(angle, standoff, 'M-' + rp + ',-' + rp + aPart + '-' + rp + ',' + rp +
                 aPart + rp + ',' + rp + aPart + rp + ',-' + rp +
-                aPart + '-' + rp + ',-' + rp + 'Z';
+                aPart + '-' + rp + ',-' + rp + 'Z');
         }
     },
     'star-diamond': {
         n: 22,
-        f: function(r) {
-            var rp = d3.round(r * 1.4, 2);
-            var rc = d3.round(r * 1.9, 2);
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rp = round(r * 1.4, 2);
+            var rc = round(r * 1.9, 2);
             var aPart = 'A ' + rc + ',' + rc + ' 0 0 1 ';
-            return 'M-' + rp + ',0' + aPart + '0,' + rp +
+            return align(angle, standoff, 'M-' + rp + ',0' + aPart + '0,' + rp +
                 aPart + rp + ',0' + aPart + '0,-' + rp +
-                aPart + '-' + rp + ',0' + 'Z';
+                aPart + '-' + rp + ',0' + 'Z');
         }
     },
     'diamond-tall': {
         n: 23,
-        f: function(r) {
-            var x = d3.round(r * 0.7, 2);
-            var y = d3.round(r * 1.4, 2);
-            return 'M0,' + y + 'L' + x + ',0L0,-' + y + 'L-' + x + ',0Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x = round(r * 0.7, 2);
+            var y = round(r * 1.4, 2);
+            return align(angle, standoff, 'M0,' + y + 'L' + x + ',0L0,-' + y + 'L-' + x + ',0Z');
         }
     },
     'diamond-wide': {
         n: 24,
-        f: function(r) {
-            var x = d3.round(r * 1.4, 2);
-            var y = d3.round(r * 0.7, 2);
-            return 'M0,' + y + 'L' + x + ',0L0,-' + y + 'L-' + x + ',0Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x = round(r * 1.4, 2);
+            var y = round(r * 0.7, 2);
+            return align(angle, standoff, 'M0,' + y + 'L' + x + ',0L0,-' + y + 'L-' + x + ',0Z');
         }
     },
     hourglass: {
         n: 25,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            return 'M' + rs + ',' + rs + 'H-' + rs + 'L' + rs + ',-' + rs + 'H-' + rs + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M' + rs + ',' + rs + 'H-' + rs + 'L' + rs + ',-' + rs + 'H-' + rs + 'Z');
         },
         noDot: true
     },
     bowtie: {
         n: 26,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            return 'M' + rs + ',' + rs + 'V-' + rs + 'L-' + rs + ',' + rs + 'V-' + rs + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M' + rs + ',' + rs + 'V-' + rs + 'L-' + rs + ',' + rs + 'V-' + rs + 'Z');
         },
         noDot: true
     },
     'circle-cross': {
         n: 27,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            return 'M0,' + rs + 'V-' + rs + 'M' + rs + ',0H-' + rs +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M0,' + rs + 'V-' + rs + 'M' + rs + ',0H-' + rs +
                 'M' + rs + ',0A' + rs + ',' + rs + ' 0 1,1 0,-' + rs +
-                'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z';
+                'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z');
         },
         needLine: true,
         noDot: true
     },
     'circle-x': {
         n: 28,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            var rc = d3.round(r / Math.sqrt(2), 2);
-            return 'M' + rc + ',' + rc + 'L-' + rc + ',-' + rc +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            var rc = round(r / sqrt2, 2);
+            return align(angle, standoff, 'M' + rc + ',' + rc + 'L-' + rc + ',-' + rc +
                 'M' + rc + ',-' + rc + 'L-' + rc + ',' + rc +
                 'M' + rs + ',0A' + rs + ',' + rs + ' 0 1,1 0,-' + rs +
-                'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z';
+                'A' + rs + ',' + rs + ' 0 0,1 ' + rs + ',0Z');
         },
         needLine: true,
         noDot: true
     },
     'square-cross': {
         n: 29,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            return 'M0,' + rs + 'V-' + rs + 'M' + rs + ',0H-' + rs +
-                'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M0,' + rs + 'V-' + rs + 'M' + rs + ',0H-' + rs +
+                'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z');
         },
         needLine: true,
         noDot: true
     },
     'square-x': {
         n: 30,
-        f: function(r) {
-            var rs = d3.round(r, 2);
-            return 'M' + rs + ',' + rs + 'L-' + rs + ',-' + rs +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rs = round(r, 2);
+            return align(angle, standoff, 'M' + rs + ',' + rs + 'L-' + rs + ',-' + rs +
                 'M' + rs + ',-' + rs + 'L-' + rs + ',' + rs +
-                'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z';
+                'M' + rs + ',' + rs + 'H-' + rs + 'V-' + rs + 'H' + rs + 'Z');
         },
         needLine: true,
         noDot: true
     },
     'diamond-cross': {
         n: 31,
-        f: function(r) {
-            var rd = d3.round(r * 1.3, 2);
-            return 'M' + rd + ',0L0,' + rd + 'L-' + rd + ',0L0,-' + rd + 'Z' +
-                'M0,-' + rd + 'V' + rd + 'M-' + rd + ',0H' + rd;
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rd = round(r * 1.3, 2);
+            return align(angle, standoff, 'M' + rd + ',0L0,' + rd + 'L-' + rd + ',0L0,-' + rd + 'Z' +
+                'M0,-' + rd + 'V' + rd + 'M-' + rd + ',0H' + rd);
         },
         needLine: true,
         noDot: true
     },
     'diamond-x': {
         n: 32,
-        f: function(r) {
-            var rd = d3.round(r * 1.3, 2);
-            var r2 = d3.round(r * 0.65, 2);
-            return 'M' + rd + ',0L0,' + rd + 'L-' + rd + ',0L0,-' + rd + 'Z' +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rd = round(r * 1.3, 2);
+            var r2 = round(r * 0.65, 2);
+            return align(angle, standoff, 'M' + rd + ',0L0,' + rd + 'L-' + rd + ',0L0,-' + rd + 'Z' +
                 'M-' + r2 + ',-' + r2 + 'L' + r2 + ',' + r2 +
-                'M-' + r2 + ',' + r2 + 'L' + r2 + ',-' + r2;
+                'M-' + r2 + ',' + r2 + 'L' + r2 + ',-' + r2);
         },
         needLine: true,
         noDot: true
     },
     'cross-thin': {
         n: 33,
-        f: function(r) {
-            var rc = d3.round(r * 1.4, 2);
-            return 'M0,' + rc + 'V-' + rc + 'M' + rc + ',0H-' + rc;
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rc = round(r * 1.4, 2);
+            return align(angle, standoff, 'M0,' + rc + 'V-' + rc + 'M' + rc + ',0H-' + rc);
         },
         needLine: true,
         noDot: true,
@@ -26822,10 +27164,12 @@ module.exports = {
     },
     'x-thin': {
         n: 34,
-        f: function(r) {
-            var rx = d3.round(r, 2);
-            return 'M' + rx + ',' + rx + 'L-' + rx + ',-' + rx +
-                'M' + rx + ',-' + rx + 'L-' + rx + ',' + rx;
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r, 2);
+            return align(angle, standoff, 'M' + rx + ',' + rx + 'L-' + rx + ',-' + rx +
+                'M' + rx + ',-' + rx + 'L-' + rx + ',' + rx);
         },
         needLine: true,
         noDot: true,
@@ -26833,12 +27177,14 @@ module.exports = {
     },
     asterisk: {
         n: 35,
-        f: function(r) {
-            var rc = d3.round(r * 1.2, 2);
-            var rs = d3.round(r * 0.85, 2);
-            return 'M0,' + rc + 'V-' + rc + 'M' + rc + ',0H-' + rc +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rc = round(r * 1.2, 2);
+            var rs = round(r * 0.85, 2);
+            return align(angle, standoff, 'M0,' + rc + 'V-' + rc + 'M' + rc + ',0H-' + rc +
                 'M' + rs + ',' + rs + 'L-' + rs + ',-' + rs +
-                'M' + rs + ',-' + rs + 'L-' + rs + ',' + rs;
+                'M' + rs + ',-' + rs + 'L-' + rs + ',' + rs);
         },
         needLine: true,
         noDot: true,
@@ -26846,24 +27192,29 @@ module.exports = {
     },
     hash: {
         n: 36,
-        f: function(r) {
-            var r1 = d3.round(r / 2, 2);
-            var r2 = d3.round(r, 2);
-            return 'M' + r1 + ',' + r2 + 'V-' + r2 +
-                'm-' + r2 + ',0V' + r2 +
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var r1 = round(r / 2, 2);
+            var r2 = round(r, 2);
+
+            return align(angle, standoff, 'M' + r1 + ',' + r2 + 'V-' + r2 +
+                'M' + (r1 - r2) + ',-' + r2 + 'V' + r2 +
                 'M' + r2 + ',' + r1 + 'H-' + r2 +
-                'm0,-' + r2 + 'H' + r2;
+                'M-' + r2 + ',' + (r1 - r2) + 'H' + r2);
         },
         needLine: true,
         noFill: true
     },
     'y-up': {
         n: 37,
-        f: function(r) {
-            var x = d3.round(r * 1.2, 2);
-            var y0 = d3.round(r * 1.6, 2);
-            var y1 = d3.round(r * 0.8, 2);
-            return 'M-' + x + ',' + y1 + 'L0,0M' + x + ',' + y1 + 'L0,0M0,-' + y0 + 'L0,0';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x = round(r * 1.2, 2);
+            var y0 = round(r * 1.6, 2);
+            var y1 = round(r * 0.8, 2);
+            return align(angle, standoff, 'M-' + x + ',' + y1 + 'L0,0M' + x + ',' + y1 + 'L0,0M0,-' + y0 + 'L0,0');
         },
         needLine: true,
         noDot: true,
@@ -26871,11 +27222,13 @@ module.exports = {
     },
     'y-down': {
         n: 38,
-        f: function(r) {
-            var x = d3.round(r * 1.2, 2);
-            var y0 = d3.round(r * 1.6, 2);
-            var y1 = d3.round(r * 0.8, 2);
-            return 'M-' + x + ',-' + y1 + 'L0,0M' + x + ',-' + y1 + 'L0,0M0,' + y0 + 'L0,0';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var x = round(r * 1.2, 2);
+            var y0 = round(r * 1.6, 2);
+            var y1 = round(r * 0.8, 2);
+            return align(angle, standoff, 'M-' + x + ',-' + y1 + 'L0,0M' + x + ',-' + y1 + 'L0,0M0,' + y0 + 'L0,0');
         },
         needLine: true,
         noDot: true,
@@ -26883,11 +27236,13 @@ module.exports = {
     },
     'y-left': {
         n: 39,
-        f: function(r) {
-            var y = d3.round(r * 1.2, 2);
-            var x0 = d3.round(r * 1.6, 2);
-            var x1 = d3.round(r * 0.8, 2);
-            return 'M' + x1 + ',' + y + 'L0,0M' + x1 + ',-' + y + 'L0,0M-' + x0 + ',0L0,0';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var y = round(r * 1.2, 2);
+            var x0 = round(r * 1.6, 2);
+            var x1 = round(r * 0.8, 2);
+            return align(angle, standoff, 'M' + x1 + ',' + y + 'L0,0M' + x1 + ',-' + y + 'L0,0M-' + x0 + ',0L0,0');
         },
         needLine: true,
         noDot: true,
@@ -26895,11 +27250,13 @@ module.exports = {
     },
     'y-right': {
         n: 40,
-        f: function(r) {
-            var y = d3.round(r * 1.2, 2);
-            var x0 = d3.round(r * 1.6, 2);
-            var x1 = d3.round(r * 0.8, 2);
-            return 'M-' + x1 + ',' + y + 'L0,0M-' + x1 + ',-' + y + 'L0,0M' + x0 + ',0L0,0';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var y = round(r * 1.2, 2);
+            var x0 = round(r * 1.6, 2);
+            var x1 = round(r * 0.8, 2);
+            return align(angle, standoff, 'M-' + x1 + ',' + y + 'L0,0M-' + x1 + ',-' + y + 'L0,0M' + x0 + ',0L0,0');
         },
         needLine: true,
         noDot: true,
@@ -26907,9 +27264,11 @@ module.exports = {
     },
     'line-ew': {
         n: 41,
-        f: function(r) {
-            var rc = d3.round(r * 1.4, 2);
-            return 'M' + rc + ',0H-' + rc;
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rc = round(r * 1.4, 2);
+            return align(angle, standoff, 'M' + rc + ',0H-' + rc);
         },
         needLine: true,
         noDot: true,
@@ -26917,9 +27276,11 @@ module.exports = {
     },
     'line-ns': {
         n: 42,
-        f: function(r) {
-            var rc = d3.round(r * 1.4, 2);
-            return 'M0,' + rc + 'V-' + rc;
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rc = round(r * 1.4, 2);
+            return align(angle, standoff, 'M0,' + rc + 'V-' + rc);
         },
         needLine: true,
         noDot: true,
@@ -26927,9 +27288,11 @@ module.exports = {
     },
     'line-ne': {
         n: 43,
-        f: function(r) {
-            var rx = d3.round(r, 2);
-            return 'M' + rx + ',-' + rx + 'L-' + rx + ',' + rx;
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r, 2);
+            return align(angle, standoff, 'M' + rx + ',-' + rx + 'L-' + rx + ',' + rx);
         },
         needLine: true,
         noDot: true,
@@ -26937,9 +27300,11 @@ module.exports = {
     },
     'line-nw': {
         n: 44,
-        f: function(r) {
-            var rx = d3.round(r, 2);
-            return 'M' + rx + ',' + rx + 'L-' + rx + ',-' + rx;
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r, 2);
+            return align(angle, standoff, 'M' + rx + ',' + rx + 'L-' + rx + ',-' + rx);
         },
         needLine: true,
         noDot: true,
@@ -26947,83 +27312,240 @@ module.exports = {
     },
     'arrow-up': {
         n: 45,
-        f: function(r) {
-            var rx = d3.round(r, 2);
-            var ry = d3.round(r * 2, 2);
-            return 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r, 2);
+            var ry = round(r * 2, 2);
+            return align(angle, standoff, 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z');
         },
+        backoff: 1,
         noDot: true
     },
     'arrow-down': {
         n: 46,
-        f: function(r) {
-            var rx = d3.round(r, 2);
-            var ry = d3.round(r * 2, 2);
-            return 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r, 2);
+            var ry = round(r * 2, 2);
+            return align(angle, standoff, 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z');
         },
         noDot: true
     },
     'arrow-left': {
         n: 47,
-        f: function(r) {
-            var rx = d3.round(r * 2, 2);
-            var ry = d3.round(r, 2);
-            return 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r * 2, 2);
+            var ry = round(r, 2);
+            return align(angle, standoff, 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         noDot: true
     },
     'arrow-right': {
         n: 48,
-        f: function(r) {
-            var rx = d3.round(r * 2, 2);
-            var ry = d3.round(r, 2);
-            return 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r * 2, 2);
+            var ry = round(r, 2);
+            return align(angle, standoff, 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         noDot: true
     },
     'arrow-bar-up': {
         n: 49,
-        f: function(r) {
-            var rx = d3.round(r, 2);
-            var ry = d3.round(r * 2, 2);
-            return 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r, 2);
+            var ry = round(r * 2, 2);
+            return align(angle, standoff, 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',' + ry + 'H' + rx + 'Z');
         },
+        backoff: 1,
         needLine: true,
         noDot: true
     },
     'arrow-bar-down': {
         n: 50,
-        f: function(r) {
-            var rx = d3.round(r, 2);
-            var ry = d3.round(r * 2, 2);
-            return 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r, 2);
+            var ry = round(r * 2, 2);
+            return align(angle, standoff, 'M-' + rx + ',0H' + rx + 'M0,0L-' + rx + ',-' + ry + 'H' + rx + 'Z');
         },
         needLine: true,
         noDot: true
     },
     'arrow-bar-left': {
         n: 51,
-        f: function(r) {
-            var rx = d3.round(r * 2, 2);
-            var ry = d3.round(r, 2);
-            return 'M0,-' + ry + 'V' + ry + 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r * 2, 2);
+            var ry = round(r, 2);
+            return align(angle, standoff, 'M0,-' + ry + 'V' + ry + 'M0,0L' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         needLine: true,
         noDot: true
     },
     'arrow-bar-right': {
         n: 52,
-        f: function(r) {
-            var rx = d3.round(r * 2, 2);
-            var ry = d3.round(r, 2);
-            return 'M0,-' + ry + 'V' + ry + 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z';
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var rx = round(r * 2, 2);
+            var ry = round(r, 2);
+            return align(angle, standoff, 'M0,-' + ry + 'V' + ry + 'M0,0L-' + rx + ',-' + ry + 'V' + ry + 'Z');
         },
         needLine: true,
+        noDot: true
+    },
+    'arrow': {
+        n: 53,
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var headAngle = PI / 2.5; // 36 degrees - golden ratio
+            var x = 2 * r * cos(headAngle);
+            var y = 2 * r * sin(headAngle);
+
+            return align(angle, standoff,
+                'M0,0' +
+                'L' + -x + ',' + y +
+                'L' + x + ',' + y +
+                'Z'
+            );
+        },
+        backoff: 0.9,
+        noDot: true
+    },
+    'arrow-wide': {
+        n: 54,
+        f: function(r, angle, standoff) {
+            if(skipAngle(angle)) return emptyPath;
+
+            var headAngle = PI / 4; // 90 degrees
+            var x = 2 * r * cos(headAngle);
+            var y = 2 * r * sin(headAngle);
+
+            return align(angle, standoff,
+                'M0,0' +
+                'L' + -x + ',' + y +
+                'A ' + 2 * r + ',' + 2 * r + ' 0 0 1 ' + x + ',' + y +
+                'Z'
+            );
+        },
+        backoff: 0.4,
         noDot: true
     }
 };
 
-},{"@plotly/d3":16}],144:[function(_dereq_,module,exports){
+function skipAngle(angle) {
+    return angle === null;
+}
+
+var lastPathIn, lastPathOut;
+var lastAngle, lastStandoff;
+
+function align(angle, standoff, path) {
+    if((!angle || angle % 360 === 0) && !standoff) return path;
+
+    if(
+        lastAngle === angle &&
+        lastStandoff === standoff &&
+        lastPathIn === path
+    ) return lastPathOut;
+
+    lastAngle = angle;
+    lastStandoff = standoff;
+    lastPathIn = path;
+
+    function rotate(t, xy) {
+        var cosT = cos(t);
+        var sinT = sin(t);
+
+        var x = xy[0];
+        var y = xy[1] + (standoff || 0);
+        return [
+            x * cosT - y * sinT,
+            x * sinT + y * cosT
+        ];
+    }
+
+    var t = angle / 180 * PI;
+
+    var x = 0;
+    var y = 0;
+    var cmd = parseSvgPath(path);
+    var str = '';
+
+    for(var i = 0; i < cmd.length; i++) {
+        var cmdI = cmd[i];
+        var op = cmdI[0];
+
+        var x0 = x;
+        var y0 = y;
+
+        if(op === 'M' || op === 'L') {
+            x = +cmdI[1];
+            y = +cmdI[2];
+        } else if(op === 'm' || op === 'l') {
+            x += +cmdI[1];
+            y += +cmdI[2];
+        } else if(op === 'H') {
+            x = +cmdI[1];
+        } else if(op === 'h') {
+            x += +cmdI[1];
+        } else if(op === 'V') {
+            y = +cmdI[1];
+        } else if(op === 'v') {
+            y += +cmdI[1];
+        } else if(op === 'A') {
+            x = +cmdI[1];
+            y = +cmdI[2];
+
+            var E = rotate(t, [+cmdI[6], +cmdI[7]]);
+            cmdI[6] = E[0];
+            cmdI[7] = E[1];
+            cmdI[3] = +cmdI[3] + angle;
+        }
+
+        // change from H, V, h, v to L or l
+        if(op === 'H' || op === 'V') op = 'L';
+        if(op === 'h' || op === 'v') op = 'l';
+
+        if(op === 'm' || op === 'l') {
+            x -= x0;
+            y -= y0;
+        }
+
+        var B = rotate(t, [x, y]);
+
+        if(op === 'H' || op === 'V') op = 'L';
+
+
+        if(
+            op === 'M' || op === 'L' ||
+            op === 'm' || op === 'l'
+        ) {
+            cmdI[1] = B[0];
+            cmdI[2] = B[1];
+        }
+        cmdI[0] = op;
+
+        str += cmdI[0] + cmdI.slice(1).join(',');
+    }
+
+    lastPathOut = str;
+
+    return str;
+}
+
+},{"@plotly/d3":16,"parse-svg-path":72}],144:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -31304,6 +31826,17 @@ module.exports = {
         dflt: 10,
         editType: 'legend',
     },
+    entrywidth: {
+        valType: 'number',
+        min: 0,
+        editType: 'legend',
+    },
+    entrywidthmode: {
+        valType: 'enumerated',
+        values: ['fraction', 'pixels'],
+        dflt: 'pixels',
+        editType: 'legend',
+    },
     itemsizing: {
         valType: 'enumerated',
         values: ['trace', 'constant'],
@@ -31527,6 +32060,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('traceorder', defaultOrder);
     if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
+    coerce('entrywidth');
+    coerce('entrywidthmode');
     coerce('itemsizing');
     coerce('itemwidth');
 
@@ -31906,6 +32441,18 @@ function _draw(gd, legendObj) {
         }], gd);
 }
 
+function getTraceWidth(d, legendObj, textGap) {
+    var legendItem = d[0];
+    var legendWidth = legendItem.width;
+    var mode = legendObj.entrywidthmode;
+
+    var traceLegendWidth = legendItem.trace.legendwidth || legendObj.entrywidth;
+
+    if(mode === 'fraction') return legendObj._maxWidth * traceLegendWidth;
+
+    return textGap + (traceLegendWidth || legendWidth);
+}
+
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
     var evtData = {
@@ -32179,6 +32726,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
 
     var isVertical = helpers.isVertical(legendObj);
     var isGrouped = helpers.isGrouped(legendObj);
+    var isFraction = legendObj.entrywidthmode === 'fraction';
 
     var bw = legendObj.borderwidth;
     var bw2 = 2 * bw;
@@ -32191,6 +32739,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
 
     var traceGroupGap = legendObj.tracegroupgap;
+    var legendGroupWidths = {};
 
     // - if below/above plot area, give it the maximum potential margin-push value
     // - otherwise, extend the height of the plot area
@@ -32243,7 +32792,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         var maxItemWidth = 0;
         var combinedItemWidth = 0;
         traces.each(function(d) {
-            var w = d[0].width + textGap;
+            var w = getTraceWidth(d, legendObj, textGap);
             maxItemWidth = Math.max(maxItemWidth, w);
             combinedItemWidth += w;
         });
@@ -32259,7 +32808,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 var maxWidthInGroup = 0;
                 var offsetY = 0;
                 d3.select(this).selectAll('g.traces').each(function(d) {
-                    var w = d[0].width;
+                    var w = getTraceWidth(d, legendObj, textGap);
                     var h = d[0].height;
 
                     Drawing.setTranslate(this,
@@ -32267,7 +32816,8 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                         titleSize[1] + bw + itemGap + h / 2 + offsetY
                     );
                     offsetY += h;
-                    maxWidthInGroup = Math.max(maxWidthInGroup, textGap + w);
+                    maxWidthInGroup = Math.max(maxWidthInGroup, w);
+                    legendGroupWidths[d[0].trace.legendgroup] = maxWidthInGroup;
                 });
 
                 var next = maxWidthInGroup + itemGap;
@@ -32305,8 +32855,12 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             var rowWidth = 0;
             traces.each(function(d) {
                 var h = d[0].height;
-                var w = textGap + d[0].width;
-                var next = (oneRowLegend ? w : maxItemWidth) + itemGap;
+                var w = getTraceWidth(d, legendObj, textGap, isGrouped);
+                var next = (oneRowLegend ? w : maxItemWidth);
+
+                if(!isFraction) {
+                    next += itemGap;
+                }
 
                 if((next + bw + offsetX - itemGap) >= legendObj._maxWidth) {
                     maxRowWidth = Math.max(maxRowWidth, rowWidth);
@@ -32357,8 +32911,15 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     traces.each(function(d) {
         var traceToggle = d3.select(this).select('.legendtoggle');
         var h = d[0].height;
-        var w = isEditable ? textGap : (toggleRectWidth || (textGap + d[0].width));
-        if(!isVertical) w += itemGap / 2;
+        var legendgroup = d[0].trace.legendgroup;
+        var traceWidth = getTraceWidth(d, legendObj, textGap);
+        if(isGrouped && legendgroup !== '') {
+            traceWidth = legendGroupWidths[legendgroup];
+        }
+        var w = isEditable ? textGap : (toggleRectWidth || traceWidth);
+        if(!isVertical && !isFraction) {
+            w += itemGap / 2;
+        }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
     });
 }
@@ -36234,10 +36795,10 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
         width: opts._width + borderCorrect,
         height: opts._height + borderCorrect,
         transform: strTranslate(offsetShift, offsetShift),
-        fill: opts.bgcolor,
-        stroke: opts.bordercolor,
         'stroke-width': lw
-    });
+    })
+    .call(Color.stroke, opts.bordercolor)
+    .call(Color.fill, opts.bgcolor);
 }
 
 function addClipPath(rangeSlider, gd, axisOpts, opts) {
@@ -37354,21 +37915,25 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         fullLayout.newshape :
         fullLayout.newselection;
 
+    var fillC = (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'rgba(0,0,0,0)';
+
+    var strokeC = newStyle.line.color || (
+        isCartesian ?
+            Color.contrast(gd._fullLayout.plot_bgcolor) :
+            '#7f7f7f' // non-cartesian subplot
+    );
+
     outlines.enter()
         .append('path')
         .attr('class', 'select-outline select-outline-' + plotinfo.id)
         .style({
             opacity: isDrawMode ? newStyle.opacity / 2 : 1,
-            fill: (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'none',
-            stroke: newStyle.line.color || (
-                isCartesian ?
-                    Color.contrast(gd._fullLayout.plot_bgcolor) :
-                    '#7f7f7f' // non-cartesian subplot
-            ),
             'stroke-dasharray': dashStyle(newStyle.line.dash, newStyle.line.width),
             'stroke-width': newStyle.line.width + 'px',
             'shape-rendering': 'crispEdges'
         })
+        .call(Color.stroke, strokeC)
+        .call(Color.fill, fillC)
         .attr('fill-rule', 'evenodd')
         .classed('cursor-move', isDrawMode ? true : false)
         .attr('transform', transform)
@@ -38397,13 +38962,13 @@ function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptio
         if(_selectionTesters) {
             var _searchTraces = searchTraces;
             if(!hadSearchTraces) {
-                var _xaxis = getFromId(gd, _xRef, 'x');
-                var _yaxis = getFromId(gd, _yRef, 'y');
+                var _xA = getFromId(gd, _xRef, 'x');
+                var _yA = getFromId(gd, _yRef, 'y');
 
                 _searchTraces = determineSearchTraces(
                     gd,
-                    [_xaxis],
-                    [_yaxis],
+                    [_xA],
+                    [_yA],
                     subplot
                 );
 
@@ -38420,8 +38985,8 @@ function reselect(gd, mayEmitSelected, selectionTesters, searchTraces, dragOptio
                         cd0.t.xpx = [];
                         cd0.t.ypx = [];
                         for(var j = 0; j < len; j++) {
-                            cd0.t.xpx[j] = _xaxis.c2p(x[j]);
-                            cd0.t.ypx[j] = _yaxis.c2p(y[j]);
+                            cd0.t.xpx[j] = _xA.c2p(x[j]);
+                            cd0.t.ypx[j] = _yA.c2p(y[j]);
                         }
                     }
 
@@ -48221,6 +48786,11 @@ lib.getTextTransform = function(transform) {
     );
 };
 
+lib.setTransormAndDisplay = function(s, transform) {
+    s.attr('transform', lib.getTextTransform(transform));
+    s.style('display', transform.scale ? null : 'none');
+};
+
 lib.ensureUniformFontSize = function(gd, baseFont) {
     var out = lib.extendFlat({}, baseFont);
     out.size = Math.max(
@@ -54368,8 +54938,6 @@ function addAxRangeSequence(seq, rangesAltered) {
                         }
                     }
                 }
-
-                if(ax.automargin) skipTitle = false;
             }
 
             return Axes.draw(gd, axIds, {skipTitle: skipTitle});
@@ -59597,6 +60165,11 @@ module.exports = {
     legendrank: {
         valType: 'number',
         dflt: 1000,
+        editType: 'style',
+    },
+    legendwidth: {
+        valType: 'number',
+        min: 0,
         editType: 'style',
     },
     opacity: {
@@ -73931,6 +74504,18 @@ module.exports = {
         dflt: 450,
         editType: 'plot',
     },
+    minreducedwidth: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+    },
+    minreducedheight: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+    },
     margin: {
         l: {
             valType: 'number',
@@ -75421,6 +76006,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
                 'showlegend'
             );
 
+            coerce('legendwidth');
             coerce('legendgroup');
             coerce('legendgrouptitle.text');
             coerce('legendrank');
@@ -75607,6 +76193,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('width');
     coerce('height');
+    coerce('minreducedwidth');
+    coerce('minreducedheight');
+
     coerce('margin.l');
     coerce('margin.r');
     coerce('margin.t');
@@ -75962,10 +76551,6 @@ function initMargins(fullLayout) {
 var MIN_SPECIFIED_WIDTH = 2;
 var MIN_SPECIFIED_HEIGHT = 2;
 
-// could be exposed as an option - the smallest we will allow automargin to shrink a larger plot
-var MIN_REDUCED_WIDTH = 64;
-var MIN_REDUCED_HEIGHT = 64;
-
 /**
  * autoMargin: called by components that may need to expand the margins to
  * be rendered on-plot.
@@ -75986,17 +76571,19 @@ plots.autoMargin = function(gd, id, o) {
     var width = fullLayout.width;
     var height = fullLayout.height;
     var margin = fullLayout.margin;
+    var minreducedwidth = fullLayout.minreducedwidth;
+    var minreducedheight = fullLayout.minreducedheight;
 
     var minFinalWidth = Lib.constrain(
         width - margin.l - margin.r,
         MIN_SPECIFIED_WIDTH,
-        MIN_REDUCED_WIDTH
+        minreducedwidth
     );
 
     var minFinalHeight = Lib.constrain(
         height - margin.t - margin.b,
         MIN_SPECIFIED_HEIGHT,
-        MIN_REDUCED_HEIGHT
+        minreducedheight
     );
 
     var maxSpaceW = Math.max(0, width - minFinalWidth);
@@ -76075,6 +76662,8 @@ plots.doAutoMargin = function(gd) {
     var mb = margin.b;
     var pushMargin = fullLayout._pushmargin;
     var pushMarginIds = fullLayout._pushmarginIds;
+    var minreducedwidth = fullLayout.minreducedwidth;
+    var minreducedheight = fullLayout.minreducedheight;
 
     if(fullLayout.margin.autoexpand !== false) {
         for(var k in pushMargin) {
@@ -76133,13 +76722,13 @@ plots.doAutoMargin = function(gd) {
     var minFinalWidth = Lib.constrain(
         width - margin.l - margin.r,
         MIN_SPECIFIED_WIDTH,
-        MIN_REDUCED_WIDTH
+        minreducedwidth
     );
 
     var minFinalHeight = Lib.constrain(
         height - margin.t - margin.b,
         MIN_SPECIFIED_HEIGHT,
-        MIN_REDUCED_HEIGHT
+        minreducedheight
     );
 
     var maxSpaceW = Math.max(0, width - minFinalWidth);
@@ -81452,6 +82041,8 @@ module.exports = function arraysToCalcdata(cd, trace) {
         Lib.mergeArrayCastPositive(marker.size, cd, 'ms');
         Lib.mergeArrayCastPositive(marker.opacity, cd, 'mo');
         Lib.mergeArray(marker.symbol, cd, 'mx');
+        Lib.mergeArray(marker.angle, cd, 'ma');
+        Lib.mergeArray(marker.standoff, cd, 'mf');
         Lib.mergeArray(marker.color, cd, 'mc');
 
         var markerLine = marker.line;
@@ -81636,6 +82227,13 @@ module.exports = {
             editType: 'plot',
         },
         dash: extendFlat({}, dash, {editType: 'style'}),
+        backoff: { // we want to have a similar option for the start of the line
+            valType: 'number',
+            min: 0,
+            dflt: 'auto',
+            arrayOk: true,
+            editType: 'plot',
+        },
         simplify: {
             valType: 'boolean',
             dflt: true,
@@ -81680,6 +82278,28 @@ module.exports = {
             max: 1,
             arrayOk: true,
             editType: 'style',
+            anim: true,
+        },
+        angle: {
+            valType: 'angle',
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: false, // TODO: possibly set to true in future
+        },
+        angleref: {
+            valType: 'enumerated',
+            values: ['previous', 'up'],
+            dflt: 'up',
+            editType: 'plot',
+            anim: false,
+        },
+        standoff: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
             anim: true,
         },
         size: {
@@ -81837,8 +82457,8 @@ var calcSelection = _dereq_('./calc_selection');
 
 function calc(gd, trace) {
     var fullLayout = gd._fullLayout;
-    var xa = Axes.getFromId(gd, trace.xaxis || 'x');
-    var ya = Axes.getFromId(gd, trace.yaxis || 'y');
+    var xa = trace._xA = Axes.getFromId(gd, trace.xaxis || 'x', 'x');
+    var ya = trace._yA = Axes.getFromId(gd, trace.yaxis || 'y', 'y');
     var origX = xa.makeCalcdata(trace, 'x');
     var origY = ya.makeCalcdata(trace, 'y');
     var xObj = alignPeriod(trace, xa, 'x', origX);
@@ -82427,7 +83047,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {backoff: true});
         handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
         coerce('line.simplify');
@@ -82816,6 +83436,8 @@ var hasColorscale = _dereq_('../../components/colorscale/helpers').hasColorscale
 var colorscaleDefaults = _dereq_('../../components/colorscale/defaults');
 
 module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce, opts) {
+    if(!opts) opts = {};
+
     var markerColor = (traceIn.marker || {}).color;
 
     coerce('line.color', defaultColor);
@@ -82828,12 +83450,15 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     }
 
     coerce('line.width');
-    if(!(opts || {}).noDash) coerce('line.dash');
+
+    if(!opts.noDash) coerce('line.dash');
+    if(opts.backoff) coerce('line.backoff');
 };
 
 },{"../../components/colorscale/defaults":130,"../../components/colorscale/helpers":131,"../../lib":264}],404:[function(_dereq_,module,exports){
 'use strict';
 
+var Drawing = _dereq_('../../components/drawing');
 var numConstants = _dereq_('../../constants/numerical');
 var BADNUM = numConstants.BADNUM;
 var LOG_CLIP = numConstants.LOG_CLIP;
@@ -82846,17 +83471,20 @@ var constants = _dereq_('./constants');
 
 
 module.exports = function linePoints(d, opts) {
+    var trace = opts.trace || {};
     var xa = opts.xaxis;
     var ya = opts.yaxis;
     var xLog = xa.type === 'log';
     var yLog = ya.type === 'log';
     var xLen = xa._length;
     var yLen = ya._length;
+    var backoff = opts.backoff;
+    var marker = trace.marker;
     var connectGaps = opts.connectGaps;
     var baseTolerance = opts.baseTolerance;
     var shape = opts.shape;
     var linear = shape === 'linear';
-    var fill = opts.fill && opts.fill !== 'none';
+    var fill = trace.fill && trace.fill !== 'none';
     var segments = [];
     var minTolerance = constants.minTolerance;
     var len = d.length;
@@ -83109,7 +83737,17 @@ module.exports = function linePoints(d, opts) {
         lastXEdge = lastYEdge = 0;
     }
 
+    var arrayMarker = Lib.isArrayOrTypedArray(marker);
+
     function addPt(pt) {
+        if(pt && backoff) {
+            pt.i = i;
+            pt.d = d;
+            pt.trace = trace;
+            pt.marker = arrayMarker ? marker[pt.i] : marker;
+            pt.backoff = backoff;
+        }
+
         latestXFrac = pt[0] / xLen;
         latestYFrac = pt[1] / yLen;
         // Are we more than maxScreensAway off-screen any direction?
@@ -83280,10 +83918,41 @@ module.exports = function linePoints(d, opts) {
         segments.push(pts.slice(0, pti));
     }
 
+
+    var lastShapeChar = shape.slice(shape.length - 1);
+    if(backoff && lastShapeChar !== 'h' && lastShapeChar !== 'v') {
+        var trimmed = false;
+        var n = -1;
+        var newSegments = [];
+
+        for(var j = 0; j < segments.length; j++) {
+            for(var k = 0; k < segments[j].length - 1; k++) {
+                var start = segments[j][k];
+                var end = segments[j][k + 1];
+
+                var xy = Drawing.applyBackoff(end, start);
+                if(
+                    xy[0] !== end[0] ||
+                    xy[1] !== end[1]
+                ) {
+                    trimmed = true;
+                }
+                if(!newSegments[n + 1]) {
+                    n++;
+                    newSegments[n] = [
+                        start, [xy[0], xy[1]]
+                    ];
+                }
+            }
+        }
+
+        return trimmed ? newSegments : segments;
+    }
+
     return segments;
 };
 
-},{"../../constants/numerical":243,"../../lib":264,"./constants":394}],405:[function(_dereq_,module,exports){
+},{"../../components/drawing":142,"../../constants/numerical":243,"../../lib":264,"./constants":394}],405:[function(_dereq_,module,exports){
 'use strict';
 
 
@@ -83448,6 +84117,16 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.symbol');
     coerce('marker.opacity', isBubble ? 0.7 : 1);
     coerce('marker.size');
+    if(!opts.noAngle) {
+        coerce('marker.angle');
+        if(!opts.noAngleRef) {
+            coerce('marker.angleref');
+        }
+
+        if(!opts.noStandOff) {
+            coerce('marker.standoff');
+        }
+    }
 
     coerce('marker.color', defaultColor);
     if(hasColorscale(traceIn, 'marker')) {
@@ -83744,9 +84423,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         segments = linePoints(cdscatter, {
             xaxis: xa,
             yaxis: ya,
+            trace: trace,
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
             shape: line.shape,
+            backoff: line.backoff,
             simplify: line.simplify,
             fill: trace.fill
         });
@@ -85186,7 +85867,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(subTypes.hasMarkers(traceOut)) {
-        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true});
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noSelect: true, noAngle: true});
     }
 
     if(subTypes.hasText(traceOut)) {
@@ -88379,7 +89060,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.14.0';
+exports.version = '2.15.0';
 
 },{}],444:[function(_dereq_,module,exports){
 (function (global){(function (){
