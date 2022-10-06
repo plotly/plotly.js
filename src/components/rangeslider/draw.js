@@ -399,10 +399,10 @@ function drawBg(rangeSlider, gd, axisOpts, opts) {
         width: opts._width + borderCorrect,
         height: opts._height + borderCorrect,
         transform: strTranslate(offsetShift, offsetShift),
-        fill: opts.bgcolor,
-        stroke: opts.bordercolor,
         'stroke-width': lw
-    });
+    })
+    .call(Color.stroke, opts.bordercolor)
+    .call(Color.fill, opts.bgcolor);
 }
 
 function addClipPath(rangeSlider, gd, axisOpts, opts) {
