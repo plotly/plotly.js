@@ -26,6 +26,11 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('bearing');
     coerce('pitch');
 
+    coerce('westbound');
+    coerce('eastbound');
+    coerce('southbound');
+    coerce('northbound');
+
     handleArrayContainerDefaults(containerIn, containerOut, {
         name: 'layers',
         handleItemDefaults: handleLayerDefaults

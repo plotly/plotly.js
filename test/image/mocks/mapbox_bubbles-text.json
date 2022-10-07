@@ -39,6 +39,10 @@
   ],
   "layout": {
     "mapbox": {
+      "westbound": -60,
+      "eastbound": 60,
+      "southbound": -30,
+      "northbound": 30,
       "style": "light",
       "zoom": 2.5,
       "center": {

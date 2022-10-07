@@ -95,6 +95,27 @@ var attrs = module.exports = overrideAll({
         ].join(' ')
     },
 
+    westbound: {
+        valType: 'number',
+        dflt: null,
+        description: 'Sets the minimum longitude of the map (in degrees East).'
+    },
+    eastbound: {
+        valType: 'number',
+        dflt: null,
+        description: 'Sets the maximum longitude of the map (in degrees East).'
+    },
+    southbound: {
+        valType: 'number',
+        dflt: null,
+        description: 'Sets the minimum latitude of the map (in degrees North).'
+    },
+    northbound: {
+        valType: 'number',
+        dflt: null,
+        description: 'Sets the maximum latitude of the map (in degrees North).'
+    },
+
     layers: templatedArray('layer', {
         visible: {
             valType: 'boolean',
