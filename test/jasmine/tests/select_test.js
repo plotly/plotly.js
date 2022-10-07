@@ -1862,6 +1862,12 @@ describe('Test select box and lasso per trace:', function() {
             fig.data[0].lat.push(null);
 
             fig.layout.dragmode = 'select';
+
+            delete fig.layout.mapbox.eastbound;
+            delete fig.layout.mapbox.westbound;
+            delete fig.layout.mapbox.southbound;
+            delete fig.layout.mapbox.northbound;
+
             fig.config = {
                 mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
             };
