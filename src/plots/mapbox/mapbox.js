@@ -96,9 +96,11 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     var southbound = opts.southbound;
     var northbound = opts.northbound;
     var maxBounds = (
+        /*
         westbound !== undefined &&
         eastbound !== undefined &&
         southbound !== undefined &&
+        */
         northbound !== undefined
     ) ? [[westbound, southbound], [eastbound, northbound]] : null;
 

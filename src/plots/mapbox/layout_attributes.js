@@ -97,23 +97,31 @@ var attrs = module.exports = overrideAll({
 
     westbound: {
         valType: 'number',
-        dflt: null,
-        description: 'Sets the minimum longitude of the map (in degrees East).'
+        description: [
+            'Sets the minimum longitude of the map (in degrees East)',
+            'if `eastbound`, `southbound` and `northbound` are declared.'
+        ].join(' ')
     },
     eastbound: {
         valType: 'number',
-        dflt: null,
-        description: 'Sets the maximum longitude of the map (in degrees East).'
+        description: [
+            'Sets the maximum longitude of the map (in degrees East)',
+            'if `westbound`, `southbound` and `northbound` are declared.'
+        ].join(' ')
     },
     southbound: {
         valType: 'number',
-        dflt: null,
-        description: 'Sets the minimum latitude of the map (in degrees North).'
+        description: [
+            'Sets the minimum latitude of the map (in degrees North)',
+            'if `eastbound`, `westbound` and `northbound` are declared.'
+        ].join(' ')
     },
     northbound: {
         valType: 'number',
-        dflt: null,
-        description: 'Sets the maximum latitude of the map (in degrees North).'
+        description: [
+            'Sets the maximum latitude of the map (in degrees North)',
+            'if `eastbound`, `westbound` and `southbound` are declared.'
+        ].join(' ')
     },
 
     layers: templatedArray('layer', {

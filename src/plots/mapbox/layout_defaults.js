@@ -26,10 +26,21 @@ function handleDefaults(containerIn, containerOut, coerce, opts) {
     coerce('bearing');
     coerce('pitch');
 
-    coerce('westbound');
-    coerce('eastbound');
-    coerce('southbound');
-    coerce('northbound');
+    var westbound = coerce('westbound');
+    var eastbound = coerce('eastbound');
+    var southbound = coerce('southbound');
+    var northbound = coerce('northbound');
+    if(
+        westbound === undefined ||
+        eastbound === undefined ||
+        southbound === undefined ||
+        northbound === undefined
+    ) {
+        delete containerOut.westbound;
+        delete containerOut.eastbound;
+        delete containerOut.southbound;
+        delete containerOut.northbound;
+    }
 
     handleArrayContainerDefaults(containerIn, containerOut, {
         name: 'layers',

@@ -3087,8 +3087,7 @@
      }
     },
     "eastbound": {
-     "description": "Sets the maximum longitude of the map (in degrees East).",
-     "dflt": null,
+     "description": "Sets the maximum longitude of the map (in degrees East) if `westbound`, `southbound` and `northbound` are declared.",
      "editType": "plot",
      "valType": "number"
     },
@@ -3313,8 +3312,7 @@
      "role": "object"
     },
     "northbound": {
-     "description": "Sets the maximum latitude of the map (in degrees North).",
-     "dflt": null,
+     "description": "Sets the maximum latitude of the map (in degrees North) if `eastbound`, `westbound` and `southbound` are declared.",
      "editType": "plot",
      "valType": "number"
     },
@@ -3326,8 +3324,7 @@
     },
     "role": "object",
     "southbound": {
-     "description": "Sets the minimum latitude of the map (in degrees North).",
-     "dflt": null,
+     "description": "Sets the minimum latitude of the map (in degrees North) if `eastbound`, `westbound` and `northbound` are declared.",
      "editType": "plot",
      "valType": "number"
     },
@@ -3359,8 +3356,7 @@
      "valType": "any"
     },
     "westbound": {
-     "description": "Sets the minimum longitude of the map (in degrees East).",
-     "dflt": null,
+     "description": "Sets the minimum longitude of the map (in degrees East) if `eastbound`, `southbound` and `northbound` are declared.",
      "editType": "plot",
      "valType": "number"
     },
