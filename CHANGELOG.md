@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.15.1] -- 2022-10-11
+
+### Fixed
+ - Fix latest version of plotly.js main module on npm 
+
+
 ## [2.15.0] -- 2022-10-06
 
 ### Added
