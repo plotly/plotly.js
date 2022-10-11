@@ -91,18 +91,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     // store access token associated with this map
     self.accessToken = opts.accesstoken;
 
-    var westbound = opts.westbound;
-    var eastbound = opts.eastbound;
-    var southbound = opts.southbound;
-    var northbound = opts.northbound;
-    var maxBounds = (
-        /*
-        westbound !== undefined &&
-        eastbound !== undefined &&
-        southbound !== undefined &&
-        */
-        northbound !== undefined
-    ) ? [[westbound, southbound], [eastbound, northbound]] : null;
+    var bounds = opts.bounds;
+    var maxBounds = bounds ? [[bounds.west, bounds.south], [bounds.east, bounds.north]] : null;
 
     // create the map!
     var map = self.map = new mapboxgl.Map({

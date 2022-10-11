@@ -95,33 +95,35 @@ var attrs = module.exports = overrideAll({
         ].join(' ')
     },
 
-    westbound: {
-        valType: 'number',
-        description: [
-            'Sets the minimum longitude of the map (in degrees East)',
-            'if `eastbound`, `southbound` and `northbound` are declared.'
-        ].join(' ')
-    },
-    eastbound: {
-        valType: 'number',
-        description: [
-            'Sets the maximum longitude of the map (in degrees East)',
-            'if `westbound`, `southbound` and `northbound` are declared.'
-        ].join(' ')
-    },
-    southbound: {
-        valType: 'number',
-        description: [
-            'Sets the minimum latitude of the map (in degrees North)',
-            'if `eastbound`, `westbound` and `northbound` are declared.'
-        ].join(' ')
-    },
-    northbound: {
-        valType: 'number',
-        description: [
-            'Sets the maximum latitude of the map (in degrees North)',
-            'if `eastbound`, `westbound` and `southbound` are declared.'
-        ].join(' ')
+    bounds: {
+        west: {
+            valType: 'number',
+            description: [
+                'Sets the minimum longitude of the map (in degrees East)',
+                'if `east`, `south` and `north` are declared.'
+            ].join(' ')
+        },
+        east: {
+            valType: 'number',
+            description: [
+                'Sets the maximum longitude of the map (in degrees East)',
+                'if `west`, `south` and `north` are declared.'
+            ].join(' ')
+        },
+        south: {
+            valType: 'number',
+            description: [
+                'Sets the minimum latitude of the map (in degrees North)',
+                'if `east`, `west` and `north` are declared.'
+            ].join(' ')
+        },
+        north: {
+            valType: 'number',
+            description: [
+                'Sets the maximum latitude of the map (in degrees North)',
+                'if `east`, `west` and `south` are declared.'
+            ].join(' ')
+        }
     },
 
     layers: templatedArray('layer', {
