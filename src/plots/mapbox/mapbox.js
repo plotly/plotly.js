@@ -91,6 +91,9 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     // store access token associated with this map
     self.accessToken = opts.accesstoken;
 
+    var bounds = opts.bounds;
+    var maxBounds = bounds ? [[bounds.west, bounds.south], [bounds.east, bounds.north]] : null;
+
     // create the map!
     var map = self.map = new mapboxgl.Map({
         container: self.div,
@@ -100,6 +103,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         zoom: opts.zoom,
         bearing: opts.bearing,
         pitch: opts.pitch,
+        maxBounds: maxBounds,
 
         interactive: !self.isStatic,
         preserveDrawingBuffer: self.isStatic,

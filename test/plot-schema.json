@@ -3006,6 +3006,30 @@
      "editType": "plot",
      "valType": "number"
     },
+    "bounds": {
+     "east": {
+      "description": "Sets the maximum longitude of the map (in degrees East) if `west`, `south` and `north` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     },
+     "editType": "plot",
+     "north": {
+      "description": "Sets the maximum latitude of the map (in degrees North) if `east`, `west` and `south` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     },
+     "role": "object",
+     "south": {
+      "description": "Sets the minimum latitude of the map (in degrees North) if `east`, `west` and `north` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     },
+     "west": {
+      "description": "Sets the minimum longitude of the map (in degrees East) if `east`, `south` and `north` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     }
+    },
     "center": {
      "editType": "plot",
      "lat": {
