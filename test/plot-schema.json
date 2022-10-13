@@ -52752,7 +52752,7 @@
       "valType": "boolean"
      },
      "maxzoom": {
-      "description": "Sets the maximum zoom level. At zoom levels equal to or greater than the maxzoom, the layer will be hidden.",
+      "description": "Sets the maximum zoom level. At zoom levels equal to or greater than this, points will never be clustered.",
       "dflt": 24,
       "editType": "calc",
       "max": 24,
