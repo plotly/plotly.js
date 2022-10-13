@@ -2258,7 +2258,7 @@ axes.draw = function(gd, arg, opts) {
 
             var ax = axes.getFromId(gd, axId);
             if(ax.shift === true) {
-                axShifts = incrementShift(ax, shiftConstant, axShifts)
+                axShifts = incrementShift(ax, shiftConstant, axShifts);
             }
 
             if(!opts) opts = {};
@@ -4227,10 +4227,10 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
 
 function incrementShift(ax, shiftVal, axShifts) {
     var shiftValAdj = ax.side === 'right' ? shiftVal : -shiftVal;
-    if(!(ax.overlaying in axShifts)){
+    if(!(ax.overlaying in axShifts)) {
         axShifts[ax.overlaying] = {};
     }
-    if (!(ax.side in axShifts[ax.overlaying])) {
+    if(!(ax.side in axShifts[ax.overlaying])) {
         axShifts[ax.overlaying][ax.side] = 0;
     }
     axShifts[ax.overlaying][ax.side] += shiftValAdj;

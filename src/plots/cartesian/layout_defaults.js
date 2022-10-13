@@ -270,11 +270,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var overlayingAxis = id2name(axLayoutIn.overlaying);
         var overlayingAnchorDomain = [0, 1];
 
-        if (layoutOut[overlayingAxis] !== undefined) {
+        if(layoutOut[overlayingAxis] !== undefined) {
             var overlayingAnchor = id2name(layoutOut[overlayingAxis].anchor);
-            if (layoutOut[overlayingAnchor] !== undefined) {
+            if(layoutOut[overlayingAnchor] !== undefined) {
                 overlayingAnchorDomain = layoutOut[overlayingAnchor].domain;
-            }           
+            }
         }
 
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, {
