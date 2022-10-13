@@ -1432,6 +1432,51 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis10.rangebreaks[0].enabled).toBe(false, 'reject false');
             expect(layoutOut.xaxis11.rangebreaks[0].enabled).toBe(false, 'reject true');
         });
+
+        it('should coerce default shift if anchor is *free*', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.shift).toBe(false);
+        });
+
+        it('should not coerce shift if anchor is not *free*', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {shift: true}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.shift).toBeUndefined();
+        });
+
+        it('should set automargin to *true* when shift is *true*', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {shift: true, anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.automargin).toBe(true);
+        });
+
+        it('should set default axis position if shift is *true* according to overlaying domain', function() {
+            layoutIn = {
+                xaxis: {domain: [0.2, 0.5]},
+                yaxis: {},
+                yaxis2: {shift: true, anchor: 'free', overlaying: 'y'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.2);
+
+            layoutIn = {
+                xaxis: {domain: [0.2, 0.5]},
+                yaxis: {},
+                yaxis2: {shift: true, anchor: 'free', overlaying: 'y', side: 'right'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.5);
+        });
     });
 
     describe('autorange relayout', function() {
