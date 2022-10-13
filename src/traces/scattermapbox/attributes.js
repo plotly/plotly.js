@@ -28,7 +28,7 @@ module.exports = overrideAll({
         maxzoom: extendFlat({}, mapboxLayoutAtributes.layers.maxzoom, {
             description: [
                 'Sets the maximum zoom level.',
-                'At zoom levels equal to or greater than the maxzoom, the layer will be hidden.'
+                'At zoom levels equal to or greater than this, points will never be clustered.'
             ].join(' ')
         }),
         step: {
