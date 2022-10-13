@@ -1004,8 +1004,7 @@ module.exports = {
         ].join(' ')
     },
     shift: {
-        valType: 'number',
-        extras: [true, false],
+        valType: 'any',
         dflt: false,
         editType: 'plot',
         description: [
