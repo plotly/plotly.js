@@ -1433,20 +1433,19 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis11.rangebreaks[0].enabled).toBe(false, 'reject true');
         });
 
-        it('should coerce default shift if anchor is *free*', function() {
+        it('should coerce shift only if anchor is *free*', function() {
             layoutIn = {
                 xaxis: {},
                 yaxis: {anchor: 'free'}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.shift).toBe(false);
-        });
 
-        it('should not coerce shift if anchor is not *free*', function() {
-            layoutIn = {
-                xaxis: {},
-                yaxis: {shift: true}
-            };
+            layoutIn.yaxis.shift = true;
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.shift).toBe(true);
+
+            layoutIn.yaxis.anchor = 'x';
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.shift).toBeUndefined();
         });
@@ -1458,6 +1457,15 @@ describe('Test axes', function() {
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.automargin).toBe(true);
+        });
+
+        it('should set automargin to *false* when shift is numeric', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {shift: 100, anchor: 'free'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.automargin).toBe(false);
         });
 
         it('should set default axis position if shift is *true* according to overlaying domain', function() {
@@ -1472,11 +1480,12 @@ describe('Test axes', function() {
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis2.position).toBe(0.2);
 
-            layoutIn = {
-                xaxis: {domain: [0.2, 0.5]},
-                yaxis: {},
-                yaxis2: {shift: true, anchor: 'free', overlaying: 'y', side: 'right'}
-            };
+            layoutIn.yaxis2.side = 'right';
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis2.position).toBe(0.5);
+
+            // Same should apply if shift is numeric
+            layoutIn.yaxis2.shift = 100;
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis2.position).toBe(0.5);
         });

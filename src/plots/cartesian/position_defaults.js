@@ -51,6 +51,8 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     if(anchor === 'free') {
         if(shift !== false && shift !== undefined) {
             dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
+        }
+        if(shift === true) {
             dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
         }
         // Only coerce shift and position if free anchor
@@ -61,7 +63,6 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
         }
         coerce('position', dfltPosition);
     }
-
     coerce('automargin', dfltAutomargin);
 
     var overlaying = false;
