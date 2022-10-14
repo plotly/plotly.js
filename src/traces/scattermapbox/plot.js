@@ -85,24 +85,23 @@ proto.update = function update(calcTrace) {
     var map = subplot.map;
     var optsAll = convert(subplot.gd, calcTrace);
     var below = subplot.belowLookup['trace-' + this.uid];
-    var i, k, opts, order;
-    var hasCluster = trace.cluster && trace.cluster.enabled;
-    var hadCluster = this.clusterEnabled;
+    var i, k, opts;
+    var hasCluster = !!(trace.cluster && trace.cluster.enabled);
+    var hadCluster = !!this.clusterEnabled;
 
-    if(hasCluster === hadCluster) {
-        order = [];
-        if(below !== this.below) {
-            for(i = order.length - 1; i >= 0; i--) {
-                k = order[i];
-                map.removeLayer(this.layerIds[k]);
-            }
-            for(i = 0; i < order.length; i++) {
-                k = order[i];
-                opts = optsAll[k];
-                this.addLayer(k, opts, below);
-            }
-            this.below = below;
+    if(below !== this.below) {
+        var order = ORDER.nonCluster;
+
+        for(i = order.length - 1; i >= 0; i--) {
+            k = order[i];
+            map.removeLayer(this.layerIds[k]);
         }
+        for(i = 0; i < order.length; i++) {
+            k = order[i];
+            opts = optsAll[k];
+            this.addLayer(k, opts, below);
+        }
+        this.below = below;
     } else if(hasCluster && !hadCluster) {
         for(i = ORDER.nonCluster.length - 1; i >= 0; i--) {
             k = ORDER.nonCluster[i];
