@@ -3972,7 +3972,7 @@ function anyCounterAxLineAtZero(gd, ax, counterAxis, rng) {
             return typeof pos2 === 'number' && Math.abs(pos2 - zeroPosition) < tolerance;
         }
 
-        if(closeEnough(ax2._mainLinePositionShift) || closeEnough(ax2._mainMirrorPosition)) {
+        if(closeEnough(ax2._mainLinePosition) || closeEnough(ax2._mainMirrorPosition)) {
             return true;
         }
         var linePositions = ax2._linepositions || {};
