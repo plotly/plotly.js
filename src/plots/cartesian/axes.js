@@ -2318,10 +2318,12 @@ axes.drawOne = function(gd, ax, opts) {
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
-    ax._shift = ax.shift !== true ? 0 : axShifts[ax.overlaying][ax.side];
+
+    ax._shift = setShiftVal(ax, axShifts);
+
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
-    var mainLinePositionShift = ax.shift === true ? mainLinePosition += ax._shift : mainLinePosition;
+    var mainLinePositionShift = ax.shift !== false ? mainLinePosition += ax._shift : mainLinePosition;
     var mainMirrorPosition = ax._mainMirrorPosition;
 
     var vals = ax._vals = axes.calcTicks(ax);
@@ -4235,4 +4237,16 @@ function incrementShift(ax, shiftVal, axShifts) {
     }
     axShifts[ax.overlaying][ax.side] += shiftValAdj;
     return axShifts;
+}
+
+function setShiftVal(ax, axShifts) {
+    var shiftVal;
+    if(typeof(ax.shift) === 'number') {
+        shiftVal = ax.shift;
+    } else if(ax.shift === true) {
+        shiftVal = axShifts[ax.overlaying][ax.side];
+    } else {
+        shiftVal = 0;
+    }
+    return shiftVal;
 }
