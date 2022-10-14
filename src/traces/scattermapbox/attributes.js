@@ -37,7 +37,10 @@ module.exports = overrideAll({
             dflt: -1,
             min: -1,
             description: [
-                'Sets the steps for each cluster.'
+                'Sets how many points it takes to create a cluster or advance to the next cluster step.',
+                'Use this in conjunction with arrays for `size` and / or `color`.',
+                'If an integer, steps start at multiples of this number.',
+                'If an array, each step extends from the given value until one less than the next value.'
             ].join(' ')
         },
         size: {
