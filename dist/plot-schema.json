@@ -3006,6 +3006,30 @@
      "editType": "plot",
      "valType": "number"
     },
+    "bounds": {
+     "east": {
+      "description": "Sets the maximum longitude of the map (in degrees East) if `west`, `south` and `north` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     },
+     "editType": "plot",
+     "north": {
+      "description": "Sets the maximum latitude of the map (in degrees North) if `east`, `west` and `south` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     },
+     "role": "object",
+     "south": {
+      "description": "Sets the minimum latitude of the map (in degrees North) if `east`, `west` and `north` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     },
+     "west": {
+      "description": "Sets the minimum longitude of the map (in degrees East) if `east`, `south` and `north` are declared.",
+      "editType": "plot",
+      "valType": "number"
+     }
+    },
     "center": {
      "editType": "plot",
      "lat": {
@@ -53421,6 +53445,74 @@
      "description": "Determines if this scattermapbox trace's layers are to be inserted before the layer with the specified ID. By default, scattermapbox layers are inserted above all the base layers. To place the scattermapbox layers above every other layer, set `below` to *''*.",
      "editType": "calc",
      "valType": "string"
+    },
+    "cluster": {
+     "color": {
+      "arrayOk": true,
+      "description": "Sets the color for each cluster step.",
+      "editType": "calc",
+      "valType": "color"
+     },
+     "colorsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `color`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "editType": "calc",
+     "enabled": {
+      "description": "Determines whether clustering is enabled or disabled.",
+      "editType": "calc",
+      "valType": "boolean"
+     },
+     "maxzoom": {
+      "description": "Sets the maximum zoom level. At zoom levels equal to or greater than this, points will never be clustered.",
+      "dflt": 24,
+      "editType": "calc",
+      "max": 24,
+      "min": 0,
+      "valType": "number"
+     },
+     "opacity": {
+      "arrayOk": true,
+      "description": "Sets the marker opacity.",
+      "dflt": 1,
+      "editType": "calc",
+      "max": 1,
+      "min": 0,
+      "valType": "number"
+     },
+     "opacitysrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `opacity`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "role": "object",
+     "size": {
+      "arrayOk": true,
+      "description": "Sets the size for each cluster step.",
+      "dflt": 20,
+      "editType": "calc",
+      "min": 0,
+      "valType": "number"
+     },
+     "sizesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `size`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "step": {
+      "arrayOk": true,
+      "description": "Sets how many points it takes to create a cluster or advance to the next cluster step. Use this in conjunction with arrays for `size` and / or `color`. If an integer, steps start at multiples of this number. If an array, each step extends from the given value until one less than the next value.",
+      "dflt": -1,
+      "editType": "calc",
+      "min": -1,
+      "valType": "number"
+     },
+     "stepsrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `step`.",
+      "editType": "none",
+      "valType": "string"
+     }
     },
     "connectgaps": {
      "description": "Determines whether or not gaps (i.e. {nan} or missing values) in the provided data arrays are connected.",

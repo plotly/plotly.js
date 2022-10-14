@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.15.1
+* plotly.js (finance) v2.16.0
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -93412,7 +93412,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.15.1';
+exports.version = '2.16.0';
 
 },{}]},{},[12])(12)
 });
