@@ -9,6 +9,14 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.16.0] -- 2022-10-14
+
+### Added
+ - Add clustering options to `scattermapbox` [[#5827](https://github.com/plotly/plotly.js/pull/5827)],
+   with thanks to @elben10 for the contribution!
+ - Add bounds to mapbox suplots [[6339](https://github.com/plotly/plotly.js/pull/6339)]
+
+
 ## [2.15.1] -- 2022-10-11
 
 ### Fixed
