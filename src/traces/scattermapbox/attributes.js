@@ -22,7 +22,6 @@ module.exports = overrideAll({
     cluster: {
         enabled: {
             valType: 'boolean',
-            dflt: false,
             description: 'Determines whether clustering is enabled or disabled.'
         },
         maxzoom: extendFlat({}, mapboxLayoutAtributes.layers.maxzoom, {

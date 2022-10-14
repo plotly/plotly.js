@@ -53461,7 +53461,6 @@
      "editType": "calc",
      "enabled": {
       "description": "Determines whether clustering is enabled or disabled.",
-      "dflt": false,
       "editType": "calc",
       "valType": "boolean"
      },
