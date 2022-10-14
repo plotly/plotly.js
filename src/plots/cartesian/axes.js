@@ -2323,7 +2323,7 @@ axes.drawOne = function(gd, ax, opts) {
 
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
-    var mainLinePositionShift = ax.shift !== false ? mainLinePosition += ax._shift : mainLinePosition;
+    var mainLinePositionShift = (ax.shift !== false && ax.shift !== undefined) ? mainLinePosition += ax._shift : mainLinePosition;
     var mainMirrorPosition = ax._mainMirrorPosition;
 
     var vals = ax._vals = axes.calcTicks(ax);
