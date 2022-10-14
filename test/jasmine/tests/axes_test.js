@@ -1466,7 +1466,7 @@ describe('Test axes', function() {
                 yaxis: {},
                 yaxis2: {shift: true, anchor: 'free', overlaying: 'y'}
             };
-            
+
             layoutOut._subplots.cartesian.push('xy2');
             layoutOut._subplots.yaxis.push('y2');
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
