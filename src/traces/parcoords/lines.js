@@ -183,6 +183,7 @@ function makeItem(
     var layoutWidth = model.layoutWidth * plotGlPixelRatio;
 
     var deselectedLinesColor = model.deselectedLines.color;
+    var deselectedLinesOpacity = model.deselectedLines.opacity;
 
     var itemModel = Lib.extendFlat({
         key: crossfilterDimensionIndex,
@@ -206,8 +207,8 @@ function makeItem(
             deselectedLinesColor[0] / 255,
             deselectedLinesColor[1] / 255,
             deselectedLinesColor[2] / 255,
-            deselectedLinesColor[3] < 1 ?
-                deselectedLinesColor[3] :
+            deselectedLinesOpacity !== 'auto' ?
+                deselectedLinesColor[3] * deselectedLinesOpacity :
                 Math.max(1 / 255, Math.pow(1 / model.lines.color.length, 1 / 3))
         ],
 

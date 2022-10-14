@@ -4225,6 +4225,132 @@ describe('Test axes', function() {
             .then(done, done.fail);
         });
 
+        it('should handle partial automargin', function(done) {
+            var initialSize;
+
+            function assertSize(msg, actual, exp) {
+                for(var k in exp) {
+                    var parts = exp[k].split('|');
+                    var op = parts[0];
+
+                    var method = {
+                        '=': 'toBe',
+                        grew: 'toBeGreaterThan',
+                    }[op];
+
+                    var val = initialSize[k];
+                    var msgk = msg + ' ' + k + (parts[1] ? ' |' + parts[1] : '');
+                    var args = op === '~=' ? [val, 1.1, msgk] : [val, msgk, ''];
+
+                    expect(actual[k])[method](args[0], args[1], args[2]);
+                }
+            }
+
+            function check(msg, relayoutObj, exp) {
+                return function() {
+                    return Plotly.relayout(gd, relayoutObj).then(function() {
+                        var gs = Lib.extendDeep({}, gd._fullLayout._size);
+                        assertSize(msg, gs, exp);
+                    });
+                };
+            }
+
+            Plotly.newPlot(gd, [{
+                x: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooongloooooongloooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ],
+                y: [
+                    'short label 1', 'loooooong label 1',
+                    'short label 2', 'loooooong label 2',
+                    'short label 3', 'loooooong label 3',
+                    'short label 4', 'loooooong label 4',
+                    'short label 5', 'loooooong label 5'
+                ]
+            }], {
+                margin: {l: 0, r: 0, b: 0, t: 0},
+                width: 600, height: 600
+            })
+            .then(function() {
+                expect(gd._fullLayout.xaxis._tickAngles.xtick).toBe(30);
+
+                var gs = gd._fullLayout._size;
+                initialSize = Lib.extendDeep({}, gs);
+            })
+            .then(check('automargin y', {'yaxis.automargin': true, 'yaxis.tickangle': 30, 'yaxis.ticklen': 30}, {
+                t: 'grew', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin not left', {'yaxis.automargin': 'right+height'}, {
+                t: 'grew', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep left height', {'yaxis.automargin': 'left+height'}, {
+                t: 'grew', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep bottom right', {'yaxis.automargin': 'bottom+right'}, {
+                t: '=', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep height', {'yaxis.automargin': 'height'}, {
+                t: 'grew', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep top', {'yaxis.automargin': 'top'}, {
+                t: 'grew', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin not top', {'yaxis.automargin': 'bottom+width'}, {
+                t: '=', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep left', {'yaxis.automargin': 'left'}, {
+                t: '=', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep width', {'yaxis.automargin': 'width'}, {
+                t: '=', l: 'grew',
+                b: '=', r: '='
+            }))
+            .then(check('automargin x', {'xaxis.automargin': true, 'yaxis.automargin': false}, {
+                t: '=', l: '=',
+                b: 'grew', r: 'grew'
+            }))
+            .then(check('automargin not bottom', {'xaxis.automargin': 'top+width'}, {
+                t: '=', l: '=',
+                b: '=', r: 'grew'
+            }))
+            .then(check('automargin keep right', {'xaxis.automargin': 'right'}, {
+                t: '=', l: '=',
+                b: '=', r: 'grew'
+            }))
+            .then(check('automargin keep bottom', {'xaxis.automargin': 'bottom'}, {
+                t: '=', l: '=',
+                b: 'grew', r: '='
+            }))
+            .then(check('automargin keep top right', {'xaxis.automargin': 'top+right'}, {
+                t: '=', l: '=',
+                b: '=', r: 'grew'
+            }))
+            .then(check('automargin keep top left', {'xaxis.automargin': 'top+left'}, {
+                t: '=', l: '=',
+                b: '=', r: '='
+            }))
+            .then(check('automargin keep bottom left', {'xaxis.automargin': 'bottom+left'}, {
+                t: '=', l: '=',
+                b: 'grew', r: '='
+            }))
+            .then(check('turn off automargin', {'xaxis.automargin': false, 'yaxis.automargin': false}, {
+                t: '=', l: '=',
+                b: '=', r: '='
+            }))
+            .then(done, done.fail);
+        });
+
         it('should handle cases with free+mirror axes', function(done) {
             Plotly.newPlot(gd, [{
                 y: [1, 2, 1]
@@ -4247,6 +4373,31 @@ describe('Test axes', function() {
                 // N.B. no '.automargin.mirror'
                 expect(Object.keys(gd._fullLayout._pushmargin))
                     .toEqual(['x.automargin', 'y.automargin', 'base']);
+            })
+            .then(done, done.fail);
+        });
+        it('should respect axis title placement on relayout', function(done) {
+            function getPos(gd, sel) {
+                return d3Select(gd).select(sel).node().getBoundingClientRect();
+            }
+
+            // Tick position is < title position since 0 is at the top of the graph,
+            // rather than at the bottom. We're checking that the ticks and title don't overlap
+            function assertLayout() {
+                var titleTop = getPos(gd, '.xtitle').top;
+                var tickBottom = getPos(gd, '.xtick').bottom;
+                expect(tickBottom).toBeLessThan(titleTop + 2); // allow two pixels tolerance
+            }
+
+            var fig = require('@mocks/z-automargin-zoom.json');
+            Plotly.newPlot(gd, fig)
+
+            .then(assertLayout)
+            .then(function() {
+                return Plotly.relayout(gd, {'xaxis.range': [6, 14]});
+            })
+            .then(function() {
+                assertLayout();
             })
             .then(done, done.fail);
         });

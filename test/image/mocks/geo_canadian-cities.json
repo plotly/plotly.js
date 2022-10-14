@@ -2,7 +2,7 @@
     "data": [
         {
             "type": "scattergeo",
-            "mode": "markers+text",
+            "mode": "markers+lines+text",
             "lon": [
                 -73.57,
                 -79.24,
@@ -39,7 +39,13 @@
                 "Winnepeg",
                 "Regina"
             ],
+            "line": {
+                "color": "green",
+                "dash": "dot"
+            },
             "marker": {
+                "symbol": "arrow-wide",
+                "angleref": "previous",
                 "size": 10,
                 "color": [
                     "#bebada",

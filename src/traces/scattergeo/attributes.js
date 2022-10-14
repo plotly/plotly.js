@@ -114,6 +114,17 @@ module.exports = overrideAll({
     marker: extendFlat({
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
+        angle: scatterMarkerAttrs.angle,
+        angleref: extendFlat({}, scatterMarkerAttrs.angleref, {
+            values: ['previous', 'up', 'north'],
+            description: [
+                'Sets the reference for marker angle.',
+                'With *previous*, angle 0 points along the line from the previous point to this one.',
+                'With *up*, angle 0 points toward the top of the screen.',
+                'With *north*, angle 0 points north based on the current map projection.',
+            ].join(' ')
+        }),
+        standoff: scatterMarkerAttrs.standoff,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,

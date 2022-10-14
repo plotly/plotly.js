@@ -13,10 +13,11 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    function makePath(pts) {
+    function makePath(pts, trace) {
         var segments = linePoints(pts, {
             xaxis: xa,
             yaxis: ya,
+            trace: trace,
             connectGaps: true,
             baseTolerance: 0.75,
             shape: 'spline',
@@ -80,7 +81,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                     pt[t.posLetter] = posCenter + (density[i].v / scale);
                     pt[t.valLetter] = valAxis.c2l(density[i].t, true);
                 }
-                pathPos = makePath(pts);
+                pathPos = makePath(pts, trace);
             }
 
             if(hasNegativeSide) {
@@ -90,7 +91,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
                     pt[t.posLetter] = posCenter - (density[i].v / scale);
                     pt[t.valLetter] = valAxis.c2l(density[i].t, true);
                 }
-                pathNeg = makePath(pts);
+                pathNeg = makePath(pts, trace);
             }
 
             if(hasBothSides) {

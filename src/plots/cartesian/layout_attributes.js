@@ -625,7 +625,9 @@ module.exports = {
         description: 'Determines whether or not the tick labels are drawn.'
     },
     automargin: {
-        valType: 'boolean',
+        valType: 'flaglist',
+        flags: ['height', 'width', 'left', 'right', 'top', 'bottom'],
+        extras: [true, false],
         dflt: false,
         editType: 'ticks',
         description: [

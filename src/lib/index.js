@@ -1331,6 +1331,11 @@ lib.getTextTransform = function(transform) {
     );
 };
 
+lib.setTransormAndDisplay = function(s, transform) {
+    s.attr('transform', lib.getTextTransform(transform));
+    s.style('display', transform.scale ? null : 'none');
+};
+
 lib.ensureUniformFontSize = function(gd, baseFont) {
     var out = lib.extendFlat({}, baseFont);
     out.size = Math.max(

@@ -30,6 +30,12 @@
       "ticks": "outside",
       "mirror": "ticks",
       "range": [-0.5, 3.5]
-    }
+    },
+    "selections": [{
+      "x0": 6.25,
+      "x1": -0.25,
+      "y1": 3.25,
+      "y0": 1.25
+    }]
   }
 }

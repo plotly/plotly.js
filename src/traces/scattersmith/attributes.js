@@ -38,6 +38,7 @@ module.exports = {
         color: lineAttrs.color,
         width: lineAttrs.width,
         dash: lineAttrs.dash,
+        backoff: lineAttrs.backoff,
         shape: extendFlat({}, lineAttrs.shape, {
             values: ['linear', 'spline']
         }),

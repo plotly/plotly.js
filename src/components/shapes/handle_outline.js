@@ -7,7 +7,7 @@ function clearOutlineControllers(gd) {
     }
 }
 
-function clearSelect(gd) {
+function clearOutline(gd) {
     var zoomLayer = gd._fullLayout._zoomlayer;
     if(zoomLayer) {
         // until we get around to persistent selections, remove the outline
@@ -16,10 +16,10 @@ function clearSelect(gd) {
         zoomLayer.selectAll('.select-outline').remove();
     }
 
-    gd._fullLayout._drawing = false;
+    gd._fullLayout._outlining = false;
 }
 
 module.exports = {
     clearOutlineControllers: clearOutlineControllers,
-    clearSelect: clearSelect
+    clearOutline: clearOutline
 };

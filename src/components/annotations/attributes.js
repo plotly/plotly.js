@@ -271,7 +271,7 @@ module.exports = templatedArray('annotation', {
         description: [
             'Indicates in what coordinates the tail of the',
             'annotation (ax,ay) is specified.',
-            axisPlaceableObjs.axisRefDescription('ax', 'left', 'right'),
+            axisPlaceableObjs.axisRefDescription('x', 'left', 'right'),
             arrowAxisRefDescription('x')
         ].join(' ')
     },
@@ -286,7 +286,7 @@ module.exports = templatedArray('annotation', {
         description: [
             'Indicates in what coordinates the tail of the',
             'annotation (ax,ay) is specified.',
-            axisPlaceableObjs.axisRefDescription('ay', 'bottom', 'top'),
+            axisPlaceableObjs.axisRefDescription('y', 'bottom', 'top'),
             arrowAxisRefDescription('y')
         ].join(' ')
     },

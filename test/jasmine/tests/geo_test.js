@@ -2732,6 +2732,43 @@ describe('Test geo zoom/pan/drag interactions:', function() {
     });
 });
 
+describe('Test geo interactions update marker angles:', function() {
+    var gd;
+
+    beforeEach(function() { gd = createGraphDiv(); });
+
+    afterEach(destroyGraphDiv);
+
+    function getPath() {
+        return d3Select('.scattergeo .point').node().getAttribute('d');
+    }
+
+    it('update angles when panning', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/geo_conic-conformal'));
+        fig.layout.width = 700;
+        fig.layout.height = 500;
+        fig.layout.dragmode = 'pan';
+
+        var initialPath, newPath;
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            initialPath = getPath();
+
+            return drag({path: [[300, 200], [350, 250], [400, 300]], noCover: true});
+        })
+        .then(function() {
+            newPath = getPath();
+            expect(newPath).toEqual('M0,0L18.238949513733473,8.206139204003389L19.579067718529352,-4.081679467234269Z');
+
+            expect(newPath).not.toEqual(initialPath);
+            expect(newPath).toEqual('M0,0L18.238949513733473,8.206139204003389L19.579067718529352,-4.081679467234269Z');
+            expect(initialPath).toEqual('M0,0L-1.5033314641545745,19.94341982983066L10.506227353572104,17.01820163222463Z');
+        })
+        .then(done, done.fail);
+    });
+});
+
 describe('plotly_relayouting', function() {
     var gd;
     var events;
