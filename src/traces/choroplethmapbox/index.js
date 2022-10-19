@@ -13,7 +13,12 @@ module.exports = {
     styleOnSelect: function(_, cd) {
         if(cd) {
             var trace = cd[0].trace;
-            trace._glTrace.updateOnSelect(cd);
+            if(
+                trace._glTrace &&
+                trace._glTrace.updateOnSelect
+            ) {
+                trace._glTrace.updateOnSelect(cd);
+            }
         }
     },
 
