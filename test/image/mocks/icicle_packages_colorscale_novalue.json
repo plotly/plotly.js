@@ -8,6 +8,7 @@
                 "line": {
                     "color": "#777"
                 },
+                "fillet": 10,
                 "colorscale": [[0, "#FFF"], [0.01, "#FF0"], [0.1, "#F00"], [1, "#000"]],
                 "showscale": true
             },
