@@ -34113,6 +34113,13 @@
       "valType": "string"
      },
      "editType": "calc",
+     "fillet": {
+      "description": "Sets the rounding of corners (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
      "line": {
       "color": {
        "arrayOk": true,
@@ -69182,6 +69189,13 @@
       ]
      },
      "editType": "calc",
+     "fillet": {
+      "description": "Sets the rounding of corners (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
      "line": {
       "color": {
        "arrayOk": true,
