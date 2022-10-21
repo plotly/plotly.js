@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.16.1] -- 2022-10-21
+
+### Fixed
+ - Fix `choroplethmapbox` selection when adding new traces on top [[#6345](https://github.com/plotly/plotly.js/pull/6345)]
+
+
 ## [2.16.0] -- 2022-10-14
 
 ### Added
