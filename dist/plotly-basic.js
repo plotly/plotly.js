@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.16.0
+* plotly.js (basic) v2.16.1
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -85405,7 +85405,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.16.0';
+exports.version = '2.16.1';
 
 },{}]},{},[8])(8)
 });
