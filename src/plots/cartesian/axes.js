@@ -2324,7 +2324,7 @@ axes.drawOne = function(gd, ax, opts) {
 
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
-    var mainLinePositionShift = (ax.shift !== false && ax.shift !== undefined) ? mainLinePosition += ax._shift : mainLinePosition;
+    var mainLinePositionShift = mainLinePosition += ax._shift;
     var mainMirrorPosition = ax._mainMirrorPosition;
 
     var vals = ax._vals = axes.calcTicks(ax);
@@ -4241,13 +4241,7 @@ function incrementShift(ax, shiftVal, axShifts) {
 }
 
 function setShiftVal(ax, axShifts) {
-    var shiftVal;
-    if(typeof(ax.shift) === 'number') {
-        shiftVal = ax.shift;
-    } else if(ax.shift === true) {
-        shiftVal = axShifts[ax.overlaying][ax.side];
-    } else {
-        shiftVal = 0;
-    }
-    return shiftVal;
+    return ax.shift === true ?
+        axShifts[ax.overlaying][ax.side] :
+        (ax.shift || 0);
 }
