@@ -130,7 +130,7 @@ proto.update = function update(calcTrace) {
         this.clusterEnabled = hasCluster;
     }
 
-  // link ref for quick update during selections
+    // link ref for quick update during selections
     calcTrace[0].trace._glTrace = this;
 };
 

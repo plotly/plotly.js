@@ -30,7 +30,7 @@ function _newPlot(gd, arg2, arg3, arg4) {
     if(!fig.layout) fig.layout = {};
     if(!fig.layout.newselection) fig.layout.newselection = {};
     fig.layout.newselection.mode = 'gradual';
-    // complex ouline creation are mainly tested in "gradual" mode here
+    // complex ouline creation are mainly tested in 'gradual' mode here
 
     return Plotly.newPlot(gd, fig);
 }
@@ -3030,6 +3030,67 @@ describe('Test select box and lasso per trace:', function() {
             .then(done, done.fail);
         });
     });
+
+    it('@gl should work on choroplethmapbox traces after adding a new trace on top:', function(done) {
+        var assertPoints = makeAssertPoints(['location', 'z']);
+        var assertRanges = makeAssertRanges('mapbox');
+        var assertLassoPoints = makeAssertLassoPoints('mapbox');
+        var assertSelectedPoints = makeAssertSelectedPoints();
+
+        var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth0.json'));
+
+        fig.data[0].locations.push(null);
+
+        fig.layout.dragmode = 'select';
+        fig.config = {
+            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+        };
+        addInvisible(fig);
+
+        var hasCssTransform = false;
+
+        _newPlot(gd, fig)
+        .then(function() {
+            // add a scatter points on top
+            fig.data[3] = {
+                type: 'scattermapbox',
+                marker: { size: 40 },
+                lon: [-70],
+                lat: [40]
+            };
+
+            return Plotly.react(gd, fig);
+        })
+        .then(function() {
+            return _run(hasCssTransform,
+                [[150, 150], [300, 300]],
+                function() {
+                    assertPoints([['NY', 10]]);
+                    assertRanges([[-83.38, 46.13], [-74.06, 39.29]]);
+                    assertSelectedPoints({0: [0], 3: []});
+                },
+                null, BOXEVENTS, 'choroplethmapbox select'
+            );
+        })
+        .then(function() {
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        })
+        .then(function() {
+            return _run(hasCssTransform,
+                [[300, 200], [300, 300], [400, 300], [400, 200], [300, 200]],
+                function() {
+                    assertPoints([['MA', 20], []]);
+                    assertSelectedPoints({0: [1], 3: [0]});
+                    assertLassoPoints([
+                        [-74.06, 43.936], [-74.06, 39.293], [-67.84, 39.293],
+                        [-67.84, 43.936], [-74.06, 43.936]
+                    ]);
+                },
+                null, LASSOEVENTS, 'choroplethmapbox lasso'
+            );
+        })
+        .then(done, done.fail);
+    }, LONG_TIMEOUT_INTERVAL);
 });
 
 describe('Test that selections persist:', function() {
