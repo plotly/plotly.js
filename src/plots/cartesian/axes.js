@@ -2319,7 +2319,8 @@ axes.drawOne = function(gd, ax, opts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
 
-    ax._shift = setShiftVal(ax, axShifts);
+    // Only set if it hasn't been defined from drawing previously
+    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
 
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
