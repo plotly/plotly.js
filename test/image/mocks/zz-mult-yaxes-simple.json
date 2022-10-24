@@ -77,22 +77,31 @@
     ],
     "layout": {
         "title": {
-            "text": "multiple y-axes example - uniform formatting"
+            "text": "multiple y-axes example"
         },
         "width": 800,      
-        "yaxis": {"showline": true, "title": {"text": "yaxis title"}},
+        "yaxis": {"showline": true, "title": {"text": "yaxis title"}, "ticklen": 40},
         "yaxis2": {
             "title": {"text": "yaxis2 title"},
             "overlaying": "y",
             "showline": true,
-            "side": "right"
+            "side": "right",
+            "ticks": "inside",
+            "ticklen": 15,
+            "linewidth": 15,
+            "tickfont": {
+                "size": 20
+            }
         },
         "yaxis3": {
             "title": {"text": "yaxis3 title"},
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
-            "shift": true
+            "shift": true,
+            "titlefont": {
+                "size": 24
+            }
         },
         "yaxis4": {
             "title": {"text": "yaxis4 title"},
@@ -100,7 +109,9 @@
             "overlaying": "y",
             "showline": true,
             "shift": true,
-            "side": "right"
+            "side": "right",
+            "ticks": "inside",
+            "ticklen": 20
         },
         "yaxis5": {
             "title": {"text": "yaxis5 title"},
@@ -108,6 +119,11 @@
             "overlaying": "y",
             "showline": true,
             "shift": true
-        }
+        },
+        "legend": {
+            "x": 1,
+            "xanchor" : "right",
+            "y": 1 
+          }
     }
 }
