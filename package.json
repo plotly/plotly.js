@@ -67,8 +67,7 @@
   },
   "browserify": {
     "transform": [
-      "glslify",
-      "./tasks/compress_attributes.js"
+      "glslify"
     ]
   },
   "dependencies": {
@@ -123,16 +122,20 @@
     "world-calendars": "^1.0.3"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.19.6",
+    "@babel/preset-env": "^7.19.4",
     "amdefine": "^1.0.1",
+    "assert": "^2.0.0",
+    "babel": "^6.23.0",
+    "babel-loader": "^9.0.0",
     "brfs": "^2.0.2",
-    "browserify": "^17.0.0",
     "browserify-transform-tools": "^1.7.0",
     "bubleify": "^2.0.0",
+    "buffer": "^6.0.3",
     "canvas": "^2.10.1",
     "check-node-version": "^4.2.1",
     "chttps": "^1.0.6",
     "deep-equal": "^2.0.5",
-    "derequire": "^2.1.1",
     "ecstatic": "^4.1.4",
     "eslint": "^8.25.0",
     "extra-iterable": "^2.5.22",
@@ -141,11 +144,11 @@
     "fuse.js": "^6.6.2",
     "glob": "^7.2.0",
     "gzip-size": "^6.0.0",
+    "ify-loader": "^1.1.0",
     "into-stream": "^6.0.0",
     "jasmine-core": "^3.5.0",
     "jsdom": "^19.0.0",
     "karma": "^6.4.0",
-    "karma-browserify": "^8.1.0",
     "karma-chrome-launcher": "^3.1.1",
     "karma-firefox-launcher": "^2.1.2",
     "karma-ie-launcher": "^1.0.0",
@@ -154,11 +157,13 @@
     "karma-spec-reporter": "^0.0.34",
     "karma-verbose-reporter": "^0.0.8",
     "karma-viewport": "1.0.2",
+    "karma-webpack": "^5.0.0",
     "lodash": "^4.17.21",
     "madge": "^5.0.1",
     "mathjax-v2": "npm:mathjax@2.7.5",
     "mathjax-v3": "npm:mathjax@^3.2.2",
     "minify-stream": "^2.1.0",
+    "node-polyfill-webpack-plugin": "^2.0.1",
     "npm-link-check": "^4.0.0",
     "open": "^8.4.0",
     "pixelmatch": "^5.3.0",
@@ -168,8 +173,11 @@
     "run-series": "^1.1.9",
     "sane-topojson": "^4.0.0",
     "sass": "^1.55.0",
+    "stream-browserify": "^3.0.0",
     "through2": "^4.0.2",
+    "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
-    "watchify": "^4.0.0"
+    "webpack": "^5.74.0",
+    "webpack-cli": "^4.10.0"
   }
 }

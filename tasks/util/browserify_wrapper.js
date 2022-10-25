@@ -1,14 +1,10 @@
-var fs = require('fs');
 var path = require('path');
 
-var browserify = require('browserify');
-var minify = require('minify-stream');
-var derequire = require('derequire');
-var through = require('through2');
+var webpack = require('webpack');
 
-var strictD3 = require('./strict_d3');
+var config = require('../../webpack.config.js');
 
-/** Convenience browserify wrapper
+/** Convenience bundle wrapper
  *
  * @param {string} pathToIndex path to index file to bundle
  * @param {string} pathToBunlde path to destination bundle
@@ -31,85 +27,63 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var pathToMinBundle = opts.pathToMinBundle;
 
-    var browserifyOpts = {};
-    browserifyOpts.standalone = opts.standalone;
-    browserifyOpts.debug = opts.debug;
-
-    if(opts.noCompress) {
-        browserifyOpts.ignoreTransform = './tasks/compress_attributes.js';
+    if(!opts.noCompress) {
+        config.module.rules.push({
+            test: /\.js$/,
+            use: [
+                'ify-loader'
+            ]
+        });
     }
 
-    browserifyOpts.transform = [];
-    if(opts.debug) {
-        browserifyOpts.transform.push(strictD3);
-    }
+    config.entry = pathToIndex;
 
-    var b = browserify(pathToIndex, browserifyOpts);
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
-    function done() {
-        if(cb && --pending === 0) {
-            if(opts.deleteIndex) {
-                console.log('delete', pathToIndex);
-                fs.unlinkSync(pathToIndex, {});
-            }
+    var parsedPath;
+    parsedPath = path.parse(pathToBundle);
+    config.output.path = parsedPath.dir;
+    config.output.filename = parsedPath.base;
 
-            cb(null);
-        }
-    }
+    config.optimization = {
+        minimize: pending === 1 && pathToMinBundle
+    };
 
-    var bundleStream = b.bundle(function(err) {
+    var compiler = webpack(config);
+
+    compiler.run(function(err, stats) {
+        console.log(stats);
+
         if(err) {
-            if(cb) cb(err);
-            else throw err;
+            console.log('err:', err);
+        } else {
+            console.log('success:', config.output.path + '/' + config.output.filename);
+
+            if(pending === 2) {
+                parsedPath = path.parse(pathToMinBundle);
+                config.output.path = parsedPath.dir;
+                config.output.filename = parsedPath.base;
+
+                config.optimization = {
+                    minimize: true
+                };
+
+                compiler = webpack(config);
+
+                compiler.run(function(err, stats) {
+                    console.log(stats);
+
+                    if(err) {
+                        console.log('err:', err);
+                    } else {
+                        console.log('success:', config.output.path + '/' + config.output.filename);
+
+                        if(cb) cb();
+                    }
+                });
+            } else {
+                if(cb) cb();
+            }
         }
     });
-
-    if(pathToMinBundle) {
-        var minifyOpts = {
-            ecma: 5,
-            mangle: true,
-            output: {
-                beautify: false,
-                ascii_only: true
-            },
-
-            sourceMap: false
-        };
-
-        bundleStream
-            .pipe(applyDerequire())
-            .pipe(minify(minifyOpts))
-            .pipe(fs.createWriteStream(pathToMinBundle))
-            .on('finish', function() {
-                logger(pathToMinBundle);
-                done();
-            });
-    }
-
-    if(pathToBundle) {
-        bundleStream
-            .pipe(applyDerequire())
-            .pipe(fs.createWriteStream(pathToBundle))
-            .on('finish', function() {
-                logger(pathToBundle);
-                done();
-            });
-    }
 };
-
-function logger(pathToOutput) {
-    var log = 'ok ' + path.basename(pathToOutput);
-    console.log(log);
-}
-
-function applyDerequire() {
-    var buf = '';
-    return through(function(chunk, enc, next) {
-        buf += chunk.toString();
-        next();
-    }, function(done) {
-        this.push(derequire(buf));
-        done();
-    });
-}
