@@ -2248,8 +2248,9 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    // TODO: could be stored be stored in the x axis (ax._counterAx)? - {x: {left: ..., right: ...}}
-    var shiftConstant = 60;
+    var fullAxList = axes.list(gd)
+    var overlayingShiftedAx = fullAxList.filter(ax => ax['shift'] === true).map(ax => ax['overlaying']);
+ 
     var axShifts = {'false': {'left': 0, 'right': 0}};
 
     return Lib.syncOrAsync(axList.map(function(axId) {
@@ -2257,15 +2258,16 @@ axes.draw = function(gd, arg, opts) {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
-            if(ax.shift === true) {
-                axShifts = incrementShift(ax, shiftConstant, axShifts);
-            }
 
             if(!opts) opts = {};
             opts.axShifts = axShifts;
+            opts.overlayingShiftedAx = overlayingShiftedAx;
 
             var axDone = axes.drawOne(gd, ax, opts);
 
+            if(ax._shiftPusher) {
+                axShifts = incrementShift(ax, ax._fullDepth, axShifts);
+            }
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
 
@@ -2318,9 +2320,11 @@ axes.drawOne = function(gd, ax, opts) {
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
-
     // Only set if it hasn't been defined from drawing previously
-    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
+    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;   
+    // Will this axis 'push' out other axes?
+    ax._shiftPusher = opts.overlayingShiftedAx.includes(ax._id) || opts.overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
+    ax._fullDepth = 60;
 
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
@@ -4229,14 +4233,16 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
 }
 
 function incrementShift(ax, shiftVal, axShifts) {
+    // Need to set 'overlay' for anchored axis
+    var overlay = ((ax.anchor !== 'free') && ((ax.overlaying === undefined) || (ax.overlaying === false))) ? ax._id : ax.overlaying;
     var shiftValAdj = ax.side === 'right' ? shiftVal : -shiftVal;
-    if(!(ax.overlaying in axShifts)) {
-        axShifts[ax.overlaying] = {};
+    if(!(overlay in axShifts)) {
+        axShifts[overlay] = {};
     }
-    if(!(ax.side in axShifts[ax.overlaying])) {
-        axShifts[ax.overlaying][ax.side] = 0;
+    if(!(ax.side in axShifts[overlay])) {
+        axShifts[overlay][ax.side] = 0;
     }
-    axShifts[ax.overlaying][ax.side] += shiftValAdj;
+    axShifts[overlay][ax.side] += shiftValAdj;
     return axShifts;
 }
 
