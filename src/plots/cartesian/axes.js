@@ -657,8 +657,34 @@ function isClose(a, b) {
 axes.prepTicks = function(ax, opts) {
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
-    // calculate max number of (auto) ticks to display based on plot size
-    if(ax.tickmode === 'auto' || !ax.dtick) {
+    // sync ticks with the overlaying defined axis
+    if(ax.tickmode === 'sync') {
+        var baseAxis = ax._mainAxis;
+
+        var minValBaseAxis = Math.min(baseAxis.range[0], baseAxis.range[1]);
+        var maxValBaseAxis = Math.max(baseAxis.range[0], baseAxis.range[1]);
+
+        var rangeDeltaBaseAxis = Math.abs(maxValBaseAxis - minValBaseAxis);
+
+        var dtickRatio = rangeDeltaBaseAxis / baseAxis.dtick;
+
+        var minValAxis = Math.min(ax.range[0], ax.range[1]);
+        var maxValAxis = Math.max(ax.range[0], ax.range[1]);
+
+        var rangeDeltaAxis = Math.abs(maxValAxis - minValAxis);
+
+        ax.dtick = rangeDeltaAxis / dtickRatio;
+
+        if(baseAxis._vals.length > 0) {
+            var firstTickPosition = baseAxis.l2p(baseAxis._vals[0].x);
+
+            var firstTickPercentage = firstTickPosition / baseAxis._length;
+
+            var offsetVal = rangeDeltaAxis * (1 - firstTickPercentage);
+
+            ax.tick0 = offsetVal + minValAxis;
+        }
+    } else if(ax.tickmode === 'auto' || !ax.dtick) { // calculate max number of (auto) ticks to display based on plot size
         var nt = ax.nticks;
         var minPx;
 

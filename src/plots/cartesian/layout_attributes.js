@@ -14,7 +14,7 @@ var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
 var tickmode = {
     valType: 'enumerated',
-    values: ['auto', 'linear', 'array'],
+    values: ['auto', 'linear', 'array', 'sync'],
     editType: 'ticks',
     impliedEdits: {tick0: undefined, dtick: undefined},
     description: [

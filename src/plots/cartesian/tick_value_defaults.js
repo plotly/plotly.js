@@ -28,6 +28,8 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
 
     if(tickmode === 'auto') {
         coerce(prefix + 'nticks');
+    } else if(tickmode === 'sync') {
+        coerce('overlaying');
     } else if(tickmode === 'linear') {
         // dtick is usually a positive number, but there are some
         // special strings available for log or date axes
