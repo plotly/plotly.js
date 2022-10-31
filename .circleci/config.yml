@@ -410,9 +410,6 @@ jobs:
           name: Display function constructors in plotly.js bundle
           command: npm run log-new-func
       - run:
-          name: Test certain bundles against function constructors
-          command: npm run no-new-func
-      - run:
           name: Test plotly bundles against es6
           command: npm run no-es6-dist
 
