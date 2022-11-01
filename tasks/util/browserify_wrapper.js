@@ -41,21 +41,21 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
     var parsedPath;
-    parsedPath = path.parse(pathToBundle);
+    parsedPath = path.parse(pathToBundle || pathToMinBundle);
     config.output.path = parsedPath.dir;
     config.output.filename = parsedPath.base;
 
     config.optimization = {
-        minimize: pending === 1 && pathToMinBundle
+        minimize: pathToMinBundle && pending === 1
     };
 
     var compiler = webpack(config);
 
     compiler.run(function(err, stats) {
-        console.log(stats);
-
         if(err) {
             console.log('err:', err);
+        } if(stats.hasErrors()) {
+            console.log('stats.errors:', stats.errors);
         } else {
             console.log('success:', config.output.path + '/' + config.output.filename);
 
