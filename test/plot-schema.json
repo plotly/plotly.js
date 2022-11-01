@@ -1462,7 +1462,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -3963,7 +3964,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -4562,7 +4564,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -5681,7 +5684,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -6243,7 +6247,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -6805,7 +6810,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -8430,7 +8436,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -8828,7 +8835,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -9232,7 +9240,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -10260,7 +10269,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "ticks": {
@@ -10987,7 +10997,8 @@
      "values": [
       "auto",
       "linear",
-      "array"
+      "array",
+      "sync"
      ]
     },
     "tickprefix": {
@@ -11511,7 +11522,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "ticks": {
@@ -11984,7 +11996,8 @@
      "values": [
       "auto",
       "linear",
-      "array"
+      "array",
+      "sync"
      ]
     },
     "tickprefix": {
@@ -13048,7 +13061,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -14569,7 +14583,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -18774,7 +18789,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -19773,7 +19789,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -20801,7 +20818,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -21847,7 +21865,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -23234,7 +23253,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -24192,7 +24212,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -25499,7 +25520,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -27215,7 +27237,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -28385,7 +28408,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -29926,7 +29950,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -31110,7 +31135,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -32252,7 +32278,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -33907,7 +33934,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -35309,7 +35337,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -36220,7 +36249,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -37442,7 +37472,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -39430,7 +39461,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -40393,7 +40425,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -43917,7 +43950,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -46119,7 +46153,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -46708,7 +46743,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -48156,7 +48192,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -49997,7 +50034,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -51984,7 +52022,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -53890,7 +53929,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -55065,7 +55105,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -56909,7 +56950,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -58730,7 +58772,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -60577,7 +60620,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -62378,7 +62422,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -63777,7 +63822,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -65242,7 +65288,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -66115,7 +66162,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
@@ -68475,7 +68523,8 @@
        "values": [
         "auto",
         "linear",
-        "array"
+        "array",
+        "sync"
        ]
       },
       "tickprefix": {
@@ -70788,7 +70837,8 @@
       "values": [
        "auto",
        "linear",
-       "array"
+       "array",
+       "sync"
       ]
      },
      "tickprefix": {
