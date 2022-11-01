@@ -675,7 +675,7 @@ axes.prepTicks = function(ax, opts) {
 
         ax.dtick = rangeDeltaAxis / dtickRatio;
 
-        if(baseAxis._vals.length > 0) {
+        if(baseAxis && baseAxis._vals.length > 0) {
             var firstTickPosition = baseAxis.l2p(baseAxis._vals[0].x);
 
             var firstTickPercentage = firstTickPosition / baseAxis._length;
