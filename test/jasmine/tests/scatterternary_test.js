@@ -455,6 +455,8 @@ describe('Test scatterternary *cliponaxis*', function() {
     it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
         var gd = createGraphDiv();
         var fig = Lib.extendDeep({}, require('@mocks/ternary_markers.json'));
+        // use simple markers here
+        delete fig.data[0].marker;
 
         function _assert(layerClips, nodeDisplays, lineClips) {
             var frontLayer = d3Select('.frontplot');

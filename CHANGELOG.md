@@ -9,6 +9,46 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.16.1] -- 2022-10-21
+
+### Fixed
+ - Fix `choroplethmapbox` selection when adding new traces on top [[#6345](https://github.com/plotly/plotly.js/pull/6345)]
+
+
+## [2.16.0] -- 2022-10-14
+
+### Added
+ - Add clustering options to `scattermapbox` [[#5827](https://github.com/plotly/plotly.js/pull/5827)],
+   with thanks to @elben10 for the contribution!
+ - Add bounds to mapbox suplots [[6339](https://github.com/plotly/plotly.js/pull/6339)]
+
+
+## [2.15.1] -- 2022-10-11
+
+### Fixed
+ - Fix latest version of plotly.js main module on npm 
+
+
+## [2.15.0] -- 2022-10-06
+
+### Added
+ - Add `angle`, `angleref` and `standoff` to `marker` and add `backoff` to `line`; also introduce new arrow symbols to facilitate drawing networks [[#6297](https://github.com/plotly/plotly.js/pull/6297)]
+ - Add `minreducedwidth` and `minreducedheight` to layout for increasing control over automargin [[#6307](https://github.com/plotly/plotly.js/pull/6307)]
+ - Add `entrywidth` and `entrywidthmode` to legend [[#6202](https://github.com/plotly/plotly.js/pull/6202), [#6324](https://github.com/plotly/plotly.js/pull/6324)]
+
+### Changed
+ - Use valType of `angle` for `rotation` in `pie` [[#6304](https://github.com/plotly/plotly.js/pull/6304)]
+
+### Fixed
+ - Fix mapbox `touch event` after switching back from select mode [[#6281](https://github.com/plotly/plotly.js/pull/6281)],
+   with thanks to @mmtmr for the contribution!
+ - Fix automargin to update axis titles in redraws [[#6312](https://github.com/plotly/plotly.js/pull/6312)]
+ - Fix exporting patterns with transparent color [[#6318](https://github.com/plotly/plotly.js/pull/6318)]
+ - Fix exporting text on empty slices [[#6335](https://github.com/plotly/plotly.js/pull/6335)]
+ - Disable interactions for `treemap`, `icicle`, `sunburst`, `pie`, `funnelarea`, 
+   `parcats`, `parcoords` and `sankey` traces when `staticPlot` is set to true [[#6296](https://github.com/plotly/plotly.js/pull/6296)]
+   
+
 ## [2.14.0] -- 2022-08-10
 
 ### Added

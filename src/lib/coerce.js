@@ -171,7 +171,7 @@ exports.valObjectMeta = {
             'A number (in degree) between -180 and 180.'
         ].join(' '),
         requiredOpts: [],
-        otherOpts: ['dflt'],
+        otherOpts: ['dflt', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
             if(v === 'auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);

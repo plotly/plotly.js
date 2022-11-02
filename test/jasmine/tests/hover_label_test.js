@@ -3999,6 +3999,9 @@ describe('hover distance', function() {
     describe('closest hovermode', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'closest';
+        // use simple markers here
+        delete mockCopy.data[0].marker;
+        delete mockCopy.data[1].marker;
 
         beforeEach(function(done) {
             Plotly.newPlot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
