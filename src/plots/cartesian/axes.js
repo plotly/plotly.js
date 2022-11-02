@@ -2321,10 +2321,10 @@ axes.drawOne = function(gd, ax, opts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
     // Only set if it hasn't been defined from drawing previously
-    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;   
+    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift; 
     // Will this axis 'push' out other axes?
     ax._shiftPusher = opts.overlayingShiftedAx.includes(ax._id) || opts.overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
-    ax._fullDepth = 60;
+    ax._fullDepth = 0;
 
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
@@ -2606,9 +2606,11 @@ axes.drawOne = function(gd, ax, opts) {
                 }
             } else {
                 if(s === 'l') {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen) - shift;
+                    ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+                    push[s] = ax._depth - shift
                 } else {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen) + shift;
+                    ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+                    push[s] = ax._depth + shift
                     domainIndices.reverse();
                 }
 
@@ -3921,6 +3923,8 @@ function drawTitle(gd, ax) {
             avoid.pad = 0;
         }
     }
+
+    ax._fullDepth += (titleStandoff + approxTitleDepth(ax))
 
     return Titles.draw(gd, axId + 'title', {
         propContainer: ax,

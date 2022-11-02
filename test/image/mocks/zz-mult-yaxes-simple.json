@@ -86,22 +86,26 @@
             "overlaying": "y",
             "showline": true,
             "side": "right",
-            "ticks": "inside",
-            "ticklen": 15,
+            "ticklen": 25,
             "linewidth": 15,
             "tickfont": {
+                "size": 20
+            },
+            "titlefont": {
                 "size": 20
             }
         },
         "yaxis3": {
-            "title": {"text": "yaxis3 title"},
+            "title": {"text": "yaxis3 title", "standoff": 25},
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
             "shift": true,
+            "ticklen": 40,
             "titlefont": {
-                "size": 24
+                "size": 20
             }
+
         },
         "yaxis4": {
             "title": {"text": "yaxis4 title"},
@@ -109,9 +113,7 @@
             "overlaying": "y",
             "showline": true,
             "shift": true,
-            "side": "right",
-            "ticks": "inside",
-            "ticklen": 20
+            "side": "right"
         },
         "yaxis5": {
             "title": {"text": "yaxis5 title"},
