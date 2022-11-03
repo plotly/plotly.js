@@ -593,7 +593,9 @@ proto.updateFx = function(fullLayout) {
     map.off('click', self.onClickInPanHandler);
     if(selectMode(dragMode) || drawMode(dragMode)) {
         map.dragPan.disable();
-        map.on('zoomstart', self.clearSelect);
+        if(self.clearSelect) {
+            map.on('zoomstart', self.clearSelect);
+        }
 
         self.dragOptions.prepFn = function(e, startX, startY) {
             prepSelect(e, startX, startY, self.dragOptions, dragMode);
@@ -602,7 +604,9 @@ proto.updateFx = function(fullLayout) {
         dragElement.init(self.dragOptions);
     } else {
         map.dragPan.enable();
-        map.off('zoomstart', self.clearSelect);
+        if(self.clearSelect) {
+            map.off('zoomstart', self.clearSelect);
+        }
         self.div.onmousedown = null;
         self.div.ontouchstart = null;
         self.div.removeEventListener('touchstart', self.div._ontouchstart);
