@@ -31,7 +31,7 @@ var server = http.createServer(ecstatic({
 // Start the server up!
 server.listen(PORT);
 
-// open up browser window on first bundle callback
+// open up browser window
 open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
     strict ? '-strict' :
     mathjax3 ? '-mathjax3' :
@@ -42,7 +42,7 @@ open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
 getMockFiles()
     .then(readFiles)
     .then(createMocksList)
-    .then(saveToFile);
+    .then(saveMockListToFile);
 
 // Devtools config
 var devtoolsConfig = {};
@@ -72,7 +72,8 @@ compiler.run(function(devtoolsErr, devtoolsStats) {
     if(devtoolsErr) {
         console.log('err:', devtoolsErr);
     } else if(devtoolsStats.hasErrors()) {
-        console.log('stats.errors:', devtoolsStats.errors);
+        if(!devtoolsStats.errors) console.log(devtoolsStats);
+        else console.log('stats.errors:', devtoolsStats.errors);
     } else {
         console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
     }
@@ -84,7 +85,8 @@ compiler.run(function(devtoolsErr, devtoolsStats) {
                 if(err) {
                     console.log('err:', err);
                 } else if(stats.hasErrors()) {
-                    console.log('stats.errors:', stats.errors);
+                    if(!stats.errors) console.log(stats);
+                    else console.log('stats.errors:', stats.errors);
                 } else {
                     console.log('success:', config.output.path + '/' + config.output.filename);
                 }
@@ -145,7 +147,7 @@ function createMocksList(files) {
     return mocksList;
 }
 
-function saveToFile(mocksList) {
+function saveMockListToFile(mocksList) {
     var filePath = path.join(constants.pathToBuild, 'test_dashboard_mocks.json');
     var content = JSON.stringify(mocksList, null, 4);
 
