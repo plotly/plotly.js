@@ -2502,6 +2502,122 @@ axes.drawOne = function(gd, ax, opts) {
         }
     }
 
+    var xLinesXLeft, xLinesXRight, xLinesYBottom, xLinesYTop,
+        leftYLineWidth, rightYLineWidth;
+    var yLinesYBottom, yLinesYTop, yLinesXLeft, yLinesXRight,
+        connectYBottom, connectYTop;
+    var extraSubplot;
+
+    var axList = axes.list(gd, '', true);
+
+    function xLinePath(y) {
+        return 'M' + xLinesXLeft + ',' + y + 'H' + xLinesXRight;
+    }
+    
+    function xLinePathFree(y) {
+        return 'M' + xa._offset + ',' + y + 'h' + xa._length;
+    }
+    
+    function yLinePath(x) {
+        return 'M' + x + ',' + yLinesYTop + 'V' + yLinesYBottom;
+    }
+    
+    function yLinePathFree(x) {
+        if(typeof(ya.shift) === 'number') {
+            x += ya.shift;
+        } else if(ya._shift !== undefined) {
+            x += ya._shift;
+        }
+        return 'M' + x + ',' + ya._offset + 'v' + ya._length;
+    }
+
+    for(var subplot in fullLayout._plots) {
+        var plotinfo = fullLayout._plots[subplot];
+        var pad = gd._fullLayout._size.p
+        var xa = plotinfo.xaxis;
+        var ya = plotinfo.yaxis;
+
+        /*
+         * x lines get longer where they meet y lines, to make a crisp corner.
+         * The x lines get the padding (margin.pad) plus the y line width to
+         * fill up the corner nicely. Free x lines are excluded - they always
+         * span exactly the data area of the plot
+         *
+         *  | XXXXX
+         *  | XXXXX
+         *  |
+         *  +------
+         *     x1
+         *    -----
+         *     x2
+         */
+        var xPath = 'M0,0';
+        if(shouldShowLinesOrTicks(xa, subplot)) {
+            leftYLineWidth = findCounterAxisLineWidth(xa, 'left', ya, axList);
+            xLinesXLeft = xa._offset - (leftYLineWidth ? (pad + leftYLineWidth) : 0);
+            rightYLineWidth = findCounterAxisLineWidth(xa, 'right', ya, axList);
+            xLinesXRight = xa._offset + xa._length + (rightYLineWidth ? (pad + rightYLineWidth) : 0);
+            xLinesYBottom = getLinePosition(gd, xa, ya, 'bottom');
+            xLinesYTop = getLinePosition(gd, xa, ya, 'top');
+
+            // save axis line positions for extra ticks to reference
+            // each subplot that gets ticks from "allticks" gets an entry:
+            //    [left or bottom, right or top]
+            extraSubplot = (!xa._anchorAxis || subplot !== xa._mainSubplot);
+            if(extraSubplot && (xa.mirror === 'allticks' || xa.mirror === 'all')) {
+                xa._linepositions[subplot] = [xLinesYBottom, xLinesYTop];
+            }
+
+            xPath = mainPath(xa, xLinePath, xLinePathFree, subplot);
+            if(extraSubplot && xa.showline && (xa.mirror === 'all' || xa.mirror === 'allticks')) {
+                xPath += xLinePath(xLinesYBottom) + xLinePath(xLinesYTop);
+            }
+
+            plotinfo.xlines
+                .style('stroke-width', xa._lw + 'px')
+                .call(Color.stroke, xa.showline ?
+                    xa.linecolor : 'rgba(0,0,0,0)');
+        }
+        plotinfo.xlines.attr('d', xPath);
+
+        /*
+         * y lines that meet x axes get longer only by margin.pad, because
+         * the x axes fill in the corner space. Free y axes, like free x axes,
+         * always span exactly the data area of the plot
+         *
+         *   |   | XXXX
+         * y2| y1| XXXX
+         *   |   | XXXX
+         *       |
+         *       +-----
+         */
+        var yPath = 'M0,0';
+        if(shouldShowLinesOrTicks(ya, subplot)) {        
+            connectYBottom = findCounterAxisLineWidth(ya, 'bottom', xa, axList);
+            yLinesYBottom = ya._offset + ya._length + (connectYBottom ? pad : 0);
+            connectYTop = findCounterAxisLineWidth(ya, 'top', xa, axList);
+            yLinesYTop = ya._offset - (connectYTop ? pad : 0);
+            yLinesXLeft = getLinePosition(gd, ya, xa, 'left');
+            yLinesXRight = getLinePosition(gd, ya, xa, 'right');
+
+            extraSubplot = (!ya._anchorAxis || subplot !== ya._mainSubplot);
+            if(extraSubplot && (ya.mirror === 'allticks' || ya.mirror === 'all')) {
+                ya._linepositions[subplot] = [yLinesXLeft, yLinesXRight];
+            }
+
+            yPath = mainPath(ya, yLinePath, yLinePathFree, subplot);
+            if(extraSubplot && ya.showline && (ya.mirror === 'all' || ya.mirror === 'allticks')) {
+                yPath += yLinePath(yLinesXLeft) + yLinePath(yLinesXRight);
+            }
+
+            plotinfo.ylines
+                .style('stroke-width', ya._lw + 'px')
+                .call(Color.stroke, ya.showline ?
+                    ya.linecolor : 'rgba(0,0,0,0)');
+        }
+        plotinfo.ylines.attr('d', yPath);
+    }
+
     var seq = [];
 
     // tick labels - for now just the main labels.
@@ -4244,4 +4360,81 @@ function setShiftVal(ax, axShifts) {
     return ax.shift === true ?
         axShifts[ax.overlaying][ax.side] :
         (ax.shift || 0);
+}
+
+function mainPath(ax, pathFn, pathFnFree, subplot) {
+    if(!ax.showline || subplot !== ax._mainSubplot) return '';
+    if(!ax._anchorAxis) return pathFnFree(ax._mainLinePosition);
+    var out = pathFn(ax._mainLinePosition);
+    if(ax.mirror) out += pathFn(ax._mainMirrorPosition);
+    return out;
+}
+
+function shouldShowLinesOrTicks(ax, subplot) {
+    return (ax.ticks || ax.showline) &&
+        (subplot === ax._mainSubplot || ax.mirror === 'all' || ax.mirror === 'allticks');
+}
+
+/*
+ * Is there another axis intersecting `side` end of `ax`?
+ * First look at `counterAx` (the axis for this subplot),
+ * then at all other potential counteraxes on or overlaying this subplot.
+ * Take the line width from the first one that has a line.
+ */
+function findCounterAxisLineWidth(ax, side, counterAx, axList) {
+    if(shouldShowLineThisSide(ax, side, counterAx)) {
+        return counterAx._lw;
+    }
+    for(var i = 0; i < axList.length; i++) {
+        var axi = axList[i];
+        if(axi._mainAxis === counterAx._mainAxis && shouldShowLineThisSide(ax, side, axi)) {
+            return axi._lw;
+        }
+    }
+    return 0;
+}
+
+
+/*
+ * should we draw a line on counterAx at this side of ax?
+ * It's assumed that counterAx is known to overlay the subplot we're working on
+ * but it may not be its main axis.
+ */
+function shouldShowLineThisSide(ax, side, counterAx) {
+    // does counterAx get a line at all?
+    if(!counterAx.showline || !counterAx._lw) return false;
+
+    // are we drawing *all* lines for counterAx?
+    if(counterAx.mirror === 'all' || counterAx.mirror === 'allticks') return true;
+
+    var anchorAx = counterAx._anchorAxis;
+
+    // is this a free axis? free axes can only have a subplot side-line with all(ticks)? mirroring
+    if(!anchorAx) return false;
+
+    // in order to handle cases where the user forgot to anchor this axis correctly
+    // (because its default anchor has the same domain on the relevant end)
+    // check whether the relevant position is the same.
+    var sideIndex = alignmentConstants.FROM_BL[side];
+    if(counterAx.side === side) {
+        return anchorAx.domain[sideIndex] === ax.domain[sideIndex];
+    }
+    return counterAx.mirror && anchorAx.domain[1 - sideIndex] === ax.domain[1 - sideIndex];
+}
+
+// TODO: This is repeated from plot_api/subroutines.js
+function getLinePosition(gd, ax, counterAx, side) {
+    var lwHalf = ax._lw / 2;
+    var gs = gd._fullLayout._size;
+    var pad = gs.p;
+
+    if(ax._id.charAt(0) === 'x') {
+        if(!counterAx) return gs.t + gs.h * (1 - (ax.position || 0)) + (lwHalf % 1);
+        else if(side === 'top') return counterAx._offset - pad - lwHalf;
+        return counterAx._offset + counterAx._length + pad + lwHalf;
+    }
+
+    if(!counterAx) return gs.l + gs.w * (ax.position || 0) + (lwHalf % 1);
+    else if(side === 'right') return counterAx._offset + counterAx._length + pad + lwHalf;
+    return counterAx._offset - pad - lwHalf;
 }
