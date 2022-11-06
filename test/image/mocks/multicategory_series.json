@@ -298,7 +298,6 @@
             ],
             "name": "vCar",
             "yaxis": "y",
-            "legendgroup": "B - 3",
             "showlegend": false
         },
         {
@@ -864,7 +863,6 @@
             ],
             "name": "vCar",
             "yaxis": "y",
-            "legendgroup": "B - 3",
             "showlegend": false
         },
         {
@@ -1385,7 +1383,6 @@
             ],
             "name": "vCar",
             "yaxis": "y",
-            "legendgroup": "B - 3",
             "showlegend": false
         },
         {
