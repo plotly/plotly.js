@@ -281,6 +281,11 @@ func.defaultConfig = {
                         ]
                     }
                 }
+            }, {
+                test: /\.(js|glsl)$/,
+                use: [
+                    'ify-loader'
+                ]
             }]
         },
         resolve: {

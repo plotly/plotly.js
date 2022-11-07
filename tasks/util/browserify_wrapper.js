@@ -29,7 +29,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     if(!opts.noCompress) {
         config.module.rules.push({
-            test: /\.js$/,
+            test: /\.(js|glsl)$/,
             use: [
                 'ify-loader'
             ]

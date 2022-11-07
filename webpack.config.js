@@ -33,6 +33,17 @@ module.exports = {
                     ]
                 }
             },
+        }, {
+            test: /\.glsl$/,
+            include: /node_modules/,
+            use: {
+                loader: 'raw-loader'
+            }
+        }, {
+            test: /\.(js|glsl)$/,
+            use: [
+                'ify-loader'
+            ]
         }]
     },
     resolve: {
