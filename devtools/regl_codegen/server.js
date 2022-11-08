@@ -97,9 +97,8 @@ compiler = webpack(devtoolsConfig);
 compiler.run(function(devtoolsErr, devtoolsStats) {
     if(devtoolsErr) {
         console.log('err:', devtoolsErr);
-    } else if(devtoolsStats.hasErrors()) {
-        if(!devtoolsStats.errors) console.log(devtoolsStats);
-        else console.log('stats.errors:', devtoolsStats.errors);
+    } else if(devtoolsStats.errors && devtoolsStats.errors.length) {
+        console.log('stats.errors:', devtoolsStats.errors);
     } else {
         console.log('success:', devtoolsConfig.output.path + '/' + devtoolsConfig.output.filename);
 

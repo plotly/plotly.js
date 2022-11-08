@@ -54,7 +54,7 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     compiler.run(function(err, stats) {
         if(err) {
             console.log('err:', err);
-        } if(stats.hasErrors()) {
+        } if(stats.errors && stats.errors.length) {
             console.log('stats.errors:', stats.errors);
         } else {
             console.log('success:', config.output.path + '/' + config.output.filename);
