@@ -2320,12 +2320,20 @@ axes.drawOne = function(gd, ax, opts) {
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
-    // Only set if it hasn't been defined from drawing previously
-    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift; 
     // Will this axis 'push' out other axes?
     ax._shiftPusher = opts.overlayingShiftedAx.includes(ax._id) || opts.overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
+    // An axis is also shifted by 1/2 of its own linewidth
+    // And inside tick length if applicable
+    if(ax._shiftPusher & ax.anchor === 'free') {
+        var selfPush = (ax.linewidth / 2 || 0)
+        if(ax.ticks === 'inside') {
+            selfPush += ax.ticklen;
+        }
+        axShifts = incrementShift(ax, selfPush, axShifts);
+    }
+    // Only set if it hasn't been defined from drawing previously
+    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift; 
     ax._fullDepth = 0;
-
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
     var mainLinePositionShift = mainLinePosition += ax._shift;
@@ -2569,7 +2577,7 @@ axes.drawOne = function(gd, ax, opts) {
         var mirrorPush;
         var rangeSliderPush;
 
-        if(ax.automargin || hasRangeSlider) {
+        if(ax.automargin || hasRangeSlider || ax._shiftPusher) {
             if(ax.type === 'multicategory') {
                 llbbox = getLabelLevelBbox('tick2');
             } else {
@@ -2577,6 +2585,18 @@ axes.drawOne = function(gd, ax, opts) {
                 if(axLetter === 'x' && s === 'b') {
                     ax._depth = Math.max(llbbox.width > 0 ? llbbox.bottom - pos : 0, outsideTickLen);
                 }
+            }
+        }
+
+        if(ax._shiftPusher) {
+            if(s === 'l') {
+                ax._fullDepth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+            } else {
+                ax._fullDepth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+            }
+            // TODO: Things seem wonky with axis titles
+            if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+                ax._fullDepth += (approxTitleDepth(ax) * 2) + (ax.title.standoff || 0);
             }
         }
 
@@ -3924,7 +3944,7 @@ function drawTitle(gd, ax) {
         }
     }
 
-    ax._fullDepth += (titleStandoff + approxTitleDepth(ax))
+    ax._titleStandoff = titleStandoff 
 
     return Titles.draw(gd, axId + 'title', {
         propContainer: ax,
