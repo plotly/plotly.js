@@ -4,6 +4,8 @@ var webpack = require('webpack');
 
 var config = require('../../webpack.config.js');
 
+var nRules = config.module.rules.length;
+
 /** Convenience bundle wrapper
  *
  * @param {string} pathToIndex path to index file to bundle
@@ -11,7 +13,6 @@ var config = require('../../webpack.config.js');
  * @param {object} opts
  *  Browserify options:
  *  - standalone {string}
- *  - debug {boolean} [optional]
  *  Additional option:
  *  - pathToMinBundle {string} path to destination minified bundle
  *  - noCompress {boolean} skip attribute meta compression?
@@ -27,14 +28,12 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var pathToMinBundle = opts.pathToMinBundle;
 
-    if(!opts.noCompress) {
-        config.module.rules.push({
-            test: /\.(js|glsl)$/,
-            use: [
-                'ify-loader'
-            ]
-        });
-    }
+    config.module.rules[nRules] = opts.noCompress ? {} : {
+        test: /\.js$/,
+        use: [
+            'transform-loader?' + path.resolve(__dirname, '../../tasks/compress_attributes.js')
+        ]
+    };
 
     config.entry = pathToIndex;
 
@@ -45,8 +44,10 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
     config.output.path = parsedPath.dir;
     config.output.filename = parsedPath.base;
 
+    config.output.library.name = opts.standalone || 'Plotly';
+
     config.optimization = {
-        minimize: pathToMinBundle && pending === 1
+        minimize: !!(pathToMinBundle && pending === 1)
     };
 
     var compiler = webpack(config);
