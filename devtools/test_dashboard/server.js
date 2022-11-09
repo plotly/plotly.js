@@ -20,24 +20,6 @@ var mathjax3chtml = args.mathjax3chtml;
 
 if(strict) config.entry = './lib/index-strict.js';
 
-// Create server
-var server = http.createServer(ecstatic({
-    root: constants.pathToRoot,
-    cache: 0,
-    gzip: true,
-    cors: true
-}));
-
-// Start the server up!
-server.listen(PORT);
-
-// open up browser window
-open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
-    strict ? '-strict' :
-    mathjax3 ? '-mathjax3' :
-    mathjax3chtml ? '-mathjax3chtml' : ''
-) + '.html');
-
 // mock list
 getMockFiles()
     .then(readFiles)
@@ -79,6 +61,8 @@ compiler.run(function(devtoolsErr, devtoolsStats) {
 
     compiler.close(function(closeErr) {
         if(!closeErr) {
+            var firstBundle = true;
+
             compiler = webpack(config);
             compiler.watch({}, function(err, stats) {
                 if(err) {
@@ -87,6 +71,28 @@ compiler.run(function(devtoolsErr, devtoolsStats) {
                     console.log('stats.errors:', stats.errors);
                 } else {
                     console.log('success:', config.output.path + '/' + config.output.filename);
+
+                    if(firstBundle) {
+                        // Create server
+                        var server = http.createServer(ecstatic({
+                            root: constants.pathToRoot,
+                            cache: 0,
+                            gzip: true,
+                            cors: true
+                        }));
+
+                        // Start the server up!
+                        server.listen(PORT);
+
+                        // open up browser window
+                        open('http://localhost:' + PORT + '/devtools/test_dashboard/index' + (
+                            strict ? '-strict' :
+                            mathjax3 ? '-mathjax3' :
+                            mathjax3chtml ? '-mathjax3chtml' : ''
+                        ) + '.html');
+
+                        firstBundle = false;
+                    }
                 }
             });
         }
