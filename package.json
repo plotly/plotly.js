@@ -35,7 +35,6 @@
     "build": "npm run empty-dist && npm run preprocess && npm run find-strings && npm run bundle && npm run extra-bundles && npm run locales && npm run schema dist && npm run stats",
     "regl-codegen": "node devtools/regl_codegen/server.js",
     "cibuild": "npm run empty-dist && npm run preprocess && node tasks/cibundle.js",
-    "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint .",
     "lint-fix": "eslint . --fix || true",
     "log-new-func": "eslint --no-ignore --no-eslintrc --no-inline-config --rule '{no-new-func: error}' dist/plotly.js 2>&1 | ./tasks/show_eval_lines.sh",
