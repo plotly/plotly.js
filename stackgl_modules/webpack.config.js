@@ -24,7 +24,7 @@ module.exports = {
             }
         }, {
             test: /\.js$/,
-            include: /node_modules[\\\/](buffer|pngjs)[\\\/]/,
+            include: /node_modules[\\\/]buffer[\\\/]/,
             use: {
                 loader: 'babel-loader',
                 options: {
