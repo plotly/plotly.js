@@ -101,9 +101,11 @@
             "automargin": true,
             "linewidth": 10,
             "tickfont": {"size": 8},
-            "titlefont": {"size": 8},
             "tickformat" : ".5f",
-            "title": {"text": "yaxis", "standoff": 30}
+            "title": {
+                "text": "yaxis", 
+                "standoff": 30, 
+                "font": {"size": 8}}
         },
         "yaxis2": {
             "overlaying": "y",
@@ -125,9 +127,11 @@
             "ticklen": 30,
             "side": "right",
             "tickfont": {"size": 24},
-            "titlefont": {"size": 24},
             "tickformat" : ".2f",
-            "title": {"text": "yaxis 3", "standoff": 0}
+            "title": {
+                "text": "yaxis 3",
+                "standoff": 0, 
+                "font": {"size": 24}}
 
         },
         "yaxis4": {
