@@ -2601,10 +2601,12 @@ axes.drawOne = function(gd, ax, opts) {
             } else {
                 ax._fullDepth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
             }
-            // TODO: Things seem wonky with axis titles
+            // TODO: Multiplying the approx depth seems to be a workaround for getting the default standoff?
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
                 ax._fullDepth += (approxTitleDepth(ax) * 2) + (ax.title.standoff || 0);
             }
+            // Hard-coded padding after each axis. This could be exposed to the user in the future
+            ax._fullDepth += 10;  
         }
 
         if(ax.automargin) {

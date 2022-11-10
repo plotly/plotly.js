@@ -100,7 +100,10 @@
             "ticklen": 15,
             "automargin": true,
             "linewidth": 10,
-            "tickfont": {"size": 8}
+            "tickfont": {"size": 8},
+            "titlefont": {"size": 8},
+            "tickformat" : ".5f",
+            "title": {"text": "yaxis", "standoff": 30}
         },
         "yaxis2": {
             "overlaying": "y",
@@ -109,7 +112,9 @@
             "automargin": true,
             "linewidth": 40,
             "ticklen": 20,
-            "ticks": "inside"
+            "ticks": "inside",
+            "tickformat" : ".1f",
+            "title": {"text": "yaxis 2"}
         },
         "yaxis3": {
             "anchor": "free",
@@ -119,7 +124,10 @@
             "linewidth": 20,
             "ticklen": 30,
             "side": "right",
-            "tickfont": {"size": 24}
+            "tickfont": {"size": 24},
+            "titlefont": {"size": 24},
+            "tickformat" : ".2f",
+            "title": {"text": "yaxis 3", "standoff": 0}
 
         },
         "yaxis4": {
@@ -130,14 +138,17 @@
             "side": "right",
             "linewidth": 0,
             "ticklen": 20,
-            "ticks": "inside"
+            "ticks": "inside",
+            "tickformat" : ".2f"
         },
         "yaxis5": {
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
             "shift": true,
-            "linewidth": 0
+            "linewidth": 0,
+            "tickformat" : ".2f",
+            "title": {"text": "yaxis 5"}
         },
         "yaxis6": {
             "anchor": "free",
@@ -146,7 +157,9 @@
             "shift": true,
             "linewidth": 0,
             "side": "right",
-            "tickfont": {"size": 24}
+            "tickfont": {"size": 24},
+            "tickformat" : ".2f",
+            "title": {"text": "yaxis 6"}
         },
         "legend": {
             "x": 1,
