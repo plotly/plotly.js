@@ -2313,6 +2313,7 @@ axes.drawOne = function(gd, ax, opts) {
     opts = opts || {};
 
     var axShifts = opts.axShifts || {};
+    var overlayingShiftedAx = opts.overlayingShiftedAx || [];
 
     var i, sp, plotinfo;
 
@@ -2327,7 +2328,7 @@ axes.drawOne = function(gd, ax, opts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
     // Will this axis 'push' out other axes?
-    ax._shiftPusher = opts.overlayingShiftedAx.includes(ax._id) || opts.overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
+    ax._shiftPusher = overlayingShiftedAx.includes(ax._id) || overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
     // An axis is also shifted by 1/2 of its own linewidth
     // And inside tick length if applicable
     if(ax._shiftPusher & ax.anchor === 'free') {

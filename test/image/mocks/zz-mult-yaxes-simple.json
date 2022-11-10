@@ -137,8 +137,7 @@
             "overlaying": "y",
             "showline": true,
             "shift": true,
-            "linewidth": 0,
-            "ticklen": 0
+            "linewidth": 0
         },
         "yaxis6": {
             "anchor": "free",
