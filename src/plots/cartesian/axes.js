@@ -2606,7 +2606,7 @@ axes.drawOne = function(gd, ax, opts) {
                 ax._fullDepth += (approxTitleDepth(ax) * 2) + (ax.title.standoff || 0);
             }
             // Hard-coded padding after each axis. This could be exposed to the user in the future
-            ax._fullDepth += 10;  
+            ax._fullDepth += 10;
         }
 
         if(ax.automargin) {
