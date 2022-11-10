@@ -2248,9 +2248,15 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    var fullAxList = axes.list(gd)
-    var overlayingShiftedAx = fullAxList.filter(ax => ax['shift'] === true).map(ax => ax['overlaying']);
- 
+    var fullAxList = axes.list(gd);
+    // Get the list of the overlaying axis for all 'shift' axes
+    var overlayingShiftedAx = fullAxList.filter(function(ax) {
+        return ax.shift === true;
+    }).map(function(ax) {
+        return ax.overlaying;
+    });
+
+
     var axShifts = {'false': {'left': 0, 'right': 0}};
 
     return Lib.syncOrAsync(axList.map(function(axId) {
@@ -2325,14 +2331,14 @@ axes.drawOne = function(gd, ax, opts) {
     // An axis is also shifted by 1/2 of its own linewidth
     // And inside tick length if applicable
     if(ax._shiftPusher & ax.anchor === 'free') {
-        var selfPush = (ax.linewidth / 2 || 0)
+        var selfPush = (ax.linewidth / 2 || 0);
         if(ax.ticks === 'inside') {
             selfPush += ax.ticklen;
         }
         axShifts = incrementShift(ax, selfPush, axShifts);
     }
     // Only set if it hasn't been defined from drawing previously
-    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift; 
+    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
     ax._fullDepth = 0;
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
@@ -2627,10 +2633,10 @@ axes.drawOne = function(gd, ax, opts) {
             } else {
                 if(s === 'l') {
                     ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
-                    push[s] = ax._depth - shift
+                    push[s] = ax._depth - shift;
                 } else {
                     ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
-                    push[s] = ax._depth + shift
+                    push[s] = ax._depth + shift;
                     domainIndices.reverse();
                 }
 
@@ -3944,7 +3950,7 @@ function drawTitle(gd, ax) {
         }
     }
 
-    ax._titleStandoff = titleStandoff 
+    ax._titleStandoff = titleStandoff;
 
     return Titles.draw(gd, axId + 'title', {
         propContainer: ax,
