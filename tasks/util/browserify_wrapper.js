@@ -72,10 +72,10 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
                 compiler = webpack(config);
 
                 compiler.run(function(err, stats) {
-                    console.log(stats);
-
                     if(err) {
                         console.log('err:', err);
+                    } else if(stats.errors && stats.errors.length) {
+                        console.log('stats.errors:', stats.errors);
                     } else {
                         console.log('success:', config.output.path + '/' + config.output.filename);
 
