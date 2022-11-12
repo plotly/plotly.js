@@ -1581,7 +1581,7 @@
         },
         "hovermode": "x unified",
         "title": {
-            "text": "Multicategory Mock with Tickmode 'sync'"
+            "text": "Multicategory Mock"
         },
         "xaxis": {
             "visible": false,
@@ -1609,7 +1609,6 @@
             ],
             "type": "linear",
             "side": "left",
-            "tickmode": "sync",
             "overlaying": "y"
         },
         "showlegend": true
