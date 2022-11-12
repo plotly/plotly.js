@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.16.2] -- 2022-11-11
+
+### Fixed
+ - Fix mapbox clearOutline calls (regression introduced in 2.13.0) [[#6367](https://github.com/plotly/plotly.js/pull/6367)]
+
+
 ## [2.16.1] -- 2022-10-21
 
 ### Fixed
