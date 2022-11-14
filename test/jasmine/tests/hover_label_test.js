@@ -2642,7 +2642,7 @@ describe('Hover on multicategory axes', function() {
     });
 
     it('should work with series', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/multicategory_series.json'));
+        var fig = Lib.extendDeep({}, require('@mocks/zz-multicategory_series.json'));
         fig.data = [fig.data[0]];
         fig.layout.width = 500;
         fig.layout.height = 500;
