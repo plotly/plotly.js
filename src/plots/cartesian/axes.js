@@ -664,12 +664,12 @@ axes.prepTicks = function(ax, opts) {
         // get range min and max to find range delta of axis 1
         var minValBaseAxis = Math.min(baseAxis.range[0], baseAxis.range[1]);
         var maxValBaseAxis = Math.max(baseAxis.range[0], baseAxis.range[1]);
-        var rangeDeltaBaseAxis = Math.abs(maxValBaseAxis - minValBaseAxis);
+        var rangeDeltaBaseAxis = maxValBaseAxis - minValBaseAxis;
 
         // get range min and max to find range delta of axis 2
         var minValAxis = Math.min(ax.range[0], ax.range[1]);
         var maxValAxis = Math.max(ax.range[0], ax.range[1]);
-        var rangeDeltaCurrentAxis = Math.abs(maxValAxis - minValAxis);
+        var rangeDeltaCurrentAxis = maxValAxis - minValAxis;
 
         // set second axis' dtick value to be based off of same ratio as the first axis
         var dtickRatio = rangeDeltaBaseAxis / baseAxis.dtick;
