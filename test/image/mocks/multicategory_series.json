@@ -1570,7 +1570,6 @@
         },
         "legend": {
             "x": 0.5,
-            "y": "auto",
             "xanchor": "center",
             "yanchor": "top",
             "orientation": "h",
