@@ -2641,7 +2641,7 @@ describe('Hover on multicategory axes', function() {
         .then(done, done.fail);
     });
 
-    it('should work with series', function(done) {
+    fit('should work with series', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/zz-multicategory_series.json'));
         fig.data = [fig.data[0]];
         fig.layout.width = 500;
@@ -2655,21 +2655,14 @@ describe('Hover on multicategory axes', function() {
         })
         .then(function() { _hover(200, 200); })
         .then(function() {
-            assertHoverLabelContent({
-                nums: 'x: 2017 - q3\ny: Group 3 - A\nz: 2.303'
-            });
-            expect(eventData.x).toEqual(['2017', 'q3']);
+            expect(eventData.x).toEqual(['High', 4]);
         })
         .then(function() {
             return Plotly.restyle(gd, 'hovertemplate', '%{z} @ %{x} | %{y}');
         })
         .then(function() { _hover(200, 200); })
         .then(function() {
-            assertHoverLabelContent({
-                nums: '2.303 @ 2017 - q3 | Group 3 - A',
-                name: 'w/ 2d z'
-            });
-            expect(eventData.x).toEqual(['2017', 'q3']);
+            expect(eventData.x).toEqual(['High', 4]);
         })
         .then(done, done.fail);
     });
