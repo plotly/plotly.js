@@ -1,42 +1,78 @@
 {
-    "data": [
-       {
-          "name": "Apples",
-          "type": "bar",
-          "x": ["Jan", "Feb", "Mar", "Apr", "May"],
-          "y": [232, 2506, 470, 1864, -190]
-       },
-       {
-          "name": "Oranges",
-          "type": "line",
-          "x": ["Jan", "Feb", "Mar", "Apr", "May"],
-          "y": [-0.8, 0.09, 0.01, 0.13, 0.42],
-          "yaxis": "y2"
-       }
-    ],
-    "layout": {
-       "margin": {
-          "t": 40, "r": 70, "b": 40, "l": 70
-       },
-       "width": 700,
-       "legend": {
-          "orientation": "h",
-          "x": 0.6,
-          "y": 1.1
-       },
-       "yaxis": {
-          "title": "Apples",
-          "side": "left",
-          "range": [0, 2506]
-       },
-       "yaxis2": {
-          "title": "Oranges",
-          "side": "right",
-          "range": [0, 0.42],
-          "overlaying": "y",
-          "tickmode": "sync",
-          "zeroline": false
+   "data": [
+      {
+         "name": "Apples",
+         "type": "bar",
+         "x": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May"
+         ],
+         "y": [
+            232,
+            2506,
+            470,
+            1864,
+            -190
+         ]
+      },
+      {
+         "name": "Oranges",
+         "type": "scatter",
+         "x": [
+            "Jan",
+            "Feb",
+            "Mar",
+            "Apr",
+            "May"
+         ],
+         "y": [
+            -0.8,
+            0.09,
+            0.01,
+            0.13,
+            0.42
+         ],
+         "yaxis": "y2"
       }
-    }
- }
- 
+   ],
+   "layout": {
+      "margin": {
+         "t": 40,
+         "r": 70,
+         "b": 40,
+         "l": 70
+      },
+      "width": 700,
+      "legend": {
+         "orientation": "h",
+         "x": 0.6,
+         "y": 1.1
+      },
+      "yaxis": {
+         "title": {
+            "text": "Apples"
+         },
+         "side": "left",
+         "range": [
+            0,
+            2506
+         ]
+      },
+      "yaxis2": {
+         "title": {
+            "text": "Oranges"
+         },
+         "side": "right",
+         "range": [
+            0,
+            0.42
+         ],
+         "overlaying": "y",
+         "tickmode": "sync",
+         "zeroline": false
+      }
+   }
+}
