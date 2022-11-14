@@ -2641,7 +2641,7 @@ describe('Hover on multicategory axes', function() {
         .then(done, done.fail);
     });
 
-    fit('should work with series', function(done) {
+    it('should work with series', function(done) {
         var fig = Lib.extendDeep({}, require('@mocks/multicategory_series.json'));
         fig.data = [fig.data[0]];
         fig.layout.width = 500;
