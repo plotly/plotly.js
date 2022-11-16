@@ -888,12 +888,13 @@ function createHoverText(hoverData, opts) {
     var xa = c0.xa;
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
-    var t0 = c0[axLetter + 'Label'];
+    var axLabel = axLetter + 'Label';
+    var t0 = c0[axLabel];
 
     // search in array for the label
     if(t0 === undefined && xa.type === 'multicategory') {
         for(var q = 0; q < hoverData.length; q++) {
-            t0 = hoverData[q][axLetter + 'Label'];
+            t0 = hoverData[q][axLabel];
             if(t0 !== undefined) break;
         }
     }
