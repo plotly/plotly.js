@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.16.2
+* plotly.js (gl3d) v2.16.3
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -29409,7 +29409,17 @@ function createHoverText(hoverData, opts) {
     var xa = c0.xa;
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
-    var t0 = c0[axLetter + 'Label'];
+    var axLabel = axLetter + 'Label';
+    var t0 = c0[axLabel];
+
+    // search in array for the label
+    if(t0 === undefined && xa.type === 'multicategory') {
+        for(var q = 0; q < hoverData.length; q++) {
+            t0 = hoverData[q][axLabel];
+            if(t0 !== undefined) break;
+        }
+    }
+
     var outerContainerBB = getBoundingClientRect(gd, outerContainer);
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
@@ -30588,7 +30598,7 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 
     var cd0 = winningPoint.cd[0];
 
-    if(ax.type === 'category') val = ax._categoriesMap[val];
+    if(ax.type === 'category' || ax.type === 'multicategory') val = ax._categoriesMap[val];
     else if(ax.type === 'date') {
         var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
         if(periodalignment) {
@@ -89060,7 +89070,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.16.2';
+exports.version = '2.16.3';
 
 },{}],444:[function(_dereq_,module,exports){
 (function (global){(function (){
