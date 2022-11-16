@@ -891,12 +891,11 @@ function createHoverText(hoverData, opts) {
     var t0 = c0[axLetter + 'Label'];
 
     // search in array for the label
-    if(t0 === undefined) {
-        hoverData.map(function(data) {
-            if(data[axLetter + 'Label']) {
-                t0 = data[axLetter + 'Label'];
-            }
-        });
+    if(t0 === undefined && xa.type === 'multicategory') {
+        for(var q = 0; q < hoverData.length; q++) {
+            t0 = hoverData[q][axLetter + 'Label'];
+            if(t0 !== undefined) break;
+        }
     }
 
     var outerContainerBB = getBoundingClientRect(gd, outerContainer);
