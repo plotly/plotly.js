@@ -891,7 +891,7 @@ function createHoverText(hoverData, opts) {
     var t0 = c0[axLetter + 'Label'];
 
     // search in array for the label
-    if(!t0) {
+    if(t0 === undefined) {
         hoverData.map(function(data) {
             if(data[axLetter + 'Label']) {
                 t0 = data[axLetter + 'Label'];
