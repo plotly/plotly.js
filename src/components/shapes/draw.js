@@ -16,6 +16,8 @@ var arrayEditor = require('../../plot_api/plot_template').arrayEditor;
 var dragElement = require('../dragelement');
 var setCursor = require('../../lib/setcursor');
 
+var svgTextUtils = require('../../lib/svg_text_utils');
+
 var constants = require('./constants');
 var helpers = require('./helpers');
 var getPathString = helpers.getPathString;
@@ -129,7 +131,10 @@ function drawOne(gd, index) {
             opacity = gd._fullLayout.activeshape.opacity;
         }
 
-        var path = shapeLayer.append('path')
+        var shapeGroup = shapeLayer.append('g')
+            .classed('shape-group', true);
+
+        var path = shapeGroup.append('path')
             .attr(attrs)
             .style('opacity', opacity)
             .call(Color.stroke, lineColor)
@@ -137,6 +142,35 @@ function drawOne(gd, index) {
             .call(Drawing.dashLine, lineDash, lineWidth);
 
         setClipPath(path, gd, options);
+
+        var text = options.text;
+        console.log('text!');
+        console.log(text);
+
+        var labelGroup = shapeGroup.append('g')
+            .classed('shape-label', true);
+
+        var labelText = labelGroup.append('text')
+            .classed('shape-label-text', true)
+            .text(text);
+    
+        function textLayout(s) {
+            s.call(Drawing.font)
+            .attr({
+                'text-anchor': {
+                    left: 'start',
+                    right: 'end'
+                }[options.align] || 'middle',
+                'x': options.x0,
+                'y': options.y0,
+            });
+    
+            svgTextUtils.convertToTspans(s, gd);
+            return s;
+        }        
+
+        labelText.call(textLayout);
+
 
         var editHelpers;
         if(isActiveShape || gd._context.edits.shapePosition) editHelpers = arrayEditor(gd.layout, 'shapes', options);
