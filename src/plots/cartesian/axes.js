@@ -2248,8 +2248,15 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
-    // TODO: could be stored be stored in the x axis (ax._counterAx)? - {x: {left: ..., right: ...}}
-    var shiftConstant = 60;
+    var fullAxList = axes.list(gd);
+    // Get the list of the overlaying axis for all 'shift' axes
+    var overlayingShiftedAx = fullAxList.filter(function(ax) {
+        return ax.shift === true;
+    }).map(function(ax) {
+        return ax.overlaying;
+    });
+
+
     var axShifts = {'false': {'left': 0, 'right': 0}};
 
     return Lib.syncOrAsync(axList.map(function(axId) {
@@ -2257,15 +2264,16 @@ axes.draw = function(gd, arg, opts) {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
-            if(ax.shift === true) {
-                axShifts = incrementShift(ax, shiftConstant, axShifts);
-            }
 
             if(!opts) opts = {};
             opts.axShifts = axShifts;
+            opts.overlayingShiftedAx = overlayingShiftedAx;
 
             var axDone = axes.drawOne(gd, ax, opts);
 
+            if(ax._shiftPusher) {
+                axShifts = incrementShift(ax, ax._fullDepth, axShifts);
+            }
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
 
@@ -2305,6 +2313,7 @@ axes.drawOne = function(gd, ax, opts) {
     opts = opts || {};
 
     var axShifts = opts.axShifts || {};
+    var overlayingShiftedAx = opts.overlayingShiftedAx || [];
 
     var i, sp, plotinfo;
 
@@ -2318,10 +2327,20 @@ axes.drawOne = function(gd, ax, opts) {
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
-
+    // Will this axis 'push' out other axes?
+    ax._shiftPusher = overlayingShiftedAx.includes(ax._id) || overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
+    // An axis is also shifted by 1/2 of its own linewidth
+    // And inside tick length if applicable
+    if(ax._shiftPusher & ax.anchor === 'free') {
+        var selfPush = (ax.linewidth / 2 || 0);
+        if(ax.ticks === 'inside') {
+            selfPush += ax.ticklen;
+        }
+        axShifts = incrementShift(ax, selfPush, axShifts);
+    }
     // Only set if it hasn't been defined from drawing previously
     ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
-
+    ax._fullDepth = 0;
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
     var mainLinePositionShift = mainLinePosition += ax._shift;
@@ -2691,7 +2710,7 @@ axes.drawOne = function(gd, ax, opts) {
         var mirrorPush;
         var rangeSliderPush;
 
-        if(ax.automargin || hasRangeSlider) {
+        if(ax.automargin || hasRangeSlider || ax._shiftPusher) {
             if(ax.type === 'multicategory') {
                 llbbox = getLabelLevelBbox('tick2');
             } else {
@@ -2700,6 +2719,20 @@ axes.drawOne = function(gd, ax, opts) {
                     ax._depth = Math.max(llbbox.width > 0 ? llbbox.bottom - pos : 0, outsideTickLen);
                 }
             }
+        }
+
+        if(ax._shiftPusher) {
+            if(s === 'l') {
+                ax._fullDepth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+            } else {
+                ax._fullDepth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+            }
+            // TODO: Multiplying the approx depth seems to be a workaround for getting the default standoff?
+            if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+                ax._fullDepth += (approxTitleDepth(ax) * 2) + (ax.title.standoff || 0);
+            }
+            // Hard-coded padding after each axis. This could be exposed to the user in the future
+            ax._fullDepth += 10;
         }
 
         if(ax.automargin) {
@@ -2728,9 +2761,11 @@ axes.drawOne = function(gd, ax, opts) {
                 }
             } else {
                 if(s === 'l') {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen) - shift;
+                    ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+                    push[s] = ax._depth - shift;
                 } else {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen) + shift;
+                    ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+                    push[s] = ax._depth + shift;
                     domainIndices.reverse();
                 }
 
@@ -4044,6 +4079,8 @@ function drawTitle(gd, ax) {
         }
     }
 
+    ax._titleStandoff = titleStandoff;
+
     return Titles.draw(gd, axId + 'title', {
         propContainer: ax,
         propName: ax._name + '.title.text',
@@ -4355,14 +4392,16 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
 }
 
 function incrementShift(ax, shiftVal, axShifts) {
+    // Need to set 'overlay' for anchored axis
+    var overlay = ((ax.anchor !== 'free') && ((ax.overlaying === undefined) || (ax.overlaying === false))) ? ax._id : ax.overlaying;
     var shiftValAdj = ax.side === 'right' ? shiftVal : -shiftVal;
-    if(!(ax.overlaying in axShifts)) {
-        axShifts[ax.overlaying] = {};
+    if(!(overlay in axShifts)) {
+        axShifts[overlay] = {};
     }
-    if(!(ax.side in axShifts[ax.overlaying])) {
-        axShifts[ax.overlaying][ax.side] = 0;
+    if(!(ax.side in axShifts[overlay])) {
+        axShifts[overlay][ax.side] = 0;
     }
-    axShifts[ax.overlaying][ax.side] += shiftValAdj;
+    axShifts[overlay][ax.side] += shiftValAdj;
     return axShifts;
 }
 
