@@ -224,6 +224,26 @@ module.exports = templatedArray('shape', {
             '`config.editable` or `config.edits.shapePosition`.'
         ].join(' ')
     },
-
+    text: {
+        valType: 'string',
+        dflt: null,
+        editType: 'arraydraw',
+        description: 'Sets the text to display with shape.'
+    },
+    textposition: {
+        valType: 'enumerated',
+        values: ['center', 'topleft', 'topright', 'bottomleft', 'bottomright'],
+        dflt: 'center',
+        editType: 'arraydraw',
+        description: 'Sets text position relative to shape.'
+    },
+    textangle: {
+        valType: 'number',
+        min: -180,
+        max: 180,
+        dflt: 0,
+        editType: 'arraydraw',
+        description: 'Sets text angle.'
+    },
     editType: 'arraydraw'
 });
