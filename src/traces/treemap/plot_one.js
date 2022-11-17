@@ -217,8 +217,8 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         var dy = _y1 - _y0;
         if(!dx || !dy) return '';
 
-        var FILLET = trace.marker.cornerradius;
-        var r = dx > 2 * FILLET && dy > 2 * FILLET ? FILLET : Math.min(dx, dy) / 2;
+        var cornerradius = trace.marker.cornerradius;
+        var r = dx > 2 * cornerradius && dy > 2 * cornerradius ? cornerradius : Math.min(dx, dy) / 2;
 
         var arc = function(rx, ry) { return r ? 'a' + pos(r, r) + ' 0 0 1 ' + pos(rx, ry) : ''; };
 
