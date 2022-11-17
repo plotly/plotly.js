@@ -61,7 +61,7 @@ module.exports = {
 
         line: sunburstAttrs.marker.line,
 
-        fillet: treemapAttrs.marker.fillet,
+        cornerradius: treemapAttrs.marker.cornerradius,
 
         editType: 'calc'
     },

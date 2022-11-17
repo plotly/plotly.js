@@ -1295,7 +1295,7 @@ describe('Test treemap restyle:', function() {
         .then(done, done.fail);
     });
 
-    it('should be able to restyle *marker.fillet*', function(done) {
+    it('should be able to restyle *marker.cornerradius*', function(done) {
         var mock = {
             data: [{
                 type: 'treemap',
@@ -1321,11 +1321,11 @@ describe('Test treemap restyle:', function() {
         Plotly.newPlot(gd, mock)
         .then(_assert('no arcs', false))
         .then(function() {
-            return Plotly.restyle(gd, 'marker.fillet', 10);
+            return Plotly.restyle(gd, 'marker.cornerradius', 10);
         })
         .then(_assert('has arcs', true))
         .then(function() {
-            return Plotly.restyle(gd, 'marker.fillet', 0);
+            return Plotly.restyle(gd, 'marker.cornerradius', 0);
         })
         .then(_assert('no arcs', false))
         .then(done, done.fail);

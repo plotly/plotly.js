@@ -85,7 +85,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.pad.r', headerSize / 4);
     coerce('marker.pad.b', bottomText ? headerSize : headerSize / 4);
 
-    coerce('marker.fillet');
+    coerce('marker.cornerradius');
 
     traceOut._hovered = {
         marker: {

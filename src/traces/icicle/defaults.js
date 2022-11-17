@@ -62,7 +62,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
 
-    coerce('marker.fillet');
+    coerce('marker.cornerradius');
 
     coerce('marker.colors');
     var withColorscale = traceOut._hasColorscale = (

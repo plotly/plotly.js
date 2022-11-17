@@ -141,7 +141,7 @@ module.exports = {
 
         line: sunburstAttrs.marker.line,
 
-        fillet: {
+        cornerradius: {
             valType: 'number',
             min: 0,
             // max: 10, // TODO: Do we need a max?
