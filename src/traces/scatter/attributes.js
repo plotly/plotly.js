@@ -146,7 +146,9 @@ module.exports = {
         values: ['v', 'h'],
         editType: 'calc',
         description: [
-            'Only relevant when `stackgroup` is used, and only the first',
+            'Only relevant in the following cases:',
+            '1. when `scattermode` is set to *group*.',
+            '2. when `stackgroup` is used, and only the first',
             '`orientation` found in the `stackgroup` will be used - including',
             'if `visible` is *legendonly* but not if it is `false`. Sets the',
             'stacking direction. With *v* (*h*), the y (x) values of subsequent',

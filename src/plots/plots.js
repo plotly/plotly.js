@@ -14,6 +14,7 @@ var BADNUM = require('../constants/numerical').BADNUM;
 
 var axisIDs = require('./cartesian/axis_ids');
 var clearOutline = require('../components/shapes/handle_outline').clearOutline;
+var scatterAttrs = require('../traces/scatter/layout_attributes');
 
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
@@ -1566,6 +1567,8 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
         'fx',
         'supplyLayoutGlobalDefaults'
     )(layoutIn, layoutOut, coerce);
+
+    Lib.coerce(layoutIn, layoutOut, scatterAttrs, 'scattermode');
 };
 
 function getComputedSize(attr) {

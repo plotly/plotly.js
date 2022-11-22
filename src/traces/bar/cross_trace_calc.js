@@ -441,7 +441,14 @@ function setBarCenterAndWidth(pa, sieve) {
 
             // store the actual bar width and position, for use by hover
             var width = calcBar.w = barwidthIsArray ? barwidth[j] : barwidth;
-            calcBar[pLetter] = calcBar.p + (poffsetIsArray ? poffset[j] : poffset) + width / 2;
+
+            if(calcBar.p === undefined) {
+                calcBar.p = calcBar[pLetter];
+                calcBar['orig_' + pLetter] = calcBar[pLetter];
+            }
+
+            var delta = (poffsetIsArray ? poffset[j] : poffset) + width / 2;
+            calcBar[pLetter] = calcBar.p + delta;
         }
     }
 }
@@ -498,13 +505,17 @@ function setBaseAndTop(sa, sieve) {
     for(var i = 0; i < calcTraces.length; i++) {
         var calcTrace = calcTraces[i];
         var fullTrace = calcTrace[0].trace;
+        var isScatter = fullTrace.type === 'scatter';
+        var isVertical = fullTrace.orientation === 'v';
         var pts = [];
         var tozero = false;
 
         for(var j = 0; j < calcTrace.length; j++) {
             var bar = calcTrace[j];
-            var base = bar.b;
-            var top = base + bar.s;
+            var base = isScatter ? 0 : bar.b;
+            var top = isScatter ? (
+                isVertical ? bar.y : bar.x
+            ) : base + bar.s;
 
             bar[sLetter] = top;
             pts.push(top);

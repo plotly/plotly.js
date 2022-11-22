@@ -44902,7 +44902,7 @@
      "valType": "number"
     },
     "orientation": {
-     "description": "Only relevant when `stackgroup` is used, and only the first `orientation` found in the `stackgroup` will be used - including if `visible` is *legendonly* but not if it is `false`. Sets the stacking direction. With *v* (*h*), the y (x) values of subsequent traces are added. Also affects the default value of `fill`.",
+     "description": "Only relevant in the following cases: 1. when `scattermode` is set to *group*. 2. when `stackgroup` is used, and only the first `orientation` found in the `stackgroup` will be used - including if `visible` is *legendonly* but not if it is `false`. Sets the stacking direction. With *v* (*h*), the y (x) values of subsequent traces are added. Also affects the default value of `fill`.",
      "editType": "calc",
      "valType": "enumerated",
      "values": [
@@ -45307,6 +45307,33 @@
     "scatter-like",
     "zoomScale"
    ],
+   "layoutAttributes": {
+    "scattergap": {
+     "description": "Sets the gap (in plot fraction) between scatter points of adjacent location coordinates. Defaults to `bargap`.",
+     "editType": "calc",
+     "max": 1,
+     "min": 0,
+     "valType": "number"
+    },
+    "scattergroupgap": {
+     "description": "Sets the gap (in plot fraction) between scatter points of the same location coordinate.",
+     "dflt": 0,
+     "editType": "calc",
+     "max": 1,
+     "min": 0,
+     "valType": "number"
+    },
+    "scattermode": {
+     "description": "Determines how scatter points at the same location coordinate are displayed on the graph. With *group*, the scatter points are plotted next to one another centered around the shared location. With *overlay*, the scatter points are plotted over one another, you might need to reduce *opacity* to see multiple scatter points.",
+     "dflt": "overlay",
+     "editType": "calc",
+     "valType": "enumerated",
+     "values": [
+      "group",
+      "overlay"
+     ]
+    }
+   },
    "meta": {
     "description": "The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts. The data visualized as scatter point or lines is set in `x` and `y`. Text (appearing either on the chart or on hover only) is via `text`. Bubble charts are achieved by setting `marker.size` and/or `marker.color` to numerical arrays."
    },
