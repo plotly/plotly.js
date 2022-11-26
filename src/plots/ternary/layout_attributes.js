@@ -15,7 +15,19 @@ var ternaryAxesAttrs = {
     },
     color: axesAttrs.color,
     // ticks
-    tickmode: axesAttrs.tickmode,
+    tickmode: extendFlat({}, axesAttrs.tickmode, {
+        dflt: ['auto', 'linear', 'array'],
+        description: [
+            'Sets the tick mode for this axis.',
+            'If *auto*, the number of ticks is set via `nticks`.',
+            'If *linear*, the placement of the ticks is determined by',
+            'a starting position `tick0` and a tick step `dtick`',
+            '(*linear* is the default value if `tick0` and `dtick` are provided).',
+            'If *array*, the placement of the ticks is set via `tickvals`',
+            'and the tick text is `ticktext`.',
+            '(*array* is the default value if `tickvals` is provided).'
+        ].join(' ')
+    }),
     nticks: extendFlat({}, axesAttrs.nticks, {dflt: 6, min: 1}),
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
