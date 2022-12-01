@@ -85,12 +85,12 @@ proto.update = function update(calcTrace) {
     var map = subplot.map;
     var optsAll = convert(subplot.gd, calcTrace);
     var below = subplot.belowLookup['trace-' + this.uid];
-    var i, k, opts;
+    var i, k, opts, order;
     var hasCluster = !!(trace.cluster && trace.cluster.enabled);
     var hadCluster = !!this.clusterEnabled;
 
     if(below !== this.below) {
-        var order = ORDER.nonCluster;
+        order = ORDER.nonCluster;
 
         for(i = order.length - 1; i >= 0; i--) {
             k = order[i];
@@ -128,6 +128,19 @@ proto.update = function update(calcTrace) {
             this.addLayer(k, opts, below);
         }
         this.clusterEnabled = hasCluster;
+    }
+
+    order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
+    for(i = 0; i < order.length; i++) {
+        k = order[i];
+        opts = optsAll[k];
+
+        subplot.setOptions(this.layerIds[k], 'setLayoutProperty', opts.layout);
+
+        if(opts.layout.visibility === 'visible') {
+            this.setSourceData(k, opts);
+            subplot.setOptions(this.layerIds[k], 'setPaintProperty', opts.paint);
+        }
     }
 
     // link ref for quick update during selections
