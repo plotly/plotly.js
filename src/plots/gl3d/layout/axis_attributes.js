@@ -75,7 +75,7 @@ module.exports = overrideAll({
     }),
     // ticks
     tickmode: extendFlat({}, axesAttrs.tickmode, {
-        dflt: ['auto', 'linear', 'array'],
+        values: ['auto', 'linear', 'array'],
         description: [
             'Sets the tick mode for this axis.',
             'If *auto*, the number of ticks is set via `nticks`.',
