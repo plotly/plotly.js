@@ -2640,6 +2640,32 @@ describe('Hover on multicategory axes', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should work with series', function(done) {
+        var fig = Lib.extendDeep({}, require('@mocks/zz-multicategory_series.json'));
+        fig.data = [fig.data[0]];
+        fig.layout.width = 500;
+        fig.layout.height = 500;
+
+        Plotly.newPlot(gd, fig)
+        .then(function() {
+            gd.on('plotly_hover', function(d) {
+                eventData = d.points[0];
+            });
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            expect(eventData.x).toEqual(['High', 4]);
+        })
+        .then(function() {
+            return Plotly.restyle(gd, 'hovertemplate', '%{z} @ %{x} | %{y}');
+        })
+        .then(function() { _hover(200, 200); })
+        .then(function() {
+            expect(eventData.x).toEqual(['High', 4]);
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('hover on traces with (x|y)period positioning', function() {
