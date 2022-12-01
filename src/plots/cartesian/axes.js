@@ -661,29 +661,30 @@ axes.prepTicks = function(ax, opts) {
     if(ax.tickmode === 'sync') {
         var baseAxis = ax._mainAxis;
 
-        // get range min and max to find range delta of axis 1
-        var minValBaseAxis = Math.min(baseAxis.range[0], baseAxis.range[1]);
-        var maxValBaseAxis = Math.max(baseAxis.range[0], baseAxis.range[1]);
-        var rangeDeltaBaseAxis = maxValBaseAxis - minValBaseAxis;
-
         // get range min and max to find range delta of axis 2
         var minValAxis = Math.min(ax.range[0], ax.range[1]);
         var maxValAxis = Math.max(ax.range[0], ax.range[1]);
         var rangeDeltaCurrentAxis = maxValAxis - minValAxis;
 
-        // set second axis' dtick value to be based off of same ratio as the first axis
-        var dtickRatio = rangeDeltaBaseAxis / baseAxis.dtick;
-        ax.dtick = rangeDeltaCurrentAxis / dtickRatio;
-
         // validate that the axis has values before we try to use them for tick0 calculation
         if(baseAxis && baseAxis._vals.length > 0) {
-            // get position of first axis' starting tick
+            var _len = baseAxis._length - 1;
+
+            // get position of first & last axis' starting ticks
             var firstTickPosition = baseAxis.l2p(baseAxis._vals[0].x);
-            var firstTickPercentage = firstTickPosition / baseAxis._length;
+            var firstTickPercentage = firstTickPosition / _len;
+            firstTickPercentage = Math.round(firstTickPercentage * 100) / 100;
+
+            var lastTickPosition = baseAxis.l2p(baseAxis._vals[baseAxis._vals.length - 1].x);
+            var lastTickPercentage = lastTickPosition / _len;
+            lastTickPercentage = Math.round(lastTickPercentage * 100) / 100;
 
             // set current axis to have same starting tick position
-            var currentAxisOffsetVal = rangeDeltaCurrentAxis * (1 - firstTickPercentage);
-            ax.tick0 = currentAxisOffsetVal + minValAxis;
+            var firstOffset = rangeDeltaCurrentAxis * (1 - firstTickPercentage);
+            ax.tick0 = firstOffset + minValAxis;
+
+            var lastOffset = rangeDeltaCurrentAxis * (1 - lastTickPercentage);
+            ax.dtick = (lastOffset - firstOffset) / (baseAxis._vals.length - 1);
         }
     } else if(ax.tickmode === 'auto' || !ax.dtick) { // calculate max number of (auto) ticks to display based on plot size
         var nt = ax.nticks;
