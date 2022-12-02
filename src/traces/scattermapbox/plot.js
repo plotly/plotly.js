@@ -8,11 +8,12 @@ var ORDER = {
     nonCluster: ['fill', 'line', 'circle', 'symbol'],
 };
 
-function ScatterMapbox(subplot, uid, clusterEnabled) {
+function ScatterMapbox(subplot, uid, clusterEnabled, isHidden) {
     this.type = 'scattermapbox';
     this.subplot = subplot;
     this.uid = uid;
     this.clusterEnabled = clusterEnabled;
+    this.isHidden = isHidden;
 
     this.sourceIds = {
         fill: 'source-' + uid + '-fill',
@@ -127,11 +128,12 @@ proto.update = function update(calcTrace) {
         }
     }
 
-    function reset() {
+    function repaint() {
         var order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
         for(var i = 0; i < order.length; i++) {
             var k = order[i];
             var opts = optsAll[k];
+            if(!opts) continue;
 
             subplot.setOptions(lThis.layerIds[k], 'setLayoutProperty', opts.layout);
 
@@ -144,14 +146,22 @@ proto.update = function update(calcTrace) {
         }
     }
 
-    if(hadCluster !== hasCluster) {
+    var wasHidden = this.isHidden;
+    var isHidden = trace.visible !== true;
+
+    if(isHidden && !wasHidden) {
+        if(hadCluster) removeCluster(); else removeNonCluster();
+    } else if(!isHidden && wasHidden) {
+        if(hasCluster) addCluster(); else addNonCluster();
+    } else if(hadCluster !== hasCluster) {
         if(hadCluster) removeCluster(); else removeNonCluster();
         if(hasCluster) addCluster(); else addNonCluster();
     } else {
-        reset();
+        repaint();
     }
 
     this.clusterEnabled = hasCluster;
+    this.isHidden = isHidden;
     this.below = below;
 
     // link ref for quick update during selections
@@ -171,10 +181,13 @@ proto.dispose = function dispose() {
 module.exports = function createScatterMapbox(subplot, calcTrace) {
     var trace = calcTrace[0].trace;
     var hasCluster = trace.cluster && trace.cluster.enabled;
+    var isHidden = trace.visible !== true;
+
     var scatterMapbox = new ScatterMapbox(
         subplot,
         trace.uid,
-        hasCluster
+        hasCluster,
+        isHidden
     );
 
     var optsAll = convert(subplot.gd, calcTrace);
