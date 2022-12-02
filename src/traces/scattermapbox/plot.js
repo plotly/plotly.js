@@ -88,55 +88,45 @@ proto.update = function update(calcTrace) {
     var i, k, opts;
     var hasCluster = !!(trace.cluster && trace.cluster.enabled);
     var hadCluster = !!this.clusterEnabled;
+    var lThis = this;
 
     function addCluster() {
-        this.addSource('circle', optsAll.circle, trace.cluster);
+        lThis.addSource('circle', optsAll.circle, trace.cluster);
         for(i = 0; i < ORDER.cluster.length; i++) {
             k = ORDER.cluster[i];
             opts = optsAll[k];
-            this.addLayer(k, opts, below);
+            lThis.addLayer(k, opts, below);
         }
     }
 
     function removeCluster() {
         for(i = ORDER.cluster.length - 1; i >= 0; i--) {
             k = ORDER.cluster[i];
-            map.removeLayer(this.layerIds[k]);
+            map.removeLayer(lThis.layerIds[k]);
         }
-        map.removeSource(this.sourceIds.circle);
+        map.removeSource(lThis.sourceIds.circle);
     }
 
     function addNonCluster() {
         for(i = 0; i < ORDER.nonCluster.length; i++) {
             k = ORDER.nonCluster[i];
             opts = optsAll[k];
-            this.addSource(k, opts, trace.cluster);
-            this.addLayer(k, opts, below);
+            lThis.addSource(k, opts, trace.cluster);
+            lThis.addLayer(k, opts, below);
         }
     }
 
     function removeNonCluster() {
         for(i = ORDER.nonCluster.length - 1; i >= 0; i--) {
             k = ORDER.nonCluster[i];
-            map.removeLayer(this.layerIds[k]);
-            map.removeSource(this.sourceIds[k]);
+            map.removeLayer(lThis.layerIds[k]);
+            map.removeSource(lThis.sourceIds[k]);
         }
     }
 
-    if(hasCluster && !hadCluster) {
-        removeNonCluster();
-        addCluster();
-    } else if(!hasCluster && hadCluster) {
-        removeCluster();
-        addNonCluster();
-    } else if(below !== this.below) {
-        if(!hasCluster && !hadCluster) {
-            removeNonCluster();
-            addNonCluster();
-        } else if(hasCluster && hadCluster) {
-            removeCluster();
-            addCluster();
-        }
+    if(hadCluster !== hasCluster || below !== this.below) {
+        if(hadCluster) removeCluster(); else removeNonCluster();
+        if(hasCluster) addCluster(); else addNonCluster();
     } else {
         var order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
         for(i = 0; i < order.length; i++) {
