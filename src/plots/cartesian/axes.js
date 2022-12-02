@@ -3219,7 +3219,7 @@ axes.drawGrid = function(gd, ax, opts) {
 
     var hasMinor = ax.minor && ax.minor.showgrid;
     var minorVals = hasMinor ? opts.vals.filter(function(d) { return d.minor; }) : [];
-    var majorVals = ax.showgrid ? opts.vals.filter(function(d) { return !d.minor; }) : [];
+    var majorVals = ax.showgrid && ax.tickmode !== 'sync' ? opts.vals.filter(function(d) { return !d.minor; }) : [];
 
     var counterAx = opts.counterAxis;
     if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
