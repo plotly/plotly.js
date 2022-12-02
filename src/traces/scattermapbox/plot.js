@@ -136,7 +136,9 @@ proto.update = function update(calcTrace) {
             subplot.setOptions(lThis.layerIds[k], 'setLayoutProperty', opts.layout);
 
             if(opts.layout.visibility === 'visible') {
-                lThis.setSourceData(k, opts);
+                if(k !== 'cluster') {
+                    lThis.setSourceData(k, opts);
+                }
                 subplot.setOptions(lThis.layerIds[k], 'setPaintProperty', opts.paint);
             }
         }
