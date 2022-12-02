@@ -114,7 +114,7 @@ proto.update = function update(calcTrace) {
         for(var i = 0; i < order.length; i++) {
             var k = order[i];
             var opts = optsAll[k];
-            lThis.addSource(k, opts, trace.cluster);
+            lThis.addSource(k, opts);
             lThis.addLayer(k, opts, below);
         }
     }
