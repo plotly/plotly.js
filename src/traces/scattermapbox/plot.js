@@ -128,6 +128,14 @@ proto.update = function update(calcTrace) {
         }
     }
 
+    function remove() {
+        if(hadCluster) removeCluster(); else removeNonCluster();
+    }
+
+    function add() {
+        if(hasCluster) addCluster(); else addNonCluster();
+    }
+
     function repaint() {
         var order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
         for(var i = 0; i < order.length; i++) {
@@ -150,12 +158,12 @@ proto.update = function update(calcTrace) {
     var isHidden = trace.visible !== true;
 
     if(isHidden && !wasHidden) {
-        if(hadCluster) removeCluster(); else removeNonCluster();
+        remove();
     } else if(!isHidden && wasHidden) {
-        if(hasCluster) addCluster(); else addNonCluster();
+        add();
     } else if(hadCluster !== hasCluster) {
-        if(hadCluster) removeCluster(); else removeNonCluster();
-        if(hasCluster) addCluster(); else addNonCluster();
+        remove();
+        add();
     } else {
         repaint();
     }
