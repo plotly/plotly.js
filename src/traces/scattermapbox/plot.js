@@ -144,7 +144,7 @@ proto.update = function update(calcTrace) {
         }
     }
 
-    if(hadCluster !== hasCluster || below !== this.below) {
+    if(hadCluster !== hasCluster) {
         if(hadCluster) removeCluster(); else removeNonCluster();
         if(hasCluster) addCluster(); else addNonCluster();
     } else {
