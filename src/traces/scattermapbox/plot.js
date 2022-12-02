@@ -90,12 +90,13 @@ proto.update = function update(calcTrace) {
     var hadCluster = !!this.clusterEnabled;
 
     if(below !== this.below) {
-        order = ORDER.nonCluster;
-
+        order = hadCluster ? ORDER.cluster : ORDER.nonCluster;
         for(i = order.length - 1; i >= 0; i--) {
             k = order[i];
             map.removeLayer(this.layerIds[k]);
         }
+
+        order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
         for(i = 0; i < order.length; i++) {
             k = order[i];
             opts = optsAll[k];
