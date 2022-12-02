@@ -102,7 +102,6 @@ proto.update = function update(calcTrace) {
             opts = optsAll[k];
             this.addLayer(k, opts, below);
         }
-        this.below = below;
     } else if(hasCluster && !hadCluster) {
         for(i = ORDER.nonCluster.length - 1; i >= 0; i--) {
             k = ORDER.nonCluster[i];
@@ -115,7 +114,6 @@ proto.update = function update(calcTrace) {
             opts = optsAll[k];
             this.addLayer(k, opts, below);
         }
-        this.clusterEnabled = hasCluster;
     } else if(!hasCluster && hadCluster) {
         for(i = 0; i < ORDER.cluster.length; i++) {
             k = ORDER.cluster[i];
@@ -128,7 +126,6 @@ proto.update = function update(calcTrace) {
             this.addSource(k, opts, trace.cluster);
             this.addLayer(k, opts, below);
         }
-        this.clusterEnabled = hasCluster;
     }
 
     order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
@@ -143,6 +140,9 @@ proto.update = function update(calcTrace) {
             subplot.setOptions(this.layerIds[k], 'setPaintProperty', opts.paint);
         }
     }
+
+    this.clusterEnabled = hasCluster;
+    this.below = below;
 
     // link ref for quick update during selections
     calcTrace[0].trace._glTrace = this;
