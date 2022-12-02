@@ -85,41 +85,28 @@ proto.update = function update(calcTrace) {
     var map = subplot.map;
     var optsAll = convert(subplot.gd, calcTrace);
     var below = subplot.belowLookup['trace-' + this.uid];
-    var i, k, opts, order;
+    var i, k, opts;
     var hasCluster = !!(trace.cluster && trace.cluster.enabled);
     var hadCluster = !!this.clusterEnabled;
 
-    if(below !== this.below) {
-        order = hadCluster ? ORDER.cluster : ORDER.nonCluster;
-        for(i = order.length - 1; i >= 0; i--) {
-            k = order[i];
-            map.removeLayer(this.layerIds[k]);
-        }
-
-        order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
-        for(i = 0; i < order.length; i++) {
-            k = order[i];
-            opts = optsAll[k];
-            this.addLayer(k, opts, below);
-        }
-    } else if(hasCluster && !hadCluster) {
-        for(i = ORDER.nonCluster.length - 1; i >= 0; i--) {
-            k = ORDER.nonCluster[i];
-            map.removeLayer(this.layerIds[k]);
-            map.removeSource(this.sourceIds[k]);
-        }
+    function addCluster() {
         this.addSource('circle', optsAll.circle, trace.cluster);
         for(i = 0; i < ORDER.cluster.length; i++) {
             k = ORDER.cluster[i];
             opts = optsAll[k];
             this.addLayer(k, opts, below);
         }
-    } else if(!hasCluster && hadCluster) {
-        for(i = 0; i < ORDER.cluster.length; i++) {
+    }
+
+    function removeCluster() {
+        for(i = ORDER.cluster.length - 1; i >= 0; i--) {
             k = ORDER.cluster[i];
             map.removeLayer(this.layerIds[k]);
         }
         map.removeSource(this.sourceIds.circle);
+    }
+
+    function addNonCluster() {
         for(i = 0; i < ORDER.nonCluster.length; i++) {
             k = ORDER.nonCluster[i];
             opts = optsAll[k];
@@ -128,16 +115,40 @@ proto.update = function update(calcTrace) {
         }
     }
 
-    order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
-    for(i = 0; i < order.length; i++) {
-        k = order[i];
-        opts = optsAll[k];
+    function removeNonCluster() {
+        for(i = ORDER.nonCluster.length - 1; i >= 0; i--) {
+            k = ORDER.nonCluster[i];
+            map.removeLayer(this.layerIds[k]);
+            map.removeSource(this.sourceIds[k]);
+        }
+    }
 
-        subplot.setOptions(this.layerIds[k], 'setLayoutProperty', opts.layout);
+    if(hasCluster && !hadCluster) {
+        removeNonCluster();
+        addCluster();
+    } else if(!hasCluster && hadCluster) {
+        removeCluster();
+        addNonCluster();
+    } else if(below !== this.below) {
+        if(!hasCluster && !hadCluster) {
+            removeNonCluster();
+            addNonCluster();
+        } else if(hasCluster && hadCluster) {
+            removeCluster();
+            addCluster();
+        }
+    } else {
+        var order = hasCluster ? ORDER.cluster : ORDER.nonCluster;
+        for(i = 0; i < order.length; i++) {
+            k = order[i];
+            opts = optsAll[k];
 
-        if(opts.layout.visibility === 'visible') {
-            this.setSourceData(k, opts);
-            subplot.setOptions(this.layerIds[k], 'setPaintProperty', opts.paint);
+            subplot.setOptions(this.layerIds[k], 'setLayoutProperty', opts.layout);
+
+            if(opts.layout.visibility === 'visible') {
+                this.setSourceData(k, opts);
+                subplot.setOptions(this.layerIds[k], 'setPaintProperty', opts.paint);
+            }
         }
     }
 
