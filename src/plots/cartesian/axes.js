@@ -657,36 +657,8 @@ function isClose(a, b) {
 axes.prepTicks = function(ax, opts) {
     var rng = Lib.simpleMap(ax.range, ax.r2l, undefined, undefined, opts);
 
-    // sync ticks with the overlaying defined axis
-    if(ax.tickmode === 'sync') {
-        var baseAxis = ax._mainAxis;
-
-        // get range min and max to find range delta of axis 2
-        var minValAxis = Math.min(ax.range[0], ax.range[1]);
-        var maxValAxis = Math.max(ax.range[0], ax.range[1]);
-        var rangeDeltaCurrentAxis = maxValAxis - minValAxis;
-
-        // validate that the axis has values before we try to use them for tick0 calculation
-        if(baseAxis && baseAxis._vals.length > 0) {
-            var _len = baseAxis._length - 1;
-
-            // get position of first & last axis' starting ticks
-            var firstTickPosition = baseAxis.l2p(baseAxis._vals[0].x);
-            var firstTickPercentage = firstTickPosition / _len;
-            firstTickPercentage = Math.round(firstTickPercentage * 100) / 100;
-
-            var lastTickPosition = baseAxis.l2p(baseAxis._vals[baseAxis._vals.length - 1].x);
-            var lastTickPercentage = lastTickPosition / _len;
-            lastTickPercentage = Math.round(lastTickPercentage * 100) / 100;
-
-            // set current axis to have same starting tick position
-            var firstOffset = rangeDeltaCurrentAxis * (1 - firstTickPercentage);
-            ax.tick0 = firstOffset + minValAxis;
-
-            var lastOffset = rangeDeltaCurrentAxis * (1 - lastTickPercentage);
-            ax.dtick = (lastOffset - firstOffset) / (baseAxis._vals.length - 1);
-        }
-    } else if(ax.tickmode === 'auto' || !ax.dtick) { // calculate max number of (auto) ticks to display based on plot size
+    // calculate max number of (auto) ticks to display based on plot size
+    if(ax.tickmode === 'auto' || !ax.dtick) {
         var nt = ax.nticks;
         var minPx;
 
@@ -978,6 +950,17 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
             continue;
         }
+        // fill tickVals based on overlaying axis
+        if(mockAx.tickmode === 'sync') {
+            if(major) {
+                tickVals = [];
+                ticksOut = syncTicks(ax);
+            } else {
+                minorTickVals = [];
+                minorTicks = syncTicks(ax);
+            }
+            continue;
+        }
 
         // add a tiny bit so we get ticks which may have rounded out
         var exRng = expandRange(rng);
@@ -1230,6 +1213,48 @@ axes.calcTicks = function calcTicks(ax, opts) {
 
     return ticksOut;
 };
+
+function syncTicks(ax) {
+    var rng = Lib.simpleMap(ax.range, ax.r2l);
+    var exRng = expandRange(rng);
+    var tickMin = Math.min(exRng[0], exRng[1]);
+    var tickMax = Math.max(exRng[0], exRng[1]);
+
+    // get the overlaying axis
+    var baseAxis = ax._mainAxis;
+
+    var ticksOut = [];
+    if(baseAxis && baseAxis._vals.length > 0) {
+        for(var isMinor = 0; isMinor <= 1; isMinor++) {
+            if(isMinor && !ax.minor) continue;
+
+            for(var i = 0; i < baseAxis._vals.length; i++) {
+                // get the position of the every tick
+                var pos = baseAxis.l2p(baseAxis._vals[i].x);
+                // get the tick for the current axis based on position
+                var vali = ax.p2l(pos);
+                if(vali > tickMin && vali < tickMax) {
+                    var obj = axes.tickText(ax, vali);
+
+                    if(isMinor) {
+                        obj.minor = true;
+                        obj.text = '';
+                    }
+
+                    ticksOut.push(obj);
+                }
+            }
+        }
+    }
+
+    if(ax.rangebreaks) {
+        // remove ticks falling inside rangebreaks
+        ticksOut = ticksOut.filter(function(d) {
+            return ax.maskBreaks(d.x) !== BADNUM;
+        });
+    }
+    return ticksOut;
+}
 
 function arrayTicks(ax) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
@@ -3219,7 +3244,7 @@ axes.drawGrid = function(gd, ax, opts) {
 
     var hasMinor = ax.minor && ax.minor.showgrid;
     var minorVals = hasMinor ? opts.vals.filter(function(d) { return d.minor; }) : [];
-    var majorVals = ax.showgrid && ax.tickmode !== 'sync' ? opts.vals.filter(function(d) { return !d.minor; }) : [];
+    var majorVals = ax.showgrid ? opts.vals.filter(function(d) { return !d.minor; }) : [];
 
     var counterAx = opts.counterAxis;
     if(counterAx && axes.shouldShowZeroLine(gd, ax, counterAx)) {
