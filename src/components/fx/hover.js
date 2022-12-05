@@ -888,7 +888,17 @@ function createHoverText(hoverData, opts) {
     var xa = c0.xa;
     var ya = c0.ya;
     var axLetter = hovermode.charAt(0);
-    var t0 = c0[axLetter + 'Label'];
+    var axLabel = axLetter + 'Label';
+    var t0 = c0[axLabel];
+
+    // search in array for the label
+    if(t0 === undefined && xa.type === 'multicategory') {
+        for(var q = 0; q < hoverData.length; q++) {
+            t0 = hoverData[q][axLabel];
+            if(t0 !== undefined) break;
+        }
+    }
+
     var outerContainerBB = getBoundingClientRect(gd, outerContainer);
     var outerTop = outerContainerBB.top;
     var outerWidth = outerContainerBB.width;
@@ -2067,7 +2077,7 @@ function getCoord(axLetter, winningPoint, fullLayout) {
 
     var cd0 = winningPoint.cd[0];
 
-    if(ax.type === 'category') val = ax._categoriesMap[val];
+    if(ax.type === 'category' || ax.type === 'multicategory') val = ax._categoriesMap[val];
     else if(ax.type === 'date') {
         var periodalignment = winningPoint.trace[axLetter + 'periodalignment'];
         if(periodalignment) {

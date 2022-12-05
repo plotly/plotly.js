@@ -292,6 +292,18 @@ module.exports = {
             ].join(' ')
         },
         dash: extendFlat({}, dash, {editType: 'style'}),
+        backoff: { // we want to have a similar option for the start of the line
+            valType: 'number',
+            min: 0,
+            dflt: 'auto',
+            arrayOk: true,
+            editType: 'plot',
+            description: [
+                'Sets the line back off from the end point of the nth line segment (in px).',
+                'This option is useful e.g. to avoid overlap with arrowhead markers.',
+                'With *auto* the lines would trim before markers if `marker.angleref` is set to *previous*.'
+            ].join(' ')
+        },
         simplify: {
             valType: 'boolean',
             dflt: true,
@@ -388,6 +400,41 @@ module.exports = {
             editType: 'style',
             anim: true,
             description: 'Sets the marker opacity.'
+        },
+        angle: {
+            valType: 'angle',
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: false, // TODO: possibly set to true in future
+            description: [
+                'Sets the marker angle in respect to `angleref`.'
+            ].join(' ')
+        },
+        angleref: {
+            valType: 'enumerated',
+            values: ['previous', 'up'],
+            dflt: 'up',
+            editType: 'plot',
+            anim: false,
+            description: [
+                'Sets the reference for marker angle.',
+                'With *previous*, angle 0 points along the line from the previous point to this one.',
+                'With *up*, angle 0 points toward the top of the screen.'
+            ].join(' ')
+        },
+        standoff: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            arrayOk: true,
+            editType: 'plot',
+            anim: true,
+            description: [
+                'Moves the marker away from the data point in the direction of `angle` (in px).',
+                'This can be useful for example if you have another marker at this',
+                'location and you want to point an arrowhead marker at it.'
+            ].join(' ')
         },
         size: {
             valType: 'number',

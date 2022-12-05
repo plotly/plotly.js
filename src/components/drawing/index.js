@@ -221,6 +221,7 @@ var SYMBOLDEFS = require('./symbol_defs');
 
 drawing.symbolNames = [];
 drawing.symbolFuncs = [];
+drawing.symbolBackOffs = [];
 drawing.symbolNeedLines = {};
 drawing.symbolNoDot = {};
 drawing.symbolNoFill = {};
@@ -240,6 +241,7 @@ Object.keys(SYMBOLDEFS).forEach(function(k) {
     );
     drawing.symbolNames[n] = k;
     drawing.symbolFuncs[n] = symDef.f;
+    drawing.symbolBackOffs[n] = symDef.backoff || 0;
 
     if(symDef.needLine) {
         drawing.symbolNeedLines[n] = true;
@@ -287,9 +289,9 @@ drawing.symbolNumber = function(v) {
         0 : Math.floor(Math.max(v, 0));
 };
 
-function makePointPath(symbolNumber, r) {
+function makePointPath(symbolNumber, r, t, s) {
     var base = symbolNumber % 100;
-    return drawing.symbolFuncs[base](r) + (symbolNumber >= 200 ? DOTPATH : '');
+    return drawing.symbolFuncs[base](r, t, s) + (symbolNumber >= 200 ? DOTPATH : '');
 }
 
 var HORZGRADIENT = {x1: 1, x2: 0, y1: 0, y2: 0};
@@ -660,7 +662,10 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         // because that impacts how to handle colors
         d.om = x % 200 >= 100;
 
-        sel.attr('d', makePointPath(x, r));
+        var angle = getMarkerAngle(d, trace);
+        var standoff = getMarkerStandoff(d, trace);
+
+        sel.attr('d', makePointPath(x, r, angle, standoff));
     }
 
     var perPointGradient = false;
@@ -909,7 +914,7 @@ drawing.selectedPointStyle = function(s, trace) {
             var mx = d.mx || marker.symbol || 0;
             var mrc2 = fns.selectedSizeFn(d);
 
-            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2));
+            pt.attr('d', makePointPath(drawing.symbolNumber(mx), mrc2, getMarkerAngle(d, trace), getMarkerStandoff(d, trace)));
 
             // save for Drawing.selectedTextStyle
             d.mrc2 = mrc2;
@@ -1080,6 +1085,26 @@ drawing.smoothclosed = function(pts, smoothness) {
     return path;
 };
 
+var lastDrawnX, lastDrawnY;
+
+function roundEnd(pt, isY, isLastPoint) {
+    if(isLastPoint) pt = applyBackoff(pt);
+
+    return isY ? roundY(pt[1]) : roundX(pt[0]);
+}
+
+function roundX(p) {
+    var v = d3.round(p, 2);
+    lastDrawnX = v;
+    return v;
+}
+
+function roundY(p) {
+    var v = d3.round(p, 2);
+    lastDrawnY = v;
+    return v;
+}
+
 function makeTangent(prevpt, thispt, nextpt, smoothness) {
     var d1x = prevpt[0] - thispt[0];
     var d1y = prevpt[1] - thispt[1];
@@ -1093,11 +1118,11 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
     var denom2 = 3 * d1a * (d1a + d2a);
     return [
         [
-            d3.round(thispt[0] + (denom1 && numx / denom1), 2),
-            d3.round(thispt[1] + (denom1 && numy / denom1), 2)
+            roundX(thispt[0] + (denom1 && numx / denom1)),
+            roundY(thispt[1] + (denom1 && numy / denom1))
         ], [
-            d3.round(thispt[0] - (denom2 && numx / denom2), 2),
-            d3.round(thispt[1] - (denom2 && numy / denom2), 2)
+            roundX(thispt[0] - (denom2 && numx / denom2)),
+            roundY(thispt[1] - (denom2 && numy / denom2))
         ]
     ];
 }
@@ -1105,34 +1130,98 @@ function makeTangent(prevpt, thispt, nextpt, smoothness) {
 // step paths - returns a generator function for paths
 // with the given step shape
 var STEPPATH = {
-    hv: function(p0, p1) {
-        return 'H' + d3.round(p1[0], 2) + 'V' + d3.round(p1[1], 2);
+    hv: function(p0, p1, isLastPoint) {
+        return 'H' +
+            roundX(p1[0]) + 'V' +
+            roundEnd(p1, 1, isLastPoint);
     },
-    vh: function(p0, p1) {
-        return 'V' + d3.round(p1[1], 2) + 'H' + d3.round(p1[0], 2);
+    vh: function(p0, p1, isLastPoint) {
+        return 'V' +
+            roundY(p1[1]) + 'H' +
+            roundEnd(p1, 0, isLastPoint);
     },
-    hvh: function(p0, p1) {
-        return 'H' + d3.round((p0[0] + p1[0]) / 2, 2) + 'V' +
-            d3.round(p1[1], 2) + 'H' + d3.round(p1[0], 2);
+    hvh: function(p0, p1, isLastPoint) {
+        return 'H' +
+            roundX((p0[0] + p1[0]) / 2) + 'V' +
+            roundY(p1[1]) + 'H' +
+            roundEnd(p1, 0, isLastPoint);
     },
-    vhv: function(p0, p1) {
-        return 'V' + d3.round((p0[1] + p1[1]) / 2, 2) + 'H' +
-            d3.round(p1[0], 2) + 'V' + d3.round(p1[1], 2);
+    vhv: function(p0, p1, isLastPoint) {
+        return 'V' +
+            roundY((p0[1] + p1[1]) / 2) + 'H' +
+            roundX(p1[0]) + 'V' +
+            roundEnd(p1, 1, isLastPoint);
     }
 };
-var STEPLINEAR = function(p0, p1) {
-    return 'L' + d3.round(p1[0], 2) + ',' + d3.round(p1[1], 2);
+var STEPLINEAR = function(p0, p1, isLastPoint) {
+    return 'L' +
+        roundEnd(p1, 0, isLastPoint) + ',' +
+        roundEnd(p1, 1, isLastPoint);
 };
 drawing.steps = function(shape) {
     var onestep = STEPPATH[shape] || STEPLINEAR;
     return function(pts) {
-        var path = 'M' + d3.round(pts[0][0], 2) + ',' + d3.round(pts[0][1], 2);
-        for(var i = 1; i < pts.length; i++) {
-            path += onestep(pts[i - 1], pts[i]);
+        var path = 'M' + roundX(pts[0][0]) + ',' + roundY(pts[0][1]);
+        var len = pts.length;
+        for(var i = 1; i < len; i++) {
+            path += onestep(pts[i - 1], pts[i], i === len - 1);
         }
         return path;
     };
 };
+
+function applyBackoff(pt, start) {
+    var backoff = pt.backoff;
+    var trace = pt.trace;
+    var d = pt.d;
+    var i = pt.i;
+
+    if(backoff && trace &&
+        trace.marker &&
+        trace.marker.angle % 360 === 0 &&
+        trace.line &&
+        trace.line.shape !== 'spline'
+    ) {
+        var arrayBackoff = Lib.isArrayOrTypedArray(backoff);
+        var end = pt;
+
+        var x1 = start ? start[0] : lastDrawnX || 0;
+        var y1 = start ? start[1] : lastDrawnY || 0;
+
+        var x2 = end[0];
+        var y2 = end[1];
+
+        var dx = x2 - x1;
+        var dy = y2 - y1;
+
+        var t = Math.atan2(dy, dx);
+
+        var b = arrayBackoff ? backoff[i] : backoff;
+
+        if(b === 'auto') {
+            var endI = end.i;
+            if(trace.type === 'scatter') endI--; // Why we need this hack?
+
+            var endMarker = end.marker;
+            b = endMarker ? drawing.symbolBackOffs[drawing.symbolNumber(endMarker.symbol)] * endMarker.size : 0;
+            b += drawing.getMarkerStandoff(d[endI], trace) || 0;
+        }
+
+        var x = x2 - b * Math.cos(t);
+        var y = y2 - b * Math.sin(t);
+
+        if(
+            ((x <= x2 && x >= x1) || (x >= x2 && x <= x1)) &&
+            ((y <= y2 && y >= y1) || (y >= y2 && y <= y1))
+        ) {
+            pt = [x, y];
+        }
+    }
+
+    return pt;
+}
+
+drawing.applyBackoff = applyBackoff;
 
 // off-screen svg render testing element, shared by the whole page
 // uses the id 'js-plotly-tester' and stores it in drawing.tester
@@ -1458,3 +1547,168 @@ drawing.setTextPointsScale = function(selection, xScale, yScale) {
         el.attr('transform', transforms.join(''));
     });
 };
+
+function getMarkerStandoff(d, trace) {
+    var standoff;
+
+    if(d) standoff = d.mf;
+
+    if(standoff === undefined) {
+        standoff = trace.marker ? trace.marker.standoff || 0 : 0;
+    }
+
+    if(!trace._geo && !trace._xA) {
+        // case of legends
+        return -standoff;
+    }
+
+    return standoff;
+}
+
+drawing.getMarkerStandoff = getMarkerStandoff;
+
+var atan2 = Math.atan2;
+var cos = Math.cos;
+var sin = Math.sin;
+
+function rotate(t, xy) {
+    var x = xy[0];
+    var y = xy[1];
+    return [
+        x * cos(t) - y * sin(t),
+        x * sin(t) + y * cos(t)
+    ];
+}
+
+var previousLon;
+var previousLat;
+var previousX;
+var previousY;
+var previousI;
+var previousTraceUid;
+
+function getMarkerAngle(d, trace) {
+    var angle = d.ma;
+
+    if(angle === undefined) {
+        angle = trace.marker.angle || 0;
+    }
+
+    var x, y;
+    var ref = trace.marker.angleref;
+    if(ref === 'previous' || ref === 'north') {
+        if(trace._geo) {
+            var p = trace._geo.project(d.lonlat);
+            x = p[0];
+            y = p[1];
+        } else {
+            var xa = trace._xA;
+            var ya = trace._yA;
+            if(xa && ya) {
+                x = xa.c2p(d.x);
+                y = ya.c2p(d.y);
+            } else {
+                // case of legends
+                return 90;
+            }
+        }
+
+        if(trace._geo) {
+            var lon = d.lonlat[0];
+            var lat = d.lonlat[1];
+
+            var north = trace._geo.project([
+                lon,
+                lat + 1e-5 // epsilon
+            ]);
+
+            var east = trace._geo.project([
+                lon + 1e-5, // epsilon
+                lat
+            ]);
+
+            var u = atan2(
+                east[1] - y,
+                east[0] - x
+            );
+
+            var v = atan2(
+                north[1] - y,
+                north[0] - x
+            );
+
+            var t;
+            if(ref === 'north') {
+                t = angle / 180 * Math.PI;
+                // To use counter-clockwise angles i.e.
+                // East: 90, West: -90
+                // to facilitate wind visualisations
+                // in future we should use t = -t here.
+            } else if(ref === 'previous') {
+                var lon1 = lon / 180 * Math.PI;
+                var lat1 = lat / 180 * Math.PI;
+                var lon2 = previousLon / 180 * Math.PI;
+                var lat2 = previousLat / 180 * Math.PI;
+
+                var dLon = lon2 - lon1;
+
+                var deltaY = cos(lat2) * sin(dLon);
+                var deltaX = sin(lat2) * cos(lat1) - cos(lat2) * sin(lat1) * cos(dLon);
+
+                t = -atan2(
+                    deltaY,
+                    deltaX
+                ) - Math.PI;
+
+                previousLon = lon;
+                previousLat = lat;
+            }
+
+            var A = rotate(u, [cos(t), 0]);
+            var B = rotate(v, [sin(t), 0]);
+
+            angle = atan2(
+                A[1] + B[1],
+                A[0] + B[0]
+            ) / Math.PI * 180;
+
+            if(ref === 'previous' && !(
+                previousTraceUid === trace.uid &&
+                d.i === previousI + 1
+            )) {
+                angle = null;
+            }
+        }
+
+        if(ref === 'previous' && !trace._geo) {
+            if(
+                previousTraceUid === trace.uid &&
+                d.i === previousI + 1 &&
+                isNumeric(x) &&
+                isNumeric(y)
+            ) {
+                var dX = x - previousX;
+                var dY = y - previousY;
+
+                var shape = trace.line ? trace.line.shape || '' : '';
+
+                var lastShapeChar = shape.slice(shape.length - 1);
+                if(lastShapeChar === 'h') dY = 0;
+                if(lastShapeChar === 'v') dX = 0;
+
+                angle += atan2(dY, dX) / Math.PI * 180 + 90;
+            } else {
+                angle = null;
+            }
+        }
+    }
+
+    previousX = x;
+    previousY = y;
+    previousI = d.i;
+    previousTraceUid = trace.uid;
+
+    return angle;
+}
+
+drawing.getMarkerAngle = getMarkerAngle;

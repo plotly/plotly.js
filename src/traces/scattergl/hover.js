@@ -139,6 +139,7 @@ function calcHover(pointData, x, y, trace) {
         di.ms = Lib.isArrayOrTypedArray(marker.size) ? marker.size[id] : marker.size;
         di.mo = Lib.isArrayOrTypedArray(marker.opacity) ? marker.opacity[id] : marker.opacity;
         di.mx = Lib.isArrayOrTypedArray(marker.symbol) ? marker.symbol[id] : marker.symbol;
+        di.ma = Lib.isArrayOrTypedArray(marker.angle) ? marker.angle[id] : marker.angle;
         di.mc = Lib.isArrayOrTypedArray(marker.color) ? marker.color[id] : marker.color;
     }
 
