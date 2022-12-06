@@ -157,17 +157,17 @@ proto.update = function update(calcTrace) {
     var wasHidden = this.isHidden;
     var isHidden = trace.visible !== true;
 
-    if(this.below !== below) {
-        remove(true);
-        add(true);
-        repaint();
-    } else if(hadCluster !== hasCluster) {
-        remove();
-        add();
-    } else if(isHidden) {
+    if(isHidden) {
         if(!wasHidden) remove();
     } else if(wasHidden) {
         if(!isHidden) add();
+    } else if(hadCluster !== hasCluster) {
+        remove();
+        add();
+    } else if(this.below !== below) {
+        remove(true);
+        add(true);
+        repaint();
     } else {
         repaint();
     }
