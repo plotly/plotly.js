@@ -90,8 +90,8 @@ proto.update = function update(calcTrace) {
     var hadCluster = !!this.clusterEnabled;
     var lThis = this;
 
-    function addCluster() {
-        lThis.addSource('circle', optsAll.circle, trace.cluster);
+    function addCluster(noSource) {
+        if(!noSource) lThis.addSource('circle', optsAll.circle, trace.cluster);
         var order = ORDER.cluster;
         for(var i = 0; i < order.length; i++) {
             var k = order[i];
@@ -100,40 +100,40 @@ proto.update = function update(calcTrace) {
         }
     }
 
-    function removeCluster() {
+    function removeCluster(noSource) {
         var order = ORDER.cluster;
         for(var i = order.length - 1; i >= 0; i--) {
             var k = order[i];
             map.removeLayer(lThis.layerIds[k]);
         }
-        map.removeSource(lThis.sourceIds.circle);
+        if(!noSource) map.removeSource(lThis.sourceIds.circle);
     }
 
-    function addNonCluster() {
+    function addNonCluster(noSource) {
         var order = ORDER.nonCluster;
         for(var i = 0; i < order.length; i++) {
             var k = order[i];
             var opts = optsAll[k];
-            lThis.addSource(k, opts);
+            if(!noSource) lThis.addSource(k, opts);
             lThis.addLayer(k, opts, below);
         }
     }
 
-    function removeNonCluster() {
+    function removeNonCluster(noSource) {
         var order = ORDER.nonCluster;
         for(var i = order.length - 1; i >= 0; i--) {
             var k = order[i];
             map.removeLayer(lThis.layerIds[k]);
-            map.removeSource(lThis.sourceIds[k]);
+            if(!noSource) map.removeSource(lThis.sourceIds[k]);
         }
     }
 
-    function remove() {
-        if(hadCluster) removeCluster(); else removeNonCluster();
+    function remove(noSource) {
+        if(hadCluster) removeCluster(noSource); else removeNonCluster(noSource);
     }
 
-    function add() {
-        if(hasCluster) addCluster(); else addNonCluster();
+    function add(noSource) {
+        if(hasCluster) addCluster(noSource); else addNonCluster(noSource);
     }
 
     function repaint() {
@@ -157,10 +157,11 @@ proto.update = function update(calcTrace) {
     var wasHidden = this.isHidden;
     var isHidden = trace.visible !== true;
 
-    if(
-        this.below !== below ||
-        hadCluster !== hasCluster
-    ) {
+    if(this.below !== below) {
+        remove(true);
+        add(true);
+        repaint();
+    } else if(hadCluster !== hasCluster) {
         remove();
         add();
     } else if(isHidden && !wasHidden) {
