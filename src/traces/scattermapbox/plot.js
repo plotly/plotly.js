@@ -164,10 +164,10 @@ proto.update = function update(calcTrace) {
     } else if(hadCluster !== hasCluster) {
         remove();
         add();
-    } else if(isHidden && !wasHidden) {
-        remove();
-    } else if(!isHidden && wasHidden) {
-        add();
+    } else if(isHidden) {
+        if(!wasHidden) remove();
+    } else if(wasHidden) {
+        if(!isHidden) add();
     } else {
         repaint();
     }
