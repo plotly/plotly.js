@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.16.3
+* plotly.js (geo) v2.16.4
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -37284,7 +37284,7 @@ module.exports = {
     calc: _dereq_('./calc'),
 
     // ./scales.js is required in lib/coerce.js ;
-    // it needs to be a separate module to avoid circular a dependency
+    // it needs to be a separate module to avoid a circular dependency
     scales: scales.scales,
     defaultScale: scales.defaultScale,
     getScale: scales.get,
@@ -98193,7 +98193,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.16.3';
+exports.version = '2.16.4';
 
 },{}]},{},[8])(8)
 });
