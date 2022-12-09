@@ -2329,8 +2329,7 @@ axes.drawOne = function(gd, ax, opts) {
     if(!mainPlotinfo) return;
     // Will this axis 'push' out other axes?
     ax._shiftPusher = overlayingShiftedAx.includes(ax._id) || overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
-    // An axis is also shifted by 1/2 of its own linewidth
-    // And inside tick length if applicable
+    // An axis is also shifted by 1/2 of its own linewidth and inside tick length if applicable
     if(ax._shiftPusher & ax.anchor === 'free') {
         var selfPush = (ax.linewidth / 2 || 0);
         if(ax.ticks === 'inside') {
@@ -2338,9 +2337,16 @@ axes.drawOne = function(gd, ax, opts) {
         }
         axShifts = incrementShift(ax, selfPush, axShifts);
     }
-    // Only set if it hasn't been defined from drawing previously
-    // ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
-    ax._shift = setShiftVal(ax, axShifts);
+
+    // Somewhat inelegant way of making sure that the shift value is only updated when the
+    // Axes.DrawOne() function is called from the right context. An issue when redrawing the
+    // axis as result of using the dragbox, for example.
+    if(opts.skipTitle === true) {
+        ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
+    } else {
+        ax._shift = setShiftVal(ax, axShifts);
+    }
+
     ax._fullDepth = 0;
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
@@ -2614,7 +2620,7 @@ axes.drawOne = function(gd, ax, opts) {
                     ax._fullDepth += approxTitleDepth(ax);
                 }
             }
-            // Hard-coded padding after each axis. This could be exposed to the user in the future
+            // TODO: Expose as a param to allow user to specify padding between axes
             ax._fullDepth += 10;
         }
 
