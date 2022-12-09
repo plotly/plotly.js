@@ -2608,20 +2608,23 @@ axes.drawOne = function(gd, ax, opts) {
             }
         }
 
+        var axDepth = 0;
+        var titleDepth = 0;
+        var multAxisPad = 10; // TODO: Expose as a param to allow user to specify padding between axes
         if(ax._shiftPusher) {
             if(s === 'l') {
-                ax._fullDepth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+                axDepth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
             } else {
-                ax._fullDepth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+                axDepth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
             }
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
-                ax._fullDepth = (ax._titleStandoff || 0) + (ax._titleScoot || 0);
+                titleDepth = (ax._titleStandoff || 0) + (ax._titleScoot || 0);
                 if(s === 'l') {
-                    ax._fullDepth += approxTitleDepth(ax);
+                    titleDepth += approxTitleDepth(ax);
                 }
             }
-            // TODO: Expose as a param to allow user to specify padding between axes
-            ax._fullDepth += 10;
+
+            ax._fullDepth = Math.max(axDepth, titleDepth) + multAxisPad;
         }
 
         if(ax.automargin) {
