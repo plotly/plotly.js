@@ -2339,7 +2339,8 @@ axes.drawOne = function(gd, ax, opts) {
         axShifts = incrementShift(ax, selfPush, axShifts);
     }
     // Only set if it hasn't been defined from drawing previously
-    ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
+    // ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
+    ax._shift = setShiftVal(ax, axShifts)
     ax._fullDepth = 0;
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
@@ -2573,6 +2574,12 @@ axes.drawOne = function(gd, ax, opts) {
 
     var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
 
+    if(!opts.skipTitle &&
+        !(hasRangeSlider && ax.side === 'bottom')
+    ) {
+        seq.push(function() { return drawTitle(gd, ax); });
+    }
+
     seq.push(function() {
         var s = ax.side.charAt(0);
         var sMirror = OPPOSITE_SIDE[ax.side].charAt(0);
@@ -2601,9 +2608,11 @@ axes.drawOne = function(gd, ax, opts) {
             } else {
                 ax._fullDepth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
             }
-            // TODO: Multiplying the approx depth seems to be a workaround for getting the default standoff?
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
-                ax._fullDepth += (approxTitleDepth(ax) * 2) + (ax.title.standoff || 0);
+                ax._fullDepth = (ax._titleStandoff || 0) + (ax._titleScoot || 0)
+                if(s == 'l') {
+                    ax._fullDepth += approxTitleDepth(ax)
+                }
             }
             // Hard-coded padding after each axis. This could be exposed to the user in the future
             ax._fullDepth += 10;
@@ -2691,12 +2700,6 @@ axes.drawOne = function(gd, ax, opts) {
         Plots.autoMargin(gd, axMirrorAutoMarginID(ax), mirrorPush);
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
     });
-
-    if(!opts.skipTitle &&
-        !(hasRangeSlider && ax.side === 'bottom')
-    ) {
-        seq.push(function() { return drawTitle(gd, ax); });
-    }
 
     return Lib.syncOrAsync(seq);
 };
