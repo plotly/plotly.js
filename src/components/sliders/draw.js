@@ -449,6 +449,8 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
 }
 
 function attachGripEvents(item, gd, sliderGroup) {
+    if(gd._context.staticPlot) return;
+
     var node = sliderGroup.node();
     var $gd = d3.select(gd);
 
