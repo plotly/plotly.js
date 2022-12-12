@@ -31,8 +31,7 @@ function groupCrossTraceCalc(gd, plotinfo) {
 
     var opts = {
         mode: fullLayout.scattermode,
-        gap: fullLayout.scattergap,
-        groupgap: fullLayout.scattergroupgap
+        gap: fullLayout.scattergap
     };
 
     setGroupPositions(gd, xa, ya, calcTracesVert, opts);

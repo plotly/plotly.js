@@ -13,6 +13,5 @@ module.exports = function(layoutIn, layoutOut) {
 
     if(layoutOut.scattermode === 'group') {
         coerce('scattergap', groupBarmode ? layoutOut.bargap : 0.2);
-        coerce('scattergroupgap');
     }
 };

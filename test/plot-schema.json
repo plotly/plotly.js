@@ -45315,14 +45315,6 @@
      "min": 0,
      "valType": "number"
     },
-    "scattergroupgap": {
-     "description": "Sets the gap (in plot fraction) between scatter points of the same location coordinate.",
-     "dflt": 0,
-     "editType": "calc",
-     "max": 1,
-     "min": 0,
-     "valType": "number"
-    },
     "scattermode": {
      "description": "Determines how scatter points at the same location coordinate are displayed on the graph. With *group*, the scatter points are plotted next to one another centered around the shared location. With *overlay*, the scatter points are plotted over one another, you might need to reduce *opacity* to see multiple scatter points.",
      "dflt": "overlay",

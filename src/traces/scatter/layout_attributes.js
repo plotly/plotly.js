@@ -26,16 +26,5 @@ module.exports = {
             'adjacent location coordinates.',
             'Defaults to `bargap`.'
         ].join(' ')
-    },
-    scattergroupgap: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0,
-        editType: 'calc',
-        description: [
-            'Sets the gap (in plot fraction) between scatter points of',
-            'the same location coordinate.'
-        ].join(' ')
     }
 };
