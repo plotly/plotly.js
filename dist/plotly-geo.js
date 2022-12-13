@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.16.4
+* plotly.js (geo) v2.16.5
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -55740,6 +55740,8 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
 }
 
 function attachGripEvents(item, gd, sliderGroup) {
+    if(gd._context.staticPlot) return;
+
     var node = sliderGroup.node();
     var $gd = d3.select(gd);
 
@@ -98193,7 +98195,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.16.4';
+exports.version = '2.16.5';
 
 },{}]},{},[8])(8)
 });
