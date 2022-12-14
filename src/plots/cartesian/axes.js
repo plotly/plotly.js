@@ -950,7 +950,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
             continue;
         }
-        
+
         // fill tickVals based on overlaying axis
         if(mockAx.tickmode === 'sync') {
             tickVals = [];
@@ -1223,7 +1223,6 @@ function syncTicks(ax) {
             // get the tick for the current axis based on position
             var vali = ax.p2l(pos);
 
-            // 
             var obj = axes.tickText(ax, vali);
 
             // assign minor ticks
