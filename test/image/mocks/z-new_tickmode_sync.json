@@ -59,7 +59,8 @@
          "range": [
             0,
             2506
-         ]
+         ],
+         "minor": { "showgrid": true }
       },
       "yaxis2": {
          "title": {
@@ -72,6 +73,7 @@
          ],
          "overlaying": "y",
          "tickmode": "sync",
+         "minor": { "showgrid": true },
          "zeroline": false
       }
    }
