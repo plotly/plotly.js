@@ -10,9 +10,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     var overlayableAxes = options.overlayableAxes || [];
     var letter = options.letter;
     var grid = options.grid;
-    var shift = containerIn.shift;
     var overlayingDomain = options.overlayingDomain;
-
     var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltShift, dfltAutomargin;
 
     if(grid) {
@@ -49,17 +47,12 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     }, 'side');
 
     if(anchor === 'free') {
+        var shift = coerce('shift', dfltShift);
         if(shift !== false && shift !== undefined) {
             dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
         }
         if(shift === true) {
             dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
-        }
-        // Only coerce shift and position if free anchor
-        if(shift !== undefined) {
-            coerce('shift', shift);
-        } else {
-            coerce('shift', dfltShift);
         }
         coerce('position', dfltPosition);
     }

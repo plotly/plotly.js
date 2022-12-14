@@ -2327,8 +2327,10 @@ axes.drawOne = function(gd, ax, opts) {
 
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
-    // Will this axis 'push' out other axes?
-    ax._shiftPusher = overlayingShiftedAx.includes(ax._id) || overlayingShiftedAx.includes(ax.overlaying) || ax.shift === true;
+
+    ax._shiftPusher = ax.shift === true ||
+        overlayingShiftedAx.indexOf(ax._id) !== -1 ||
+        overlayingShiftedAx.indexOf(ax.overlaying) !== -1;
     // An axis is also shifted by 1/2 of its own linewidth and inside tick length if applicable
     if(ax._shiftPusher & ax.anchor === 'free') {
         var selfPush = (ax.linewidth / 2 || 0);
@@ -2341,11 +2343,7 @@ axes.drawOne = function(gd, ax, opts) {
     // Somewhat inelegant way of making sure that the shift value is only updated when the
     // Axes.DrawOne() function is called from the right context. An issue when redrawing the
     // axis as result of using the dragbox, for example.
-    if(opts.skipTitle === true) {
-        ax._shift = ax._shift === undefined ? setShiftVal(ax, axShifts) : ax._shift;
-    } else {
-        ax._shift = setShiftVal(ax, axShifts);
-    }
+    if(opts.skipTitle !== true || ax._shift === undefined) ax._shift = setShiftVal(ax, axShifts);
 
     ax._fullDepth = 0;
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
@@ -2610,13 +2608,12 @@ axes.drawOne = function(gd, ax, opts) {
 
         var axDepth = 0;
         var titleDepth = 0;
-        var multAxisPad = 10; // TODO: Expose as a param to allow user to specify padding between axes
+        var multAxisPad = 3; // TODO: Expose as a param to allow user to specify padding between axes
         if(ax._shiftPusher) {
-            if(s === 'l') {
-                axDepth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
-            } else {
-                axDepth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
-            }
+            axDepth = Math.max(
+                outsideTickLen,
+                llbbox.height > 0 ? (s === 'l' ? pos - llbbox.left : llbbox.right - pos) : 0
+            );
             if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
                 titleDepth = (ax._titleStandoff || 0) + (ax._titleScoot || 0);
                 if(s === 'l') {
@@ -3842,7 +3839,7 @@ axes.getPxPosition = function(gd, ax) {
         };
     } else if(axLetter === 'y') {
         anchorAxis = {
-            _offset: (gs.l + (ax.position || 0) * gs.w) + ax._shift,
+            _offset: gs.l + (ax.position || 0) * gs.w + ax._shift,
             _length: 0
         };
     }
