@@ -250,16 +250,16 @@ var getDataConversions = axes.getDataConversions = function(gd, trace, target, t
 
     // if 'target' has corresponding axis
     // -> use setConvert method
-    if(ax) return { d2c: ax.d2c, c2d: ax.c2d };
+    if(ax) return {d2c: ax.d2c, c2d: ax.c2d};
 
     // special case for 'ids'
     // -> cast to String
-    if(d2cTarget === 'ids') return { d2c: toString, c2d: toString };
+    if(d2cTarget === 'ids') return {d2c: toString, c2d: toString};
 
     // otherwise (e.g. numeric-array of 'marker.color' or 'marker.size')
     // -> cast to Number
 
-    return { d2c: toNum, c2d: toNum };
+    return {d2c: toNum, c2d: toNum};
 };
 
 function toNum(v) { return +v; }
@@ -297,8 +297,8 @@ axes.minDtick = function(ax, newDiff, newFirst, allow) {
             // (within rounding err)
             // and forceTick0 can be shifted to newFirst
 
-            (((newFirst - ax._forceTick0) / newDiff % 1) +
-                1.000001) % 1 < 2e-6) {
+                (((newFirst - ax._forceTick0) / newDiff % 1) +
+                    1.000001) % 1 < 2e-6) {
             ax._minDtick = newDiff;
             ax._forceTick0 = newFirst;
         } else if((newDiff / ax._minDtick + 1e-6) % 1 > 2e-6 ||
@@ -306,8 +306,8 @@ axes.minDtick = function(ax, newDiff, newFirst, allow) {
             // newFirst can be shifted to forceTick0) then do nothing - same
             // forcing stands. Otherwise, cancel forced minimum
 
-            (((newFirst - ax._forceTick0) / ax._minDtick % 1) +
-                1.000001) % 1 > 2e-6) {
+                (((newFirst - ax._forceTick0) / ax._minDtick % 1) +
+                    1.000001) % 1 > 2e-6) {
             ax._minDtick = 0;
         }
     }
@@ -423,7 +423,7 @@ axes.autoBin = function(data, ax, nbins, is2d, calendar, size) {
 
     var finalSize = dummyAx.dtick;
     var binStart = axes.tickIncrement(
-        axes.tickFirst(dummyAx), finalSize, 'reverse', calendar);
+            axes.tickFirst(dummyAx), finalSize, 'reverse', calendar);
     var binEnd, bincount;
 
     // check for too many data points right at the edges of bins
@@ -501,7 +501,7 @@ function autoShiftNumericBins(binStart, data, ax, dataMin, dataMax) {
         }
     } else if(midcount < dataCount * 0.1) {
         if(edgecount > dataCount * 0.3 ||
-            nearEdge(dataMin) || nearEdge(dataMax)) {
+                nearEdge(dataMin) || nearEdge(dataMax)) {
             // lots of points at the edge, not many in the middle
             // shift half a bin
             var binshift = ax.dtick / 2;
@@ -950,6 +950,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
             }
             continue;
         }
+        
         // fill tickVals based on overlaying axis
         if(mockAx.tickmode === 'sync') {
             tickVals = [];
@@ -1222,6 +1223,7 @@ function syncTicks(ax) {
             // get the tick for the current axis based on position
             var vali = ax.p2l(pos);
 
+            // 
             var obj = axes.tickText(ax, vali);
 
             // assign minor ticks
@@ -1276,8 +1278,8 @@ function arrayTicks(ax) {
             var vali = tickVal2l(vals[i]);
             if(vali > tickMin && vali < tickMax) {
                 var obj = text[i] === undefined ?
-                    axes.tickText(ax, vali) :
-                    tickTextObj(ax, vali, String(text[i]));
+                        axes.tickText(ax, vali) :
+                        tickTextObj(ax, vali, String(text[i]));
 
                 if(isMinor) {
                     obj.minor = true;
@@ -1683,7 +1685,7 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
  *     it's different from the first value.
  */
 axes.hoverLabelText = function(ax, values, hoverformat) {
-    if(hoverformat) ax = Lib.extendFlat({}, ax, { hoverformat: hoverformat });
+    if(hoverformat) ax = Lib.extendFlat({}, ax, {hoverformat: hoverformat});
 
     var val = Array.isArray(values) ? values[0] : values;
     var val2 = Array.isArray(values) ? values[1] : undefined;
@@ -1730,7 +1732,7 @@ function formatDate(ax, out, hover, extraPrecision) {
         // second or sub-second precision: extra always shows max digits.
         // for other fields, extra precision just adds one field.
         if(isNumeric(tr)) tr = 4;
-        else tr = { y: 'm', m: 'd', d: 'M', M: 'S', S: 4 }[tr];
+        else tr = {y: 'm', m: 'd', d: 'M', M: 'S', S: 4}[tr];
     }
 
     var dateStr = Lib.formatDate(out.x, fmt, tr, ax._dateFormat, ax.calendar, ax._extraFormat);
@@ -2104,11 +2106,11 @@ axes.getTickFormat = function(ax) {
     }
 
     function isProperStop(dtick, range, convert) {
-        var convertFn = convert || function(x) { return x; };
+        var convertFn = convert || function(x) { return x;};
         var leftDtick = range[0];
         var rightDtick = range[1];
         return ((!leftDtick && typeof leftDtick !== 'number') || convertFn(leftDtick) <= convertFn(dtick)) &&
-            ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
+               ((!rightDtick && typeof rightDtick !== 'number') || convertFn(rightDtick) >= convertFn(dtick));
     }
 
     function isProperLogStop(dtick, range) {
@@ -2197,18 +2199,18 @@ axes.makeClipPaths = function(gd) {
     // for more info: https://github.com/plotly/plotly.js/issues/2595
     if(fullLayout._hasOnlyLargeSploms) return;
 
-    var fullWidth = { _offset: 0, _length: fullLayout.width, _id: '' };
-    var fullHeight = { _offset: 0, _length: fullLayout.height, _id: '' };
+    var fullWidth = {_offset: 0, _length: fullLayout.width, _id: ''};
+    var fullHeight = {_offset: 0, _length: fullLayout.height, _id: ''};
     var xaList = axes.list(gd, 'x', true);
     var yaList = axes.list(gd, 'y', true);
     var clipList = [];
     var i, j;
 
     for(i = 0; i < xaList.length; i++) {
-        clipList.push({ x: xaList[i], y: fullHeight });
+        clipList.push({x: xaList[i], y: fullHeight});
         for(j = 0; j < yaList.length; j++) {
-            if(i === 0) clipList.push({ x: fullWidth, y: yaList[j] });
-            clipList.push({ x: xaList[i], y: yaList[j] });
+            if(i === 0) clipList.push({x: fullWidth, y: yaList[j]});
+            clipList.push({x: xaList[i], y: yaList[j]});
         }
     }
 
@@ -2221,7 +2223,7 @@ axes.makeClipPaths = function(gd) {
     axClips.enter().append('clipPath')
         .classed('axesclip', true)
         .attr('id', function(d) { return 'clip' + fullLayout._uid + d.x._id + d.y._id; })
-        .append('rect');
+      .append('rect');
 
     axClips.exit().remove();
 
@@ -2541,10 +2543,10 @@ axes.drawOne = function(gd, ax, opts) {
     });
 
     if(ax.type === 'multicategory') {
-        var pad = { x: 2, y: 10 }[axLetter];
+        var pad = {x: 2, y: 10}[axLetter];
 
         seq.push(function() {
-            var bboxKey = { x: 'height', y: 'width' }[axLetter];
+            var bboxKey = {x: 'height', y: 'width'}[axLetter];
             var standoff = getLabelLevelBbox()[bboxKey] + pad +
                 (ax._tickAngles[axId + 'tick'] ? ax.tickfont.size * LINE_SPACING : 0);
 
@@ -2600,7 +2602,7 @@ axes.drawOne = function(gd, ax, opts) {
         }
 
         if(ax.automargin) {
-            push = { x: 0, y: 0, r: 0, l: 0, t: 0, b: 0 };
+            push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
             var domainIndices = [0, 1];
 
             if(axLetter === 'x') {
@@ -2654,7 +2656,7 @@ axes.drawOne = function(gd, ax, opts) {
             }
 
             if(ax.mirror && ax.anchor !== 'free') {
-                mirrorPush = { x: 0, y: 0, r: 0, l: 0, t: 0, b: 0 };
+                mirrorPush = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
 
                 mirrorPush[sMirror] = ax.linewidth;
                 if(ax.mirror && ax.mirror !== true) mirrorPush[sMirror] += outsideTickLen;
@@ -2695,7 +2697,7 @@ function filterPush(push, automargin) {
 
     var keepMargin = Object.keys(MARGIN_MAPPING).reduce(function(data, nextKey) {
         if(automargin.indexOf(nextKey) !== -1) {
-            MARGIN_MAPPING[nextKey].forEach(function(key) { data[key] = 1; });
+            MARGIN_MAPPING[nextKey].forEach(function(key) { data[key] = 1;});
         }
         return data;
     }, {});
@@ -2716,7 +2718,7 @@ function getBoundaryVals(ax, vals) {
     var _push = function(d, bndIndex) {
         var xb = d.xbnd[bndIndex];
         if(xb !== null) {
-            out.push(Lib.extendFlat({}, d, { x: xb }));
+            out.push(Lib.extendFlat({}, d, {x: xb}));
         }
     };
 
@@ -2761,7 +2763,7 @@ function getDividerVals(ax, vals) {
     var _push = function(d, bndIndex) {
         var xb = d.xbnd[bndIndex];
         if(xb !== null) {
-            out.push(Lib.extendFlat({}, d, { x: xb }));
+            out.push(Lib.extendFlat({}, d, {x: xb}));
         }
     };
 
@@ -2836,7 +2838,7 @@ function calcLabelLevelBbox(ax, cls) {
  */
 axes.getTickSigns = function(ax, minor) {
     var axLetter = ax._id.charAt(0);
-    var sideOpposite = { x: 'top', y: 'right' }[axLetter];
+    var sideOpposite = {x: 'top', y: 'right'}[axLetter];
     var main = ax.side === sideOpposite ? 1 : -1;
     var out = [-1, 1, main, -main];
     // then we flip if outside XOR y axis
@@ -2847,7 +2849,7 @@ axes.getTickSigns = function(ax, minor) {
     }
     // independent of `ticks`; do not flip this one
     if(ax.side) {
-        out.push({ l: -1, t: -1, r: 1, b: 1 }[ax.side.charAt(0)]);
+        out.push({l: -1, t: -1, r: 1, b: 1}[ax.side.charAt(0)]);
     }
     return out;
 };
@@ -3084,7 +3086,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
         out.heightFn = function(d, a, h) {
             return (a < -60 || a > 60) ? -0.5 * h :
                 ((ax.side === 'top') !== insideTickLabels) ? -h :
-                    0;
+                0;
         };
     } else if(axLetter === 'y') {
         endSide =
@@ -3131,7 +3133,7 @@ axes.makeLabelFns = function(ax, shift, angle) {
 
             return a < -30 ? -h :
                 a < 30 ? -0.5 * h :
-                    0;
+                0;
         };
     }
 
@@ -3319,7 +3321,7 @@ axes.drawZeroLine = function(gd, ax, opts) {
     var show = axes.shouldShowZeroLine(gd, ax, opts.counterAxis);
 
     var zl = opts.layer.selectAll('path.' + cls)
-        .data(show ? [{ x: 0, id: ax._id }] : []);
+        .data(show ? [{x: 0, id: ax._id}] : []);
 
     zl.exit().remove();
 
@@ -3391,32 +3393,32 @@ axes.drawLabels = function(gd, ax, opts) {
     tickLabels.enter().append('g')
         .classed(cls, 1)
         .append('text')
-        // only so tex has predictable alignment that we can
-        // alter later
-        .attr('text-anchor', 'middle')
-        .each(function(d) {
-            var thisLabel = d3.select(this);
-            var newPromise = gd._promises.length;
+            // only so tex has predictable alignment that we can
+            // alter later
+            .attr('text-anchor', 'middle')
+            .each(function(d) {
+                var thisLabel = d3.select(this);
+                var newPromise = gd._promises.length;
 
-            thisLabel
-                .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
-                .call(Drawing.font, d.font, d.fontSize, d.fontColor)
-                .text(d.text)
-                .call(svgTextUtils.convertToTspans, gd);
+                thisLabel
+                    .call(svgTextUtils.positionText, labelFns.xFn(d), labelFns.yFn(d))
+                    .call(Drawing.font, d.font, d.fontSize, d.fontColor)
+                    .text(d.text)
+                    .call(svgTextUtils.convertToTspans, gd);
 
-            if(gd._promises[newPromise]) {
-                // if we have an async label, we'll deal with that
-                // all here so take it out of gd._promises and
-                // instead position the label and promise this in
-                // labelsReady
-                labelsReady.push(gd._promises.pop().then(function() {
+                if(gd._promises[newPromise]) {
+                    // if we have an async label, we'll deal with that
+                    // all here so take it out of gd._promises and
+                    // instead position the label and promise this in
+                    // labelsReady
+                    labelsReady.push(gd._promises.pop().then(function() {
+                        positionLabels(thisLabel, tickAngle);
+                    }));
+                } else {
+                    // sync label: just position it now.
                     positionLabels(thisLabel, tickAngle);
-                }));
-            } else {
-                // sync label: just position it now.
-                positionLabels(thisLabel, tickAngle);
-            }
-        });
+                }
+            });
 
     hideCounterAxisInsideTickLabels(ax, [TICK_TEXT]);
 
@@ -3437,9 +3439,9 @@ axes.drawLabels = function(gd, ax, opts) {
 
             var transform = opts.transFn.call(thisLabel.node(), d) +
                 ((isNumeric(angle) && +angle !== 0) ?
-                    (' rotate(' + angle + ',' + labelFns.xFn(d) + ',' +
-                        (labelFns.yFn(d) - d.fontSize / 2) + ')') :
-                    '');
+                (' rotate(' + angle + ',' + labelFns.xFn(d) + ',' +
+                    (labelFns.yFn(d) - d.fontSize / 2) + ')') :
+                '');
 
             // how much to shift a multi-line label to center it vertically.
             var nLines = svgTextUtils.lineCount(thisLabel);
@@ -3464,7 +3466,7 @@ axes.drawLabels = function(gd, ax, opts) {
                 }
             } else {
                 var mjWidth = Drawing.bBox(mathjaxGroup.node()).width;
-                var mjShift = mjWidth * { end: -0.5, start: 0.5 }[anchor];
+                var mjShift = mjWidth * {end: -0.5, start: 0.5}[anchor];
                 mathjaxGroup.attr('transform', transform + strTranslate(mjShift, 0));
             }
         });
@@ -3918,7 +3920,7 @@ function drawTitle(gd, ax) {
     } else {
         y = ax._offset + ax._length / 2;
         x = (ax.side === 'right') ? pos + titleStandoff : pos - titleStandoff;
-        transform = { rotate: '-90', offset: 0 };
+        transform = {rotate: '-90', offset: 0};
     }
 
     var avoid;
@@ -3948,7 +3950,7 @@ function drawTitle(gd, ax) {
         placeholder: fullLayout._dfltTitle[axLetter],
         avoid: avoid,
         transform: transform,
-        attributes: { x: x, y: y, 'text-anchor': 'middle' }
+        attributes: {x: x, y: y, 'text-anchor': 'middle'}
     });
 }
 
@@ -3986,7 +3988,7 @@ function anyCounterAxLineAtZero(gd, ax, counterAxis, rng) {
 
     var zeroPosition = ax._offset + (
         ((Math.abs(rng[0]) < Math.abs(rng[1])) === (axLetter === 'x')) ?
-            0 : ax._length
+        0 : ax._length
     );
 
     function lineNearZero(ax2) {
@@ -4036,7 +4038,7 @@ function hasBarsOrFill(gd, ax) {
         if(trace.visible === true && (trace.xaxis + trace.yaxis) === subplot) {
             if(
                 Registry.traceIs(trace, 'bar-like') &&
-                trace.orientation === { x: 'h', y: 'v' }[axLetter]
+                trace.orientation === {x: 'h', y: 'v'}[axLetter]
             ) return true;
 
             if(
@@ -4109,7 +4111,7 @@ function makeAxisGroups(gd, traces) {
         }
 
         if(!groupsi.length) {
-            groups.push({ x: [xi], y: [yi] });
+            groups.push({x: [xi], y: [yi]});
             continue;
         }
 
@@ -4160,13 +4162,13 @@ function swapAxisGroup(gd, xIds, yIds) {
         var coerceLinearX = false;
         var coerceLinearY = false;
         if(keyi.charAt(0) === '_' || typeof xVal === 'function' ||
-            noSwapAttrs.indexOf(keyi) !== -1) {
+                noSwapAttrs.indexOf(keyi) !== -1) {
             continue;
         }
         for(j = 1; j < xFullAxes.length && allEqual; j++) {
             var xVali = xFullAxes[j][keyi];
             if(keyi === 'type' && numericTypes.indexOf(xVal) !== -1 &&
-                numericTypes.indexOf(xVali) !== -1 && xVal !== xVali) {
+                    numericTypes.indexOf(xVali) !== -1 && xVal !== xVali) {
                 // type is special - if we find a mixture of linear and log,
                 // coerce them all to linear on flipping
                 coerceLinearX = true;
@@ -4175,7 +4177,7 @@ function swapAxisGroup(gd, xIds, yIds) {
         for(j = 1; j < yFullAxes.length && allEqual; j++) {
             var yVali = yFullAxes[j][keyi];
             if(keyi === 'type' && numericTypes.indexOf(yVal) !== -1 &&
-                numericTypes.indexOf(yVali) !== -1 && yVal !== yVali) {
+                    numericTypes.indexOf(yVali) !== -1 && yVal !== yVali) {
                 // type is special - if we find a mixture of linear and log,
                 // coerce them all to linear on flipping
                 coerceLinearY = true;
@@ -4192,7 +4194,7 @@ function swapAxisGroup(gd, xIds, yIds) {
     for(i = 0; i < gd._fullLayout.annotations.length; i++) {
         var ann = gd._fullLayout.annotations[i];
         if(xIds.indexOf(ann.xref) !== -1 &&
-            yIds.indexOf(ann.yref) !== -1) {
+                yIds.indexOf(ann.yref) !== -1) {
             Lib.swapAttrs(layout.annotations[i], ['?']);
         }
     }
