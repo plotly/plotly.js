@@ -7962,32 +7962,30 @@ describe('shift tests', function() {
     });
 
     function checkLine(selector, position) {
-        var path = d3Select(gd).select(selector)
+        var path = d3Select(gd).select(selector);
         var pos = (path.split('d="M')[1]).split(',')[0];
         expect(Number(pos)).toBeCloseTo(position, 2);
-    };
+    }
 
     afterEach(destroyGraphDiv);
 
     it('should set y-axis shifts correctly on first draw when shift=true', function() {
         var fig = require('@mocks/zz-mult-yaxes-simple.json');
         Plotly.newPlot(gd, fig).then(function() {
-            checkLine('path.xy3-y.crisp', 550)
-            checkLine('path.xy4-y.crisp', 691)
-            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(97, 2)
-            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(243, 2)
+            checkLine('path.xy3-y.crisp', 550);
+            checkLine('path.xy4-y.crisp', 691);
+            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(97, 2);
+            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(243, 2);
         });
     });
 
     it('should set y-axis shifts correctly on first draw when shift=<numeric>', function() {
-        
         var fig = require('@mocks/zz-mult-yaxes-manual-shift.json');
         Plotly.newPlot(gd, fig).then(function() {
-            checkLine('path.xy3-y.crisp', 97)
-            checkLine('path.xy4-y.crisp', 616)
-            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(-100, 2)
-            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(100, 2)
+            checkLine('path.xy3-y.crisp', 97);
+            checkLine('path.xy4-y.crisp', 616);
+            expect(gd._fullLayout.yaxis3._shift).toBeCloseTo(-100, 2);
+            expect(gd._fullLayout.yaxis4._shift).toBeCloseTo(100, 2);
         });
     });
-
 });
