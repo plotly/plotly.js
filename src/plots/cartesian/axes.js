@@ -2297,7 +2297,7 @@ axes.draw = function(gd, arg, opts) {
             var plotinfo = fullLayout._plots[id];
             if(plotinfo) {
                 var ya = plotinfo.yaxis;
-                if(ya.overlaying === arg[0]) {
+                if(ya.tickmode === 'sync' && ya.overlaying === arg[0]) {
                     arg.push(ya._id);
                 }
             }
