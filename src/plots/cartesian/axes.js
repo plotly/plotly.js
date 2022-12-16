@@ -2272,7 +2272,7 @@ axes.draw = function(gd, arg, opts) {
             var axDone = axes.drawOne(gd, ax, opts);
 
             if(ax._shiftPusher) {
-                axShifts = incrementShift(ax, ax._fullDepth, axShifts);
+                incrementShift(ax, ax._fullDepth, axShifts);
             }
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -2337,7 +2337,7 @@ axes.drawOne = function(gd, ax, opts) {
         if(ax.ticks === 'inside') {
             selfPush += ax.ticklen;
         }
-        axShifts = incrementShift(ax, selfPush, axShifts);
+        incrementShift(ax, selfPush, axShifts);
     }
 
     // Somewhat inelegant way of making sure that the shift value is only updated when the
@@ -4285,7 +4285,6 @@ function incrementShift(ax, shiftVal, axShifts) {
         axShifts[overlay][ax.side] = 0;
     }
     axShifts[overlay][ax.side] += shiftValAdj;
-    return axShifts;
 }
 
 function setShiftVal(ax, axShifts) {
