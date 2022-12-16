@@ -2291,6 +2291,17 @@ axes.draw = function(gd, arg, opts) {
                 fullLayout._infolayer.select('.g-' + ya._id + 'title').remove();
             }
         });
+    } else if(arg && arg.length === 1) {
+        fullLayout._paper.selectAll('g.subplot').each(function(d) {
+            var id = d[0];
+            var plotinfo = fullLayout._plots[id];
+            if(plotinfo) {
+                var ya = plotinfo.yaxis;
+                if(ya.overlaying === arg[0]) {
+                    arg.push(ya._id);
+                }
+            }
+        });
     }
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
