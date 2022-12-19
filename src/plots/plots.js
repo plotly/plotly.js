@@ -1957,18 +1957,18 @@ plots.autoMargin = function(gd, id, o) {
 
 plots.redrawWithShift = function(gd) {
     if('_redrawFromAutoMarginCount' in gd._fullLayout) {
-        return false
+        return false;
     }
-    var axList = axisIDs.list(gd, '', true)
+    var axList = axisIDs.list(gd, '', true);
     var isShift = false;
     for(var ax in axList) {
-        if(isShift === true){
+        if(isShift === true) {
             return isShift;
         }
-        isShift = axList[ax].shift
+        isShift = axList[ax].shift;
     }
-    return isShift
-}
+    return isShift;
+};
 
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
