@@ -9,10 +9,22 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.16.5] -- 2022-12-13
+
+### Fixed
+ - Disable slider interactions when `staticPlot` is set to true [[#6393](https://github.com/plotly/plotly.js/pull/6393)]
+
+
+## [2.16.4] -- 2022-12-07
+
+### Fixed
+ - Fix `scattermapbox` redraw (regression introduced in 2.16.0) [[#6387](https://github.com/plotly/plotly.js/pull/6387)]
+
+
 ## [2.16.3] -- 2022-11-16
 
 ### Fixed
- - Fixed hover on multicategory axes [[#6360](https://github.com/plotly/plotly.js/pull/6360)],
+ - Fix hover on multicategory axes [[#6360](https://github.com/plotly/plotly.js/pull/6360)],
    with thanks to @filipesantiagoAM for the contribution!
 
 

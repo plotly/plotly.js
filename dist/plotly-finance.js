@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.16.3
+* plotly.js (finance) v2.16.5
 * Copyright 2012-2022, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -24751,7 +24751,7 @@ module.exports = {
     calc: _dereq_('./calc'),
 
     // ./scales.js is required in lib/coerce.js ;
-    // it needs to be a separate module to avoid circular a dependency
+    // it needs to be a separate module to avoid a circular dependency
     scales: scales.scales,
     defaultScale: scales.defaultScale,
     getScale: scales.get,
@@ -43207,6 +43207,8 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
 }
 
 function attachGripEvents(item, gd, sliderGroup) {
+    if(gd._context.staticPlot) return;
+
     var node = sliderGroup.node();
     var $gd = d3.select(gd);
 
@@ -93422,7 +93424,7 @@ function getSortFunc(opts, d2c) {
 'use strict';
 
 // package version injected by `npm run preprocess`
-exports.version = '2.16.3';
+exports.version = '2.16.5';
 
 },{}]},{},[12])(12)
 });
