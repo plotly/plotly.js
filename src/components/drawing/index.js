@@ -1203,7 +1203,13 @@ function applyBackoff(pt, start) {
             if(trace.type === 'scatter') endI--; // Why we need this hack?
 
             var endMarker = end.marker;
-            b = endMarker ? drawing.symbolBackOffs[drawing.symbolNumber(endMarker.symbol)] * endMarker.size : 0;
+            var endMarkerSymbol = endMarker.symbol;
+            if(Lib.isArrayOrTypedArray(endMarkerSymbol)) endMarkerSymbol = endMarkerSymbol[endI];
+
+            var endMarkerSize = endMarker.size;
+            if(Lib.isArrayOrTypedArray(endMarkerSize)) endMarkerSize = endMarkerSize[endI];
+
+            b = endMarker ? drawing.symbolBackOffs[drawing.symbolNumber(endMarkerSymbol)] * endMarkerSize : 0;
             b += drawing.getMarkerStandoff(d[endI], trace) || 0;
         }
 
