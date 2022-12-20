@@ -42935,6 +42935,12 @@
   "scatter": {
    "animatable": true,
    "attributes": {
+    "alignmentgroup": {
+     "description": "Set several traces linked to the same position axis or matching axes to the same alignmentgroup. This controls whether bars compute their positional range dependently or independently.",
+     "dflt": "",
+     "editType": "calc",
+     "valType": "string"
+    },
     "cliponaxis": {
      "description": "Determines whether or not markers and text nodes are clipped about the subplot axes. To show markers and text nodes above axis lines and tick labels, make sure to set `xaxis.layer` and `yaxis.layer` to *below traces*.",
      "dflt": true,
@@ -44891,6 +44897,12 @@
     "name": {
      "description": "Sets the trace name. The trace name appear as the legend item and on hover.",
      "editType": "style",
+     "valType": "string"
+    },
+    "offsetgroup": {
+     "description": "Set several traces linked to the same position axis or matching axes to the same offsetgroup where bars of the same position coordinate will line up.",
+     "dflt": "",
+     "editType": "calc",
      "valType": "string"
     },
     "opacity": {
