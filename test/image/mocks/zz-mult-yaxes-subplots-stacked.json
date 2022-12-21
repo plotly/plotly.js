@@ -93,21 +93,21 @@
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
-            "shift": true
+            "autoshift": true
         },
         "yaxis4": {
             "title": {"text": "yaxis4 title"},
             "anchor": "free",
             "overlaying": "y2",
             "showline": true,
-            "shift": true
+            "autoshift": true
         },
         "yaxis5": {
             "title": {"text": "yaxis5 title"},
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
-            "shift": true
+            "autoshift": true
         }
     }
 }

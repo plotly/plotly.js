@@ -11,7 +11,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     var letter = options.letter;
     var grid = options.grid;
     var overlayingDomain = options.overlayingDomain;
-    var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltShift, dfltAutomargin;
+    var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltAutoshift, dfltShift, dfltAutomargin;
 
     if(grid) {
         dfltDomain = grid._domains[letter][grid._axisMap[containerOut._id]];
@@ -27,7 +27,8 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     dfltAnchor = dfltAnchor || (isNumeric(containerIn.position) ? 'free' : (counterAxes[0] || 'free'));
     dfltSide = dfltSide || (letter === 'x' ? 'bottom' : 'left');
     dfltPosition = dfltPosition || 0;
-    dfltShift = dfltShift || false;
+    dfltAutoshift = dfltAutoshift || false;
+    dfltShift = dfltShift || 0;
     dfltAutomargin = dfltAutomargin || false;
 
     var anchor = Lib.coerce(containerIn, containerOut, {
@@ -47,14 +48,14 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     }, 'side');
 
     if(anchor === 'free') {
-        var shift = coerce('shift', dfltShift);
-        if(shift !== false && shift !== undefined) {
+        var autoshift = coerce('autoshift', dfltAutoshift);
+        if(autoshift === true) {
             dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
-        }
-        if(shift === true) {
             dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
+            dfltShift = side === 'left' ? -3 : 3;
         }
         coerce('position', dfltPosition);
+        coerce('shift', dfltShift);
     }
     coerce('automargin', dfltAutomargin);
 

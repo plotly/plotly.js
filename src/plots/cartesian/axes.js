@@ -2251,7 +2251,7 @@ axes.draw = function(gd, arg, opts) {
     var fullAxList = axes.list(gd);
     // Get the list of the overlaying axis for all 'shift' axes
     var overlayingShiftedAx = fullAxList.filter(function(ax) {
-        return ax.shift === true;
+        return ax.autoshift === true;
     }).map(function(ax) {
         return ax.overlaying;
     });
@@ -2272,7 +2272,7 @@ axes.draw = function(gd, arg, opts) {
             var axDone = axes.drawOne(gd, ax, opts);
 
             if(ax._shiftPusher) {
-                incrementShift(ax, ax._fullDepth, axShifts);
+                incrementShift(ax, ax._fullDepth, axShifts, true);
             }
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -2328,16 +2328,18 @@ axes.drawOne = function(gd, ax, opts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
 
-    ax._shiftPusher = ax.shift === true ||
+    ax._shiftPusher = ax.autoshift === true ||
         overlayingShiftedAx.indexOf(ax._id) !== -1 ||
         overlayingShiftedAx.indexOf(ax.overlaying) !== -1;
     // An axis is also shifted by 1/2 of its own linewidth and inside tick length if applicable
+    // as well as its manually specified `shift` val if we're in the context of `autoshift`
     if(ax._shiftPusher & ax.anchor === 'free') {
         var selfPush = (ax.linewidth / 2 || 0);
         if(ax.ticks === 'inside') {
             selfPush += ax.ticklen;
         }
-        incrementShift(ax, selfPush, axShifts);
+        incrementShift(ax, selfPush, axShifts, true);
+        incrementShift(ax, (ax.shift || 0), axShifts, false);
     }
 
     // Somewhat inelegant way of making sure that the shift value is only updated when the
@@ -2608,7 +2610,6 @@ axes.drawOne = function(gd, ax, opts) {
 
         var axDepth = 0;
         var titleDepth = 0;
-        var multAxisPad = 3; // TODO: Expose as a param to allow user to specify padding between axes
         if(ax._shiftPusher) {
             axDepth = Math.max(
                 outsideTickLen,
@@ -2621,7 +2622,7 @@ axes.drawOne = function(gd, ax, opts) {
                 }
             }
 
-            ax._fullDepth = Math.max(axDepth, titleDepth) + multAxisPad;
+            ax._fullDepth = Math.max(axDepth, titleDepth);
         }
 
         if(ax.automargin) {
@@ -4274,10 +4275,15 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
     }
 }
 
-function incrementShift(ax, shiftVal, axShifts) {
+function incrementShift(ax, shiftVal, axShifts, normalize) {
     // Need to set 'overlay' for anchored axis
     var overlay = ((ax.anchor !== 'free') && ((ax.overlaying === undefined) || (ax.overlaying === false))) ? ax._id : ax.overlaying;
-    var shiftValAdj = ax.side === 'right' ? shiftVal : -shiftVal;
+    var shiftValAdj;
+    if(normalize) {
+        shiftValAdj = ax.side === 'right' ? shiftVal : -shiftVal;
+    } else {
+        shiftValAdj = shiftVal;
+    }
     if(!(overlay in axShifts)) {
         axShifts[overlay] = {};
     }
@@ -4288,7 +4294,7 @@ function incrementShift(ax, shiftVal, axShifts) {
 }
 
 function setShiftVal(ax, axShifts) {
-    return ax.shift === true ?
+    return ax.autoshift === true ?
         axShifts[ax.overlaying][ax.side] :
         (ax.shift || 0);
 }

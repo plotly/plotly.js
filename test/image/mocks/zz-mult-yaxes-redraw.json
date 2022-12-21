@@ -80,7 +80,7 @@
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
-            "shift": true,
+            "autoshift": true,
             "side": "right",
             "title": {"text": "axis 3"}
         },
@@ -88,7 +88,7 @@
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
-            "shift": true,
+            "autoshift": true,
             "side": "left",
             "title": {"text": "axis 4"}
         }

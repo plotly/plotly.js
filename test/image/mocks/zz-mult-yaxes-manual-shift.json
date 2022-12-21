@@ -58,6 +58,21 @@
             "name": "yaxis4 data",
             "yaxis": "y4",
             "type": "scatter"
+        }, 
+        {
+            "x": [
+                3,
+                4,
+                5
+            ],
+            "y": [
+                400,
+                500,
+                600
+            ],
+            "name": "yaxis5 data",
+            "yaxis": "y5",
+            "type": "scatter"
         }
     ],
     "layout": {
@@ -78,16 +93,24 @@
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
-            "shift": -100,
-            "position": 0.2
+            "autoshift": true,
+            "shift": -25
         },
         "yaxis4": {
             "title": {"text": "yaxis4 title"},
             "anchor": "free",
             "overlaying": "y",
             "showline": true,
+            "autoshift": true
+        },
+        "yaxis5": {
+            "title": {"text": "yaxis5 title"},
+            "anchor": "free",
+            "overlaying": "y",
+            "position": 0.8,
             "shift": 100,
-            "side": "right"
+            "showline": true,
+            "side": "left"
         }
     }
 }

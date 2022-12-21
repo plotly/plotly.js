@@ -1965,10 +1965,10 @@ function needsRedrawForShift(gd) {
         if(isShift === true) {
             return isShift;
         }
-        isShift = axList[ax].shift;
+        isShift = (axList[ax].autoshift === true || axList[ax].shift !== undefined) ? true : false;
     }
     return isShift;
-};
+}
 
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;

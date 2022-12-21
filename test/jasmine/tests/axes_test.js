@@ -1433,27 +1433,30 @@ describe('Test axes', function() {
             expect(layoutOut.xaxis11.rangebreaks[0].enabled).toBe(false, 'reject true');
         });
 
-        it('should coerce shift only if anchor is *free*', function() {
+        it('should coerce autoshift and shift only if anchor is *free*', function() {
             layoutIn = {
                 xaxis: {},
                 yaxis: {anchor: 'free'}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.yaxis.shift).toBe(false);
+            expect(layoutOut.yaxis.autoshift).toBe(false);
+            expect(layoutOut.yaxis.shift).toEqual(0);
 
-            layoutIn.yaxis.shift = true;
+            layoutIn.yaxis.autoshift = true;
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut.yaxis.shift).toBe(true);
+            expect(layoutOut.yaxis.autoshift).toBe(true);
+            expect(layoutOut.yaxis.shift).toEqual(-3);
 
             layoutIn.yaxis.anchor = 'x';
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.autoshift).toBeUndefined();
             expect(layoutOut.yaxis.shift).toBeUndefined();
         });
 
         it('should set automargin to *true* when shift is *true*', function() {
             layoutIn = {
                 xaxis: {},
-                yaxis: {shift: true, anchor: 'free'}
+                yaxis: {autoshift: true, anchor: 'free'}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.automargin).toBe(true);
@@ -1472,7 +1475,7 @@ describe('Test axes', function() {
             layoutIn = {
                 xaxis: {domain: [0.2, 0.5]},
                 yaxis: {},
-                yaxis2: {shift: true, anchor: 'free', overlaying: 'y'}
+                yaxis2: {autoshift: true, anchor: 'free', overlaying: 'y'}
             };
 
             layoutOut._subplots.cartesian.push('xy2');

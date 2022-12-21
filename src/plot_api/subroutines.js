@@ -240,9 +240,7 @@ function lsInner(gd) {
     }
 
     function yLinePathFree(x) {
-        if(typeof(ya.shift) === 'number') {
-            x += ya.shift;
-        } else if(ya._shift !== undefined) {
+        if(ya._shift !== undefined) {
             x += ya._shift;
         }
         return 'M' + x + ',' + ya._offset + 'v' + ya._length;
