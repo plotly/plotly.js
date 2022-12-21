@@ -1961,7 +1961,7 @@ function needsRedrawForShift(gd) {
     }
     var axList = axisIDs.list(gd, '', true);
     for(var ax in axList) {
-        if(axList[ax].autoshift || axList[ax].shift !== undefined) return true;
+        if(axList[ax].autoshift || axList[ax].shift) return true;
     }
     return false;
 }
