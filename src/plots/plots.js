@@ -1960,14 +1960,10 @@ function needsRedrawForShift(gd) {
         return false;
     }
     var axList = axisIDs.list(gd, '', true);
-    var isShift = false;
     for(var ax in axList) {
-        if(isShift === true) {
-            return isShift;
-        }
-        isShift = (axList[ax].autoshift === true || axList[ax].shift !== undefined) ? true : false;
+        if(axList[ax].autoshift || axList[ax].shift !== undefined) return true;
     }
-    return isShift;
+    return false;
 }
 
 plots.doAutoMargin = function(gd) {
