@@ -2251,7 +2251,7 @@ axes.draw = function(gd, arg, opts) {
     var fullAxList = axes.list(gd);
     // Get the list of the overlaying axis for all 'shift' axes
     var overlayingShiftedAx = fullAxList.filter(function(ax) {
-        return ax.autoshift === true;
+        return ax.autoshift;
     }).map(function(ax) {
         return ax.overlaying;
     });
@@ -2328,7 +2328,7 @@ axes.drawOne = function(gd, ax, opts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
 
-    ax._shiftPusher = ax.autoshift === true ||
+    ax._shiftPusher = ax.autoshift ||
         overlayingShiftedAx.indexOf(ax._id) !== -1 ||
         overlayingShiftedAx.indexOf(ax.overlaying) !== -1;
     // An axis is also shifted by 1/2 of its own linewidth and inside tick length if applicable
@@ -4293,7 +4293,7 @@ function incrementShift(ax, shiftVal, axShifts, normalize) {
 }
 
 function setShiftVal(ax, axShifts) {
-    return ax.autoshift === true ?
+    return ax.autoshift ?
         axShifts[ax.overlaying][ax.side] :
         (ax.shift || 0);
 }

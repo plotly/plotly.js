@@ -49,7 +49,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     if(anchor === 'free') {
         if(letter === 'y') {
             var autoshift = coerce('autoshift');
-            if(autoshift === true) {
+            if(autoshift) {
                 dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
                 dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
                 dfltShift = side === 'left' ? -3 : 3;
