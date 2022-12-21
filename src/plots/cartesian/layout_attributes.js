@@ -1020,8 +1020,8 @@ module.exports = {
         editType: 'plot',
         description: [
             'Moves the axis a given number of pixels from where it would have been otherwise.',
-            'If `shiftauto=true`, then this defaults to a padding of `-3` if `side=left`',
-            'and `+3` if `side=right`. Defaults to `0` if `shiftauto=false`.',
+            'If `autoshift=true`, then this defaults to a padding of `-3` if `side=left`',
+            'and `+3` if `side=right`. Defaults to `0` if `autoshift=false`.',
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     },

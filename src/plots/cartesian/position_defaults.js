@@ -11,7 +11,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     var letter = options.letter;
     var grid = options.grid;
     var overlayingDomain = options.overlayingDomain;
-    var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltAutoshift, dfltShift, dfltAutomargin;
+    var dfltAnchor, dfltDomain, dfltSide, dfltPosition, dfltShift, dfltAutomargin;
 
     if(grid) {
         dfltDomain = grid._domains[letter][grid._axisMap[containerOut._id]];
@@ -27,9 +27,8 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     dfltAnchor = dfltAnchor || (isNumeric(containerIn.position) ? 'free' : (counterAxes[0] || 'free'));
     dfltSide = dfltSide || (letter === 'x' ? 'bottom' : 'left');
     dfltPosition = dfltPosition || 0;
-    dfltAutoshift = dfltAutoshift || false;
-    dfltShift = dfltShift || 0;
-    dfltAutomargin = dfltAutomargin || false;
+    dfltShift = 0;
+    dfltAutomargin = false;
 
     var anchor = Lib.coerce(containerIn, containerOut, {
         anchor: {
@@ -48,14 +47,16 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     }, 'side');
 
     if(anchor === 'free') {
-        var autoshift = coerce('autoshift', dfltAutoshift);
-        if(autoshift === true) {
-            dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
-            dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
-            dfltShift = side === 'left' ? -3 : 3;
+        if(letter === 'y') {
+            var autoshift = coerce('autoshift');
+            if(autoshift === true) {
+                dfltPosition = side === 'left' ? overlayingDomain[0] : overlayingDomain[1];
+                dfltAutomargin = containerOut.automargin ? containerOut.automargin : true;
+                dfltShift = side === 'left' ? -3 : 3;
+            }
+            coerce('shift', dfltShift);
         }
         coerce('position', dfltPosition);
-        coerce('shift', dfltShift);
     }
     coerce('automargin', dfltAutomargin);
 
