@@ -2296,15 +2296,34 @@ axes.draw = function(gd, arg, opts) {
             var id = d[0];
             var plotinfo = fullLayout._plots[id];
             if(plotinfo) {
+                var xa = plotinfo.xaxis;
                 var ya = plotinfo.yaxis;
-                if(ya.tickmode === 'sync' && ya.overlaying === arg[0]) {
-                    arg.push(ya._id);
-                }
+                isSyncAxis(xa, arg[0]);
+                isSyncAxis(ya, arg[0]);
             }
         });
     }
 
+    function isSyncAxis(ax, idToValidate) {
+        if(ax.tickmode === 'sync' && ax.overlaying === idToValidate) {
+            arg.push(ax._id);
+        }
+    }
+
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
+
+    // order axes that have dependency to other axes
+    axList.map(function(axId) {
+        var ax = axes.getFromId(gd, axId);
+
+        if(ax.tickmode === 'sync' && ax.overlaying) {
+            var overlayingIndex = axList.findIndex(function(axis) {return axis === ax.overlaying;});
+
+            if(overlayingIndex >= 0) {
+                axList.unshift(axList.splice(overlayingIndex, 1).shift());
+            }
+        }
+    });
 
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
