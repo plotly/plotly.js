@@ -2272,7 +2272,7 @@ axes.draw = function(gd, arg, opts) {
             var axDone = axes.drawOne(gd, ax, opts);
 
             if(ax._shiftPusher) {
-                incrementShift(ax, ax._fullDepth, axShifts, true);
+                incrementShift(ax, ax._fullDepth || 0, axShifts, true);
             }
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
@@ -2347,7 +2347,6 @@ axes.drawOne = function(gd, ax, opts) {
     // axis as result of using the dragbox, for example.
     if(opts.skipTitle !== true || ax._shift === undefined) ax._shift = setShiftVal(ax, axShifts);
 
-    ax._fullDepth = 0;
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
     var mainLinePositionShift = mainLinePosition += ax._shift;
