@@ -1294,6 +1294,42 @@ describe('Test treemap restyle:', function() {
         .then(_assert('back to dflt', ['Root', 'B', 'A\nnode1', 'b\nnode3']))
         .then(done, done.fail);
     });
+
+    it('should be able to restyle *marker.cornerradius*', function(done) {
+        var mock = {
+            data: [{
+                type: 'treemap',
+                labels: ['Root', 'A', 'B', 'b'],
+                parents: ['', 'Root', 'Root', 'B'],
+                text: ['node0', 'node1', 'node2', 'node3'],
+                values: [0, 1, 2, 3],
+                pathbar: { visible: false }
+            }]
+        };
+
+        function _assert(msg, exp) {
+            return function() {
+                var layer = d3Select(gd).select('.treemaplayer');
+                layer.selectAll('.surface').each(function() {
+                    var surfaces = d3Select(this);
+                    var path = surfaces[0][0].getAttribute('d');
+                    expect(path.indexOf('a') !== -1).toEqual(exp);
+                });
+            };
+        }
+
+        Plotly.newPlot(gd, mock)
+        .then(_assert('no arcs', false))
+        .then(function() {
+            return Plotly.restyle(gd, 'marker.cornerradius', 10);
+        })
+        .then(_assert('has arcs', true))
+        .then(function() {
+            return Plotly.restyle(gd, 'marker.cornerradius', 0);
+        })
+        .then(_assert('no arcs', false))
+        .then(done, done.fail);
+    });
 });
 
 describe('Test treemap tweening:', function() {

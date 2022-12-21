@@ -34112,6 +34112,13 @@
       "editType": "none",
       "valType": "string"
      },
+     "cornerradius": {
+      "description": "Sets the maximum rounding of corners (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
+     },
      "editType": "calc",
      "line": {
       "color": {
@@ -69170,6 +69177,13 @@
       "description": "Sets the source reference on Chart Studio Cloud for `colors`.",
       "editType": "none",
       "valType": "string"
+     },
+     "cornerradius": {
+      "description": "Sets the maximum rounding of corners (in px).",
+      "dflt": 0,
+      "editType": "plot",
+      "min": 0,
+      "valType": "number"
      },
      "depthfade": {
       "description": "Determines if the sector colors are faded towards the background from the leaves up to the headers. This option is unavailable when a `colorscale` is present, defaults to false when `marker.colors` is set, but otherwise defaults to true. When set to *reversed*, the fading direction is inverted, that is the top elements within hierarchy are drawn with fully saturated colors while the leaves are faded towards the background color.",

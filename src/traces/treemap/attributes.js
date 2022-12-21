@@ -141,7 +141,17 @@ module.exports = {
 
         line: sunburstAttrs.marker.line,
 
-        editType: 'calc'
+        cornerradius: {
+            valType: 'number',
+            min: 0,
+            dflt: 0,
+            editType: 'plot',
+            description: [
+                'Sets the maximum rounding of corners (in px).'
+            ].join(' ')
+        },
+
+        editType: 'calc',
     },
         colorScaleAttrs('marker', {
             colorAttr: 'colors',

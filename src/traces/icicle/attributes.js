@@ -61,6 +61,8 @@ module.exports = {
 
         line: sunburstAttrs.marker.line,
 
+        cornerradius: treemapAttrs.marker.cornerradius,
+
         editType: 'calc'
     },
         colorScaleAttrs('marker', {
