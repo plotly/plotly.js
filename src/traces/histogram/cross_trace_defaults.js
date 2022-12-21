@@ -4,7 +4,7 @@ var Lib = require('../../lib');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
 var traceIs = require('../../registry').traceIs;
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
 
 var nestedProperty = Lib.nestedProperty;
 var getAxisGroup = require('../../plots/cartesian/constraints').getAxisGroup;
