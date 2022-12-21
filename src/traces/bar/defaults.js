@@ -7,7 +7,7 @@ var Registry = require('../../registry');
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handlePeriodDefaults = require('../scatter/period_defaults');
 var handleStyleDefaults = require('./style_defaults');
-var handleGroupingDefaults = require('./grouping_defaults');
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
 var attributes = require('./attributes');
 
 var coerceFont = Lib.coerceFont;

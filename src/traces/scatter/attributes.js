@@ -123,6 +123,29 @@ module.exports = {
     xhoverformat: axisHoverFormat('x'),
     yhoverformat: axisHoverFormat('y'),
 
+    offsetgroup: {
+        valType: 'string',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set several traces linked to the same position axis',
+            'or matching axes to the same',
+            'offsetgroup where bars of the same position coordinate will line up.'
+        ].join(' ')
+    },
+
+    alignmentgroup: {
+        valType: 'string',
+        dflt: '',
+        editType: 'calc',
+        description: [
+            'Set several traces linked to the same position axis',
+            'or matching axes to the same',
+            'alignmentgroup. This controls whether bars compute their positional',
+            'range dependently or independently.'
+        ].join(' ')
+    },
+
     stackgroup: {
         valType: 'string',
         dflt: '',
@@ -146,7 +169,9 @@ module.exports = {
         values: ['v', 'h'],
         editType: 'calc',
         description: [
-            'Only relevant when `stackgroup` is used, and only the first',
+            'Only relevant in the following cases:',
+            '1. when `scattermode` is set to *group*.',
+            '2. when `stackgroup` is used, and only the first',
             '`orientation` found in the `stackgroup` will be used - including',
             'if `visible` is *legendonly* but not if it is `false`. Sets the',
             'stacking direction. With *v* (*h*), the y (x) values of subsequent',
