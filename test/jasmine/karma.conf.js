@@ -2,6 +2,8 @@
 
 var path = require('path');
 var minimist = require('minimist');
+var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
+var LoaderOptionsPlugin = require('webpack').LoaderOptionsPlugin;
 var constants = require('../../tasks/util/constants');
 
 var isCI = Boolean(process.env.CI);
@@ -118,8 +120,6 @@ if(isFullSuite) {
     testFileGlob = path.join(__dirname, 'tests', glob(merge(argv._).map(basename)));
 }
 
-var pathToShortcutPath = path.join(__dirname, '..', '..', 'tasks', 'util', 'shortcut_paths.js');
-var pathToStrictD3 = path.join(__dirname, '..', '..', 'tasks', 'util', 'strict_d3.js');
 var pathToJQuery = path.join(__dirname, 'assets', 'jquery-1.8.3.min.js');
 var pathToCustomMatchers = path.join(__dirname, 'assets', 'custom_matchers.js');
 var pathToUnpolyfill = path.join(__dirname, 'assets', 'unpolyfill.js');
@@ -175,7 +175,7 @@ func.defaultConfig = {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine', 'jasmine-spec-tags', 'browserify', 'viewport'],
+    frameworks: ['jasmine', 'jasmine-spec-tags', 'webpack', 'viewport'],
 
     // list of files / patterns to load in the browser
     //
@@ -260,11 +260,52 @@ func.defaultConfig = {
         }
     },
 
-    browserify: {
-        transform: [pathToStrictD3, pathToShortcutPath],
-        extensions: ['.js'],
-        watch: !argv.nowatch,
-        debug: true
+    webpack: {
+        target: ['web', 'es5'],
+        module: {
+            rules: [{
+                test: /\.js$/,
+                use: [
+                    'transform-loader?' + path.resolve(__dirname, '..', '..', 'tasks/util/shortcut_paths')
+                ]
+            }, {
+                test: /\.js$/,
+                include: /node_modules/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        babelrc: false,
+                        configFile: false,
+                        plugins: [
+                            '@babel/plugin-transform-modules-commonjs'
+                        ]
+                    }
+                }
+            }, {
+                test: /\.(js|glsl)$/,
+                use: [
+                    'ify-loader'
+                ]
+            }]
+        },
+        resolve: {
+            fallback: {
+                'stream': require.resolve('stream-browserify')
+            }
+        },
+        plugins: [
+            new NodePolyfillPlugin({ includeAliases: ['process'] }),
+            new LoaderOptionsPlugin({
+                // test: /\.xxx$/, // may apply this only for some modules
+                options: {
+                    library: {
+                        name: 'Plotly',
+                        type: 'umd',
+                        umdNamedDefine: true
+                    }
+                }
+            })
+        ]
     },
 
     client: {
@@ -312,16 +353,24 @@ func.defaultConfig = {
     failOnEmptyTestSuite: !argv.doNotFailOnEmptyTestSuite
 };
 
-func.defaultConfig.preprocessors[pathToCustomMatchers] = ['browserify'];
-func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+func.defaultConfig.preprocessors[pathToCustomMatchers] = ['webpack'];
+func.defaultConfig.preprocessors[testFileGlob] = ['webpack'];
 
 if(isBundleTest) {
     switch(basename(testFileGlob)) {
         case 'minified_bundle':
             func.defaultConfig.files.push(constants.pathToPlotlyBuildMin);
+            func.defaultConfig.module = {
+                rules: {
+                    test: /\.js$/,
+                    use: [
+                        'transform-loader?' + path.resolve(__dirname, 'tasks/compress_attributes.js')
+                    ]
+                }
+            };
             break;
         case 'plotschema':
-            func.defaultConfig.browserify.ignoreTransform = './tasks/compress_attributes.js';
+            // no tasks/compress_attributes in this case
             break;
     }
 } else {

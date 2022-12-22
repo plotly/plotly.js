@@ -108,7 +108,7 @@ There are two kinds of plotly.js bundles:
 
 ---
 ## Alternative ways to load and build plotly.js
-If your library needs to bundle or directly load [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations of `browserify` or `webpack`, etc. then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
+If your library needs to bundle or directly load [plotly.js/lib/index.js](https://github.com/plotly/plotly.js/blob/master/lib/index.js) or parts of its modules similar to [index-basic](https://github.com/plotly/plotly.js/blob/master/lib/index-basic.js) in some other way than via an official or a custom bundle, or in case you want to tweak the default build configurations, then please visit [`BUILDING.md`](https://github.com/plotly/plotly.js/blob/master/BUILDING.md).
 
 ---
 ## Documentation

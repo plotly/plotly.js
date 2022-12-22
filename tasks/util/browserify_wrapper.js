@@ -1,21 +1,18 @@
-var fs = require('fs');
 var path = require('path');
 
-var browserify = require('browserify');
-var minify = require('minify-stream');
-var derequire = require('derequire');
-var through = require('through2');
+var webpack = require('webpack');
 
-var strictD3 = require('./strict_d3');
+var config = require('../../webpack.config.js');
 
-/** Convenience browserify wrapper
+var nRules = config.module.rules.length;
+
+/** Convenience bundle wrapper
  *
  * @param {string} pathToIndex path to index file to bundle
  * @param {string} pathToBunlde path to destination bundle
  * @param {object} opts
  *  Browserify options:
  *  - standalone {string}
- *  - debug {boolean} [optional]
  *  Additional option:
  *  - pathToMinBundle {string} path to destination minified bundle
  *  - noCompress {boolean} skip attribute meta compression?
@@ -31,85 +28,63 @@ module.exports = function _bundle(pathToIndex, pathToBundle, opts, cb) {
 
     var pathToMinBundle = opts.pathToMinBundle;
 
-    var browserifyOpts = {};
-    browserifyOpts.standalone = opts.standalone;
-    browserifyOpts.debug = opts.debug;
+    config.module.rules[nRules] = opts.noCompress ? {} : {
+        test: /\.js$/,
+        use: [
+            'transform-loader?' + path.resolve(__dirname, '../../tasks/compress_attributes.js')
+        ]
+    };
 
-    if(opts.noCompress) {
-        browserifyOpts.ignoreTransform = './tasks/compress_attributes.js';
-    }
+    config.entry = pathToIndex;
 
-    browserifyOpts.transform = [];
-    if(opts.debug) {
-        browserifyOpts.transform.push(strictD3);
-    }
-
-    var b = browserify(pathToIndex, browserifyOpts);
     var pending = (pathToMinBundle && pathToBundle) ? 2 : 1;
 
-    function done() {
-        if(cb && --pending === 0) {
-            if(opts.deleteIndex) {
-                console.log('delete', pathToIndex);
-                fs.unlinkSync(pathToIndex, {});
-            }
+    var parsedPath;
+    parsedPath = path.parse(pathToBundle || pathToMinBundle);
+    config.output.path = parsedPath.dir;
+    config.output.filename = parsedPath.base;
 
-            cb(null);
-        }
-    }
+    config.output.library.name = opts.standalone || 'Plotly';
 
-    var bundleStream = b.bundle(function(err) {
+    config.optimization = {
+        minimize: !!(pathToMinBundle && pending === 1)
+    };
+
+    var compiler = webpack(config);
+
+    compiler.run(function(err, stats) {
         if(err) {
-            if(cb) cb(err);
-            else throw err;
+            console.log('err:', err);
+        } if(stats.errors && stats.errors.length) {
+            console.log('stats.errors:', stats.errors);
+        } else {
+            console.log('success:', config.output.path + '/' + config.output.filename);
+
+            if(pending === 2) {
+                parsedPath = path.parse(pathToMinBundle);
+                config.output.path = parsedPath.dir;
+                config.output.filename = parsedPath.base;
+
+                config.optimization = {
+                    minimize: true
+                };
+
+                compiler = webpack(config);
+
+                compiler.run(function(err, stats) {
+                    if(err) {
+                        console.log('err:', err);
+                    } else if(stats.errors && stats.errors.length) {
+                        console.log('stats.errors:', stats.errors);
+                    } else {
+                        console.log('success:', config.output.path + '/' + config.output.filename);
+
+                        if(cb) cb();
+                    }
+                });
+            } else {
+                if(cb) cb();
+            }
         }
     });
-
-    if(pathToMinBundle) {
-        var minifyOpts = {
-            ecma: 5,
-            mangle: true,
-            output: {
-                beautify: false,
-                ascii_only: true
-            },
-
-            sourceMap: false
-        };
-
-        bundleStream
-            .pipe(applyDerequire())
-            .pipe(minify(minifyOpts))
-            .pipe(fs.createWriteStream(pathToMinBundle))
-            .on('finish', function() {
-                logger(pathToMinBundle);
-                done();
-            });
-    }
-
-    if(pathToBundle) {
-        bundleStream
-            .pipe(applyDerequire())
-            .pipe(fs.createWriteStream(pathToBundle))
-            .on('finish', function() {
-                logger(pathToBundle);
-                done();
-            });
-    }
 };
-
-function logger(pathToOutput) {
-    var log = 'ok ' + path.basename(pathToOutput);
-    console.log(log);
-}
-
-function applyDerequire() {
-    var buf = '';
-    return through(function(chunk, enc, next) {
-        buf += chunk.toString();
-        next();
-    }, function(done) {
-        this.push(derequire(buf));
-        done();
-    });
-}

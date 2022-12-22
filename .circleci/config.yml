@@ -404,13 +404,7 @@ jobs:
           name: Test plotly.min.js import using requirejs
           command: npm run test-requirejs
       - run:
-          name: Test plotly bundles againt unexpected characters
-          command: npm run no-bad-char
-      - run:
-          name: Display function constructors in plotly.js bundle
-          command: npm run log-new-func
-      - run:
-          name: Test certain bundles against function constructors
+          name: Display function constructors in all bundles
           command: npm run no-new-func
       - run:
           name: Test plotly bundles against es6
