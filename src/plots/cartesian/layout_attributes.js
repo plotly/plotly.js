@@ -1003,6 +1003,30 @@ module.exports = {
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     },
+    autoshift: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'plot',
+        description: [
+            'Automatically reposition the axis to avoid',
+            'overlap with other axes with the same `overlaying` value.',
+            'This repositioning will account for any `shift` amount applied to other',
+            'axes on the same side with `autoshift` is set to true.',
+            'Only has an effect if `anchor` is set to *free*.',
+        ].join(' ')
+    },
+    shift: {
+        valType: 'number',
+        editType: 'plot',
+        description: [
+            'Moves the axis a given number of pixels from where it would have been otherwise.',
+            'Accepts both positive and negative values, which will shift the axis either right',
+            'or left, respectively.',
+            'If `autoshift` is set to true, then this defaults to a padding of -3 if `side` is set to *left*.',
+            'and defaults to +3 if `side` is set to *right*. Defaults to 0 if `autoshift` is set to false.',
+            'Only has an effect if `anchor` is set to *free*.'
+        ].join(' ')
+    },
     categoryorder: {
         valType: 'enumerated',
         values: [

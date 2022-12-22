@@ -1958,6 +1958,17 @@ plots.autoMargin = function(gd, id, o) {
     }
 };
 
+function needsRedrawForShift(gd) {
+    if('_redrawFromAutoMarginCount' in gd._fullLayout) {
+        return false;
+    }
+    var axList = axisIDs.list(gd, '', true);
+    for(var ax in axList) {
+        if(axList[ax].autoshift || axList[ax].shift) return true;
+    }
+    return false;
+}
+
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     var width = fullLayout.width;
@@ -2076,7 +2087,7 @@ plots.doAutoMargin = function(gd) {
     gs.h = Math.round(height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!fullLayout._replotting && plots.didMarginChange(oldMargins, gs)) {
+    if(!fullLayout._replotting && (plots.didMarginChange(oldMargins, gs) || needsRedrawForShift(gd))) {
         if('_redrawFromAutoMarginCount' in fullLayout) {
             fullLayout._redrawFromAutoMarginCount++;
         } else {
