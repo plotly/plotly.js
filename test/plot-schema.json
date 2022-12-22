@@ -34123,13 +34123,6 @@
       "editType": "none",
       "valType": "string"
      },
-     "cornerradius": {
-      "description": "Sets the maximum rounding of corners (in px).",
-      "dflt": 0,
-      "editType": "plot",
-      "min": 0,
-      "valType": "number"
-     },
      "editType": "calc",
      "line": {
       "color": {
