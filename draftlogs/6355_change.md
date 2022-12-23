@@ -1,1 +1,0 @@
- - Switch from browserify to webpack in order to be able to use most recent ES modules & allow JavaScript syntax beyond ES5 [[#6355](https://github.com/plotly/plotly.js/pull/6355)]
