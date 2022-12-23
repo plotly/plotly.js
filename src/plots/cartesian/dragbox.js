@@ -88,6 +88,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var scaleX;
     var scaleY;
 
+    // offset the x location of the box if needed
+    x += plotinfo.yaxis._shift;
+
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
         ya0 = plotinfo.yaxis;

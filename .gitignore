@@ -4,6 +4,8 @@ build/*
 !build/plotcss.js
 !build/README.md
 
+dist/*.LICENSE.txt
+
 npm-debug.log*
 *.sublime*
 *~
