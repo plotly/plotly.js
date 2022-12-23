@@ -44,9 +44,6 @@
       },
       "width": 700,
       "showlegend": false,
-      "xaxis": {
-         "autorange": "true"
-      },
       "xaxis2": {
          "anchor": "y2",
          "side": "top",

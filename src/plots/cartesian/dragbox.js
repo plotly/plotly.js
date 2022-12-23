@@ -726,16 +726,24 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 if(!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
             }
         }
+        
+        function pushActiveAxIdsSynced(axList, axisType) {
+            for(i = 0; i < axList.length; i++) {
+                if(!axList[i].fixedrange && axList[i][axisType]) {activeAxIds.push(axList[i][axisType]._id);}
+            }
+        }
 
         if(editX) {
             pushActiveAxIds(xaxes);
             pushActiveAxIds(links.xaxes);
             pushActiveAxIds(matches.xaxes);
+            pushActiveAxIdsSynced(plotinfo.overlays, 'xaxis');
         }
         if(editY) {
             pushActiveAxIds(yaxes);
             pushActiveAxIds(links.yaxes);
             pushActiveAxIds(matches.yaxes);
+            pushActiveAxIdsSynced(plotinfo.overlays, 'yaxis');
         }
 
         updates = {};
