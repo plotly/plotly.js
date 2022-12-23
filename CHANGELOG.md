@@ -9,6 +9,23 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.17.0] -- 2022-12-22
+
+### Added
+ - Add `shift` and `autoshift` to cartesian y axes to help avoid overlapping of multiple axes [[#6334](https://github.com/plotly/plotly.js/pull/6334)],
+   with thanks to [Gamma Technologies](https://www.gtisoft.com) for sponsoring the related development!
+ - Introduce group attributes for `scatter` trace i.e. `alignmentgroup`, `offsetgroup`, `scattermode` and `scattergap` [[#6381](https://github.com/plotly/plotly.js/pull/6381)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+ - Add `marker.cornerradius` attribute to `treemap` trace [[#6351](https://github.com/plotly/plotly.js/pull/6351)]
+
+### Changed
+ - Change bundler from browserify to webpack [[#6355](https://github.com/plotly/plotly.js/pull/6355)]
+
+### Fixed
+ - Fix auto `backoff` when marker symbols and sizes are arrays [[#6414](https://github.com/plotly/plotly.js/pull/6414)]
+ - Avoid displaying resize cursor on static sliders [[#6397](https://github.com/plotly/plotly.js/pull/6397)]
+
+
 ## [2.16.5] -- 2022-12-13
 
 ### Fixed

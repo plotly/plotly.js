@@ -9,7 +9,7 @@ var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;
 var mainIndex = constants.mainIndex;
 
-// Browserify the plotly.js partial bundles
+// Bundle the plotly.js partial bundles
 module.exports = function partialBundle(tasks, opts) {
     var name = opts.name;
     var index = opts.index;
@@ -54,7 +54,6 @@ module.exports = function partialBundle(tasks, opts) {
 
     tasks.push(function(done) {
         var bundleOpts = {
-            standalone: 'Plotly',
             deleteIndex: deleteIndex,
             pathToMinBundle: distMin
         };

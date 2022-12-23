@@ -26,7 +26,7 @@ if(process.argv.length > 2) {
 
 var tasks = [];
 
-// Browserify the plotly.js partial bundles
+// Bundle the plotly.js partial bundles
 for(var i = 0; i < list.length; i++) {
     var opts = list[i];
 
