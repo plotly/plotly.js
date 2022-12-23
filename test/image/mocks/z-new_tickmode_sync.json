@@ -22,20 +22,17 @@
          "name": "Oranges",
          "type": "scatter",
          "x": [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May"
-         ],
-         "y": [
-            -0.8,
-            0.09,
-            0.01,
-            0.13,
-            0.42
-         ],
-         "yaxis": "y2"
+            "A",
+            "B",
+            "C"
+        ],
+        "y": [
+            0,
+            0.5,
+            1
+        ],
+         "yaxis": "y2",
+         "xaxis": "x2"
       }
    ],
    "layout": {
@@ -46,10 +43,19 @@
          "l": 70
       },
       "width": 700,
-      "legend": {
-         "orientation": "h",
-         "x": 0.6,
-         "y": 1.1
+      "showlegend": false,
+      "xaxis": {
+         "autorange": "true"
+      },
+      "xaxis2": {
+         "anchor": "y2",
+         "side": "top",
+         "overlaying": "x",
+         "tickmode": "sync",
+         "domain": [
+            0.52,
+            1
+         ]
       },
       "yaxis": {
          "title": {
@@ -60,7 +66,9 @@
             0,
             2506
          ],
-         "minor": { "showgrid": true }
+         "minor": {
+            "showgrid": true
+         }
       },
       "yaxis2": {
          "title": {
@@ -73,7 +81,9 @@
          ],
          "overlaying": "y",
          "tickmode": "sync",
-         "minor": { "showgrid": true },
+         "minor": {
+            "showgrid": true
+         },
          "zeroline": false
       }
    }
