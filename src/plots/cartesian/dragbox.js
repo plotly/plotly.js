@@ -726,7 +726,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 if(!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
             }
         }
-        
+
         function pushActiveAxIdsSynced(axList, axisType) {
             for(i = 0; i < axList.length; i++) {
                 if(!axList[i].fixedrange && axList[i][axisType]) {activeAxIds.push(axList[i][axisType]._id);}
