@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "2.16.5",
+  "version": "2.17.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
