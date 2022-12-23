@@ -2298,13 +2298,13 @@ axes.draw = function(gd, arg, opts) {
             if(plotinfo) {
                 var xa = plotinfo.xaxis;
                 var ya = plotinfo.yaxis;
-                isSyncAxis(xa, arg[0]);
-                isSyncAxis(ya, arg[0]);
+                addSyncAxis(xa, arg[0]);
+                addSyncAxis(ya, arg[0]);
             }
         });
     }
 
-    function isSyncAxis(ax, idToValidate) {
+    function addSyncAxis(ax, idToValidate) {
         if(ax.tickmode === 'sync' && ax.overlaying === idToValidate) {
             arg.push(ax._id);
         }
