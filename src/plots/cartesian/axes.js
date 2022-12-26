@@ -2306,10 +2306,10 @@ axes.draw = function(gd, arg, opts) {
     // order axes that have dependency to other axes
     axList.map(function(axId) {
         var ax = axes.getFromId(gd, axId);
-        
+
         if(ax.tickmode === 'sync' && ax.overlaying) {
             var overlayingIndex = axList.findIndex(function(axis) {return axis === ax.overlaying;});
-            
+
             if(overlayingIndex >= 0) {
                 axList.unshift(axList.splice(overlayingIndex, 1).shift());
             }
