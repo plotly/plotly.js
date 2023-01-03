@@ -1210,7 +1210,7 @@ axes.calcTicks = function calcTicks(ax, opts) {
     return ticksOut;
 };
 
-function filterRangeBreaks(ax, ticksOut){
+function filterRangeBreaks(ax, ticksOut) {
     if(ax.rangebreaks) {
         // remove ticks falling inside rangebreaks
         ticksOut = ticksOut.filter(function(d) {
@@ -3308,7 +3308,7 @@ axes.drawTicks = function(gd, ax, opts) {
 axes.drawGrid = function(gd, ax, opts) {
     opts = opts || {};
 
-    if(ax.tickmode === 'sync'){
+    if(ax.tickmode === 'sync') {
         // for tickmode sync we use the overlaying axis grid
         return;
     }
