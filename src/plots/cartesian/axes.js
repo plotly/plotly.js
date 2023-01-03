@@ -1233,14 +1233,12 @@ function syncTicks(ax) {
 
             // get the tick for the current axis based on position
             var vali = ax.p2l(pos);
-            var val1 = ax.p2l(pos - 0.2);
-            var val2 = ax.p2l(pos + 0.2);
+            var val1 = ax.p2l(pos - 0.1);
+            var val2 = ax.p2l(pos + 0.1);
             var d = 1 + Math.round(Math.log10(Math.abs(val2 - val1)));
             var e = Math.pow(10, -d);
             var valR = Math.round(vali * e) / e;
-            var objR = axes.tickText(ax, valR);
-            var obj = axes.tickText(ax, vali);
-            obj.text = objR.text;
+            var obj = axes.tickText(ax, valR);
 
             // assign minor ticks
             if(baseAxis._vals[i].minor) {
