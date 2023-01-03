@@ -141,7 +141,7 @@
     "gzip-size": "^6.0.0",
     "ify-loader": "^1.1.0",
     "into-stream": "^6.0.0",
-    "jasmine-core": "^3.5.0",
+    "jasmine-core": "3.5.0",
     "jsdom": "^19.0.0",
     "karma": "^6.4.0",
     "karma-chrome-launcher": "^3.1.1",
