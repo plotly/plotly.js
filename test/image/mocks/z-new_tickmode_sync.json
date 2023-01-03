@@ -63,6 +63,8 @@
             0,
             2506
          ],
+         "ticklen": 10,
+         "tickwidth": 3,
          "minor": {
             "showgrid": true
          }
@@ -74,8 +76,10 @@
          "side": "right",
          "range": [
             0,
-            0.42
+            0.5
          ],
+         "ticklen": 10,
+         "tickwidth": 3,
          "overlaying": "y",
          "tickmode": "sync",
          "minor": {
