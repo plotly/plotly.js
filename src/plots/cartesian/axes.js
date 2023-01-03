@@ -1210,20 +1210,31 @@ axes.calcTicks = function calcTicks(ax, opts) {
     return ticksOut;
 };
 
+function filterRangeBreaks(ax, ticksOut){
+    if(ax.rangebreaks) {
+        // remove ticks falling inside rangebreaks
+        ticksOut = ticksOut.filter(function(d) {
+            return ax.maskBreaks(d.x) !== BADNUM;
+        });
+    }
+
+    return ticksOut;
+}
+
 function syncTicks(ax) {
     // get the overlaying axis
     var baseAxis = ax._mainAxis;
 
     var ticksOut = [];
-    if(baseAxis && baseAxis._vals) {
+    if(baseAxis._vals) {
         for(var i = 0; i < baseAxis._vals.length; i++) {
             // get the position of the every tick
             var pos = baseAxis.l2p(baseAxis._vals[i].x);
 
             // get the tick for the current axis based on position
             var vali = ax.p2l(pos);
-            var val1 = ax.p2l(pos - 0.5);
-            var val2 = ax.p2l(pos + 0.5);
+            var val1 = ax.p2l(pos - 0.2);
+            var val2 = ax.p2l(pos + 0.2);
             var d = 1 + Math.round(Math.log10(Math.abs(val2 - val1)));
             var e = Math.pow(10, -d);
             var valR = Math.round(vali * e) / e;
@@ -1241,12 +1252,8 @@ function syncTicks(ax) {
         }
     }
 
-    if(ax.rangebreaks) {
-    // remove ticks falling inside rangebreaks
-        ticksOut = ticksOut.filter(function(d) {
-            return ax.maskBreaks(d.x) !== BADNUM;
-        });
-    }
+    ticksOut = filterRangeBreaks(ax, ticksOut);
+
     return ticksOut;
 }
 
@@ -1296,12 +1303,7 @@ function arrayTicks(ax) {
         }
     }
 
-    if(ax.rangebreaks) {
-        // remove ticks falling inside rangebreaks
-        ticksOut = ticksOut.filter(function(d) {
-            return ax.maskBreaks(d.x) !== BADNUM;
-        });
-    }
+    ticksOut = filterRangeBreaks(ax, ticksOut);
 
     return ticksOut;
 }
@@ -3306,9 +3308,14 @@ axes.drawTicks = function(gd, ax, opts) {
 axes.drawGrid = function(gd, ax, opts) {
     opts = opts || {};
 
+    if(ax.tickmode === 'sync'){
+        // for tickmode sync we use the overlaying axis grid
+        return;
+    }
+
     var cls = ax._id + 'grid';
 
-    var hasMinor = ax.minor && ax.minor.showgrid && ax.tickmode !== 'sync';
+    var hasMinor = ax.minor && ax.minor.showgrid;
     var minorVals = hasMinor ? opts.vals.filter(function(d) { return d.minor; }) : [];
     var majorVals = ax.showgrid ? opts.vals.filter(function(d) { return !d.minor; }) : [];
 
