@@ -1235,7 +1235,7 @@ function syncTicks(ax) {
             var vali = ax.p2l(pos);
             var val1 = ax.p2l(pos - 0.1);
             var val2 = ax.p2l(pos + 0.1);
-            var d = 1 + Math.round(Math.log10(Math.abs(val2 - val1)));
+            var d = 1 + Math.ceil(Math.log10(Math.abs(val2 - val1)));
             var e = Math.pow(10, -d);
             var valR = Math.round(vali * e) / e;
             var obj = axes.tickText(ax, valR);
