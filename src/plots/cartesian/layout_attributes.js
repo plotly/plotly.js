@@ -12,12 +12,9 @@ var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
-var tickmode = {
-    valType: 'enumerated',
-    values: ['auto', 'linear', 'array', 'sync'],
-    editType: 'ticks',
-    impliedEdits: {tick0: undefined, dtick: undefined},
-    description: [
+function makeTickmode(minor) {
+    var values = ['auto', 'linear', 'array', 'sync'];
+    var description = [
         'Sets the tick mode for this axis.',
         'If *auto*, the number of ticks is set via `nticks`.',
         'If *linear*, the placement of the ticks is determined by',
@@ -28,7 +25,20 @@ var tickmode = {
         '(*array* is the default value if `tickvals` is provided).',
         'If *sync*, the number of ticks will sync with the overlayed axis',
         'set by `overlaying` property.'
-    ].join(' ')
+    ]; 
+
+    if(minor) {
+        values = values.slice(0, -1);
+        description = description.slice(0, -2);
+    }
+
+    return {
+        valType: 'enumerated',
+        values: values,
+        editType: 'ticks',
+        impliedEdits: {tick0: undefined, dtick: undefined},
+        description: description.join(' ')
+    }
 };
 
 function makeNticks(minor) {
@@ -506,7 +516,7 @@ module.exports = {
     }),
 
     // ticks
-    tickmode: tickmode,
+    tickmode: makeTickmode(),
     nticks: makeNticks(),
     tick0: tick0,
     dtick: dtick,
@@ -949,19 +959,7 @@ module.exports = {
     },
 
     minor: {
-        tickmode: extendFlat({}, axesAttrs.tickmode, {
-            values: ['auto', 'linear', 'array'],
-            description: [
-                'Sets the tick mode for this axis.',
-                'If *auto*, the number of ticks is set via `nticks`.',
-                'If *linear*, the placement of the ticks is determined by',
-                'a starting position `tick0` and a tick step `dtick`',
-                '(*linear* is the default value if `tick0` and `dtick` are provided).',
-                'If *array*, the placement of the ticks is set via `tickvals`',
-                'and the tick text is `ticktext`.',
-                '(*array* is the default value if `tickvals` is provided).'
-            ].join(' ')
-        }),
+        tickmode: makeTickmode('minor'),
         nticks: makeNticks('minor'),
         tick0: tick0,
         dtick: dtick,
