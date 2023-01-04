@@ -949,7 +949,19 @@ module.exports = {
     },
 
     minor: {
-        tickmode: tickmode,
+        tickmode: extendFlat({}, axesAttrs.tickmode, {
+            values: ['auto', 'linear', 'array'],
+            description: [
+                'Sets the tick mode for this axis.',
+                'If *auto*, the number of ticks is set via `nticks`.',
+                'If *linear*, the placement of the ticks is determined by',
+                'a starting position `tick0` and a tick step `dtick`',
+                '(*linear* is the default value if `tick0` and `dtick` are provided).',
+                'If *array*, the placement of the ticks is set via `tickvals`',
+                'and the tick text is `ticktext`.',
+                '(*array* is the default value if `tickvals` is provided).'
+            ].join(' ')
+        }),
         nticks: makeNticks('minor'),
         tick0: tick0,
         dtick: dtick,
