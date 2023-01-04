@@ -49,6 +49,7 @@
       "width": 700,
       "showlegend": false,
       "xaxis": {
+         "showgrid": true,
          "ticklen": 10,
          "tickwidth": 3,
          "ticklabelmode": "period"
