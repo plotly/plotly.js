@@ -4,11 +4,11 @@
          "name": "Apples",
          "type": "bar",
          "x": [
-            "Jan",
-            "Feb",
-            "Mar",
-            "Apr",
-            "May"
+            "2000-01",
+            "2000-02",
+            "2000-03",
+            "2000-04",
+            "2000-05"
          ],
          "y": [
             232,
@@ -24,13 +24,17 @@
          "x": [
             "A",
             "B",
-            "C"
-        ],
-        "y": [
+            "C",
+            "D",
+            "E"
+         ],
+         "y": [
             0,
-            0.5,
-            1
-        ],
+            0.4,
+            0.1,
+            0.3,
+            0.2
+         ],
          "yaxis": "y2",
          "xaxis": "x2"
       }
@@ -44,15 +48,18 @@
       },
       "width": 700,
       "showlegend": false,
+      "xaxis": {
+         "ticklen": 10,
+         "tickwidth": 3,
+         "ticklabelmode": "period"
+      },
       "xaxis2": {
          "anchor": "y2",
          "side": "top",
          "overlaying": "x",
          "tickmode": "sync",
-         "domain": [
-            0.52,
-            1
-         ]
+         "ticklen": 10,
+         "tickwidth": 3
       },
       "yaxis": {
          "title": {
@@ -61,7 +68,7 @@
          "side": "left",
          "range": [
             0,
-            2506
+            2500
          ],
          "ticklen": 10,
          "tickwidth": 3,
