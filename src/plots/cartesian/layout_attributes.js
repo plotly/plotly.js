@@ -25,7 +25,7 @@ function makeTickmode(minor) {
         '(*array* is the default value if `tickvals` is provided).',
         'If *sync*, the number of ticks will sync with the overlayed axis',
         'set by `overlaying` property.'
-    ]; 
+    ];
 
     if(minor) {
         values = values.slice(0, -1);
@@ -38,8 +38,8 @@ function makeTickmode(minor) {
         editType: 'ticks',
         impliedEdits: {tick0: undefined, dtick: undefined},
         description: description.join(' ')
-    }
-};
+    };
+}
 
 function makeNticks(minor) {
     return {
