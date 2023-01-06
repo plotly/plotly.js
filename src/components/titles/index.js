@@ -77,6 +77,20 @@ function draw(gd, titleClass, options) {
     else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
     var editable = gd._context.edits[editAttr];
 
+    if(editAttr === 'titleText' && title.automargin === true) {
+        // TODO: Could there ever be more than one title?
+        var titleID = 'title.automargin';
+        Plots.allowAutoMargin(gd, titleID);
+        // TODO: Remove hard-coding
+        Plots.autoMargin(gd, titleID, {
+            x: 0.5,
+            y: 1,
+            l: 0,
+            r: 0,
+            t: 50,
+            b: 0});
+    }
+
     if(txt === '') opacity = 0;
     // look for placeholder text while stripping out numbers from eg X2, Y3
     // this is just for backward compatibility with the old version that had

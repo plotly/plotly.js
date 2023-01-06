@@ -125,6 +125,15 @@ module.exports = {
                 'Padding is muted if the respective anchor value is *middle*/*center*.'
             ].join(' ')
         }),
+        automargin: {
+            valType: 'boolean',
+            dflt: false,
+            role: 'info',
+            editType: 'plot',
+            description: [
+                'Determines whether the title can automatically push the figure margins.'
+            ].join(' ')
+        },
         editType: 'layoutstyle'
     },
     uniformtext: {
