@@ -9429,7 +9429,6 @@
      "description": "Determines whether the title can automatically push the figure margins.",
      "dflt": false,
      "editType": "plot",
-     "role": "info",
      "valType": "boolean"
     },
     "editType": "layoutstyle",

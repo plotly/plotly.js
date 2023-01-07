@@ -128,7 +128,6 @@ module.exports = {
         automargin: {
             valType: 'boolean',
             dflt: false,
-            role: 'info',
             editType: 'plot',
             description: [
                 'Determines whether the title can automatically push the figure margins.'
