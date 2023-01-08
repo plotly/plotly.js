@@ -1035,6 +1035,27 @@ describe('end-to-end scatter tests', function() {
         .then(done, done.fail);
     });
 
+    it('updates line segments on redraw when having null values', function(done) {
+        function checkSegments(exp, msg) {
+            var lineSelection = d3Select(gd).selectAll('.scatterlayer .js-line');
+            expect(lineSelection.size()).toBe(exp, msg);
+        }
+
+        Plotly.newPlot(gd, [{
+            y: [1, null, 2, 3],
+            mode: 'lines+markers'
+        }])
+        .then(function() {
+            checkSegments(2, 'inital');
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, 10]);
+        })
+        .then(function() {
+            checkSegments(2, 'after redraw');
+        })
+        .then(done, done.fail);
+    });
+
     it('correctly autoranges fill tonext traces across multiple subplots', function(done) {
         Plotly.newPlot(gd, [
             {y: [3, 4, 5], fill: 'tonexty'},
