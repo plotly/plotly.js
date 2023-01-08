@@ -248,7 +248,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     revpath = thisrevpath + 'Z' + revpath;
                 }
 
-                if(subTypes.hasLines(trace) && pts.length > 1) {
+                if(subTypes.hasLines(trace)) {
                     var el = d3.select(this);
 
                     // This makes the coloring work correctly:
