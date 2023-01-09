@@ -1,6 +1,6 @@
 /**
-* plotly.js (gl3d) v2.17.0
-* Copyright 2012-2022, Plotly, Inc.
+* plotly.js (gl3d) v2.17.1
+* Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
@@ -58314,7 +58314,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
           fullpath += 'Z' + thispath;
           revpath = thisrevpath + 'Z' + revpath;
         }
-        if (subTypes.hasLines(trace) && pts.length > 1) {
+        if (subTypes.hasLines(trace)) {
           var el = d3.select(this);
 
           // This makes the coloring work correctly:
@@ -62329,7 +62329,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.17.0';
+exports.version = '2.17.1';
 
 /***/ }),
 
