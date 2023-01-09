@@ -146,24 +146,36 @@ function drawOne(gd, index) {
         var text = options.text;
         console.log('text!');
         console.log(text);
-
+        
         var labelGroup = shapeGroup.append('g')
             .classed('shape-label', true);
 
         var labelText = labelGroup.append('text')
             .classed('shape-label-text', true)
             .text(text);
-    
+        
+        // setup conversion functions
+        var xa = Axes.getFromId(gd, options.xref);
+        var xRefType = Axes.getRefType(options.xref);
+        var ya = Axes.getFromId(gd, options.yref);
+        var yRefType = Axes.getRefType(options.yref);
+        var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
+        var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+
         function textLayout(s) {
-            s.call(Drawing.font)
-            .attr({
-                'text-anchor': {
-                    left: 'start',
-                    right: 'end'
-                }[options.align] || 'middle',
-                'x': options.x0,
-                'y': options.y0,
-            });
+            if(options.x0 && options.y0) {
+                s.call(Drawing.font)
+                    .attr({
+                        'text-anchor': {
+                            left: 'start',
+                            right: 'end'
+                        }[options.align] || 'middle',
+                        'x': x2p(options.x0),
+                        'y': y2p(options.y0),
+                    });
+            } else {
+                console.log("x0 or y0 not defined for shape, so can't place text");
+            }
     
             svgTextUtils.convertToTspans(s, gd);
             return s;
@@ -200,7 +212,6 @@ function drawOne(gd, index) {
                 );
             }
         }
-
         path.node().addEventListener('click', function() { return activateShape(gd, path); });
     }
 }
