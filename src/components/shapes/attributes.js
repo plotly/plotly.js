@@ -1,6 +1,7 @@
 'use strict';
 
 var annAttrs = require('../annotations/attributes');
+var fontAttrs = require('../../plots/font_attributes');
 var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
@@ -224,26 +225,47 @@ module.exports = templatedArray('shape', {
             '`config.editable` or `config.edits.shapePosition`.'
         ].join(' ')
     },
-    text: {
-        valType: 'string',
+    label: {
+        text: {
+            valType: 'string',
+            dflt: null,
+            editType: 'arraydraw',
+            description: 'Sets the text to display with shape.'
+        },
+        font: fontAttrs({
+            editType: 'calc+arraydraw',
+            colorEditType: 'arraydraw',
+            description: 'Sets the shape label text font.'
+        }),
+        position: {
+            valType: 'enumerated',
+            values: [
+                'top left', 'top center', 'top right',
+                'middle left', 'middle center', 'middle right',
+                'bottom left', 'bottom center', 'bottom right'
+            ],
+            dflt: 'top left',
+            editType: 'arraydraw',
+            description: 'Sets the position of the label relative to she shape.'
+        },
+        angle: {
+            valType: 'number',
+            min: -180,
+            max: 180,
+            dflt: 0,
+            editType: 'arraydraw',
+            description: 'Sets label angle.'
+        },
+        xanchor: annAttrs.xanchor,
+        yanchor: annAttrs.yanchor,
+        padding: {
+            valType: 'number',
+            dflt: 0,
+            editType: 'arraydraw',
+            description: 'Sets padding between edge of label and xanchor / yanchor.'
+        },
         dflt: null,
-        editType: 'arraydraw',
-        description: 'Sets the text to display with shape.'
-    },
-    textposition: {
-        valType: 'enumerated',
-        values: ['center', 'topleft', 'topright', 'bottomleft', 'bottomright'],
-        dflt: 'center',
-        editType: 'arraydraw',
-        description: 'Sets text position relative to shape.'
-    },
-    textangle: {
-        valType: 'number',
-        min: -180,
-        max: 180,
-        dflt: 0,
-        editType: 'arraydraw',
-        description: 'Sets text angle.'
+        editType: 'arraydraw'
     },
     editType: 'arraydraw'
 });

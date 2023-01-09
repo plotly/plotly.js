@@ -143,7 +143,10 @@ function drawOne(gd, index) {
 
         setClipPath(path, gd, options);
 
-        var text = options.text;
+        var text = null;
+        if(options.label) {
+            text = options.label.text;
+        }
         console.log('text!');
         console.log(text);
         

@@ -40,7 +40,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         coerce('line.dash');
     }
 
-    coerce('text');
+    coerce('label.text');
 
     var xSizeMode = coerce('xsizemode');
     var ySizeMode = coerce('ysizemode');
