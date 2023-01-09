@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.17.1] -- 2023-01-09
+
+### Fixed
+ - Fix line redraw (regression introduced in 2.15.0) [[#6429](https://github.com/plotly/plotly.js/pull/6429)]
+
+
 ## [2.17.0] -- 2022-12-22
 
 ### Added
