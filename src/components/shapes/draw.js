@@ -44,10 +44,15 @@ function draw(gd) {
     // Remove previous shapes before drawing new in shapes in fullLayout.shapes
     fullLayout._shapeUpperLayer.selectAll('path').remove();
     fullLayout._shapeLowerLayer.selectAll('path').remove();
+    fullLayout._shapeUpperLayer.selectAll('text').remove();
+    fullLayout._shapeLowerLayer.selectAll('text').remove();
 
     for(var k in fullLayout._plots) {
         var shapelayer = fullLayout._plots[k].shapelayer;
-        if(shapelayer) shapelayer.selectAll('path').remove();
+        if(shapelayer) {
+            shapelayer.selectAll('path').remove();
+            shapelayer.selectAll('text').remove();
+        }
     }
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
