@@ -171,7 +171,7 @@ function drawOne(gd, index) {
                     .attr({
                         'text-anchor': {
                             left: 'start',
-                            middle: 'middle',
+                            center: 'middle',
                             right: 'end'
                         }[options.label.xanchor],
                         'x': x2p(options.x0),
