@@ -148,50 +148,10 @@ function drawOne(gd, index) {
 
         setClipPath(path, gd, options);
 
-        var text = null;
+        // Draw label, if present
         if(options.label) {
-            text = options.label.text;
+            drawLabel(gd, options, shapeGroup);
         }
-        
-        var labelGroup = shapeGroup.append('g')
-            .classed('shape-label', true);
-
-        var labelText = labelGroup.append('text')
-            .classed('shape-label-text', true)
-            .text(text);
-                
-        // Setup conversion functions
-        var xa = Axes.getFromId(gd, options.xref);
-        var xRefType = Axes.getRefType(options.xref);
-        var ya = Axes.getFromId(gd, options.yref);
-        var yRefType = Axes.getRefType(options.yref);
-        var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-        var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
-
-        var textx = x2p(options.x0);
-        var texty = y2p(options.y0);
-        var textangle = options.label.textangle;
-
-        function textLayout(s) {
-            if(options.x0 && options.y0) {
-                s.call(Drawing.font)
-                    .attr({
-                        'text-anchor': {
-                            left: 'start',
-                            center: 'middle',
-                            right: 'end'
-                        }[options.label.xanchor],
-                        'y': texty,
-                        'x': textx,
-                        'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
-                    });
-            }
-            svgTextUtils.convertToTspans(s, gd);
-            return s;
-        }
-
-        labelText.call(textLayout);
-
 
         var editHelpers;
         if(isActiveShape || gd._context.edits.shapePosition) editHelpers = arrayEditor(gd.layout, 'shapes', options);
@@ -631,6 +591,64 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
             gd
         );
     }
+}
+
+function drawLabel(gd, options, shapeGroup) {
+
+    var text = options.label.text;
+
+    var labelGroup = shapeGroup.append('g')
+        .classed('shape-label', true);
+    var labelText = labelGroup.append('text')
+        .classed('shape-label-text', true)
+        .text(text);
+
+    // Setup conversion functions
+    var xa = Axes.getFromId(gd, options.xref);
+    var xRefType = Axes.getRefType(options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+    var yRefType = Axes.getRefType(options.yref);
+    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
+    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+
+    var shapex0 = x2p(options.x0);
+    var shapex1 = x2p(options.x1);
+    var shapey0 = y2p(options.y0);
+    var shapey1 = y2p(options.y1);
+
+    // TODO: Calculate correct (x,y) based on 'position' param
+    var textx = shapex0;
+    var texty = shapey0;
+
+    var textangle = options.label.textangle;
+
+    // Handle 'auto' angle for lines
+    if(textangle === 'auto') {
+        textangle = -180 / Math.PI * Math.atan2(
+            Math.abs(shapey1 - shapey0),
+            Math.abs(shapex1 - shapex0)
+        );
+    }
+
+    function textLayout(s) {
+        if(options.x0 && options.y0) {
+            s.call(Drawing.font)
+                .attr({
+                    'text-anchor': {
+                        left: 'start',
+                        center: 'middle',
+                        right: 'end'
+                    }[options.label.xanchor],
+                    'y': texty,
+                    'x': textx,
+                    'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+                });
+        }
+        svgTextUtils.convertToTspans(s, gd);
+        return s;
+    }
+
+    labelText.call(textLayout);
 }
 
 function movePath(pathIn, moveX, moveY) {

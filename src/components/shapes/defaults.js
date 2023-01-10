@@ -40,11 +40,6 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
         coerce('line.dash');
     }
 
-    coerce('label.text');
-    coerce('label.xanchor');
-    coerce('label.yanchor');
-    coerce('label.textangle');
-
     var xSizeMode = coerce('xsizemode');
     var ySizeMode = coerce('ysizemode');
 
@@ -121,4 +116,11 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     if(noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
+
+    // Label options
+    coerce('label.text');
+    coerce('label.xanchor');
+    coerce('label.yanchor');
+    coerce('label.textangle', shapeType === 'line' ? 'auto' : 0);
+
 }
