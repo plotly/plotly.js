@@ -95,7 +95,7 @@
     "glslify": "^7.1.1",
     "has-hover": "^1.0.1",
     "has-passive-events": "^1.0.0",
-    "is-mobile": "^2.2.2",
+    "is-mobile": "^3.1.1",
     "mapbox-gl": "1.10.1",
     "mouse-change": "^1.4.0",
     "mouse-event-offset": "^3.0.2",
