@@ -171,18 +171,16 @@ function drawOne(gd, index) {
                     .attr({
                         'text-anchor': {
                             left: 'start',
+                            middle: 'middle',
                             right: 'end'
-                        }[options.align] || 'middle',
+                        }[options.label.xanchor],
                         'x': x2p(options.x0),
                         'y': y2p(options.y0),
                     });
-            } else {
-                console.log("x0 or y0 not defined for shape, so can't place text");
             }
-    
             svgTextUtils.convertToTspans(s, gd);
             return s;
-        }        
+        }
 
         labelText.call(textLayout);
 

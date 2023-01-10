@@ -41,6 +41,8 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     }
 
     coerce('label.text');
+    coerce('label.xanchor');
+    coerce('label.yanchor');
 
     var xSizeMode = coerce('xsizemode');
     var ySizeMode = coerce('ysizemode');
