@@ -43,6 +43,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('label.text');
     coerce('label.xanchor');
     coerce('label.yanchor');
+    coerce('label.textangle');
 
     var xSizeMode = coerce('xsizemode');
     var ySizeMode = coerce('ysizemode');

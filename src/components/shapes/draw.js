@@ -152,8 +152,6 @@ function drawOne(gd, index) {
         if(options.label) {
             text = options.label.text;
         }
-        console.log('text!');
-        console.log(text);
         
         var labelGroup = shapeGroup.append('g')
             .classed('shape-label', true);
@@ -161,14 +159,18 @@ function drawOne(gd, index) {
         var labelText = labelGroup.append('text')
             .classed('shape-label-text', true)
             .text(text);
-        
-        // setup conversion functions
+                
+        // Setup conversion functions
         var xa = Axes.getFromId(gd, options.xref);
         var xRefType = Axes.getRefType(options.xref);
         var ya = Axes.getFromId(gd, options.yref);
         var yRefType = Axes.getRefType(options.yref);
         var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
         var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+
+        var textx = x2p(options.x0);
+        var texty = y2p(options.y0);
+        var textangle = options.label.textangle;
 
         function textLayout(s) {
             if(options.x0 && options.y0) {
@@ -179,8 +181,9 @@ function drawOne(gd, index) {
                             center: 'middle',
                             right: 'end'
                         }[options.label.xanchor],
-                        'x': x2p(options.x0),
-                        'y': y2p(options.y0),
+                        'y': texty,
+                        'x': textx,
+                        'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
                     });
             }
             svgTextUtils.convertToTspans(s, gd);

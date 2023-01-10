@@ -248,13 +248,14 @@ module.exports = templatedArray('shape', {
             editType: 'arraydraw',
             description: 'Sets the position of the label relative to she shape.'
         },
-        angle: {
-            valType: 'number',
-            min: -180,
-            max: 180,
+        textangle: {
+            valType: 'angle',
             dflt: 0,
-            editType: 'arraydraw',
-            description: 'Sets label angle.'
+            editType: 'calc+arraydraw',
+            description: [
+                'Sets the angle at which the `text` is drawn',
+                'with respect to the horizontal.'
+            ].join(' ')
         },
         xanchor: annAttrs.xanchor,
         yanchor: annAttrs.yanchor,
