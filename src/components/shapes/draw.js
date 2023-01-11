@@ -146,7 +146,7 @@ function drawOne(gd, index) {
             .call(Color.fill, fillColor)
             .call(Drawing.dashLine, lineDash, lineWidth);
 
-        setClipPath(path, gd, options);
+        setClipPath(shapeGroup, gd, options);
 
         // Draw label, if present
         if(options.label) {
