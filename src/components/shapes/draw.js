@@ -150,7 +150,10 @@ function drawOne(gd, index) {
 
         // Draw label, if present
         if(options.label) {
-            drawLabel(gd, options, shapeGroup);
+            var attrs = {
+                'data-index': index,
+            };
+            drawLabel(gd, options, attrs, shapeGroup);
         }
 
         var editHelpers;
@@ -593,11 +596,11 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     }
 }
 
-function drawLabel(gd, options, shapeGroup) {
-
+function drawLabel(gd, options, attrs, shapeGroup) {
     var text = options.label.text;
 
     var labelGroup = shapeGroup.append('g')
+        .attr(attrs)
         .classed('shape-label', true);
     var labelText = labelGroup.append('text')
         .classed('shape-label-text', true)
