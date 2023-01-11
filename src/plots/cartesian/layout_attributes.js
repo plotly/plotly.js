@@ -12,9 +12,12 @@ var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
-function makeTickmode(minor) {
-    var values = ['auto', 'linear', 'array', 'sync'];
-    var description = [
+var minorTickmode = {
+    valType: 'enumerated',
+    values: ['auto', 'linear', 'array'],
+    editType: 'ticks',
+    impliedEdits: {tick0: undefined, dtick: undefined},
+    description: [
         'Sets the tick mode for this axis.',
         'If *auto*, the number of ticks is set via `nticks`.',
         'If *linear*, the placement of the ticks is determined by',
@@ -22,24 +25,18 @@ function makeTickmode(minor) {
         '(*linear* is the default value if `tick0` and `dtick` are provided).',
         'If *array*, the placement of the ticks is set via `tickvals`',
         'and the tick text is `ticktext`.',
-        '(*array* is the default value if `tickvals` is provided).',
+        '(*array* is the default value if `tickvals` is provided).'
+    ].join(' ')
+};
+
+var tickmode = extendFlat({}, minorTickmode, {
+    values: minorTickmode.values.slice().concat(['sync']),
+    description: [
+        minorTickmode.description,
         'If *sync*, the number of ticks will sync with the overlayed axis',
         'set by `overlaying` property.'
-    ];
-
-    if(minor) {
-        values = values.slice(0, -1);
-        description = description.slice(0, -2);
-    }
-
-    return {
-        valType: 'enumerated',
-        values: values,
-        editType: 'ticks',
-        impliedEdits: {tick0: undefined, dtick: undefined},
-        description: description.join(' ')
-    };
-}
+    ].join(' ')
+});
 
 function makeNticks(minor) {
     return {
@@ -516,7 +513,7 @@ module.exports = {
     }),
 
     // ticks
-    tickmode: makeTickmode(),
+    tickmode: tickmode,
     nticks: makeNticks(),
     tick0: tick0,
     dtick: dtick,
@@ -959,7 +956,7 @@ module.exports = {
     },
 
     minor: {
-        tickmode: makeTickmode('minor'),
+        tickmode: minorTickmode,
         nticks: makeNticks('minor'),
         tick0: tick0,
         dtick: dtick,
