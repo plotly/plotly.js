@@ -22,7 +22,7 @@ module.exports = {
             }
         }, {
             test: /\.js$/,
-            include: /node_modules[\\\/]buffer[\\\/]/,
+            include: /node_modules[\\\/](buffer|is-mobile)[\\\/]/,
             use: {
                 loader: 'babel-loader',
                 options: {
