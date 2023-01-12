@@ -12,7 +12,7 @@ var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
-var tickmode = {
+var minorTickmode = {
     valType: 'enumerated',
     values: ['auto', 'linear', 'array'],
     editType: 'ticks',
@@ -28,6 +28,15 @@ var tickmode = {
         '(*array* is the default value if `tickvals` is provided).'
     ].join(' ')
 };
+
+var tickmode = extendFlat({}, minorTickmode, {
+    values: minorTickmode.values.slice().concat(['sync']),
+    description: [
+        minorTickmode.description,
+        'If *sync*, the number of ticks will sync with the overlayed axis',
+        'set by `overlaying` property.'
+    ].join(' ')
+});
 
 function makeNticks(minor) {
     return {
@@ -947,7 +956,7 @@ module.exports = {
     },
 
     minor: {
-        tickmode: tickmode,
+        tickmode: minorTickmode,
         nticks: makeNticks('minor'),
         tick0: tick0,
         dtick: dtick,

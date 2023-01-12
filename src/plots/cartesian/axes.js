@@ -951,6 +951,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
             continue;
         }
 
+        // fill tickVals based on overlaying axis
+        if(mockAx.tickmode === 'sync') {
+            tickVals = [];
+            ticksOut = syncTicks(ax);
+            continue;
+        }
+
         // add a tiny bit so we get ticks which may have rounded out
         var exRng = expandRange(rng);
         var startTick = exRng[0];
@@ -1203,6 +1210,51 @@ axes.calcTicks = function calcTicks(ax, opts) {
     return ticksOut;
 };
 
+function filterRangeBreaks(ax, ticksOut) {
+    if(ax.rangebreaks) {
+        // remove ticks falling inside rangebreaks
+        ticksOut = ticksOut.filter(function(d) {
+            return ax.maskBreaks(d.x) !== BADNUM;
+        });
+    }
+
+    return ticksOut;
+}
+
+function syncTicks(ax) {
+    // get the overlaying axis
+    var baseAxis = ax._mainAxis;
+
+    var ticksOut = [];
+    if(baseAxis._vals) {
+        for(var i = 0; i < baseAxis._vals.length; i++) {
+            // filter vals with noTick flag
+            if(baseAxis._vals[i].noTick) {
+                continue;
+            }
+
+            // get the position of the every tick
+            var pos = baseAxis.l2p(baseAxis._vals[i].x);
+
+            // get the tick for the current axis based on position
+            var vali = ax.p2l(pos);
+            var obj = axes.tickText(ax, vali);
+
+            // assign minor ticks
+            if(baseAxis._vals[i].minor) {
+                obj.minor = true;
+                obj.text = '';
+            }
+
+            ticksOut.push(obj);
+        }
+    }
+
+    ticksOut = filterRangeBreaks(ax, ticksOut);
+
+    return ticksOut;
+}
+
 function arrayTicks(ax) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var exRng = expandRange(rng);
@@ -1249,12 +1301,7 @@ function arrayTicks(ax) {
         }
     }
 
-    if(ax.rangebreaks) {
-        // remove ticks falling inside rangebreaks
-        ticksOut = ticksOut.filter(function(d) {
-            return ax.maskBreaks(d.x) !== BADNUM;
-        });
-    }
+    ticksOut = filterRangeBreaks(ax, ticksOut);
 
     return ticksOut;
 }
@@ -2256,6 +2303,18 @@ axes.draw = function(gd, arg, opts) {
         return ax.overlaying;
     });
 
+    // order axes that have dependency to other axes
+    axList.map(function(axId) {
+        var ax = axes.getFromId(gd, axId);
+
+        if(ax.tickmode === 'sync' && ax.overlaying) {
+            var overlayingIndex = axList.findIndex(function(axis) {return axis === ax.overlaying;});
+
+            if(overlayingIndex >= 0) {
+                axList.unshift(axList.splice(overlayingIndex, 1).shift());
+            }
+        }
+    });
 
     var axShifts = {'false': {'left': 0, 'right': 0}};
 
@@ -3246,6 +3305,11 @@ axes.drawTicks = function(gd, ax, opts) {
  */
 axes.drawGrid = function(gd, ax, opts) {
     opts = opts || {};
+
+    if(ax.tickmode === 'sync') {
+        // for tickmode sync we use the overlaying axis grid
+        return;
+    }
 
     var cls = ax._id + 'grid';
 
