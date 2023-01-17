@@ -10,7 +10,7 @@ module.exports = {
         library: {
             name: 'Plotly',
             type: 'umd',
-            umdNamedDefine: true
+            umdNamedDefine: false
         }
     },
     module: {
