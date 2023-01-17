@@ -38,7 +38,7 @@ devtoolsConfig.output = {
     library: {
         name: 'Tabs',
         type: 'umd',
-        umdNamedDefine: true
+        umdNamedDefine: false
     }
 };
 

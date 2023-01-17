@@ -301,7 +301,7 @@ func.defaultConfig = {
                     library: {
                         name: 'Plotly',
                         type: 'umd',
-                        umdNamedDefine: true
+                        umdNamedDefine: false
                     }
                 }
             })
