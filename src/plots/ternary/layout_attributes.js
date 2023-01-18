@@ -15,7 +15,7 @@ var ternaryAxesAttrs = {
     },
     color: axesAttrs.color,
     // ticks
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: extendFlat({}, axesAttrs.nticks, {dflt: 6, min: 1}),
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
