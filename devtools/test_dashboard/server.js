@@ -35,7 +35,10 @@ devtoolsConfig.entry = path.join(devtoolsPath, 'devtools.js');
 devtoolsConfig.output = {
     path: config.output.path,
     filename: 'test_dashboard-bundle.js',
-    library: {...config.output.library, name: 'Tabs'}
+    library: {
+        name: 'Tabs',
+        type: 'umd'
+    }
 };
 
 devtoolsConfig.target = config.target;
