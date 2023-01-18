@@ -1518,7 +1518,7 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
             posref: d.posref,
             size: d.by * (axIsX ? YFACTOR : 1) / 2,
             pmin: 0,
-            pmax: (axIsX ? fullLayout.width : fullLayout.height)
+            pmax: (axIsX ? fullLayout.width : fullLayout.height) - ax._mainLinePosition
         }];
     });
 
