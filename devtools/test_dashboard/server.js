@@ -37,8 +37,7 @@ devtoolsConfig.output = {
     filename: 'test_dashboard-bundle.js',
     library: {
         name: 'Tabs',
-        type: 'umd',
-        umdNamedDefine: true
+        type: 'umd'
     }
 };
 

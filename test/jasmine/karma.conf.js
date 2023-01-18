@@ -5,6 +5,7 @@ var minimist = require('minimist');
 var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 var LoaderOptionsPlugin = require('webpack').LoaderOptionsPlugin;
 var constants = require('../../tasks/util/constants');
+var webpackConfig = require('../../webpack.config.js');
 
 var isCI = Boolean(process.env.CI);
 
@@ -298,11 +299,7 @@ func.defaultConfig = {
             new LoaderOptionsPlugin({
                 // test: /\.xxx$/, // may apply this only for some modules
                 options: {
-                    library: {
-                        name: 'Plotly',
-                        type: 'umd',
-                        umdNamedDefine: true
-                    }
+                    library: webpackConfig.output.library
                 }
             })
         ]
