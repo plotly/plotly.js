@@ -9,6 +9,19 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.18.0] -- 2023-01-19
+
+### Added
+- Add `sync` tickmode option [[#6356](https://github.com/plotly/plotly.js/pull/6356), [#6443](https://github.com/plotly/plotly.js/pull/6443)],
+  with thanks to @filipesantiagoAM and @VictorBezak for the contribution!
+
+### Changed
+ - Improve detection of mobile & tablet devices for WebGL rendering by upgrading `is-mobile` [[#6432](https://github.com/plotly/plotly.js/pull/6432)]
+
+### Fixed
+ - Fix library's imported name using `requirejs` AMD loader (regression introduced in 2.17.0) [[#6440](https://github.com/plotly/plotly.js/pull/6440)]
+
+
 ## [2.17.1] -- 2023-01-09
 
 ### Fixed
