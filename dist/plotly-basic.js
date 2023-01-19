@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.17.1
+* plotly.js (basic) v2.18.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -8,7 +8,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define("Plotly", [], factory);
+		define([], factory);
 	else if(typeof exports === 'object')
 		exports["Plotly"] = factory();
 	else
@@ -2555,7 +2555,7 @@ module.exports = overrideAll({
     dflt: 'rgba(0,0,0,0)'
   },
   // tick and title properties named and function exactly as in axes
-  tickmode: axesAttrs.tickmode,
+  tickmode: axesAttrs.minor.tickmode,
   nticks: axesAttrs.nticks,
   tick0: axesAttrs.tick0,
   dtick: axesAttrs.dtick,
@@ -26263,7 +26263,7 @@ polygon.filter = function filter(pts, tolerance) {
 
 
 var isNumeric = __webpack_require__(2770);
-var isMobileOrTablet = __webpack_require__(5539);
+var isMobileOrTablet = __webpack_require__(5791);
 module.exports = function preserveDrawingBuffer(opts) {
   var ua;
   if (opts && opts.hasOwnProperty('userAgent')) {
@@ -37080,6 +37080,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
       continue;
     }
 
+    // fill tickVals based on overlaying axis
+    if (mockAx.tickmode === 'sync') {
+      tickVals = [];
+      ticksOut = syncTicks(ax);
+      continue;
+    }
+
     // add a tiny bit so we get ticks which may have rounded out
     var exRng = expandRange(rng);
     var startTick = exRng[0];
@@ -37280,6 +37287,44 @@ axes.calcTicks = function calcTicks(ax, opts) {
   }
   return ticksOut;
 };
+function filterRangeBreaks(ax, ticksOut) {
+  if (ax.rangebreaks) {
+    // remove ticks falling inside rangebreaks
+    ticksOut = ticksOut.filter(function (d) {
+      return ax.maskBreaks(d.x) !== BADNUM;
+    });
+  }
+  return ticksOut;
+}
+function syncTicks(ax) {
+  // get the overlaying axis
+  var baseAxis = ax._mainAxis;
+  var ticksOut = [];
+  if (baseAxis._vals) {
+    for (var i = 0; i < baseAxis._vals.length; i++) {
+      // filter vals with noTick flag
+      if (baseAxis._vals[i].noTick) {
+        continue;
+      }
+
+      // get the position of the every tick
+      var pos = baseAxis.l2p(baseAxis._vals[i].x);
+
+      // get the tick for the current axis based on position
+      var vali = ax.p2l(pos);
+      var obj = axes.tickText(ax, vali);
+
+      // assign minor ticks
+      if (baseAxis._vals[i].minor) {
+        obj.minor = true;
+        obj.text = '';
+      }
+      ticksOut.push(obj);
+    }
+  }
+  ticksOut = filterRangeBreaks(ax, ticksOut);
+  return ticksOut;
+}
 function arrayTicks(ax) {
   var rng = Lib.simpleMap(ax.range, ax.r2l);
   var exRng = expandRange(rng);
@@ -37317,12 +37362,7 @@ function arrayTicks(ax) {
       }
     }
   }
-  if (ax.rangebreaks) {
-    // remove ticks falling inside rangebreaks
-    ticksOut = ticksOut.filter(function (d) {
-      return ax.maskBreaks(d.x) !== BADNUM;
-    });
-  }
+  ticksOut = filterRangeBreaks(ax, ticksOut);
   return ticksOut;
 }
 var roundBase10 = [2, 5, 10];
@@ -38224,6 +38264,19 @@ axes.draw = function (gd, arg, opts) {
   }).map(function (ax) {
     return ax.overlaying;
   });
+
+  // order axes that have dependency to other axes
+  axList.map(function (axId) {
+    var ax = axes.getFromId(gd, axId);
+    if (ax.tickmode === 'sync' && ax.overlaying) {
+      var overlayingIndex = axList.findIndex(function (axis) {
+        return axis === ax.overlaying;
+      });
+      if (overlayingIndex >= 0) {
+        axList.unshift(axList.splice(overlayingIndex, 1).shift());
+      }
+    }
+  });
   var axShifts = {
     'false': {
       'left': 0,
@@ -39094,6 +39147,10 @@ axes.drawTicks = function (gd, ax, opts) {
  */
 axes.drawGrid = function (gd, ax, opts) {
   opts = opts || {};
+  if (ax.tickmode === 'sync') {
+    // for tickmode sync we use the overlaying axis grid
+    return;
+  }
   var cls = ax._id + 'grid';
   var hasMinor = ax.minor && ax.minor.showgrid;
   var minorVals = hasMinor ? opts.vals.filter(function (d) {
@@ -41928,15 +41985,24 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if (!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
       }
     }
+    function pushActiveAxIdsSynced(axList, axisType) {
+      for (i = 0; i < axList.length; i++) {
+        var axListI = axList[i];
+        var axListIType = axListI[axisType];
+        if (!axListI.fixedrange && axListIType.tickmode === 'sync') activeAxIds.push(axListIType._id);
+      }
+    }
     if (editX) {
       pushActiveAxIds(xaxes);
       pushActiveAxIds(links.xaxes);
       pushActiveAxIds(matches.xaxes);
+      pushActiveAxIdsSynced(plotinfo.overlays, 'xaxis');
     }
     if (editY) {
       pushActiveAxIds(yaxes);
       pushActiveAxIds(links.yaxes);
       pushActiveAxIds(matches.yaxes);
+      pushActiveAxIdsSynced(plotinfo.overlays, 'yaxis');
     }
     updates = {};
     for (i = 0; i < activeAxIds.length; i++) {
@@ -43167,7 +43233,7 @@ var ONEDAY = (__webpack_require__(606).ONEDAY);
 var constants = __webpack_require__(5555);
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
-var tickmode = {
+var minorTickmode = {
   valType: 'enumerated',
   values: ['auto', 'linear', 'array'],
   editType: 'ticks',
@@ -43176,6 +43242,9 @@ var tickmode = {
     dtick: undefined
   }
 };
+var tickmode = extendFlat({}, minorTickmode, {
+  values: minorTickmode.values.slice().concat(['sync'])
+});
 function makeNticks(minor) {
   return {
     valType: 'integer',
@@ -43689,7 +43758,7 @@ module.exports = {
     editType: 'plot'
   },
   minor: {
-    tickmode: tickmode,
+    tickmode: minorTickmode,
     nticks: makeNticks('minor'),
     tick0: tick0,
     dtick: dtick,
@@ -44256,6 +44325,12 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     // which applied in the calculation below:
     if (domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
     Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
+
+    // tickmode sync needs an overlaying axis, otherwise
+    // we should default it to 'auto'
+    if (containerOut.tickmode === 'sync') {
+      containerOut.tickmode = 'auto';
+    }
   }
   coerce('layer');
   return containerOut;
@@ -45304,7 +45379,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
   var _tickvals = readInput('tickvals');
   var tickmodeDefault = isArrayOrTypedArray(_tickvals) ? 'array' : _dtick ? 'linear' : 'auto';
   var tickmode = coerce(prefix + 'tickmode', tickmodeDefault);
-  if (tickmode === 'auto') {
+  if (tickmode === 'auto' || tickmode === 'sync') {
     coerce(prefix + 'nticks');
   } else if (tickmode === 'linear') {
     // dtick is usually a positive number, but there are some
@@ -58881,7 +58956,36 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.17.1';
+exports.version = '2.18.0';
+
+/***/ }),
+
+/***/ 5791:
+/***/ (function(module) {
+
+"use strict";
+
+
+module.exports = isMobile;
+module.exports.isMobile = isMobile;
+module.exports["default"] = isMobile;
+var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
+var notMobileRE = /CrOS/;
+var tabletRE = /android|ipad|playbook|silk/i;
+function isMobile(opts) {
+  if (!opts) opts = {};
+  var ua = opts.ua;
+  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
+  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
+    ua = ua.headers['user-agent'];
+  }
+  if (typeof ua !== 'string') return false;
+  var result = mobileRE.test(ua) && !notMobileRE.test(ua) || !!opts.tablet && tabletRE.test(ua);
+  if (!result && opts.tablet && opts.featureDetect && navigator && navigator.maxTouchPoints > 1 && ua.indexOf('Macintosh') !== -1 && ua.indexOf('Safari') !== -1) {
+    result = true;
+  }
+  return result;
+}
 
 /***/ }),
 
@@ -69393,49 +69497,6 @@ module.exports = isBrowser && detect()
 /***/ (function(module) {
 
 module.exports = true;
-
-/***/ }),
-
-/***/ 5539:
-/***/ (function(module) {
-
-"use strict";
-
-
-module.exports = isMobile
-module.exports.isMobile = isMobile
-module.exports["default"] = isMobile
-
-var mobileRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
-
-var tabletRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android|ipad|playbook|silk/i
-
-function isMobile (opts) {
-  if (!opts) opts = {}
-  var ua = opts.ua
-  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent
-  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
-    ua = ua.headers['user-agent']
-  }
-  if (typeof ua !== 'string') return false
-
-  var result = opts.tablet ? tabletRE.test(ua) : mobileRE.test(ua)
-
-  if (
-    !result &&
-    opts.tablet &&
-    opts.featureDetect &&
-    navigator &&
-    navigator.maxTouchPoints > 1 &&
-    ua.indexOf('Macintosh') !== -1 &&
-    ua.indexOf('Safari') !== -1
-  ) {
-    result = true
-  }
-
-  return result
-}
-
 
 /***/ }),
 
