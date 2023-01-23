@@ -124,4 +124,5 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('label.textangle', shapeType === 'line' ? 'auto' : 0);
     coerce('label.position', '');
     coerce('label.padding');
+    Lib.coerceFont(coerce, 'label.font', fullLayout.font);
 }

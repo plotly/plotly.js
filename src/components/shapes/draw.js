@@ -598,6 +598,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
 function drawLabel(gd, options, labelGroupAttrs, shapeGroup) {
     var text = options.label.text;
+    var font = options.label.font;
 
     var labelTextAttrs = {
         'data-notex': 1
@@ -638,7 +639,7 @@ function drawLabel(gd, options, labelGroupAttrs, shapeGroup) {
 
     function textLayout(s) {
         if(options.x0 && options.y0) {
-            s.call(Drawing.font)
+            s.call(Drawing.font, font)
                 .attr({
                     'text-anchor': {
                         left: 'start',
