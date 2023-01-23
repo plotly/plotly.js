@@ -632,10 +632,7 @@ function drawLabel(gd, options, labelGroupAttrs, shapeGroup) {
 
     // Handle 'auto' angle for lines
     if(textangle === 'auto') {
-        textangle = -180 / Math.PI * Math.atan2(
-            Math.abs(shapey1 - shapey0),
-            Math.abs(shapex1 - shapex0)
-        );
+        textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
     }
 
     function textLayout(s) {
@@ -657,6 +654,17 @@ function drawLabel(gd, options, labelGroupAttrs, shapeGroup) {
     }
 
     labelText.call(textLayout);
+}
+
+function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
+    var dy, dx;
+    dx = Math.abs(shapex1 - shapex0);
+    if(shapex1 >= shapex0) {
+        dy = shapey0 - shapey1;
+    } else {
+        dy = shapey1 - shapey0;
+    }
+    return -180 / Math.PI * Math.atan2(dy, dx);
 }
 
 function movePath(pathIn, moveX, moveY) {

@@ -12,12 +12,12 @@
         "margin": {"l":20,"r":20,"pad":0},
         "showlegend":false,
         "shapes":[
-            {"label":{"text":"anchored right, <br>angle 45", "xanchor":"right", "textangle":45}, "layer":"below","xref":"paper","yref":"paper","x0":0.5,"x1":0.6,"y0":0.4,"y1":0.6},
-            {"label":{"text":"anchored left"}, "xref":"paper","yref":"paper","type":"circle","x0":0.3,"x1":0.35,"y0":0.2,"y1":0.4},
-            {"label":{"text":"anchored right", "xanchor":"right"}, "xref":"paper","yref":"paper","type":"line","x0":0.8,"x1":0.9,"y0":0.8,"y1":0.9},
-            {"label":{"text":"anchored center, angle -30", "xanchor":"center", "textangle":-30}, "layer":"below","x0":2,"x1":3,"y0":7,"y1":9.5,"opacity":0.5,"fillcolor":"#05e","line":{"width":3,"color":"#025","dash":"dashdot"}},
-            {"label":{"text":"anchored left"}, "yref":"paper","type":"line","x0":1.1,"x1":2.4,"y0":0.1,"y1":0.4,"line":{"color":"#039","dash":"dot","width":2}},
-            {"label":{"text":"anchored center", "xanchor":"center"}, "xref":"paper","x0":0.8,"x1":0.9,"y0":1,"y1":3,"fillcolor":"#ccc"}
+            {"label":{"text":"anchored right, <br>angle 45", "xanchor":"right", "textangle":45}, "layer":"below","xref":"paper","yref":"paper","x0":0.5,"x1":0.6,"y0":0.4,"y1":0.6, "editable": true},
+            {"label":{"text":"anchored left"}, "xref":"paper","yref":"paper","type":"circle","x0":0.3,"x1":0.35,"y0":0.2,"y1":0.4, "editable": true},
+            {"label":{"text":"anchored right", "xanchor":"right"}, "xref":"paper","yref":"paper","type":"line","x0":0.8,"x1":0.9,"y0":0.8,"y1":0.9, "editable": true},
+            {"label":{"text":"anchored center, angle -30", "xanchor":"center", "textangle":-30}, "layer":"below","x0":2,"x1":3,"y0":7,"y1":9.5,"opacity":0.5,"fillcolor":"#05e","line":{"width":3,"color":"#025","dash":"dashdot"}, "editable": true},
+            {"label":{"text":"anchored left"}, "yref":"paper","type":"line","x0":1.1,"x1":2.4,"y0":0.1,"y1":0.4,"line":{"color":"#039","dash":"dot","width":2}, "editable": true},
+            {"label":{"text":"anchored center", "xanchor":"center"}, "xref":"paper","x0":0.8,"x1":0.9,"y0":1,"y1":3,"fillcolor":"#ccc", "editable": true}
         ]
     }
 }
