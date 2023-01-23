@@ -242,9 +242,11 @@ module.exports = templatedArray('shape', {
             values: [
                 'top left', 'top center', 'top right',
                 'middle left', 'middle center', 'middle right',
-                'bottom left', 'bottom center', 'bottom right'
+                'bottom left', 'bottom center', 'bottom right',
+                'top start', 'top end',
+                'middle start', 'middle end',
+                'bottom start', 'bottom end',
             ],
-            dflt: 'top left',
             editType: 'arraydraw',
             description: 'Sets the position of the label relative to she shape.'
         },

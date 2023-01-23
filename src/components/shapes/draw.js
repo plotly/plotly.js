@@ -624,9 +624,10 @@ function drawLabel(gd, options, labelGroupAttrs, shapeGroup) {
     var shapey0 = y2p(options.y0);
     var shapey1 = y2p(options.y1);
 
-    // TODO: Calculate correct (x,y) based on 'position' param
-    var textx = shapex0;
-    var texty = shapey0;
+    // Calculate correct (x,y) for text
+    var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options);
+    var textx = textPos.textx;
+    var texty = textPos.texty;
 
     var textangle = options.label.textangle;
 
@@ -665,6 +666,65 @@ function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
         dy = shapey1 - shapey0;
     }
     return -180 / Math.PI * Math.atan2(dy, dx);
+}
+
+function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions) {
+    var textPosition = shapeOptions.label.position;
+    var textPadding = shapeOptions.label.padding;
+    var shapeType = shapeOptions.type;
+    var textAngle = shapeOptions.label.textangle;
+
+    var textx, texty;
+
+    // Text position functions differently for lines vs. other shapes
+    if(shapeType === 'line') {
+        // Handle special case for padding when angle is 'auto' for lines
+        // Padding should be treated as an orthogonal offset in this case
+        // Otherwise, padding is just a simple x and y offset
+        var paddingX, paddingY;
+        if(textAngle === 'auto') {
+            var textAngleRad = Math.PI / 180 * calcTextAngle(shapex0, shapey0, shapex1, shapey1);
+            paddingX = textPadding * Math.sin(textAngleRad);
+            paddingY = -textPadding * Math.cos(textAngleRad);
+        } else {
+            paddingX = textPadding;
+            paddingY = textPadding;
+        }
+
+        // Handle directional offset for top vs. bottom vs. center of line (default is 'top')
+        var paddingMultiplier = textPosition.indexOf('middle') !== -1 ? 0 : textPosition.indexOf('bottom') !== -1 ? -1 : 1;
+
+        if(textPosition.indexOf('start') !== -1) {
+            textx = shapex0 + paddingX * paddingMultiplier;
+            texty = shapey0 + paddingY * paddingMultiplier;
+        } else if(textPosition.indexOf('end') !== -1) {
+            textx = shapex1 + paddingX * paddingMultiplier;
+            texty = shapey1 + paddingY * paddingMultiplier;
+        } else { // Default: center
+            textx = (shapex0 + shapex1) / 2 + paddingX * paddingMultiplier;
+            texty = (shapey0 + shapey1) / 2 + paddingY * paddingMultiplier;
+        }
+    } else { // Text position for shapes that are not lines
+        // calc horizontal position
+        if(textPosition.indexOf('top') !== -1) {
+            textx = Math.max(shapex0, shapex1) + textPadding;
+        } else if(textPosition.indexOf('bottom') !== -1) {
+            textx = Math.min(shapex0, shapex1) - textPadding;
+        } else { // Default: center
+            textx = (shapex0 + shapex1) / 2;
+        }
+
+        // calc vertical position
+        if(textPosition.indexOf('top') !== -1) {
+            texty = Math.min(shapey0, shapey1) - textPadding;
+        } else if(textPosition.indexOf('bottom') !== -1) {
+            texty = Math.max(shapey0, shapey1) + textPadding;
+        } else { // Default: middle
+            texty = (shapey0 + shapey1) / 2;
+        }
+    }
+
+    return { textx: textx, texty: texty };
 }
 
 function movePath(pathIn, moveX, moveY) {
