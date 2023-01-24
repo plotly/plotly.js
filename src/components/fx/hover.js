@@ -1494,6 +1494,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
 // the other, though it hardly matters - there's just too much
 // information then.
 function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
+    let crossAxKey = axKey === 'xa' ? 'ya' : 'xa';
     var nummoves = 0;
     var axSign = 1;
     var nLabels = hoverLabels.size();
@@ -1504,12 +1505,32 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
 
     hoverLabels.each(function(d) {
         var ax = d[axKey];
+        let crossAx = d[crossAxKey];
         var axIsX = ax._id.charAt(0) === 'x';
         var rng = ax.range;
 
         if(k === 0 && rng && ((rng[0] > rng[1]) !== axIsX)) {
             axSign = -1;
         }
+        let pmin, pmax;
+        if (axIsX) {
+            if (crossAx.side === 'left') {
+                pmin = crossAx._mainLinePosition;
+                pmax = fullLayout.width;
+            } else {
+                pmin = 0;
+                pmax = crossAx._mainLinePosition;
+            }
+        } else {
+            if (crossAx.side === 'top') {
+                pmin = crossAx._mainLinePosition;
+                pmax = fullLayout.height;
+            } else {
+                pmin = 0;
+                pmax = crossAx._mainLinePosition;
+            }
+        }
+
         pointgroups[k++] = [{
             datum: d,
             traceIndex: d.trace.index,
@@ -1517,8 +1538,8 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
             pos: d.pos,
             posref: d.posref,
             size: d.by * (axIsX ? YFACTOR : 1) / 2,
-            pmin: 0,
-            pmax: (axIsX ? fullLayout.width : fullLayout.height) - ax._mainLinePosition
+            pmin,
+            pmax
         }];
     });
 
