@@ -105,6 +105,7 @@ function createFills(gd, traceJoin, plotinfo) {
 }
 
 function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
+    var isStatic = gd._context.staticPlot;
     var i;
 
     // Since this has been reorganized and we're executing this on individual traces,
@@ -279,7 +280,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     lineJoin.enter().append('path')
         .classed('js-line', true)
-        .style('vector-effect', 'non-scaling-stroke')
+        .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
         .call(Drawing.lineGroupStyle)
         .each(makeUpdate(true));
 
