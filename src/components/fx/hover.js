@@ -1494,7 +1494,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
 // the other, though it hardly matters - there's just too much
 // information then.
 function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
-    let crossAxKey = axKey === 'xa' ? 'ya' : 'xa';
+    var crossAxKey = axKey === 'xa' ? 'ya' : 'xa';
     var nummoves = 0;
     var axSign = 1;
     var nLabels = hoverLabels.size();
@@ -1505,29 +1505,30 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
 
     hoverLabels.each(function(d) {
         var ax = d[axKey];
-        let crossAx = d[crossAxKey];
+        var crossAx = d[crossAxKey];
         var axIsX = ax._id.charAt(0) === 'x';
         var rng = ax.range;
 
         if(k === 0 && rng && ((rng[0] > rng[1]) !== axIsX)) {
             axSign = -1;
         }
-        let pmin, pmax;
-        if (axIsX) {
-            if (crossAx.side === 'left') {
-                pmin = crossAx._mainLinePosition;
-                pmax = fullLayout.width;
+        var pmin = 0;
+        var pmax = (axIsX ? fullLayout.width : fullLayout.height);
+        if (fullLayout.hovermode === 'x' || fullLayout.hovermode === 'y') {
+            if (axIsX) {
+                if (crossAx.side === 'left') {
+                    pmin = crossAx._mainLinePosition;
+                    pmax = fullLayout.width;
+                } else {
+                    pmax = crossAx._mainLinePosition;
+                }
             } else {
-                pmin = 0;
-                pmax = crossAx._mainLinePosition;
-            }
-        } else {
-            if (crossAx.side === 'top') {
-                pmin = crossAx._mainLinePosition;
-                pmax = fullLayout.height;
-            } else {
-                pmin = 0;
-                pmax = crossAx._mainLinePosition;
+                if (crossAx.side === 'top') {
+                    pmin = crossAx._mainLinePosition;
+                    pmax = fullLayout.height;
+                } else {
+                    pmax = crossAx._mainLinePosition;
+                }
             }
         }
 
