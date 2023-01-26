@@ -413,7 +413,58 @@ exports.drawMainTitle = function(gd) {
             dy: dy
         }
     });
+
+    applyTitleAutoMargin(gd, fullLayout, dy);
+    
 };
+
+function applyTitleAutoMargin(gd, fullLayout, dy){
+    var title = fullLayout.title;
+
+    if(
+        !title.automargin || 
+        title.yref!=='container' //||
+        //((title.y!==1 && title.yanchor!=='top') && 
+        //(title.y!==0 && title.yanchor!=='bottom'))
+        ) {
+            console.log('invalid title layout for automargin')
+            return
+    } else {
+    var vPadShift = getVPadShift(title, dy)
+    var push = {
+        x: title.x,
+        y: 1,
+        l: 0,
+        r: 0,
+        t: 0,
+        b: 0,
+        pad: 0
+    };
+    
+    if(title.yref === 'paper'){
+         push.t = 0; 
+    } else {
+        push.t = title.font.size;
+    } 
+    push.t += Math.abs(vPadShift); 
+    console.log(push)
+
+    var titleID = 'title.automargin';
+    Plots.allowAutoMargin(gd, titleID);
+    Plots.autoMargin(gd, titleID, push);
+    }
+}
+
+function getVPadShift(title, dy) {
+    var vPadShift = 0; 
+    if(dy === '0em' || !dy) {
+        vPadShift = -title.pad.b;
+    } else if(dy === alignmentConstants.CAP_SHIFT + 'em') {
+        vPadShift = title.pad.t;
+    }
+    return vPadShift;
+
+}
 
 function getMainTitleX(fullLayout, textAnchor) {
     var title = fullLayout.title;
@@ -438,14 +489,7 @@ function getMainTitleX(fullLayout, textAnchor) {
 function getMainTitleY(fullLayout, dy) {
     var title = fullLayout.title;
     var gs = fullLayout._size;
-    var vPadShift = 0;
-
-    if(dy === '0em' || !dy) {
-        vPadShift = -title.pad.b;
-    } else if(dy === alignmentConstants.CAP_SHIFT + 'em') {
-        vPadShift = title.pad.t;
-    }
-
+    var vPadShift = getVPadShift(title, dy);
     if(title.y === 'auto') {
         return gs.t / 2;
     } else {
