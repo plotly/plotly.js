@@ -1,5 +1,7 @@
 'use strict';
 
+var d3 = require('@plotly/d3');
+
 var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
@@ -149,12 +151,7 @@ function drawOne(gd, index) {
         setClipPath(shapeGroup, gd, options);
 
         // Draw label, if present
-        if(options.label) {
-            var labelGroupAttrs = {
-                'data-index': index,
-            };
-            drawLabel(gd, options, labelGroupAttrs, shapeGroup);
-        }
+        drawLabel(gd, index, options, shapeGroup);
 
         var editHelpers;
         if(isActiveShape || gd._context.edits.shapePosition) editHelpers = arrayEditor(gd.layout, 'shapes', options);
@@ -218,6 +215,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     var x0, y0, x1, y1, xAnchor, yAnchor;
     var n0, s0, w0, e0, optN, optS, optW, optE;
     var pathIn;
+
+    var shapeGroup = d3.select(shapePath.node().parentNode);
 
     // setup conversion functions
     var xa = Axes.getFromId(gd, shapeOptions.xref);
@@ -440,6 +439,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
         renderVisualCues(shapeLayer, shapeOptions);
+        drawLabel(gd, index, shapeOptions, shapeGroup);
     }
 
     function resizeShape(dx, dy) {
@@ -512,6 +512,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
         renderVisualCues(shapeLayer, shapeOptions);
+        drawLabel(gd, index, shapeOptions, shapeGroup);
     }
 
     function renderVisualCues(shapeLayer, shapeOptions) {
@@ -596,7 +597,15 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     }
 }
 
-function drawLabel(gd, options, labelGroupAttrs, shapeGroup) {
+function drawLabel(gd, index, options, shapeGroup) {
+    if(!options.label) return;
+
+    // Remove existing label
+    shapeGroup.selectAll('.shape-label').remove();
+
+    var labelGroupAttrs = {
+        'data-index': index,
+    };
     var text = options.label.text;
     var font = options.label.font;
 
