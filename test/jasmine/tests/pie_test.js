@@ -972,7 +972,7 @@ describe('Pie traces', function() {
             textposition: [['outside', 'outside', 'inside', 'inside', 'outside']],
             'outsidetextfont.size': 12
         }, {
-            t: '~=', l: 'shrunk',
+            t: 'grew', l: 'shrunk',
             b: 'grew', r: 'grew'
         }))
         .then(check('automargin:false', {automargin: false}, {
