@@ -598,10 +598,11 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 }
 
 function drawLabel(gd, index, options, shapeGroup) {
-    if(!(options.label && options.x0 && options.x1)) return;
-
     // Remove existing label
     shapeGroup.selectAll('.shape-label').remove();
+
+    // If no label, return
+    if(!options.label) return;
 
     var labelGroupAttrs = {
         'data-index': index,
@@ -621,18 +622,30 @@ function drawLabel(gd, index, options, shapeGroup) {
         .classed('shape-label-text', true)
         .text(text);
 
-    // Setup conversion functions
-    var xa = Axes.getFromId(gd, options.xref);
-    var xRefType = Axes.getRefType(options.xref);
-    var ya = Axes.getFromId(gd, options.yref);
-    var yRefType = Axes.getRefType(options.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    // If x0, x1, y0, y1 are defined explicitly, use those values
+    // Otherwise, use shape bounding box
+    var shapex0, shapex1, shapey0, shapey1;
+    if('x0' in options && 'x1' in options && 'y0' in options && 'y1' in options) {
+        // Setup conversion functions
+        var xa = Axes.getFromId(gd, options.xref);
+        var xRefType = Axes.getRefType(options.xref);
+        var ya = Axes.getFromId(gd, options.yref);
+        var yRefType = Axes.getRefType(options.yref);
+        var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
+        var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
 
-    var shapex0 = x2p(options.x0);
-    var shapex1 = x2p(options.x1);
-    var shapey0 = y2p(options.y0);
-    var shapey1 = y2p(options.y1);
+        shapex0 = x2p(options.x0);
+        shapex1 = x2p(options.x1);
+        shapey0 = y2p(options.y0);
+        shapey1 = y2p(options.y1);
+    } else {
+        // Get shape bounding box
+        var shapeBBox = shapeGroup.selectAll('path').node().getBoundingClientRect();
+        shapex0 = shapeBBox.x;
+        shapex1 = shapeBBox.right;
+        shapey0 = shapeBBox.y;
+        shapey1 = shapeBBox.bottom;
+    }
 
     // Handle 'auto' angle for lines
     var textangle = options.label.textangle;
@@ -640,14 +653,18 @@ function drawLabel(gd, index, options, shapeGroup) {
         textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
     }
 
-    // Do an initial render just so we can get the bounding box height --
-    // this is not the final render
-    labelText.call(function(s) {
+    // Do a fake render so we can get the text bounding box height
+    var _labelText = labelGroup.append('text')
+        .attr(labelTextAttrs)
+        .classed('shape-label-text', true)
+        .text(text);
+    _labelText.call(function(s) {
         s.call(Drawing.font, font).attr({});
         svgTextUtils.convertToTspans(s, gd);
         return s;
     });
-    var textBB = Drawing.bBox(labelText.node());
+    var textBB = Drawing.bBox(_labelText.node());
+    _labelText.remove();
 
     // Calculate correct (x,y) for text
     // We also determine true xanchor since xanchor depends on position when set to 'auto'
@@ -721,7 +738,6 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
             paddingMultiplier = 1;
             if(yanchor === 'auto') yanchor = 'bottom';
         }
-        // var paddingMultiplier = textPosition.indexOf('middle') !== -1 ? 0 : textPosition.indexOf('bottom') !== -1 ? -1 : 1;
 
         if(textPosition.indexOf('start') !== -1) {
             textx = shapex0 + paddingX * paddingMultiplier;
@@ -752,7 +768,7 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
         }
 
         // calc vertical position
-        paddingY = textPadding
+        paddingY = textPadding;
         if(textPosition.indexOf('top') !== -1) {
             texty = Math.min(shapey0, shapey1) - paddingY;
             if(yanchor === 'auto') yanchor = 'bottom';
@@ -766,11 +782,13 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
     }
 
     // Shift vertical (& horizontal) position according to `yanchor`
-    // This shiftFraction is only a rough approximation, but maybe good enough?
-    var shiftFraction = {middle: -0.2, bottom: 0.3, top: -0.7}[yanchor];
+    var shiftFraction = { middle: 0, bottom: 0.5, top: -0.5 }[yanchor];
+    // To adjust for text being anchored at baseline instead of bottom of descenders
+    // Probably not the right way of handling
+    var baselineAdjust = shapeOptions.label.font.size / 4;
     var textHeight = textBB.height;
-    var xshift = textHeight * Math.sin(textAngleRad) * shiftFraction;
-    var yshift = -textHeight * Math.cos(textAngleRad) * shiftFraction;
+    var xshift = (textHeight * shiftFraction - baselineAdjust) * Math.sin(textAngleRad);
+    var yshift = -(textHeight * shiftFraction - baselineAdjust) * Math.cos(textAngleRad);
 
     return { textx: textx + xshift, texty: texty + yshift, xanchor: xanchor };
 }
