@@ -33,17 +33,17 @@ var dyToEnlargeHeight = { n: -10, s: 10, w: 0, e: 0, nw: -10, se: 10, ne: -10, s
 // Helper functions
 function getMoveLineDragElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer g[data-index="' + index + '"] path').node();
+    return d3SelectAll('.shapelayer .shape-group g[data-index="' + index + '"] path').node();
 }
 
 function getResizeLineOverStartPointElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer g[data-index="' + index + '"] circle[data-line-point="start-point"]').node();
+    return d3SelectAll('.shapelayer .shape-group g[data-index="' + index + '"] circle[data-line-point="start-point"]').node();
 }
 
 function getResizeLineOverEndPointElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer g[data-index="' + index + '"] circle[data-line-point="end-point"]').node();
+    return d3SelectAll('.shapelayer .shape-group g[data-index="' + index + '"] circle[data-line-point="end-point"]').node();
 }
 
 describe('Test shapes defaults:', function() {
@@ -201,15 +201,15 @@ function countSubplots(gd) {
 }
 
 function countShapePathsInLowerLayer() {
-    return d3SelectAll('.layer-below > .shapelayer > path').size();
+    return d3SelectAll('.layer-below > .shapelayer > .shape-group > path').size();
 }
 
 function countShapePathsInUpperLayer() {
-    return d3SelectAll('.layer-above > .shapelayer > path').size();
+    return d3SelectAll('.layer-above > .shapelayer > .shape-group > path').size();
 }
 
 function countShapePathsInSubplots() {
-    return d3SelectAll('.layer-subplot > .shapelayer > path').size();
+    return d3SelectAll('.layer-subplot > .shapelayer > .shape-group > path').size();
 }
 
 describe('Test shapes:', function() {
@@ -721,7 +721,7 @@ describe('Test shapes: a plot with shapes and an overlaid axis', function() {
 });
 
 function getFirstShapeNode() {
-    return d3SelectAll('.shapelayer path').node();
+    return d3SelectAll('.shapelayer .shape-group path').node();
 }
 
 function assertShapeSize(shapeNode, w, h) {
@@ -1479,7 +1479,7 @@ describe('Test shapes', function() {
     }
 
     function getShapeNode(index) {
-        return d3SelectAll('.shapelayer path').filter(function() {
+        return d3SelectAll('.shapelayer .shape-group path').filter(function() {
             return +this.getAttribute('data-index') === index;
         }).node();
     }
