@@ -598,7 +598,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
 }
 
 function drawLabel(gd, index, options, shapeGroup) {
-    if(!options.label) return;
+    if(!(options.label && options.x0 && options.x1)) return;
 
     // Remove existing label
     shapeGroup.selectAll('.shape-label').remove();
@@ -634,32 +634,40 @@ function drawLabel(gd, index, options, shapeGroup) {
     var shapey0 = y2p(options.y0);
     var shapey1 = y2p(options.y1);
 
-    // Calculate correct (x,y) for text
-    var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options);
-    var textx = textPos.textx;
-    var texty = textPos.texty;
-
-    var textangle = options.label.textangle;
-
     // Handle 'auto' angle for lines
+    var textangle = options.label.textangle;
     if(textangle === 'auto') {
         textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
     }
 
+    // Do an initial render just so we can get the bounding box height --
+    // this is not the final render
+    labelText.call(function(s) {
+        s.call(Drawing.font, font).attr({});
+        svgTextUtils.convertToTspans(s, gd);
+        return s;
+    });
+    var textBB = Drawing.bBox(labelText.node());
+
+    // Calculate correct (x,y) for text
+    // We also determine true xanchor since xanchor depends on position when set to 'auto'
+    var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBB);
+    var textx = textPos.textx;
+    var texty = textPos.texty;
+    var xanchor = textPos.xanchor;
+
     function textLayout(s) {
-        if(options.x0 && options.y0) {
-            s.call(Drawing.font, font)
-                .attr({
-                    'text-anchor': {
-                        left: 'start',
-                        center: 'middle',
-                        right: 'end'
-                    }[options.label.xanchor],
-                    'y': texty,
-                    'x': textx,
-                    'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
-                });
-        }
+        s.call(Drawing.font, font)
+            .attr({
+                'text-anchor': {
+                    left: 'start',
+                    center: 'middle',
+                    right: 'end'
+                }[xanchor],
+                'y': texty,
+                'x': textx,
+                'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+            });
         svgTextUtils.convertToTspans(s, gd);
         return s;
     }
@@ -678,22 +686,22 @@ function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
     return -180 / Math.PI * Math.atan2(dy, dx);
 }
 
-function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions) {
+function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
     var textPosition = shapeOptions.label.position;
     var textPadding = shapeOptions.label.padding;
     var shapeType = shapeOptions.type;
-    var textAngle = shapeOptions.label.textangle;
+    var textAngleRad = Math.PI / 180 * actualTextAngle;
+    var xanchor = shapeOptions.label.xanchor;
+    var yanchor = shapeOptions.label.yanchor;
 
-    var textx, texty;
+    var textx, texty, paddingX, paddingY;
 
     // Text position functions differently for lines vs. other shapes
     if(shapeType === 'line') {
         // Handle special case for padding when angle is 'auto' for lines
         // Padding should be treated as an orthogonal offset in this case
         // Otherwise, padding is just a simple x and y offset
-        var paddingX, paddingY;
-        if(textAngle === 'auto') {
-            var textAngleRad = Math.PI / 180 * calcTextAngle(shapex0, shapey0, shapex1, shapey1);
+        if(shapeOptions.label.textangle === 'auto') {
             paddingX = textPadding * Math.sin(textAngleRad);
             paddingY = -textPadding * Math.cos(textAngleRad);
         } else {
@@ -702,39 +710,69 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions) {
         }
 
         // Handle directional offset for top vs. bottom vs. center of line (default is 'top')
-        var paddingMultiplier = textPosition.indexOf('middle') !== -1 ? 0 : textPosition.indexOf('bottom') !== -1 ? -1 : 1;
+        var paddingMultiplier;
+        if(textPosition.indexOf('middle') !== -1) {
+            paddingMultiplier = 0;
+            if(yanchor === 'auto') yanchor = 'middle';
+        } else if(textPosition.indexOf('bottom') !== -1) {
+            paddingMultiplier = -1;
+            if(yanchor === 'auto') yanchor = 'top';
+        } else {
+            paddingMultiplier = 1;
+            if(yanchor === 'auto') yanchor = 'bottom';
+        }
+        // var paddingMultiplier = textPosition.indexOf('middle') !== -1 ? 0 : textPosition.indexOf('bottom') !== -1 ? -1 : 1;
 
         if(textPosition.indexOf('start') !== -1) {
             textx = shapex0 + paddingX * paddingMultiplier;
             texty = shapey0 + paddingY * paddingMultiplier;
+            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'right' : 'left';
         } else if(textPosition.indexOf('end') !== -1) {
             textx = shapex1 + paddingX * paddingMultiplier;
             texty = shapey1 + paddingY * paddingMultiplier;
+            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'left' : 'right';
         } else { // Default: center
             textx = (shapex0 + shapex1) / 2 + paddingX * paddingMultiplier;
             texty = (shapey0 + shapey1) / 2 + paddingY * paddingMultiplier;
+            if(xanchor === 'auto') xanchor = 'center';
         }
     } else { // Text position for shapes that are not lines
         // calc horizontal position
-        if(textPosition.indexOf('top') !== -1) {
-            textx = Math.max(shapex0, shapex1) + textPadding;
-        } else if(textPosition.indexOf('bottom') !== -1) {
-            textx = Math.min(shapex0, shapex1) - textPadding;
+        // Horizontal needs a little extra padding to look balanced
+        paddingX = textPadding + 3;
+        if(textPosition.indexOf('right') !== -1) {
+            textx = Math.max(shapex0, shapex1) + paddingX;
+            if(xanchor === 'auto') xanchor = 'left';
+        } else if(textPosition.indexOf('left') !== -1) {
+            textx = Math.min(shapex0, shapex1) - paddingX;
+            if(xanchor === 'auto') xanchor = 'right';
         } else { // Default: center
             textx = (shapex0 + shapex1) / 2;
+            if(xanchor === 'auto') xanchor = 'center';
         }
 
         // calc vertical position
+        paddingY = textPadding
         if(textPosition.indexOf('top') !== -1) {
-            texty = Math.min(shapey0, shapey1) - textPadding;
+            texty = Math.min(shapey0, shapey1) - paddingY;
+            if(yanchor === 'auto') yanchor = 'bottom';
         } else if(textPosition.indexOf('bottom') !== -1) {
-            texty = Math.max(shapey0, shapey1) + textPadding;
+            texty = Math.max(shapey0, shapey1) + paddingY;
+            if(yanchor === 'auto') yanchor = 'top';
         } else { // Default: middle
             texty = (shapey0 + shapey1) / 2;
+            if(yanchor === 'auto') yanchor = 'middle';
         }
     }
 
-    return { textx: textx, texty: texty };
+    // Shift vertical (& horizontal) position according to `yanchor`
+    // This shiftFraction is only a rough approximation, but maybe good enough?
+    var shiftFraction = {middle: -0.2, bottom: 0.3, top: -0.7}[yanchor];
+    var textHeight = textBB.height;
+    var xshift = textHeight * Math.sin(textAngleRad) * shiftFraction;
+    var yshift = -textHeight * Math.cos(textAngleRad) * shiftFraction;
+
+    return { textx: textx + xshift, texty: texty + yshift, xanchor: xanchor };
 }
 
 function movePath(pathIn, moveX, moveY) {
