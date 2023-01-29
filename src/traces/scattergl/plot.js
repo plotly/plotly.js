@@ -348,7 +348,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
             (yaxis._rl || yaxis.range)[1]
         ]
     };
-    var vpRange = Lib.repeat(vpRange0, scene.count);
+    var vpRange = Lib.repeat(vpRange0, count);
 
     // upload viewport/range data to GPU
     if(scene.fill2d) {
