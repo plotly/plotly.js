@@ -255,7 +255,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     var isSelectMode = selectMode(dragmode);
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
-    for(i = 0; i < count; i++) {
+    for(i = 0; i < cdata.length; i++) {
         var cd0 = cdata[i][0];
         var trace = cd0.trace;
         var stash = cd0.t;
