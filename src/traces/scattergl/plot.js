@@ -53,7 +53,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
         return;
     }
 
-    var count = scene.count;
+    var count = cdata.length;
     var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills
@@ -255,7 +255,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     var isSelectMode = selectMode(dragmode);
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
-    for(i = 0; i < cdata.length; i++) {
+    for(i = 0; i < count; i++) {
         var cd0 = cdata[i][0];
         var trace = cd0.trace;
         var stash = cd0.t;
