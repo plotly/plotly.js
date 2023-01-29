@@ -53,7 +53,6 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
         return;
     }
 
-    var count = cdata.length;
     var regl = fullLayout._glcanvas.data()[0].regl;
 
     // that is needed for fills
@@ -74,28 +73,28 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
             scene.fill2d = createLine(regl);
         }
         if(scene.glText === true) {
-            scene.glText = new Array(count);
-            for(i = 0; i < count; i++) {
+            scene.glText = new Array(cdata.length);
+            for(i = 0; i < cdata.length; i++) {
                 scene.glText[i] = new Text(regl);
             }
         }
 
         // update main marker options
         if(scene.glText) {
-            if(count > scene.glText.length) {
+            if(cdata.length > scene.glText.length) {
                 // add gl text marker
-                var textsToAdd = count - scene.glText.length;
+                var textsToAdd = cdata.length - scene.glText.length;
                 for(i = 0; i < textsToAdd; i++) {
                     scene.glText.push(new Text(regl));
                 }
-            } else if(count < scene.glText.length) {
+            } else if(cdata.length < scene.glText.length) {
                 // remove gl text marker
-                var textsToRemove = scene.glText.length - count;
-                var removedTexts = scene.glText.splice(count, textsToRemove);
+                var textsToRemove = scene.glText.length - cdata.length;
+                var removedTexts = scene.glText.splice(cdata.length, textsToRemove);
                 removedTexts.forEach(function(text) { text.destroy(); });
             }
 
-            for(i = 0; i < count; i++) {
+            for(i = 0; i < cdata.length; i++) {
                 scene.glText[i].update(scene.textOptions[i]);
             }
         }
@@ -128,7 +127,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
         }
 
         // fill requires linked traces, so we generate it's positions here
-        scene.fillOrder = Lib.repeat(null, count);
+        scene.fillOrder = Lib.repeat(null, cdata.length);
         if(scene.fill2d) {
             scene.fillOptions = scene.fillOptions.map(function(fillOptions, i) {
                 var cdscatter = cdata[i];
@@ -255,7 +254,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
     var isSelectMode = selectMode(dragmode);
     var clickSelectEnabled = fullLayout.clickmode.indexOf('select') > -1;
 
-    for(i = 0; i < count; i++) {
+    for(i = 0; i < cdata.length; i++) {
         var cd0 = cdata[i][0];
         var trace = cd0.trace;
         var stash = cd0.t;
@@ -306,8 +305,8 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
 
         // use unselected styles on 'context' canvas
         if(scene.scatter2d) {
-            var unselOpts = new Array(count);
-            for(i = 0; i < count; i++) {
+            var unselOpts = new Array(cdata.length);
+            for(i = 0; i < cdata.length; i++) {
                 unselOpts[i] = scene.selectBatch[i].length || scene.unselectBatch[i].length ?
                     scene.markerUnselectedOptions[i] :
                     {};
@@ -348,7 +347,7 @@ var exports = module.exports = function plot(gd, subplot, cdata) {
             (yaxis._rl || yaxis.range)[1]
         ]
     };
-    var vpRange = Lib.repeat(vpRange0, count);
+    var vpRange = Lib.repeat(vpRange0, cdata.length);
 
     // upload viewport/range data to GPU
     if(scene.fill2d) {
