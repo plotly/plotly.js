@@ -7109,6 +7109,96 @@
         "nonzero"
        ]
       },
+      "label": {
+       "dflt": null,
+       "editType": "arraydraw",
+       "font": {
+        "color": {
+         "editType": "arraydraw",
+         "valType": "color"
+        },
+        "description": "Sets the shape label text font.",
+        "editType": "calc+arraydraw",
+        "family": {
+         "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+         "editType": "calc+arraydraw",
+         "noBlank": true,
+         "strict": true,
+         "valType": "string"
+        },
+        "role": "object",
+        "size": {
+         "editType": "calc+arraydraw",
+         "min": 1,
+         "valType": "number"
+        }
+       },
+       "padding": {
+        "description": "Sets padding between edge of label and xanchor / yanchor.",
+        "dflt": 0,
+        "editType": "arraydraw",
+        "valType": "number"
+       },
+       "position": {
+        "description": "Sets the position of the label relative to she shape.",
+        "editType": "arraydraw",
+        "valType": "enumerated",
+        "values": [
+         "top left",
+         "top center",
+         "top right",
+         "middle left",
+         "middle center",
+         "middle right",
+         "bottom left",
+         "bottom center",
+         "bottom right",
+         "top start",
+         "top end",
+         "middle start",
+         "middle end",
+         "bottom start",
+         "bottom end"
+        ]
+       },
+       "role": "object",
+       "text": {
+        "description": "Sets the text to display with shape.",
+        "dflt": null,
+        "editType": "arraydraw",
+        "valType": "string"
+       },
+       "textangle": {
+        "description": "Sets the angle at which the `text` is drawn with respect to the horizontal.",
+        "dflt": 0,
+        "editType": "calc+arraydraw",
+        "valType": "angle"
+       },
+       "xanchor": {
+        "description": "Sets the text box's horizontal position anchor This anchor binds the `x` position to the *left*, *center* or *right* of the annotation. For example, if `x` is set to 1, `xref` to *paper* and `xanchor` to *right* then the right-most portion of the annotation lines up with the right-most edge of the plotting area. If *auto*, the anchor is equivalent to *center* for data-referenced annotations or if there is an arrow, whereas for paper-referenced with no arrow, the anchor picked corresponds to the closest side.",
+        "dflt": "auto",
+        "editType": "calc+arraydraw",
+        "valType": "enumerated",
+        "values": [
+         "auto",
+         "left",
+         "center",
+         "right"
+        ]
+       },
+       "yanchor": {
+        "description": "Sets the text box's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the annotation. For example, if `y` is set to 1, `yref` to *paper* and `yanchor` to *top* then the top-most portion of the annotation lines up with the top-most edge of the plotting area. If *auto*, the anchor is equivalent to *middle* for data-referenced annotations or if there is an arrow, whereas for paper-referenced with no arrow, the anchor picked corresponds to the closest side.",
+        "dflt": "auto",
+        "editType": "calc+arraydraw",
+        "valType": "enumerated",
+        "values": [
+         "auto",
+         "top",
+         "middle",
+         "bottom"
+        ]
+       }
+      },
       "layer": {
        "description": "Specifies whether shapes are drawn below or above traces.",
        "dflt": "above",
