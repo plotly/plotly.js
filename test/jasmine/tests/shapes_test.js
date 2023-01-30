@@ -488,7 +488,7 @@ describe('shapes axis reference changes', function() {
     afterEach(destroyGraphDiv);
 
     function getShape(index) {
-        var s = d3SelectAll('path[data-index="' + index + '"]');
+        var s = d3SelectAll('.shape-group[data-index="' + index + '"]');
         expect(s.size()).toBe(1);
         return s;
     }
