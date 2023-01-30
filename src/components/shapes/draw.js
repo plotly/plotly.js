@@ -139,7 +139,8 @@ function drawOne(gd, index) {
         }
 
         var shapeGroup = shapeLayer.append('g')
-            .classed('shape-group', true);
+            .classed('shape-group', true)
+            .attr({ 'data-index': index });
 
         var path = shapeGroup.append('path')
             .attr(attrs)
