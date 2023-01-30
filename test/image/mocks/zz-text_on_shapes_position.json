@@ -5,8 +5,8 @@
         "mode":"markers"
     }],
     "layout": {
-        "xaxis":{"title":{"text":"linear"},"range":[0,100],"domain":[0,100],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
-        "yaxis":{"title":{"text":"linear"},"range":[0,100],"domain":[0,100],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
+        "xaxis":{"title":{"text":"linear"},"range":[0,100],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
+        "yaxis":{"title":{"text":"linear"},"range":[0,100],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
         "height":800,
         "width":800,
         "margin": {"l":20,"r":20,"pad":0},
