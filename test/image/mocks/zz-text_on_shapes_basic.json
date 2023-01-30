@@ -1,0 +1,28 @@
+{
+    "data":[{
+        "x":[0,10],
+        "y":[0,10],
+        "mode":"markers"
+    }],
+    "layout": {
+        "xaxis":{"title":{"text":"linear"},"range":[0,10],"domain":[0,10],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
+        "yaxis":{"title":{"text":"linear"},"range":[0,10],"domain":[0,10],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
+        "height":400,
+        "width":800,
+        "margin": {"l":20,"r":20,"pad":0},
+        "showlegend":false,
+        "shapes":[
+            {"label":{"text":"top right, xanchor right, <br>angle 45", "xanchor":"right", "textangle":45, "position": "top right", "padding": 20}, "layer":"below","xref":"paper","yref":"paper","x0":0.5,"x1":0.6,"y0":0.4,"y1":0.6},
+            {"label":{"text":"top right", "position": "top right"}, "xref":"paper","yref":"paper","type":"circle","x0":0.3,"x1":0.35,"y0":0.2,"y1":0.4},
+            {"label":{"text":"xanchor right, position auto <br> two lines", "xanchor":"right", "padding": 10, "position": "top center", "font": {"family":"Courier New, monospace", "size":20}}, "xref":"paper","yref":"paper","type":"line","x0":0.8,"x1":0.9,"y0":0.8,"y1":0.9},
+            {"label":{"text":"position auto, xanchor center, angle -30", "xanchor":"center", "textangle":-30}, "layer":"below","x0":2,"x1":3,"y0":7,"y1":9.5,"opacity":0.5,"fillcolor":"#05e","line":{"width":3,"color":"#025","dash":"dashdot"}},
+            {"label":{"text":"position auto, yanchor top", "yanchor": "top"}, "yref":"paper","type":"line","x0":1.1,"x1":2.4,"y0":0.1,"y1":0.4,"line":{"color":"#039","dash":"dot","width":2}},
+            {"label":{"text":"position auto, xanchor center", "xanchor":"center"}, "xref":"paper","x0":0.8,"x1":0.9,"y0":1,"y1":3,"fillcolor":"#ccc"},
+            {"label":{"text":"text on path, top center", "position":"top center"}, "xref":"paper","path":"M0.05,4C0.4,12 -0.1,12 0.25,4Z","fillcolor":"#a66"},
+            {"label":{"text":"text on path, top center", "position":"top center"}, "xref":"paper","yref":"paper","path":"M0,0.2V0.3H0.05L0,0.4Q0.1,0.4 0.1,0.3T0.15,0.3C0.1,0.4 0.2,0.4 0.2,0.3S0.15,0.3 0.15,0.2Z","fillcolor":"#4c0"}
+        ]
+    },
+    "config": {
+        "editable": true
+    }
+}
