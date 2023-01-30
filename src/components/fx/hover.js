@@ -209,7 +209,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
 
     var rotateLabels = false;
 
-    var hoverLabel = createHoverText(pointsData, {
+    var hoverText = createHoverText(pointsData, {
         gd: gd,
         hovermode: 'closest',
         rotateLabels: rotateLabels,
@@ -217,6 +217,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
         container: d3.select(opts.container),
         outerContainer: opts.outerContainer || opts.container
     });
+    var hoverLabel = hoverText.hoverLabels;
 
     // Fix vertical overlap
     var tooltipSpacing = 5;
@@ -819,7 +820,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         fullLayout.paper_bgcolor
     );
 
-    var hoverLabels = createHoverText(hoverData, {
+    var hoverText = createHoverText(hoverData, {
         gd: gd,
         hovermode: hovermode,
         rotateLabels: rotateLabels,
@@ -829,9 +830,10 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         commonLabelOpts: fullLayout.hoverlabel,
         hoverdistance: fullLayout.hoverdistance
     });
+    var hoverLabels = hoverText.hoverLabels;
 
     if(!helpers.isUnifiedHover(hovermode)) {
-        hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
+        hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout, hoverText.commonLabel);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
     }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
@@ -942,6 +944,7 @@ function createHoverText(hoverData, opts) {
         .classed('axistext', true);
     commonLabel.exit().remove();
 
+    var commonLabelLx, commonLabelLy;
     commonLabel.each(function() {
         var label = d3.select(this);
         var lpath = Lib.ensureSingle(label, 'path', '', function(s) {
@@ -1087,6 +1090,9 @@ function createHoverText(hoverData, opts) {
         }
 
         label.attr('transform', strTranslate(lx, ly));
+
+        commonLabelLx = lx;
+        commonLabelLy = ly;
     });
 
     // Show a single hover label
@@ -1370,7 +1376,10 @@ function createHoverText(hoverData, opts) {
             } else if(anchorStartOK) {
                 hty += dy / 2;
                 d.anchor = 'start';
-            } else d.anchor = 'middle';
+            } else {
+                d.anchor = 'middle';
+            }
+            d.crossPos = hty;
         } else {
             d.pos = hty;
             anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
@@ -1391,6 +1400,7 @@ function createHoverText(hoverData, opts) {
                 if(overflowR > 0) htx -= overflowR;
                 if(overflowL < 0) htx += -overflowL;
             }
+            d.crossPos = htx;
         }
 
         tx.attr('text-anchor', d.anchor);
@@ -1399,7 +1409,14 @@ function createHoverText(hoverData, opts) {
             (rotateLabels ? strRotate(YANGLE) : ''));
     });
 
-    return hoverLabels;
+    return {
+        hoverLabels: hoverLabels,
+        commonLabel: {
+            lx: commonLabelLx,
+            ly: commonLabelLy,
+            label: commonLabel
+        }
+    };
 }
 
 function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
@@ -1493,7 +1510,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
 // know what happens if the group spans all the way from one edge to
 // the other, though it hardly matters - there's just too much
 // information then.
-function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
+function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout, commonLabel) {
     var crossAxKey = axKey === 'xa' ? 'ya' : 'xa';
     var nummoves = 0;
     var axSign = 1;
@@ -1502,6 +1519,27 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
     // make groups of touching points
     var pointgroups = new Array(nLabels);
     var k = 0;
+
+    // get extent of axis hover label
+    var axisLabelMinX, axisLabelMaxX, axisLabelMinY, axisLabelMaxY;
+    if(commonLabel) {
+        commonLabel.label.each(function() {
+            var selection = d3.select(this);
+            if(selection && selection.length) {
+                var labels = selection[0];
+                if(labels && labels.length) {
+                    var label = labels[0];
+                    var bbox = label.getBBox();
+                    if(bbox) {
+                        axisLabelMinX = commonLabel.lx;
+                        axisLabelMaxX = commonLabel.lx + bbox.width;
+                        axisLabelMinY = commonLabel.ly;
+                        axisLabelMaxY = commonLabel.ly + bbox.height;
+                    }
+                }
+            }
+        });
+    }
 
     hoverLabels.each(function(d) {
         var ax = d[axKey];
@@ -1514,20 +1552,29 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
         }
         var pmin = 0;
         var pmax = (axIsX ? fullLayout.width : fullLayout.height);
-        if (fullLayout.hovermode === 'x' || fullLayout.hovermode === 'y') {
-            if (axIsX) {
-                if (crossAx.side === 'left') {
-                    pmin = crossAx._mainLinePosition;
-                    pmax = fullLayout.width;
-                } else {
-                    pmax = crossAx._mainLinePosition;
+        if(fullLayout.hovermode === 'x' || fullLayout.hovermode === 'y') {
+            // extent of hover label on cross axis:
+            var labelMinX = d.crossPos;
+            var labelMaxX = d.crossPos + d.txwidth;
+            if(axIsX) {
+                if(Math.max(labelMinX, axisLabelMinY) <= Math.min(labelMaxX, axisLabelMaxY)) {
+                    // has overlap with axis label
+                    if(crossAx.side === 'left') {
+                        pmin = crossAx._mainLinePosition;
+                        pmax = fullLayout.width;
+                    } else {
+                        pmax = crossAx._mainLinePosition;
+                    }
                 }
             } else {
-                if (crossAx.side === 'top') {
-                    pmin = crossAx._mainLinePosition;
-                    pmax = fullLayout.height;
-                } else {
-                    pmax = crossAx._mainLinePosition;
+                if(Math.max(labelMinX, axisLabelMinX) <= Math.min(labelMaxX, axisLabelMaxX)) {
+                    // has overlap with axis label
+                    if(crossAx.side === 'top') {
+                        pmin = crossAx._mainLinePosition;
+                        pmax = fullLayout.height;
+                    } else {
+                        pmax = crossAx._mainLinePosition;
+                    }
                 }
             }
         }
@@ -1539,8 +1586,8 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
             pos: d.pos,
             posref: d.posref,
             size: d.by * (axIsX ? YFACTOR : 1) / 2,
-            pmin,
-            pmax
+            pmin: pmin,
+            pmax: pmax
         }];
     });
 
