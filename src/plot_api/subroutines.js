@@ -414,44 +414,33 @@ exports.drawMainTitle = function(gd) {
         }
     });
 
-    applyTitleAutoMargin(gd, fullLayout, dy);
+    if(gd._fullLayout.title.automargin) {
+        applyTitleAutoMargin(gd, fullLayout, dy);
+    }
 };
 
 function applyTitleAutoMargin(gd, fullLayout, dy) {
     var title = fullLayout.title;
+    var y = title.y === 'auto' ? (fullLayout.margin.t / 2 / fullLayout.height) : title.y;
+    var direction = y > 0.5 ? 't' : 'b';
+    var titleID = 'title.automargin';
+    var titleSize = title.font.size;
 
-    if(
-        !title.automargin ||
-        title.yref !== 'container' // ||
-        // ((title.y!==1 && title.yanchor!=='top') &&
-        // (title.y!==0 && title.yanchor!=='bottom'))
-        ) {
-            console.log('invalid title layout for automargin')
-            return;
-    } else {
-        var vPadShift = getVPadShift(title, dy);
-        var push = {
-            x: title.x,
-            y: 1,
-            l: 0,
-            r: 0,
-            t: 0,
-            b: 0,
-            pad: 0
-        };
+    var push = {
+        x: title.x,
+        y: direction === 't' ? 1 : 0,
+        t: 0,
+        b: 0
+    };
 
-        if(title.yref === 'paper') {
-            push.t = 0;
-        } else {
-            push.t = title.font.size;
-        }
-        push.t += Math.abs(vPadShift);
-        console.log(push)
-
-        var titleID = 'title.automargin';
-        Plots.allowAutoMargin(gd, titleID);
-        Plots.autoMargin(gd, titleID, push);
+    push[direction] = direction === 't' ? getMainTitleY(fullLayout, dy) : fullLayout.height - getMainTitleY(fullLayout, dy);
+    if((direction === 't' && Lib.isTopAnchor(title)) || (direction === 'b' && Lib.isBottomAnchor(title))) {
+        push[direction] += titleSize;
+    } else if(Lib.isMiddleAnchor(title)) {
+        push[direction] += titleSize / 2;
     }
+    Plots.allowAutoMargin(gd, titleID);
+    Plots.autoMargin(gd, titleID, push);
 }
 
 function getVPadShift(title, dy) {
