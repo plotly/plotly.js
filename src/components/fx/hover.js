@@ -833,7 +833,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hoverLabels = hoverText.hoverLabels;
 
     if(!helpers.isUnifiedHover(hovermode)) {
-        hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout, hoverText.commonLabel);
+        hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabel);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
     }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
@@ -1510,8 +1510,9 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
 // know what happens if the group spans all the way from one edge to
 // the other, though it hardly matters - there's just too much
 // information then.
-function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout, commonLabel) {
-    var crossAxKey = axKey === 'xa' ? 'ya' : 'xa';
+function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) {
+    var axKey = rotateLabels ? 'xa' : 'ya';
+    var crossAxKey = rotateLabels ? 'ya' : 'xa';
     var nummoves = 0;
     var axSign = 1;
     var nLabels = hoverLabels.size();
@@ -1525,17 +1526,13 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout, commonLabel) {
     if(commonLabel) {
         commonLabel.label.each(function() {
             var selection = d3.select(this);
-            if(selection && selection.length) {
-                var labels = selection[0];
-                if(labels && labels.length) {
-                    var label = labels[0];
-                    var bbox = label.getBBox();
-                    if(bbox) {
-                        axisLabelMinX = commonLabel.lx;
-                        axisLabelMaxX = commonLabel.lx + bbox.width;
-                        axisLabelMinY = commonLabel.ly;
-                        axisLabelMaxY = commonLabel.ly + bbox.height;
-                    }
+            if(selection && selection.length && selection[0] && selection[0].length && selection[0][0]) {
+                var bbox = selection[0][0].getBBox();
+                if(bbox) {
+                    axisLabelMinX = commonLabel.lx;
+                    axisLabelMaxX = commonLabel.lx + bbox.width;
+                    axisLabelMinY = commonLabel.ly;
+                    axisLabelMaxY = commonLabel.ly + bbox.height;
                 }
             }
         });
@@ -1553,11 +1550,16 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout, commonLabel) {
         var pmin = 0;
         var pmax = (axIsX ? fullLayout.width : fullLayout.height);
         if(fullLayout.hovermode === 'x' || fullLayout.hovermode === 'y') {
-            // extent of hover label on cross axis:
-            var labelMinX = d.crossPos;
-            var labelMaxX = d.crossPos + d.txwidth;
+            // extent of rect behind hover label on cross axis (without arrow):
+            var offsets = getHoverLabelOffsets(d, rotateLabels);
+            var shiftX = getLabelShiftX(d);
+            // calculation based on alignHoverText function
+            var offsetRectX = (shiftX.x2x + (shiftX.alignShift - 1) * d.tx2width / 2 + offsets.x) * fullLayout._invScaleX;
+
+            var labelMinX = d.crossPos + offsetRectX;
+            var labelMaxX = labelMinX + d.tx2width;
             if(axIsX) {
-                if(Math.max(labelMinX, axisLabelMinY) <= Math.min(labelMaxX, axisLabelMaxY)) {
+                if(axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.max(labelMinX, axisLabelMinY) <= Math.min(labelMaxX, axisLabelMaxY)) {
                     // has overlap with axis label
                     if(crossAx.side === 'left') {
                         pmin = crossAx._mainLinePosition;
@@ -1567,7 +1569,7 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout, commonLabel) {
                     }
                 }
             } else {
-                if(Math.max(labelMinX, axisLabelMinX) <= Math.min(labelMaxX, axisLabelMaxX)) {
+                if(axisLabelMinX !== undefined && axisLabelMaxX !== undefined && Math.max(labelMinX, axisLabelMinX) <= Math.min(labelMaxX, axisLabelMaxX)) {
                     // has overlap with axis label
                     if(crossAx.side === 'top') {
                         pmin = crossAx._mainLinePosition;
@@ -1731,6 +1733,39 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout, commonLabel) {
     }
 }
 
+function getHoverLabelOffsets(hoverLabel, rotateLabels) {
+    var offsetX = 0;
+    var offsetY = hoverLabel.offset;
+
+    if(rotateLabels) {
+        offsetY *= -YSHIFTY;
+        offsetX = hoverLabel.offset * YSHIFTX;
+    }
+
+    return {
+        x: offsetX,
+        y: offsetY
+    };
+}
+
+function getLabelShiftX(hoverLabel) {
+    var alignShift = {start: 1, end: -1, middle: 0}[hoverLabel.anchor];
+    var txx = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
+    var tx2x = txx + alignShift * (hoverLabel.txwidth + HOVERTEXTPAD);
+
+    var isMiddle = hoverLabel.anchor === 'middle';
+    if(isMiddle) {
+        txx -= hoverLabel.tx2width / 2;
+        tx2x += hoverLabel.txwidth / 2 + HOVERTEXTPAD;
+    }
+
+    return {
+        alignShift: alignShift,
+        xx: txx,
+        x2x: tx2x
+    };
+}
+
 function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
     var pX = function(x) { return x * scaleX; };
     var pY = function(y) { return y * scaleY; };
@@ -1744,38 +1779,27 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         var tx = g.select('text.nums');
         var anchor = d.anchor;
         var horzSign = anchor === 'end' ? -1 : 1;
-        var alignShift = {start: 1, end: -1, middle: 0}[anchor];
-        var txx = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
-        var tx2x = txx + alignShift * (d.txwidth + HOVERTEXTPAD);
-        var offsetX = 0;
-        var offsetY = d.offset;
+        var shiftX = getLabelShiftX(d);
+        var offsets = getHoverLabelOffsets(d, rotateLabels);
 
         var isMiddle = anchor === 'middle';
-        if(isMiddle) {
-            txx -= d.tx2width / 2;
-            tx2x += d.txwidth / 2 + HOVERTEXTPAD;
-        }
-        if(rotateLabels) {
-            offsetY *= -YSHIFTY;
-            offsetX = d.offset * YSHIFTX;
-        }
 
         g.select('path')
             .attr('d', isMiddle ?
             // middle aligned: rect centered on data
-            ('M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) +
+            ('M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsets.y - d.by / 2) +
               'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z') :
             // left or right aligned: side rect with arrow to data
-            ('M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) +
+            ('M0,0L' + pX(horzSign * HOVERARROWSIZE + offsets.x) + ',' + pY(HOVERARROWSIZE + offsets.y) +
                 'v' + pY(d.by / 2 - HOVERARROWSIZE) +
                 'h' + pX(horzSign * d.bx) +
                 'v-' + pY(d.by) +
-                'H' + pX(horzSign * HOVERARROWSIZE + offsetX) +
-                'V' + pY(offsetY - HOVERARROWSIZE) +
+                'H' + pX(horzSign * HOVERARROWSIZE + offsets.x) +
+                'V' + pY(offsets.y - HOVERARROWSIZE) +
                 'Z'));
 
-        var posX = offsetX + txx;
-        var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
+        var posX = offsets.x + shiftX.xx;
+        var posY = offsets.y + d.ty0 - d.by / 2 + HOVERTEXTPAD;
         var textAlign = d.textAlign || 'auto';
 
         if(textAlign !== 'auto') {
@@ -1797,12 +1821,12 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         if(d.tx2width) {
             g.select('text.name')
                 .call(svgTextUtils.positionText,
-                    pX(tx2x + alignShift * HOVERTEXTPAD + offsetX),
-                    pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD));
+                    pX(shiftX.x2x + shiftX.alignShift * HOVERTEXTPAD + offsets.x),
+                    pY(offsets.y + d.ty0 - d.by / 2 + HOVERTEXTPAD));
             g.select('rect')
                 .call(Drawing.setRect,
-                    pX(tx2x + (alignShift - 1) * d.tx2width / 2 + offsetX),
-                    pY(offsetY - d.by / 2 - 1),
+                    pX(shiftX.x2x + (shiftX.alignShift - 1) * d.tx2width / 2 + offsets.x),
+                    pY(offsets.y - d.by / 2 - 1),
                     pX(d.tx2width), pY(d.by + 2));
         }
     });
