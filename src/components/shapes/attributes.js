@@ -228,7 +228,7 @@ module.exports = templatedArray('shape', {
     label: {
         text: {
             valType: 'string',
-            dflt: null,
+            dflt: '',
             editType: 'arraydraw',
             description: 'Sets the text to display with shape.'
         },

@@ -151,7 +151,7 @@ function drawOne(gd, index) {
 
         setClipPath(shapeGroup, gd, options);
 
-        // Draw label, if present
+        // Draw or clear the label
         drawLabel(gd, index, options, shapeGroup);
 
         var editHelpers;
