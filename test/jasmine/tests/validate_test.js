@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 
 describe('Plotly.validate', function() {
@@ -538,7 +538,7 @@ describe('Plotly.validate', function() {
     it('should accept attributes that really end in a number', function() {
         // and not try to strip that number off!
         // eg x0, x1 in shapes
-        var shapeMock = require('@mocks/shapes.json');
+        var shapeMock = require('../../image/mocks/shapes.json');
         var out = Plotly.validate(shapeMock.data, shapeMock.layout);
         expect(out).toBeUndefined();
     });

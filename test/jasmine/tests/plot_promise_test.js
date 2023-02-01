@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Events = require('@src/lib/events');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Events = require('../../../src/lib/events');
+var Registry = require('../../../src/registry');
 function _doPlot(gd, data, layout) {
     return Registry.call('_doPlot', gd, data, layout);
 }

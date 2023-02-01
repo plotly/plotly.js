@@ -1,11 +1,11 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Axes = require('@src/plots/cartesian/axes');
-var Drawing = require('@src/components/drawing');
-var constants = require('@src/plots/cartesian/constants');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Axes = require('../../../src/plots/cartesian/axes');
+var Drawing = require('../../../src/components/drawing');
+var constants = require('../../../src/plots/cartesian/constants');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -23,7 +23,7 @@ var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var MODEBAR_DELAY = 500;
 
 describe('zoom box element', function() {
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
 
     var gd;
     beforeEach(function(done) {
@@ -75,7 +75,7 @@ describe('main plot pan', function() {
     afterEach(destroyGraphDiv);
 
     it('should respond to pan interactions', function(done) {
-        var mock = require('@mocks/10.json');
+        var mock = require('../../image/mocks/10.json');
         var precision = 5;
 
         var originalX = [-0.5251046025104602, 5.5];
@@ -187,7 +187,7 @@ describe('main plot pan', function() {
     });
 
     it('should emit plotly_relayouting events during pan interactions', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/10.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/10.json'));
         mock.layout.dragmode = 'pan';
 
         var nsteps = 10;
@@ -556,7 +556,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     });
 
     it('updates linked axes when there are constraints (axes_scaleanchor mock)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/axes_scaleanchor.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/axes_scaleanchor.json'));
 
         function _assert(y3rng, y4rng) {
             expect(gd._fullLayout.yaxis3.range).toBeCloseToArray(y3rng, 2, 'y3 rng');
@@ -775,7 +775,7 @@ describe('axis zoom/pan and main plot zoom', function() {
     });
 
     it('should compute correct multicategory tick label span during drag', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/multicategory.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/multicategory.json'));
 
         function _assertLabels(msg, exp) {
             var tickLabels = d3Select(gd).selectAll('.xtick > text');

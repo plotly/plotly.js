@@ -1,9 +1,9 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Fx = require('@src/components/fx');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Fx = require('../../../src/components/fx');
 
-var constants = require('@src/plots/mapbox/constants');
-var supplyLayoutDefaults = require('@src/plots/mapbox/layout_defaults');
+var constants = require('../../../src/plots/mapbox/constants');
+var supplyLayoutDefaults = require('../../../src/plots/mapbox/layout_defaults');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -25,7 +25,7 @@ var SORTED_EVENT_KEYS = [
     'bbox'
 ].sort();
 
-var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
 var MOUSE_DELAY = 100;
 var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -494,7 +494,7 @@ describe('mapbox credentials', function() {
 });
 
 describe('mapbox plots', function() {
-    var mock = require('@mocks/mapbox_0.json');
+    var mock = require('../../image/mocks/mapbox_0.json');
     var gd;
 
     var pointPos = [579, 276];
@@ -782,7 +782,7 @@ describe('mapbox plots', function() {
     }, LONG_TIMEOUT_INTERVAL);
 
     it('@gl should be able to add, update and remove layers', function(done) {
-        var mockWithLayers = require('@mocks/mapbox_layers');
+        var mockWithLayers = require('../../image/mocks/mapbox_layers');
 
         var layer0 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[0]);
         var layer1 = Lib.extendDeep({}, mockWithLayers.layout.mapbox.layers[1]);
@@ -1611,7 +1611,7 @@ describe('mapbox plots', function() {
         });
 
         it('@gl should be displayed for attributions defined in layers\' sourceattribution', function(done) {
-            var mock = require('@mocks/mapbox_layers.json');
+            var mock = require('../../image/mocks/mapbox_layers.json');
             var customMock = Lib.extendDeep(mock);
 
             var attr = 'custom attribution';

@@ -1,11 +1,11 @@
-var Plotly = require('@lib/index');
-var plotApi = require('@src/plot_api/plot_api');
-var Lib = require('@src/lib');
-var Axes = require('@src/plots/cartesian/axes');
-var subroutines = require('@src/plot_api/subroutines');
-var annotations = require('@src/components/annotations');
-var images = require('@src/components/images');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var plotApi = require('../../../src/plot_api/plot_api');
+var Lib = require('../../../src/lib');
+var Axes = require('../../../src/plots/cartesian/axes');
+var subroutines = require('../../../src/plot_api/subroutines');
+var annotations = require('../../../src/components/annotations');
+var images = require('../../../src/components/images');
+var Registry = require('../../../src/registry');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -18,7 +18,7 @@ var mouseEvent = require('../assets/mouse_event');
 var drag = require('../assets/drag');
 var delay = require('../assets/delay');
 
-var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
 
 describe('@noCIdep Plotly.react', function() {
     var mockedMethods = [

@@ -1,11 +1,11 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -15,7 +15,7 @@ var touchEvent = require('../assets/touch_event');
 
 var LONG_TIMEOUT_INTERVAL = 5 * jasmine.DEFAULT_TIMEOUT_INTERVAL;
 var delay = require('../assets/delay');
-var sankeyConstants = require('@src/traces/sankey/constants');
+var sankeyConstants = require('../../../src/traces/sankey/constants');
 
 function _newPlot(gd, arg2, arg3, arg4) {
     var fig;
@@ -160,7 +160,7 @@ describe('Click-to-select', function() {
     afterEach(destroyGraphDiv);
 
     function plotMock14(layoutOpts) {
-        var mock = require('@mocks/14.json');
+        var mock = require('../../image/mocks/14.json');
         var defaultLayoutOpts = {
             layout: {
                 clickmode: 'event+select',
@@ -440,7 +440,7 @@ describe('Click-to-select', function() {
     });
 
     it('deals correctly with histogram\'s binning in the persistent selection case', function(done) {
-        var mock = require('@mocks/histogram_colorscale.json');
+        var mock = require('../../image/mocks/histogram_colorscale.json');
         var firstBinPts = [0];
         var secondBinPts = [1, 2];
         var thirdBinPts = [3, 4, 5];
@@ -479,7 +479,7 @@ describe('Click-to-select', function() {
     });
 
     it('ignores clicks on boxes in a box trace type', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/box_grouped_horz.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/box_grouped_horz.json'));
 
         mock.layout.clickmode = 'event+select';
         mock.layout.width = 1100;
@@ -553,25 +553,25 @@ describe('Click-to-select', function() {
 
         // The non-gl traces: use CI annotation
         [
-            testCase('histrogram', require('@mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
-            testCase('box', require('@mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
+            testCase('histrogram', require('../../image/mocks/histogram_colorscale.json'), 355, 301, [3, 4, 5]),
+            testCase('box', require('../../image/mocks/box_grouped_horz.json'), 610, 342, [[2], [], []],
               { width: 1100, height: 450 }),
-            testCase('violin', require('@mocks/violin_grouped.json'), 166, 187, [[3], [], []],
+            testCase('violin', require('../../image/mocks/violin_grouped.json'), 166, 187, [[3], [], []],
               { width: 1100, height: 450 }),
-            testCase('ohlc', require('@mocks/ohlc_first.json'), 669, 165, [9]),
-            testCase('candlestick', require('@mocks/finance_style.json'), 331, 162, [[], [5]]),
-            testCase('choropleth', require('@mocks/geo_choropleth-text.json'), 440, 163, [6]),
-            testCase('scattergeo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
-            testCase('scatterternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
+            testCase('ohlc', require('../../image/mocks/ohlc_first.json'), 669, 165, [9]),
+            testCase('candlestick', require('../../image/mocks/finance_style.json'), 331, 162, [[], [5]]),
+            testCase('choropleth', require('../../image/mocks/geo_choropleth-text.json'), 440, 163, [6]),
+            testCase('scattergeo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('scatterternary', require('../../image/mocks/ternary_markers.json'), 485, 335, [7]),
 
             // Note that first trace (carpet) in mock doesn't support selection,
             // thus undefined is expected
-            testCase('scattercarpet', require('@mocks/scattercarpet.json'), 532, 178,
+            testCase('scattercarpet', require('../../image/mocks/scattercarpet.json'), 532, 178,
               [undefined, [], [], [], [], [], [2]], { width: 1100, height: 450 }),
 
             // scatterpolar and scatterpolargl do not support pan (the default),
             // so set dragmode to zoom
-            testCase('scatterpolar', require('@mocks/polar_scatter.json'), 130, 290,
+            testCase('scatterpolar', require('../../image/mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
         ]
           .forEach(function(testCase) {
@@ -581,9 +581,9 @@ describe('Click-to-select', function() {
           });
 
         [
-            testCase('scatterpolargl', require('@mocks/glpolar_scatter.json'), 130, 290,
+            testCase('scatterpolargl', require('../../image/mocks/glpolar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' }),
-            testCase('splom', require('@mocks/splom_lower.json'), 427, 400, [[], [7], []])
+            testCase('splom', require('../../image/mocks/splom_lower.json'), 427, 400, [[], [7], []])
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
@@ -592,10 +592,10 @@ describe('Click-to-select', function() {
           });
 
         [
-            testCase('scattermapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('choroplethmapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('scattermapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('choroplethmapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0]], {},
+              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ]
           .forEach(function(testCase) {
               it('@gl trace type ' + testCase.label, function(done) {
@@ -667,10 +667,10 @@ describe('Click-to-select', function() {
 
     describe('triggers \'plotly_selected\' before \'plotly_click\'', function() {
         [
-            testCase('cartesian', require('@mocks/14.json'), 270, 160, [7]),
-            testCase('geo', require('@mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
-            testCase('ternary', require('@mocks/ternary_markers.json'), 485, 335, [7]),
-            testCase('polar', require('@mocks/polar_scatter.json'), 130, 290,
+            testCase('cartesian', require('../../image/mocks/14.json'), 270, 160, [7]),
+            testCase('geo', require('../../image/mocks/geo_scattergeo-locations.json'), 285, 240, [1]),
+            testCase('ternary', require('../../image/mocks/ternary_markers.json'), 485, 335, [7]),
+            testCase('polar', require('../../image/mocks/polar_scatter.json'), 130, 290,
               [[], [], [], [19], [], []], { dragmode: 'zoom' })
         ].forEach(function(testCase) {
             it('for base plot ' + testCase.label, function(done) {
@@ -679,10 +679,10 @@ describe('Click-to-select', function() {
         });
 
         [
-            testCase('mapbox', require('@mocks/mapbox_0.json'), 650, 195, [[2], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN }),
-            testCase('mapbox', require('@mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
-              { mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN })
+            testCase('mapbox', require('../../image/mocks/mapbox_0.json'), 650, 195, [[2], []], {},
+              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN }),
+            testCase('mapbox', require('../../image/mocks/mapbox_choropleth0.json'), 270, 220, [[0], []], {},
+              { mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN })
         ].forEach(function(testCase) {
             it('@gl for base plot ' + testCase.label, function(done) {
                 _run(testCase, done);
@@ -745,7 +745,7 @@ describe('Click-to-select', function() {
 });
 
 describe('Test select box and lasso in general:', function() {
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
     var selectPath = [[93, 193], [143, 193]];
     var lassoPath = [[316, 171], [318, 239], [335, 243], [328, 169]];
 
@@ -1357,7 +1357,7 @@ describe('Test select box and lasso in general:', function() {
 
     it('@flaky should cleanly clear and restart selections on double click when add/subtract mode on', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/0.json'));
 
         fig.layout.dragmode = 'select';
         _newPlot(gd, fig)
@@ -1393,7 +1393,7 @@ describe('Test select box and lasso in general:', function() {
 
     it('should clear selected points on double click only on pan/lasso modes', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/0.json'));
         fig.data = [fig.data[0]];
         fig.layout.xaxis.autorange = false;
         fig.layout.xaxis.range = [2, 8];
@@ -1757,7 +1757,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertPoints = makeAssertPoints(['a', 'b', 'c']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_simple'));
             fig.layout.width = 800;
             fig.layout.dragmode = 'select';
             addInvisible(fig);
@@ -1814,7 +1814,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertPoints = makeAssertPoints(['a', 'b']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/scattercarpet'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/scattercarpet'));
             delete fig.data[6].selectedpoints;
             fig.layout.dragmode = 'select';
             addInvisible(fig);
@@ -1856,7 +1856,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertLassoPoints = makeAssertLassoPoints('mapbox');
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/mapbox_bubbles-text'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_bubbles-text'));
 
             fig.data[0].lon.push(null);
             fig.data[0].lat.push(null);
@@ -1866,7 +1866,7 @@ describe('Test select box and lasso per trace:', function() {
             delete fig.layout.mapbox.bounds;
 
             fig.config = {
-                mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
             };
             addInvisible(fig);
 
@@ -1920,13 +1920,13 @@ describe('Test select box and lasso per trace:', function() {
             var assertLassoPoints = makeAssertLassoPoints('mapbox');
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth0.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth0.json'));
 
             fig.data[0].locations.push(null);
 
             fig.layout.dragmode = 'select';
             fig.config = {
-                mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
             };
             addInvisible(fig);
 
@@ -2072,7 +2072,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertPoints = makeAssertPoints(['r', 'theta']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/polar_subplots'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_subplots'));
             fig.layout.width = 800;
             fig.layout.dragmode = 'select';
             addInvisible(fig);
@@ -2114,7 +2114,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertPoints = makeAssertPoints(['real', 'imag']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/smith_basic.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/smith_basic.json'));
             fig.layout.dragmode = 'select';
             addInvisible(fig);
 
@@ -2155,7 +2155,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertPoints = makeAssertPoints(['r', 'theta']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/polar_wind-rose.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_wind-rose.json'));
             fig.layout.showlegend = false;
             fig.layout.width = 500;
             fig.layout.height = 500;
@@ -2217,7 +2217,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertRanges = makeAssertRanges('geo', -0.5);
             var assertLassoPoints = makeAssertLassoPoints('geo', -0.5);
 
-            var fig = Lib.extendDeep({}, require('@mocks/geo_choropleth-text'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_choropleth-text'));
             fig.layout.width = 870;
             fig.layout.height = 450;
             fig.layout.dragmode = 'select';
@@ -2283,7 +2283,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertRanges = makeAssertRanges();
             var assertLassoPoints = makeAssertLassoPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/waterfall_profit-loss_2018_positive-negative'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/waterfall_profit-loss_2018_positive-negative'));
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
@@ -2344,7 +2344,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertRanges = makeAssertRanges();
             var assertLassoPoints = makeAssertLassoPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/funnel_horizontal_group_basic'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/funnel_horizontal_group_basic'));
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
@@ -2407,7 +2407,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertRanges = makeAssertRanges();
             var assertLassoPoints = makeAssertLassoPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/0'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/0'));
             fig.layout.dragmode = 'lasso';
             addInvisible(fig);
 
@@ -2561,7 +2561,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertRanges = makeAssertRanges();
             var assertLassoPoints = makeAssertLassoPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/hist_grouped'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/hist_grouped'));
             fig.layout.dragmode = 'lasso';
             fig.layout.width = 600;
             fig.layout.height = 500;
@@ -2613,7 +2613,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertRanges = makeAssertRanges();
             var assertLassoPoints = makeAssertLassoPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/box_grouped'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/box_grouped'));
             fig.data.forEach(function(trace) {
                 trace.boxpoints = 'all';
             });
@@ -2733,7 +2733,7 @@ describe('Test select box and lasso per trace:', function() {
             var assertRanges = makeAssertRanges();
             var assertLassoPoints = makeAssertLassoPoints();
 
-            var fig = Lib.extendDeep({}, require('@mocks/violin_grouped'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/violin_grouped'));
             fig.layout.dragmode = 'lasso';
             fig.layout.width = 600;
             fig.layout.height = 500;
@@ -2976,7 +2976,7 @@ describe('Test select box and lasso per trace:', function() {
 
         [false].forEach(function(hasCssTransform) {
             it('select, hasCssTransform: ' + hasCssTransform, function(done) {
-                var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
+                var fig = Lib.extendDeep({}, require('../../image/mocks/sankey_circular.json'));
                 fig.layout.dragmode = 'select';
                 var dblClickPos = [250, 400];
 
@@ -3011,7 +3011,7 @@ describe('Test select box and lasso per trace:', function() {
         });
 
         it('should not work when dragmode is undefined', function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/sankey_circular.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/sankey_circular.json'));
             fig.layout.dragmode = undefined;
 
             _newPlot(gd, fig)
@@ -3037,13 +3037,13 @@ describe('Test select box and lasso per trace:', function() {
         var assertLassoPoints = makeAssertLassoPoints('mapbox');
         var assertSelectedPoints = makeAssertSelectedPoints();
 
-        var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth0.json'));
 
         fig.data[0].locations.push(null);
 
         fig.layout.dragmode = 'select';
         fig.config = {
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         };
         addInvisible(fig);
 

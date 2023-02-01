@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var supplyDefaults = require('@src/traces/surface').supplyDefaults;
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var supplyDefaults = require('../../../src/traces/surface').supplyDefaults;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

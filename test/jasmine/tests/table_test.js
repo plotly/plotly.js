@@ -1,13 +1,13 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
 function _doPlot(gd, data, layout) {
     return Registry.call('_doPlot', gd, data, layout);
 }
 
-var Table = require('@src/traces/table');
-var attributes = require('@src/traces/table/attributes');
-var cn = require('@src/traces/table/constants').cn;
+var Table = require('../../../src/traces/table');
+var attributes = require('../../../src/traces/table/attributes');
+var cn = require('../../../src/traces/table/constants').cn;
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -16,7 +16,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var supplyAllDefaults = require('../assets/supply_defaults');
 var mouseEvent = require('../assets/mouse_event');
 
-var mockMulti = require('@mocks/table_latex_multitrace_scatter.json');
+var mockMulti = require('../../image/mocks/table_latex_multitrace_scatter.json');
 
 // mock with two columns; lowest column count of general case
 var mock2 = Lib.extendDeep({}, mockMulti);
@@ -32,7 +32,7 @@ var mock0 = Lib.extendDeep({}, mock1);
 mock0.data[0].header.values = [];
 mock0.data[0].cells.values = [];
 
-var mock = require('@mocks/table_plain_birds.json');
+var mock = require('../../image/mocks/table_plain_birds.json');
 
 describe('table initialization tests', function() {
     'use strict';
@@ -204,7 +204,7 @@ describe('table', function() {
         });
 
         it('should remove scroll glyph and capture zone when *staticPlot:true*', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/table_plain_birds.json'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/table_plain_birds.json'));
             var gd = createGraphDiv();
 
             function _assert(msg, exp) {

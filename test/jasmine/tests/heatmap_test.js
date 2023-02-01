@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var setConvert = require('@src/plots/cartesian/set_convert');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var setConvert = require('../../../src/plots/cartesian/set_convert');
 
-var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
-var Heatmap = require('@src/traces/heatmap');
+var convertColumnXYZ = require('../../../src/traces/heatmap/convert_column_xyz');
+var Heatmap = require('../../../src/traces/heatmap');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -530,7 +530,7 @@ describe('heatmap calc', function() {
 
     ['heatmap', 'heatmapgl'].forEach(function(traceType) {
         it('should sort z data based on axis categoryorder for ' + traceType, function() {
-            var mock = require('@mocks/heatmap_categoryorder');
+            var mock = require('../../image/mocks/heatmap_categoryorder');
             var mockCopy = Lib.extendDeep({}, mock);
             var data = mockCopy.data[0];
             data.type = traceType;
@@ -560,7 +560,7 @@ describe('heatmap calc', function() {
         });
 
         it('should sort z data based on axis categoryarray ' + traceType, function() {
-            var mock = require('@mocks/heatmap_categoryorder');
+            var mock = require('../../image/mocks/heatmap_categoryorder');
             var mockCopy = Lib.extendDeep({}, mock);
             var data = mockCopy.data[0];
             data.type = traceType;
@@ -669,7 +669,7 @@ describe('heatmap plot', function() {
     afterEach(destroyGraphDiv);
 
     it('should not draw traces that are off-screen', function(done) {
-        var mock = require('@mocks/heatmap_multi-trace.json');
+        var mock = require('../../image/mocks/heatmap_multi-trace.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
         function assertImageCnt(cnt) {
@@ -722,7 +722,7 @@ describe('heatmap plot', function() {
     });
 
     it('should be able to restyle', function(done) {
-        var mock = require('@mocks/13.json');
+        var mock = require('../../image/mocks/13.json');
         var mockCopy = Lib.extendDeep({}, mock);
 
         function getImageURL() {
@@ -756,7 +756,7 @@ describe('heatmap plot', function() {
     });
 
     it('draws canvas with correct margins', function(done) {
-        var mockWithPadding = require('@mocks/heatmap_brick_padding.json');
+        var mockWithPadding = require('../../image/mocks/heatmap_brick_padding.json');
         var mockWithoutPadding = Lib.extendDeep({}, mockWithPadding);
         var getContextStub = {
             fillRect: jasmine.createSpy()
@@ -866,7 +866,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_multi-trace.json');
+            var mock = require('../../image/mocks/heatmap_multi-trace.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
@@ -893,7 +893,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_categoryorder.json');
+            var mock = require('../../image/mocks/heatmap_categoryorder.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
@@ -944,7 +944,7 @@ describe('heatmap hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = require('@mocks/heatmap_contour_irregular_bricks.json');
+            var mock = require('../../image/mocks/heatmap_contour_irregular_bricks.json');
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout).then(done);
