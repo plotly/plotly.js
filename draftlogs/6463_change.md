@@ -1,0 +1,1 @@
+ - Bump `d3-interpolate` to v3 [[#6463](https://github.com/plotly/plotly.js/pull/6463)]
