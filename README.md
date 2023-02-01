@@ -55,7 +55,7 @@ You may also consider using [`plotly.js-dist`](https://www.npmjs.com/package/plo
 
 ```html
 <head>
-    <script src="https://cdn.plot.ly/plotly-2.18.0.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.18.0.min.js" charset="utf-8"></script>
 </head>
 <body>
     <div id="gd"></div>
