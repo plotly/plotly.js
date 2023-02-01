@@ -1555,11 +1555,12 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
             var shiftX = getLabelShiftX(d);
             // calculation based on alignHoverText function
             var offsetRectX = (shiftX.x2x + (shiftX.alignShift - 1) * d.tx2width / 2 + offsets.x) * fullLayout._invScaleX;
+            var offsetRectY = (offsets.y - d.by / 2 - 1) * fullLayout._invScaleY;
 
-            var labelMinX = d.crossPos + offsetRectX;
-            var labelMaxX = labelMinX + d.tx2width;
+            var labelMin = d.crossPos + (axIsX ? offsetRectY : offsetRectX);
+            var labelMax = labelMin + (axIsX ? d.tx2width * fullLayout._invScaleX : (d.by + 2) * fullLayout._invScaleY);
             if(axIsX) {
-                if(axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.max(labelMinX, axisLabelMinY) <= Math.min(labelMaxX, axisLabelMaxY)) {
+                if(axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.max(labelMin, axisLabelMinY) <= Math.min(labelMax, axisLabelMaxY)) {
                     // has overlap with axis label
                     if(crossAx.side === 'left') {
                         pmin = crossAx._mainLinePosition;
@@ -1569,7 +1570,7 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
                     }
                 }
             } else {
-                if(axisLabelMinX !== undefined && axisLabelMaxX !== undefined && Math.max(labelMinX, axisLabelMinX) <= Math.min(labelMaxX, axisLabelMaxX)) {
+                if(axisLabelMinX !== undefined && axisLabelMaxX !== undefined && Math.max(labelMin, axisLabelMinX) <= Math.min(labelMax, axisLabelMaxX)) {
                     // has overlap with axis label
                     if(crossAx.side === 'top') {
                         pmin = crossAx._mainLinePosition;
