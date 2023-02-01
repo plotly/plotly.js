@@ -1,9 +1,9 @@
-var Choropleth = require('@src/traces/choropleth');
+var Choropleth = require('../../../src/traces/choropleth');
 
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var loggers = require('@src/lib/loggers');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var loggers = require('../../../src/lib/loggers');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -198,7 +198,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should generate hover label info (base), hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_first.json'));
 
             run(
                 hasCssTransform,
@@ -212,7 +212,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should use the hovertemplate, hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_first.json'));
             fig.data[1].hovertemplate = 'tpl %{z}<extra>x</extra>';
 
             run(
@@ -227,7 +227,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should generate hover label info (\'text\' single value case), hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_first.json'));
             fig.data[1].text = 'tExT';
             fig.data[1].hoverinfo = 'text';
 
@@ -243,7 +243,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should generate hover label info (\'text\' array case), hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_first.json'));
             fig.data[1].text = ['tExT', 'TeXt', '-text-'];
             fig.data[1].hoverinfo = 'text';
 
@@ -259,7 +259,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should generate hover labels from `hovertext`, hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_first.json'));
             fig.data[1].hovertext = ['tExT', 'TeXt', '-text-'];
             fig.data[1].text = ['N', 'O', 'P'];
             fig.data[1].hoverinfo = 'text';
@@ -276,7 +276,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should generate hover label with custom styling, hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_first.json'));
             fig.data[1].hoverlabel = {
                 bgcolor: 'red',
                 bordercolor: ['blue', 'black', 'green'],
@@ -302,7 +302,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should generate hover label with arrayOk \'hoverinfo\' settings, hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_first.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_first.json'));
             fig.data[1].hoverinfo = ['location', 'z', 'location+name'];
 
             run(
@@ -348,7 +348,7 @@ describe('Test choropleth hover:', function() {
 
     [false, true].forEach(function(hasCssTransform) {
         it('should include *properties* from input custom geojson, hasCssTransform: ' + hasCssTransform, function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/geo_custom-geojson.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/geo_custom-geojson.json'));
             fig.data = [fig.data[1]];
             fig.data[0].hovertemplate = '%{properties.name}<extra>%{ct[0]:.1f} | %{ct[1]:.1f}</extra>';
             fig.layout.geo.projection = {scale: 20};

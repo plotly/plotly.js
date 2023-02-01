@@ -1,17 +1,17 @@
-var Plotly = require('@lib/index');
-var plotApi = require('@src/plot_api/plot_api');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Queue = require('@src/lib/queue');
-var Scatter = require('@src/traces/scatter');
-var Bar = require('@src/traces/bar');
-var Legend = require('@src/components/legend');
-var Axes = require('@src/plots/cartesian/axes');
+var Plotly = require('../../../lib/index');
+var plotApi = require('../../../src/plot_api/plot_api');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Queue = require('../../../src/lib/queue');
+var Scatter = require('../../../src/traces/scatter');
+var Bar = require('../../../src/traces/bar');
+var Legend = require('../../../src/components/legend');
+var Axes = require('../../../src/plots/cartesian/axes');
 var pkg = require('../../../package.json');
-var subroutines = require('@src/plot_api/subroutines');
-var manageArrays = require('@src/plot_api/manage_arrays');
-var helpers = require('@src/plot_api/helpers');
-var editTypes = require('@src/plot_api/edit_types');
+var subroutines = require('../../../src/plot_api/subroutines');
+var manageArrays = require('../../../src/plot_api/manage_arrays');
+var helpers = require('../../../src/plot_api/helpers');
+var editTypes = require('../../../src/plot_api/edit_types');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -1199,7 +1199,7 @@ describe('Test plot api', function() {
         });
 
         it('turns off cauto (autocolorscale) when you edit cmin or cmax (colorscale)', function(done) {
-            var scales = require('@src/components/colorscale/scales').scales;
+            var scales = require('../../../src/components/colorscale/scales').scales;
 
             var autocscale = scales.Reds;
             var mcscl0 = 'Rainbow';
@@ -1493,7 +1493,7 @@ describe('Test plot api', function() {
         });
 
         it('updates colorbars when editing bar charts', function(done) {
-            var mock = require('@mocks/bar-colorscale-colorbar.json');
+            var mock = require('../../image/mocks/bar-colorscale-colorbar.json');
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(function() {

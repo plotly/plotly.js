@@ -264,30 +264,7 @@ func.defaultConfig = {
     webpack: {
         target: ['web', 'es5'],
         module: {
-            rules: [{
-                test: /\.js$/,
-                use: [
-                    'transform-loader?' + path.resolve(__dirname, '..', '..', 'tasks/util/shortcut_paths')
-                ]
-            }, {
-                test: /\.js$/,
-                include: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        babelrc: false,
-                        configFile: false,
-                        plugins: [
-                            '@babel/plugin-transform-modules-commonjs'
-                        ]
-                    }
-                }
-            }, {
-                test: /\.(js|glsl)$/,
-                use: [
-                    'ify-loader'
-                ]
-            }]
+            rules: webpackConfig.module.rules
         },
         resolve: {
             fallback: {

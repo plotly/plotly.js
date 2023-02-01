@@ -1,7 +1,7 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var util = require('@src/lib/svg_text_utils');
+var util = require('../../../src/lib/svg_text_utils');
 
 
 describe('svg+text utils', function() {

@@ -1,9 +1,9 @@
 'use strict';
 
-var Plotly = require('@lib/index');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Registry = require('../../../src/registry');
 
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var failTest = require('../assets/fail_test');

@@ -1,11 +1,11 @@
-var Shapes = require('@src/components/shapes');
-var helpers = require('@src/components/shapes/helpers');
-var constants = require('@src/components/shapes/constants');
+var Shapes = require('../../../src/components/shapes');
+var helpers = require('../../../src/components/shapes/helpers');
+var constants = require('../../../src/components/shapes/constants');
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Axes = require('@src/plots/cartesian/axes');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Axes = require('../../../src/plots/cartesian/axes');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -215,7 +215,7 @@ function countShapePathsInSubplots() {
 describe('Test shapes:', function() {
     'use strict';
 
-    var mock = require('@mocks/shapes.json');
+    var mock = require('../../image/mocks/shapes.json');
     var gd;
 
     beforeEach(function(done) {

@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Registry = require('@src/registry');
-var Plots = require('@src/plots/plots');
+var Plotly = require('../../../lib/index');
+var Registry = require('../../../src/registry');
+var Plots = require('../../../src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 
 describe('Plots.executeAPICommand', function() {
     'use strict';
@@ -510,7 +510,7 @@ describe('component bindings', function() {
     'use strict';
 
     var gd;
-    var mock = require('@mocks/binding.json');
+    var mock = require('../../image/mocks/binding.json');
 
     beforeEach(function(done) {
         var mockCopy = Lib.extendDeep({}, mock);
