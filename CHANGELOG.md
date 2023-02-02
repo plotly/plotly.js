@@ -9,6 +9,16 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.18.1] -- 2023-02-02
+
+### Changed
+ - Bump `d3-interpolate` and `d3-color` to v3 to address audit warnings [[#6463](https://github.com/plotly/plotly.js/pull/6463)]
+
+### Fixed
+ - Fix scaling of exports e.g. the SVG format by not adding `vector-effect` CSS to static plots [[#6445](https://github.com/plotly/plotly.js/pull/6445)]
+ - Fix hover on IE (regression introduced in 2.5.0) [#6466](https://github.com/plotly/plotly.js/pull/6466)
+
+
 ## [2.18.0] -- 2023-01-19
 
 ### Added
