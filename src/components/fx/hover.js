@@ -2124,8 +2124,8 @@ function getBoundingClientRect(gd, node) {
 
     var rect = node.getBoundingClientRect();
 
-    var x0 = rect.x;
-    var y0 = rect.y;
+    var x0 = rect.left;
+    var y0 = rect.top;
     var x1 = x0 + rect.width;
     var y1 = y0 + rect.height;
 
