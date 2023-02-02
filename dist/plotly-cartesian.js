@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.18.0
+* plotly.js (cartesian) v2.18.1
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -7248,6 +7248,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
   var hasAnimation = transitionOpts && transitionOpts.duration > 0;
+  var isStatic = gd._context.staticPlot;
   traces.each(function (d) {
     var trace = d[0].trace;
     // || {} is in case the trace (specifically scatterternary)
@@ -7291,7 +7292,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
 
         isNew = !yerror.size();
         if (isNew) {
-          yerror = errorbar.append('path').style('vector-effect', 'non-scaling-stroke').classed('yerror', true);
+          yerror = errorbar.append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').classed('yerror', true);
         } else if (hasAnimation) {
           yerror = yerror.transition().duration(transitionOpts.duration).ease(transitionOpts.easing);
         }
@@ -7308,7 +7309,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
 
         isNew = !xerror.size();
         if (isNew) {
-          xerror = errorbar.append('path').style('vector-effect', 'non-scaling-stroke').classed('xerror', true);
+          xerror = errorbar.append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').classed('xerror', true);
         } else if (hasAnimation) {
           xerror = xerror.transition().duration(transitionOpts.duration).ease(transitionOpts.easing);
         }
@@ -9588,8 +9589,8 @@ function getLeftOffset(gd) {
 function getBoundingClientRect(gd, node) {
   var fullLayout = gd._fullLayout;
   var rect = node.getBoundingClientRect();
-  var x0 = rect.x;
-  var y0 = rect.y;
+  var x0 = rect.left;
+  var y0 = rect.top;
   var x1 = x0 + rect.width;
   var y1 = y0 + rect.height;
   var A = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
@@ -23466,7 +23467,7 @@ function isTransformableElement(element) {
   return element && (element instanceof Element || element instanceof HTMLElement);
 }
 function equalDomRects(a, b) {
-  return a && b && a.x === b.x && a.y === b.y && a.top === b.top && a.left === b.left && a.right === b.right && a.bottom === b.bottom;
+  return a && b && a.top === b.top && a.left === b.left && a.right === b.right && a.bottom === b.bottom;
 }
 module.exports = {
   getGraphDiv: getGraphDiv,
@@ -53489,6 +53490,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
   var fullLayout = gd._fullLayout;
+  var isStatic = gd._context.staticPlot;
   if (!opts) {
     opts = {
       mode: fullLayout.barmode,
@@ -53618,7 +53620,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         y1 = fixpx(y1, y0, !isHorizontal);
       }
       var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);
-      sel.style('vector-effect', 'non-scaling-stroke').attr('d', isNaN((x1 - x0) * (y1 - y0)) || isBlank && gd._context.staticPlot ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z').call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
+      sel.style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').attr('d', isNaN((x1 - x0) * (y1 - y0)) || isBlank && gd._context.staticPlot ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z').call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
       if (!fullLayout.uniformtext.mode && withTransition) {
         var styleFns = Drawing.makePointStyleFns(trace);
         Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
@@ -55931,6 +55933,7 @@ var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 function plot(gd, plotinfo, cdbox, boxLayer) {
+  var isStatic = gd._context.staticPlot;
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
   Lib.makeTraceGroups(boxLayer, cdbox, 'trace boxes').each(function (cd) {
@@ -55956,7 +55959,7 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
     plotBoxAndWhiskers(plotGroup, {
       pos: posAxis,
       val: valAxis
-    }, trace, t);
+    }, trace, t, isStatic);
     plotPoints(plotGroup, {
       x: xa,
       y: ya
@@ -55967,7 +55970,7 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
     }, trace, t);
   });
 }
-function plotBoxAndWhiskers(sel, axes, trace, t) {
+function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
   var isHorizontal = trace.orientation === 'h';
   var valAxis = axes.val;
   var posAxis = axes.pos;
@@ -55990,7 +55993,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
     bdPos1 = t.bdPos;
   }
   var paths = sel.selectAll('path.box').data(trace.type !== 'violin' || trace.box.visible ? Lib.identity : []);
-  paths.enter().append('path').style('vector-effect', 'non-scaling-stroke').attr('class', 'box');
+  paths.enter().append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').attr('class', 'box');
   paths.exit().remove();
   paths.each(function (d) {
     if (d.empty) return 'M0,0Z';
@@ -57732,6 +57735,7 @@ function joinAllPaths(pi, perimeter) {
   return fullpath;
 }
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
+  var isStatic = gd._context.staticPlot;
   var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
   var showLines = contours.showlines !== false;
   var showLabels = contours.showlabels;
@@ -57741,7 +57745,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
   // if we're showing labels, because the fill paths include the perimeter
   // so can't be used to position the labels correctly.
   // In this case we'll remove the lines after making the labels.
-  var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo);
+  var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo, isStatic);
   var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
   var labelGroup = plotgroup.selectAll('g.contourlabels').data(showLabels ? [0] : []);
   labelGroup.exit().remove();
@@ -57813,7 +57817,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
   }
   if (showLabels && !showLines) linegroup.remove();
 }
-exports.createLines = function (lineContainer, makeLines, pathinfo) {
+exports.createLines = function (lineContainer, makeLines, pathinfo, isStatic) {
   var smoothing = pathinfo[0].smoothing;
   var linegroup = lineContainer.selectAll('g.contourlevel').data(makeLines ? pathinfo : []);
   linegroup.exit().remove();
@@ -57828,7 +57832,7 @@ exports.createLines = function (lineContainer, makeLines, pathinfo) {
     opencontourlines.enter().append('path').classed('openline', true);
     opencontourlines.attr('d', function (d) {
       return Drawing.smoothopen(d, smoothing);
-    }).style('stroke-miterlimit', 1).style('vector-effect', 'non-scaling-stroke');
+    }).style('stroke-miterlimit', 1).style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
     var closedcontourlines = linegroup.selectAll('path.closedline').data(function (d) {
       return d.ppaths || d.paths;
     });
@@ -57836,7 +57840,7 @@ exports.createLines = function (lineContainer, makeLines, pathinfo) {
     closedcontourlines.enter().append('path').classed('closedline', true);
     closedcontourlines.attr('d', function (d) {
       return Drawing.smoothclosed(d, smoothing);
-    }).style('stroke-miterlimit', 1).style('vector-effect', 'non-scaling-stroke');
+    }).style('stroke-miterlimit', 1).style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
   }
   return linegroup;
 };
@@ -66390,6 +66394,7 @@ function createFills(gd, traceJoin, plotinfo) {
   });
 }
 function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
+  var isStatic = gd._context.staticPlot;
   var i;
 
   // Since this has been reorganized and we're executing this on individual traces,
@@ -66532,7 +66537,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
   var lineJoin = lines.selectAll('.js-line').data(segments);
   transition(lineJoin.exit()).style('opacity', 0).remove();
   lineJoin.each(makeUpdate(false));
-  lineJoin.enter().append('path').classed('js-line', true).style('vector-effect', 'non-scaling-stroke').call(Drawing.lineGroupStyle).each(makeUpdate(true));
+  lineJoin.enter().append('path').classed('js-line', true).style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').call(Drawing.lineGroupStyle).each(makeUpdate(true));
   Drawing.setClipUrl(lineJoin, plotinfo.layerClipId, gd);
   function clearFill(selection) {
     transition(selection).attr('d', 'M0,0Z');
@@ -68101,6 +68106,7 @@ var boxPlot = __webpack_require__(86047);
 var linePoints = __webpack_require__(34621);
 var helpers = __webpack_require__(60168);
 module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
+  var isStatic = gd._context.staticPlot;
   var fullLayout = gd._fullLayout;
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
@@ -68134,7 +68140,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     var hasPositiveSide = hasBothSides || trace.side === 'positive';
     var hasNegativeSide = hasBothSides || trace.side === 'negative';
     var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
-    violins.enter().append('path').style('vector-effect', 'non-scaling-stroke').attr('class', 'violin');
+    violins.enter().append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').attr('class', 'violin');
     violins.exit().remove();
     violins.each(function (d) {
       var pathSel = d3.select(this);
@@ -68242,7 +68248,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     // N.B. use different class name than boxPlot.plotBoxMean,
     // to avoid selectAll conflict
     var meanPaths = plotGroup.selectAll('path.meanline').data(fn || []);
-    meanPaths.enter().append('path').attr('class', 'meanline').style('fill', 'none').style('vector-effect', 'non-scaling-stroke');
+    meanPaths.enter().append('path').attr('class', 'meanline').style('fill', 'none').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
     meanPaths.exit().remove();
     meanPaths.each(function (d) {
       var v = valAxis.c2p(d.mean, true);
@@ -69266,7 +69272,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.18.0';
+exports.version = '2.18.1';
 
 /***/ }),
 
