@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var rgb = require('@src/components/color').rgb;
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var rgb = require('../../../src/components/color').rgb;
 
-var supplyLayoutDefaults = require('@src/plots/ternary/layout_defaults');
+var supplyLayoutDefaults = require('../../../src/plots/ternary/layout_defaults');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -31,7 +31,7 @@ describe('ternary plots', function() {
     afterEach(destroyGraphDiv);
 
     describe('with scatterternary trace(s)', function() {
-        var mock = require('@mocks/ternary_simple.json');
+        var mock = require('../../image/mocks/ternary_simple.json');
         var gd;
 
         var pointPos = [391, 219];
@@ -244,7 +244,7 @@ describe('ternary plots', function() {
     });
 
     describe('static plots', function() {
-        var mock = require('@mocks/ternary_simple.json');
+        var mock = require('../../image/mocks/ternary_simple.json');
         var gd;
 
         beforeEach(function(done) {
@@ -271,7 +271,7 @@ describe('ternary plots', function() {
 
     it('should be able to reorder axis layers when relayout\'ing *layer*', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_simple.json'));
         var dflt = [
             'draglayer', 'plotbg', 'backplot', 'grids',
             'frontplot',
@@ -342,7 +342,7 @@ describe('ternary plots', function() {
 
     it('should be able to relayout axis tickfont attributes', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_simple.json'));
 
         function _assert(family, color, size) {
             var tick = d3Select('g.aaxis > g.ytick > text').node();
@@ -374,7 +374,7 @@ describe('ternary plots', function() {
 
     it('should be able to relayout axis title attributes', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_simple.json'));
 
         function _assert(axisPrefix, title, family, color, size) {
             var titleSel = d3Select('.' + axisPrefix + 'title');
@@ -422,7 +422,7 @@ describe('ternary plots', function() {
 
     it('should be able to hide/show ticks and tick labels', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/ternary_simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_simple.json'));
 
         function assertCnt(selector, expected, msg) {
             var sel = d3Select(gd).selectAll(selector);
@@ -506,7 +506,7 @@ describe('ternary plots', function() {
                 var events = [];
                 var path = [[350, 250], [375, 250], [375, 225]];
                 var relayoutCallback;
-                var fig = Lib.extendDeep({}, require('@mocks/ternary_simple'));
+                var fig = Lib.extendDeep({}, require('../../image/mocks/ternary_simple'));
                 fig.layout.dragmode = dragmode;
 
                 var gd = createGraphDiv();
@@ -552,7 +552,7 @@ describe('ternary plots when css transform is present', function() {
 
     afterEach(destroyGraphDiv);
 
-    var mock = require('@mocks/ternary_simple.json');
+    var mock = require('../../image/mocks/ternary_simple.json');
     var gd;
 
     function transformPlot(gd, transformString) {
@@ -781,7 +781,7 @@ describe('ternary defaults', function() {
 
 
 describe('Test event property of interactions on a ternary plot:', function() {
-    var mock = require('@mocks/ternary_simple.json');
+    var mock = require('../../image/mocks/ternary_simple.json');
 
     var mockCopy, gd;
 

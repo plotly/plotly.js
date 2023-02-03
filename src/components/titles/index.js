@@ -202,6 +202,8 @@ function draw(gd, titleClass, options) {
                     }
                 });
                 shift = Math.min(maxshift, shift);
+                // Keeping track of this for calculation of full axis size if needed
+                cont._titleScoot = Math.abs(shift);
             }
 
             if(shift > 0 || maxshift < 0) {

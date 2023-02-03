@@ -4,6 +4,7 @@ var fontAttrs = require('./font_attributes');
 var animationAttrs = require('./animation_attributes');
 var colorAttrs = require('../components/color/attributes');
 var drawNewShapeAttrs = require('../components/shapes/draw_newshape/attributes');
+var drawNewSelectionAttrs = require('../components/selections/draw_newselection/attributes');
 var padAttrs = require('./pad_attributes');
 var extendFlat = require('../lib/extend').extendFlat;
 
@@ -187,6 +188,20 @@ module.exports = {
         description: [
             'Sets the plot\'s height (in px).'
         ].join(' ')
+    },
+    minreducedwidth: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+        description: 'Minimum width of the plot with margin.automargin applied (in px)'
+    },
+    minreducedheight: {
+        valType: 'number',
+        min: 2,
+        dflt: 64,
+        editType: 'plot',
+        description: 'Minimum height of the plot with margin.automargin applied (in px)'
     },
     margin: {
         l: {
@@ -392,6 +407,9 @@ module.exports = {
 
     newshape: drawNewShapeAttrs.newshape,
     activeshape: drawNewShapeAttrs.activeshape,
+
+    newselection: drawNewSelectionAttrs.newselection,
+    activeselection: drawNewSelectionAttrs.activeselection,
 
     meta: {
         valType: 'any',

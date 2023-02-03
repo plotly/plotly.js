@@ -1,5 +1,5 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 var createGraphDiv = require('../assets/create_graph_div');
@@ -81,7 +81,7 @@ describe('Test streamtube autorange', function() {
     }
 
     it('@gl should add pad around tubes to make sure they fit on the scene', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-first'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_streamtube-first'));
 
         Plotly.newPlot(gd, fig).then(function() {
             _assertAxisRanges('base',
@@ -207,7 +207,7 @@ describe('Test streamtube interactions', function() {
     });
 
     it('@gl overspecified meshgrid should return blank mesh grid', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_streamtube-simple.json'));
         var trace = fig.data[0];
         var x = trace.x.slice();
         var y = trace.y.slice();
@@ -385,7 +385,7 @@ describe('Test streamtube interactions', function() {
     });
 
     it('@gl should add/clear gl objects correctly', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_streamtube-simple.json'));
         var trace = Lib.extendDeep({}, fig.data[0]);
 
         function _assert(msg, exp) {
@@ -417,7 +417,7 @@ describe('Test streamtube interactions', function() {
     });
 
     it('@gl should be able to restyle to a cone trace and back', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_cone-autorange.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_cone-autorange.json'));
         var trace1 = Lib.extendDeep({}, fig.data[0]);
         trace1.type = 'streamtube';
 
@@ -462,7 +462,7 @@ describe('Test streamtube hover', function() {
     });
 
     it('@gl should display hover labels', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_streamtube-simple.json'));
         fig.data[0].showscale = false;
         fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
         fig.layout.width = 400;
@@ -528,7 +528,7 @@ describe('Test streamtube hover', function() {
     });
 
     it('@gl should display hover labels (multi-trace case)', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_streamtube-simple.json'));
         var trace0 = fig.data[0];
         trace0.showscale = false;
         trace0.name = 'TUBE!';
@@ -571,7 +571,7 @@ describe('Test streamtube hover', function() {
     });
 
     it('@gl should emit correct event data', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/gl3d_streamtube-simple.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/gl3d_streamtube-simple.json'));
         fig.data[0].showscale = false;
         fig.layout.margin = {l: 0, t: 0, r: 0, b: 0};
         fig.layout.width = 400;

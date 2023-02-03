@@ -19,7 +19,7 @@ var Drawing = require('../components/drawing');
 var Color = require('../components/color');
 var initInteractions = require('../plots/cartesian/graph_interact').initInteractions;
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-var clearSelect = require('../plots/cartesian/select').clearSelect;
+var clearOutline = require('../components/selections').clearOutline;
 
 var dfltConfig = require('./plot_config').dfltConfig;
 var manageArrays = require('./manage_arrays');
@@ -369,6 +369,7 @@ function _doPlot(gd, data, layout, config) {
         Plots.addLinks,
         Plots.rehover,
         Plots.redrag,
+        Plots.reselect,
         // TODO: doAutoMargin is only needed here for axis automargin, which
         // happens outside of marginPushers where all the other automargins are
         // calculated. Would be much better to separate margin calculations from
@@ -1299,7 +1300,11 @@ function restyle(gd, astr, val, _traces) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover, Plots.redrag);
+    seq.push(
+        Plots.rehover,
+        Plots.redrag,
+        Plots.reselect
+    );
 
     Queue.add(gd,
         restyle, [gd, specs.undoit, specs.traces],
@@ -1801,7 +1806,11 @@ function relayout(gd, astr, val) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover, Plots.redrag);
+    seq.push(
+        Plots.rehover,
+        Plots.redrag,
+        Plots.reselect
+    );
 
     Queue.add(gd,
         relayout, [gd, specs.undoit],
@@ -1879,8 +1888,6 @@ function addAxRangeSequence(seq, rangesAltered) {
                         }
                     }
                 }
-
-                if(ax.automargin) skipTitle = false;
             }
 
             return Axes.draw(gd, axIds, {skipTitle: skipTitle});
@@ -1890,7 +1897,7 @@ function addAxRangeSequence(seq, rangesAltered) {
         };
 
     seq.push(
-        clearSelect,
+        clearOutline,
         subroutines.doAutoRangeAndConstraints,
         drawAxes,
         subroutines.drawData,
@@ -2314,7 +2321,11 @@ function update(gd, traceUpdate, layoutUpdate, _traces) {
         seq.push(emitAfterPlot);
     }
 
-    seq.push(Plots.rehover, Plots.redrag);
+    seq.push(
+        Plots.rehover,
+        Plots.redrag,
+        Plots.reselect
+    );
 
     Queue.add(gd,
         update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
@@ -2750,7 +2761,11 @@ function react(gd, data, layout, config) {
             seq.push(emitAfterPlot);
         }
 
-        seq.push(Plots.rehover, Plots.redrag);
+        seq.push(
+            Plots.rehover,
+            Plots.redrag,
+            Plots.reselect
+        );
 
         plotDone = Lib.syncOrAsync(seq, gd);
         if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
@@ -3801,6 +3816,7 @@ function makePlotFramework(gd) {
     fullLayout._shapeUpperLayer = layerAbove.append('g')
         .classed('shapelayer', true);
 
+    fullLayout._selectionLayer = fullLayout._toppaper.append('g').classed('selectionlayer', true);
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._menulayer = fullLayout._toppaper.append('g').classed('menulayer', true);
     fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);

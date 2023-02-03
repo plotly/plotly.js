@@ -206,6 +206,17 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         );
     };
 
+    // Note that `pad` is just an integer for `icicle`` traces where
+    // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
+    var pad = trace[isIcicle ? 'tiling' : 'marker'].pad;
+
+    var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };
+
+    var hasTop = hasFlag('top');
+    var hasLeft = hasFlag('left');
+    var hasRight = hasFlag('right');
+    var hasBottom = hasFlag('bottom');
+
     // slice path generation fn
     var pathDescendant = function(d) {
         var _x0 = viewMapX(d.x0);
@@ -217,12 +228,19 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         var dy = _y1 - _y0;
         if(!dx || !dy) return '';
 
-        var FILLET = 0; // TODO: may expose this constant
-
-        var r = (
-            dx > 2 * FILLET &&
-            dy > 2 * FILLET
-        ) ? FILLET : 0;
+        var cornerradius = trace.marker.cornerradius || 0;
+        var r = Math.min(cornerradius, dx / 2, dy / 2);
+        if(
+            r &&
+            d.data &&
+            d.data.data &&
+            d.data.data.label
+        ) {
+            if(hasTop) r = Math.min(r, pad.t);
+            if(hasLeft) r = Math.min(r, pad.l);
+            if(hasRight) r = Math.min(r, pad.r);
+            if(hasBottom) r = Math.min(r, pad.b);
+        }
 
         var arc = function(rx, ry) { return r ? 'a' + pos(r, r) + ' 0 0 1 ' + pos(rx, ry) : ''; };
 
@@ -245,25 +263,19 @@ module.exports = function plotOne(gd, cd, element, transitionOpts, drawDescendan
         var y1 = pt.y1;
         var textBB = pt.textBB;
 
-        var hasFlag = function(f) { return trace.textposition.indexOf(f) !== -1; };
-
-        var hasBottom = hasFlag('bottom');
-        var hasTop = hasFlag('top') || (opts.isHeader && !hasBottom);
+        var _hasTop = hasTop || (opts.isHeader && !hasBottom);
 
         var anchor =
-            hasTop ? 'start' :
+            _hasTop ? 'start' :
             hasBottom ? 'end' : 'middle';
 
-        var hasRight = hasFlag('right');
-        var hasLeft = hasFlag('left') || opts.onPathbar;
+        var _hasRight = hasFlag('right');
+        var _hasLeft = hasFlag('left') || opts.onPathbar;
 
         var leftToRight =
-            hasLeft ? -1 :
-            hasRight ? 1 : 0;
+            _hasLeft ? -1 :
+            _hasRight ? 1 : 0;
 
-        // Note that `pad` is just an integer for `icicle`` traces where
-        // `pad` is a hashmap for treemap: pad.t, pad.b, pad.l, and pad.r
-        var pad = trace[isIcicle ? 'tiling' : 'marker'].pad;
         if(opts.isHeader) {
             x0 += (isIcicle ? pad : pad.l) - TEXTPAD;
             x1 -= (isIcicle ? pad : pad.r) - TEXTPAD;

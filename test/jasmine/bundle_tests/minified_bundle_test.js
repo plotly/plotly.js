@@ -1,6 +1,6 @@
 /* global Plotly:false */
 
-var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var mockLists = require('../assets/mock_lists');
 
 // only needed for mapbox subplots

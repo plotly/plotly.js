@@ -2,7 +2,7 @@
 
 var Lib = require('../../lib');
 
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
 var handleText = require('../bar/defaults').handleText;
 var handleXYDefaults = require('../scatter/xy_defaults');
 var handlePeriodDefaults = require('../scatter/period_defaults');

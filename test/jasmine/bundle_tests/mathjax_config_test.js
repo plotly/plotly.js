@@ -1,6 +1,6 @@
 /* eslint-disable new-cap */
 
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
 var delay = require('../assets/delay');
 var createGraphDiv = require('../assets/create_graph_div');

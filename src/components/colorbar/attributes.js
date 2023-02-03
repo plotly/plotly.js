@@ -129,7 +129,7 @@ module.exports = overrideAll({
         description: 'Sets the color of padded area.'
     },
     // tick and title properties named and function exactly as in axes
-    tickmode: axesAttrs.tickmode,
+    tickmode: axesAttrs.minor.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,

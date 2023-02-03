@@ -149,7 +149,10 @@ function model(layout, d, i) {
     var trace = cd0.trace;
     var lineColor = helpers.convertTypedArray(cd0.lineColor);
     var line = trace.line;
-    var deselectedLines = {color: rgba(c.deselectedLineColor)};
+    var deselectedLines = {
+        color: rgba(trace.unselected.line.color),
+        opacity: trace.unselected.line.opacity
+    };
     var cOpts = Colorscale.extractOpts(line);
     var cscale = cOpts.reversescale ? Colorscale.flipScale(cd0.cscale) : cd0.cscale;
     var domain = trace.domain;
@@ -432,6 +435,8 @@ function extremeText(d, isTop) {
 
 
 module.exports = function parcoords(gd, cdModule, layout, callbacks) {
+    var isStatic = gd._context.staticPlot;
+
     var fullLayout = gd._fullLayout;
     var svg = fullLayout._toppaper;
     var glContainer = fullLayout._glcontainer;
@@ -466,7 +471,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
 
     // emit hover / unhover event
     pickLayer
-        .style('pointer-events', 'auto')
+        .style('pointer-events', isStatic ? 'none' : 'auto')
         .on('mousemove', function(d) {
             if(state.linePickActive() && d.lineLayer && callbacks && callbacks.hover) {
                 var event = d3.event;
@@ -671,7 +676,7 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .classed(c.cn.axisTitle, true)
         .attr('text-anchor', 'middle')
         .style('cursor', 'ew-resize')
-        .style('pointer-events', 'auto');
+        .style('pointer-events', isStatic ? 'none' : 'auto');
 
     axisTitle
         .text(function(d) { return d.label; })
@@ -755,5 +760,5 @@ module.exports = function parcoords(gd, cdModule, layout, callbacks) {
         .text(function(d) { return extremeText(d, false); })
         .each(function(d) { Drawing.font(d3.select(this), d.model.rangeFont); });
 
-    brush.ensureAxisBrush(axisOverlays, paperColor);
+    brush.ensureAxisBrush(axisOverlays, paperColor, gd);
 };

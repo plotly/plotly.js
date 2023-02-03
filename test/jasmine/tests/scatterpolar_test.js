@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var ScatterPolar = require('@src/traces/scatterpolar');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var ScatterPolar = require('../../../src/traces/scatterpolar');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -91,7 +91,7 @@ describe('Test scatterpolar hover:', function() {
 
         var fig = Lib.extendDeep(
             {width: 700, height: 500},
-            specs.mock || require('@mocks/polar_scatter.json')
+            specs.mock || require('../../image/mocks/polar_scatter.json')
         );
 
         if(specs.patch) {
@@ -154,13 +154,13 @@ describe('Test scatterpolar hover:', function() {
         name: 'Trial 3'
     }, {
         desc: 'on fills',
-        mock: require('@mocks/polar_fills.json'),
+        mock: require('../../image/mocks/polar_fills.json'),
         pos: [300, 230],
         nums: 'trace 2',
         name: ''
     }, {
         desc: 'on category axes',
-        mock: require('@mocks/polar_categories.json'),
+        mock: require('../../image/mocks/polar_categories.json'),
         patch: function(fig) {
             fig.data.forEach(function(t) { t.fill = 'none'; });
             return fig;

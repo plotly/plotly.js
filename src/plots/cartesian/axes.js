@@ -39,6 +39,14 @@ var GRID_PATH = { K: 'gridline', L: 'path' };
 var MINORGRID_PATH = { K: 'minor-gridline', L: 'path' };
 var TICK_PATH = { K: 'tick', L: 'path' };
 var TICK_TEXT = { K: 'tick', L: 'text' };
+var MARGIN_MAPPING = {
+    width: ['x', 'r', 'l', 'xl', 'xr'],
+    height: ['y', 't', 'b', 'yt', 'yb'],
+    right: ['r', 'xr'],
+    left: ['l', 'xl'],
+    top: ['t', 'yt'],
+    bottom: ['b', 'yb']
+};
 
 var alignmentConstants = require('../../constants/alignment');
 var MID_SHIFT = alignmentConstants.MID_SHIFT;
@@ -205,6 +213,7 @@ axes.redrawComponents = function(gd, axIds) {
     _redrawOneComp('annotations', 'drawOne', '_annIndices');
     _redrawOneComp('shapes', 'drawOne', '_shapeIndices');
     _redrawOneComp('images', 'draw', '_imgIndices', true);
+    _redrawOneComp('selections', 'drawOne', '_selectionIndices');
 };
 
 var getDataConversions = axes.getDataConversions = function(gd, trace, target, targetArray) {
@@ -942,6 +951,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
             continue;
         }
 
+        // fill tickVals based on overlaying axis
+        if(mockAx.tickmode === 'sync') {
+            tickVals = [];
+            ticksOut = syncTicks(ax);
+            continue;
+        }
+
         // add a tiny bit so we get ticks which may have rounded out
         var exRng = expandRange(rng);
         var startTick = exRng[0];
@@ -1194,6 +1210,51 @@ axes.calcTicks = function calcTicks(ax, opts) {
     return ticksOut;
 };
 
+function filterRangeBreaks(ax, ticksOut) {
+    if(ax.rangebreaks) {
+        // remove ticks falling inside rangebreaks
+        ticksOut = ticksOut.filter(function(d) {
+            return ax.maskBreaks(d.x) !== BADNUM;
+        });
+    }
+
+    return ticksOut;
+}
+
+function syncTicks(ax) {
+    // get the overlaying axis
+    var baseAxis = ax._mainAxis;
+
+    var ticksOut = [];
+    if(baseAxis._vals) {
+        for(var i = 0; i < baseAxis._vals.length; i++) {
+            // filter vals with noTick flag
+            if(baseAxis._vals[i].noTick) {
+                continue;
+            }
+
+            // get the position of the every tick
+            var pos = baseAxis.l2p(baseAxis._vals[i].x);
+
+            // get the tick for the current axis based on position
+            var vali = ax.p2l(pos);
+            var obj = axes.tickText(ax, vali);
+
+            // assign minor ticks
+            if(baseAxis._vals[i].minor) {
+                obj.minor = true;
+                obj.text = '';
+            }
+
+            ticksOut.push(obj);
+        }
+    }
+
+    ticksOut = filterRangeBreaks(ax, ticksOut);
+
+    return ticksOut;
+}
+
 function arrayTicks(ax) {
     var rng = Lib.simpleMap(ax.range, ax.r2l);
     var exRng = expandRange(rng);
@@ -1240,12 +1301,7 @@ function arrayTicks(ax) {
         }
     }
 
-    if(ax.rangebreaks) {
-        // remove ticks falling inside rangebreaks
-        ticksOut = ticksOut.filter(function(d) {
-            return ax.maskBreaks(d.x) !== BADNUM;
-        });
-    }
+    ticksOut = filterRangeBreaks(ax, ticksOut);
 
     return ticksOut;
 }
@@ -2239,13 +2295,44 @@ axes.draw = function(gd, arg, opts) {
 
     var axList = (!arg || arg === 'redraw') ? axes.listIds(gd) : arg;
 
+    var fullAxList = axes.list(gd);
+    // Get the list of the overlaying axis for all 'shift' axes
+    var overlayingShiftedAx = fullAxList.filter(function(ax) {
+        return ax.autoshift;
+    }).map(function(ax) {
+        return ax.overlaying;
+    });
+
+    // order axes that have dependency to other axes
+    axList.map(function(axId) {
+        var ax = axes.getFromId(gd, axId);
+
+        if(ax.tickmode === 'sync' && ax.overlaying) {
+            var overlayingIndex = axList.findIndex(function(axis) {return axis === ax.overlaying;});
+
+            if(overlayingIndex >= 0) {
+                axList.unshift(axList.splice(overlayingIndex, 1).shift());
+            }
+        }
+    });
+
+    var axShifts = {'false': {'left': 0, 'right': 0}};
+
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {
             if(!axId) return;
 
             var ax = axes.getFromId(gd, axId);
+
+            if(!opts) opts = {};
+            opts.axShifts = axShifts;
+            opts.overlayingShiftedAx = overlayingShiftedAx;
+
             var axDone = axes.drawOne(gd, ax, opts);
 
+            if(ax._shiftPusher) {
+                incrementShift(ax, ax._fullDepth || 0, axShifts, true);
+            }
             ax._r = ax.range.slice();
             ax._rl = Lib.simpleMap(ax._r, ax.r2l);
 
@@ -2284,6 +2371,9 @@ axes.draw = function(gd, arg, opts) {
 axes.drawOne = function(gd, ax, opts) {
     opts = opts || {};
 
+    var axShifts = opts.axShifts || {};
+    var overlayingShiftedAx = opts.overlayingShiftedAx || [];
+
     var i, sp, plotinfo;
 
     ax.setScale();
@@ -2297,15 +2387,35 @@ axes.drawOne = function(gd, ax, opts) {
     // this happens when updating matched group with 'missing' axes
     if(!mainPlotinfo) return;
 
+    ax._shiftPusher = ax.autoshift ||
+        overlayingShiftedAx.indexOf(ax._id) !== -1 ||
+        overlayingShiftedAx.indexOf(ax.overlaying) !== -1;
+    // An axis is also shifted by 1/2 of its own linewidth and inside tick length if applicable
+    // as well as its manually specified `shift` val if we're in the context of `autoshift`
+    if(ax._shiftPusher & ax.anchor === 'free') {
+        var selfPush = (ax.linewidth / 2 || 0);
+        if(ax.ticks === 'inside') {
+            selfPush += ax.ticklen;
+        }
+        incrementShift(ax, selfPush, axShifts, true);
+        incrementShift(ax, (ax.shift || 0), axShifts, false);
+    }
+
+    // Somewhat inelegant way of making sure that the shift value is only updated when the
+    // Axes.DrawOne() function is called from the right context. An issue when redrawing the
+    // axis as result of using the dragbox, for example.
+    if(opts.skipTitle !== true || ax._shift === undefined) ax._shift = setShiftVal(ax, axShifts);
+
     var mainAxLayer = mainPlotinfo[axLetter + 'axislayer'];
     var mainLinePosition = ax._mainLinePosition;
+    var mainLinePositionShift = mainLinePosition += ax._shift;
     var mainMirrorPosition = ax._mainMirrorPosition;
 
     var vals = ax._vals = axes.calcTicks(ax);
 
     // Add a couple of axis properties that should cause us to recreate
     // elements. Used in d3 data function.
-    var axInfo = [ax.mirror, mainLinePosition, mainMirrorPosition].join('_');
+    var axInfo = [ax.mirror, mainLinePositionShift, mainMirrorPosition].join('_');
     for(i = 0; i < vals.length; i++) {
         vals[i].axInfo = axInfo;
     }
@@ -2400,8 +2510,8 @@ axes.drawOne = function(gd, ax, opts) {
     var minorTickSigns = axes.getTickSigns(ax, 'minor');
 
     if(ax.ticks || (ax.minor && ax.minor.ticks)) {
-        var majorTickPath = axes.makeTickPath(ax, mainLinePosition, majorTickSigns[2]);
-        var minorTickPath = axes.makeTickPath(ax, mainLinePosition, minorTickSigns[2], { minor: true });
+        var majorTickPath = axes.makeTickPath(ax, mainLinePositionShift, majorTickSigns[2]);
+        var minorTickPath = axes.makeTickPath(ax, mainLinePositionShift, minorTickSigns[2], { minor: true });
 
         var mirrorMajorTickPath;
         var mirrorMinorTickPath;
@@ -2487,7 +2597,7 @@ axes.drawOne = function(gd, ax, opts) {
             layer: mainAxLayer,
             plotinfo: plotinfo,
             transFn: transTickLabelFn,
-            labelFns: axes.makeLabelFns(ax, mainLinePosition)
+            labelFns: axes.makeLabelFns(ax, mainLinePositionShift)
         });
     });
 
@@ -2506,27 +2616,33 @@ axes.drawOne = function(gd, ax, opts) {
                 repositionOnUpdate: true,
                 secondary: true,
                 transFn: transTickFn,
-                labelFns: axes.makeLabelFns(ax, mainLinePosition + standoff * majorTickSigns[4])
+                labelFns: axes.makeLabelFns(ax, mainLinePositionShift + standoff * majorTickSigns[4])
             });
         });
 
         seq.push(function() {
-            ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePosition);
+            ax._depth = majorTickSigns[4] * (getLabelLevelBbox('tick2')[ax.side] - mainLinePositionShift);
 
             return drawDividers(gd, ax, {
                 vals: dividerVals,
                 layer: mainAxLayer,
-                path: axes.makeTickPath(ax, mainLinePosition, majorTickSigns[4], { len: ax._depth }),
+                path: axes.makeTickPath(ax, mainLinePositionShift, majorTickSigns[4], { len: ax._depth }),
                 transFn: transTickFn
             });
         });
     } else if(ax.title.hasOwnProperty('standoff')) {
         seq.push(function() {
-            ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePosition);
+            ax._depth = majorTickSigns[4] * (getLabelLevelBbox()[ax.side] - mainLinePositionShift);
         });
     }
 
     var hasRangeSlider = Registry.getComponentMethod('rangeslider', 'isVisible')(ax);
+
+    if(!opts.skipTitle &&
+        !(hasRangeSlider && ax.side === 'bottom')
+    ) {
+        seq.push(function() { return drawTitle(gd, ax); });
+    }
 
     seq.push(function() {
         var s = ax.side.charAt(0);
@@ -2539,7 +2655,7 @@ axes.drawOne = function(gd, ax, opts) {
         var mirrorPush;
         var rangeSliderPush;
 
-        if(ax.automargin || hasRangeSlider) {
+        if(ax.automargin || hasRangeSlider || ax._shiftPusher) {
             if(ax.type === 'multicategory') {
                 llbbox = getLabelLevelBbox('tick2');
             } else {
@@ -2550,10 +2666,27 @@ axes.drawOne = function(gd, ax, opts) {
             }
         }
 
+        var axDepth = 0;
+        var titleDepth = 0;
+        if(ax._shiftPusher) {
+            axDepth = Math.max(
+                outsideTickLen,
+                llbbox.height > 0 ? (s === 'l' ? pos - llbbox.left : llbbox.right - pos) : 0
+            );
+            if(ax.title.text !== fullLayout._dfltTitle[axLetter]) {
+                titleDepth = (ax._titleStandoff || 0) + (ax._titleScoot || 0);
+                if(s === 'l') {
+                    titleDepth += approxTitleDepth(ax);
+                }
+            }
+
+            ax._fullDepth = Math.max(axDepth, titleDepth);
+        }
+
         if(ax.automargin) {
             push = {x: 0, y: 0, r: 0, l: 0, t: 0, b: 0};
             var domainIndices = [0, 1];
-
+            var shift = typeof ax._shift === 'number' ? ax._shift : 0;
             if(axLetter === 'x') {
                 if(s === 'b') {
                     push[s] = ax._depth;
@@ -2576,9 +2709,11 @@ axes.drawOne = function(gd, ax, opts) {
                 }
             } else {
                 if(s === 'l') {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+                    ax._depth = Math.max(llbbox.height > 0 ? pos - llbbox.left : 0, outsideTickLen);
+                    push[s] = ax._depth - shift;
                 } else {
-                    push[s] = ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+                    ax._depth = Math.max(llbbox.height > 0 ? llbbox.right - pos : 0, outsideTickLen);
+                    push[s] = ax._depth + shift;
                     domainIndices.reverse();
                 }
 
@@ -2617,9 +2752,13 @@ axes.drawOne = function(gd, ax, opts) {
                 }
             }
         }
-
         if(hasRangeSlider) {
             rangeSliderPush = Registry.getComponentMethod('rangeslider', 'autoMarginOpts')(gd, ax);
+        }
+
+        if(typeof ax.automargin === 'string') {
+            filterPush(push, ax.automargin);
+            filterPush(mirrorPush, ax.automargin);
         }
 
         Plots.autoMargin(gd, axAutoMarginID(ax), push);
@@ -2627,14 +2766,25 @@ axes.drawOne = function(gd, ax, opts) {
         Plots.autoMargin(gd, rangeSliderAutoMarginID(ax), rangeSliderPush);
     });
 
-    if(!opts.skipTitle &&
-        !(hasRangeSlider && ax.side === 'bottom')
-    ) {
-        seq.push(function() { return drawTitle(gd, ax); });
-    }
-
     return Lib.syncOrAsync(seq);
 };
+
+function filterPush(push, automargin) {
+    if(!push) return;
+
+    var keepMargin = Object.keys(MARGIN_MAPPING).reduce(function(data, nextKey) {
+        if(automargin.indexOf(nextKey) !== -1) {
+            MARGIN_MAPPING[nextKey].forEach(function(key) { data[key] = 1;});
+        }
+        return data;
+    }, {});
+    Object.keys(push).forEach(function(key) {
+        if(!keepMargin[key]) {
+            if(key.length === 1) push[key] = 0;
+            else delete push[key];
+        }
+    });
+}
 
 function getBoundaryVals(ax, vals) {
     var out = [];
@@ -3155,6 +3305,11 @@ axes.drawTicks = function(gd, ax, opts) {
  */
 axes.drawGrid = function(gd, ax, opts) {
     opts = opts || {};
+
+    if(ax.tickmode === 'sync') {
+        // for tickmode sync we use the overlaying axis grid
+        return;
+    }
 
     var cls = ax._id + 'grid';
 
@@ -3748,7 +3903,7 @@ axes.getPxPosition = function(gd, ax) {
         };
     } else if(axLetter === 'y') {
         anchorAxis = {
-            _offset: gs.l + (ax.position || 0) * gs.w,
+            _offset: gs.l + (ax.position || 0) * gs.w + ax._shift,
             _length: 0
         };
     }
@@ -3870,6 +4025,8 @@ function drawTitle(gd, ax) {
             avoid.pad = 0;
         }
     }
+
+    ax._titleStandoff = titleStandoff;
 
     return Titles.draw(gd, axId + 'title', {
         propContainer: ax,
@@ -4179,4 +4336,28 @@ function hideCounterAxisInsideTickLabels(ax, opts) {
             ax._hideCounterAxisInsideTickLabels(opts);
         }
     }
+}
+
+function incrementShift(ax, shiftVal, axShifts, normalize) {
+    // Need to set 'overlay' for anchored axis
+    var overlay = ((ax.anchor !== 'free') && ((ax.overlaying === undefined) || (ax.overlaying === false))) ? ax._id : ax.overlaying;
+    var shiftValAdj;
+    if(normalize) {
+        shiftValAdj = ax.side === 'right' ? shiftVal : -shiftVal;
+    } else {
+        shiftValAdj = shiftVal;
+    }
+    if(!(overlay in axShifts)) {
+        axShifts[overlay] = {};
+    }
+    if(!(ax.side in axShifts[overlay])) {
+        axShifts[overlay][ax.side] = 0;
+    }
+    axShifts[overlay][ax.side] += shiftValAdj;
+}
+
+function setShiftVal(ax, axShifts) {
+    return ax.autoshift ?
+        axShifts[ax.overlaying][ax.side] :
+        (ax.shift || 0);
 }

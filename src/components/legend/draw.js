@@ -351,6 +351,18 @@ function _draw(gd, legendObj) {
         }], gd);
 }
 
+function getTraceWidth(d, legendObj, textGap) {
+    var legendItem = d[0];
+    var legendWidth = legendItem.width;
+    var mode = legendObj.entrywidthmode;
+
+    var traceLegendWidth = legendItem.trace.legendwidth || legendObj.entrywidth;
+
+    if(mode === 'fraction') return legendObj._maxWidth * traceLegendWidth;
+
+    return textGap + (traceLegendWidth || legendWidth);
+}
+
 function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
     var trace = legendItem.data()[0][0].trace;
     var evtData = {
@@ -624,6 +636,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
 
     var isVertical = helpers.isVertical(legendObj);
     var isGrouped = helpers.isGrouped(legendObj);
+    var isFraction = legendObj.entrywidthmode === 'fraction';
 
     var bw = legendObj.borderwidth;
     var bw2 = 2 * bw;
@@ -636,6 +649,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     var isAbovePlotArea = legendObj.y > 1 || (legendObj.y === 1 && yanchor === 'bottom');
 
     var traceGroupGap = legendObj.tracegroupgap;
+    var legendGroupWidths = {};
 
     // - if below/above plot area, give it the maximum potential margin-push value
     // - otherwise, extend the height of the plot area
@@ -688,7 +702,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
         var maxItemWidth = 0;
         var combinedItemWidth = 0;
         traces.each(function(d) {
-            var w = d[0].width + textGap;
+            var w = getTraceWidth(d, legendObj, textGap);
             maxItemWidth = Math.max(maxItemWidth, w);
             combinedItemWidth += w;
         });
@@ -704,7 +718,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                 var maxWidthInGroup = 0;
                 var offsetY = 0;
                 d3.select(this).selectAll('g.traces').each(function(d) {
-                    var w = d[0].width;
+                    var w = getTraceWidth(d, legendObj, textGap);
                     var h = d[0].height;
 
                     Drawing.setTranslate(this,
@@ -712,7 +726,8 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
                         titleSize[1] + bw + itemGap + h / 2 + offsetY
                     );
                     offsetY += h;
-                    maxWidthInGroup = Math.max(maxWidthInGroup, textGap + w);
+                    maxWidthInGroup = Math.max(maxWidthInGroup, w);
+                    legendGroupWidths[d[0].trace.legendgroup] = maxWidthInGroup;
                 });
 
                 var next = maxWidthInGroup + itemGap;
@@ -750,8 +765,12 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
             var rowWidth = 0;
             traces.each(function(d) {
                 var h = d[0].height;
-                var w = textGap + d[0].width;
-                var next = (oneRowLegend ? w : maxItemWidth) + itemGap;
+                var w = getTraceWidth(d, legendObj, textGap, isGrouped);
+                var next = (oneRowLegend ? w : maxItemWidth);
+
+                if(!isFraction) {
+                    next += itemGap;
+                }
 
                 if((next + bw + offsetX - itemGap) >= legendObj._maxWidth) {
                     maxRowWidth = Math.max(maxRowWidth, rowWidth);
@@ -802,8 +821,15 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     traces.each(function(d) {
         var traceToggle = d3.select(this).select('.legendtoggle');
         var h = d[0].height;
-        var w = isEditable ? textGap : (toggleRectWidth || (textGap + d[0].width));
-        if(!isVertical) w += itemGap / 2;
+        var legendgroup = d[0].trace.legendgroup;
+        var traceWidth = getTraceWidth(d, legendObj, textGap);
+        if(isGrouped && legendgroup !== '') {
+            traceWidth = legendGroupWidths[legendgroup];
+        }
+        var w = isEditable ? textGap : (toggleRectWidth || traceWidth);
+        if(!isVertical && !isFraction) {
+            w += itemGap / 2;
+        }
         Drawing.setRect(traceToggle, 0, -h / 2, w, h);
     });
 }

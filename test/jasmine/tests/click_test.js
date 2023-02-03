@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -31,7 +31,7 @@ function move(fromX, fromY, toX, toY, delay) {
 }
 
 describe('Test click interactions:', function() {
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
 
     var mockCopy, gd;
 
@@ -1104,7 +1104,7 @@ describe('dragbox', function() {
     afterEach(destroyGraphDiv);
 
     it('should scale subplot and inverse scale scatter points', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/bar_line.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/bar_line.json'));
 
         function assertScale(node, x, y) {
             var scale = Drawing.getScale(node);

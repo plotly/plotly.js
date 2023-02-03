@@ -89,6 +89,7 @@ module.exports = {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
         dash: dash,
+        backoff: scatterLineAttrs.backoff,
         shape: extendFlat({}, scatterLineAttrs.shape,
             {values: ['linear', 'spline']}),
         smoothing: scatterLineAttrs.smoothing,
@@ -115,6 +116,9 @@ module.exports = {
     marker: extendFlat({
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
+        angle: scatterMarkerAttrs.angle,
+        angleref: scatterMarkerAttrs.angleref,
+        standoff: scatterMarkerAttrs.standoff,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,

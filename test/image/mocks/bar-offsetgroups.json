@@ -83,6 +83,21 @@
       "title": {
         "text": "four distinct offset groups"
       }
-    }
+    },
+    "selections": [{
+      "xref": "x",
+      "yref": "y",
+      "x0": 0.5,
+      "x1": 3.5,
+      "y0": 4.5,
+      "y1": 0.5
+    }, {
+      "xref": "x2",
+      "yref": "y2",
+      "x0": 0.5,
+      "x1": 3.5,
+      "y0": 4.5,
+      "y1": 0.5
+    }]
   }
 }

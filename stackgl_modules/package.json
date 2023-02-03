@@ -5,7 +5,7 @@
     ]
   },
   "scripts": {
-    "bundle-stackgl": "../node_modules/browserify/bin/cmd.js main.js --standalone stackgl | ../node_modules/derequire/bin/cmd.js --from require --to _glvis_ > index.js",
+    "bundle-stackgl": "webpack --mode production",
     "postshrinkwrap": "chttps ."
   },
   "dependencies": {

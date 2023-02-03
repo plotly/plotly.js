@@ -9,6 +9,7 @@
 				"line": {
 					"color": "#777"
 				},
+				"cornerradius": 4,
 				"colorscale": [[0, "#FFF"], [0.01, "#FF0"], [0.1, "#F00"], [1, "#000"]],
 				"showscale": true
 			},

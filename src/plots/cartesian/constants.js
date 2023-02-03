@@ -29,26 +29,14 @@ module.exports = {
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,
 
-    // smallest dimension allowed for a select box
-    MINSELECT: 12,
-
     // smallest dimension allowed for a zoombox
     MINZOOM: 20,
 
     // width of axis drag regions
     DRAGGERSIZE: 20,
 
-    // max pixels off straight before a lasso select line counts as bent
-    BENDPX: 1.5,
-
     // delay before a redraw (relayout) after smooth panning and zooming
     REDRAWDELAY: 50,
-
-    // throttling limit (ms) for selectPoints calls
-    SELECTDELAY: 100,
-
-    // cache ID suffix for throttle
-    SELECTID: '-select',
 
     // last resort axis ranges for x and y axes if we have no data
     DFLTRANGEX: [-1, 6],

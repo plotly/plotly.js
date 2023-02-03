@@ -240,6 +240,9 @@ function lsInner(gd) {
     }
 
     function yLinePathFree(x) {
+        if(ya._shift !== undefined) {
+            x += ya._shift;
+        }
         return 'M' + x + ',' + ya._offset + 'v' + ya._length;
     }
 
@@ -592,6 +595,7 @@ exports.drawData = function(gd) {
 
     // draw components that can be drawn on axes,
     // and that do not push the margins
+    Registry.getComponentMethod('selections', 'draw')(gd);
     Registry.getComponentMethod('shapes', 'draw')(gd);
     Registry.getComponentMethod('annotations', 'draw')(gd);
     Registry.getComponentMethod('images', 'draw')(gd);

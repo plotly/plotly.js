@@ -26,9 +26,9 @@ var redrawReglTraces = require('../../plot_api/subroutines').redrawReglTraces;
 var Plots = require('../plots');
 
 var getFromId = require('./axis_ids').getFromId;
-var prepSelect = require('./select').prepSelect;
-var clearSelect = require('./select').clearSelect;
-var selectOnClick = require('./select').selectOnClick;
+var prepSelect = require('../../components/selections').prepSelect;
+var clearOutline = require('../../components/selections').clearOutline;
+var selectOnClick = require('../../components/selections').selectOnClick;
 var scaleZoom = require('./scale_zoom');
 
 var constants = require('./constants');
@@ -87,6 +87,9 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // scaling factors from css transform
     var scaleX;
     var scaleY;
+
+    // offset the x location of the box if needed
+    x += plotinfo.yaxis._shift;
 
     function recomputeAxisLists() {
         xa0 = plotinfo.xaxis;
@@ -231,9 +234,6 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     updateSubplots([0, 0, pw, ph]);
                     dragOptions.moveFn(dragDataNow.dx, dragDataNow.dy);
                 }
-
-                // TODO should we try to "re-select" under select/lasso modes?
-                // probably best to wait for https://github.com/plotly/plotly.js/issues/1851
             }
         };
     };
@@ -242,7 +242,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // clear selection polygon cache (if any)
         dragOptions.plotinfo.selection = false;
         // clear selection outlines
-        clearSelect(gd);
+        clearOutline(gd);
     }
 
     function clickFn(numClicks, evt) {
@@ -727,15 +727,25 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
 
+        function pushActiveAxIdsSynced(axList, axisType) {
+            for(i = 0; i < axList.length; i++) {
+                var axListI = axList[i];
+                var axListIType = axListI[axisType];
+                if(!axListI.fixedrange && axListIType.tickmode === 'sync') activeAxIds.push(axListIType._id);
+            }
+        }
+
         if(editX) {
             pushActiveAxIds(xaxes);
             pushActiveAxIds(links.xaxes);
             pushActiveAxIds(matches.xaxes);
+            pushActiveAxIdsSynced(plotinfo.overlays, 'xaxis');
         }
         if(editY) {
             pushActiveAxIds(yaxes);
             pushActiveAxIds(links.yaxes);
             pushActiveAxIds(matches.yaxes);
+            pushActiveAxIdsSynced(plotinfo.overlays, 'yaxis');
         }
 
         updates = {};

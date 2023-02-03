@@ -29,7 +29,14 @@ polygon.tester = function tester(ptsIn) {
     var ymax = ymin;
     var i;
 
-    pts.push(pts[0]);
+    if(
+        pts[pts.length - 1][0] !== pts[0][0] ||
+        pts[pts.length - 1][1] !== pts[0][1]
+    ) {
+        // close the polygon
+        pts.push(pts[0]);
+    }
+
     for(i = 1; i < pts.length; i++) {
         xmin = Math.min(xmin, pts[i][0]);
         xmax = Math.max(xmax, pts[i][0]);

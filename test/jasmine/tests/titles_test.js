@@ -1,11 +1,11 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var alignmentConstants = require('@src/constants/alignment');
-var interactConstants = require('@src/constants/interactions');
-var Lib = require('@src/lib');
-var rgb = require('@src/components/color').rgb;
+var Plotly = require('../../../lib/index');
+var alignmentConstants = require('../../../src/constants/alignment');
+var interactConstants = require('../../../src/constants/interactions');
+var Lib = require('../../../src/lib');
+var rgb = require('../../../src/components/color').rgb;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
