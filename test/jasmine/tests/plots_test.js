@@ -1347,7 +1347,7 @@ describe('Test Plots with automargin and minreducedwidth/height', function() {
             expect(xy.getAttribute(attr)).toBeCloseTo(exp, -1);
         }
 
-        var fig = require('../../image/mocks/z-automargin-minreducedheight.json');
+        var fig = require('../../image/mocks/automargin-minreducedheight.json');
 
         Plotly.newPlot(gd, fig)
         .then(function() {
