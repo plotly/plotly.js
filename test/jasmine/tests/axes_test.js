@@ -4449,7 +4449,7 @@ describe('Test axes', function() {
                 expect(tickBottom).toBeLessThan(titleTop + 2); // allow two pixels tolerance
             }
 
-            var fig = require('../../image/mocks/z-automargin-zoom.json');
+            var fig = require('../../image/mocks/automargin-zoom.json');
             Plotly.newPlot(gd, fig)
 
             .then(assertLayout)
@@ -7973,7 +7973,7 @@ describe('shift tests', function() {
     afterEach(destroyGraphDiv);
 
     it('should set y-axis shifts correctly on first draw when shift=true', function() {
-        var fig = require('../../image/mocks/zz-mult-yaxes-simple.json');
+        var fig = require('../../image/mocks/mult-yaxes-simple.json');
         Plotly.newPlot(gd, fig).then(function() {
             checkLine('path.xy3-y.crisp', 550);
             checkLine('path.xy4-y.crisp', 691);
@@ -7983,7 +7983,7 @@ describe('shift tests', function() {
     });
 
     it('should set y-axis shifts correctly on first draw when shift=<numeric>', function() {
-        var fig = require('../../image/mocks/zz-mult-yaxes-manual-shift.json');
+        var fig = require('../../image/mocks/mult-yaxes-manual-shift.json');
         Plotly.newPlot(gd, fig).then(function() {
             checkLine('path.xy3-y.crisp', 97);
             checkLine('path.xy4-y.crisp', 616);
