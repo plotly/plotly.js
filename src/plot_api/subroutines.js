@@ -5,6 +5,7 @@ var Registry = require('../registry');
 var Plots = require('../plots/plots');
 
 var Lib = require('../lib');
+var svgTextUtils = require('../lib/svg_text_utils');
 var clearGlCanvases = require('../lib/clear_gl_canvases');
 
 var Color = require('../components/color');
@@ -22,6 +23,7 @@ var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
+var LINE_SPACING = alignmentConstants.LINE_SPACING;
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
@@ -401,6 +403,13 @@ exports.drawMainTitle = function(gd) {
 
     var textAnchor = getMainTitleTextAnchor(fullLayout);
     var dy = getMainTitleDy(fullLayout);
+    var y = getMainTitleY(fullLayout, dy);
+
+    if(gd._fullLayout.title.automargin) {
+        applyTitleAutoMargin(gd, fullLayout, dy);
+        // A bit hacky to make sure top padding is properly accounted for
+        y += gd._fullLayout.title.pad.t;
+    }
 
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
@@ -408,37 +417,41 @@ exports.drawMainTitle = function(gd) {
         placeholder: fullLayout._dfltTitle.plot,
         attributes: {
             x: getMainTitleX(fullLayout, textAnchor),
-            y: getMainTitleY(fullLayout, dy),
+            y: y,
             'text-anchor': textAnchor,
             dy: dy
         }
     });
-
-    if(gd._fullLayout.title.automargin) {
-        applyTitleAutoMargin(gd, fullLayout, dy);
-    }
 };
 
-function applyTitleAutoMargin(gd, fullLayout, dy) {
-    var title = fullLayout.title;
-    var y = title.y === 'auto' ? (fullLayout.margin.t / 2 / fullLayout.height) : title.y;
-    var direction = y > 0.5 ? 't' : 'b';
-    var titleID = 'title.automargin';
-    var titleSize = title.font.size;
+function titleDepth(title) {
+    var fontSize = title.font.size;
+    var extraLines = (title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
+    return extraLines ?
+        fontSize * (extraLines + 1) * LINE_SPACING :
+        fontSize;
+}
 
+function applyTitleAutoMargin(gd, fullLayout, dy) {
+    var titleID = 'title.automargin';
+    var title = fullLayout.title;
+    var direction = fullLayout.title.y > 0.5 ? 't' : 'b';
     var push = {
         x: title.x,
-        y: direction === 't' ? 1 : 0,
+        y: title.y, // TODO: Assuming that y is either 1 or 0?
         t: 0,
         b: 0
     };
 
-    push[direction] = direction === 't' ? getMainTitleY(fullLayout, dy) : fullLayout.height - getMainTitleY(fullLayout, dy);
-    if((direction === 't' && Lib.isTopAnchor(title)) || (direction === 'b' && Lib.isBottomAnchor(title))) {
-        push[direction] += titleSize;
-    } else if(Lib.isMiddleAnchor(title)) {
-        push[direction] += titleSize / 2;
-    }
+    // TODO: This is not yet accurate with multi-line titles
+    // TODO: Push titleDepth depending on yanchor?
+    push[direction] = (
+        titleDepth(title) +
+        getMainTitleY(fullLayout, dy) +
+        title.pad.t +
+        title.pad.b
+        );
+
     Plots.allowAutoMargin(gd, titleID);
     Plots.autoMargin(gd, titleID, push);
 }
