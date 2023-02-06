@@ -56,16 +56,20 @@ exports.ensureArray = function(out, n) {
     return out;
 };
 
+function detectType(a) {
+    return typeof a === 'undefined' ? undefined : a;
+}
+
 var typedArrays = {
-    int8: typeof Int8Array !== 'undefined' ? Int8Array : null,
-    uint8: typeof Uint8Array !== 'undefined' ? Uint8Array : null,
-    uint8clamped: typeof Uint8ClampedArray !== 'undefined' ? Uint8ClampedArray : null,
-    int16: typeof Int16Array !== 'undefined' ? Int16Array : null,
-    uint16: typeof Uint16Array !== 'undefined' ? Uint16Array : null,
-    int32: typeof Int32Array !== 'undefined' ? Int32Array : null,
-    uint32: typeof Uint32Array !== 'undefined' ? Uint32Array : null,
-    float32: typeof Float32Array !== 'undefined' ? Float32Array : null,
-    float64: typeof Float64Array !== 'undefined' ? Float64Array : null,
+    int8: detectType(Int8Array),
+    uint8: detectType(Uint8Array),
+    uint8clamped: detectType(Uint8ClampedArray),
+    int16: detectType(Int16Array),
+    uint16: detectType(Uint16Array),
+    int32: detectType(Int32Array),
+    uint32: detectType(Uint32Array),
+    float32: detectType(Float32Array),
+    float64: detectType(Float64Array)
 };
 exports.typedArrays = typedArrays;
 
