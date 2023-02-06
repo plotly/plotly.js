@@ -1661,7 +1661,7 @@ describe('hover info', function() {
             .then(done, done.fail);
         });
 
-        it('@noCI centered-aligned, should stack nicely upon each other', function(done) {
+        it('centered-aligned, should stack nicely upon each other', function(done) {
             var trace1 = {
                 x: ['giraffes'],
                 y: [5],
