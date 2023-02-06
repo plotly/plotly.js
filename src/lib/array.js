@@ -150,7 +150,7 @@ function isTypedArraySpec(v) {
 exports.isTypedArraySpec = isTypedArraySpec;
 
 function coerceTypedArraySpec(v) {
-    var shape = v.shape;
+    var shape = v.shape; // TODO: could one skip shape for 1d arrays?
 
     // Assume isTypedArraySpec passed
     var coerced = {dtype: v.dtype, bvals: v.bvals};
@@ -158,7 +158,7 @@ function coerceTypedArraySpec(v) {
     // Normalize shape to a list
     if(isInteger(shape)) {
         coerced.shape = [shape];
-    } else {
+    } else {  // TODO: should check shape isArrayOrTypedArray(shape)
         coerced.shape = shape;
     }
 
