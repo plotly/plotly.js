@@ -80,7 +80,9 @@ exports.decodeTypedArraySpec = function(v) {
     var T = typedArrays[v.dtype];
 
     var buffer = v.bvals;
-    if(buffer.constructor !== ArrayBuffer) buffer = b64.decode(buffer);
+    if(buffer.constructor !== ArrayBuffer) {
+        buffer = b64.decode(buffer);
+    }
 
     var shape = v.shape;
     var ndims = shape ? shape.length : 1;
