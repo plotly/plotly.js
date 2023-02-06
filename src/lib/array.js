@@ -121,7 +121,9 @@ exports.decodeTypedArraySpec = function(v) {
                 // next layer of nested arrays
                 for(var i = 0; i < numSubArrays; i++) {
                     var offset = i * subArrayLength;
-                    nextArray.push(nextArray.slice(offset, offset + subArrayLength - 1));
+                    nextArray.push(
+                        nextArray.slice(offset, offset + subArrayLength - 1)
+                    );
                 }
             }
 
@@ -144,9 +146,11 @@ function isTypedArraySpec(v) {
     // Assume v has not passed through
     return typedArrays[v.dtype] && v.bvals && (
         isInteger(shape) ||
-        (isArrayOrTypedArray(shape) &&
+        (
+            isArrayOrTypedArray(shape) &&
             shape.length > 0 &&
-            shape.every(function(d) { return isInteger(d); }))
+            shape.every(isInteger)
+        )
     );
 }
 exports.isTypedArraySpec = isTypedArraySpec;
