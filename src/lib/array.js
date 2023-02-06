@@ -69,36 +69,37 @@ exports.decodeTypedArraySpec = function(v) {
     v = coerceTypedArraySpec(v);
     var T = typedArrays[v.dtype];
     var buffer;
-    if(v.bvals.constructor === ArrayBuffer) {
+    var bvals = v.bvals;
+    if(bvals.constructor === ArrayBuffer) {
         // Already an ArrayBuffer
-        buffer = v.bvals;
+        buffer = bvals;
     } else {
         // Decode, assuming a string
-        buffer = b64.decode(v.bvals);
+        buffer = b64.decode(bvals);
     }
 
-    // Check if 1d shape. If so, we're done
-    if(v.ndims === 1) {
-        // Construct single Typed array over entire buffer
-        return new T(buffer);
-    } else {
+    var lastDimIndex = v.ndims - 1;
+
+    if(lastDimIndex > 0) {
         // Reshape into nested plain arrays with innermost
         // level containing typed arrays
         // We could eventually adopt an ndarray library
 
+        var shape = v.shape;
+
         // Build cumulative product of dimensions
-        var cumulativeShape = v.shape.map(function(a, i) {
-            return a * (v.shape[i - 1] || 1);
+        var cumulativeShape = shape.map(function(a, i) {
+            return a * (shape[i - 1] || 1);
         });
 
         // Loop of dimensions in reverse order
         var nestedArray = [];
-        for(var dimInd = v.ndims - 1; dimInd > 0; dimInd--) {
-            var subArrayLength = v.shape[dimInd];
+        for(var dimInd = lastDimIndex; dimInd > 0; dimInd--) {
+            var subArrayLength = shape[dimInd];
             var numSubArrays = cumulativeShape[dimInd - 1];
             var nextArray = [];
 
-            if(dimInd === v.ndims - 1) {
+            if(dimInd === lastDimIndex) {
                 // First time through, we build the
                 // inner most typed arrays
                 for(var typedInd = 0; typedInd < numSubArrays; typedInd++) {
@@ -121,36 +122,45 @@ exports.decodeTypedArraySpec = function(v) {
         }
 
         return nestedArray;
+    } else {
+        // Construct single Typed array over entire buffer
+        return new T(buffer);
     }
 };
 
 function isTypedArraySpec(v) {
+    if(!isPlainObject(v)) return false;
+
+    var shape = v.shape;
+
     // Assume v has not passed through
-    return isPlainObject(v) && typedArrays[v.dtype] && v.bvals && (
-        Number.isInteger(v.shape) ||
-        (isArrayOrTypedArray(v.shape) &&
-            v.shape.length > 0 &&
-            v.shape.every(function(d) { return Number.isInteger(d); }))
+    return typedArrays[v.dtype] && v.bvals && (
+        Number.isInteger(shape) ||
+        (isArrayOrTypedArray(shape) &&
+            shape.length > 0 &&
+            shape.every(function(d) { return Number.isInteger(d); }))
     );
 }
 exports.isTypedArraySpec = isTypedArraySpec;
 
 function coerceTypedArraySpec(v) {
+    var shape = v.shape;
+
     // Assume isTypedArraySpec passed
     var coerced = {dtype: v.dtype, bvals: v.bvals};
 
     // Normalize shape to a list
-    if(Number.isInteger(v.shape)) {
-        coerced.shape = [v.shape];
+    if(Number.isInteger(shape)) {
+        coerced.shape = [shape];
     } else {
-        coerced.shape = v.shape;
+        coerced.shape = shape;
     }
 
     // Add length property
-    coerced.length = v.shape.reduce(function(a, b) { return a * b; });
+    coerced.length = shape.reduce(function(a, b) { return a * b; });
 
     // Add ndims
-    coerced.ndims = v.shape.length;
+    coerced.ndims = shape.length;
 
     return coerced;
 }
