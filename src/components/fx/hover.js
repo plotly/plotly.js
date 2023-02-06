@@ -1560,7 +1560,8 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
             var labelMin = d.crossPos + (axIsX ? offsetRectY : offsetRectX);
             var labelMax = labelMin + (axIsX ? d.tx2width * fullLayout._invScaleX : (d.by + 2) * fullLayout._invScaleY);
             if(axIsX) {
-                if(axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.max(labelMin, axisLabelMinY) <= Math.min(labelMax, axisLabelMaxY)) {
+                // at least 1 pixel overlap
+                if(axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.min(labelMax, axisLabelMaxY) - Math.max(labelMin, axisLabelMinY) > 1) {
                     // has overlap with axis label
                     if(crossAx.side === 'left') {
                         pmin = crossAx._mainLinePosition;
@@ -1570,7 +1571,8 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
                     }
                 }
             } else {
-                if(axisLabelMinX !== undefined && axisLabelMaxX !== undefined && Math.max(labelMin, axisLabelMinX) <= Math.min(labelMax, axisLabelMaxX)) {
+                // at least 1 pixel overlap
+                if(axisLabelMinX !== undefined && axisLabelMaxX !== undefined && Math.min(labelMax, axisLabelMaxX) - Math.max(labelMin, axisLabelMinX) > 1) {
                     // has overlap with axis label
                     if(crossAx.side === 'top') {
                         pmin = crossAx._mainLinePosition;
@@ -1782,25 +1784,27 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         var horzSign = anchor === 'end' ? -1 : 1;
         var shiftX = getLabelShiftX(d);
         var offsets = getHoverLabelOffsets(d, rotateLabels);
+        var offsetX = offsets.x;
+        var offsetY = offsets.y;
 
         var isMiddle = anchor === 'middle';
 
         g.select('path')
             .attr('d', isMiddle ?
             // middle aligned: rect centered on data
-            ('M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsets.y - d.by / 2) +
+            ('M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) +
               'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z') :
             // left or right aligned: side rect with arrow to data
-            ('M0,0L' + pX(horzSign * HOVERARROWSIZE + offsets.x) + ',' + pY(HOVERARROWSIZE + offsets.y) +
+            ('M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) +
                 'v' + pY(d.by / 2 - HOVERARROWSIZE) +
                 'h' + pX(horzSign * d.bx) +
                 'v-' + pY(d.by) +
-                'H' + pX(horzSign * HOVERARROWSIZE + offsets.x) +
-                'V' + pY(offsets.y - HOVERARROWSIZE) +
+                'H' + pX(horzSign * HOVERARROWSIZE + offsetX) +
+                'V' + pY(offsetY - HOVERARROWSIZE) +
                 'Z'));
 
-        var posX = offsets.x + shiftX.xx;
-        var posY = offsets.y + d.ty0 - d.by / 2 + HOVERTEXTPAD;
+        var posX = offsetX + shiftX.xx;
+        var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
         var textAlign = d.textAlign || 'auto';
 
         if(textAlign !== 'auto') {
@@ -1822,12 +1826,12 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         if(d.tx2width) {
             g.select('text.name')
                 .call(svgTextUtils.positionText,
-                    pX(shiftX.x2x + shiftX.alignShift * HOVERTEXTPAD + offsets.x),
-                    pY(offsets.y + d.ty0 - d.by / 2 + HOVERTEXTPAD));
+                    pX(shiftX.x2x + shiftX.alignShift * HOVERTEXTPAD + offsetX),
+                    pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD));
             g.select('rect')
                 .call(Drawing.setRect,
-                    pX(shiftX.x2x + (shiftX.alignShift - 1) * d.tx2width / 2 + offsets.x),
-                    pY(offsets.y - d.by / 2 - 1),
+                    pX(shiftX.x2x + (shiftX.alignShift - 1) * d.tx2width / 2 + offsetX),
+                    pY(offsetY - d.by / 2 - 1),
                     pX(d.tx2width), pY(d.by + 2));
         }
     });
