@@ -78,15 +78,9 @@ exports.decodeTypedArraySpec = function(v) {
     // Assume processed by coerceTypedArraySpec
     v = coerceTypedArraySpec(v);
     var T = typedArrays[v.dtype];
-    var buffer;
-    var bvals = v.bvals;
-    if(bvals.constructor === ArrayBuffer) {
-        // Already an ArrayBuffer
-        buffer = bvals;
-    } else {
-        // Decode, assuming a string
-        buffer = b64.decode(bvals);
-    }
+
+    var buffer = v.bvals;
+    if(buffer.constructor !== ArrayBuffer) buffer = b64.decode(buffer);
 
     var lastDimIndex = v.ndims - 1;
 
