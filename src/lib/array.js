@@ -87,6 +87,8 @@ exports.decodeTypedArraySpec = function(v) {
     var lastDimIndex = v.ndims - 1;
 
     if(lastDimIndex > 0) {
+        var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
+
         // Reshape into nested plain arrays with innermost
         // level containing typed arrays
         // We could eventually adopt an ndarray library
@@ -111,7 +113,7 @@ exports.decodeTypedArraySpec = function(v) {
                 for(var typedInd = 0; typedInd < numSubArrays; typedInd++) {
                     var typedOffset = typedInd * subArrayLength;
                     nextArray.push(
-                        new T(buffer, typedOffset * T.BYTES_PER_ELEMENT, subArrayLength)
+                        new T(buffer, typedOffset * BYTES_PER_ELEMENT, subArrayLength)
                     );
                 }
             } else {
