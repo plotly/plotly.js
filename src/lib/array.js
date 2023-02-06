@@ -1,8 +1,14 @@
 'use strict';
 var b64 = require('base64-arraybuffer');
+var isNumeric = require('fast-isnumeric');
+
 var isPlainObject = require('./is_plain_object');
 
 var isArray = Array.isArray;
+
+function isInteger(a) {
+    return isNumeric(a) && (a % 1 === 0);
+}
 
 var ab = ArrayBuffer;
 var dv = DataView;
@@ -135,10 +141,10 @@ function isTypedArraySpec(v) {
 
     // Assume v has not passed through
     return typedArrays[v.dtype] && v.bvals && (
-        Number.isInteger(shape) ||
+        isInteger(shape) ||
         (isArrayOrTypedArray(shape) &&
             shape.length > 0 &&
-            shape.every(function(d) { return Number.isInteger(d); }))
+            shape.every(function(d) { return isInteger(d); }))
     );
 }
 exports.isTypedArraySpec = isTypedArraySpec;
@@ -150,7 +156,7 @@ function coerceTypedArraySpec(v) {
     var coerced = {dtype: v.dtype, bvals: v.bvals};
 
     // Normalize shape to a list
-    if(Number.isInteger(shape)) {
+    if(isInteger(shape)) {
         coerced.shape = [shape];
     } else {
         coerced.shape = shape;
