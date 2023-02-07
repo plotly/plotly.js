@@ -1549,20 +1549,20 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
         }
         var pmin = 0;
         var pmax = (axIsX ? fullLayout.width : fullLayout.height);
+        // in hovermode avoid overlap between hover labels and axis label
         if(fullLayout.hovermode === 'x' || fullLayout.hovermode === 'y') {
             // extent of rect behind hover label on cross axis (without arrow):
             var offsets = getHoverLabelOffsets(d, rotateLabels);
-            var shiftX = getLabelShiftX(d);
+            var shiftX = getTextShiftX(d);
             // calculation based on alignHoverText function
-            var offsetRectX = (shiftX.x2x + (shiftX.alignShift - 1) * d.tx2width / 2 + offsets.x) * fullLayout._invScaleX;
+            var offsetRectX = (shiftX.text2ShiftX + (shiftX.alignShift - 1) * d.tx2width / 2 + offsets.x) * fullLayout._invScaleX;
             var offsetRectY = (offsets.y - d.by / 2 - 1) * fullLayout._invScaleY;
 
             var labelMin = d.crossPos + (axIsX ? offsetRectY : offsetRectX);
             var labelMax = labelMin + (axIsX ? d.tx2width * fullLayout._invScaleX : (d.by + 2) * fullLayout._invScaleY);
             if(axIsX) {
-                // at least 1 pixel overlap
                 if(axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.min(labelMax, axisLabelMaxY) - Math.max(labelMin, axisLabelMinY) > 1) {
-                    // has overlap with axis label
+                    // has at least 1 pixel overlap with axis label
                     if(crossAx.side === 'left') {
                         pmin = crossAx._mainLinePosition;
                         pmax = fullLayout.width;
@@ -1571,9 +1571,8 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
                     }
                 }
             } else {
-                // at least 1 pixel overlap
                 if(axisLabelMinX !== undefined && axisLabelMaxX !== undefined && Math.min(labelMax, axisLabelMaxX) - Math.max(labelMin, axisLabelMinX) > 1) {
-                    // has overlap with axis label
+                    // has at least 1 pixel overlap with axis label
                     if(crossAx.side === 'top') {
                         pmin = crossAx._mainLinePosition;
                         pmax = fullLayout.height;
@@ -1751,21 +1750,24 @@ function getHoverLabelOffsets(hoverLabel, rotateLabels) {
     };
 }
 
-function getLabelShiftX(hoverLabel) {
+/**
+ * Calculate the shift in x for text and text2 elements
+ */
+function getTextShiftX(hoverLabel) {
     var alignShift = {start: 1, end: -1, middle: 0}[hoverLabel.anchor];
-    var txx = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
-    var tx2x = txx + alignShift * (hoverLabel.txwidth + HOVERTEXTPAD);
+    var textShiftX = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
+    var text2ShiftX = textShiftX + alignShift * (hoverLabel.txwidth + HOVERTEXTPAD);
 
     var isMiddle = hoverLabel.anchor === 'middle';
     if(isMiddle) {
-        txx -= hoverLabel.tx2width / 2;
-        tx2x += hoverLabel.txwidth / 2 + HOVERTEXTPAD;
+        textShiftX -= hoverLabel.tx2width / 2;
+        text2ShiftX += hoverLabel.txwidth / 2 + HOVERTEXTPAD;
     }
 
     return {
         alignShift: alignShift,
-        xx: txx,
-        x2x: tx2x
+        textShiftX: textShiftX,
+        text2ShiftX: text2ShiftX
     };
 }
 
@@ -1782,7 +1784,7 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         var tx = g.select('text.nums');
         var anchor = d.anchor;
         var horzSign = anchor === 'end' ? -1 : 1;
-        var shiftX = getLabelShiftX(d);
+        var shiftX = getTextShiftX(d);
         var offsets = getHoverLabelOffsets(d, rotateLabels);
         var offsetX = offsets.x;
         var offsetY = offsets.y;
@@ -1803,7 +1805,7 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
                 'V' + pY(offsetY - HOVERARROWSIZE) +
                 'Z'));
 
-        var posX = offsetX + shiftX.xx;
+        var posX = offsetX + shiftX.textShiftX;
         var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
         var textAlign = d.textAlign || 'auto';
 
@@ -1826,11 +1828,11 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
         if(d.tx2width) {
             g.select('text.name')
                 .call(svgTextUtils.positionText,
-                    pX(shiftX.x2x + shiftX.alignShift * HOVERTEXTPAD + offsetX),
+                    pX(shiftX.text2ShiftX + shiftX.alignShift * HOVERTEXTPAD + offsetX),
                     pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD));
             g.select('rect')
                 .call(Drawing.setRect,
-                    pX(shiftX.x2x + (shiftX.alignShift - 1) * d.tx2width / 2 + offsetX),
+                    pX(shiftX.text2ShiftX + (shiftX.alignShift - 1) * d.tx2width / 2 + offsetX),
                     pY(offsetY - d.by / 2 - 1),
                     pX(d.tx2width), pY(d.by + 2));
         }
