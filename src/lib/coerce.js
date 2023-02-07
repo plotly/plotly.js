@@ -36,25 +36,11 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            var wasSet;
-            if(isArrayOrTypedArray(v)) {
-                propOut.set(v);
-                wasSet = true;
-            } else if(isTypedArraySpec(v)) {
-                // Copy and coerce spec
-                v = coerceTypedArraySpec(v);
-
-                if(v.bvals.constructor === ArrayBuffer) {
-                    // Already an ArrayBuffer
-                    // decoding is cheap
-                    propOut.set(decodeTypedArraySpec(v));
-                } else {
-                    var decoded = decodeTypedArraySpec(v);
-                    propOut.set(decoded);
-                }
-                wasSet = true;
-            }
-            if(!wasSet && dflt !== undefined) propOut.set(dflt);
+            propOut.set(
+                isArrayOrTypedArray(v) ? v :
+                isTypedArraySpec(v) ? decodeTypedArraySpec(coerceTypedArraySpec(v)) :
+                dflt
+            );
         }
     },
     enumerated: {
