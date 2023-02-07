@@ -71,11 +71,8 @@ var typedArrays = {
     float32: detectType(Float32Array),
     float64: detectType(Float64Array)
 };
-exports.typedArrays = typedArrays;
-
 
 exports.decodeTypedArraySpec = function(v) {
-    // Assume processed by coerceTypedArraySpec
     v = coerceTypedArraySpec(v);
     var T = typedArrays[v.dtype];
 
@@ -139,7 +136,7 @@ exports.decodeTypedArraySpec = function(v) {
     }
 };
 
-function isTypedArraySpec(v) {
+exports.isTypedArraySpec = function(v) {
     if(!isPlainObject(v)) return false;
 
     var shape = v.shape;
@@ -153,8 +150,7 @@ function isTypedArraySpec(v) {
             shape.every(isInteger)
         )
     );
-}
-exports.isTypedArraySpec = isTypedArraySpec;
+};
 
 function coerceTypedArraySpec(v) {
     var shape = v.shape; // TODO: could one skip shape for 1d arrays?
@@ -168,7 +164,6 @@ function coerceTypedArraySpec(v) {
         bvals: v.bvals
     };
 }
-exports.coerceTypedArraySpec = coerceTypedArraySpec;
 
 /*
  * TypedArray-compatible concatenation of n arrays

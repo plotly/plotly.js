@@ -14,8 +14,6 @@ var modHalf = require('./mod').modHalf;
 var isArrayOrTypedArray = require('./array').isArrayOrTypedArray;
 var isTypedArraySpec = require('./array').isTypedArraySpec;
 var decodeTypedArraySpec = require('./array').decodeTypedArraySpec;
-var coerceTypedArraySpec = require('./array').coerceTypedArraySpec;
-
 
 exports.valObjectMeta = {
     data_array: {
@@ -38,7 +36,7 @@ exports.valObjectMeta = {
         coerceFunction: function(v, propOut, dflt) {
             propOut.set(
                 isArrayOrTypedArray(v) ? v :
-                isTypedArraySpec(v) ? decodeTypedArraySpec(coerceTypedArraySpec(v)) :
+                isTypedArraySpec(v) ? decodeTypedArraySpec(v) :
                 dflt
             );
         }
