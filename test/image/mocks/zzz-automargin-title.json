@@ -25,10 +25,12 @@
         },
         "title": {
             "automargin": true, 
-            "text": "Some text",
-            "y": 1,
-            "yanchor": "top",
-            "container": "paper"
+            "text": "A sample title",
+            "font": {"size": 24},
+            "pad": {"t": 15},
+            "yanchor": "bottom",
+            "yref": "paper",
+            "y": 1
         }
   }
 }

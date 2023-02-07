@@ -407,8 +407,6 @@ exports.drawMainTitle = function(gd) {
 
     if(gd._fullLayout.title.automargin) {
         applyTitleAutoMargin(gd, fullLayout, dy);
-        // A bit hacky to make sure top padding is properly accounted for
-        y += gd._fullLayout.title.pad.t;
     }
 
     Titles.draw(gd, 'gtitle', {
@@ -447,7 +445,7 @@ function applyTitleAutoMargin(gd, fullLayout, dy) {
     // TODO: Push titleDepth depending on yanchor?
     push[direction] = (
         titleDepth(title) +
-        getMainTitleY(fullLayout, dy) +
+        // getMainTitleY(fullLayout, dy) + // TODO: Why is this calculation triggering too many automargin redraws?
         title.pad.t +
         title.pad.b
         );
