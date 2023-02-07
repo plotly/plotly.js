@@ -73,6 +73,7 @@ var typedArrays = {
 };
 
 exports.decodeTypedArraySpec = function(v) {
+    var out = [];
     v = coerceTypedArraySpec(v);
     var T = typedArrays[v.dtype];
 
@@ -129,11 +130,18 @@ exports.decodeTypedArraySpec = function(v) {
             nestedArray = nextArray;
         }
 
-        return nestedArray;
+        out = nestedArray;
     } else {
         // Construct single Typed array over entire buffer
-        return new T(buffer);
+        out = new T(buffer);
     }
+
+    // attach spec to array for json export
+    out.shape = v.shape;
+    out.dtype = v.dtype;
+    out.bvals = v.bvals;
+
+    return out;
 };
 
 exports.isTypedArraySpec = function(v) {
