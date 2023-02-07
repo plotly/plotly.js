@@ -27,7 +27,8 @@
             "automargin": true, 
             "text": "Some text",
             "y": 1,
-            "yanchor": "top"
+            "yanchor": "top",
+            "container": "paper"
         }
   }
 }
