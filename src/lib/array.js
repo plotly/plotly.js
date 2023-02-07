@@ -1,5 +1,5 @@
 'use strict';
-var b64 = require('base64-arraybuffer');
+var b64decode = require('base64-arraybuffer').decode;
 var isNumeric = require('fast-isnumeric');
 
 var isPlainObject = require('./is_plain_object');
@@ -81,7 +81,7 @@ exports.decodeTypedArraySpec = function(v) {
 
     var buffer = v.bvals;
     if(buffer.constructor !== ArrayBuffer) {
-        buffer = b64.decode(buffer);
+        buffer = b64decode(buffer);
     }
 
     var shape = v.shape;
