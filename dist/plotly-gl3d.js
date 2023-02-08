@@ -1,6 +1,6 @@
 /**
 * plotly.js (gl3d) v2.14.0
-* Copyright 2012-2022, Plotly, Inc.
+* Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
