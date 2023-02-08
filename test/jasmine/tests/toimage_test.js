@@ -291,6 +291,27 @@ describe('Plotly.toImage', function() {
             .then(done, done.fail);
         });
 
+        it('export typed arrays as regular arrays', function(done) {
+            Plotly.newPlot(gd, [{
+                type: 'surface',
+                x: new Float64Array([-1 / 3, 1 / 3]),
+                y: new Float32Array([-1 / 3, 1 / 3]),
+                z: [
+                    new Int16Array([-32768, 32767]),
+                    new Uint16Array([65535, 0])
+                ],
+            }])
+            .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
+            .then(function(fig) {
+                fig = JSON.parse(fig);
+
+                expect(fig.data[0].x).toEqual([-0.3333333333333333, 0.3333333333333333]);
+                expect(fig.data[0].y).toEqual([-0.3333333432674408, 0.3333333432674408]);
+                expect(fig.data[0].z).toEqual([[-32768, 32767], [65535, 0]]);
+            })
+            .then(done, done.fail);
+        });
+
         it('export computed margins', function(done) {
             Plotly.toImage(pieAutoMargin, imgOpts)
             .then(function(fig) {
