@@ -2230,6 +2230,17 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         }
 
         if(Lib.isTypedArray(d)) {
+            if(d.dtype) {
+                return stripObj({
+                    dtype: d.dtype,
+                    shape: d.shape,
+                    bvals: d.bvals,
+
+                    // we could possibly add _vals here
+                    // _vals: Lib.simpleMap(d, Lib.identity)
+                }, keepFunction);
+            }
+
             return Lib.simpleMap(d, Lib.identity);
         }
 
