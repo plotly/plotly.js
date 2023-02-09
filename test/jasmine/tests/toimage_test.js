@@ -339,18 +339,11 @@ describe('Plotly.toImage', function() {
 
                 expect(fig.data[0].x.bvals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
                 expect(fig.data[0].y.bvals).toEqual('q6qqPquqqr4=');
-                // expect(fig.data[0].z.bvals).toEqual('AABkAMgALAGQAfQB');
+                expect(fig.data[0].z.bvals).toEqual('AABkAMgALAGQAfQB');
 
                 expect(fig.data[0].x.dtype).toEqual('float64');
                 expect(fig.data[0].y.dtype).toEqual('float32');
-                // expect(fig.data[0].z.dtype).toEqual('uint16');
-
-                // expect(fig.data[0].x._vals).toEqual([-0.3333333333333333, 0.3333333333333333]);
-                // expect(fig.data[0].y._vals).toEqual([0.3333333432674408, -0.3333333432674408]);
-                // expect(fig.data[0].z._vals).toEqual([[0, 100, 200], [300, 400, 500]]);
-
-                // until we fix maintaining z array in surface
-                expect(fig.data[0].z).toEqual([[0, 100, 200], [300, 400, 500]]);
+                expect(fig.data[0].z.dtype).toEqual('uint16');
             })
             .then(done, done.fail);
         });

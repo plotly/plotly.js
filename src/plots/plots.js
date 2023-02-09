@@ -2226,6 +2226,14 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         }
 
         if(Array.isArray(d)) {
+            if(d.dtype) {
+                return stripObj({
+                    dtype: d.dtype,
+                    shape: d.shape,
+                    bvals: d.bvals,
+                }, keepFunction);
+            }
+
             return d.map(function(x) {return stripObj(x, keepFunction);});
         }
 
@@ -2235,9 +2243,6 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
                     dtype: d.dtype,
                     shape: d.shape,
                     bvals: d.bvals,
-
-                    // we could possibly add _vals here
-                    _vals: Lib.simpleMap(d, Lib.identity)
                 }, keepFunction);
             }
 
