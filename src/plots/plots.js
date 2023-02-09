@@ -2225,27 +2225,22 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
             return o;
         }
 
-        if(Array.isArray(d)) {
-            if(d.dtype) {
-                return stripObj({
-                    dtype: d.dtype,
-                    shape: d.shape,
-                    bvals: d.bvals,
-                }, keepFunction);
-            }
+        var dIsArray = Array.isArray(d);
+        var dIsTypedArray = Lib.isTypedArray(d);
 
+        if((dIsArray || dIsTypedArray) && d.dtype) {
+            return stripObj({
+                dtype: d.dtype,
+                shape: d.shape,
+                bvals: d.bvals,
+            }, keepFunction);
+        }
+
+        if(dIsArray) {
             return d.map(function(x) {return stripObj(x, keepFunction);});
         }
 
-        if(Lib.isTypedArray(d)) {
-            if(d.dtype) {
-                return stripObj({
-                    dtype: d.dtype,
-                    shape: d.shape,
-                    bvals: d.bvals,
-                }, keepFunction);
-            }
-
+        if(dIsTypedArray) {
             return Lib.simpleMap(d, Lib.identity);
         }
 
