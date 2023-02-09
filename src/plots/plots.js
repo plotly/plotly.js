@@ -4,6 +4,7 @@ var d3 = require('@plotly/d3');
 var timeFormatLocale = require('d3-time-format').timeFormatLocale;
 var formatLocale = require('d3-format').formatLocale;
 var isNumeric = require('fast-isnumeric');
+var b64encode = require('base64-arraybuffer');
 
 var Registry = require('../registry');
 var PlotSchema = require('../plot_api/plot_schema');
@@ -2229,10 +2230,17 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         var dIsTypedArray = Lib.isTypedArray(d);
 
         if((dIsArray || dIsTypedArray) && d.dtype) {
+            var bvals = d.bvals;
             return stripObj({
                 dtype: d.dtype,
                 shape: d.shape,
-                bvals: d.bvals,
+
+                bvals:
+                    // case of ArrayBuffer
+                    bvals.constructor === ArrayBuffer ? b64encode.encode(bvals) :
+                    // case of b64 string
+                    bvals
+
             }, keepFunction);
         }
 

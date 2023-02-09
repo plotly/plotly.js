@@ -1,5 +1,5 @@
 var b64 = require('base64-arraybuffer');
-function b64encode(typedArray) {
+function b64encodeTypedArray(typedArray) {
     return b64.encode(typedArray.buffer);
 }
 
@@ -320,9 +320,9 @@ describe('Plotly.toImage', function() {
         });
 
         it('import & export typed 1d and 2d arrays', function(done) {
-            var x = b64encode(new Float64Array([-1 / 3, 0, 1 / 3]));
-            var y = b64encode(new Float32Array([1 / 3, -1 / 3]));
-            var z = b64encode(new Uint16Array([0, 100, 200, 300, 400, 500]));
+            var x = b64encodeTypedArray(new Float64Array([-1 / 3, 0, 1 / 3]));
+            var y = b64encodeTypedArray(new Float32Array([1 / 3, -1 / 3]));
+            var z = b64encodeTypedArray(new Uint16Array([0, 100, 200, 300, 400, 500]));
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
