@@ -1,3 +1,8 @@
+var b64 = require('base64-arraybuffer');
+function b64encode(typedArray) {
+    return b64.encode(typedArray.buffer);
+}
+
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 
@@ -299,15 +304,50 @@ describe('Plotly.toImage', function() {
                 z: [
                     new Int16Array([-32768, 32767]),
                     new Uint16Array([65535, 0])
-                ],
+                ]
             }])
             .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
             .then(function(fig) {
                 fig = JSON.parse(fig);
 
+                expect(fig.data[0].visible).toEqual(true);
+
                 expect(fig.data[0].x).toEqual([-0.3333333333333333, 0.3333333333333333]);
                 expect(fig.data[0].y).toEqual([-0.3333333432674408, 0.3333333432674408]);
                 expect(fig.data[0].z).toEqual([[-32768, 32767], [65535, 0]]);
+            })
+            .then(done, done.fail);
+        });
+
+        it('import & export typed 1d and 2d arrays', function(done) {
+            var x = b64encode(new Float64Array([-1 / 3, 0, 1 / 3]));
+            var y = b64encode(new Float32Array([-1 / 3, 1 / 3]));
+            var z = b64encode(new Uint8Array([127, 0, 255, 255, 0, 127]));
+
+            Plotly.newPlot(gd, [{
+                type: 'surface',
+                x: {bvals: x, dtype: 'float64', shape: [3]},
+                y: {bvals: y, dtype: 'float32', shape: [2]},
+                z: {bvals: z, dtype: 'uint8', shape: [2, 3]}
+            }])
+
+            .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
+            .then(function(fig) {
+                fig = JSON.parse(fig);
+
+                expect(fig.data[0].visible).toEqual(true);
+
+                expect(fig.data[0].x.bvals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(fig.data[0].y.bvals).toEqual('q6qqvquqqj4=');
+                expect(fig.data[0].z.bvals).toEqual('fwD//wB/');
+
+                expect(fig.data[0].x.dtype).toEqual('float64');
+                expect(fig.data[0].y.dtype).toEqual('float32');
+                expect(fig.data[0].z.dtype).toEqual('uint8');
+
+                expect(fig.data[0].x._vals).toEqual([-0.3333333333333333, 0.3333333333333333]);
+                expect(fig.data[0].y._vals).toEqual([-0.3333333432674408, 0.3333333432674408]);
+                expect(fig.data[0].z._vals).toEqual([[127, 0, 255], [255, 0, 127]]);
             })
             .then(done, done.fail);
         });
