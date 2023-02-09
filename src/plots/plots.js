@@ -2237,7 +2237,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
                     bvals: d.bvals,
 
                     // we could possibly add _vals here
-                    // _vals: Lib.simpleMap(d, Lib.identity)
+                    _vals: Lib.simpleMap(d, Lib.identity)
                 }, keepFunction);
             }
 
