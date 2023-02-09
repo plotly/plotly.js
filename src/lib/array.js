@@ -85,55 +85,21 @@ exports.decodeTypedArraySpec = function(v) {
     var shape = v.shape;
     var ndims = shape ? shape.length : 1;
 
-    var lastDimIndex = ndims - 1;
+    var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
 
-    if(lastDimIndex > 0) {
-        var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
-
-        // Reshape into nested plain arrays with innermost
-        // level containing typed arrays
-        // We could eventually adopt an ndarray library
-
-        // Build cumulative product of dimensions
-        var cumulativeShape = shape.map(function(a, i) {
-            return a * (shape[i - 1] || 1);
-        });
-
-        // Loop of dimensions in reverse order
-        var nestedArray = [];
-        for(var dimInd = lastDimIndex; dimInd > 0; dimInd--) {
-            var subArrayLength = shape[dimInd];
-            var numSubArrays = cumulativeShape[dimInd - 1];
-            var nextArray = [];
-
-            if(dimInd === lastDimIndex) {
-                // First time through, we build the
-                // inner most typed arrays
-                for(var typedInd = 0; typedInd < numSubArrays; typedInd++) {
-                    var typedOffset = typedInd * subArrayLength;
-                    nextArray.push(
-                        new T(buffer, typedOffset * BYTES_PER_ELEMENT, subArrayLength)
-                    );
-                }
-            } else {
-                // Following times through, build
-                // next layer of nested arrays
-                for(var i = 0; i < numSubArrays; i++) {
-                    var offset = i * subArrayLength;
-                    nextArray.push(
-                        nextArray.slice(offset, offset + subArrayLength - 1)
-                    );
-                }
-            }
-
-            // Update nested array with next nesting level
-            nestedArray = nextArray;
-        }
-
-        out = nestedArray;
-    } else {
-        // Construct single Typed array over entire buffer
+    if(ndims === 1) {
         out = new T(buffer);
+    } else if(ndims === 2) {
+        var ni = shape[0];
+        var nj = shape[1];
+
+
+        out = [];
+        for(var j = 0; j < nj; j++) {
+            out[j] = new T(buffer, BYTES_PER_ELEMENT * j * ni, ni);
+        }
+    } else if(ndims === 3) {
+        // TODO: for volume
     }
 
     // attach spec to array for json export
