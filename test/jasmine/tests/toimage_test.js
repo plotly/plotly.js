@@ -308,21 +308,24 @@ describe('Plotly.toImage', function() {
             }])
             .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
             .then(function(fig) {
-                fig = JSON.parse(fig);
+                var trace = JSON.parse(fig).data[0];
 
-                expect(fig.data[0].visible).toEqual(true);
+                expect(trace.visible).toEqual(true);
 
-                expect(fig.data[0].x).toEqual([-0.3333333333333333, 0.3333333333333333]);
-                expect(fig.data[0].y).toEqual([-0.3333333432674408, 0.3333333432674408]);
-                expect(fig.data[0].z).toEqual([[-32768, 32767], [65535, 0]]);
+                expect(trace.x).toEqual([-0.3333333333333333, 0.3333333333333333]);
+                expect(trace.y).toEqual([-0.3333333432674408, 0.3333333432674408]);
+                expect(trace.z).toEqual([[-32768, 32767], [65535, 0]]);
             })
             .then(done, done.fail);
         });
 
         it('import & export typed 1d and 2d arrays', function(done) {
-            var x = b64encodeTypedArray(new Float64Array([-1 / 3, 0, 1 / 3]));
-            var y = b64encodeTypedArray(new Float32Array([1 / 3, -1 / 3]));
-            var z = b64encodeTypedArray(new Uint16Array([0, 100, 200, 300, 400, 500]));
+            var allX = new Float64Array([-1 / 3, 0, 1 / 3]);
+            var allY = new Float32Array([1 / 3, -1 / 3]);
+            var allZ = new Uint16Array([0, 100, 200, 300, 400, 500]);
+            var x = b64encodeTypedArray(allX);
+            var y = b64encodeTypedArray(allY);
+            var z = b64encodeTypedArray(allZ);
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
@@ -330,20 +333,29 @@ describe('Plotly.toImage', function() {
                 y: {bvals: y, dtype: 'float32', shape: [2]},
                 z: {bvals: z, dtype: 'uint16', shape: [3, 2]}
             }])
+            .then(function(gd) {
+                var trace = gd._fullData[0];
+                expect(trace.x.slice()).toEqual(allX);
+                expect(trace.y.slice()).toEqual(allY);
+                expect(trace.z.slice()).toEqual([
+                    new Uint16Array([0, 100, 200]),
+                    new Uint16Array([300, 400, 500])
+                ]);
 
-            .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
+                return Plotly.toImage(gd, imgOpts);
+            })
             .then(function(fig) {
-                fig = JSON.parse(fig);
+                var trace = JSON.parse(fig).data[0];
 
-                expect(fig.data[0].visible).toEqual(true);
+                expect(trace.visible).toEqual(true);
 
-                expect(fig.data[0].x.bvals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
-                expect(fig.data[0].y.bvals).toEqual('q6qqPquqqr4=');
-                expect(fig.data[0].z.bvals).toEqual('AABkAMgALAGQAfQB');
+                expect(trace.x.bvals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
+                expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
 
-                expect(fig.data[0].x.dtype).toEqual('float64');
-                expect(fig.data[0].y.dtype).toEqual('float32');
-                expect(fig.data[0].z.dtype).toEqual('uint16');
+                expect(trace.x.dtype).toEqual('float64');
+                expect(trace.y.dtype).toEqual('float32');
+                expect(trace.z.dtype).toEqual('uint16');
             })
             .then(done, done.fail);
         });
