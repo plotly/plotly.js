@@ -329,9 +329,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {bvals: x, dtype: 'float64', shape: [3]},
-                y: {bvals: y, dtype: 'float32', shape: [2]},
-                z: {bvals: z, dtype: 'uint16', shape: [3, 2]}
+                x: {bvals: x, dtype: 'f64', shape: [3]},
+                y: {bvals: y, dtype: 'f32', shape: [2]},
+                z: {bvals: z, dtype: 'ui16', shape: [3, 2]}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -353,9 +353,9 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
                 expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
 
-                expect(trace.x.dtype).toEqual('float64');
-                expect(trace.y.dtype).toEqual('float32');
-                expect(trace.z.dtype).toEqual('uint16');
+                expect(trace.x.dtype).toEqual('f64');
+                expect(trace.y.dtype).toEqual('f32');
+                expect(trace.z.dtype).toEqual('ui16');
             })
             .then(done, done.fail);
         });
@@ -370,9 +370,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {bvals: x, dtype: 'float64', shape: [3]},
-                y: {bvals: y, dtype: 'float32', shape: [2]},
-                z: {bvals: z, dtype: 'uint16', shape: [3, 2]}
+                x: {bvals: x, dtype: 'f64', shape: [3]},
+                y: {bvals: y, dtype: 'f32', shape: [2]},
+                z: {bvals: z, dtype: 'ui16', shape: [3, 2]}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -394,9 +394,9 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
                 expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
 
-                expect(trace.x.dtype).toEqual('float64');
-                expect(trace.y.dtype).toEqual('float32');
-                expect(trace.z.dtype).toEqual('uint16');
+                expect(trace.x.dtype).toEqual('f64');
+                expect(trace.y.dtype).toEqual('f32');
+                expect(trace.z.dtype).toEqual('ui16');
             })
             .then(done, done.fail);
         });

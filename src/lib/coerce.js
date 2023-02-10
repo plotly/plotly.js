@@ -25,9 +25,9 @@ exports.valObjectMeta = {
             '(1) a regular {array} object',
             '(2) a typed array (e.g. Float32Array)',
             '(3) an object with keys dtype, bvals, and optionally shape.',
-            'In this 3rd form, dtype is one of *int8*, *uint8*, *uint8clamped*,',
-            '*int16*, *uint16*, *int32*, *uint32*, *float32*, or *float64*.',
-            'bvals is either a base64-encoded string or an ArrayBuffer,',
+            'In this 3rd form, dtype is one of *i8*, *ui8*, *ui8c*,',
+            '*i16*, *ui16*, *i32*, *ui32*, *f32*, or *f64*.',
+            'bvals is either a base64-encoded string or an ArrayBuffer of an integer or float typed array,',
             'and for multi-dimensional arrays you must provide its dimensions',
             'as an array of integers.'
         ].join(' '),

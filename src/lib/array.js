@@ -61,15 +61,19 @@ function detectType(a) {
 }
 
 var typedArrays = {
-    int8: detectType(Int8Array),
-    uint8: detectType(Uint8Array),
-    uint8clamped: detectType(Uint8ClampedArray),
-    int16: detectType(Int16Array),
-    uint16: detectType(Uint16Array),
-    int32: detectType(Int32Array),
-    uint32: detectType(Uint32Array),
-    float32: detectType(Float32Array),
-    float64: detectType(Float64Array)
+    i8: detectType(Int8Array),
+    ui8: detectType(Uint8Array),
+    ui8c: detectType(Uint8ClampedArray),
+    i16: detectType(Int16Array),
+    ui16: detectType(Uint16Array),
+    i32: detectType(Int32Array),
+    ui32: detectType(Uint32Array),
+    f32: detectType(Float32Array),
+    f64: detectType(Float64Array),
+
+    // TODO: potentially add Big Int
+    // bi64: detectType(BigInt64Array),
+    // bui64: detectType(BigUint64Array),
 };
 
 exports.decodeTypedArraySpec = function(v) {
