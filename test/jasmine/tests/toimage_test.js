@@ -360,6 +360,47 @@ describe('Plotly.toImage', function() {
             .then(done, done.fail);
         });
 
+        it('import buffer and export b64', function(done) {
+            var allX = new Float64Array([-1 / 3, 0, 1 / 3]);
+            var allY = new Float32Array([1 / 3, -1 / 3]);
+            var allZ = new Uint16Array([0, 100, 200, 300, 400, 500]);
+            var x = allX.buffer;
+            var y = allY.buffer;
+            var z = allZ.buffer;
+
+            Plotly.newPlot(gd, [{
+                type: 'surface',
+                x: {bvals: x, dtype: 'float64', shape: [3]},
+                y: {bvals: y, dtype: 'float32', shape: [2]},
+                z: {bvals: z, dtype: 'uint16', shape: [3, 2]}
+            }])
+            .then(function(gd) {
+                var trace = gd._fullData[0];
+                expect(trace.x.slice()).toEqual(allX);
+                expect(trace.y.slice()).toEqual(allY);
+                expect(trace.z.slice()).toEqual([
+                    new Uint16Array([0, 100, 200]),
+                    new Uint16Array([300, 400, 500])
+                ]);
+
+                return Plotly.toImage(gd, imgOpts);
+            })
+            .then(function(fig) {
+                var trace = JSON.parse(fig).data[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x.bvals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
+                expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
+
+                expect(trace.x.dtype).toEqual('float64');
+                expect(trace.y.dtype).toEqual('float32');
+                expect(trace.z.dtype).toEqual('uint16');
+            })
+            .then(done, done.fail);
+        });
+
         it('export computed margins', function(done) {
             Plotly.toImage(pieAutoMargin, imgOpts)
             .then(function(fig) {
