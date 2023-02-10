@@ -85,21 +85,38 @@ exports.decodeTypedArraySpec = function(v) {
     var shape = v.shape;
     var ndims = shape ? shape.length : 1;
 
+    var j;
+    var ni = shape[0];
+    var nj = shape[1];
+
     var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
+    var rowBites = BYTES_PER_ELEMENT * ni;
+    var pos = 0;
 
     if(ndims === 1) {
         out = new T(buffer);
     } else if(ndims === 2) {
-        var ni = shape[0];
-        var nj = shape[1];
-
-
-        out = [];
-        for(var j = 0; j < nj; j++) {
-            out[j] = new T(buffer, BYTES_PER_ELEMENT * j * ni, ni);
+        for(j = 0; j < nj; j++) {
+            out[j] = new T(buffer, pos, ni);
+            pos += rowBites;
         }
+    /*
+
+    // 3d arrays are not supported in traces e.g. volume & isosurface
+    // once supported we could uncomment this part
+
     } else if(ndims === 3) {
-        // TODO: for volume
+        var nk = shape[2];
+        for(var k = 0; k < nk; k++) {
+            out[k] = [];
+            for(j = 0; j < nj; j++) {
+                out[k][j] = new T(buffer, pos, ni);
+                pos += rowBites;
+            }
+        }
+    */
+    } else {
+        throw new Error('Bad shape: "' + shape + '"');
     }
 
     // attach spec to array for json export

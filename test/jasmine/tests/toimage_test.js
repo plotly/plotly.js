@@ -319,7 +319,7 @@ describe('Plotly.toImage', function() {
             .then(done, done.fail);
         });
 
-        it('import & export typed 1d and 2d arrays', function(done) {
+        it('import & export 1d and 2d typed arrays', function(done) {
             var allX = new Float64Array([-1 / 3, 0, 1 / 3]);
             var allY = new Float32Array([1 / 3, -1 / 3]);
             var allZ = new Uint16Array([0, 100, 200, 300, 400, 500]);
