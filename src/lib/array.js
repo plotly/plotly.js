@@ -1,14 +1,9 @@
 'use strict';
 var b64decode = require('base64-arraybuffer').decode;
-var isNumeric = require('fast-isnumeric');
 
 var isPlainObject = require('./is_plain_object');
 
 var isArray = Array.isArray;
-
-function isInteger(a) {
-    return isNumeric(a) && (a % 1 === 0);
-}
 
 var ab = ArrayBuffer;
 var dv = DataView;
@@ -76,22 +71,27 @@ var typedArrays = {
     // bui64: detectType(BigUint64Array),
 };
 
-exports.decodeTypedArraySpec = function(v) {
+function isArrayBuffer(a) {
+    return a.constructor === ArrayBuffer;
+}
+exports.isArrayBuffer = isArrayBuffer;
+
+exports.decodeTypedArraySpec = function(vIn) {
     var out = [];
-    v = coerceTypedArraySpec(v);
-    var T = typedArrays[v.dtype];
+    var v = coerceTypedArraySpec(vIn);
+    var shape = v.spec.split('|');
+    var dtype = shape.shift();
+    var ndims = shape.length;
+    var T = typedArrays[dtype];
+    if(!T) throw new Error('Error in spec: "' + v.spec + '"');
 
     var buffer = v.bvals;
-    if(buffer.constructor !== ArrayBuffer) {
+    if(!isArrayBuffer(buffer)) {
         buffer = b64decode(buffer);
     }
 
-    var shape = v.shape;
-    var ndims = shape ? shape.length : 1;
-
-    var j;
-    var ni = shape[0];
-    var nj = shape[1];
+    var nj, j;
+    var ni = +shape[0];
 
     var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
     var rowBites = BYTES_PER_ELEMENT * ni;
@@ -100,6 +100,7 @@ exports.decodeTypedArraySpec = function(v) {
     if(ndims === 1) {
         out = new T(buffer);
     } else if(ndims === 2) {
+        nj = +shape[1];
         for(j = 0; j < nj; j++) {
             out[j] = new T(buffer, pos, ni);
             pos += rowBites;
@@ -110,7 +111,8 @@ exports.decodeTypedArraySpec = function(v) {
     // once supported we could uncomment this part
 
     } else if(ndims === 3) {
-        var nk = shape[2];
+        nj = +shape[1];
+        var nk = +shape[2];
         for(var k = 0; k < nk; k++) {
             out[k] = [];
             for(j = 0; j < nj; j++) {
@@ -120,42 +122,27 @@ exports.decodeTypedArraySpec = function(v) {
         }
     */
     } else {
-        throw new Error('Bad shape: "' + shape + '"');
+        throw new Error('Error in spec: "' + v.spec + '"');
     }
 
-    // attach spec to array for json export
-    out.shape = v.shape;
-    out.dtype = v.dtype;
+    // attach spec & bvals to array for json export
+    out.spec = v.spec;
     out.bvals = v.bvals;
 
     return out;
 };
 
 exports.isTypedArraySpec = function(v) {
-    if(!isPlainObject(v)) return false;
-
-    var shape = v.shape;
-
-    // Assume v has not passed through
-    return typedArrays[v.dtype] && v.bvals && (
-        isInteger(shape) ||
-        (
-            isArrayOrTypedArray(shape) &&
-            shape.length > 0 &&
-            shape.every(isInteger)
-        )
+    return (
+        isPlainObject(v) &&
+        v.hasOwnProperty('spec') && (typeof v.spec === 'string') &&
+        v.hasOwnProperty('bvals') && (typeof v.bvals === 'string' || isArrayBuffer(v.bvals))
     );
 };
 
 function coerceTypedArraySpec(v) {
-    var shape = v.shape; // TODO: could one skip shape for 1d arrays?
-
-    // Normalize shape to a list
-    if(isInteger(shape)) shape = [shape];
-
     return {
-        shape: shape,
-        dtype: v.dtype,
+        spec: v.spec,
         bvals: v.bvals
     };
 }

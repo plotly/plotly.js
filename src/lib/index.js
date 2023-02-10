@@ -62,6 +62,7 @@ lib.toLogRange = require('./to_log_range');
 lib.relinkPrivateKeys = require('./relink_private');
 
 var arrayModule = require('./array');
+lib.isArrayBuffer = arrayModule.isArrayBuffer;
 lib.isTypedArray = arrayModule.isTypedArray;
 lib.isArrayOrTypedArray = arrayModule.isArrayOrTypedArray;
 lib.isArray1D = arrayModule.isArray1D;

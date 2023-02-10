@@ -27,9 +27,12 @@ exports.valObjectMeta = {
             '(3) an object with keys dtype, bvals, and optionally shape.',
             'In this 3rd form, dtype is one of *i8*, *ui8*, *ui8c*,',
             '*i16*, *ui16*, *i32*, *ui32*, *f32*, or *f64*.',
-            'bvals is either a base64-encoded string or an ArrayBuffer of an integer or float typed array,',
-            'and for multi-dimensional arrays you must provide its dimensions',
-            'as an array of integers.'
+            'bvals is either a base64-encoded string or the ArrayBuffer of',
+            'an integer or float typed array.',
+            'For either single or multi-dimensional arrays you must also',
+            'provide its dimensions separated by pipe at the start of `dtype`.',
+            'For exmaple *f64|100|5* declares a 2-D array that has 5 rows and 100 columns',
+            'containing float64 values.'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],

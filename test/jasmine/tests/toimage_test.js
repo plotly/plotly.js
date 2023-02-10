@@ -297,16 +297,30 @@ describe('Plotly.toImage', function() {
         });
 
         it('export typed arrays as regular arrays', function(done) {
+            var x = new Float64Array([-1 / 3, 1 / 3]);
+            var y = new Float32Array([-1 / 3, 1 / 3]);
+            var z = [
+                new Int16Array([-32768, 32767]),
+                new Uint16Array([65535, 0])
+            ];
+
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: new Float64Array([-1 / 3, 1 / 3]),
-                y: new Float32Array([-1 / 3, 1 / 3]),
-                z: [
-                    new Int16Array([-32768, 32767]),
-                    new Uint16Array([65535, 0])
-                ]
+                x: x,
+                y: y,
+                z: z
             }])
-            .then(function(gd) { return Plotly.toImage(gd, imgOpts);})
+            .then(function(gd) {
+                var trace = gd._fullData[0];
+
+                expect(trace.visible).toEqual(true);
+
+                expect(trace.x.slice()).toEqual(x);
+                expect(trace.y.slice()).toEqual(y);
+                expect(trace.z.slice()).toEqual(z);
+
+                return Plotly.toImage(gd, imgOpts);
+            })
             .then(function(fig) {
                 var trace = JSON.parse(fig).data[0];
 
@@ -329,12 +343,15 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {bvals: x, dtype: 'f64', shape: [3]},
-                y: {bvals: y, dtype: 'f32', shape: [2]},
-                z: {bvals: z, dtype: 'ui16', shape: [3, 2]}
+                x: {bvals: x, spec: 'f64|3'},
+                y: {bvals: y, spec: 'f32|2'},
+                z: {bvals: z, spec: 'ui16|3|2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
+
+                expect(trace.visible).toEqual(true);
+
                 expect(trace.x.slice()).toEqual(allX);
                 expect(trace.y.slice()).toEqual(allY);
                 expect(trace.z.slice()).toEqual([
@@ -353,9 +370,9 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
                 expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
 
-                expect(trace.x.dtype).toEqual('f64');
-                expect(trace.y.dtype).toEqual('f32');
-                expect(trace.z.dtype).toEqual('ui16');
+                expect(trace.x.spec).toEqual('f64|3');
+                expect(trace.y.spec).toEqual('f32|2');
+                expect(trace.z.spec).toEqual('ui16|3|2');
             })
             .then(done, done.fail);
         });
@@ -370,12 +387,15 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {bvals: x, dtype: 'f64', shape: [3]},
-                y: {bvals: y, dtype: 'f32', shape: [2]},
-                z: {bvals: z, dtype: 'ui16', shape: [3, 2]}
+                x: {bvals: x, spec: 'f64|3'},
+                y: {bvals: y, spec: 'f32|2'},
+                z: {bvals: z, spec: 'ui16|3|2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
+
+                expect(trace.visible).toEqual(true);
+
                 expect(trace.x.slice()).toEqual(allX);
                 expect(trace.y.slice()).toEqual(allY);
                 expect(trace.z.slice()).toEqual([
@@ -394,9 +414,9 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
                 expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
 
-                expect(trace.x.dtype).toEqual('f64');
-                expect(trace.y.dtype).toEqual('f32');
-                expect(trace.z.dtype).toEqual('ui16');
+                expect(trace.x.spec).toEqual('f64|3');
+                expect(trace.y.spec).toEqual('f32|2');
+                expect(trace.z.spec).toEqual('ui16|3|2');
             })
             .then(done, done.fail);
         });
