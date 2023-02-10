@@ -85,7 +85,7 @@ exports.decodeTypedArraySpec = function(vIn) {
     var T = typedArrays[dtype];
     if(!T) throw new Error('Error in spec: "' + v.spec + '"');
 
-    var buffer = v.bvals;
+    var buffer = v.vals;
     if(!isArrayBuffer(buffer)) {
         buffer = b64decode(buffer);
     }
@@ -125,9 +125,9 @@ exports.decodeTypedArraySpec = function(vIn) {
         throw new Error('Error in spec: "' + v.spec + '"');
     }
 
-    // attach spec & bvals to array for json export
+    // attach spec & vals to array for json export
     out.spec = v.spec;
-    out.bvals = v.bvals;
+    out.vals = v.vals;
 
     return out;
 };
@@ -136,14 +136,14 @@ exports.isTypedArraySpec = function(v) {
     return (
         isPlainObject(v) &&
         v.hasOwnProperty('spec') && (typeof v.spec === 'string') &&
-        v.hasOwnProperty('bvals') && (typeof v.bvals === 'string' || isArrayBuffer(v.bvals))
+        v.hasOwnProperty('vals') && (typeof v.vals === 'string' || isArrayBuffer(v.vals))
     );
 };
 
 function coerceTypedArraySpec(v) {
     return {
         spec: v.spec,
-        bvals: v.bvals
+        vals: v.vals
     };
 }
 

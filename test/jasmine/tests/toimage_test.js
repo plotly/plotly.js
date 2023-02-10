@@ -343,9 +343,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {bvals: x, spec: 'f64|3'},
-                y: {bvals: y, spec: 'f32|2'},
-                z: {bvals: z, spec: 'ui16|3|2'}
+                x: {vals: x, spec: 'f64|3'},
+                y: {vals: y, spec: 'f32|2'},
+                z: {vals: z, spec: 'ui16|3|2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -366,9 +366,9 @@ describe('Plotly.toImage', function() {
 
                 expect(trace.visible).toEqual(true);
 
-                expect(trace.x.bvals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
-                expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
-                expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
+                expect(trace.x.vals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.vals).toEqual('q6qqPquqqr4=');
+                expect(trace.z.vals).toEqual('AABkAMgALAGQAfQB');
 
                 expect(trace.x.spec).toEqual('f64|3');
                 expect(trace.y.spec).toEqual('f32|2');
@@ -387,9 +387,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {bvals: x, spec: 'f64|3'},
-                y: {bvals: y, spec: 'f32|2'},
-                z: {bvals: z, spec: 'ui16|3|2'}
+                x: {vals: x, spec: 'f64|3'},
+                y: {vals: y, spec: 'f32|2'},
+                z: {vals: z, spec: 'ui16|3|2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -410,9 +410,9 @@ describe('Plotly.toImage', function() {
 
                 expect(trace.visible).toEqual(true);
 
-                expect(trace.x.bvals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
-                expect(trace.y.bvals).toEqual('q6qqPquqqr4=');
-                expect(trace.z.bvals).toEqual('AABkAMgALAGQAfQB');
+                expect(trace.x.vals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.vals).toEqual('q6qqPquqqr4=');
+                expect(trace.z.vals).toEqual('AABkAMgALAGQAfQB');
 
                 expect(trace.x.spec).toEqual('f64|3');
                 expect(trace.y.spec).toEqual('f32|2');
