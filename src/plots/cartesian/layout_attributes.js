@@ -633,6 +633,17 @@ module.exports = {
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
     },
+    labelalias: {
+        valType: 'any',
+        dflt: false,
+        editType: 'ticks',
+        description: [
+            'Determines the alias for certain labels for ticks and hover.',
+            'For example using {US: \'USA\', CA: \'Canada\'} maps US to USA',
+            'and CA to Canada if tick or hover labels match US or Canada i.e.',
+            'before adding prefix and suffix to labels.'
+        ].join(' ')
+    },
     automargin: {
         valType: 'flaglist',
         flags: ['height', 'width', 'left', 'right', 'top', 'bottom'],
