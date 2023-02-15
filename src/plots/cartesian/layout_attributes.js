@@ -641,7 +641,7 @@ module.exports = {
             'Determines the alias for certain labels for ticks and hover.',
             'For example using {US: \'USA\', CA: \'Canada\'} maps US to USA',
             'and CA to Canada if tick or hover labels match US or Canada i.e.',
-            'before adding prefix and suffix to labels.'
+            'after adding prefix and suffix to labels.'
         ].join(' ')
     },
     automargin: {
