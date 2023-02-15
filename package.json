@@ -70,7 +70,7 @@
     ]
   },
   "dependencies": {
-    "@plotly/d3": "3.8.0",
+    "@plotly/d3": "3.8.1",
     "@plotly/d3-sankey": "0.7.2",
     "@plotly/d3-sankey-circular": "0.33.1",
     "@turf/area": "^6.4.0",
