@@ -1,7 +1,7 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Registry = require('@src/registry');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Registry = require('../../../src/registry');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -209,7 +209,7 @@ describe('Test Plots', function() {
             layoutOut,
             expected;
 
-        var formatObj = require('@src/locale-en').format;
+        var formatObj = require('../../../src/locale-en').format;
 
         function supplyLayoutDefaults(layoutIn, layoutOut) {
             layoutOut._dfltTitle = {
@@ -645,7 +645,7 @@ describe('Test Plots', function() {
     });
 
     describe('getSubplotCalcData', function() {
-        var getSubplotCalcData = require('@src/plots/get_data').getSubplotCalcData;
+        var getSubplotCalcData = require('../../../src/plots/get_data').getSubplotCalcData;
 
         var trace0 = { geo: 'geo2' };
         var trace1 = { subplot: 'ternary10' };
@@ -817,7 +817,7 @@ describe('Test Plots', function() {
         afterEach(destroyGraphDiv);
 
         it('should call reused style modules only once per graph', function(done) {
-            var Drawing = require('@src/components/drawing');
+            var Drawing = require('../../../src/components/drawing');
 
             Plotly.newPlot(gd, [{
                 mode: 'markers',
@@ -1347,7 +1347,7 @@ describe('Test Plots with automargin and minreducedwidth/height', function() {
             expect(xy.getAttribute(attr)).toBeCloseTo(exp, -1);
         }
 
-        var fig = require('@mocks/z-automargin-minreducedheight.json');
+        var fig = require('../../image/mocks/automargin-minreducedheight.json');
 
         Plotly.newPlot(gd, fig)
         .then(function() {

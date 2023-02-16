@@ -10,7 +10,7 @@ module.exports = {
         library: {
             name: 'Plotly',
             type: 'umd',
-            umdNamedDefine: true
+            umdNamedDefine: false
         }
     },
     module: {
@@ -22,7 +22,7 @@ module.exports = {
             }
         }, {
             test: /\.js$/,
-            include: /node_modules[\\\/](buffer|is-mobile)[\\\/]/,
+            include: /node_modules[\\\/](buffer|d3-color|d3-interpolate|is-mobile)[\\\/]/,
             use: {
                 loader: 'babel-loader',
                 options: {

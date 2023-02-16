@@ -9,6 +9,39 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.18.2] -- 2023-02-15
+
+### Fixed
+ - Avoid attaching internal d3 object to the window (regression introduced in 2.17.0) [#6487](https://github.com/plotly/plotly.js/pull/6487)
+ - Correct the order of lower fence and upper fence in the French locale (fr) [[#6476](https://github.com/plotly/plotly.js/pull/6476)],
+   with thanks to @Gagaro for the contribution!
+ - Correct formats in the Peruvian locale (es-pe) [[#6451](https://github.com/plotly/plotly.js/pull/6451)],
+   with thanks to @andresrcs for the contribution!
+
+
+## [2.18.1] -- 2023-02-02
+
+### Changed
+ - Bump `d3-interpolate` and `d3-color` to v3 to address audit warnings [[#6463](https://github.com/plotly/plotly.js/pull/6463)]
+
+### Fixed
+ - Fix scaling of exports e.g. the SVG format by not adding `vector-effect` CSS to static plots [[#6445](https://github.com/plotly/plotly.js/pull/6445)]
+ - Fix hover on IE (regression introduced in 2.5.0) [[#6466](https://github.com/plotly/plotly.js/pull/6466)]
+
+
+## [2.18.0] -- 2023-01-19
+
+### Added
+- Add `sync` tickmode option [[#6356](https://github.com/plotly/plotly.js/pull/6356), [#6443](https://github.com/plotly/plotly.js/pull/6443)],
+  with thanks to @filipesantiagoAM and @VictorBezak for the contribution!
+
+### Changed
+ - Improve detection of mobile & tablet devices for WebGL rendering by upgrading `is-mobile` [[#6432](https://github.com/plotly/plotly.js/pull/6432)]
+
+### Fixed
+ - Fix library's imported name using `requirejs` AMD loader (regression introduced in 2.17.0) [[#6440](https://github.com/plotly/plotly.js/pull/6440)]
+
+
 ## [2.17.1] -- 2023-01-09
 
 ### Fixed

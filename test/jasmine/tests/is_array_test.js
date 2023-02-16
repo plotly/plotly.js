@@ -1,4 +1,4 @@
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 
 describe('isArrayOrTypedArray', function() {
     function A() {}

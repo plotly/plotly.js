@@ -1,24 +1,24 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 
-var Funnel = require('@src/traces/funnel');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Drawing = require('@src/components/drawing');
+var Funnel = require('../../../src/traces/funnel');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Drawing = require('../../../src/components/drawing');
 
-var Axes = require('@src/plots/cartesian/axes');
+var Axes = require('../../../src/plots/cartesian/axes');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
-var color = require('@src/components/color');
+var color = require('../../../src/components/color');
 var rgb = color.rgb;
 
 var customAssertions = require('../assets/custom_assertions');
 var assertHoverLabelContent = customAssertions.assertHoverLabelContent;
 var checkTextTemplate = require('../assets/check_texttemplate');
 var checkTransition = require('../assets/check_transitions');
-var Fx = require('@src/components/fx');
+var Fx = require('../../../src/components/fx');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -1333,7 +1333,7 @@ describe('funnel hover', function() {
         beforeAll(function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/funnel_11.json'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/funnel_11.json'));
 
             Plotly.newPlot(gd, mock.data, mock.layout)
             .then(done, done.fail);
@@ -1358,7 +1358,7 @@ describe('funnel hover', function() {
         it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) { t.type = 'funnel'; t.orientation = 'v'; });
             mock.layout.funnelmode = 'group';
 
@@ -1390,7 +1390,7 @@ describe('funnel hover', function() {
         it('should turn off percentages with hoveinfo none or skip', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t, i) {
                 t.type = 'funnel';
                 t.orientation = 'v';
@@ -1417,7 +1417,7 @@ describe('funnel hover', function() {
         it('should turn on percentages with hoveinfo all', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'funnel';
                 t.orientation = 'v';
@@ -1449,7 +1449,7 @@ describe('funnel hover', function() {
         it('should use hovertemplate if specified', function(done) {
             gd = createGraphDiv();
 
-            var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+            var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
             mock.data.forEach(function(t) {
                 t.type = 'funnel';
                 t.orientation = 'v';

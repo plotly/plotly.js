@@ -1,1 +1,0 @@
- - Improve detection of mobile & tablet devices by upgrading `is-mobile` [[#6432](https://github.com/plotly/plotly.js/pull/6432)]

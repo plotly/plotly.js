@@ -5,6 +5,7 @@ var minimist = require('minimist');
 var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 var LoaderOptionsPlugin = require('webpack').LoaderOptionsPlugin;
 var constants = require('../../tasks/util/constants');
+var webpackConfig = require('../../webpack.config.js');
 
 var isCI = Boolean(process.env.CI);
 
@@ -263,30 +264,7 @@ func.defaultConfig = {
     webpack: {
         target: ['web', 'es5'],
         module: {
-            rules: [{
-                test: /\.js$/,
-                use: [
-                    'transform-loader?' + path.resolve(__dirname, '..', '..', 'tasks/util/shortcut_paths')
-                ]
-            }, {
-                test: /\.js$/,
-                include: /node_modules/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        babelrc: false,
-                        configFile: false,
-                        plugins: [
-                            '@babel/plugin-transform-modules-commonjs'
-                        ]
-                    }
-                }
-            }, {
-                test: /\.(js|glsl)$/,
-                use: [
-                    'ify-loader'
-                ]
-            }]
+            rules: webpackConfig.module.rules
         },
         resolve: {
             fallback: {
@@ -298,11 +276,7 @@ func.defaultConfig = {
             new LoaderOptionsPlugin({
                 // test: /\.xxx$/, // may apply this only for some modules
                 options: {
-                    library: {
-                        name: 'Plotly',
-                        type: 'umd',
-                        umdNamedDefine: true
-                    }
+                    library: webpackConfig.output.library
                 }
             })
         ]

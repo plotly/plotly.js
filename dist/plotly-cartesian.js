@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.17.1
+* plotly.js (cartesian) v2.18.2
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -8,7 +8,7 @@
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
 	else if(typeof define === 'function' && define.amd)
-		define("Plotly", [], factory);
+		define([], factory);
 	else if(typeof exports === 'object')
 		exports["Plotly"] = factory();
 	else
@@ -2645,7 +2645,7 @@ module.exports = overrideAll({
     dflt: 'rgba(0,0,0,0)'
   },
   // tick and title properties named and function exactly as in axes
-  tickmode: axesAttrs.tickmode,
+  tickmode: axesAttrs.minor.tickmode,
   nticks: axesAttrs.nticks,
   tick0: axesAttrs.tick0,
   dtick: axesAttrs.dtick,
@@ -7248,6 +7248,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
   var hasAnimation = transitionOpts && transitionOpts.duration > 0;
+  var isStatic = gd._context.staticPlot;
   traces.each(function (d) {
     var trace = d[0].trace;
     // || {} is in case the trace (specifically scatterternary)
@@ -7291,7 +7292,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
 
         isNew = !yerror.size();
         if (isNew) {
-          yerror = errorbar.append('path').style('vector-effect', 'non-scaling-stroke').classed('yerror', true);
+          yerror = errorbar.append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').classed('yerror', true);
         } else if (hasAnimation) {
           yerror = yerror.transition().duration(transitionOpts.duration).ease(transitionOpts.easing);
         }
@@ -7308,7 +7309,7 @@ module.exports = function plot(gd, traces, plotinfo, transitionOpts) {
 
         isNew = !xerror.size();
         if (isNew) {
-          xerror = errorbar.append('path').style('vector-effect', 'non-scaling-stroke').classed('xerror', true);
+          xerror = errorbar.append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').classed('xerror', true);
         } else if (hasAnimation) {
           xerror = xerror.transition().duration(transitionOpts.duration).ease(transitionOpts.easing);
         }
@@ -9588,8 +9589,8 @@ function getLeftOffset(gd) {
 function getBoundingClientRect(gd, node) {
   var fullLayout = gd._fullLayout;
   var rect = node.getBoundingClientRect();
-  var x0 = rect.x;
-  var y0 = rect.y;
+  var x0 = rect.left;
+  var y0 = rect.top;
   var x1 = x0 + rect.width;
   var y1 = y0 + rect.height;
   var A = Lib.apply3DTransform(fullLayout._invTransform)(x0, y0);
@@ -23466,7 +23467,7 @@ function isTransformableElement(element) {
   return element && (element instanceof Element || element instanceof HTMLElement);
 }
 function equalDomRects(a, b) {
-  return a && b && a.x === b.x && a.y === b.y && a.top === b.top && a.left === b.left && a.right === b.right && a.bottom === b.bottom;
+  return a && b && a.top === b.top && a.left === b.left && a.right === b.right && a.bottom === b.bottom;
 }
 module.exports = {
   getGraphDiv: getGraphDiv,
@@ -26353,7 +26354,7 @@ polygon.filter = function filter(pts, tolerance) {
 
 
 var isNumeric = __webpack_require__(92770);
-var isMobileOrTablet = __webpack_require__(15539);
+var isMobileOrTablet = __webpack_require__(35791);
 module.exports = function preserveDrawingBuffer(opts) {
   var ua;
   if (opts && opts.hasOwnProperty('userAgent')) {
@@ -37170,6 +37171,13 @@ axes.calcTicks = function calcTicks(ax, opts) {
       continue;
     }
 
+    // fill tickVals based on overlaying axis
+    if (mockAx.tickmode === 'sync') {
+      tickVals = [];
+      ticksOut = syncTicks(ax);
+      continue;
+    }
+
     // add a tiny bit so we get ticks which may have rounded out
     var exRng = expandRange(rng);
     var startTick = exRng[0];
@@ -37370,6 +37378,44 @@ axes.calcTicks = function calcTicks(ax, opts) {
   }
   return ticksOut;
 };
+function filterRangeBreaks(ax, ticksOut) {
+  if (ax.rangebreaks) {
+    // remove ticks falling inside rangebreaks
+    ticksOut = ticksOut.filter(function (d) {
+      return ax.maskBreaks(d.x) !== BADNUM;
+    });
+  }
+  return ticksOut;
+}
+function syncTicks(ax) {
+  // get the overlaying axis
+  var baseAxis = ax._mainAxis;
+  var ticksOut = [];
+  if (baseAxis._vals) {
+    for (var i = 0; i < baseAxis._vals.length; i++) {
+      // filter vals with noTick flag
+      if (baseAxis._vals[i].noTick) {
+        continue;
+      }
+
+      // get the position of the every tick
+      var pos = baseAxis.l2p(baseAxis._vals[i].x);
+
+      // get the tick for the current axis based on position
+      var vali = ax.p2l(pos);
+      var obj = axes.tickText(ax, vali);
+
+      // assign minor ticks
+      if (baseAxis._vals[i].minor) {
+        obj.minor = true;
+        obj.text = '';
+      }
+      ticksOut.push(obj);
+    }
+  }
+  ticksOut = filterRangeBreaks(ax, ticksOut);
+  return ticksOut;
+}
 function arrayTicks(ax) {
   var rng = Lib.simpleMap(ax.range, ax.r2l);
   var exRng = expandRange(rng);
@@ -37407,12 +37453,7 @@ function arrayTicks(ax) {
       }
     }
   }
-  if (ax.rangebreaks) {
-    // remove ticks falling inside rangebreaks
-    ticksOut = ticksOut.filter(function (d) {
-      return ax.maskBreaks(d.x) !== BADNUM;
-    });
-  }
+  ticksOut = filterRangeBreaks(ax, ticksOut);
   return ticksOut;
 }
 var roundBase10 = [2, 5, 10];
@@ -38314,6 +38355,19 @@ axes.draw = function (gd, arg, opts) {
   }).map(function (ax) {
     return ax.overlaying;
   });
+
+  // order axes that have dependency to other axes
+  axList.map(function (axId) {
+    var ax = axes.getFromId(gd, axId);
+    if (ax.tickmode === 'sync' && ax.overlaying) {
+      var overlayingIndex = axList.findIndex(function (axis) {
+        return axis === ax.overlaying;
+      });
+      if (overlayingIndex >= 0) {
+        axList.unshift(axList.splice(overlayingIndex, 1).shift());
+      }
+    }
+  });
   var axShifts = {
     'false': {
       'left': 0,
@@ -39184,6 +39238,10 @@ axes.drawTicks = function (gd, ax, opts) {
  */
 axes.drawGrid = function (gd, ax, opts) {
   opts = opts || {};
+  if (ax.tickmode === 'sync') {
+    // for tickmode sync we use the overlaying axis grid
+    return;
+  }
   var cls = ax._id + 'grid';
   var hasMinor = ax.minor && ax.minor.showgrid;
   var minorVals = hasMinor ? opts.vals.filter(function (d) {
@@ -42018,15 +42076,24 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if (!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
       }
     }
+    function pushActiveAxIdsSynced(axList, axisType) {
+      for (i = 0; i < axList.length; i++) {
+        var axListI = axList[i];
+        var axListIType = axListI[axisType];
+        if (!axListI.fixedrange && axListIType.tickmode === 'sync') activeAxIds.push(axListIType._id);
+      }
+    }
     if (editX) {
       pushActiveAxIds(xaxes);
       pushActiveAxIds(links.xaxes);
       pushActiveAxIds(matches.xaxes);
+      pushActiveAxIdsSynced(plotinfo.overlays, 'xaxis');
     }
     if (editY) {
       pushActiveAxIds(yaxes);
       pushActiveAxIds(links.yaxes);
       pushActiveAxIds(matches.yaxes);
+      pushActiveAxIdsSynced(plotinfo.overlays, 'yaxis');
     }
     updates = {};
     for (i = 0; i < activeAxIds.length; i++) {
@@ -43257,7 +43324,7 @@ var ONEDAY = (__webpack_require__(50606).ONEDAY);
 var constants = __webpack_require__(85555);
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
-var tickmode = {
+var minorTickmode = {
   valType: 'enumerated',
   values: ['auto', 'linear', 'array'],
   editType: 'ticks',
@@ -43266,6 +43333,9 @@ var tickmode = {
     dtick: undefined
   }
 };
+var tickmode = extendFlat({}, minorTickmode, {
+  values: minorTickmode.values.slice().concat(['sync'])
+});
 function makeNticks(minor) {
   return {
     valType: 'integer',
@@ -43779,7 +43849,7 @@ module.exports = {
     editType: 'plot'
   },
   minor: {
-    tickmode: tickmode,
+    tickmode: minorTickmode,
     nticks: makeNticks('minor'),
     tick0: tick0,
     dtick: dtick,
@@ -44346,6 +44416,12 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     // which applied in the calculation below:
     if (domain[0] > domain[1] - 1 / 4096) containerOut.domain = dfltDomain;
     Lib.noneOrAll(containerIn.domain, containerOut.domain, dfltDomain);
+
+    // tickmode sync needs an overlaying axis, otherwise
+    // we should default it to 'auto'
+    if (containerOut.tickmode === 'sync') {
+      containerOut.tickmode = 'auto';
+    }
   }
   coerce('layer');
   return containerOut;
@@ -45394,7 +45470,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
   var _tickvals = readInput('tickvals');
   var tickmodeDefault = isArrayOrTypedArray(_tickvals) ? 'array' : _dtick ? 'linear' : 'auto';
   var tickmode = coerce(prefix + 'tickmode', tickmodeDefault);
-  if (tickmode === 'auto') {
+  if (tickmode === 'auto' || tickmode === 'sync') {
     coerce(prefix + 'nticks');
   } else if (tickmode === 'linear') {
     // dtick is usually a positive number, but there are some
@@ -49941,7 +50017,7 @@ var ternaryAxesAttrs = {
 
   color: axesAttrs.color,
   // ticks
-  tickmode: axesAttrs.tickmode,
+  tickmode: axesAttrs.minor.tickmode,
   nticks: extendFlat({}, axesAttrs.nticks, {
     dflt: 6,
     min: 1
@@ -53414,6 +53490,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
   var fullLayout = gd._fullLayout;
+  var isStatic = gd._context.staticPlot;
   if (!opts) {
     opts = {
       mode: fullLayout.barmode,
@@ -53543,7 +53620,7 @@ function plot(gd, plotinfo, cdModule, traceLayer, opts, makeOnCompleteCallback) 
         y1 = fixpx(y1, y0, !isHorizontal);
       }
       var sel = transition(Lib.ensureSingle(bar, 'path'), fullLayout, opts, makeOnCompleteCallback);
-      sel.style('vector-effect', 'non-scaling-stroke').attr('d', isNaN((x1 - x0) * (y1 - y0)) || isBlank && gd._context.staticPlot ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z').call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
+      sel.style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').attr('d', isNaN((x1 - x0) * (y1 - y0)) || isBlank && gd._context.staticPlot ? 'M0,0Z' : 'M' + x0 + ',' + y0 + 'V' + y1 + 'H' + x1 + 'V' + y0 + 'Z').call(Drawing.setClipUrl, plotinfo.layerClipId, gd);
       if (!fullLayout.uniformtext.mode && withTransition) {
         var styleFns = Drawing.makePointStyleFns(trace);
         Drawing.singlePointStyle(di, sel, trace, styleFns, gd);
@@ -55856,6 +55933,7 @@ var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 function plot(gd, plotinfo, cdbox, boxLayer) {
+  var isStatic = gd._context.staticPlot;
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
   Lib.makeTraceGroups(boxLayer, cdbox, 'trace boxes').each(function (cd) {
@@ -55881,7 +55959,7 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
     plotBoxAndWhiskers(plotGroup, {
       pos: posAxis,
       val: valAxis
-    }, trace, t);
+    }, trace, t, isStatic);
     plotPoints(plotGroup, {
       x: xa,
       y: ya
@@ -55892,7 +55970,7 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
     }, trace, t);
   });
 }
-function plotBoxAndWhiskers(sel, axes, trace, t) {
+function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
   var isHorizontal = trace.orientation === 'h';
   var valAxis = axes.val;
   var posAxis = axes.pos;
@@ -55915,7 +55993,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
     bdPos1 = t.bdPos;
   }
   var paths = sel.selectAll('path.box').data(trace.type !== 'violin' || trace.box.visible ? Lib.identity : []);
-  paths.enter().append('path').style('vector-effect', 'non-scaling-stroke').attr('class', 'box');
+  paths.enter().append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').attr('class', 'box');
   paths.exit().remove();
   paths.each(function (d) {
     if (d.empty) return 'M0,0Z';
@@ -57657,6 +57735,7 @@ function joinAllPaths(pi, perimeter) {
   return fullpath;
 }
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
+  var isStatic = gd._context.staticPlot;
   var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
   var showLines = contours.showlines !== false;
   var showLabels = contours.showlabels;
@@ -57666,7 +57745,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
   // if we're showing labels, because the fill paths include the perimeter
   // so can't be used to position the labels correctly.
   // In this case we'll remove the lines after making the labels.
-  var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo);
+  var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo, isStatic);
   var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
   var labelGroup = plotgroup.selectAll('g.contourlabels').data(showLabels ? [0] : []);
   labelGroup.exit().remove();
@@ -57738,7 +57817,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
   }
   if (showLabels && !showLines) linegroup.remove();
 }
-exports.createLines = function (lineContainer, makeLines, pathinfo) {
+exports.createLines = function (lineContainer, makeLines, pathinfo, isStatic) {
   var smoothing = pathinfo[0].smoothing;
   var linegroup = lineContainer.selectAll('g.contourlevel').data(makeLines ? pathinfo : []);
   linegroup.exit().remove();
@@ -57753,7 +57832,7 @@ exports.createLines = function (lineContainer, makeLines, pathinfo) {
     opencontourlines.enter().append('path').classed('openline', true);
     opencontourlines.attr('d', function (d) {
       return Drawing.smoothopen(d, smoothing);
-    }).style('stroke-miterlimit', 1).style('vector-effect', 'non-scaling-stroke');
+    }).style('stroke-miterlimit', 1).style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
     var closedcontourlines = linegroup.selectAll('path.closedline').data(function (d) {
       return d.ppaths || d.paths;
     });
@@ -57761,7 +57840,7 @@ exports.createLines = function (lineContainer, makeLines, pathinfo) {
     closedcontourlines.enter().append('path').classed('closedline', true);
     closedcontourlines.attr('d', function (d) {
       return Drawing.smoothclosed(d, smoothing);
-    }).style('stroke-miterlimit', 1).style('vector-effect', 'non-scaling-stroke');
+    }).style('stroke-miterlimit', 1).style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
   }
   return linegroup;
 };
@@ -66315,6 +66394,7 @@ function createFills(gd, traceJoin, plotinfo) {
   });
 }
 function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
+  var isStatic = gd._context.staticPlot;
   var i;
 
   // Since this has been reorganized and we're executing this on individual traces,
@@ -66457,7 +66537,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
   var lineJoin = lines.selectAll('.js-line').data(segments);
   transition(lineJoin.exit()).style('opacity', 0).remove();
   lineJoin.each(makeUpdate(false));
-  lineJoin.enter().append('path').classed('js-line', true).style('vector-effect', 'non-scaling-stroke').call(Drawing.lineGroupStyle).each(makeUpdate(true));
+  lineJoin.enter().append('path').classed('js-line', true).style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').call(Drawing.lineGroupStyle).each(makeUpdate(true));
   Drawing.setClipUrl(lineJoin, plotinfo.layerClipId, gd);
   function clearFill(selection) {
     transition(selection).attr('d', 'M0,0Z');
@@ -68026,6 +68106,7 @@ var boxPlot = __webpack_require__(86047);
 var linePoints = __webpack_require__(34621);
 var helpers = __webpack_require__(60168);
 module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
+  var isStatic = gd._context.staticPlot;
   var fullLayout = gd._fullLayout;
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
@@ -68059,7 +68140,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     var hasPositiveSide = hasBothSides || trace.side === 'positive';
     var hasNegativeSide = hasBothSides || trace.side === 'negative';
     var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
-    violins.enter().append('path').style('vector-effect', 'non-scaling-stroke').attr('class', 'violin');
+    violins.enter().append('path').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke').attr('class', 'violin');
     violins.exit().remove();
     violins.each(function (d) {
       var pathSel = d3.select(this);
@@ -68167,7 +68248,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
     // N.B. use different class name than boxPlot.plotBoxMean,
     // to avoid selectAll conflict
     var meanPaths = plotGroup.selectAll('path.meanline').data(fn || []);
-    meanPaths.enter().append('path').attr('class', 'meanline').style('fill', 'none').style('vector-effect', 'non-scaling-stroke');
+    meanPaths.enter().append('path').attr('class', 'meanline').style('fill', 'none').style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
     meanPaths.exit().remove();
     meanPaths.each(function (d) {
       var v = valAxis.c2p(d.mean, true);
@@ -69191,7 +69272,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.17.1';
+exports.version = '2.18.2';
 
 /***/ }),
 
@@ -70963,6 +71044,35 @@ function defineBigIntMethod(fn) {
 }
 function BufferBigIntNotDefined() {
   throw new Error('BigInt not supported');
+}
+
+/***/ }),
+
+/***/ 35791:
+/***/ (function(module) {
+
+"use strict";
+
+
+module.exports = isMobile;
+module.exports.isMobile = isMobile;
+module.exports["default"] = isMobile;
+var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
+var notMobileRE = /CrOS/;
+var tabletRE = /android|ipad|playbook|silk/i;
+function isMobile(opts) {
+  if (!opts) opts = {};
+  var ua = opts.ua;
+  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent;
+  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
+    ua = ua.headers['user-agent'];
+  }
+  if (typeof ua !== 'string') return false;
+  var result = mobileRE.test(ua) && !notMobileRE.test(ua) || !!opts.tablet && tabletRE.test(ua);
+  if (!result && opts.tablet && opts.featureDetect && navigator && navigator.maxTouchPoints > 1 && ua.indexOf('Macintosh') !== -1 && ua.indexOf('Safari') !== -1) {
+    result = true;
+  }
+  return result;
 }
 
 /***/ }),
@@ -77795,7 +77905,7 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
   d3.xml = d3_xhrType(function(request) {
     return request.responseXML;
   });
-  if (true) this.d3 = d3, !(__WEBPACK_AMD_DEFINE_FACTORY__ = (d3),
+  if (true) !(__WEBPACK_AMD_DEFINE_FACTORY__ = (d3),
 		__WEBPACK_AMD_DEFINE_RESULT__ = (typeof __WEBPACK_AMD_DEFINE_FACTORY__ === 'function' ?
 		(__WEBPACK_AMD_DEFINE_FACTORY__.call(exports, __webpack_require__, exports, module)) :
 		__WEBPACK_AMD_DEFINE_FACTORY__),
@@ -84902,49 +85012,6 @@ module.exports = function isGeneratorFunction(fn) {
 	}
 	return getProto(fn) === GeneratorFunction;
 };
-
-
-/***/ }),
-
-/***/ 15539:
-/***/ (function(module) {
-
-"use strict";
-
-
-module.exports = isMobile
-module.exports.isMobile = isMobile
-module.exports["default"] = isMobile
-
-var mobileRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
-
-var tabletRE = /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino|android|ipad|playbook|silk/i
-
-function isMobile (opts) {
-  if (!opts) opts = {}
-  var ua = opts.ua
-  if (!ua && typeof navigator !== 'undefined') ua = navigator.userAgent
-  if (ua && ua.headers && typeof ua.headers['user-agent'] === 'string') {
-    ua = ua.headers['user-agent']
-  }
-  if (typeof ua !== 'string') return false
-
-  var result = opts.tablet ? tabletRE.test(ua) : mobileRE.test(ua)
-
-  if (
-    !result &&
-    opts.tablet &&
-    opts.featureDetect &&
-    navigator &&
-    navigator.maxTouchPoints > 1 &&
-    ua.indexOf('Macintosh') !== -1 &&
-    ua.indexOf('Safari') !== -1
-  ) {
-    result = true
-  }
-
-  return result
-}
 
 
 /***/ }),

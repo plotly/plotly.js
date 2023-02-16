@@ -1,6 +1,6 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var ScatterPolarGl = require('@src/traces/scatterpolargl');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var ScatterPolarGl = require('../../../src/traces/scatterpolargl');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -53,7 +53,7 @@ describe('Test scatterpolargl hover:', function() {
 
         var fig = Lib.extendDeep(
             {width: 700, height: 500},
-            specs.mock || require('@mocks/glpolar_scatter.json')
+            specs.mock || require('../../image/mocks/glpolar_scatter.json')
         );
 
         if(specs.patch) {
@@ -107,7 +107,7 @@ describe('Test scatterpolargl hover:', function() {
         name: 'Trial 3'
     }, {
         desc: 'on category axes',
-        mock: require('@mocks/polar_categories.json'),
+        mock: require('../../image/mocks/polar_categories.json'),
         patch: function(fig) {
             fig.data.forEach(function(t) {
                 t.type = 'scatterpolargl';
@@ -359,8 +359,8 @@ describe('Test scatterpolargl autorange:', function() {
 
     describe('should return the same value as SVG scatter for ~small~ data', function() {
         var specs = [
-            {name: 'markers', fig: require('@mocks/polar_scatter.json')},
-            {name: 'lines', fig: require('@mocks/polar_line.json')},
+            {name: 'markers', fig: require('../../image/mocks/polar_scatter.json')},
+            {name: 'lines', fig: require('../../image/mocks/polar_line.json')},
         ];
 
         specs.forEach(function(s) {

@@ -1,7 +1,7 @@
 var d3Select = require('../../strict-d3').select;
-var Plotly = require('@lib/index');
-var Drawing = require('@src/components/drawing');
-var svgTextUtils = require('@src/lib/svg_text_utils');
+var Plotly = require('../../../lib/index');
+var Drawing = require('../../../src/components/drawing');
+var svgTextUtils = require('../../../src/lib/svg_text_utils');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 

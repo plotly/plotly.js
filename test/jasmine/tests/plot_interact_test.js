@@ -1,8 +1,8 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -46,7 +46,7 @@ describe('Test plot structure', function() {
         }
 
         describe('scatter traces', function() {
-            var mock = require('@mocks/14.json');
+            var mock = require('../../image/mocks/14.json');
             var gd;
 
             beforeEach(function(done) {
@@ -164,7 +164,7 @@ describe('Test plot structure', function() {
         });
 
         describe('contour/heatmap traces', function() {
-            var mock = require('@mocks/connectgaps_2d.json');
+            var mock = require('../../image/mocks/connectgaps_2d.json');
             var gd;
 
             function extendMock() {
@@ -389,7 +389,7 @@ describe('Test plot structure', function() {
         });
 
         describe('pie traces', function() {
-            var mock = require('@mocks/pie_simple.json');
+            var mock = require('../../image/mocks/pie_simple.json');
             var gd;
 
             function countPieTraces() {
@@ -465,7 +465,7 @@ describe('Test plot structure', function() {
     });
 
     describe('geo plots', function() {
-        var mock = require('@mocks/geo_first.json');
+        var mock = require('../../image/mocks/geo_first.json');
 
         beforeEach(function(done) {
             Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(done);

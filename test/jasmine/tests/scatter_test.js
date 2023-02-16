@@ -1,12 +1,12 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
-var Scatter = require('@src/traces/scatter');
-var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
-var linePoints = require('@src/traces/scatter/line_points');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
+var Scatter = require('../../../src/traces/scatter');
+var makeBubbleSizeFn = require('../../../src/traces/scatter/make_bubble_size_func');
+var linePoints = require('../../../src/traces/scatter/line_points');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
 
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customAssertions = require('../assets/custom_assertions');
@@ -19,7 +19,7 @@ var assertNodeDisplay = customAssertions.assertNodeDisplay;
 var assertMultiNodeOrder = customAssertions.assertMultiNodeOrder;
 var checkEventData = require('../assets/check_event_data');
 var checkTextTemplate = require('../assets/check_texttemplate');
-var constants = require('@src/traces/scatter/constants');
+var constants = require('../../../src/traces/scatter/constants');
 
 var supplyAllDefaults = require('../assets/supply_defaults');
 
@@ -1296,7 +1296,7 @@ describe('stacked area', function() {
 
     beforeEach(function() { gd = createGraphDiv(); });
     afterEach(destroyGraphDiv);
-    var mock = require('@mocks/stacked_area');
+    var mock = require('../../image/mocks/stacked_area');
 
     it('updates ranges correctly when traces are toggled', function(done) {
         function checkRanges(ranges, msg) {
@@ -1470,7 +1470,7 @@ describe('scatter hoverPoints', function() {
 
     it('should show \'hovertext\' items when present, \'text\' if not', function(done) {
         var gd = createGraphDiv();
-        var mock = Lib.extendDeep({}, require('@mocks/text_chart_arrays'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/text_chart_arrays'));
 
         Plotly.newPlot(gd, mock).then(function() {
             var pts = _hover(gd, 0, 1, 'x');
@@ -1858,7 +1858,7 @@ describe('Test scatter *clipnaxis*:', function() {
 
     it('should show/hide point/text/errorbars in clipped and non-clipped layers', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/cliponaxis_false.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/cliponaxis_false.json'));
         var xRange0 = fig.layout.xaxis.range.slice();
         var yRange0 = fig.layout.yaxis.range.slice();
 
@@ -1999,7 +1999,7 @@ describe('Test scatter *clipnaxis*:', function() {
 });
 
 describe('event data', function() {
-    var mock = require('@mocks/scatter-colorscale-colorbar');
+    var mock = require('../../image/mocks/scatter-colorscale-colorbar');
     var mockCopy = Lib.extendDeep({}, mock);
     mockCopy.layout.hovermode = 'x';
 

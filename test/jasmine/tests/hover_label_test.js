@@ -1,13 +1,13 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Fx = require('@src/components/fx');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Fx = require('../../../src/components/fx');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
 
-var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
-var MINUS_SIGN = require('@src/constants/numerical').MINUS_SIGN;
+var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
+var MINUS_SIGN = require('../../../src/constants/numerical').MINUS_SIGN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -26,7 +26,7 @@ var assertElemRightTo = customAssertions.assertElemRightTo;
 var assertElemTopsAligned = customAssertions.assertElemTopsAligned;
 var assertElemInside = customAssertions.assertElemInside;
 
-var groupTitlesMock = require('@mocks/legendgroup-titles');
+var groupTitlesMock = require('../../image/mocks/legendgroup-titles');
 
 function touch(path, options) {
     var len = path.length;
@@ -79,7 +79,7 @@ describe('Fx.hover:', function() {
 describe('hover info', function() {
     'use strict';
 
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
     var evt = { xpx: 355, ypx: 150 };
 
     afterEach(destroyGraphDiv);
@@ -895,7 +895,7 @@ describe('hover info', function() {
         });
 
         it('should get the right content and color for contour constraints', function(done) {
-            var contourConstraints = require('@mocks/contour_constraints.json');
+            var contourConstraints = require('../../image/mocks/contour_constraints.json');
             var fig = Lib.extendDeep({}, contourConstraints);
             fig.layout.hovermode = 'x';
 
@@ -2066,7 +2066,7 @@ describe('hover info', function() {
 
     it('should fallback to regular hover content when hoveron does not support hovertemplate', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_self_next.json'));
 
         fig.data.forEach(function(trace) {
             trace.hoveron = 'points+fills';
@@ -2188,7 +2188,7 @@ describe('hover info on stacked subplots', function() {
 
     describe('hover info on stacked subplots with shared x-axis', function() {
         var mock = Lib.extendDeep({},
-            require('@mocks/stacked_coupled_subplots.json'),
+            require('../../image/mocks/stacked_coupled_subplots.json'),
             {data: [
                 // Tweak the mock so the higher subplot sometimes has points
                 // higher *within the subplot*, sometimes lower.
@@ -2254,7 +2254,7 @@ describe('hover info on stacked subplots', function() {
     });
 
     describe('hover info on stacked subplots with shared y-axis', function() {
-        var mock = Lib.extendDeep(require('@mocks/stacked_subplots_shared_yaxis.json'));
+        var mock = Lib.extendDeep(require('../../image/mocks/stacked_subplots_shared_yaxis.json'));
         mock.data[0].name = 'Who put the bomp in the bomp bah bomp bah bomp';
         mock.data[0].hoverlabel = {namelength: -1};
         mock.data[1].name = 'Who put the ram in the rama lama ding dong';
@@ -2351,7 +2351,7 @@ describe('hover info on overlaid subplots', function() {
     afterEach(destroyGraphDiv);
 
     it('should respond to hover', function(done) {
-        var mock = require('@mocks/autorange-tozero-rangemode.json');
+        var mock = require('../../image/mocks/autorange-tozero-rangemode.json');
         mock.layout.hovermode = 'x';
 
         Plotly.newPlot(createGraphDiv(), mock.data, mock.layout).then(function() {
@@ -2453,7 +2453,7 @@ describe('hover on fill', function() {
     }
 
     it('should always show one label in the right place', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/scatter_fill_self_next.json'));
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
         mock.layout.hovermode = 'x';
 
@@ -2495,7 +2495,7 @@ describe('hover on fill', function() {
     });
 
     it('should work for scatterternary too', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/ternary_fill.json'));
         var gd = createGraphDiv();
 
         Plotly.newPlot(gd, mock.data, mock.layout).then(function() {
@@ -2531,7 +2531,7 @@ describe('hover on fill', function() {
     });
 
     it('should act like closest mode on ternary when cartesian is in compare mode', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/ternary_fill.json'));
         mock.layout.hovermode = 'x';
         var gd = createGraphDiv();
 
@@ -2609,7 +2609,7 @@ describe('Hover on multicategory axes', function() {
     });
 
     it('should work on heatmap traces', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/heatmap_multicategory.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/heatmap_multicategory.json'));
         fig.data = [fig.data[0]];
         fig.layout.width = 500;
         fig.layout.height = 500;
@@ -2642,7 +2642,7 @@ describe('Hover on multicategory axes', function() {
     });
 
     it('should work with series', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/zz-multicategory_series.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/multicategory_series.json'));
         fig.data = [fig.data[0]];
         fig.layout.width = 500;
         fig.layout.height = 500;
@@ -2686,7 +2686,7 @@ describe('hover on traces with (x|y)period positioning', function() {
     }
 
     it('shows hover info for scatter, bar, waterfall, funnel, heatmap and contour traces', function(done) {
-        Plotly.newPlot(gd, require('@mocks/period_positioning.json'))
+        Plotly.newPlot(gd, require('../../image/mocks/period_positioning.json'))
         .then(function() { _hover(110, 390); })
         .then(function() {
             assertHoverLabelContent({
@@ -2816,7 +2816,7 @@ describe('hover on traces with (x|y)period positioning', function() {
     });
 
     it('shows hover info for box, ohlc, candlestick traces', function(done) {
-        Plotly.newPlot(gd, require('@mocks/period_positioning2.json'))
+        Plotly.newPlot(gd, require('../../image/mocks/period_positioning2.json'))
         .then(function() { _hover(110, 390); })
         .then(function() {
             assertHoverLabelContent({
@@ -2891,7 +2891,7 @@ describe('hover on traces with (x|y)period positioning', function() {
     });
 
     it('shows hover info and hovertemplate for bar and scatter traces using (start | middle | end) alignments and different periods', function(done) {
-        Plotly.newPlot(gd, require('@mocks/period_positioning4.json'))
+        Plotly.newPlot(gd, require('../../image/mocks/period_positioning4.json'))
         .then(function() { _hover(65, 425); })
         .then(function() {
             assertHoverLabelContent({
@@ -4018,7 +4018,7 @@ describe('Test hover label custom styling:', function() {
 describe('hover distance', function() {
     'use strict';
 
-    var mock = require('@mocks/19.json');
+    var mock = require('../../image/mocks/19.json');
 
     afterEach(destroyGraphDiv);
 
@@ -4427,7 +4427,7 @@ describe('hover labels z-position', function() {
     });
 
     afterEach(destroyGraphDiv);
-    var mock = require('@mocks/14.json');
+    var mock = require('../../image/mocks/14.json');
 
     it('is above the modebar', function(done) {
         Plotly.newPlot(gd, mock).then(function() {
@@ -4697,7 +4697,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('x unified should work for x/y cartesian traces with legendgroup', function(done) {
-        var mockLegendGroup = require('@mocks/legendgroup.json');
+        var mockLegendGroup = require('../../image/mocks/legendgroup.json');
         var mockCopy = Lib.extendDeep({}, mockLegendGroup);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5851,7 +5851,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should have the same traceorder as the legend', function(done) {
-        var mock = require('@mocks/stacked_area.json');
+        var mock = require('../../image/mocks/stacked_area.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         var expectation = ['top : 1', 'middle : 6', 'bottom : 0'];
@@ -5871,7 +5871,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should order items based on trace index as in the legend', function(done) {
-        var mock = require('@mocks/29.json');
+        var mock = require('../../image/mocks/29.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5889,7 +5889,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should work for finance traces', function(done) {
-        var mockOhlc = require('@mocks/finance_multicategory.json');
+        var mockOhlc = require('../../image/mocks/finance_multicategory.json');
         var mockCopy = Lib.extendDeep({}, mockOhlc);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5905,7 +5905,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should work for "legend_horizontal_autowrap"', function(done) {
-        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var mock = require('../../image/mocks/legend_horizontal_autowrap.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5919,7 +5919,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style scatter symbols accordingly', function(done) {
-        var mock = require('@mocks/marker_colorscale_template.json');
+        var mock = require('../../image/mocks/marker_colorscale_template.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5937,7 +5937,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style bar symbols accordingly', function(done) {
-        var mock = require('@mocks/bar-marker-line-colorscales.json');
+        var mock = require('../../image/mocks/bar-marker-line-colorscales.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5955,7 +5955,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style funnel symbols accordingly', function(done) {
-        var mock = require('@mocks/funnel_custom.json');
+        var mock = require('../../image/mocks/funnel_custom.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)
@@ -5971,7 +5971,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('should style waterfall symbols correctly', function(done) {
-        var mock = require('@mocks/waterfall_custom.json');
+        var mock = require('../../image/mocks/waterfall_custom.json');
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.hovermode = 'x unified';
         Plotly.newPlot(gd, mockCopy)

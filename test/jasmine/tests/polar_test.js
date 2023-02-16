@@ -1,7 +1,7 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Polar = require('@src/plots/polar');
-var constants = require('@src/plots/polar/constants');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Polar = require('../../../src/plots/polar');
+var constants = require('../../../src/plots/polar/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -223,7 +223,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to reorder axis layers when relayout\'ing *layer*', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_line.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_line.json'));
         var dflt = constants.layerNames;
 
         function _assert(expected) {
@@ -281,7 +281,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to relayout axis types', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         Plotly.newPlot(gd, fig).then(function() {
             expect(gd._fullLayout.polar._subplot.viewInitial['radialaxis.range'])
@@ -310,7 +310,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be propagate angular settings down to tick labels', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         var pos0 = [];
         var pos1 = [];
 
@@ -335,7 +335,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to relayout angular ticks layout', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         function check(cnt, expected) {
             var ticks = d3SelectAll('path.angularaxistick');
@@ -370,7 +370,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should be able to toggle axis features', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         function assertCnt(selector, expected, msg) {
             var sel = d3Select(gd).selectAll(selector);
@@ -504,7 +504,7 @@ describe('Test relayout on polar subplots:', function() {
 
     it('should clean up its framework, clip paths and info layers when getting deleted', function(done) {
         var gd = createGraphDiv();
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         var traces = Lib.extendDeep([], fig.data);
         var inds = traces.map(function(_, i) { return i; });
 
@@ -762,7 +762,7 @@ describe('Test polar interactions:', function() {
     };
 
     it('should trigger hover/unhover/click/doubleclick events', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         var ptPos = [250, 200];
         var blankPos = [200, 120];
         var marginPos = [20, 20];
@@ -854,7 +854,7 @@ describe('Test polar interactions:', function() {
     });
 
     it('should respond to drag interactions on plot area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -962,7 +962,7 @@ describe('Test polar interactions:', function() {
     });
 
     it('should respond to drag interactions on radial drag area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -1045,7 +1045,7 @@ describe('Test polar interactions:', function() {
     });
 
     it('should respond to drag interactions on inner radial drag area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
         fig.layout.polar.hole = 0.2;
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -1083,7 +1083,7 @@ describe('Test polar interactions:', function() {
     });
 
     it('should respond to drag interactions on angular drag area', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
         // to avoid dragging on hover labels
         fig.layout.hovermode = false;
@@ -1148,7 +1148,7 @@ describe('Test polar interactions:', function() {
 
     describe('dragmode === false', function() {
         it('should not respond to drag interactions on plot area when dragmode === false', function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
             fig.layout.width = 400;
@@ -1238,7 +1238,7 @@ describe('Test polar interactions:', function() {
         });
 
         it('should not respond to drag interactions on radial drag area when dragmode === false', function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
             fig.layout.width = 400;
@@ -1318,7 +1318,7 @@ describe('Test polar interactions:', function() {
         });
 
         it('should not respond to drag interactions on inner radial drag area when dragmode === false', function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
             fig.layout.polar.hole = 0.2;
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
@@ -1361,7 +1361,7 @@ describe('Test polar interactions:', function() {
         });
 
         it('should not respond to drag interactions on angular drag area when dragmode === false', function(done) {
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
             // adjust margins so that middle of plot area is at 300x300
             // with its middle at [200,200]
             fig.layout.width = 400;
@@ -1478,7 +1478,7 @@ describe('Test polar interactions:', function() {
 
         specs.forEach(function(s) {
             it('@gl - ' + s.desc, function(done) {
-                var fig = Lib.extendDeep({}, require('@mocks/glpolar_scatter.json'));
+                var fig = Lib.extendDeep({}, require('../../image/mocks/glpolar_scatter.json'));
                 scene = null;
                 gl = null;
 
@@ -1522,7 +1522,7 @@ describe('Test polar interactions:', function() {
         it('should emit events on radial drag area', function(done) {
             var events = []; var path = [[375, 200], [-100, 0]]; var nsteps = 10;
             var relayoutEvents = [];
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
             // to avoid dragging on hover labels
             fig.layout.hovermode = false;
 
@@ -1563,7 +1563,7 @@ describe('Test polar interactions:', function() {
         it('should emit events on inner radial drag area', function(done) {
             var events = []; var path = [[150, 250], [175, 250]];
             var relayoutEvents = [];
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
             function _drag(p0, dp, nsteps) {
                 var node = d3Select('.polar > .draglayer > .maindrag').node();
@@ -1594,7 +1594,7 @@ describe('Test polar interactions:', function() {
 
         it('should emit events on angular drag area', function(done) {
             var events = []; var relayoutEvents = []; var nsteps = 10;
-            var fig = Lib.extendDeep({}, require('@mocks/polar_scatter.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/polar_scatter.json'));
 
             function _drag(p0, dp, nsteps) {
                 var node = d3Select('.polar > .draglayer > .angulardrag').node();

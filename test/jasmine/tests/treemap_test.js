@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
-var constants = require('@src/traces/treemap/constants');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
+var constants = require('../../../src/traces/treemap/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -965,7 +965,7 @@ describe('Test treemap hover lifecycle:', function() {
     }
 
     it('should fire the correct events', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -1040,7 +1040,7 @@ describe('Test treemap clicks:', function() {
     }
 
     it('should trigger animation when clicking on branches', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -1070,7 +1070,7 @@ describe('Test treemap clicks:', function() {
     });
 
     it('should trigger plotly_click event when clicking on leaf node', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -1092,7 +1092,7 @@ describe('Test treemap clicks:', function() {
     });
 
     it('should not trigger animation when graph is transitioning', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners())
@@ -1152,7 +1152,7 @@ describe('Test treemap clicks:', function() {
     });
 
     it('should be able to override default click behavior using plotly_treemapclick handler ()', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         Plotly.newPlot(gd, mock)
         .then(setupListeners({turnOffAnimation: true}))
@@ -1189,7 +1189,7 @@ describe('Test treemap restyle:', function() {
     }
 
     it('should be able to toggle visibility', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/treemap_first.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_first.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -1208,7 +1208,7 @@ describe('Test treemap restyle:', function() {
     });
 
     it('should be able to restyle *maxdepth* and *level* w/o recomputing the hierarchy', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/treemap_coffee.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/treemap_coffee.json'));
 
         function _assert(msg, exp) {
             return function() {
@@ -1523,7 +1523,7 @@ describe('Test treemap interactions edge cases', function() {
     afterEach(destroyGraphDiv);
 
     it('should keep tracking hover labels and hover events after *calc* edits', function(done) {
-        var mock = Lib.extendFlat({}, require('@mocks/treemap_first.json'));
+        var mock = Lib.extendFlat({}, require('../../image/mocks/treemap_first.json'));
         var hoverCnt = 0;
         var unhoverCnt = 0;
 
@@ -1603,7 +1603,7 @@ describe('Test treemap interactions edge cases', function() {
     });
 
     it('should transition treemap traces only', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
         mock.data[0].visible = false;
         mock.data[1].type = 'treemap';
         mock.data[1].name = 'treemap';
@@ -1639,7 +1639,7 @@ describe('Test treemap interactions edge cases', function() {
     });
 
     it('should be able to transition treemap traces via `Plotly.react`', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/display-text_zero-number.json'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/display-text_zero-number.json'));
         mock.data[1].type = 'treemap';
         mock.data[1].name = 'treemap';
 

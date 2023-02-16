@@ -1,7 +1,7 @@
 'use strict';
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 
 // Test utilities
@@ -12,7 +12,7 @@ var delay = require('../assets/delay');
 var mouseEvent = require('../assets/mouse_event');
 var readPixel = require('../assets/read_pixel');
 
-var multipleScatter2dMock = require('@mocks/gl2d_scatter2d-multiple-colors.json');
+var multipleScatter2dMock = require('../../image/mocks/gl2d_scatter2d-multiple-colors.json');
 
 var plotData = {
     'data': [
