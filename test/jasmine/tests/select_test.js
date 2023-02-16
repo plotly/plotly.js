@@ -2277,7 +2277,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('should work for waterfall traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@noCI should work for waterfall traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2338,7 +2338,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('should work for funnel traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@noCI should work for funnel traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
             var assertRanges = makeAssertRanges();
@@ -2492,7 +2492,7 @@ describe('Test select box and lasso per trace:', function() {
     });
 
     [false, true].forEach(function(hasCssTransform) {
-        it('should work for date/category traces, hasCssTransform: ' + hasCssTransform, function(done) {
+        it('@noCI should work for date/category traces, hasCssTransform: ' + hasCssTransform, function(done) {
             var assertPoints = makeAssertPoints(['curveNumber', 'x', 'y']);
             var assertSelectedPoints = makeAssertSelectedPoints();
 

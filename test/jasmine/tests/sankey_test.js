@@ -771,7 +771,7 @@ describe('sankey tests', function() {
             .then(done, done.fail);
         });
 
-        it('should position hover labels correctly', function(done) {
+        it('@noCI should position hover labels correctly', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 

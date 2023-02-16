@@ -25,4 +25,8 @@ describe('Test plotly.min.js', function() {
             Plotly.newPlot(gd, mockSpec[1]).catch(fail).then(done);
         }, LONG_TIMEOUT_INTERVAL);
     });
+
+    it('should not expose d3', function() {
+        expect(window.d3).not.toBeDefined();
+    });
 });
