@@ -9,6 +9,16 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.18.2] -- 2023-02-15
+
+### Fixed
+ - Avoid attaching internal d3 object to the window (regression introduced in 2.17.0) [#6487](https://github.com/plotly/plotly.js/pull/6487)
+ - Correct the order of lower fence and upper fence in the French locale (fr) [[#6476](https://github.com/plotly/plotly.js/pull/6476)],
+   with thanks to @Gagaro for the contribution!
+ - Correct formats in the Peruvian locale (es-pe) [[#6451](https://github.com/plotly/plotly.js/pull/6451)],
+   with thanks to @andresrcs for the contribution!
+
+
 ## [2.18.1] -- 2023-02-02
 
 ### Changed
@@ -16,7 +26,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ### Fixed
  - Fix scaling of exports e.g. the SVG format by not adding `vector-effect` CSS to static plots [[#6445](https://github.com/plotly/plotly.js/pull/6445)]
- - Fix hover on IE (regression introduced in 2.5.0) [#6466](https://github.com/plotly/plotly.js/pull/6466)
+ - Fix hover on IE (regression introduced in 2.5.0) [[#6466](https://github.com/plotly/plotly.js/pull/6466)]
 
 
 ## [2.18.0] -- 2023-01-19
