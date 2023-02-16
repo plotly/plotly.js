@@ -716,44 +716,43 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
 
     // Text position functions differently for lines vs. other shapes
     if(shapeType === 'line') {
-        // Handle special case for padding when angle is 'auto' for lines
+        // Set base position for start vs. center vs. end of line (default is 'center')
+        if(textPosition.indexOf('start') !== -1) {
+            textx = shapex0;
+            texty = shapey0;
+            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'right' : 'left';
+        } else if(textPosition.indexOf('end') !== -1) {
+            textx = shapex1;
+            texty = shapey1;
+            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'left' : 'right';
+        } else { // Default: center
+            textx = (shapex0 + shapex1) / 2;
+            texty = (shapey0 + shapey1) / 2;
+            if(xanchor === 'auto') xanchor = 'center';
+        }
+
+        // Default yanchor is 'bottom' for lines (should handle in defaults.js)
+        if(yanchor === 'auto') yanchor = 'bottom';
+
+        // Special case for padding when angle is 'auto' for lines
         // Padding should be treated as an orthogonal offset in this case
         // Otherwise, padding is just a simple x and y offset
         if(shapeOptions.label.textangle === 'auto') {
-            paddingX = textPadding * Math.sin(textAngleRad);
-            paddingY = -textPadding * Math.cos(textAngleRad);
+            // Set direction to apply padding (based on `yanchor` only)
+            var paddingDirection = { bottom: 1, middle: 0, top: -1 }[yanchor];
+            paddingX = textPadding * Math.sin(textAngleRad) * paddingDirection;
+            paddingY = -textPadding * Math.cos(textAngleRad) * paddingDirection;
         } else {
-            paddingX = textPadding;
-            paddingY = textPadding;
+            // Set direction to apply padding (based on `xanchor` and `yanchor`)
+            var paddingDirectionX = { left: 1, center: 0, right: -1 }[xanchor];
+            var paddingDirectionY = { bottom: -1, middle: 0, top: 1 }[yanchor];
+            paddingX = textPadding * paddingDirectionX;
+            paddingY = textPadding * paddingDirectionY;
         }
-
-        // Handle directional offset for top vs. bottom vs. center of line (default is 'top')
-        var paddingMultiplier;
-        if(textPosition.indexOf('middle') !== -1) {
-            paddingMultiplier = 0;
-            if(yanchor === 'auto') yanchor = 'middle';
-        } else if(textPosition.indexOf('bottom') !== -1) {
-            paddingMultiplier = -1;
-            if(yanchor === 'auto') yanchor = 'top';
-        } else {
-            paddingMultiplier = 1;
-            if(yanchor === 'auto') yanchor = 'bottom';
-        }
-
-        if(textPosition.indexOf('start') !== -1) {
-            textx = shapex0 + paddingX * paddingMultiplier;
-            texty = shapey0 + paddingY * paddingMultiplier;
-            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'right' : 'left';
-        } else if(textPosition.indexOf('end') !== -1) {
-            textx = shapex1 + paddingX * paddingMultiplier;
-            texty = shapey1 + paddingY * paddingMultiplier;
-            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'left' : 'right';
-        } else { // Default: center
-            textx = (shapex0 + shapex1) / 2 + paddingX * paddingMultiplier;
-            texty = (shapey0 + shapey1) / 2 + paddingY * paddingMultiplier;
-            if(xanchor === 'auto') xanchor = 'center';
-        }
-    } else { // Text position for shapes that are not lines
+        textx = textx + paddingX;
+        texty = texty + paddingY;
+    } else {
+        // Text position for shapes that are not lines
         // calc horizontal position
         // Horizontal needs a little extra padding to look balanced
         paddingX = textPadding + 3;
@@ -783,10 +782,9 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
     }
 
     // Shift vertical (& horizontal) position according to `yanchor`
-    var shiftFraction = { middle: 0, bottom: 0.5, top: -0.5 }[yanchor];
-    // To adjust for text being anchored at baseline instead of bottom of descenders
-    // Probably not the right way of handling
-    var baselineAdjust = shapeOptions.label.font.size / 4;
+    var shiftFraction = { middle: 0.5, bottom: 1, top: 0 }[yanchor];
+    // Adjust so that text is anchored at top of first line rather than at baseline of first line
+    var baselineAdjust = shapeOptions.label.font.size;
     var textHeight = textBB.height;
     var xshift = (textHeight * shiftFraction - baselineAdjust) * Math.sin(textAngleRad);
     var yshift = -(textHeight * shiftFraction - baselineAdjust) * Math.cos(textAngleRad);
