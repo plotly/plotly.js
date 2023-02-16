@@ -399,14 +399,16 @@ function findCounterAxisLineWidth(ax, side, counterAx, axList) {
 }
 
 exports.drawMainTitle = function(gd) {
+    var title = gd._fullLayout.title;
+    setDflts(title);
     var fullLayout = gd._fullLayout;
-
     var textAnchor = getMainTitleTextAnchor(fullLayout);
     var dy = getMainTitleDy(fullLayout);
     var y = getMainTitleY(fullLayout, dy);
+    var position = fullLayout.title.y > 0.5 ? 't' : 'b';
 
     if(gd._fullLayout.title.automargin) {
-        applyTitleAutoMargin(gd, fullLayout, dy);
+        applyTitleAutoMargin(gd, position, y);
     }
 
     Titles.draw(gd, 'gtitle', {
@@ -422,6 +424,34 @@ exports.drawMainTitle = function(gd) {
     });
 };
 
+// Is any part of the title outside of the container?
+// TODO: What if yref='container'?
+function isOutsideContainer(gd, title, position, y) {
+    var plotHeight = gd._fullLayout._size.h;
+    var yPosTop = Lib.isTopAnchor(title) ? y : y - titleDepth(title); // Standardize to the top of the title
+    var yPosRel = position === 'b' ? plotHeight - yPosTop : yPosTop; // Position relative to the top or bottom of plot
+    if ((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
+        return false
+    } else {
+        if (yPosRel < titleDepth(title)) {
+            return true
+        } else {
+            return false
+        }
+    }
+}
+
+// TODO: Move to setting defaults stage, rather than drawing
+// title.y is 1 or 0 if automargin and paper ref
+function setDflts(title) {
+    if(title.automargin && title.yref === 'paper') {
+        title.y = title.y === 0 ? title.y : 1
+    }
+    if(title.automargin) {
+        title.yanchor = title.yanchor === 'auto' ? 'bottom' : title.yanchor;
+    }
+}
+
 function titleDepth(title) {
     var fontSize = title.font.size;
     var extraLines = (title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
@@ -430,26 +460,24 @@ function titleDepth(title) {
         fontSize;
 }
 
-function applyTitleAutoMargin(gd, fullLayout, dy) {
+function applyTitleAutoMargin(gd, position, y) {
     var titleID = 'title.automargin';
-    var title = fullLayout.title;
-    var direction = fullLayout.title.y > 0.5 ? 't' : 'b';
+    var title = gd._fullLayout.title;
     var push = {
         x: title.x,
-        y: title.y, // TODO: Assuming that y is either 1 or 0?
+        y: position === 't' ? 1 : 0, // TODO: Assuming that y is either 1 or 0?
         t: 0,
         b: 0
     };
 
-    // TODO: This is not yet accurate with multi-line titles
-    // TODO: Push titleDepth depending on yanchor?
-    push[direction] = (
-        titleDepth(title) +
-        // getMainTitleY(fullLayout, dy) + // TODO: Why is this calculation triggering too many automargin redraws?
-        title.pad.t +
-        title.pad.b
+    if (isOutsideContainer(gd, title, position, y)) {
+        console.log('isOutsideContainer')
+        push[position] = (
+            titleDepth(title) +
+            title.pad.t +
+            title.pad.b
         );
-
+    }
     Plots.allowAutoMargin(gd, titleID);
     Plots.autoMargin(gd, titleID, push);
 }
