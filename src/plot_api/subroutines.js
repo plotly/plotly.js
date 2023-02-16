@@ -430,13 +430,13 @@ function isOutsideContainer(gd, title, position, y) {
     var plotHeight = gd._fullLayout._size.h;
     var yPosTop = Lib.isTopAnchor(title) ? y : y - titleDepth(title); // Standardize to the top of the title
     var yPosRel = position === 'b' ? plotHeight - yPosTop : yPosTop; // Position relative to the top or bottom of plot
-    if ((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
-        return false
+    if((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
+        return false;
     } else {
-        if (yPosRel < titleDepth(title)) {
-            return true
+        if(yPosRel < titleDepth(title)) {
+            return true;
         } else {
-            return false
+            return false;
         }
     }
 }
@@ -445,7 +445,7 @@ function isOutsideContainer(gd, title, position, y) {
 // title.y is 1 or 0 if automargin and paper ref
 function setDflts(title) {
     if(title.automargin && title.yref === 'paper') {
-        title.y = title.y === 0 ? title.y : 1
+        title.y = title.y === 0 ? title.y : 1;
     }
     if(title.automargin) {
         title.yanchor = title.yanchor === 'auto' ? 'bottom' : title.yanchor;
@@ -470,8 +470,7 @@ function applyTitleAutoMargin(gd, position, y) {
         b: 0
     };
 
-    if (isOutsideContainer(gd, title, position, y)) {
-        console.log('isOutsideContainer')
+    if(isOutsideContainer(gd, title, position, y)) {
         push[position] = (
             titleDepth(title) +
             title.pad.t +
