@@ -4,7 +4,7 @@ var Lib = require('../../lib');
 var Registry = require('../../registry');
 var Color = require('../../components/color');
 var handlePeriodDefaults = require('../scatter/period_defaults');
-var handleGroupingDefaults = require('../bar/defaults').handleGroupingDefaults;
+var handleGroupingDefaults = require('../scatter/grouping_defaults');
 var autoType = require('../../plots/cartesian/axis_autotype');
 var attributes = require('./attributes');
 

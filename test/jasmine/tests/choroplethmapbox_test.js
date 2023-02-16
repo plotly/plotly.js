@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var loggers = require('@src/lib/loggers');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var loggers = require('../../../src/lib/loggers');
 
-var convertModule = require('@src/traces/choroplethmapbox/convert');
-var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
+var convertModule = require('../../../src/traces/choroplethmapbox/convert');
+var MAPBOX_ACCESS_TOKEN = require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -541,7 +541,7 @@ describe('Test choroplethmapbox hover:', function() {
         }
 
         var fig = Lib.extendDeep({},
-            s.mock || require('@mocks/mapbox_choropleth0.json')
+            s.mock || require('../../image/mocks/mapbox_choropleth0.json')
         );
 
         if(s.patch) {
@@ -607,7 +607,7 @@ describe('Test choroplethmapbox hover:', function() {
     }, {
         desc: 'with "typeof number" locations[i] and feature id (in *name* label case)',
         patch: function() {
-            var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth-raw-geojson.json'));
             fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
@@ -619,7 +619,7 @@ describe('Test choroplethmapbox hover:', function() {
     }, {
         desc: 'with "typeof number" locations[i] and feature id (in *nums* label case)',
         patch: function() {
-            var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth-raw-geojson.json'));
             fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;
@@ -632,7 +632,7 @@ describe('Test choroplethmapbox hover:', function() {
     }, {
         desc: 'with "typeof number" locations[i] and feature id (hovertemplate case)',
         patch: function() {
-            var fig = Lib.extendDeep({}, require('@mocks/mapbox_choropleth-raw-geojson.json'));
+            var fig = Lib.extendDeep({}, require('../../image/mocks/mapbox_choropleth-raw-geojson.json'));
             fig.data = [fig.data[1]];
             fig.data[0].locations = [100];
             fig.data[0].geojson.id = 100;

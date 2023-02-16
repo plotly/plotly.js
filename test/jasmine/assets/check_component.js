@@ -66,7 +66,7 @@ module.exports = function checkComponent(Plotly) {
     describe('registered subplot (gl3d)', function() {
         var gd;
 
-        var mock = require('@mocks/gl3d_world-cals');
+        var mock = require('../../image/mocks/gl3d_world-cals');
         // just pick out the scatter3d trace
         mock.data = [mock.data[1]];
         var xaxisCalendar = mock.layout.scene.xaxis.calendar;

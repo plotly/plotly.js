@@ -3,7 +3,6 @@
 module.exports = Sieve;
 
 var distinctVals = require('../../lib').distinctVals;
-var BADNUM = require('../../constants/numerical').BADNUM;
 
 /**
  * Helper class to sieve data from traces into bins
@@ -27,12 +26,18 @@ function Sieve(traces, opts) {
     // for single-bin histograms - see histogram/calc
     var width1 = Infinity;
 
+    var axLetter = opts.posAxis._id.charAt(0);
+
     var positions = [];
     for(var i = 0; i < traces.length; i++) {
         var trace = traces[i];
         for(var j = 0; j < trace.length; j++) {
             var bar = trace[j];
-            if(bar.p !== BADNUM) positions.push(bar.p);
+            var pos = bar.p;
+            if(pos === undefined) {
+                pos = bar[axLetter];
+            }
+            if(pos !== undefined) positions.push(pos);
         }
         if(trace[0] && trace[0].width1) {
             width1 = Math.min(trace[0].width1, width1);

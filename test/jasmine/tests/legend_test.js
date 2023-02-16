@@ -1,12 +1,12 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var DBLCLICKDELAY = require('@src/plot_api/plot_config').dfltConfig.doubleClickDelay;
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var DBLCLICKDELAY = require('../../../src/plot_api/plot_config').dfltConfig.doubleClickDelay;
 
-var Legend = require('@src/components/legend');
-var getLegendData = require('@src/components/legend/get_legend_data');
-var helpers = require('@src/components/legend/helpers');
-var constants = require('@src/components/legend/constants');
+var Legend = require('../../../src/components/legend');
+var getLegendData = require('../../../src/components/legend/get_legend_data');
+var helpers = require('../../../src/components/legend/helpers');
+var constants = require('../../../src/components/legend/constants');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -17,9 +17,9 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertPlotSize = require('../assets/custom_assertions').assertPlotSize;
 
-var mock = require('@mocks/legend_horizontal.json');
+var mock = require('../../image/mocks/legend_horizontal.json');
 
-var Drawing = require('@src/components/drawing');
+var Drawing = require('../../../src/components/drawing');
 
 describe('legend defaults', function() {
     'use strict';
@@ -913,7 +913,7 @@ describe('legend relayout update', function() {
     afterEach(destroyGraphDiv);
 
     it('should hide and show the legend', function(done) {
-        var mockCopy = Lib.extendDeep({}, require('@mocks/0.json'), {layout: {
+        var mockCopy = Lib.extendDeep({}, require('../../image/mocks/0.json'), {layout: {
             legend: {x: 1.1, xanchor: 'left'},
             margin: {l: 50, r: 50, pad: 0},
             width: 500
@@ -944,7 +944,7 @@ describe('legend relayout update', function() {
     });
 
     it('should update border styling', function(done) {
-        var mockCopy = Lib.extendDeep({}, require('@mocks/0.json'));
+        var mockCopy = Lib.extendDeep({}, require('../../image/mocks/0.json'));
 
         function assertLegendStyle(bgColor, borderColor, borderWidth) {
             var node = d3Select('g.legend').select('rect').node();
@@ -986,7 +986,7 @@ describe('legend relayout update', function() {
         }
 
         it('it should translate markers', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/legend_valign_top.json'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/legend_valign_top.json'));
 
             var top, middle, bottom;
             Plotly.newPlot(gd, mockCopy.data, mockCopy.layout)
@@ -1009,7 +1009,7 @@ describe('legend relayout update', function() {
 
     describe('with legendgroup', function() {
         it('changes the margin size to fit tracegroupgap', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/legendgroup_horizontal_wrapping.json'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/legendgroup_horizontal_wrapping.json'));
             Plotly.newPlot(gd, mockCopy)
             .then(function() {
                 expect(gd._fullLayout._size.b).toBe(113);
@@ -1027,7 +1027,7 @@ describe('legend relayout update', function() {
     });
 
     it('should make legend fit in graph viewport', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/legend_negative_x.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/legend_negative_x.json'));
 
         function _assert(msg, xy, wh) {
             return function() {
@@ -1054,7 +1054,7 @@ describe('legend relayout update', function() {
     });
 
     it('should fit in graph viewport when changing legend.title.side', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/0.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/0.json'));
         fig.layout.legend = {
             title: {
                 text: 'legend title'
@@ -1130,7 +1130,7 @@ describe('legend orientation change:', function() {
     afterEach(destroyGraphDiv);
 
     it('should update plot background', function(done) {
-        var mock = require('@mocks/legend_horizontal_autowrap.json');
+        var mock = require('../../image/mocks/legend_horizontal_autowrap.json');
         var gd = createGraphDiv();
         var initialLegendBGColor;
 
@@ -1153,7 +1153,7 @@ describe('legend restyle update', function() {
     afterEach(destroyGraphDiv);
 
     it('should update trace toggle background rectangle', function(done) {
-        var mock = require('@mocks/0.json');
+        var mock = require('../../image/mocks/0.json');
         var mockCopy = Lib.extendDeep({}, mock);
         var gd = createGraphDiv();
 
@@ -1206,7 +1206,7 @@ describe('legend interaction', function() {
         var testEntry = 2;
 
         beforeAll(function(done) {
-            var mock = require('@mocks/pie_simple.json');
+            var mock = require('../../image/mocks/pie_simple.json');
             mockCopy = Lib.extendDeep({}, mock);
             gd = createGraphDiv();
 
@@ -1301,7 +1301,7 @@ describe('legend interaction', function() {
         var testEntry = 2;
 
         beforeAll(function(done) {
-            var mock = require('@mocks/29.json');
+            var mock = require('../../image/mocks/29.json');
             mockCopy = Lib.extendDeep({}, mock);
             gd = createGraphDiv();
 
@@ -1428,7 +1428,7 @@ describe('legend interaction', function() {
         }
 
         it('should ignore carpet traces when toggling', function(done) {
-            var _mock = Lib.extendDeep({}, require('@mocks/cheater.json'));
+            var _mock = Lib.extendDeep({}, require('../../image/mocks/cheater.json'));
             var gd = createGraphDiv();
 
             Plotly.newPlot(gd, _mock).then(function() {
@@ -1955,7 +1955,7 @@ describe('legend interaction', function() {
             var fig, to;
 
             beforeEach(function() {
-                fig = Lib.extendDeep({}, require('@mocks/0.json'));
+                fig = Lib.extendDeep({}, require('../../image/mocks/0.json'));
             });
 
             afterEach(function() {

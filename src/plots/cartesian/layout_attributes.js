@@ -12,7 +12,7 @@ var constants = require('./constants');
 var HOUR = constants.HOUR_PATTERN;
 var DAY_OF_WEEK = constants.WEEKDAY_PATTERN;
 
-var tickmode = {
+var minorTickmode = {
     valType: 'enumerated',
     values: ['auto', 'linear', 'array'],
     editType: 'ticks',
@@ -28,6 +28,15 @@ var tickmode = {
         '(*array* is the default value if `tickvals` is provided).'
     ].join(' ')
 };
+
+var tickmode = extendFlat({}, minorTickmode, {
+    values: minorTickmode.values.slice().concat(['sync']),
+    description: [
+        minorTickmode.description,
+        'If *sync*, the number of ticks will sync with the overlayed axis',
+        'set by `overlaying` property.'
+    ].join(' ')
+});
 
 function makeNticks(minor) {
     return {
@@ -947,7 +956,7 @@ module.exports = {
     },
 
     minor: {
-        tickmode: tickmode,
+        tickmode: minorTickmode,
         nticks: makeNticks('minor'),
         tick0: tick0,
         dtick: dtick,
@@ -1000,6 +1009,30 @@ module.exports = {
         description: [
             'Sets the position of this axis in the plotting space',
             '(in normalized coordinates).',
+            'Only has an effect if `anchor` is set to *free*.'
+        ].join(' ')
+    },
+    autoshift: {
+        valType: 'boolean',
+        dflt: false,
+        editType: 'plot',
+        description: [
+            'Automatically reposition the axis to avoid',
+            'overlap with other axes with the same `overlaying` value.',
+            'This repositioning will account for any `shift` amount applied to other',
+            'axes on the same side with `autoshift` is set to true.',
+            'Only has an effect if `anchor` is set to *free*.',
+        ].join(' ')
+    },
+    shift: {
+        valType: 'number',
+        editType: 'plot',
+        description: [
+            'Moves the axis a given number of pixels from where it would have been otherwise.',
+            'Accepts both positive and negative values, which will shift the axis either right',
+            'or left, respectively.',
+            'If `autoshift` is set to true, then this defaults to a padding of -3 if `side` is set to *left*.',
+            'and defaults to +3 if `side` is set to *right*. Defaults to 0 if `autoshift` is set to false.',
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     },

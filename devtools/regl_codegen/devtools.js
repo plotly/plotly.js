@@ -4,7 +4,7 @@
 
 var mocks = require('../../build/test_dashboard_mocks.json');
 var reglTraces = require('../../build/regl_traces.json');
-var Lib = require('@src/lib');
+var Lib = require('../../src/lib');
 
 // Our gracious testing object
 var Tabs = {
@@ -158,3 +158,5 @@ function handleOnLoad() {
         window.close();
     });
 }
+
+module.exports = Tabs;

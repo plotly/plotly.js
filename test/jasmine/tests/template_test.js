@@ -1,13 +1,13 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 var drag = require('../assets/drag');
 
-var scatterFillMock = require('@mocks/scatter_fill_self_next.json');
-var templateMock = require('@mocks/template.json');
+var scatterFillMock = require('../../image/mocks/scatter_fill_self_next.json');
+var templateMock = require('../../image/mocks/template.json');
 
 describe('makeTemplate', function() {
     it('does not template arrays', function() {

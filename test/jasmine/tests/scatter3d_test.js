@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Color = require('@src/components/color');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Color = require('../../../src/components/color');
 
-var Scatter3D = require('@src/traces/scatter3d');
+var Scatter3D = require('../../../src/traces/scatter3d');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -116,7 +116,7 @@ describe('Test scatter3d interactions:', function() {
 
     // lines, markers, text, error bars and surfaces each
     // correspond to one glplot object
-    var mock = require('@mocks/gl3d_marker-arrays.json');
+    var mock = require('../../image/mocks/gl3d_marker-arrays.json');
     var mock2 = Lib.extendDeep({}, mock);
     mock2.data[0].mode = 'lines+markers+text';
     mock2.data[0].error_z = { value: 10 };
