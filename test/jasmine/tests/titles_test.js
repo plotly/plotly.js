@@ -1066,6 +1066,49 @@ describe('Titles for multiple axes', function() {
     });
 });
 
+fdescribe('Title automargining', function() {
+    'use strict'
+
+    var data = [{x: [1, 1, 3], y: [1, 2, 3]}];
+    var layout = {
+        "margin": {"t":0, "b": 0, "l": 0, "r": 0},
+        "title": {
+            "text": "Basic title",
+            "font": {"size": 24},
+            "yref": "paper"
+        }
+    }
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should avoid overlap with container for yref=paper and allow padding', function(done) {
+        Plotly.newPlot(gd, data, layout).then(function() {
+            expect(gd._fullLayout._size.t).toBe(0);
+            return Plotly.relayout(gd, 'title.automargin', true);
+        }).then(function() {
+            expect(gd._fullLayout.title.automargin).toBe(true);
+            expect(gd._fullLayout.title.y).toBe(1);
+            expect(gd._fullLayout.title.yanchor).toBe('bottom');
+            expect(gd._fullLayout._size.t).toBe(24);
+            return Plotly.relayout(gd, 'title.pad.t', 10);
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBe(34);
+            return Plotly.relayout(gd, 'title.pad.b', 10);
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBe(44);
+            return Plotly.relayout(gd, 'title.yanchor', 'top');
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBe(0);
+        }).then(done, done.fail);
+    });
+
+});
+
 function expectTitle(expTitle) {
     expectTitleFn(expTitle)();
 }
