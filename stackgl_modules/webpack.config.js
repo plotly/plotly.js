@@ -1,5 +1,4 @@
 var path = require('path');
-var NodePolyfillPlugin = require('node-polyfill-webpack-plugin');
 
 module.exports = {
     target: ['web', 'es5'],
