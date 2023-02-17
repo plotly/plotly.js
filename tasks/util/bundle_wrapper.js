@@ -11,7 +11,7 @@ var nRules = config.module.rules.length;
  * @param {string} pathToIndex path to index file to bundle
  * @param {string} pathToBunlde path to destination bundle
  * @param {object} opts
- *  Browserify options:
+ *  Bundle options:
  *  - standalone {string}
  *  Additional option:
  *  - pathToMinBundle {string} path to destination minified bundle
