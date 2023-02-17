@@ -1066,18 +1066,18 @@ describe('Titles for multiple axes', function() {
     });
 });
 
-fdescribe('Title automargining', function() {
-    'use strict'
+describe('Title automargining', function() {
+    'use strict';
 
     var data = [{x: [1, 1, 3], y: [1, 2, 3]}];
     var layout = {
-        "margin": {"t":0, "b": 0, "l": 0, "r": 0},
-        "title": {
-            "text": "Basic title",
-            "font": {"size": 24},
-            "yref": "paper"
+        'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
+        'title': {
+            'text': 'Basic title',
+            'font': {'size': 24},
+            'yref': 'paper'
         }
-    }
+    };
     var gd;
 
     beforeEach(function() {
@@ -1106,7 +1106,6 @@ fdescribe('Title automargining', function() {
             expect(gd._fullLayout._size.t).toBe(0);
         }).then(done, done.fail);
     });
-
 });
 
 function expectTitle(expTitle) {
