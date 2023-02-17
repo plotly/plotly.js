@@ -16,21 +16,12 @@
         }],
     "layout": {
         "margin": {"t":0, "b": 0, "l": 0, "r": 0},
-        "yaxis": {
-        "automargin": true,
-        "title": {"text": "Y-axis"}
-        },
-        "xaxis": {"automargin": true,
-        "title": {"text": "X-axis"}
-        },
         "title": {
             "automargin": true, 
-            "text": "A sample title",
+            "text": "Basic title",
             "font": {"size": 24},
-            "pad": {"t": 15},
-            "yanchor": "bottom",
-            "yref": "paper",
-            "y": 1
+            "pad": {"t": 15, "b": 10},
+            "yref": "paper"
         }
   }
 }
