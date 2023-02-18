@@ -424,10 +424,9 @@ exports.drawMainTitle = function(gd) {
     });
 };
 
-// Is any part of the title outside of the container?
-// TODO: What if yref='container'?
+
 function isOutsideContainer(gd, title, position, y) {
-    var plotHeight = gd._fullLayout._size.h;
+    var plotHeight = title.yref === 'paper' ? gd._fullLayout._size.h : gd._fullLayout.height;
     var yPosTop = Lib.isTopAnchor(title) ? y : y - titleDepth(title); // Standardize to the top of the title
     var yPosRel = position === 'b' ? plotHeight - yPosTop : yPosTop; // Position relative to the top or bottom of plot
     if((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
@@ -441,14 +440,19 @@ function isOutsideContainer(gd, title, position, y) {
     }
 }
 
+
 // TODO: Move to setting defaults stage, rather than drawing
+// TODO: Too complex that defaults are different, depending on yref?
 // title.y is 1 or 0 if automargin and paper ref
+// 'auto' is not supported for either title.y or title.yanchor when automargin=true
 function setDflts(title) {
     if(title.automargin && title.yref === 'paper') {
         title.y = title.y === 0 ? title.y : 1;
-    }
-    if(title.automargin) {
         title.yanchor = title.yanchor === 'auto' ? 'bottom' : title.yanchor;
+    }
+    if(title.automargin && title.yref === 'container') {
+        title.y = title.y === 'auto' ? 1 : title.y;
+        title.yanchor = title.yanchor === 'auto' ? 'top' : title.yanchor;
     }
 }
 
@@ -460,23 +464,51 @@ function titleDepth(title) {
         fontSize;
 }
 
+// TODO: Simplify this logic...
+function containerPushVal(position, title, height, titleDepth) {
+    var push = 0;
+    if(title.yanchor === 'middle') {
+        push += titleDepth / 2;
+    }
+    if(position === 't') {
+        if(title.yanchor === 'top') {
+            push += titleDepth;
+        }
+        push += (height - title.y * height);
+    } else {
+        if(title.yanchor === 'bottom') {
+            push += titleDepth;
+        }
+        push += (height - (1 - title.y) * height);
+    }
+    return push;
+}
+
 function applyTitleAutoMargin(gd, position, y) {
     var titleID = 'title.automargin';
     var title = gd._fullLayout.title;
     var push = {
         x: title.x,
-        y: position === 't' ? 1 : 0, // TODO: Assuming that y is either 1 or 0?
+        y: position === 't' ? 1 : 0, // TODO: Is it correct that this should either be 1 or 0?
         t: 0,
         b: 0
     };
 
-    if(isOutsideContainer(gd, title, position, y)) {
+    if(title.yref === 'paper' && isOutsideContainer(gd, title, position, y)) {
         push[position] = (
             titleDepth(title) +
             title.pad.t +
             title.pad.b
         );
+    } else if(title.yref === 'container') {
+        push[position] = (
+            containerPushVal(position, title, gd._fullLayout.height, titleDepth(title)) +
+            title.pad.t +
+            title.pad.b
+        );
     }
+
+
     Plots.allowAutoMargin(gd, titleID);
     Plots.autoMargin(gd, titleID, push);
 }
