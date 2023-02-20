@@ -705,7 +705,7 @@ function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
 }
 
 function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
-    var textPosition = shapeOptions.label.position;
+    var textPosition = shapeOptions.label.textposition;
     var textPadding = shapeOptions.label.padding;
     var shapeType = shapeOptions.type;
     var textAngleRad = Math.PI / 180 * actualTextAngle;

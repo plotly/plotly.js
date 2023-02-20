@@ -237,7 +237,7 @@ module.exports = templatedArray('shape', {
             colorEditType: 'arraydraw',
             description: 'Sets the shape label text font.'
         }),
-        position: {
+        textposition: {
             valType: 'enumerated',
             values: [
                 'top left', 'top center', 'top right',
@@ -246,7 +246,7 @@ module.exports = templatedArray('shape', {
                 'start', 'middle', 'end',
             ],
             editType: 'arraydraw',
-            description: 'Sets the position of the label relative to the shape.'
+            description: 'Sets the position of the label text relative to the shape.'
         },
         textangle: {
             valType: 'angle',
@@ -261,7 +261,7 @@ module.exports = templatedArray('shape', {
         yanchor: annAttrs.yanchor,
         padding: {
             valType: 'number',
-            dflt: 0,
+            dflt: 3,
             editType: 'arraydraw',
             description: 'Sets padding between edge of label and xanchor / yanchor.'
         },
