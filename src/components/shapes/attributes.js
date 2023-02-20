@@ -257,8 +257,12 @@ module.exports = templatedArray('shape', {
                 'with respect to the horizontal.'
             ].join(' ')
         },
-        xanchor: annAttrs.xanchor,
-        yanchor: annAttrs.yanchor,
+        xanchor: extendFlat({}, annAttrs.xanchor, {
+            description: 'Sets the text box\'s horizontal position anchor.',
+        }),
+        yanchor: extendFlat({}, annAttrs.yanchor, {
+            description: 'Sets the text box\'s vertical position anchor.',
+        }),
         padding: {
             valType: 'number',
             dflt: 3,
