@@ -33,17 +33,17 @@ var dyToEnlargeHeight = { n: -10, s: 10, w: 0, e: 0, nw: -10, se: 10, ne: -10, s
 // Helper functions
 function getMoveLineDragElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer .shape-group g[data-index="' + index + '"] path').node();
+    return d3SelectAll('.shapelayer g[drag-helper][data-index="' + index + '"] path').node();
 }
 
 function getResizeLineOverStartPointElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer .shape-group g[data-index="' + index + '"] circle[data-line-point="start-point"]').node();
+    return d3SelectAll('.shapelayer g[drag-helper][data-index="' + index + '"] circle[data-line-point="start-point"]').node();
 }
 
 function getResizeLineOverEndPointElement(index) {
     index = index || 0;
-    return d3SelectAll('.shapelayer .shape-group g[data-index="' + index + '"] circle[data-line-point="end-point"]').node();
+    return d3SelectAll('.shapelayer g[drag-helper][data-index="' + index + '"] circle[data-line-point="end-point"]').node();
 }
 
 describe('Test shapes defaults:', function() {

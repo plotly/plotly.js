@@ -255,7 +255,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         // Note that by setting the `data-index` attr, it is ensured that
         // the helper group is purged in this modules `draw` function
         var g = shapeLayer.append('g')
-          .attr('data-index', index);
+            .attr('data-index', index)
+            .attr('drag-helper', true);
 
         // Helper path for moving
         g.append('path')
