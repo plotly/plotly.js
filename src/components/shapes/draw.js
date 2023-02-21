@@ -649,10 +649,18 @@ function drawLabel(gd, index, options, shapeGroup) {
         shapey1 = shapeBBox.bottom;
     }
 
-    // Handle 'auto' angle for lines
+    // Handle `auto` angle
     var textangle = options.label.textangle;
     if(textangle === 'auto') {
-        textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
+        if(options.type === 'line') {
+            // Auto angle for line is same angle as line
+            textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
+        } else {
+            // Auto angle for all other shapes is 0
+            // The default angle for other shapes is 0 anyway, so there's no reason to
+            // explicitly set the angle to `auto`, this is just covering an edge case
+            textangle = 0;
+        }
     }
 
     // Do a fake render so we can get the text bounding box height

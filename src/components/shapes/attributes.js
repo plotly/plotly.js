@@ -250,11 +250,12 @@ module.exports = templatedArray('shape', {
         },
         textangle: {
             valType: 'angle',
-            dflt: 0,
             editType: 'calc+arraydraw',
             description: [
-                'Sets the angle at which the `text` is drawn',
-                'with respect to the horizontal.'
+                'Sets the angle at which the label text is drawn',
+                'with respect to the horizontal. For lines, the default textangle is `auto`,',
+                'which displays the text at the same angle as the line. For all other shapes,',
+                'the default textangle is 0 (horizontal).'
             ].join(' ')
         },
         xanchor: extendFlat({}, annAttrs.xanchor, {
