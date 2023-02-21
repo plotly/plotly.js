@@ -7135,12 +7135,25 @@
        },
        "padding": {
         "description": "Sets padding between edge of label and xanchor / yanchor.",
-        "dflt": 0,
+        "dflt": 3,
         "editType": "arraydraw",
         "valType": "number"
        },
-       "position": {
-        "description": "Sets the position of the label relative to she shape.",
+       "role": "object",
+       "text": {
+        "description": "Sets the text to display with shape.",
+        "dflt": "",
+        "editType": "arraydraw",
+        "valType": "string"
+       },
+       "textangle": {
+        "description": "Sets the angle at which the `text` is drawn with respect to the horizontal.",
+        "dflt": 0,
+        "editType": "calc+arraydraw",
+        "valType": "angle"
+       },
+       "textposition": {
+        "description": "Sets the position of the label text relative to the shape.",
         "editType": "arraydraw",
         "valType": "enumerated",
         "values": [
@@ -7153,29 +7166,13 @@
          "bottom left",
          "bottom center",
          "bottom right",
-         "top start",
-         "top end",
-         "middle start",
-         "middle end",
-         "bottom start",
-         "bottom end"
+         "start",
+         "middle",
+         "end"
         ]
        },
-       "role": "object",
-       "text": {
-        "description": "Sets the text to display with shape.",
-        "dflt": null,
-        "editType": "arraydraw",
-        "valType": "string"
-       },
-       "textangle": {
-        "description": "Sets the angle at which the `text` is drawn with respect to the horizontal.",
-        "dflt": 0,
-        "editType": "calc+arraydraw",
-        "valType": "angle"
-       },
        "xanchor": {
-        "description": "Sets the text box's horizontal position anchor This anchor binds the `x` position to the *left*, *center* or *right* of the annotation. For example, if `x` is set to 1, `xref` to *paper* and `xanchor` to *right* then the right-most portion of the annotation lines up with the right-most edge of the plotting area. If *auto*, the anchor is equivalent to *center* for data-referenced annotations or if there is an arrow, whereas for paper-referenced with no arrow, the anchor picked corresponds to the closest side.",
+        "description": "Sets the text box's horizontal position anchor.",
         "dflt": "auto",
         "editType": "calc+arraydraw",
         "valType": "enumerated",
@@ -7187,7 +7184,7 @@
         ]
        },
        "yanchor": {
-        "description": "Sets the text box's vertical position anchor This anchor binds the `y` position to the *top*, *middle* or *bottom* of the annotation. For example, if `y` is set to 1, `yref` to *paper* and `yanchor` to *top* then the top-most portion of the annotation lines up with the top-most edge of the plotting area. If *auto*, the anchor is equivalent to *middle* for data-referenced annotations or if there is an arrow, whereas for paper-referenced with no arrow, the anchor picked corresponds to the closest side.",
+        "description": "Sets the text box's vertical position anchor.",
         "dflt": "auto",
         "editType": "calc+arraydraw",
         "valType": "enumerated",
