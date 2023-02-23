@@ -39,7 +39,15 @@
           "text": "$C^2$"
         },
         "showline": true,
-        "showgrid": true
+        "showgrid": true,
+        "labelalias": {
+          "0": "$0^2$",
+          "20": "$20^2$",
+          "40": "$40^2$",
+          "60": "$60^2$",
+          "80": "$80^2$",
+          "100": "$100^2$"
+        }
       }
     },
     "annotations": [
