@@ -15,7 +15,7 @@
       "shape": "bullet",
       "axis": {
         "labelalias": {
-          "0": "ZERO"
+          "0": "ZERO<sup>2</sup>"
         },
         "range": [null, 300]
       },

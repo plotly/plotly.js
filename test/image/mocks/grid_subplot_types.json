@@ -17,18 +17,18 @@
       "yanchor": "bottom",
       "y": 0,
       "len": 0.3,
-      "labelalias": {"2": "TWO"}
+      "labelalias": {"2": "TWO<sup>2</sup>"}
     }}
   ],
   "layout": {
-    "xaxis": {"title": {"text": "x"}, "labelalias": {"0": "ZERO"}},
-    "xaxis2": {"title": {"text": "x2"}, "labelalias": {"0": "ZERO"}},
-    "yaxis": {"title": {"text": "y"}, "labelalias": {"0": "ZERO"}},
-    "yaxis2": {"title": {"text": "y2"}, "labelalias": {"0": "ZERO"}},
-    "xaxis3": {"title": {"text": "x3"}, "labelalias": {"0": "ZERO"}},
-    "yaxis3": {"title": {"text": "y3"}, "labelalias": {"0": "ZERO"}},
+    "xaxis": {"title": {"text": "x"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "xaxis2": {"title": {"text": "x2"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "yaxis": {"title": {"text": "y"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "yaxis2": {"title": {"text": "y2"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "xaxis3": {"title": {"text": "x3"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "yaxis3": {"title": {"text": "y3"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
     "grid": {"rows": 3, "columns": 3, "xgap": 0.3, "ygap": 0.3},
-    "scene": {"domain": {"row": 1, "column": 1}, "zaxis": {"labelalias": {"2": "TWO"}}},
+    "scene": {"domain": {"row": 1, "column": 1}, "zaxis": {"labelalias": {"2": "TWO<sup>2</sup>"}}},
     "ternary": {"domain": {"row": 1, "column": 2}, "caxis": {"labelalias": {"1": "ONE"}}},
     "geo": {"domain": {"row": 2, "column": 1}},
     "width": 700,
