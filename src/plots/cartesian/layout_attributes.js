@@ -638,10 +638,12 @@ module.exports = {
         dflt: false,
         editType: 'ticks',
         description: [
-            'Determines the alias for certain labels for ticks and hover.',
-            'For example using {US: \'USA\', CA: \'Canada\'} maps US to USA',
-            'and CA to Canada if tick or hover labels match US or Canada i.e.',
-            'after adding prefix and suffix to labels.'
+            'Replacement text for specific tick or hover labels.',
+            'For example using {US: \'USA\', CA: \'Canada\'} changes US to USA',
+            'and CA to Canada. The labels we would have shown must match',
+            'the keys exactly, after adding any tickprefix or ticksuffix.',
+            'labelalias can be used with any axis type, and both keys (if needed)',
+            'and values (if desired) can include html-like tags or MathJax.'
         ].join(' ')
     },
     automargin: {
