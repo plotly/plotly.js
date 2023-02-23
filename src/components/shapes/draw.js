@@ -645,7 +645,7 @@ function drawLabel(gd, index, options, shapeGroup) {
         var shapeBBox = shapeGroup.selectAll('path').node().getBoundingClientRect();
         shapex0 = shapeBBox.x;
         shapex1 = shapeBBox.right;
-        shapey0 = shapeBBox.y;
+        shapey0 = shapeBBox.top;
         shapey1 = shapeBBox.bottom;
     }
 
