@@ -643,7 +643,7 @@ function drawLabel(gd, index, options, shapeGroup) {
     } else {
         // Get shape bounding box
         var shapeBBox = shapeGroup.selectAll('path').node().getBoundingClientRect();
-        shapex0 = shapeBBox.x;
+        shapex0 = shapeBBox.left;
         shapex1 = shapeBBox.right;
         shapey0 = shapeBBox.top;
         shapey1 = shapeBBox.bottom;
