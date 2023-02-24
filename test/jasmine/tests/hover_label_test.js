@@ -1583,7 +1583,7 @@ describe('hover info', function() {
         });
     });
     describe('overlapping hover labels of different lengths', function() {
-        var data = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20].map(v=>({x:[100,200,300],y:[v,v+1,v+2]}));
+        var data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(function(v) {return {x: [100, 200, 300], y: [v, v + 1, v + 2]};});
         var layout = {
             width: 500, height: 400, showlegend: false,
             margin: {l: 100, r: 100, t: 100, b: 100},
