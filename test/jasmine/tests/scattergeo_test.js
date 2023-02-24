@@ -1,9 +1,9 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var BADNUM = require('@src/constants/numerical').BADNUM;
-var loggers = require('@src/lib/loggers');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var BADNUM = require('../../../src/constants/numerical').BADNUM;
+var loggers = require('../../../src/lib/loggers');
 
-var ScatterGeo = require('@src/traces/scattergeo');
+var ScatterGeo = require('../../../src/traces/scattergeo');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
@@ -439,7 +439,7 @@ describe('Test scattergeo hover', function() {
     });
 
     it('should include *properties* from input custom geojson', function(done) {
-        var fig = Lib.extendDeep({}, require('@mocks/geo_custom-geojson.json'));
+        var fig = Lib.extendDeep({}, require('../../image/mocks/geo_custom-geojson.json'));
         fig.data = [fig.data[3]];
         fig.data[0].geo = 'geo';
         fig.data[0].marker = {size: 40};

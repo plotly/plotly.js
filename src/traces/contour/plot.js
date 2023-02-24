@@ -200,6 +200,7 @@ function joinAllPaths(pi, perimeter) {
 }
 
 function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
+    var isStatic = gd._context.staticPlot;
     var lineContainer = Lib.ensureSingle(plotgroup, 'g', 'contourlines');
     var showLines = contours.showlines !== false;
     var showLabels = contours.showlabels;
@@ -209,7 +210,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
     // if we're showing labels, because the fill paths include the perimeter
     // so can't be used to position the labels correctly.
     // In this case we'll remove the lines after making the labels.
-    var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo);
+    var linegroup = exports.createLines(lineContainer, showLines || showLabels, pathinfo, isStatic);
 
     var lineClip = exports.createLineClip(lineContainer, clipLinesForLabels, gd, cd0.trace.uid);
 
@@ -318,7 +319,7 @@ function makeLinesAndLabels(plotgroup, pathinfo, gd, cd0, contours) {
     if(showLabels && !showLines) linegroup.remove();
 }
 
-exports.createLines = function(lineContainer, makeLines, pathinfo) {
+exports.createLines = function(lineContainer, makeLines, pathinfo, isStatic) {
     var smoothing = pathinfo[0].smoothing;
 
     var linegroup = lineContainer.selectAll('g.contourlevel')
@@ -343,7 +344,7 @@ exports.createLines = function(lineContainer, makeLines, pathinfo) {
                 return Drawing.smoothopen(d, smoothing);
             })
             .style('stroke-miterlimit', 1)
-            .style('vector-effect', 'non-scaling-stroke');
+            .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
 
         var closedcontourlines = linegroup.selectAll('path.closedline')
             .data(function(d) { return d.ppaths || d.paths; });
@@ -357,7 +358,7 @@ exports.createLines = function(lineContainer, makeLines, pathinfo) {
                 return Drawing.smoothclosed(d, smoothing);
             })
             .style('stroke-miterlimit', 1)
-            .style('vector-effect', 'non-scaling-stroke');
+            .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
     }
 
     return linegroup;

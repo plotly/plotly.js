@@ -1,4 +1,4 @@
-var Lib = require('@src/lib');
+var Lib = require('../../../src/lib');
 
 describe('isPlainObject', function() {
     'use strict';

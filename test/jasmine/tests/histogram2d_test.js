@@ -1,8 +1,8 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
-var supplyDefaultsRaw = require('@src/traces/histogram2d/defaults');
-var calc = require('@src/traces/histogram2d/calc');
+var supplyDefaultsRaw = require('../../../src/traces/histogram2d/defaults');
+var calc = require('../../../src/traces/histogram2d/calc');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -178,7 +178,7 @@ describe('Test histogram2d', function() {
 
         ['histogram2d', 'histogram2dcontour'].forEach(function(traceType) {
             it('should sort z data based on axis categoryorder for ' + traceType, function() {
-                var mock = require('@mocks/heatmap_categoryorder');
+                var mock = require('../../image/mocks/heatmap_categoryorder');
                 var mockCopy = Lib.extendDeep({}, mock);
                 var data = mockCopy.data[0];
                 data.type = traceType;
@@ -208,7 +208,7 @@ describe('Test histogram2d', function() {
             });
 
             it('should sort z data based on axis categoryarray ' + traceType, function() {
-                var mock = require('@mocks/heatmap_categoryorder');
+                var mock = require('../../image/mocks/heatmap_categoryorder');
                 var mockCopy = Lib.extendDeep({}, mock);
                 var data = mockCopy.data[0];
                 data.type = traceType;

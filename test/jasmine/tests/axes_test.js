@@ -1,20 +1,20 @@
-var Plotly = require('@lib/index');
+var Plotly = require('../../../lib/index');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var utcFormat = require('d3-time-format').utcFormat;
 
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Loggers = require('@src/lib/loggers');
-var Color = require('@src/components/color');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Loggers = require('../../../src/lib/loggers');
+var Color = require('../../../src/components/color');
 var tinycolor = require('tinycolor2');
 
-var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
-var Cartesian = require('@src/plots/cartesian');
-var Axes = require('@src/plots/cartesian/axes');
-var Fx = require('@src/components/fx');
-var supplyLayoutDefaults = require('@src/plots/cartesian/layout_defaults');
-var numerical = require('@src/constants/numerical');
+var handleTickValueDefaults = require('../../../src/plots/cartesian/tick_value_defaults');
+var Cartesian = require('../../../src/plots/cartesian');
+var Axes = require('../../../src/plots/cartesian/axes');
+var Fx = require('../../../src/components/fx');
+var supplyLayoutDefaults = require('../../../src/plots/cartesian/layout_defaults');
+var numerical = require('../../../src/constants/numerical');
 var BADNUM = numerical.BADNUM;
 var ONEDAY = numerical.ONEDAY;
 var ONEWEEK = numerical.ONEWEEK;
@@ -4449,7 +4449,7 @@ describe('Test axes', function() {
                 expect(tickBottom).toBeLessThan(titleTop + 2); // allow two pixels tolerance
             }
 
-            var fig = require('@mocks/z-automargin-zoom.json');
+            var fig = require('../../image/mocks/automargin-zoom.json');
             Plotly.newPlot(gd, fig)
 
             .then(assertLayout)
@@ -7571,7 +7571,7 @@ describe('Test Axes.getTickformat', function() {
 describe('Test tickformatstops:', function() {
     'use strict';
 
-    var mock = require('@mocks/tickformatstops.json');
+    var mock = require('../../image/mocks/tickformatstops.json');
 
     var mockCopy, gd;
 
@@ -7973,7 +7973,7 @@ describe('shift tests', function() {
     afterEach(destroyGraphDiv);
 
     it('should set y-axis shifts correctly on first draw when shift=true', function() {
-        var fig = require('@mocks/zz-mult-yaxes-simple.json');
+        var fig = require('../../image/mocks/mult-yaxes-simple.json');
         Plotly.newPlot(gd, fig).then(function() {
             checkLine('path.xy3-y.crisp', 550);
             checkLine('path.xy4-y.crisp', 691);
@@ -7983,7 +7983,7 @@ describe('shift tests', function() {
     });
 
     it('should set y-axis shifts correctly on first draw when shift=<numeric>', function() {
-        var fig = require('@mocks/zz-mult-yaxes-manual-shift.json');
+        var fig = require('../../image/mocks/mult-yaxes-manual-shift.json');
         Plotly.newPlot(gd, fig).then(function() {
             checkLine('path.xy3-y.crisp', 97);
             checkLine('path.xy4-y.crisp', 616);

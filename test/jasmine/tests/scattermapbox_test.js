@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Axes = require('@src/plots/cartesian/axes');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Axes = require('../../../src/plots/cartesian/axes');
 
-var ScatterMapbox = require('@src/traces/scattermapbox');
-var convert = require('@src/traces/scattermapbox/convert');
+var ScatterMapbox = require('../../../src/traces/scattermapbox');
+var convert = require('../../../src/traces/scattermapbox/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -14,7 +14,7 @@ var supplyAllDefaults = require('../assets/supply_defaults');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 var mouseEvent = require('../assets/mouse_event');
 var click = require('../assets/click');
-var HOVERMINTIME = require('@src/components/fx').constants.HOVERMINTIME;
+var HOVERMINTIME = require('../../../src/components/fx').constants.HOVERMINTIME;
 
 function move(fromX, fromY, toX, toY, delay) {
     return new Promise(function(resolve) {
@@ -711,7 +711,7 @@ describe('scattermapbox hover', function() {
 
     beforeAll(function(done) {
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
 
         gd = createGraphDiv();
@@ -955,7 +955,7 @@ describe('scattermapbox hover', function() {
 });
 
 describe('Test plotly events on a scattermapbox plot:', function() {
-    var mock = require('@mocks/mapbox_0.json');
+    var mock = require('../../image/mocks/mapbox_0.json');
     var pointPos = [440, 290];
     var nearPos = [460, 290];
     var blankPos = [10, 10];
@@ -964,7 +964,7 @@ describe('Test plotly events on a scattermapbox plot:', function() {
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
     });
 
@@ -1125,7 +1125,7 @@ describe('Test plotly events on a scattermapbox plot:', function() {
 });
 
 describe('Test plotly events on a scattermapbox plot when css transform is present:', function() {
-    var mock = require('@mocks/mapbox_0.json');
+    var mock = require('../../image/mocks/mapbox_0.json');
     var pointPos = [440 / 2, 290 / 2];
     var nearPos = [460 / 2, 290 / 2];
     var blankPos = [10 / 2, 10 / 2];
@@ -1142,7 +1142,7 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
 
     beforeAll(function() {
         Plotly.setPlotConfig({
-            mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
         });
     });
 

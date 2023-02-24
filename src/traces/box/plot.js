@@ -10,6 +10,7 @@ var JITTERCOUNT = 5; // points either side of this to include
 var JITTERSPREAD = 0.01; // fraction of IQR to count as "dense"
 
 function plot(gd, plotinfo, cdbox, boxLayer) {
+    var isStatic = gd._context.staticPlot;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
@@ -37,13 +38,13 @@ function plot(gd, plotinfo, cdbox, boxLayer) {
             valAxis = ya;
         }
 
-        plotBoxAndWhiskers(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
+        plotBoxAndWhiskers(plotGroup, {pos: posAxis, val: valAxis}, trace, t, isStatic);
         plotPoints(plotGroup, {x: xa, y: ya}, trace, t);
         plotBoxMean(plotGroup, {pos: posAxis, val: valAxis}, trace, t);
     });
 }
 
-function plotBoxAndWhiskers(sel, axes, trace, t) {
+function plotBoxAndWhiskers(sel, axes, trace, t, isStatic) {
     var isHorizontal = trace.orientation === 'h';
     var valAxis = axes.val;
     var posAxis = axes.pos;
@@ -73,7 +74,7 @@ function plotBoxAndWhiskers(sel, axes, trace, t) {
     ) ? Lib.identity : []);
 
     paths.enter().append('path')
-        .style('vector-effect', 'non-scaling-stroke')
+        .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
         .attr('class', 'box');
 
     paths.exit().remove();

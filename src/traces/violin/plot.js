@@ -9,6 +9,7 @@ var linePoints = require('../scatter/line_points');
 var helpers = require('./helpers');
 
 module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
+    var isStatic = gd._context.staticPlot;
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
@@ -49,7 +50,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         var violins = plotGroup.selectAll('path.violin').data(Lib.identity);
 
         violins.enter().append('path')
-            .style('vector-effect', 'non-scaling-stroke')
+            .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke')
             .attr('class', 'violin');
 
         violins.exit().remove();
@@ -163,7 +164,7 @@ module.exports = function plot(gd, plotinfo, cdViolins, violinLayer) {
         meanPaths.enter().append('path')
             .attr('class', 'meanline')
             .style('fill', 'none')
-            .style('vector-effect', 'non-scaling-stroke');
+            .style('vector-effect', isStatic ? 'none' : 'non-scaling-stroke');
         meanPaths.exit().remove();
         meanPaths.each(function(d) {
             var v = valAxis.c2p(d.mean, true);

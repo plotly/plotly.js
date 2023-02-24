@@ -1,7 +1,7 @@
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Images = require('@src/components/images');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Images = require('../../../src/components/images');
+var Lib = require('../../../src/lib');
 
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;

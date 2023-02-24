@@ -1,9 +1,9 @@
 var d3Select = require('../../strict-d3').select;
 
-var Plotly = require('@lib/index');
-var Colorbar = require('@src/components/colorbar');
-var Plots = require('@src/plots/plots');
-var subroutines = require('@src/plot_api/subroutines');
+var Plotly = require('../../../lib/index');
+var Colorbar = require('../../../src/components/colorbar');
+var Plots = require('../../../src/plots/plots');
+var subroutines = require('../../../src/plot_api/subroutines');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

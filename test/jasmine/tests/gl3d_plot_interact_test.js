@@ -1,10 +1,10 @@
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 
-var Plotly = require('@lib/index');
-var Plots = require('@src/plots/plots');
-var Lib = require('@src/lib');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Plots = require('../../../src/plots/plots');
+var Lib = require('../../../src/lib');
+var Drawing = require('../../../src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -17,7 +17,7 @@ var delay = require('../assets/delay');
 describe('Test gl3d before/after plot', function() {
     var gd;
 
-    var mock = require('@mocks/gl3d_marker-arrays.json');
+    var mock = require('../../image/mocks/gl3d_marker-arrays.json');
 
     beforeEach(function() {
         jasmine.DEFAULT_TIMEOUT_INTERVAL = 8000;
@@ -1807,7 +1807,7 @@ describe('Test gl3d annotations', function() {
     });
 
     it('@gl should be removed when beyond the scene axis ranges', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/gl3d_annotations'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/gl3d_annotations'));
 
         // replace text with something easier to identify
         mock.layout.scene.annotations.forEach(function(ann, i) { ann.text = String(i); });
@@ -1839,7 +1839,7 @@ describe('Test gl3d annotations', function() {
     });
 
     it('@gl should be able to add/remove and hide/unhide themselves via relayout', function(done) {
-        var mock = Lib.extendDeep({}, require('@mocks/gl3d_annotations'));
+        var mock = Lib.extendDeep({}, require('../../image/mocks/gl3d_annotations'));
 
         // replace text with something easier to identify
         mock.layout.scene.annotations.forEach(function(ann, i) { ann.text = String(i); });
@@ -2157,7 +2157,7 @@ describe('Test removal of gl contexts', function() {
     });
 
     it('@gl should fire *plotly_webglcontextlost* when on webgl context lost', function(done) {
-        var _mock = Lib.extendDeep({}, require('@mocks/gl3d_marker-arrays.json'));
+        var _mock = Lib.extendDeep({}, require('../../image/mocks/gl3d_marker-arrays.json'));
 
         Plotly.newPlot(gd, _mock).then(function() {
             return new Promise(function(resolve, reject) {
@@ -2229,12 +2229,12 @@ describe('Test gl3d drag events', function() {
     }
 
     it('@gl should respond to drag interactions with mock of unset camera', function(done) {
-        testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')))
+        testEvents(makePlot(gd, require('../../image/mocks/gl3d_scatter3d-connectgaps.json')))
             .then(done, done.fail);
     });
 
     it('@gl should respond to drag interactions with mock of partially set camera', function(done) {
-        testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')))
+        testEvents(makePlot(gd, require('../../image/mocks/gl3d_errorbars_zx.json')))
             .then(done, done.fail);
     });
 });

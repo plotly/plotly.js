@@ -1,7 +1,7 @@
 var parseSvgPath = require('parse-svg-path');
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -103,7 +103,7 @@ describe('Draw new selections to layout', function() {
     var allMocks = [
         {
             name: 'heatmap',
-            json: require('@mocks/13'),
+            json: require('../../image/mocks/13'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -122,7 +122,7 @@ describe('Draw new selections to layout', function() {
         },
         {
             name: 'log axis',
-            json: require('@mocks/12'),
+            json: require('../../image/mocks/12'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -141,7 +141,7 @@ describe('Draw new selections to layout', function() {
         },
         {
             name: 'date axis',
-            json: require('@mocks/29'),
+            json: require('../../image/mocks/29'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -160,7 +160,7 @@ describe('Draw new selections to layout', function() {
         },
         {
             name: 'date and log axes together',
-            json: require('@mocks/cliponaxis_false-dates-log'),
+            json: require('../../image/mocks/cliponaxis_false-dates-log'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -179,7 +179,7 @@ describe('Draw new selections to layout', function() {
         },
         {
             name: 'axes with rangebreaks',
-            json: require('@mocks/axes_breaks-gridlines'),
+            json: require('../../image/mocks/axes_breaks-gridlines'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -198,7 +198,7 @@ describe('Draw new selections to layout', function() {
         },
         {
             name: 'subplot',
-            json: require('@mocks/18'),
+            json: require('../../image/mocks/18'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -217,7 +217,7 @@ describe('Draw new selections to layout', function() {
         },
         {
             name: 'cheater',
-            json: require('@mocks/cheater'),
+            json: require('../../image/mocks/cheater'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -236,7 +236,7 @@ describe('Draw new selections to layout', function() {
         },
         {
             name: 'box plot',
-            json: require('@mocks/1'),
+            json: require('../../image/mocks/1'),
             testPos: [
                 function(pos) {
                     return assertPos(pos,
@@ -279,7 +279,7 @@ describe('Draw new selections to layout', function() {
                     data: fig.data,
                     layout: fig.layout,
                     config: {
-                        mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
+                        mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
                     }
                 })
                 .then(function() {

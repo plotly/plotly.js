@@ -1,10 +1,10 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var setConvert = require('@src/plots/cartesian/set_convert');
-var name2id = require('@src/plots/cartesian/axis_ids').name2id;
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var setConvert = require('../../../src/plots/cartesian/set_convert');
+var name2id = require('../../../src/plots/cartesian/axis_ids').name2id;
 
-var RangeSlider = require('@src/components/rangeslider');
-var constants = require('@src/components/rangeslider/constants');
+var RangeSlider = require('../../../src/components/rangeslider');
+var constants = require('../../../src/components/rangeslider/constants');
 var mock = require('../../image/mocks/range_slider.json');
 
 var d3Select = require('../../strict-d3').select;
@@ -428,7 +428,7 @@ describe('Visible rangesliders', function() {
     });
 
     it('should automargin correctly with a top or bottom x axis', function(done) {
-        var topMock = require('@mocks/range_slider_top_axis');
+        var topMock = require('../../image/mocks/range_slider_top_axis');
 
         function assertTop(hasExtra) {
             var op = hasExtra ? 'toBeGreaterThan' : 'toBeLessThan';

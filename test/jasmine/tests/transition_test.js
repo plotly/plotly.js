@@ -1,16 +1,16 @@
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var plotApiHelpers = require('@src/plot_api/helpers');
-var Axes = require('@src/plots/cartesian/axes');
-var Registry = require('@src/registry');
-var Drawing = require('@src/components/drawing');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var plotApiHelpers = require('../../../src/plot_api/helpers');
+var Axes = require('../../../src/plots/cartesian/axes');
+var Registry = require('../../../src/registry');
+var Drawing = require('../../../src/components/drawing');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 var delay = require('../assets/delay');
-var mock = require('@mocks/animation');
+var mock = require('../../image/mocks/animation');
 
 describe('Plots.transition', function() {
     'use strict';

@@ -1,9 +1,9 @@
-var Selections = require('@src/components/selections');
+var Selections = require('../../../src/components/selections');
 
-var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
-var Axes = require('@src/plots/cartesian/axes');
+var Plotly = require('../../../lib/index');
+var Lib = require('../../../src/lib');
+var Plots = require('../../../src/plots/plots');
+var Axes = require('../../../src/plots/cartesian/axes');
 
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
@@ -109,7 +109,7 @@ function countSelectionPathsInGraph() {
 describe('Test selections:', function() {
     'use strict';
 
-    var shapesMock = require('@mocks/shapes.json');
+    var shapesMock = require('../../image/mocks/shapes.json');
     var mock = Lib.extendDeep({}, shapesMock);
     mock.layout.selections = mock.layout.shapes;
     delete mock.layout.shapes;

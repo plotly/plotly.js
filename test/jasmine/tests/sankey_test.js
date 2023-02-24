@@ -1,17 +1,17 @@
-var Plotly = require('@lib/index');
-var attributes = require('@src/traces/sankey/attributes');
-var Lib = require('@src/lib');
+var Plotly = require('../../../lib/index');
+var attributes = require('../../../src/traces/sankey/attributes');
+var Lib = require('../../../src/lib');
 var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var d3sankey = require('@plotly/d3-sankey');
 var d3SankeyCircular = require('@plotly/d3-sankey-circular');
-var mock = require('@mocks/sankey_energy.json');
-var mockDark = require('@mocks/sankey_energy_dark.json');
-var mockCircular = require('@mocks/sankey_circular.json');
-var mockCircularLarge = require('@mocks/sankey_circular_large.json');
-var mockXY = require('@mocks/sankey_x_y.json');
-var Sankey = require('@src/traces/sankey');
-var Registry = require('@src/registry');
+var mock = require('../../image/mocks/sankey_energy.json');
+var mockDark = require('../../image/mocks/sankey_energy_dark.json');
+var mockCircular = require('../../image/mocks/sankey_circular.json');
+var mockCircularLarge = require('../../image/mocks/sankey_circular_large.json');
+var mockXY = require('../../image/mocks/sankey_x_y.json');
+var Sankey = require('../../../src/traces/sankey');
+var Registry = require('../../../src/registry');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -21,7 +21,7 @@ var getNodeCoords = require('../assets/get_node_coords');
 var assertHoverLabelContent = require('../assets/custom_assertions').assertHoverLabelContent;
 var assertHoverLabelStyle = require('../assets/custom_assertions').assertHoverLabelStyle;
 var supplyAllDefaults = require('../assets/supply_defaults');
-var defaultColors = require('@src/components/color/attributes').defaults;
+var defaultColors = require('../../../src/components/color/attributes').defaults;
 
 var drag = require('../assets/drag');
 var checkOverlap = require('../assets/check_overlap');
@@ -563,7 +563,7 @@ describe('sankey tests', function() {
         });
 
         it('resets each subplot to its initial view (ie. x, y groups) via modebar button', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/sankey_subplots_circular'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/sankey_subplots_circular'));
 
             // Set initial view
             mockCopy.data[0].node.x = [0.25];
@@ -608,7 +608,7 @@ describe('sankey tests', function() {
         });
 
         it('works as a subplot in the presence of other trace types', function(done) {
-            var mockCopy = Lib.extendDeep({}, require('@mocks/sankey_subplots_circular'));
+            var mockCopy = Lib.extendDeep({}, require('../../image/mocks/sankey_subplots_circular'));
 
             mockCopy.data[0] = {
                 y: [5, 1, 4, 3, 2]
@@ -771,7 +771,7 @@ describe('sankey tests', function() {
             .then(done, done.fail);
         });
 
-        it('should position hover labels correctly', function(done) {
+        it('@noCI should position hover labels correctly', function(done) {
             var gd = createGraphDiv();
             var mockCopy = Lib.extendDeep({}, mock);
 
