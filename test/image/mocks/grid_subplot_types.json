@@ -13,18 +13,23 @@
       "domain": {"row": 2, "column": 0}
     },
     {"type": "scattergeo", "lon": [0, -75], "lat": [0, 45], "marker": {"size": [20, 30]}},
-    {"type": "heatmap", "z": [[1, 2], [4, 1]], "showscale": false, "xaxis": "x3", "yaxis": "y3"}
+    {"type": "heatmap", "z": [[1, 2], [4, 1]], "showscale": true, "xaxis": "x3", "yaxis": "y3", "colorbar": {
+      "yanchor": "bottom",
+      "y": 0,
+      "len": 0.3,
+      "labelalias": {"3": "2+1", "4": "2<sup>2</sup>"}
+    }}
   ],
   "layout": {
-    "xaxis": {"title": {"text": "x"}},
-    "xaxis2": {"title": {"text": "x2"}},
-    "yaxis": {"title": {"text": "y"}},
-    "yaxis2": {"title": {"text": "y2"}},
-    "xaxis3": {"title": {"text": "x3"}},
-    "yaxis3": {"title": {"text": "y3"}},
+    "xaxis": {"title": {"text": "x"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "xaxis2": {"title": {"text": "x2"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "yaxis": {"title": {"text": "y"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "yaxis2": {"title": {"text": "y2"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "xaxis3": {"title": {"text": "x3"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
+    "yaxis3": {"title": {"text": "y3"}, "labelalias": {"0": "ZERO<sup>2</sup>"}},
     "grid": {"rows": 3, "columns": 3, "xgap": 0.3, "ygap": 0.3},
-    "scene": {"domain": {"row": 1, "column": 1}},
-    "ternary": {"domain": {"row": 1, "column": 2}},
+    "scene": {"domain": {"row": 1, "column": 1}, "zaxis": {"labelalias": {"1": "", "1.5": "1+½", "2": "√4", "2.5": "5/<sub>2</sub>", "3.5": ""}}},
+    "ternary": {"domain": {"row": 1, "column": 2}, "caxis": {"labelalias": {"1": "ONE"}}},
     "geo": {"domain": {"row": 2, "column": 1}},
     "width": 700,
     "height": 700

@@ -1660,6 +1660,11 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
         if(ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
     }
 
+    if(ax.labelalias && ax.labelalias.hasOwnProperty(out.text)) {
+        var t = ax.labelalias[out.text];
+        if(typeof t === 'string') out.text = t;
+    }
+
     // Setup ticks and grid lines boundaries
     // at 1/2 a 'category' to the left/bottom
     if(ax.tickson === 'boundaries' || ax.showdividers) {
