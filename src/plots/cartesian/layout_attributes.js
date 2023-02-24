@@ -633,6 +633,19 @@ module.exports = {
         editType: 'ticks',
         description: 'Determines whether or not the tick labels are drawn.'
     },
+    labelalias: {
+        valType: 'any',
+        dflt: false,
+        editType: 'ticks',
+        description: [
+            'Replacement text for specific tick or hover labels.',
+            'For example using {US: \'USA\', CA: \'Canada\'} changes US to USA',
+            'and CA to Canada. The labels we would have shown must match',
+            'the keys exactly, after adding any tickprefix or ticksuffix.',
+            'labelalias can be used with any axis type, and both keys (if needed)',
+            'and values (if desired) can include html-like tags or MathJax.'
+        ].join(' ')
+    },
     automargin: {
         valType: 'flaglist',
         flags: ['height', 'width', 'left', 'right', 'top', 'bottom'],

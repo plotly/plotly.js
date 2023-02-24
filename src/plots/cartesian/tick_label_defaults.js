@@ -8,6 +8,10 @@ var handleArrayContainerDefaults = require('../array_container_defaults');
 
 module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
     if(!options) options = {};
+
+    var labelalias = coerce('labelalias');
+    if(!Lib.isPlainObject(labelalias)) delete containerOut.labelalias;
+
     var showAttrDflt = getShowAttrDflt(containerIn);
 
     var showTickLabels = coerce('showticklabels');
