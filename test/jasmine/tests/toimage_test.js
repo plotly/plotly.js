@@ -343,9 +343,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {vals: x, spec: 'f64|3'},
-                y: {vals: y, spec: 'f32|2'},
-                z: {vals: z, spec: 'ui16|3|2'}
+                x: {vals: x, dtype: 'f8', shape: '3'},
+                y: {vals: y, dtype: 'f4', shape: '2'},
+                z: {vals: z, dtype: 'u2', shape: '3,2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -370,9 +370,14 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.vals).toEqual('q6qqPquqqr4=');
                 expect(trace.z.vals).toEqual('AABkAMgALAGQAfQB');
 
-                expect(trace.x.spec).toEqual('f64|3');
-                expect(trace.y.spec).toEqual('f32|2');
-                expect(trace.z.spec).toEqual('ui16|3|2');
+                expect(trace.x.dtype).toEqual('f8');
+                expect(trace.x.shape).toEqual('3');
+
+                expect(trace.y.dtype).toEqual('f4');
+                expect(trace.y.shape).toEqual('2');
+
+                expect(trace.z.dtype).toEqual('u2');
+                expect(trace.z.shape).toEqual('3,2');
             })
             .then(done, done.fail);
         });
@@ -387,9 +392,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {vals: x, spec: 'f64|3'},
-                y: {vals: y, spec: 'f32|2'},
-                z: {vals: z, spec: 'ui16|3|2'}
+                x: {vals: x, dtype: 'f8', shape: '3'},
+                y: {vals: y, dtype: 'f4', shape: '2'},
+                z: {vals: z, dtype: 'u2', shape: '3,2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -414,9 +419,14 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.vals).toEqual('q6qqPquqqr4=');
                 expect(trace.z.vals).toEqual('AABkAMgALAGQAfQB');
 
-                expect(trace.x.spec).toEqual('f64|3');
-                expect(trace.y.spec).toEqual('f32|2');
-                expect(trace.z.spec).toEqual('ui16|3|2');
+                expect(trace.x.dtype).toEqual('f8');
+                expect(trace.x.shape).toEqual('3');
+
+                expect(trace.y.dtype).toEqual('f4');
+                expect(trace.y.shape).toEqual('2');
+
+                expect(trace.z.dtype).toEqual('u2');
+                expect(trace.z.shape).toEqual('3,2');
             })
             .then(done, done.fail);
         });

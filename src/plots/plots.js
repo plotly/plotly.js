@@ -2229,10 +2229,11 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         var dIsArray = Array.isArray(d);
         var dIsTypedArray = Lib.isTypedArray(d);
 
-        if((dIsArray || dIsTypedArray) && d.spec) {
+        if((dIsArray || dIsTypedArray) && d.dtype && d.shape) {
             var vals = d.vals;
             return stripObj({
-                spec: d.spec,
+                dtype: d.dtype,
+                shape: d.shape,
 
                 vals:
                     // case of ArrayBuffer

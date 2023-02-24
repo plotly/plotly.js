@@ -56,19 +56,19 @@ function detectType(a) {
 }
 
 var typedArrays = {
-    i8: detectType(Int8Array),
-    ui8: detectType(Uint8Array),
-    ui8c: detectType(Uint8ClampedArray),
-    i16: detectType(Int16Array),
-    ui16: detectType(Uint16Array),
-    i32: detectType(Int32Array),
-    ui32: detectType(Uint32Array),
-    f32: detectType(Float32Array),
-    f64: detectType(Float64Array),
+    i1: detectType(Int8Array),
+    u1: detectType(Uint8Array),
+    c1: detectType(Uint8ClampedArray), // not supported in numpy?
+    i2: detectType(Int16Array),
+    u2: detectType(Uint16Array),
+    i4: detectType(Int32Array),
+    u4: detectType(Uint32Array),
+    f4: detectType(Float32Array),
+    f8: detectType(Float64Array),
 
     // TODO: potentially add Big Int
-    // bi64: detectType(BigInt64Array),
-    // bui64: detectType(BigUint64Array),
+    // I8: detectType(BigInt64Array), // not supported in numpy?
+    // b8: detectType(BigUint64Array),
 };
 
 function isArrayBuffer(a) {
@@ -79,11 +79,13 @@ exports.isArrayBuffer = isArrayBuffer;
 exports.decodeTypedArraySpec = function(vIn) {
     var out = [];
     var v = coerceTypedArraySpec(vIn);
-    var shape = v.spec.split('|');
-    var dtype = shape.shift();
-    var ndims = shape.length;
+    var dtype = v.dtype;
+
     var T = typedArrays[dtype];
-    if(!T) throw new Error('Error in spec: "' + v.spec + '"');
+    if(!T) throw new Error('Error in dtype: "' + dtype + '"');
+
+    var shape = ('' + v.shape).split(','); // convert number to string and split to array
+    var ndims = shape.length;
 
     var buffer = v.vals;
     if(!isArrayBuffer(buffer)) {
@@ -122,11 +124,12 @@ exports.decodeTypedArraySpec = function(vIn) {
         }
     */
     } else {
-        throw new Error('Error in spec: "' + v.spec + '"');
+        throw new Error('Error in shape: "' + v.shape + '"');
     }
 
-    // attach spec & vals to array for json export
-    out.spec = v.spec;
+    // attach dtype, shape & vals to array for json export
+    out.dtype = v.dtype;
+    out.shape = v.shape;
     out.vals = v.vals;
 
     return out;
@@ -135,14 +138,16 @@ exports.decodeTypedArraySpec = function(vIn) {
 exports.isTypedArraySpec = function(v) {
     return (
         isPlainObject(v) &&
-        v.hasOwnProperty('spec') && (typeof v.spec === 'string') &&
+        v.hasOwnProperty('dtype') && (typeof v.dtype === 'string') &&
+        v.hasOwnProperty('shape') && (typeof v.shape === 'string' || typeof v.shape === 'number') &&
         v.hasOwnProperty('vals') && (typeof v.vals === 'string' || isArrayBuffer(v.vals))
     );
 };
 
 function coerceTypedArraySpec(v) {
     return {
-        spec: v.spec,
+        dtype: v.dtype,
+        shape: v.shape,
         vals: v.vals
     };
 }
