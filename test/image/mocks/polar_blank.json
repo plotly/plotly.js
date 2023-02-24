@@ -34,7 +34,7 @@
         "y": [0.56, 1]
       },
       "angularaxis": {
-        "labelalias": { "0": "ZERO<sup>2</sup>" }
+        "labelalias": { "0°": "ZERO<sup>2</sup>" }
       },
       "radialaxis": {
         "title": {"text": "blank"},
