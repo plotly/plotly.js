@@ -833,7 +833,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     var hoverLabels = hoverText.hoverLabels;
 
     if(!helpers.isUnifiedHover(hovermode)) {
-        hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabel);
+        hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabelBoundingBox);
         alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
     }    // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
     // we should improve the "fx" API so other plots can use it without these hack.
@@ -944,7 +944,13 @@ function createHoverText(hoverData, opts) {
         .classed('axistext', true);
     commonLabel.exit().remove();
 
-    var commonLabelLx, commonLabelLy;
+    // set rect (without arrow) behind label below for later collision detection
+    var commonLabelRect = {
+        minX: 0,
+        maxX: 0,
+        minY: 0,
+        maxY: 0
+    };
     commonLabel.each(function() {
         var label = d3.select(this);
         var lpath = Lib.ensureSingle(label, 'path', '', function(s) {
@@ -998,7 +1004,7 @@ function createHoverText(hoverData, opts) {
 
                 lpath.attr('d', 'M-' + (halfWidth - HOVERARROWSIZE) + ',0' +
                     'L-' + (halfWidth - HOVERARROWSIZE * 2) + ',' + topsign + HOVERARROWSIZE +
-                    'H' + (HOVERTEXTPAD + tbb.width / 2) +
+                    'H' + (halfWidth) +
                     'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
                     'H-' + halfWidth +
                     'V' + topsign + HOVERARROWSIZE +
@@ -1015,11 +1021,22 @@ function createHoverText(hoverData, opts) {
             } else {
                 lpath.attr('d', 'M0,0' +
                     'L' + HOVERARROWSIZE + ',' + topsign + HOVERARROWSIZE +
-                    'H' + (HOVERTEXTPAD + tbb.width / 2) +
+                    'H' + (halfWidth) +
                     'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) +
-                    'H-' + (HOVERTEXTPAD + tbb.width / 2) +
+                    'H-' + (halfWidth) +
                     'V' + topsign + HOVERARROWSIZE +
                     'H-' + HOVERARROWSIZE + 'Z');
+            }
+
+            commonLabelRect.minX = lx - halfWidth;
+            commonLabelRect.maxX = lx + halfWidth;
+            if(xa.side === 'top') {
+                // label on negative y side
+                commonLabelRect.minY = ly - (HOVERTEXTPAD * 2 + tbb.height);
+                commonLabelRect.maxY = ly - HOVERTEXTPAD;
+            } else {
+                commonLabelRect.minY = ly + HOVERTEXTPAD;
+                commonLabelRect.maxY = ly + (HOVERTEXTPAD * 2 + tbb.height);
             }
         } else {
             var anchor;
@@ -1047,6 +1064,17 @@ function createHoverText(hoverData, opts) {
                 'h' + leftsign + (HOVERTEXTPAD * 2 + tbb.width) +
                 'V-' + (HOVERTEXTPAD + tbb.height / 2) +
                 'H' + leftsign + HOVERARROWSIZE + 'V-' + HOVERARROWSIZE + 'Z');
+
+            commonLabelRect.minY = ly - (HOVERTEXTPAD + tbb.height / 2);
+            commonLabelRect.maxY = ly + (HOVERTEXTPAD + tbb.height / 2);
+            if(ya.side === 'right') {
+                commonLabelRect.minX = lx + HOVERARROWSIZE;
+                commonLabelRect.maxX = lx + HOVERARROWSIZE + (HOVERTEXTPAD * 2 + tbb.width);
+            } else {
+                // label on negative x side
+                commonLabelRect.minX = lx - HOVERARROWSIZE - (HOVERTEXTPAD * 2 + tbb.width);
+                commonLabelRect.maxX = lx - HOVERARROWSIZE;
+            }
 
             var halfHeight = tbb.height / 2;
             var lty = outerTop - tbb.top - halfHeight;
@@ -1090,9 +1118,6 @@ function createHoverText(hoverData, opts) {
         }
 
         label.attr('transform', strTranslate(lx, ly));
-
-        commonLabelLx = lx;
-        commonLabelLy = ly;
     });
 
     // Show a single hover label
@@ -1411,11 +1436,7 @@ function createHoverText(hoverData, opts) {
 
     return {
         hoverLabels: hoverLabels,
-        commonLabel: {
-            lx: commonLabelLx,
-            ly: commonLabelLy,
-            label: commonLabel
-        }
+        commonLabelBoundingBox: commonLabelRect
     };
 }
 
@@ -1510,7 +1531,7 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
 // know what happens if the group spans all the way from one edge to
 // the other, though it hardly matters - there's just too much
 // information then.
-function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) {
+function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabelBoundingBox) {
     var axKey = rotateLabels ? 'xa' : 'ya';
     var crossAxKey = rotateLabels ? 'ya' : 'xa';
     var nummoves = 0;
@@ -1522,21 +1543,10 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
     var k = 0;
 
     // get extent of axis hover label
-    var axisLabelMinX, axisLabelMaxX, axisLabelMinY, axisLabelMaxY;
-    if(commonLabel) {
-        commonLabel.label.each(function() {
-            var selection = d3.select(this);
-            if(selection && selection.length && selection[0] && selection[0].length && selection[0][0]) {
-                var bbox = selection[0][0].getBBox();
-                if(bbox) {
-                    axisLabelMinX = commonLabel.lx;
-                    axisLabelMaxX = commonLabel.lx + bbox.width;
-                    axisLabelMinY = commonLabel.ly;
-                    axisLabelMaxY = commonLabel.ly + bbox.height;
-                }
-            }
-        });
-    }
+    var axisLabelMinX = commonLabelBoundingBox.minX;
+    var axisLabelMaxX = commonLabelBoundingBox.maxX;
+    var axisLabelMinY = commonLabelBoundingBox.minY;
+    var axisLabelMaxY = commonLabelBoundingBox.maxY;
 
     var pX = function(x) { return x * fullLayout._invScaleX; };
     var pY = function(y) { return y * fullLayout._invScaleY; };
