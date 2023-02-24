@@ -1538,6 +1538,9 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
         });
     }
 
+    var pX = function(x) { return x * fullLayout._invScaleX; };
+    var pY = function(y) { return y * fullLayout._invScaleY; };
+
     hoverLabels.each(function(d) {
         var ax = d[axKey];
         var crossAx = d[crossAxKey];
@@ -1551,15 +1554,29 @@ function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabel) 
         var pmax = (axIsX ? fullLayout.width : fullLayout.height);
         // in hovermode avoid overlap between hover labels and axis label
         if(fullLayout.hovermode === 'x' || fullLayout.hovermode === 'y') {
-            // extent of rect behind hover label on cross axis (without arrow):
+            // extent of rect behind hover label on cross axis:
             var offsets = getHoverLabelOffsets(d, rotateLabels);
-            var shiftX = getTextShiftX(d);
-            // calculation based on alignHoverText function
-            var offsetRectX = (shiftX.text2ShiftX + (shiftX.alignShift - 1) * d.tx2width / 2 + offsets.x) * fullLayout._invScaleX;
-            var offsetRectY = (offsets.y - d.by / 2 - 1) * fullLayout._invScaleY;
+            var anchor = d.anchor;
+            var horzSign = anchor === 'end' ? -1 : 1;
+            var labelMin;
+            var labelMax;
+            if(anchor === 'middle') {
+                // use extent of centered rect either on x or y axis depending on current axis
+                labelMin = d.crossPos + (axIsX ? pY(offsets.y - d.by / 2) : pX(d.bx / 2 + d.tx2width / 2));
+                labelMax = labelMin + (axIsX ? pY(d.by) : pX(d.bx));
+            } else {
+                // use extend of path (see alignHoverText function) without arrow
+                if(axIsX) {
+                    labelMin = d.crossPos + pY(HOVERARROWSIZE + offsets.y) - pY(d.by / 2 - HOVERARROWSIZE);
+                    labelMax = labelMin + pY(d.by);
+                } else {
+                    var startX = pX(horzSign * HOVERARROWSIZE + offsets.x);
+                    var endX = startX + pX(horzSign * d.bx);
+                    labelMin = d.crossPos + Math.min(startX, endX);
+                    labelMax = d.crossPos + Math.max(startX, endX);
+                }
+            }
 
-            var labelMin = d.crossPos + (axIsX ? offsetRectY : offsetRectX);
-            var labelMax = labelMin + (axIsX ? d.tx2width * fullLayout._invScaleX : (d.by + 2) * fullLayout._invScaleY);
             if(axIsX) {
                 if(axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.min(labelMax, axisLabelMaxY) - Math.max(labelMin, axisLabelMinY) > 1) {
                     // has at least 1 pixel overlap with axis label
