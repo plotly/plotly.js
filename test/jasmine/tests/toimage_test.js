@@ -343,8 +343,8 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {vals: x, dtype: 'f8', shape: '3'},
-                y: {vals: y, dtype: 'f4', shape: '2'},
+                x: {vals: x, dtype: 'f8'},
+                y: {vals: y, dtype: 'f4'},
                 z: {vals: z, dtype: 'u2', shape: '3,2'}
             }])
             .then(function(gd) {

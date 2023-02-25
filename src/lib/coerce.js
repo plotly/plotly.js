@@ -29,11 +29,12 @@ exports.valObjectMeta = {
             '*i2*, *u2*, *i4*, *u4*, *f4*, or *f8*.',
             'vals is either a base64-encoded string or the ArrayBuffer of',
             'an integer or float typed array.',
-            'For either single or multi-dimensional arrays you must also',
+            'For either multi-dimensional arrays you must also',
             'provide its dimensions separated by comma via `shape`.',
             'For exmaple using `dtype`: *f4* and `shape`: *100,5* you can',
             'declare a 2-D array that has 5 rows and 100 columns',
-            'containing float32 values i.e. 4 bits per value.'
+            'containing float32 values i.e. 4 bits per value.',
+            '`shape` is optional for one dimensional arrays.'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],
