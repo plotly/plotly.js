@@ -103,28 +103,15 @@ exports.decodeTypedArraySpec = function(vIn) {
     if(!T) throw new Error('Error in dtype: "' + dtype + '"');
     var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
 
-    var shape;
     var buffer = v.vals;
     if(!isArrayBuffer(buffer)) {
-        if(v.shape === undefined) {
-            var len = buffer.length;
-            var n = 0.75 * len;
-            if(buffer[len - 2] === '=') {
-                n -= 2;
-            } else if(buffer[len - 1] === '=') {
-                n -= 1;
-            }
-
-            shape = [n / BYTES_PER_ELEMENT];
-        }
-
         buffer = b64decode(buffer);
     }
-
-    if(!shape) {
+    var shape = v.shape === undefined ?
+        // detect 1-d length
+        [buffer.byteLength / BYTES_PER_ELEMENT] :
         // convert number to string and split to array
-        shape = ('' + v.shape).split(',');
-    }
+        ('' + v.shape).split(',');
 
     var ndims = shape.length;
 
