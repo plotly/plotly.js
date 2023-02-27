@@ -131,7 +131,7 @@ exports.decodeTypedArraySpec = function(vIn) {
     var nj, j;
     var ni = +shape[0];
 
-    var rowBites = BYTES_PER_ELEMENT * ni;
+    var rowBytes = BYTES_PER_ELEMENT * ni;
     var pos = 0;
 
     if(ndims === 1) {
@@ -140,7 +140,7 @@ exports.decodeTypedArraySpec = function(vIn) {
         nj = +shape[1];
         for(j = 0; j < nj; j++) {
             out[j] = new T(buffer, pos, ni);
-            pos += rowBites;
+            pos += rowBytes;
         }
     /*
 
@@ -154,7 +154,7 @@ exports.decodeTypedArraySpec = function(vIn) {
             out[k] = [];
             for(j = 0; j < nj; j++) {
                 out[k][j] = new T(buffer, pos, ni);
-                pos += rowBites;
+                pos += rowBytes;
             }
         }
     */
