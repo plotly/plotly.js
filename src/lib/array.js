@@ -67,8 +67,8 @@ var typedArrays = {
     f8: detectType(Float64Array),
 
     // TODO: potentially add Big Int
-    // I8: detectType(BigInt64Array), // not supported in numpy?
-    // b8: detectType(BigUint64Array),
+    // i8: detectType(BigInt64Array),
+    // u8: detectType(BigUint64Array),
 };
 
 function isArrayBuffer(a) {
