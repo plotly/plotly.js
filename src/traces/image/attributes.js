@@ -84,13 +84,13 @@ module.exports = extendFlat({
         valType: 'any',
         dflt: 0,
         editType: 'calc+clearAxisTypes',
-        description: 'Set the image\'s x position.'
+        description: 'Set the image\'s x position. The bottom left corner of the image will be found at xmin=x0-dx/2'
     },
     y0: {
         valType: 'any',
         dflt: 0,
         editType: 'calc+clearAxisTypes',
-        description: 'Set the image\'s y position.'
+        description: 'Set the image\'s y position. The bottom left corner of the image will be found at y0-dy/2'
     },
     dx: {
         valType: 'number',
