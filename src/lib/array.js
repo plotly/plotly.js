@@ -51,24 +51,20 @@ exports.ensureArray = function(out, n) {
     return out;
 };
 
-function detectType(a) {
-    return typeof a === 'undefined' ? undefined : a;
-}
-
 var typedArrays = {
-    i1: detectType(Int8Array),
-    u1: detectType(Uint8Array),
-    c1: detectType(Uint8ClampedArray), // not supported in numpy?
-    i2: detectType(Int16Array),
-    u2: detectType(Uint16Array),
-    i4: detectType(Int32Array),
-    u4: detectType(Uint32Array),
-    f4: detectType(Float32Array),
-    f8: detectType(Float64Array),
+    i1: typeof Int8Array === 'undefined' ? undefined : Int8Array,
+    u1: typeof Uint8Array === 'undefined' ? undefined : Uint8Array,
+    c1: typeof Uint8ClampedArray === 'undefined' ? undefined : Uint8ClampedArray, // not supported in numpy?
+    i2: typeof Int16Array === 'undefined' ? undefined : Int16Array,
+    u2: typeof Uint16Array === 'undefined' ? undefined : Uint16Array,
+    i4: typeof Int32Array === 'undefined' ? undefined : Int32Array,
+    u4: typeof Uint32Array === 'undefined' ? undefined : Uint32Array,
+    f4: typeof Float32Array === 'undefined' ? undefined : Float32Array,
+    f8: typeof Float64Array === 'undefined' ? undefined : Float64Array,
 
     // TODO: potentially add Big Int
-    // i8: detectType(BigInt64Array),
-    // u8: detectType(BigUint64Array),
+    // i8: typeof BigInt64Array === 'undefined' ? undefined : BigInt64Array,
+    // u8: typeof BigUint64Array === 'undefined' ? undefined : BigUint64Array,
 };
 
 function isArrayBuffer(a) {
