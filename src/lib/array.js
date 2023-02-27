@@ -103,7 +103,7 @@ exports.decodeTypedArraySpec = function(vIn) {
     if(!T) throw new Error('Error in dtype: "' + dtype + '"');
     var BYTES_PER_ELEMENT = T.BYTES_PER_ELEMENT;
 
-    var buffer = v.vals;
+    var buffer = v.bdata;
     if(!isArrayBuffer(buffer)) {
         buffer = b64decode(buffer);
     }
@@ -149,8 +149,8 @@ exports.decodeTypedArraySpec = function(vIn) {
         throw new Error('Error in shape: "' + v.shape + '"');
     }
 
-    // attach dtype, shape & vals to array for json export
-    out.vals = v.vals;
+    // attach bdata, dtype & shape to array for json export
+    out.bdata = v.bdata;
     out.dtype = v.dtype;
     out.shape = shape.join(',');
 
@@ -162,19 +162,19 @@ exports.isTypedArraySpec = function(v) {
         isPlainObject(v) &&
         v.hasOwnProperty('dtype') && (typeof v.dtype === 'string') &&
 
+        v.hasOwnProperty('bdata') && (typeof v.bdata === 'string' || isArrayBuffer(v.bdata)) &&
+
         (v.shape === undefined || (
             v.hasOwnProperty('shape') && (typeof v.shape === 'string' || typeof v.shape === 'number')
-        )) &&
-
-        v.hasOwnProperty('vals') && (typeof v.vals === 'string' || isArrayBuffer(v.vals))
+        ))
     );
 };
 
 function coerceTypedArraySpec(v) {
     return {
+        bdata: v.bdata,
         dtype: v.dtype,
-        shape: v.shape,
-        vals: v.vals
+        shape: v.shape
     };
 }
 

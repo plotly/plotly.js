@@ -343,9 +343,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {vals: x, dtype: 'f8'},
-                y: {vals: y, dtype: 'f4'},
-                z: {vals: z, dtype: 'u2', shape: '3,2'}
+                x: {bdata: x, dtype: 'f8'},
+                y: {bdata: y, dtype: 'f4'},
+                z: {bdata: z, dtype: 'u2', shape: '3,2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -366,9 +366,9 @@ describe('Plotly.toImage', function() {
 
                 expect(trace.visible).toEqual(true);
 
-                expect(trace.x.vals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
-                expect(trace.y.vals).toEqual('q6qqPquqqr4=');
-                expect(trace.z.vals).toEqual('AABkAMgALAGQAfQB');
+                expect(trace.x.bdata).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.bdata).toEqual('q6qqPquqqr4=');
+                expect(trace.z.bdata).toEqual('AABkAMgALAGQAfQB');
 
                 expect(trace.x.dtype).toEqual('f8');
                 expect(trace.x.shape).toEqual('3');
@@ -392,9 +392,9 @@ describe('Plotly.toImage', function() {
 
             Plotly.newPlot(gd, [{
                 type: 'surface',
-                x: {vals: x, dtype: 'f8', shape: '3'},
-                y: {vals: y, dtype: 'f4', shape: '2'},
-                z: {vals: z, dtype: 'u2', shape: '3,2'}
+                x: {bdata: x, dtype: 'f8', shape: '3'},
+                y: {bdata: y, dtype: 'f4', shape: '2'},
+                z: {bdata: z, dtype: 'u2', shape: '3,2'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -415,9 +415,9 @@ describe('Plotly.toImage', function() {
 
                 expect(trace.visible).toEqual(true);
 
-                expect(trace.x.vals).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
-                expect(trace.y.vals).toEqual('q6qqPquqqr4=');
-                expect(trace.z.vals).toEqual('AABkAMgALAGQAfQB');
+                expect(trace.x.bdata).toEqual('VVVVVVVV1b8AAAAAAAAAAFVVVVVVVdU/');
+                expect(trace.y.bdata).toEqual('q6qqPquqqr4=');
+                expect(trace.z.bdata).toEqual('AABkAMgALAGQAfQB');
 
                 expect(trace.x.dtype).toEqual('f8');
                 expect(trace.x.shape).toEqual('3');

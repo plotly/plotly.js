@@ -2230,16 +2230,16 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults, includeConfi
         var dIsTypedArray = Lib.isTypedArray(d);
 
         if((dIsArray || dIsTypedArray) && d.dtype && d.shape) {
-            var vals = d.vals;
+            var bdata = d.bdata;
             return stripObj({
                 dtype: d.dtype,
                 shape: d.shape,
 
-                vals:
+                bdata:
                     // case of ArrayBuffer
-                    Lib.isArrayBuffer(vals) ? b64encode.encode(vals) :
+                    Lib.isArrayBuffer(bdata) ? b64encode.encode(bdata) :
                     // case of b64 string
-                    vals
+                    bdata
 
             }, keepFunction);
         }
