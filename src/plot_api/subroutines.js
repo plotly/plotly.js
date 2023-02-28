@@ -444,6 +444,7 @@ function setDflts(title) {
     if(title.automargin && title.yref === 'paper') {
         title.y = title.y === 0 ? title.y : 1;
         title.yanchor = title.yanchor === 'auto' ? 'bottom' : title.yanchor;
+        title.yanchor = title.y === 0 ? 'top' : title.yanchor; 
     }
     if(title.automargin && title.yref === 'container') {
         title.y = title.y === 'auto' ? 1 : title.y;
