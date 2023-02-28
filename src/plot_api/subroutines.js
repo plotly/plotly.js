@@ -405,10 +405,9 @@ exports.drawMainTitle = function(gd) {
     var textAnchor = getMainTitleTextAnchor(fullLayout);
     var dy = getMainTitleDy(fullLayout);
     var y = getMainTitleY(fullLayout, dy);
-    var position = fullLayout.title.y > 0.5 ? 't' : 'b';
 
-    if(gd._fullLayout.title.automargin) {
-        applyTitleAutoMargin(gd, position, y);
+    if(title.automargin) {
+        applyTitleAutoMargin(gd, y);
     }
 
     Titles.draw(gd, 'gtitle', {
@@ -432,11 +431,7 @@ function isOutsideContainer(gd, title, position, y) {
     if((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
         return false;
     } else {
-        if(yPosRel < titleDepth(title)) {
-            return true;
-        } else {
-            return false;
-        }
+        return yPosRel < titleDepth(title);
     }
 }
 
@@ -484,12 +479,13 @@ function containerPushVal(position, title, height, titleDepth) {
     return push;
 }
 
-function applyTitleAutoMargin(gd, position, y) {
+function applyTitleAutoMargin(gd, y) {
     var titleID = 'title.automargin';
     var title = gd._fullLayout.title;
+    var position = gd._fullLayout.title.y > 0.5 ? 't' : 'b';
     var push = {
         x: title.x,
-        y: position === 't' ? 1 : 0, // TODO: Is it correct that this should either be 1 or 0?
+        y: title.y > 0.5 ? 1 : 0, // TODO: Is it correct that this should either be 1 or 0?
         t: 0,
         b: 0
     };
@@ -511,16 +507,6 @@ function applyTitleAutoMargin(gd, position, y) {
 
     Plots.allowAutoMargin(gd, titleID);
     Plots.autoMargin(gd, titleID, push);
-}
-
-function getVPadShift(title, dy) {
-    var vPadShift = 0;
-    if(dy === '0em' || !dy) {
-        vPadShift = -title.pad.b;
-    } else if(dy === alignmentConstants.CAP_SHIFT + 'em') {
-        vPadShift = title.pad.t;
-    }
-    return vPadShift;
 }
 
 function getMainTitleX(fullLayout, textAnchor) {
@@ -546,7 +532,13 @@ function getMainTitleX(fullLayout, textAnchor) {
 function getMainTitleY(fullLayout, dy) {
     var title = fullLayout.title;
     var gs = fullLayout._size;
-    var vPadShift = getVPadShift(title, dy);
+    var vPadShift = 0;
+    if(dy === '0em' || !dy) {
+        vPadShift = -title.pad.b;
+    } else if(dy === alignmentConstants.CAP_SHIFT + 'em') {
+        vPadShift = title.pad.t;
+    }
+
     if(title.y === 'auto') {
         return gs.t / 2;
     } else {

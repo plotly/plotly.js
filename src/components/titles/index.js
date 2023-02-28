@@ -77,7 +77,6 @@ function draw(gd, titleClass, options) {
     else if(prop.indexOf('colorbar' !== -1)) editAttr = 'colorbarTitleText';
     var editable = gd._context.edits[editAttr];
 
-
     if(txt === '') opacity = 0;
     // look for placeholder text while stripping out numbers from eg X2, Y3
     // this is just for backward compatibility with the old version that had
