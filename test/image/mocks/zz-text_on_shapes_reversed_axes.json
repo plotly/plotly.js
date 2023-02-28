@@ -75,7 +75,8 @@
                 "yref": "yaxis",
                 "x0": 125,
                 "y0": 25,
-                "radius": 50
+                "x1": 175,
+                "y1": 75
             },
             {
                 "label": {"text": "label 3"},
