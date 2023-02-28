@@ -84,12 +84,10 @@ module.exports = {
             text: {
                 valType: 'string',
                 dflt: '',
-                editType: 'arraydraw',
                 description: 'Sets the text to display with shape.'
             },
             font: fontAttrs({
                 editType: 'calc+arraydraw',
-                colorEditType: 'arraydraw',
                 description: 'Sets the shape label text font.'
             }),
             textposition: {
@@ -100,7 +98,6 @@ module.exports = {
                     'bottom left', 'bottom center', 'bottom right',
                     'start', 'middle', 'end',
                 ],
-                editType: 'arraydraw',
                 description: 'Sets the position of the label text relative to the shape.'
             },
             textangle: {
@@ -122,10 +119,8 @@ module.exports = {
             padding: {
                 valType: 'number',
                 dflt: 3,
-                editType: 'arraydraw',
                 description: 'Sets padding between edge of label and xanchor / yanchor.'
             },
-            editType: 'arraydraw'
         },
         editType: 'none'
     },
