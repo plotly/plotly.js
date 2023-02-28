@@ -1,5 +1,7 @@
 'use strict';
 
+var fontAttrs = require('../../../plots/font_attributes');
+var annAttrs = require('../../annotations/attributes');
 var dash = require('../../drawing/attributes').dash;
 var extendFlat = require('../../../lib/extend').extendFlat;
 
@@ -78,7 +80,53 @@ module.exports = {
                 '*vertical* allows vertical extend.'
             ].join(' ')
         },
-
+        label: {
+            text: {
+                valType: 'string',
+                dflt: '',
+                editType: 'arraydraw',
+                description: 'Sets the text to display with shape.'
+            },
+            font: fontAttrs({
+                editType: 'calc+arraydraw',
+                colorEditType: 'arraydraw',
+                description: 'Sets the shape label text font.'
+            }),
+            textposition: {
+                valType: 'enumerated',
+                values: [
+                    'top left', 'top center', 'top right',
+                    'middle left', 'middle center', 'middle right',
+                    'bottom left', 'bottom center', 'bottom right',
+                    'start', 'middle', 'end',
+                ],
+                editType: 'arraydraw',
+                description: 'Sets the position of the label text relative to the shape.'
+            },
+            textangle: {
+                valType: 'angle',
+                editType: 'calc+arraydraw',
+                description: [
+                    'Sets the angle at which the label text is drawn',
+                    'with respect to the horizontal. For lines, the default textangle is `auto`,',
+                    'which displays the text at the same angle as the line. For all other shapes,',
+                    'the default textangle is 0 (horizontal).'
+                ].join(' ')
+            },
+            xanchor: extendFlat({}, annAttrs.xanchor, {
+                description: 'Sets the text box\'s horizontal position anchor.',
+            }),
+            yanchor: extendFlat({}, annAttrs.yanchor, {
+                description: 'Sets the text box\'s vertical position anchor.',
+            }),
+            padding: {
+                valType: 'number',
+                dflt: 3,
+                editType: 'arraydraw',
+                description: 'Sets padding between edge of label and xanchor / yanchor.'
+            },
+            editType: 'arraydraw'
+        },
         editType: 'none'
     },
 
