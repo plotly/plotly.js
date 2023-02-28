@@ -624,10 +624,34 @@ function drawLabel(gd, index, options, shapeGroup) {
         .classed('shape-label-text', true)
         .text(text);
 
-    // If x0, x1, y0, y1 are defined explicitly, use those values
-    // Otherwise, use shape bounding box
+    // Get x and y bounds of shape
     var shapex0, shapex1, shapey0, shapey1;
-    if('x0' in options && 'x1' in options && 'y0' in options && 'y1' in options) {
+    if(options.path) {
+        // If shape is defined as a path, get the
+        // min and max bounds across all polygons in path
+        var d = getPathString(gd, options);
+        var polygons = readPaths(d, gd);
+        shapex0 = Infinity;
+        shapey0 = Infinity;
+        shapex1 = -Infinity;
+        shapey1 = -Infinity;
+        for(var i = 0; i < polygons.length; i++) {
+            for(var j = 0; j < polygons[i].length; j++) {
+                var p = polygons[i][j];
+                for(var k = 1; k < p.length; k += 2) {
+                    var _x = p[k];
+                    var _y = p[k + 1];
+
+                    shapex0 = Math.min(shapex0, _x);
+                    shapex1 = Math.max(shapex1, _x);
+                    shapey0 = Math.min(shapey0, _y);
+                    shapey1 = Math.max(shapey1, _y);
+                }
+            }
+        }
+    } else {
+        // Otherwise, we use the x and y bounds defined in the shape options
+        // and convert them to pixel coordinates
         // Setup conversion functions
         var xa = Axes.getFromId(gd, options.xref);
         var xRefType = Axes.getRefType(options.xref);
@@ -635,18 +659,10 @@ function drawLabel(gd, index, options, shapeGroup) {
         var yRefType = Axes.getRefType(options.yref);
         var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
         var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
-
         shapex0 = x2p(options.x0);
         shapex1 = x2p(options.x1);
         shapey0 = y2p(options.y0);
         shapey1 = y2p(options.y1);
-    } else {
-        // Get shape bounding box
-        var shapeBBox = shapeGroup.selectAll('path').node().getBoundingClientRect();
-        shapex0 = shapeBBox.left;
-        shapex1 = shapeBBox.right;
-        shapey0 = shapeBBox.top;
-        shapey1 = shapeBBox.bottom;
     }
 
     // Handle `auto` angle

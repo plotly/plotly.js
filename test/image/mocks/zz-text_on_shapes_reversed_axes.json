@@ -45,7 +45,7 @@
         },
         "shapes": [
             {
-                "label": {"text": "label top right", "textposition": "top right"},
+                "label": {"text": "label 1 (top right)", "textposition": "top right"},
                 "editable": true,
                 "layer": "below",
                 "type": "rect",
@@ -62,7 +62,7 @@
                 "y1": 75
             },
             {
-                "label": {"text": "label"},
+                "label": {"text": "label 2"},
                 "editable": true,
                 "layer": "top",
                 "type": "circle",
@@ -75,11 +75,10 @@
                 "yref": "yaxis",
                 "x0": 125,
                 "y0": 25,
-                "x1": 175,
-                "y1": 75
+                "radius": 50
             },
             {
-                "label": {"text": "label BLUE"},
+                "label": {"text": "label 3"},
                 "editable": true,
                 "line": {
                     "width": 5
@@ -88,7 +87,7 @@
                 "path": "M250,25L225,75L275,75Z"
             },
             {
-                "label": {"text": "label"},
+                "label": {"text": "label 4"},
                 "editable": true,
                 "line": {
                     "width": 15
@@ -96,7 +95,7 @@
                 "path": "M250,225L225,275L275,275"
             },
             {
-                "label": {"text": "label"},
+                "label": {"text": "label 5"},
                 "editable": true,
                 "layer": "below",
                 "path": "M320,100C390,180 290,180 360,100Z",
@@ -106,7 +105,7 @@
                 }
             },
             {
-                "label": {"text": "label"},
+                "label": {"text": "label 6"},
                 "editable": true,
                 "line": {
                     "width": 5,
@@ -116,7 +115,7 @@
                 "path": "M0,100V200H50L0,300Q100,300 100,200T150,200C100,300 200,300 200,200S150,200 150,100Z"
             },
             {
-                "label": {"text": "label"},
+                "label": {"text": "label 7"},
                 "editable": true,
                 "line": {
                     "width": 2
