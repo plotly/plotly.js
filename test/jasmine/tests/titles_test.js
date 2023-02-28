@@ -1066,18 +1066,11 @@ describe('Titles for multiple axes', function() {
     });
 });
 
-describe('Title automargining', function() {
+// TODO: Add in tests for interactions with other automargined elements
+fdescribe('Title automargining', function() {
     'use strict';
 
     var data = [{x: [1, 1, 3], y: [1, 2, 3]}];
-    var layout = {
-        'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-        'title': {
-            'text': 'Basic title',
-            'font': {'size': 24},
-            'yref': 'paper'
-        }
-    };
     var gd;
 
     beforeEach(function() {
@@ -1087,24 +1080,81 @@ describe('Title automargining', function() {
     afterEach(destroyGraphDiv);
 
     it('should avoid overlap with container for yref=paper and allow padding', function(done) {
-        Plotly.newPlot(gd, data, layout).then(function() {
+        Plotly.newPlot(gd, data, {
+            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
+            'height': 300, 
+            'width': 400,
+            'title': {
+                'text': 'Basic title',
+                'font': {'size': 24},
+                'yref': 'paper'
+            }
+        }).then(function() {
             expect(gd._fullLayout._size.t).toBe(0);
+            expect(gd._fullLayout._size.h).toBe(300);
             return Plotly.relayout(gd, 'title.automargin', true);
         }).then(function() {
             expect(gd._fullLayout.title.automargin).toBe(true);
             expect(gd._fullLayout.title.y).toBe(1);
             expect(gd._fullLayout.title.yanchor).toBe('bottom');
             expect(gd._fullLayout._size.t).toBe(24);
+            expect(gd._fullLayout._size.h).toBe(276);
             return Plotly.relayout(gd, 'title.pad.t', 10);
         }).then(function() {
             expect(gd._fullLayout._size.t).toBe(34);
+            expect(gd._fullLayout._size.h).toBe(266);
             return Plotly.relayout(gd, 'title.pad.b', 10);
         }).then(function() {
+            expect(gd._fullLayout._size.h).toBe(256);
             expect(gd._fullLayout._size.t).toBe(44);
             return Plotly.relayout(gd, 'title.yanchor', 'top');
         }).then(function() {
             expect(gd._fullLayout._size.t).toBe(0);
         }).then(done, done.fail);
+    });
+
+
+    it('should automargin and position title at the bottom of the plot if title.y=0', function(done) {
+        Plotly.newPlot(gd, data, {
+            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
+            'height': 300, 
+            'width': 400,
+            'title': {
+                'text': 'Basic title',
+                'font': {'size': 24},
+                'yref': 'paper'
+            }
+        }).then(function() {
+            return Plotly.relayout(gd, {'title.automargin': true, 'title.y': 0});
+        }).then(function() {
+            expect(gd._fullLayout._size.b).toBe(24);
+            expect(gd._fullLayout._size.h).toBe(276);
+            expect(gd._fullLayout.title.yanchor).toBe('top');
+        }).then(done, done.fail);
+    });
+
+    it('should avoid overlap with container and plot area for yref=container and allow padding', function(done) {
+        Plotly.newPlot(gd, data, {
+            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
+            'height': 300, 
+            'width': 400,
+            'title': {
+                'text': 'Basic title',
+                'font': {'size': 24},
+                'yref': 'container',
+                'automargin': true
+            }
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBe(24);
+            expect(gd._fullLayout._size.h).toBe(276);
+            expect(gd._fullLayout.title.y).toBe(1);
+            expect(gd._fullLayout.title.yanchor).toBe('top');
+            return Plotly.relayout(gd, 'title.y', 0.6);
+        }).then(function() {
+            expect(gd._fullLayout._size.t).toBe(144);
+            expect(gd._fullLayout._size.h).toBe(156);
+        }).then(done, done.fail);
+
     });
 });
 
