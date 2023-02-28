@@ -154,6 +154,8 @@ exports.decodeTypedArraySpec = function(vIn) {
     out.dtype = v.dtype;
     out.shape = shape.join(',');
 
+    vIn._inputArray = out;
+
     return out;
 };
 

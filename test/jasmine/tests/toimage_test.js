@@ -431,6 +431,83 @@ describe('Plotly.toImage', function() {
             .then(done, done.fail);
         });
 
+        [
+            'scatter3d',
+            'scattergl',
+            'scatter'
+        ].forEach(function(type) {
+            it('import & export arrayOk marker.color and marker.size for ' + type, function(done) {
+                var is3D = type === 'scatter3d';
+
+                var allX = new Int16Array([-100, 200, -300, 400]);
+                var allY = new Uint16Array([100, 200, 300, 400]);
+                var allZ = new Int8Array([-120, -60, 0, 60]);
+                var allS = new Uint8ClampedArray([0, 60, 120, 240]);
+                var allC = new Uint8Array([0, 60, 120, 240]);
+
+                var x = b64encodeTypedArray(allX);
+                var y = b64encodeTypedArray(allY);
+                var z = b64encodeTypedArray(allZ);
+                var s = b64encodeTypedArray(allS);
+                var c = b64encodeTypedArray(allC);
+
+                Plotly.newPlot(gd, [{
+                    type: type,
+                    x: {bdata: x, dtype: 'i2'},
+                    y: {bdata: y, dtype: 'u2'},
+                    z: {bdata: z, dtype: 'i1'},
+                    marker: {
+                        color: {bdata: c, dtype: 'u1'},
+                        size: {bdata: s, dtype: 'c1'}
+                    }
+                }])
+                .then(function(gd) {
+                    var trace = gd._fullData[0];
+
+                    expect(trace.visible).toEqual(true);
+
+                    expect(trace.x.slice()).toEqual(allX);
+                    expect(trace.y.slice()).toEqual(allY);
+                    if(is3D) expect(trace.z.slice()).toEqual(allZ);
+                    expect(trace.marker.size.slice()).toEqual(allS);
+                    expect(trace.marker.color.slice()).toEqual(allC);
+                    expect(trace.line.color).toEqual('#1f77b4');
+
+                    return Plotly.toImage(gd, imgOpts);
+                })
+                .then(function(fig) {
+                    var trace = JSON.parse(fig).data[0];
+
+                    expect(trace.visible).toEqual(true);
+
+                    expect(trace.x.bdata).toEqual('nP/IANT+kAE=');
+                    expect(trace.x.dtype).toEqual('i2');
+                    expect(trace.x.shape).toEqual('4');
+
+                    expect(trace.y.bdata).toEqual('ZADIACwBkAE=');
+                    expect(trace.y.dtype).toEqual('u2');
+                    expect(trace.y.shape).toEqual('4');
+
+                    if(is3D) {
+                        expect(trace.z.bdata).toEqual('iMQAPA==');
+                        expect(trace.z.dtype).toEqual('i1');
+                        expect(trace.z.shape).toEqual('4');
+                    }
+
+                    expect(trace.marker.size.bdata).toEqual('ADx48A==');
+                    expect(trace.marker.size.dtype).toEqual('c1');
+                    expect(trace.marker.size.shape).toEqual('4');
+
+                    expect(trace.marker.color.bdata).toEqual('ADx48A==');
+                    expect(trace.marker.color.dtype).toEqual('u1');
+                    expect(trace.marker.color.shape).toEqual('4');
+
+                    expect(trace.marker.colorscale).toBeDefined();
+                })
+                .then(done, done.fail);
+            });
+        });
+
         it('export computed margins', function(done) {
             Plotly.toImage(pieAutoMargin, imgOpts)
             .then(function(fig) {

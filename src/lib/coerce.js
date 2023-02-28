@@ -385,15 +385,24 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
 
     if(dflt === undefined) dflt = opts.dflt;
 
-    /**
-     * arrayOk: value MAY be an array, then we do no value checking
-     * at this point, because it can be more complicated than the
-     * individual form (eg. some array vals can be numbers, even if the
-     * single values must be color strings)
-     */
-    if(opts.arrayOk && isArrayOrTypedArray(v)) {
-        propOut.set(v);
-        return v;
+    if(opts.arrayOk) {
+        if(isArrayOrTypedArray(v)) {
+            /**
+             * arrayOk: value MAY be an array, then we do no value checking
+             * at this point, because it can be more complicated than the
+             * individual form (eg. some array vals can be numbers, even if the
+             * single values must be color strings)
+             */
+
+            propOut.set(v);
+            return v;
+        } else {
+            if(isTypedArraySpec(v)) {
+                v = decodeTypedArraySpec(v);
+                propOut.set(v);
+                return v;
+            }
+        }
     }
 
     var coerceFunction = exports.valObjectMeta[opts.valType].coerceFunction;

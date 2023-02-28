@@ -31,11 +31,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('mode');
     coerce('below');
 
-    if(subTypes.hasLines(traceOut)) {
-        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
-        coerce('connectgaps');
-    }
-
     if(subTypes.hasMarkers(traceOut)) {
         handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noLine: true, noAngle: true});
 
@@ -48,6 +43,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             if(Lib.isArrayOrTypedArray(marker.size)) marker.size = marker.size[0];
             if(Lib.isArrayOrTypedArray(marker.color)) marker.color = marker.color[0];
         }
+    }
+
+    if(subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce, {noDash: true});
+        coerce('connectgaps');
     }
 
     var clusterMaxzoom = coerce2('cluster.maxzoom');
