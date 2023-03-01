@@ -129,6 +129,7 @@ module.exports = {
                 editType: 'none',
                 description: 'Sets padding between edge of label and xanchor / yanchor.'
             },
+            editType: 'none'
         },
         editType: 'none'
     },
