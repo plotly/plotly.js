@@ -54,8 +54,6 @@
                 },
                 "fillcolor": "red",
                 "opacity": 0.5,
-                "xref": "xaxis",
-                "yref": "yaxis",
                 "x0": 25,
                 "y0": 25,
                 "x1": 75,
@@ -64,15 +62,12 @@
             {
                 "label": {"text": "label 2"},
                 "editable": true,
-                "layer": "top",
                 "type": "circle",
                 "line": {
                     "width": 5
                 },
                 "fillcolor": "green",
                 "opacity": 0.5,
-                "xref": "xaxis",
-                "yref": "yaxis",
                 "x0": 125,
                 "y0": 25,
                 "x1": 175,
