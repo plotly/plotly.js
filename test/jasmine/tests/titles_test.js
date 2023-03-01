@@ -1082,7 +1082,7 @@ fdescribe('Title automargining', function() {
     it('should avoid overlap with container for yref=paper and allow padding', function(done) {
         Plotly.newPlot(gd, data, {
             'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            'height': 300, 
+            'height': 300,
             'width': 400,
             'title': {
                 'text': 'Basic title',
@@ -1117,7 +1117,7 @@ fdescribe('Title automargining', function() {
     it('should automargin and position title at the bottom of the plot if title.y=0', function(done) {
         Plotly.newPlot(gd, data, {
             'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            'height': 300, 
+            'height': 300,
             'width': 400,
             'title': {
                 'text': 'Basic title',
@@ -1136,7 +1136,7 @@ fdescribe('Title automargining', function() {
     it('should avoid overlap with container and plot area for yref=container and allow padding', function(done) {
         Plotly.newPlot(gd, data, {
             'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            'height': 300, 
+            'height': 300,
             'width': 400,
             'title': {
                 'text': 'Basic title',
@@ -1154,7 +1154,6 @@ fdescribe('Title automargining', function() {
             expect(gd._fullLayout._size.t).toBe(144);
             expect(gd._fullLayout._size.h).toBe(156);
         }).then(done, done.fail);
-
     });
 });
 
