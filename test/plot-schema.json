@@ -3574,6 +3574,7 @@
      ]
     },
     "label": {
+     "editType": "none",
      "font": {
       "color": {
        "editType": "calc+arraydraw",
@@ -3598,6 +3599,7 @@
      "padding": {
       "description": "Sets padding between edge of label and xanchor / yanchor.",
       "dflt": 3,
+      "editType": "none",
       "valType": "number"
      },
      "role": "object",
@@ -3608,7 +3610,7 @@
      },
      "textangle": {
       "description": "Sets the angle at which the label text is drawn with respect to the horizontal. For lines, the default textangle is `auto`, which displays the text at the same angle as the line. For all other shapes, the default textangle is 0 (horizontal).",
-      "editType": "calc+arraydraw",
+      "editType": "none",
       "valType": "angle"
      },
      "textposition": {
@@ -3632,7 +3634,7 @@
      "xanchor": {
       "description": "Sets the text box's horizontal position anchor.",
       "dflt": "auto",
-      "editType": "calc+arraydraw",
+      "editType": "none",
       "valType": "enumerated",
       "values": [
        "auto",
@@ -3644,7 +3646,7 @@
      "yanchor": {
       "description": "Sets the text box's vertical position anchor.",
       "dflt": "auto",
-      "editType": "calc+arraydraw",
+      "editType": "none",
       "valType": "enumerated",
       "values": [
        "auto",

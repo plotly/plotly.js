@@ -1,7 +1,6 @@
 'use strict';
 
 var fontAttrs = require('../../../plots/font_attributes');
-var annAttrs = require('../../annotations/attributes');
 var dash = require('../../drawing/attributes').dash;
 var extendFlat = require('../../../lib/extend').extendFlat;
 
@@ -102,7 +101,7 @@ module.exports = {
             },
             textangle: {
                 valType: 'angle',
-                editType: 'calc+arraydraw',
+                editType: 'none',
                 description: [
                     'Sets the angle at which the label text is drawn',
                     'with respect to the horizontal. For lines, the default textangle is `auto`,',
@@ -110,17 +109,27 @@ module.exports = {
                     'the default textangle is 0 (horizontal).'
                 ].join(' ')
             },
-            xanchor: extendFlat({}, annAttrs.xanchor, {
+            xanchor: {
+                valType: 'enumerated',
+                values: ['auto', 'left', 'center', 'right'],
+                dflt: 'auto',
+                editType: 'none',
                 description: 'Sets the text box\'s horizontal position anchor.',
-            }),
-            yanchor: extendFlat({}, annAttrs.yanchor, {
+            },
+            yanchor: {
+                valType: 'enumerated',
+                values: ['auto', 'top', 'middle', 'bottom'],
+                dflt: 'auto',
+                editType: 'none',
                 description: 'Sets the text box\'s vertical position anchor.',
-            }),
+            },
             padding: {
                 valType: 'number',
                 dflt: 3,
+                editType: 'none',
                 description: 'Sets padding between edge of label and xanchor / yanchor.'
             },
+            editType: 'none'
         },
         editType: 'none'
     },
