@@ -18,7 +18,8 @@
             {"label":{"text":"xanchor right, position not set<br> two lines", "xanchor":"right", "padding": 10, "font": {"family":"Courier New, monospace", "size":20}}, "xref":"paper","yref":"paper","type":"line","x0":0.8,"x1":0.9,"y0":0.8,"y1":0.9},
             {"label":{"text":"position auto, xanchor center, angle -30", "xanchor":"center", "textangle":-30}, "layer":"below","x0":2,"x1":3,"y0":7,"y1":9.5,"opacity":0.5,"fillcolor":"#05e","line":{"width":3,"color":"#025","dash":"dashdot"}},
             {"label":{"text":"position auto, yanchor top", "yanchor": "top"}, "yref":"paper","type":"line","x0":1.1,"x1":2.4,"y0":0.1,"y1":0.4,"line":{"color":"#039","dash":"dot","width":2}},
-            {"label":{"text":"position auto, xanchor center", "xanchor":"center"}, "xref":"paper","x0":0.8,"x1":0.9,"y0":1,"y1":3,"fillcolor":"#ccc"}
+            {"label":{"text":"position auto, xanchor center", "xanchor":"center"}, "xref":"paper","x0":0.8,"x1":0.9,"y0":1,"y1":3,"fillcolor":"#ccc"},
+            {"label":{"text":"position end", "textposition": "end"}, "yref":"paper","type":"line","x0":4.1,"x1":6.4,"y0":0.2,"y1":0.0,"line":{"color":"#339","width":3}}
         ]
     },
     "config": {
