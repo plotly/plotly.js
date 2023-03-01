@@ -345,7 +345,7 @@ describe('Plotly.toImage', function() {
                 type: 'surface',
                 x: {bdata: x, dtype: 'f8'},
                 y: {bdata: y, dtype: 'f4'},
-                z: {bdata: z, dtype: 'u2', shape: '3,2'}
+                z: {bdata: z, dtype: 'u2', shape: '2,3'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -377,7 +377,7 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.shape).toEqual('2');
 
                 expect(trace.z.dtype).toEqual('u2');
-                expect(trace.z.shape).toEqual('3,2');
+                expect(trace.z.shape).toEqual('2,3');
             })
             .then(done, done.fail);
         });
@@ -394,7 +394,7 @@ describe('Plotly.toImage', function() {
                 type: 'surface',
                 x: {bdata: x, dtype: 'f8', shape: '3'},
                 y: {bdata: y, dtype: 'f4', shape: '2'},
-                z: {bdata: z, dtype: 'u2', shape: '3,2'}
+                z: {bdata: z, dtype: 'u2', shape: '2,3'}
             }])
             .then(function(gd) {
                 var trace = gd._fullData[0];
@@ -426,7 +426,7 @@ describe('Plotly.toImage', function() {
                 expect(trace.y.shape).toEqual('2');
 
                 expect(trace.z.dtype).toEqual('u2');
-                expect(trace.z.shape).toEqual('3,2');
+                expect(trace.z.shape).toEqual('2,3');
             })
             .then(done, done.fail);
         });

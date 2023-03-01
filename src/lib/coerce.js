@@ -31,7 +31,7 @@ exports.valObjectMeta = {
             'an integer or float typed array.',
             'For either multi-dimensional arrays you must also',
             'provide its dimensions separated by comma via `shape`.',
-            'For exmaple using `dtype`: *f4* and `shape`: *100,5* you can',
+            'For exmaple using `dtype`: *f4* and `shape`: *5,100* you can',
             'declare a 2-D array that has 5 rows and 100 columns',
             'containing float32 values i.e. 4 bits per value.',
             '`shape` is optional for one dimensional arrays.'

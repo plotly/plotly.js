@@ -113,6 +113,7 @@ exports.decodeTypedArraySpec = function(vIn) {
         // convert number to string and split to array
         ('' + v.shape).split(',');
 
+    shape.reverse(); // i.e. to match numpy order
     var ndims = shape.length;
 
     var nj, j;
@@ -152,7 +153,7 @@ exports.decodeTypedArraySpec = function(vIn) {
     // attach bdata, dtype & shape to array for json export
     out.bdata = v.bdata;
     out.dtype = v.dtype;
-    out.shape = shape.join(',');
+    out.shape = shape.reverse().join(',');
 
     vIn._inputArray = out;
 
