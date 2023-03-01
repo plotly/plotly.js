@@ -3634,7 +3634,7 @@
       ]
      },
      "xanchor": {
-      "description": "Sets the text box's horizontal position anchor.",
+      "description": "Sets the label's horizontal position anchor This anchor binds the specified `label.textposition` to the *left*, *center* or *right* of the label text. For example, if `label.textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the shape.",
       "dflt": "auto",
       "editType": "none",
       "valType": "enumerated",
@@ -3646,12 +3646,10 @@
       ]
      },
      "yanchor": {
-      "description": "Sets the text box's vertical position anchor.",
-      "dflt": "auto",
+      "description": "Sets the label's vertical position anchor This anchor binds the specified `label.textposition` to the *top*, *middle* or *bottom* of the label text. For example, if `label.textposition` is set to *top right* and `yanchor` to *top* then the top-most portion of the label text lines up with the top-most edge of the shape.",
       "editType": "none",
       "valType": "enumerated",
       "values": [
-       "auto",
        "top",
        "middle",
        "bottom"
@@ -7255,7 +7253,7 @@
         ]
        },
        "xanchor": {
-        "description": "Sets the text box's horizontal position anchor.",
+        "description": "Sets the label's horizontal position anchor This anchor binds the specified `label.textposition` to the *left*, *center* or *right* of the label text. For example, if `label.textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the shape.",
         "dflt": "auto",
         "editType": "calc+arraydraw",
         "valType": "enumerated",
@@ -7267,12 +7265,10 @@
         ]
        },
        "yanchor": {
-        "description": "Sets the text box's vertical position anchor.",
-        "dflt": "auto",
+        "description": "Sets the label's vertical position anchor This anchor binds the specified `label.textposition` to the *top*, *middle* or *bottom* of the label text. For example, if `label.textposition` is set to *top right* and `yanchor` to *top* then the top-most portion of the label text lines up with the top-most edge of the shape.",
         "editType": "calc+arraydraw",
         "valType": "enumerated",
         "values": [
-         "auto",
          "top",
          "middle",
          "bottom"
