@@ -1067,7 +1067,7 @@ describe('Titles for multiple axes', function() {
 });
 
 // TODO: Add in tests for interactions with other automargined elements
-fdescribe('Title automargining', function() {
+describe('Title automargining', function() {
     'use strict';
 
     var data = [{x: [1, 1, 3], y: [1, 2, 3]}];
