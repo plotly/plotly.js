@@ -1,5 +1,9 @@
 'use strict';
 
+var isArrayOrTypedArray = require('../../lib/array').isArrayOrTypedArray;
+var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
+var decodeTypedArraySpec = require('../../lib/array').decodeTypedArraySpec;
+
 var filterOps = require('../../constants/filter_ops');
 var isNumeric = require('fast-isnumeric');
 
@@ -16,7 +20,8 @@ module.exports = {
 // This does not in any way shape or form support calendars. It's adapted from
 // transforms/filter.js.
 function coerceValue(operation, value) {
-    var hasArrayValue = Array.isArray(value);
+    if(isTypedArraySpec(value)) value = decodeTypedArraySpec(value);
+    var hasArrayValue = isArrayOrTypedArray(value);
 
     var coercedValue;
 
