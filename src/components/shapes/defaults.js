@@ -136,6 +136,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     // Label options
     coerce('label.text');
     coerce('label.textangle', shapeType === 'line' ? 'auto' : 0);
+<<<<<<< HEAD
     var labelTextPosition = coerce(
         'label.textposition',
         shapeType === 'line' ? 'middle' : 'middle center'
@@ -143,6 +144,11 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     coerce('label.xanchor');
     // Default yanchor value depends on shape type and label textposition
     coerce('label.yanchor', dfltLabelYanchor(shapeType, labelTextPosition));
+=======
+    coerce('label.textposition', shapeType === 'line' ? 'middle' : 'middle center');
+    coerce('label.xanchor');
+    coerce('label.yanchor');
+>>>>>>> dfb608eb8a3a7a139b2f418edbc9e74c96782091
     coerce('label.padding');
     Lib.coerceFont(coerce, 'label.font', fullLayout.font);
 }

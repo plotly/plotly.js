@@ -1,7 +1,7 @@
 'use strict';
 
 var Color = require('../../color');
-
+var Lib = require('../../../lib');
 
 module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
     coerce('newshape.drawdirection');
@@ -15,6 +15,15 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
         coerce('newshape.line.color', Color.contrast(bgcolor));
         coerce('newshape.line.dash');
     }
+
+    var isLine = layoutIn.dragmode === 'drawline';
+    coerce('newshape.label.text');
+    coerce('newshape.label.textangle', isLine ? 'auto' : 0);
+    coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
+    coerce('newshape.label.xanchor');
+    coerce('newshape.label.yanchor');
+    coerce('newshape.label.padding');
+    Lib.coerceFont(coerce, 'newshape.label.font', layoutOut.font);
 
     coerce('activeshape.fillcolor');
     coerce('activeshape.opacity');

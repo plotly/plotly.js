@@ -83,10 +83,11 @@ module.exports = {
             text: {
                 valType: 'string',
                 dflt: '',
+                editType: 'none',
                 description: 'Sets the text to display with shape.'
             },
             font: fontAttrs({
-                editType: 'calc+arraydraw',
+                editType: 'none',
                 description: 'Sets the shape label text font.'
             }),
             textposition: {
@@ -97,6 +98,7 @@ module.exports = {
                     'bottom left', 'bottom center', 'bottom right',
                     'start', 'middle', 'end',
                 ],
+                editType: 'none',
                 description: 'Sets the position of the label text relative to the shape.'
             },
             textangle: {

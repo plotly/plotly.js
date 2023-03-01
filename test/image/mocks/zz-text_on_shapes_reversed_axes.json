@@ -119,7 +119,13 @@
                 "fillcolor": "yellow",
                 "path": "M300,70C300,10 380,10 380,70C380,90 300,90 300,70ZM320,60C320,50 332,50 332,60ZM348,60C348,50 360,50 360,60ZM320,70C326,80 354,80 360,70Z"
             }
-        ]
+        ],
+        "dragmode": "drawline",
+        "newshape": {
+            "label": {
+                "text": "TEXT"
+            }
+        }
     },
     "config": {
         "editable": false,
