@@ -119,10 +119,10 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
     // Label options
     coerce('label.text');
-    coerce('label.xanchor');
-    coerce('label.yanchor');
     coerce('label.textangle', shapeType === 'line' ? 'auto' : 0);
     coerce('label.textposition', shapeType === 'line' ? 'middle' : 'middle center');
+    coerce('label.xanchor');
+    coerce('label.yanchor');
     coerce('label.padding');
     Lib.coerceFont(coerce, 'label.font', fullLayout.font);
 }
