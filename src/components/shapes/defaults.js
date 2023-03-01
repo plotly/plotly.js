@@ -15,6 +15,22 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     });
 };
 
+function dfltLabelYanchor(shapeType, labelTextPosition) {
+    var dfltYanchor;
+    if(shapeType === 'line') {
+        dfltYanchor = 'bottom';
+    } else {
+        if(labelTextPosition.indexOf('top') !== -1) {
+            dfltYanchor = 'top';
+        } else if(labelTextPosition.indexOf('bottom') !== -1) {
+            dfltYanchor = 'bottom';
+        } else {
+            dfltYanchor = 'middle';
+        }
+    }
+    return dfltYanchor;
+}
+
 function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
@@ -119,10 +135,14 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
     // Label options
     coerce('label.text');
-    coerce('label.xanchor');
-    coerce('label.yanchor');
     coerce('label.textangle', shapeType === 'line' ? 'auto' : 0);
-    coerce('label.textposition', shapeType === 'line' ? 'middle' : 'middle center');
+    var labelTextPosition = coerce(
+        'label.textposition',
+        shapeType === 'line' ? 'middle' : 'middle center'
+    );
+    coerce('label.xanchor');
+    // Default yanchor value depends on shape type and label textposition
+    coerce('label.yanchor', dfltLabelYanchor(shapeType, labelTextPosition));
     coerce('label.padding');
     Lib.coerceFont(coerce, 'label.font', fullLayout.font);
 }

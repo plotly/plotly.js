@@ -731,6 +731,7 @@ function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
 
 function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
     var textPosition = shapeOptions.label.textposition;
+    var textAngle = shapeOptions.label.textangle;
     var textPadding = shapeOptions.label.padding;
     var shapeType = shapeOptions.type;
     var textAngleRad = Math.PI / 180 * actualTextAngle;
@@ -745,24 +746,27 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
         if(textPosition.indexOf('start') !== -1) {
             textx = shapex0;
             texty = shapey0;
-            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'right' : 'left';
+            if(xanchor === 'auto') {
+                if(textAngle === 'auto') xanchor = (shapex1 >= shapex0) ? 'left' : 'right';
+                else xanchor = (shapex1 >= shapex0) ? 'right' : 'left';
+            }
         } else if(textPosition.indexOf('end') !== -1) {
             textx = shapex1;
             texty = shapey1;
-            if(xanchor === 'auto') xanchor = (shapex1 >= shapex0) ? 'left' : 'right';
+            if(xanchor === 'auto') {
+                if(textAngle === 'auto') xanchor = (shapex1 >= shapex0) ? 'right' : 'left';
+                else xanchor = (shapex1 >= shapex0) ? 'left' : 'right';
+            }
         } else { // Default: center
             textx = (shapex0 + shapex1) / 2;
             texty = (shapey0 + shapey1) / 2;
             if(xanchor === 'auto') xanchor = 'center';
         }
 
-        // Default yanchor is 'bottom' for lines (should handle in defaults.js)
-        if(yanchor === 'auto') yanchor = 'bottom';
-
         // Special case for padding when angle is 'auto' for lines
         // Padding should be treated as an orthogonal offset in this case
         // Otherwise, padding is just a simple x and y offset
-        if(shapeOptions.label.textangle === 'auto') {
+        if(textAngle === 'auto') {
             // Set direction to apply padding (based on `yanchor` only)
             var paddingDirection = { bottom: 1, middle: 0, top: -1 }[yanchor];
             paddingX = textPadding * Math.sin(textAngleRad) * paddingDirection;
@@ -782,27 +786,30 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
         // Horizontal needs a little extra padding to look balanced
         paddingX = textPadding + 3;
         if(textPosition.indexOf('right') !== -1) {
-            textx = Math.max(shapex0, shapex1) + paddingX;
-            if(xanchor === 'auto') xanchor = 'left';
-        } else if(textPosition.indexOf('left') !== -1) {
-            textx = Math.min(shapex0, shapex1) - paddingX;
+            textx = Math.max(shapex0, shapex1) - paddingX;
             if(xanchor === 'auto') xanchor = 'right';
+        } else if(textPosition.indexOf('left') !== -1) {
+            textx = Math.min(shapex0, shapex1) + paddingX;
+            if(xanchor === 'auto') xanchor = 'left';
         } else { // Default: center
             textx = (shapex0 + shapex1) / 2;
             if(xanchor === 'auto') xanchor = 'center';
         }
 
         // calc vertical position
-        paddingY = textPadding;
         if(textPosition.indexOf('top') !== -1) {
-            texty = Math.min(shapey0, shapey1) - paddingY;
-            if(yanchor === 'auto') yanchor = 'bottom';
+            texty = Math.min(shapey0, shapey1);
         } else if(textPosition.indexOf('bottom') !== -1) {
-            texty = Math.max(shapey0, shapey1) + paddingY;
-            if(yanchor === 'auto') yanchor = 'top';
-        } else { // Default: middle
+            texty = Math.max(shapey0, shapey1);
+        } else {
             texty = (shapey0 + shapey1) / 2;
-            if(yanchor === 'auto') yanchor = 'middle';
+        }
+        // Apply padding
+        paddingY = textPadding;
+        if(yanchor === 'bottom') {
+            texty = texty - paddingY;
+        } else if(yanchor === 'top') {
+            texty = texty + paddingY;
         }
     }
 

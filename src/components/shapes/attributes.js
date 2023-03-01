@@ -258,12 +258,19 @@ module.exports = templatedArray('shape', {
                 'the default textangle is 0 (horizontal).'
             ].join(' ')
         },
-        xanchor: extendFlat({}, annAttrs.xanchor, {
+        xanchor: {
+            valType: 'enumerated',
+            values: ['auto', 'left', 'center', 'right'],
+            dflt: 'auto',
+            editType: 'calc+arraydraw',
             description: 'Sets the text box\'s horizontal position anchor.',
-        }),
-        yanchor: extendFlat({}, annAttrs.yanchor, {
+        },
+        yanchor: {
+            valType: 'enumerated',
+            values: ['top', 'middle', 'bottom'],
+            editType: 'calc+arraydraw',
             description: 'Sets the text box\'s vertical position anchor.',
-        }),
+        },
         padding: {
             valType: 'number',
             dflt: 3,
