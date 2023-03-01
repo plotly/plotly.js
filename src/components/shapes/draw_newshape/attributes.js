@@ -116,13 +116,29 @@ module.exports = {
                 values: ['auto', 'left', 'center', 'right'],
                 dflt: 'auto',
                 editType: 'none',
-                description: 'Sets the text box\'s horizontal position anchor.',
+                description: [
+                    'Sets the label\'s horizontal position anchor',
+                    'This anchor binds the specified `label.textposition` to the *left*, *center*',
+                    'or *right* of the label text.',
+                    'For example, if `label.textposition` is set to *top right* and',
+                    '`xanchor` to *right* then the right-most portion of the',
+                    'label text lines up with the right-most edge of the',
+                    'shape.',
+                ].join(' '),
             },
             yanchor: {
                 valType: 'enumerated',
                 values: ['top', 'middle', 'bottom'],
                 editType: 'none',
-                description: 'Sets the text box\'s vertical position anchor.',
+                description: [
+                    'Sets the label\'s vertical position anchor',
+                    'This anchor binds the specified `label.textposition` to the *top*, *middle*',
+                    'or *bottom* of the label text.',
+                    'For example, if `label.textposition` is set to *top right* and',
+                    '`yanchor` to *top* then the top-most portion of the',
+                    'label text lines up with the top-most edge of the',
+                    'shape.',
+                ].join(' ')
             },
             padding: {
                 valType: 'number',
