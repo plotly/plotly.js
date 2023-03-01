@@ -3577,21 +3577,21 @@
      "editType": "none",
      "font": {
       "color": {
-       "editType": "calc+arraydraw",
+       "editType": "none",
        "valType": "color"
       },
       "description": "Sets the shape label text font.",
-      "editType": "calc+arraydraw",
+      "editType": "none",
       "family": {
        "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
-       "editType": "calc+arraydraw",
+       "editType": "none",
        "noBlank": true,
        "strict": true,
        "valType": "string"
       },
       "role": "object",
       "size": {
-       "editType": "calc+arraydraw",
+       "editType": "none",
        "min": 1,
        "valType": "number"
       }
@@ -3606,6 +3606,7 @@
      "text": {
       "description": "Sets the text to display with shape.",
       "dflt": "",
+      "editType": "none",
       "valType": "string"
      },
      "textangle": {
@@ -3615,6 +3616,7 @@
      },
      "textposition": {
       "description": "Sets the position of the label text relative to the shape.",
+      "editType": "none",
       "valType": "enumerated",
       "values": [
        "top left",
