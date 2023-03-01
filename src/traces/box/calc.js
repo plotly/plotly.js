@@ -266,6 +266,7 @@ module.exports = function calc(gd, trace) {
             }
         }
 
+        if(trace.notched && Lib.isTypedArray(valArray)) valArray = Array.from(valArray);
         trace._extremes[valAxis._id] = Axes.findExtremes(valAxis,
             trace.notched ? valArray.concat([minLowerNotch, maxUpperNotch]) : valArray,
             {padded: true}
