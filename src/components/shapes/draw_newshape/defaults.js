@@ -3,6 +3,23 @@
 var Color = require('../../color');
 var Lib = require('../../../lib');
 
+
+function dfltLabelYanchor(isLine, labelTextPosition) {
+    var dfltYanchor;
+    if(isLine) {
+        dfltYanchor = 'bottom';
+    } else {
+        if(labelTextPosition.indexOf('top') !== -1) {
+            dfltYanchor = 'top';
+        } else if(labelTextPosition.indexOf('bottom') !== -1) {
+            dfltYanchor = 'bottom';
+        } else {
+            dfltYanchor = 'middle';
+        }
+    }
+    return dfltYanchor;
+}
+
 module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
     coerce('newshape.drawdirection');
     coerce('newshape.layer');
@@ -19,9 +36,9 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
     var isLine = layoutIn.dragmode === 'drawline';
     coerce('newshape.label.text');
     coerce('newshape.label.textangle', isLine ? 'auto' : 0);
-    coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
+    var labelTextPosition = coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
     coerce('newshape.label.xanchor');
-    coerce('newshape.label.yanchor');
+    coerce('newshape.label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
     coerce('newshape.label.padding');
     Lib.coerceFont(coerce, 'newshape.label.font', layoutOut.font);
 

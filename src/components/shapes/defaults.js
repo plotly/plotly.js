@@ -15,9 +15,9 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     });
 };
 
-function dfltLabelYanchor(shapeType, labelTextPosition) {
+function dfltLabelYanchor(isLine, labelTextPosition) {
     var dfltYanchor;
-    if(shapeType === 'line') {
+    if(isLine) {
         dfltYanchor = 'bottom';
     } else {
         if(labelTextPosition.indexOf('top') !== -1) {
@@ -134,21 +134,13 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     }
 
     // Label options
+    var isLine = shapeType === 'line';
     coerce('label.text');
-    coerce('label.textangle', shapeType === 'line' ? 'auto' : 0);
-<<<<<<< HEAD
-    var labelTextPosition = coerce(
-        'label.textposition',
-        shapeType === 'line' ? 'middle' : 'middle center'
-    );
+    coerce('label.textangle', isLine ? 'auto' : 0);
+    var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
     coerce('label.xanchor');
     // Default yanchor value depends on shape type and label textposition
-    coerce('label.yanchor', dfltLabelYanchor(shapeType, labelTextPosition));
-=======
-    coerce('label.textposition', shapeType === 'line' ? 'middle' : 'middle center');
-    coerce('label.xanchor');
-    coerce('label.yanchor');
->>>>>>> dfb608eb8a3a7a139b2f418edbc9e74c96782091
+    coerce('label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
     coerce('label.padding');
     Lib.coerceFont(coerce, 'label.font', fullLayout.font);
 }
