@@ -17,6 +17,8 @@ var constants = require('./constants');
 var axisNames = constants.axisNames;
 
 var makeImagDflt = memoize(function(realTickvals) {
+    if(Lib.isTypedArray(realTickvals)) realTickvals = Array.from(realTickvals);
+
     return realTickvals.slice().reverse().map(function(x) { return -x; })
         .concat([0])
         .concat(realTickvals);
