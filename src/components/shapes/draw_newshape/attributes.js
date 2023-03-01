@@ -118,8 +118,7 @@ module.exports = {
             },
             yanchor: {
                 valType: 'enumerated',
-                values: ['auto', 'top', 'middle', 'bottom'],
-                dflt: 'auto',
+                values: ['top', 'middle', 'bottom'],
                 editType: 'none',
                 description: 'Sets the text box\'s vertical position anchor.',
             },
