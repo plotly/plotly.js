@@ -1,6 +1,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
 var hasColorscale = require('../../components/colorscale/helpers').hasColorscale;
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var handleDomainDefaults = require('../../plots/domain').defaults;
@@ -44,7 +45,7 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
 
         // Category level
         var arrayIn = dimensionIn.categoryarray;
-        var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
+        var isValidArray = (Lib.isArrayOrTypedArray(arrayIn) && arrayIn.length > 0) || isTypedArraySpec(arrayIn);
 
         var orderDefault;
         if(isValidArray) orderDefault = 'array';
