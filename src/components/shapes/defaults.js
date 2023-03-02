@@ -137,7 +137,7 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     var isLine = shapeType === 'line';
     var labelText = coerce('label.text');
     if(labelText) {
-        coerce('label.textangle', isLine ? 'auto' : 0);
+        coerce('label.textangle');
         var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
         coerce('label.xanchor');
         coerce('label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));

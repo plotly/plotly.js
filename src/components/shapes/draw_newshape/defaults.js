@@ -36,7 +36,7 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
     var isLine = layoutIn.dragmode === 'drawline';
     var labelText = coerce('newshape.label.text');
     if(labelText) {
-        coerce('newshape.label.textangle', isLine ? 'auto' : 0);
+        coerce('newshape.label.textangle');
         var labelTextPosition = coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
         coerce('newshape.label.xanchor');
         coerce('newshape.label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));

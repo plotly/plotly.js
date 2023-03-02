@@ -258,6 +258,7 @@ module.exports = templatedArray('shape', {
         },
         textangle: {
             valType: 'angle',
+            dflt: 'auto',
             editType: 'calc+arraydraw',
             description: [
                 'Sets the angle at which the label text is drawn',

@@ -674,8 +674,6 @@ function drawLabel(gd, index, options, shapeGroup) {
             textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
         } else {
             // Auto angle for all other shapes is 0
-            // The default angle for other shapes is 0 anyway, so there's no reason to
-            // explicitly set the angle to `auto`, this is just covering an edge case
             textangle = 0;
         }
     }

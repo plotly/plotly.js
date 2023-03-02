@@ -111,12 +111,13 @@ module.exports = {
             },
             textangle: {
                 valType: 'angle',
+                dflt: 'auto',
                 editType: 'none',
                 description: [
                     'Sets the angle at which the label text is drawn',
-                    'with respect to the horizontal. For lines, the default textangle is `auto`,',
-                    'which displays the text at the same angle as the line. For all other shapes,',
-                    'the default textangle is 0 (horizontal).'
+                    'with respect to the horizontal. For lines, angle `auto`',
+                    'is the same angle as the line. For all other shapes,',
+                    'angle `auto` is horizontal.'
                 ].join(' ')
             },
             xanchor: {
