@@ -3600,6 +3600,7 @@
       "description": "Sets padding between edge of label and xanchor / yanchor.",
       "dflt": 3,
       "editType": "none",
+      "min": 0,
       "valType": "number"
      },
      "role": "object",
@@ -3610,7 +3611,8 @@
       "valType": "string"
      },
      "textangle": {
-      "description": "Sets the angle at which the label text is drawn with respect to the horizontal. For lines, the default textangle is `auto`, which displays the text at the same angle as the line. For all other shapes, the default textangle is 0 (horizontal).",
+      "description": "Sets the angle at which the label text is drawn with respect to the horizontal. For lines, angle `auto` is the same angle as the line. For all other shapes, angle `auto` is horizontal.",
+      "dflt": "auto",
       "editType": "none",
       "valType": "angle"
      },
@@ -7219,6 +7221,7 @@
         "description": "Sets padding between edge of label and xanchor / yanchor.",
         "dflt": 3,
         "editType": "arraydraw",
+        "min": 0,
         "valType": "number"
        },
        "role": "object",
@@ -7229,7 +7232,8 @@
         "valType": "string"
        },
        "textangle": {
-        "description": "Sets the angle at which the label text is drawn with respect to the horizontal. For lines, the default textangle is `auto`, which displays the text at the same angle as the line. For all other shapes, the default textangle is 0 (horizontal).",
+        "description": "Sets the angle at which the label text is drawn with respect to the horizontal. For lines, angle `auto` is the same angle as the line. For all other shapes, angle `auto` is horizontal.",
+        "dflt": "auto",
         "editType": "calc+arraydraw",
         "valType": "angle"
        },
