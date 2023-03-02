@@ -841,7 +841,7 @@ function getMaxPull(trace) {
     if(!maxPull) return 0;
 
     var j;
-    if(Array.isArray(maxPull)) {
+    if(Lib.isArrayOrTypedArray(maxPull)) {
         maxPull = 0;
         for(j = 0; j < trace.pull.length; j++) {
             if(trace.pull[j] > maxPull) maxPull = trace.pull[j];
@@ -874,7 +874,7 @@ function scootLabels(quadrants, trace) {
         if(newExtraY * yDiffSign > 0) thisPt.labelExtraY = newExtraY;
 
         // make sure this label doesn't overlap any slices
-        if(!Array.isArray(trace.pull)) return; // this can only happen with array pulls
+        if(!Lib.isArrayOrTypedArray(trace.pull)) return; // this can only happen with array pulls
 
         for(i = 0; i < wholeSide.length; i++) {
             otherPt = wholeSide[i];

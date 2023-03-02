@@ -7,7 +7,7 @@ var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
 
 function handleLabelsAndValues(labels, values) {
-    var hasLabels = Array.isArray(labels);
+    var hasLabels = Lib.isArrayOrTypedArray(labels);
     var hasValues = Lib.isArrayOrTypedArray(values);
     var len = Math.min(
         hasLabels ? labels.length : Infinity,
@@ -72,7 +72,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var textData = coerce('text');
     var textTemplate = coerce('texttemplate');
     var textInfo;
-    if(!textTemplate) textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
+    if(!textTemplate) textInfo = coerce('textinfo', Lib.isArrayOrTypedArray(textData) ? 'text+percent' : 'percent');
 
     coerce('hovertext');
     coerce('hovertemplate');
