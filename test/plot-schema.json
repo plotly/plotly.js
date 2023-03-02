@@ -3615,7 +3615,7 @@
       "valType": "angle"
      },
      "textposition": {
-      "description": "Sets the position of the label text relative to the shape.",
+      "description": "Sets the position of the label text relative to the shape. Supported values for rectangles, circles and paths are `top left`, `top center`, `top right`, `middle left`, `middle center`, `middle right`, `bottom left`, `bottom center`, and `bottom right`. Supported values for lines are `start`, `middle`, and `end`. Default: `middle center` for rectangles, circles, and paths; `middle` for lines.",
       "editType": "none",
       "valType": "enumerated",
       "values": [
@@ -7234,7 +7234,7 @@
         "valType": "angle"
        },
        "textposition": {
-        "description": "Sets the position of the label text relative to the shape.",
+        "description": "Sets the position of the label text relative to the shape. Supported values for rectangles, circles and paths are `top left`, `top center`, `top right`, `middle left`, `middle center`, `middle right`, `bottom left`, `bottom center`, and `bottom right`. Supported values for lines are `start`, `middle`, and `end`. Default: `middle center` for rectangles, circles, and paths; `middle` for lines.",
         "editType": "arraydraw",
         "valType": "enumerated",
         "values": [
