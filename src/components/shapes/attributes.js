@@ -246,7 +246,14 @@ module.exports = templatedArray('shape', {
                 'start', 'middle', 'end',
             ],
             editType: 'arraydraw',
-            description: 'Sets the position of the label text relative to the shape.'
+            description: [
+                'Sets the position of the label text relative to the shape.',
+                'Supported values for rectangles, circles and paths are',
+                '`top left`, `top center`, `top right`, `middle left`,',
+                '`middle center`, `middle right`, `bottom left`, `bottom center`,',
+                'and `bottom right`.',
+                'Supported values for lines are `start`, `middle`, and `end`.',
+            ].join(' ')
         },
         textangle: {
             valType: 'angle',
