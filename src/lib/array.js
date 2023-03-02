@@ -114,7 +114,7 @@ exports.decodeTypedArraySpec = function(vIn) {
         ('' + v.shape).split(',');
 
     shape.reverse(); // i.e. to match numpy order
-    var ndims = shape.length;
+    var ndim = shape.length;
 
     var nj, j;
     var ni = +shape[0];
@@ -122,20 +122,15 @@ exports.decodeTypedArraySpec = function(vIn) {
     var rowBytes = BYTES_PER_ELEMENT * ni;
     var pos = 0;
 
-    if(ndims === 1) {
+    if(ndim === 1) {
         out = new T(buffer);
-    } else if(ndims === 2) {
+    } else if(ndim === 2) {
         nj = +shape[1];
         for(j = 0; j < nj; j++) {
             out[j] = new T(buffer, pos, ni);
             pos += rowBytes;
         }
-    /*
-
-    // 3d arrays are not supported in traces e.g. volume & isosurface
-    // once supported we could uncomment this part
-
-    } else if(ndims === 3) {
+    } else if(ndim === 3) {
         nj = +shape[1];
         var nk = +shape[2];
         for(var k = 0; k < nk; k++) {
@@ -145,9 +140,8 @@ exports.decodeTypedArraySpec = function(vIn) {
                 pos += rowBytes;
             }
         }
-    */
     } else {
-        throw new Error('Error in shape: "' + v.shape + '"');
+        throw new Error('ndim: ' + ndim + 'is not supported with the shape:"' + v.shape + '"');
     }
 
     // attach bdata, dtype & shape to array for json export
