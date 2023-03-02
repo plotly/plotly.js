@@ -228,7 +228,7 @@ var getDataConversions = axes.getDataConversions = function(gd, trace, target, t
     // In the case of an array target, make a mock data array
     // and call supplyDefaults to the data type and
     // setup the data-to-calc method.
-    if(Array.isArray(d2cTarget)) {
+    if(Lib.isArrayOrTypedArray(d2cTarget)) {
         ax = {
             type: autoType(targetArray, undefined, {
                 autotypenumbers: gd._fullLayout.autotypenumbers
@@ -1282,7 +1282,7 @@ function arrayTicks(ax) {
 
         // without a text array, just format the given values as any other ticks
         // except with more precision to the numbers
-        if(!Array.isArray(text)) text = [];
+        if(!Lib.isArrayOrTypedArray(text)) text = [];
 
         for(var i = 0; i < vals.length; i++) {
             var vali = tickVal2l(vals[i]);
@@ -1618,7 +1618,7 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
     var tickVal2l = axType === 'category' ? ax.d2l_noadd : ax.d2l;
     var i;
 
-    if(arrayMode && Array.isArray(ax.ticktext)) {
+    if(arrayMode && Lib.isArrayOrTypedArray(ax.ticktext)) {
         var rng = Lib.simpleMap(ax.range, ax.r2l);
         var minDiff = (Math.abs(rng[1] - rng[0]) - (ax._lBreaks || 0)) / 10000;
 
@@ -1697,8 +1697,8 @@ axes.tickText = function(ax, x, hover, noSuffixPrefix) {
 axes.hoverLabelText = function(ax, values, hoverformat) {
     if(hoverformat) ax = Lib.extendFlat({}, ax, {hoverformat: hoverformat});
 
-    var val = Array.isArray(values) ? values[0] : values;
-    var val2 = Array.isArray(values) ? values[1] : undefined;
+    var val = Lib.isArrayOrTypedArray(values) ? values[0] : values;
+    var val2 = Lib.isArrayOrTypedArray(values) ? values[1] : undefined;
     if(val2 !== undefined && val2 !== val) {
         return (
             axes.hoverLabelText(ax, val, hoverformat) + ' - ' +
