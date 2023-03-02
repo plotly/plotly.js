@@ -106,6 +106,7 @@ module.exports = {
                     '`middle center`, `middle right`, `bottom left`, `bottom center`,',
                     'and `bottom right`.',
                     'Supported values for lines are `start`, `middle`, and `end`.',
+                    'Default: `middle center` for rectangles, circles, and paths; `middle` for lines.',
                 ].join(' ')
             },
             textangle: {
