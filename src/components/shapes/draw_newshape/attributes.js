@@ -152,6 +152,7 @@ module.exports = {
             padding: {
                 valType: 'number',
                 dflt: 3,
+                min: 0,
                 editType: 'none',
                 description: 'Sets padding between edge of label and xanchor / yanchor.'
             },
