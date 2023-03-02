@@ -135,12 +135,13 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
     // Label options
     var isLine = shapeType === 'line';
-    coerce('label.text');
-    coerce('label.textangle', isLine ? 'auto' : 0);
-    var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
-    coerce('label.xanchor');
-    // Default yanchor value depends on shape type and label textposition
-    coerce('label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
-    coerce('label.padding');
-    Lib.coerceFont(coerce, 'label.font', fullLayout.font);
+    var labelText = coerce('label.text');
+    if(labelText) {
+        coerce('label.textangle', isLine ? 'auto' : 0);
+        var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
+        coerce('label.xanchor');
+        coerce('label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
+        coerce('label.padding');
+        Lib.coerceFont(coerce, 'label.font', fullLayout.font);
+    }
 }
