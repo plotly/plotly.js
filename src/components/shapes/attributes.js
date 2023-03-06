@@ -301,7 +301,7 @@ module.exports = templatedArray('shape', {
             dflt: 3,
             min: 0,
             editType: 'arraydraw',
-            description: 'Sets padding between edge of label and xanchor / yanchor.'
+            description: 'Sets padding (in px) between edge of label and xanchor / yanchor.'
         },
         editType: 'arraydraw'
     },

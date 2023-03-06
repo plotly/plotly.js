@@ -3597,7 +3597,7 @@
       }
      },
      "padding": {
-      "description": "Sets padding between edge of label and xanchor / yanchor.",
+      "description": "Sets padding (in px) between edge of label and xanchor / yanchor.",
       "dflt": 3,
       "editType": "none",
       "min": 0,
@@ -7218,7 +7218,7 @@
         }
        },
        "padding": {
-        "description": "Sets padding between edge of label and xanchor / yanchor.",
+        "description": "Sets padding (in px) between edge of label and xanchor / yanchor.",
         "dflt": 3,
         "editType": "arraydraw",
         "min": 0,
