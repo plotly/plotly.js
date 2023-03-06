@@ -449,6 +449,7 @@ function setDflts(title) {
     if(title.automargin && title.yref === 'container') {
         title.y = title.y === 'auto' ? 1 : title.y;
         title.yanchor = title.yanchor === 'auto' ? 'top' : title.yanchor;
+        title.yanchor = title.y < 0.5 ? 'bottom' : title.yanchor;
     }
 }
 
