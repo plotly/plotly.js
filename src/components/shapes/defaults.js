@@ -16,19 +16,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 };
 
 function dfltLabelYanchor(isLine, labelTextPosition) {
-    var dfltYanchor;
-    if(isLine) {
-        dfltYanchor = 'bottom';
-    } else {
-        if(labelTextPosition.indexOf('top') !== -1) {
-            dfltYanchor = 'top';
-        } else if(labelTextPosition.indexOf('bottom') !== -1) {
-            dfltYanchor = 'bottom';
-        } else {
-            dfltYanchor = 'middle';
-        }
-    }
-    return dfltYanchor;
+    // If shape is a line, default y-anchor is 'bottom' (so that text is above line by default)
+    // Otherwise, default y-anchor is equal to y-component of `textposition`
+    // (so that text is positioned inside shape bounding box by default)
+    return isLine ? 'bottom' :
+        labelTextPosition.indexOf('top') !== -1 ? 'top' :
+        labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
 }
 
 function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
