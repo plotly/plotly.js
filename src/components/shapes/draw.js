@@ -734,6 +734,8 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
     var textPadding = shapeOptions.label.padding;
     var shapeType = shapeOptions.type;
     var textAngleRad = Math.PI / 180 * actualTextAngle;
+    var sinA = Math.sin(textAngleRad);
+    var cosA = Math.cos(textAngleRad);
     var xanchor = shapeOptions.label.xanchor;
     var yanchor = shapeOptions.label.yanchor;
 
@@ -788,8 +790,8 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
         if(textAngle === 'auto') {
             // Set direction to apply padding (based on `yanchor` only)
             var paddingDirection = paddingConstantsY[yanchor];
-            paddingX = -textPadding * Math.sin(textAngleRad) * paddingDirection;
-            paddingY = textPadding * Math.cos(textAngleRad) * paddingDirection;
+            paddingX = -textPadding * sinA * paddingDirection;
+            paddingY = textPadding * cosA * paddingDirection;
         } else {
             // Set direction to apply padding (based on `xanchor` and `yanchor`)
             var paddingDirectionX = paddingConstantsX[xanchor];
@@ -837,8 +839,8 @@ function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actu
     // Adjust so that text is anchored at top of first line rather than at baseline of first line
     var baselineAdjust = shapeOptions.label.font.size;
     var textHeight = textBB.height;
-    var xshift = (textHeight * shiftFraction - baselineAdjust) * Math.sin(textAngleRad);
-    var yshift = -(textHeight * shiftFraction - baselineAdjust) * Math.cos(textAngleRad);
+    var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
+    var yshift = -(textHeight * shiftFraction - baselineAdjust) * cosA;
 
     return { textx: textx + xshift, texty: texty + yshift, xanchor: xanchor };
 }
