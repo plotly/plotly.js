@@ -1513,7 +1513,7 @@ describe('hover info', function() {
 
     describe('overflowing hover labels', function() {
         var trace = {y: [1, 2, 3], text: ['', 'a<br>b<br>c', '']};
-        var data = [trace, trace, trace, trace, trace, trace, trace];
+        var data = [trace, trace, trace, trace, trace, trace, trace, trace, trace, trace];
         var layout = {
             width: 600, height: 600, showlegend: false,
             margin: {l: 100, r: 100, t: 100, b: 100},
@@ -1531,17 +1531,86 @@ describe('hover info', function() {
             return d3Select(gd).selectAll('g.hovertext').size();
         }
 
-        it('shows as many labels as will fit on the div, not on the subplot', function(done) {
+        it('shows as many labels as will fit on the div, not on the subplot, when labels do not overlap the axis label', function(done) {
             _hoverNatural(gd, 200, 200);
 
-            expect(labelCount()).toBe(7);
+            expect(labelCount()).toBe(8);
 
             Plotly.relayout(gd, {'yaxis.domain': [0.48, 0.52]})
             .then(function() {
                 _hoverNatural(gd, 150, 200);
                 _hoverNatural(gd, 200, 200);
 
-                expect(labelCount()).toBe(7);
+                expect(labelCount()).toBe(8);
+            })
+            .then(done, done.fail);
+        });
+    });
+
+    describe('overlapping hover labels', function() {
+        var trace = {y: [1, 2, 3], x: ['01.01.2020', '02.01.2020', '03.01.2020'], text: ['', 'a<br>b<br>c', '']};
+        var data = [trace, trace, trace, trace, trace, trace, trace, trace, trace, trace];
+        var layout = {
+            width: 600, height: 600, showlegend: false,
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            hovermode: 'x'
+        };
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, data, layout).then(done);
+        });
+
+        function labelCount() {
+            return d3Select(gd).selectAll('g.hovertext').size();
+        }
+
+        it('does not show labels that would overlap the axis hover label', function(done) {
+            _hoverNatural(gd, 200, 200);
+
+            expect(labelCount()).toBe(6);
+
+            Plotly.relayout(gd, {'yaxis.domain': [0.48, 0.52]})
+            .then(function() {
+                _hoverNatural(gd, 150, 200);
+                _hoverNatural(gd, 200, 200);
+
+                expect(labelCount()).toBe(4);
+            })
+            .then(done, done.fail);
+        });
+    });
+    describe('overlapping hover labels of different lengths', function() {
+        var data = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map(function(v) {return {x: [100, 200, 300], y: [v, v + 1, v + 2]};});
+        var layout = {
+            width: 500, height: 400, showlegend: false,
+            margin: {l: 100, r: 100, t: 100, b: 100},
+            hovermode: 'x'
+        };
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.newPlot(gd, data, layout).then(done);
+        });
+
+        function labelCount() {
+            return d3Select(gd).selectAll('g.hovertext').size();
+        }
+
+        it('does not show labels that would overlap the axis hover label', function(done) {
+            _hoverNatural(gd, 130, 100);
+
+            expect(labelCount()).toBe(14);
+
+            Plotly.relayout(gd, {'yaxis.domain': [0.2, 0.8]})
+            .then(function() {
+                _hoverNatural(gd, 130, 100);
+
+                expect(labelCount()).toBe(12);
             })
             .then(done, done.fail);
         });
