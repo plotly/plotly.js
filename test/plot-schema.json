@@ -3580,7 +3580,7 @@
        "editType": "none",
        "valType": "color"
       },
-      "description": "Sets the shape label text font.",
+      "description": "Sets the new shape label text font.",
       "editType": "none",
       "family": {
        "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
@@ -3597,7 +3597,7 @@
       }
      },
      "padding": {
-      "description": "Sets padding (in px) between edge of label and xanchor / yanchor.",
+      "description": "Sets padding (in px) between edge of label and edge of new shape.",
       "dflt": 3,
       "editType": "none",
       "min": 0,
@@ -3605,7 +3605,7 @@
      },
      "role": "object",
      "text": {
-      "description": "Sets the text to display with shape.",
+      "description": "Sets the text to display with the new shape.",
       "dflt": "",
       "editType": "none",
       "valType": "string"
@@ -3617,7 +3617,7 @@
       "valType": "angle"
      },
      "textposition": {
-      "description": "Sets the position of the label text relative to the shape. Supported values for rectangles, circles and paths are `top left`, `top center`, `top right`, `middle left`, `middle center`, `middle right`, `bottom left`, `bottom center`, and `bottom right`. Supported values for lines are `start`, `middle`, and `end`. Default: `middle center` for rectangles, circles, and paths; `middle` for lines.",
+      "description": "Sets the position of the label text relative to the new shape. Supported values for rectangles, circles and paths are `top left`, `top center`, `top right`, `middle left`, `middle center`, `middle right`, `bottom left`, `bottom center`, and `bottom right`. Supported values for lines are `start`, `middle`, and `end`. Default: `middle center` for rectangles, circles, and paths; `middle` for lines.",
       "editType": "none",
       "valType": "enumerated",
       "values": [
@@ -3636,7 +3636,7 @@
       ]
      },
      "xanchor": {
-      "description": "Sets the label's horizontal position anchor This anchor binds the specified `label.textposition` to the *left*, *center* or *right* of the label text. For example, if `label.textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the shape.",
+      "description": "Sets the label's horizontal position anchor This anchor binds the specified `label.textposition` to the *left*, *center* or *right* of the label text. For example, if `label.textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the new shape.",
       "dflt": "auto",
       "editType": "none",
       "valType": "enumerated",
@@ -3648,7 +3648,7 @@
       ]
      },
      "yanchor": {
-      "description": "Sets the label's vertical position anchor This anchor binds the specified `label.textposition` to the *top*, *middle* or *bottom* of the label text. For example, if `label.textposition` is set to *top right* and `yanchor` to *top* then the top-most portion of the label text lines up with the top-most edge of the shape.",
+      "description": "Sets the label's vertical position anchor This anchor binds the specified `label.textposition` to the *top*, *middle* or *bottom* of the label text. For example, if `label.textposition` is set to *top right* and `yanchor` to *top* then the top-most portion of the label text lines up with the top-most edge of the new shape.",
       "editType": "none",
       "valType": "enumerated",
       "values": [
@@ -7218,7 +7218,7 @@
         }
        },
        "padding": {
-        "description": "Sets padding (in px) between edge of label and xanchor / yanchor.",
+        "description": "Sets padding (in px) between edge of label and edge of shape.",
         "dflt": 3,
         "editType": "arraydraw",
         "min": 0,

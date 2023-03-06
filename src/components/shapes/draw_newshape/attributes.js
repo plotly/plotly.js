@@ -84,11 +84,11 @@ module.exports = {
                 valType: 'string',
                 dflt: '',
                 editType: 'none',
-                description: 'Sets the text to display with shape.'
+                description: 'Sets the text to display with the new shape.'
             },
             font: fontAttrs({
                 editType: 'none',
-                description: 'Sets the shape label text font.'
+                description: 'Sets the new shape label text font.'
             }),
             textposition: {
                 valType: 'enumerated',
@@ -100,7 +100,7 @@ module.exports = {
                 ],
                 editType: 'none',
                 description: [
-                    'Sets the position of the label text relative to the shape.',
+                    'Sets the position of the label text relative to the new shape.',
                     'Supported values for rectangles, circles and paths are',
                     '`top left`, `top center`, `top right`, `middle left`,',
                     '`middle center`, `middle right`, `bottom left`, `bottom center`,',
@@ -132,7 +132,7 @@ module.exports = {
                     'For example, if `label.textposition` is set to *top right* and',
                     '`xanchor` to *right* then the right-most portion of the',
                     'label text lines up with the right-most edge of the',
-                    'shape.',
+                    'new shape.',
                 ].join(' '),
             },
             yanchor: {
@@ -146,7 +146,7 @@ module.exports = {
                     'For example, if `label.textposition` is set to *top right* and',
                     '`yanchor` to *top* then the top-most portion of the',
                     'label text lines up with the top-most edge of the',
-                    'shape.',
+                    'new shape.',
                 ].join(' ')
             },
             padding: {
@@ -154,7 +154,7 @@ module.exports = {
                 dflt: 3,
                 min: 0,
                 editType: 'none',
-                description: 'Sets padding (in px) between edge of label and xanchor / yanchor.'
+                description: 'Sets padding (in px) between edge of label and edge of new shape.'
             },
             editType: 'none'
         },
