@@ -13,6 +13,9 @@ plotlyjsTypes = {
     'float64': 'f8'
 }
 
+int32bounds = numpy.iinfo(numpy.int32)
+uint32bounds = numpy.iinfo(numpy.uint32)
+
 # List mainly including keys with type of 'info_array'
 # Simply having two items the b64 option is not supported by plotly.js
 # This list also includes cases of type 'any' that we don't to be converted
@@ -73,8 +76,16 @@ def arraysToB64(obj, newObj) :
 
                 # convert Big Ints until we could support them in plotly.js
                 if str(arr.dtype) == 'int64' :
+                    if arr.max() > int32bounds.max or arr.min() < int32bounds.min :
+                        newObj[key] = val
+                        continue
+
                     arr = arr.astype(numpy.int32)
                 elif str(arr.dtype) == 'uint64' :
+                    if arr.max() > uint32bounds.max or arr.min() < uint32bounds.min :
+                        newObj[key] = val
+                        continue
+
                     arr = arr.astype(numpy.uint32)
 
                 if str(arr.dtype) in plotlyjsTypes :
