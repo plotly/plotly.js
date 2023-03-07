@@ -42,6 +42,7 @@ rangeKeys = [
     'groups',
     'selectedpoints',
     'opacityscale',
+    'transforms', # deprecated
     'cameraposition' # deprecated
 ]
 
