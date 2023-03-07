@@ -443,13 +443,23 @@ function isOutsideContainer(gd, title, position, y) {
 function setDflts(title) {
     if(title.automargin && title.yref === 'paper') {
         title.y = title.y === 0 ? title.y : 1;
-        title.yanchor = title.yanchor === 'auto' ? 'bottom' : title.yanchor;
-        title.yanchor = title.y === 0 ? 'top' : title.yanchor;
+        if(title.yanchor === 'auto') {
+            if(title.y === 0) {
+                title.yanchor = 'top'
+            } else {
+                title.yanchor = 'bottom'
+            }
+        }
     }
     if(title.automargin && title.yref === 'container') {
         title.y = title.y === 'auto' ? 1 : title.y;
-        title.yanchor = title.yanchor === 'auto' ? 'top' : title.yanchor;
-        title.yanchor = title.y < 0.5 ? 'bottom' : title.yanchor;
+        if(title.yanchor === 'auto') {
+            if(title.y < 0.5) {
+                title.yanchor = 'bottom'
+            } else {
+                title.yanchor = 'top'
+            }
+        }
     }
 }
 
