@@ -71,6 +71,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 coerceAxis('tickvals', imagTickvalsDflt);
             }
 
+            if(Lib.isTypedArray(axOut.tickvals)) axOut.tickvals = Array.from(axOut.tickvals);
+
             var dfltColor;
             var dfltFontColor;
             var dfltFontSize;

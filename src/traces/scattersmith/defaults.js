@@ -75,6 +75,13 @@ function handleRealImagDefaults(traceIn, traceOut, layout, coerce) {
         len = Math.min(real.length, imag.length);
     }
 
+    if(Lib.isTypedArray(real)) {
+        traceOut.real = real = Array.from(real);
+    }
+    if(Lib.isTypedArray(imag)) {
+        traceOut.imag = imag = Array.from(imag);
+    }
+
     traceOut._length = len;
     return len;
 }
