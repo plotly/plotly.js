@@ -6,6 +6,7 @@ var createConeMesh = require('../../../stackgl_modules').gl_cone3d.createConeMes
 var simpleMap = require('../../lib').simpleMap;
 var parseColorScale = require('../../lib/gl_format_color').parseColorScale;
 var extractOpts = require('../../components/colorscale').extractOpts;
+var isArrayOrTypedArray = require('../../lib').isArrayOrTypedArray;
 var zip3 = require('../../plots/gl3d/zip3');
 
 function Cone(scene, uid) {
@@ -34,7 +35,7 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.hovertext || this.data.text;
-        if(Array.isArray(text) && text[selectIndex] !== undefined) {
+        if(isArrayOrTypedArray(text) && text[selectIndex] !== undefined) {
             selection.textLabel = text[selectIndex];
         } else if(text) {
             selection.textLabel = text;
