@@ -445,9 +445,9 @@ function setDflts(title) {
         title.y = title.y === 0 ? title.y : 1;
         if(title.yanchor === 'auto') {
             if(title.y === 0) {
-                title.yanchor = 'top'
+                title.yanchor = 'top';
             } else {
-                title.yanchor = 'bottom'
+                title.yanchor = 'bottom';
             }
         }
     }
@@ -455,9 +455,9 @@ function setDflts(title) {
         title.y = title.y === 'auto' ? 1 : title.y;
         if(title.yanchor === 'auto') {
             if(title.y < 0.5) {
-                title.yanchor = 'bottom'
+                title.yanchor = 'bottom';
             } else {
-                title.yanchor = 'top'
+                title.yanchor = 'top';
             }
         }
     }
@@ -497,7 +497,7 @@ function applyTitleAutoMargin(gd, y) {
     var position = gd._fullLayout.title.y > 0.5 ? 't' : 'b';
     var push = {
         x: title.x,
-        y: title.y > 0.5 ? 1 : 0, // TODO: Is it correct that this should either be 1 or 0?
+        y: title.y,
         t: 0,
         b: 0
     };
@@ -508,17 +508,15 @@ function applyTitleAutoMargin(gd, y) {
             title.pad.t +
             title.pad.b
         );
+        Plots.allowAutoMargin(gd, titleID);
+        Plots.autoMargin(gd, titleID, push);
     } else if(title.yref === 'container') {
-        push[position] = (
+        gd._fullLayout._reservedMargin[position] = (
             containerPushVal(position, title, gd._fullLayout.height, titleDepth(title)) +
             title.pad.t +
             title.pad.b
         );
     }
-
-
-    Plots.allowAutoMargin(gd, titleID);
-    Plots.autoMargin(gd, titleID, push);
 }
 
 function getMainTitleX(fullLayout, textAnchor) {
