@@ -306,7 +306,7 @@ describe('Test scatterpolargl interactions:', function() {
           ['category', ['A', 'B']],
         ].forEach(function(test) {
             var axType = test[0];
-            var axNames = {'r': 'radialaxis', 'theta': 'angularaxis'};
+            var axNames = {r: 'radialaxis', theta: 'angularaxis'};
             it('@gl should return the same eventData as scatter on ' + axType + ' ' + ax + ' axis', function(done) {
                 var _mock = {
                     data: [{type: 'scatterpolar', r: [5, 10], theta: [0, 180]}],
@@ -460,12 +460,12 @@ describe('Test scatterpolargl autorange:', function() {
 
 describe('Test scatterpolargl texttemplate:', function() {
     checkTextTemplate([{
-        'type': 'scatterpolargl',
-        'mode': 'markers+text',
-        'text': ['A', 'B', 'C'],
-        'textposition': 'top center',
-        'r': [1, 0.5, 1],
-        'theta': [0, 90, 180],
+        type: 'scatterpolargl',
+        mode: 'markers+text',
+        text: ['A', 'B', 'C'],
+        textposition: 'top center',
+        r: [1, 0.5, 1],
+        theta: [0, 90, 180],
     }], 'g.textpoint', [
         ['%{text}: (%{r:0.2f}, %{theta:0.1f})', ['A: (1.00, 0.0)', 'B: (0.50, 90.0)', 'C: (1.00, 180.0)']],
         [['', 'b%{theta:0.2f}', '%{theta:0.2f}'], ['', 'b90.00', '180.00']]

@@ -378,10 +378,10 @@ exports.cleanDate = function(v, dflt, calendar) {
 var fracMatch = /%\d?f/g;
 var halfYearMatch = /%h/g;
 var quarterToHalfYear = {
-    '1': '1',
-    '2': '1',
-    '3': '2',
-    '4': '2',
+    1: '1',
+    2: '1',
+    3: '2',
+    4: '2',
 };
 function modDateFormat(fmt, x, formatter, calendar) {
     fmt = fmt.replace(fracMatch, function(match) {

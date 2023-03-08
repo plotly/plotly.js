@@ -79,8 +79,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         zLabelVal: zLabel,
         text: text,
         hovertemplateLabels: {
-            'zLabel': zLabel,
-            'colorLabel': colorstring,
+            zLabel: zLabel,
+            colorLabel: colorstring,
             'color[0]Label': c[0] + s[0],
             'color[1]Label': c[1] + s[1],
             'color[2]Label': c[2] + s[2],

@@ -2904,13 +2904,13 @@ function assertTraceField(calcData, prop, expectation) {
 describe('bar tweening', function() {
     var gd;
     var mock = {
-        'data': [{
-            'type': 'bar',
-            'x': ['A', 'B', 'C'],
-            'text': ['A', 'B', 'C'],
-            'textposition': 'inside',
-            'y': [24, 5, 8],
-            'error_y': {'array': [3, 2, 1]}
+        data: [{
+            type: 'bar',
+            x: ['A', 'B', 'C'],
+            text: ['A', 'B', 'C'],
+            textposition: 'inside',
+            y: [24, 5, 8],
+            error_y: {array: [3, 2, 1]}
         }]
     };
     var transitionOpts = false; // use default
@@ -2931,7 +2931,7 @@ describe('bar tweening', function() {
             [300, '.point path', 'style', 'fill', ['rgb(165, 48, 72)', 'rgb(12, 201, 72)', 'rgb(12, 48, 225)']],
             [500, '.point path', 'style', 'fill', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']]
         ];
-        var animateOpts = {'data': [{'marker': {'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}]};
+        var animateOpts = {data: [{marker: {color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}]};
 
         checkTransition(gd, mock, animateOpts, transitionOpts, tests)
           .then(done, done.fail);
@@ -3005,7 +3005,7 @@ describe('bar tweening', function() {
             [600, '.point path', 'style', 'stroke', ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']],
             [600, '.point path', 'style', 'stroke-width', ['20px', '20px', '20px']]
         ];
-        var animateOpts = {'data': [{'marker': {'line': {'width': 20, 'color': ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
+        var animateOpts = {data: [{marker: {line: {width: 20, color: ['rgb(255, 0, 0)', 'rgb(0, 255, 0)', 'rgb(0, 0, 255)']}}}]};
 
         checkTransition(gd, mock, animateOpts, transitionOpts, tests)
           .then(done, done.fail);
@@ -3038,7 +3038,7 @@ describe('bar tweening', function() {
                 text: ['A', 'B', 'C'],
                 textposition: 'inside',
                 y: [24, 5, 8],
-                error_y: {'array': [3, 2, 1]},
+                error_y: {array: [3, 2, 1]},
                 marker: {color: ['red', 'green', 'blue']}
             }]
         };

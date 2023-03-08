@@ -97,23 +97,23 @@ var DFLTRANGE = {
  */
 var UNKNOWN = '##';
 var d3ToWorldCalendars = {
-    'd': {'0': 'dd', '-': 'd'}, // 2-digit or unpadded day of month
-    'e': {'0': 'd', '-': 'd'}, // alternate, always unpadded day of month
-    'a': {'0': 'D', '-': 'D'}, // short weekday name
-    'A': {'0': 'DD', '-': 'DD'}, // full weekday name
-    'j': {'0': 'oo', '-': 'o'}, // 3-digit or unpadded day of the year
-    'W': {'0': 'ww', '-': 'w'}, // 2-digit or unpadded week of the year (Monday first)
-    'm': {'0': 'mm', '-': 'm'}, // 2-digit or unpadded month number
-    'b': {'0': 'M', '-': 'M'}, // short month name
-    'B': {'0': 'MM', '-': 'MM'}, // full month name
-    'y': {'0': 'yy', '-': 'yy'}, // 2-digit year (map unpadded to zero-padded)
-    'Y': {'0': 'yyyy', '-': 'yyyy'}, // 4-digit year (map unpadded to zero-padded)
-    'U': UNKNOWN, // Sunday-first week of the year
-    'w': UNKNOWN, // day of the week [0(sunday),6]
+    d: {0: 'dd', '-': 'd'}, // 2-digit or unpadded day of month
+    e: {0: 'd', '-': 'd'}, // alternate, always unpadded day of month
+    a: {0: 'D', '-': 'D'}, // short weekday name
+    A: {0: 'DD', '-': 'DD'}, // full weekday name
+    j: {0: 'oo', '-': 'o'}, // 3-digit or unpadded day of the year
+    W: {0: 'ww', '-': 'w'}, // 2-digit or unpadded week of the year (Monday first)
+    m: {0: 'mm', '-': 'm'}, // 2-digit or unpadded month number
+    b: {0: 'M', '-': 'M'}, // short month name
+    B: {0: 'MM', '-': 'MM'}, // full month name
+    y: {0: 'yy', '-': 'yy'}, // 2-digit year (map unpadded to zero-padded)
+    Y: {0: 'yyyy', '-': 'yyyy'}, // 4-digit year (map unpadded to zero-padded)
+    U: UNKNOWN, // Sunday-first week of the year
+    w: UNKNOWN, // day of the week [0(sunday),6]
     // combined format, we replace the date part with the world-calendar version
     // and the %X stays there for d3 to handle with time parts
-    'c': {'0': 'D M d %X yyyy', '-': 'D M d %X yyyy'},
-    'x': {'0': 'mm/dd/yyyy', '-': 'mm/dd/yyyy'}
+    c: {0: 'D M d %X yyyy', '-': 'D M d %X yyyy'},
+    x: {0: 'mm/dd/yyyy', '-': 'mm/dd/yyyy'}
 };
 
 function worldCalFmt(fmt, x, calendar) {

@@ -2321,7 +2321,7 @@ axes.draw = function(gd, arg, opts) {
         }
     });
 
-    var axShifts = {'false': {'left': 0, 'right': 0}};
+    var axShifts = {false: {left: 0, right: 0}};
 
     return Lib.syncOrAsync(axList.map(function(axId) {
         return function() {

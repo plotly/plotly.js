@@ -1126,7 +1126,7 @@ function makeZoombox(zoomlayer, lum, xs, ys, path0) {
     return zoomlayer.append('path')
         .attr('class', 'zoombox')
         .style({
-            'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+            fill: lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
             'stroke-width': 0
         })
         .attr('transform', strTranslate(xs, ys))

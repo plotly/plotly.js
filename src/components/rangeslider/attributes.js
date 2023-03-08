@@ -40,7 +40,7 @@ module.exports = {
             {valType: 'any', editType: 'calc', impliedEdits: {'^autorange': false}}
         ],
         editType: 'calc',
-        impliedEdits: {'autorange': false},
+        impliedEdits: {autorange: false},
         description: [
             'Sets the range of the range slider.',
             'If not set, defaults to the full xaxis range.',
