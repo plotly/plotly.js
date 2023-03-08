@@ -1863,7 +1863,7 @@ function initMargins(fullLayout) {
     }
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
     if(!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
-    if(!fullLayout._reservedMargin) fullLayout._reservedMargin = {'t': 0, 'b': 0, 'l': 0, 'r': 0};
+    if(!fullLayout._reservedMargin) fullLayout._reservedMargin = {};
 }
 
 // non-negotiable - this is the smallest height we will allow users to specify via explicit margins
@@ -1981,9 +1981,15 @@ plots.doAutoMargin = function(gd) {
 
     var gs = fullLayout._size;
     var margin = fullLayout.margin;
-    var reservedMargins = fullLayout._reservedMargin;
+    var reservedMargins = {'t': 0, 'b': 0, 'l': 0, 'r': 0};
     var oldMargins = Lib.extendFlat({}, gs);
 
+    // We're assuming that each entry only pushes the margin out on one side
+    for(var [key, rank] of Object.entries(gd._fullLayout._reservedMargin)) {
+        var side = Object.keys(rank)[0]
+        var val = Object.values(rank)[0]
+        reservedMargins[side] += val
+    }
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
     // fullLayout._size has margins and plotsize after adjustment
@@ -2019,7 +2025,7 @@ plots.doAutoMargin = function(gd) {
             var pl = pushleft.size;
             var fb = pushbottom.val;
             var pb = pushbottom.size;
-            var nonReservedWidth = width - reservedMargins.r - reservedMargins.h;
+            var nonReservedWidth = width - reservedMargins.r - reservedMargins.l;
             var nonReservedHeight = height - reservedMargins.t - reservedMargins.b;
 
             for(var k2 in pushMargin) {
@@ -2027,8 +2033,8 @@ plots.doAutoMargin = function(gd) {
                     var fr = pushMargin[k2].r.val;
                     var pr = pushMargin[k2].r.size;
                     if(fr > fl) {
-                        var newL = (pl * fr + (pr - width) * fl) / (fr - fl);
-                        var newR = (pr * (1 - fl) + (pl - width) * (1 - fr)) / (fr - fl);
+                        var newL = (pl * fr + (pr - nonReservedWidth) * fl) / (fr - fl);
+                        var newR = (pr * (1 - fl) + (pl - nonReservedWidth) * (1 - fr)) / (fr - fl);
                         if(newL + newR > ml + mr) {
                             ml = newL;
                             mr = newR;
@@ -2040,8 +2046,8 @@ plots.doAutoMargin = function(gd) {
                     var ft = pushMargin[k2].t.val;
                     var pt = pushMargin[k2].t.size;
                     if(ft > fb) {
-                        var newB = (pb * ft + (pt - height) * fb) / (ft - fb);
-                        var newT = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
+                        var newB = (pb * ft + (pt - nonReservedHeight) * fb) / (ft - fb);
+                        var newT = (pt * (1 - fb) + (pb - nonReservedHeight) * (1 - ft)) / (ft - fb);
                         if(newB + newT > mb + mt) {
                             mb = newB;
                             mt = newT;
@@ -2084,10 +2090,10 @@ plots.doAutoMargin = function(gd) {
     }
 
 
-    gs.l = Math.round(ml) //+ reservedMargins.l;
-    gs.r = Math.round(mr) //+ reservedMargins.r;
-    gs.t = Math.round(mt) //+ reservedMargins.t;
-    gs.b = Math.round(mb) //+ reservedMargins.b;
+    gs.l = Math.round(ml) + reservedMargins.l;
+    gs.r = Math.round(mr) + reservedMargins.r;
+    gs.t = Math.round(mt) + reservedMargins.t;
+    gs.b = Math.round(mb) + reservedMargins.b;
     gs.p = Math.round(margin.pad);
     gs.w = Math.round(width) - gs.l - gs.r;
     gs.h = Math.round(height) - gs.t - gs.b;

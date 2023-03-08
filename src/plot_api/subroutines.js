@@ -511,11 +511,13 @@ function applyTitleAutoMargin(gd, y) {
         Plots.allowAutoMargin(gd, titleID);
         Plots.autoMargin(gd, titleID, push);
     } else if(title.yref === 'container') {
-        gd._fullLayout._reservedMargin[position] = (
+        var reservedPush = {};
+        reservedPush[position] = (
             containerPushVal(position, title, gd._fullLayout.height, titleDepth(title)) +
             title.pad.t +
             title.pad.b
         );
+        gd._fullLayout._reservedMargin[titleID] = reservedPush;
     }
 }
 
