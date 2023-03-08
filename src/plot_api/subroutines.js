@@ -501,6 +501,7 @@ function applyTitleAutoMargin(gd, y) {
         t: 0,
         b: 0
     };
+    var reservedPush = {};
 
     if(title.yref === 'paper' && isOutsideContainer(gd, title, position, y)) {
         push[position] = (
@@ -508,10 +509,7 @@ function applyTitleAutoMargin(gd, y) {
             title.pad.t +
             title.pad.b
         );
-        Plots.allowAutoMargin(gd, titleID);
-        Plots.autoMargin(gd, titleID, push);
     } else if(title.yref === 'container') {
-        var reservedPush = {};
         reservedPush[position] = (
             containerPushVal(position, title, gd._fullLayout.height, titleDepth(title)) +
             title.pad.t +
@@ -519,6 +517,8 @@ function applyTitleAutoMargin(gd, y) {
         );
         gd._fullLayout._reservedMargin[titleID] = reservedPush;
     }
+    Plots.allowAutoMargin(gd, titleID);
+    Plots.autoMargin(gd, titleID, push);
 }
 
 function getMainTitleX(fullLayout, textAnchor) {

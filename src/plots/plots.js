@@ -1985,10 +1985,11 @@ plots.doAutoMargin = function(gd) {
     var oldMargins = Lib.extendFlat({}, gs);
 
     // We're assuming that each entry only pushes the margin out on one side
-    for(var [key, rank] of Object.entries(gd._fullLayout._reservedMargin)) {
-        var side = Object.keys(rank)[0]
-        var val = Object.values(rank)[0]
-        reservedMargins[side] += val
+    var margins = gd._fullLayout._reservedMargin;
+    for(var key in margins) {
+        var side = Object.keys(margins[key])[0];
+        var val = Object.values(margins[key])[0];
+        reservedMargins[side] += val;
     }
     // adjust margins for outside components
     // fullLayout.margin is the requested margin,
