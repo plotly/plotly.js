@@ -52,8 +52,8 @@ exports.ensureArray = function(out, n) {
 };
 
 var typedArrays = {
-    c1: typeof Uint8ClampedArray === 'undefined' ? undefined :
-               Uint8ClampedArray, // not supported in numpy?
+    u1c: typeof Uint8ClampedArray === 'undefined' ? undefined :
+                Uint8ClampedArray, // not supported in numpy?
 
     i1: typeof Int8Array === 'undefined' ? undefined :
                Int8Array,
@@ -88,6 +88,16 @@ var typedArrays = {
                BigUint64Array,
     */
 };
+
+typedArrays.uint8c = typedArrays.u1c;
+typedArrays.uint8 = typedArrays.u1;
+typedArrays.int8 = typedArrays.i1;
+typedArrays.uint16 = typedArrays.u2;
+typedArrays.int16 = typedArrays.i2;
+typedArrays.uint32 = typedArrays.u4;
+typedArrays.int32 = typedArrays.i4;
+typedArrays.float32 = typedArrays.f4;
+typedArrays.float64 = typedArrays.f8;
 
 function isArrayBuffer(a) {
     return a.constructor === ArrayBuffer;

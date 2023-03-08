@@ -458,7 +458,7 @@ describe('Plotly.toImage', function() {
                     z: {bdata: z, dtype: 'i1'},
                     marker: {
                         color: {bdata: c, dtype: 'u1'},
-                        size: {bdata: s, dtype: 'c1'}
+                        size: {bdata: s, dtype: 'u1c'}
                     }
                 }])
                 .then(function(gd) {
@@ -495,7 +495,7 @@ describe('Plotly.toImage', function() {
                     }
 
                     expect(trace.marker.size.bdata).toEqual('ADx48A==');
-                    expect(trace.marker.size.dtype).toEqual('c1');
+                    expect(trace.marker.size.dtype).toEqual('u1c');
                     expect(trace.marker.size.shape).toEqual('4');
 
                     expect(trace.marker.color.bdata).toEqual('ADx48A==');
