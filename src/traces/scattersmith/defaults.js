@@ -75,6 +75,7 @@ function handleRealImagDefaults(traceIn, traceOut, layout, coerce) {
         len = Math.min(real.length, imag.length);
     }
 
+    // TODO: handle this case outside supply defaults step
     if(Lib.isTypedArray(real)) {
         traceOut.real = real = Array.from(real);
     }
