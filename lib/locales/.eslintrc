@@ -1,0 +1,6 @@
+{
+  "extends": "../.eslintrc",
+  "rules": {
+    "quote-props": ["error", "consistent"]
+  }
+}
