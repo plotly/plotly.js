@@ -236,7 +236,7 @@ module.exports = extendFlat({
             ].join(' ')
         },
         editType: 'calc',
-        impliedEdits: {'autocontour': false}
+        impliedEdits: {autocontour: false}
     },
 
     line: {

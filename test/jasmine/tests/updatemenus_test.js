@@ -760,7 +760,7 @@ describe('update menus interactions', function() {
 
             return Plotly.relayout(gd, {
                 'updatemenus[0].bgcolor': null,
-                'paper_bgcolor': 'black'
+                paper_bgcolor: 'black'
             });
         }).then(function() {
             assertItemColor(selectHeader(0), 'rgb(0, 0, 0)');
@@ -944,15 +944,15 @@ describe('update menus interaction with other components:', function() {
                 buttons: [{
                     label: 'markers and lines',
                     method: 'restyle',
-                    args: [{ 'mode': 'markers+lines' }]
+                    args: [{ mode: 'markers+lines' }]
                 }, {
                     label: 'markers',
                     method: 'restyle',
-                    args: [{ 'mode': 'markers' }]
+                    args: [{ mode: 'markers' }]
                 }, {
                     label: 'lines',
                     method: 'restyle',
-                    args: [{ 'mode': 'lines' }]
+                    args: [{ mode: 'lines' }]
                 }]
             }]
         })

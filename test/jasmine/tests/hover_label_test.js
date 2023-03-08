@@ -4586,10 +4586,10 @@ describe('dragmode: false', function() {
 describe('hovermode: (x|y)unified', function() {
     var gd;
     var mock = {
-        'data': [
-          {'y': [0, 3, 6, 4, 10, 2, 3, 5, 4, 0, 5]},
-          {'y': [0, 4, 7, 8, 10, 6, 3, 3, 4, 0, 5], }
-        ], 'layout': {'showlegend': false, 'hovermode': 'x unified'}};
+        data: [
+          {y: [0, 3, 6, 4, 10, 2, 3, 5, 4, 0, 5]},
+          {y: [0, 4, 7, 8, 10, 6, 3, 3, 4, 0, 5], }
+        ], layout: {showlegend: false, hovermode: 'x unified'}};
 
     beforeEach(function() {
         gd = createGraphDiv();
@@ -4652,7 +4652,7 @@ describe('hovermode: (x|y)unified', function() {
     }
 
     it('set smart defaults for spikeline in x unified', function(done) {
-        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'x unified', 'xaxis': {'color': 'red'}})
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {hovermode: 'x unified', xaxis: {color: 'red'}})
             .then(function(gd) {
                 expect(gd._fullLayout.hovermode).toBe('x unified');
                 var ax = gd._fullLayout.xaxis;
@@ -4668,7 +4668,7 @@ describe('hovermode: (x|y)unified', function() {
     });
 
     it('set smart defaults for spikeline in y unified', function(done) {
-        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {'hovermode': 'y unified', 'yaxis': {'color': 'red'}})
+        Plotly.newPlot(gd, [{y: [4, 6, 5]}], {hovermode: 'y unified', yaxis: {color: 'red'}})
             .then(function(gd) {
                 expect(gd._fullLayout.hovermode).toBe('y unified');
                 var ax = gd._fullLayout.yaxis;
@@ -6088,7 +6088,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 // Set legend.bgcolor which should win over paper_bgcolor
                 return Plotly.relayout(gd, {
-                    'showlegend': true,
+                    showlegend: true,
                     'legend.bgcolor': bgcolor[1],
                     'legend.bordercolor': bgcolor[1]
                 });
@@ -6165,7 +6165,7 @@ describe('hovermode: (x|y)unified', function() {
 
                 // Set legend.font which should win over layout font
                 return Plotly.relayout(gd, {
-                    'showlegend': true,
+                    showlegend: true,
                     'legend.font.size': 15,
                     'legend.font.family': 'Helvetica',
                     'legend.font.color': 'rgb(20, 20, 20)'

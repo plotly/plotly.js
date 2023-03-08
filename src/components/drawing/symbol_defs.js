@@ -668,7 +668,7 @@ module.exports = {
         needLine: true,
         noDot: true
     },
-    'arrow': {
+    arrow: {
         n: 53,
         f: function(r, angle, standoff) {
             if(skipAngle(angle)) return emptyPath;
