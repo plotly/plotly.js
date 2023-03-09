@@ -15,20 +15,15 @@ plotlyjsShortTypes = {
 int32bounds = numpy.iinfo(numpy.int32)
 uint32bounds = numpy.iinfo(numpy.uint32)
 
-# List mainly including keys with type of 'info_array'
-# Simply having two items the b64 option is not supported by plotly.js
-# This list also includes cases of type 'any' that we don't to be converted
-# e.g. in mapbox layers or geojson
-rangeKeys = [
+skipKeys = [
     'geojson',
     'layers',
-    'range',
-    'selectedpoints'
+    'range'
 ]
 
 def arraysToB64(obj, newObj) :
     for key, val in obj.items() :
-        if key in rangeKeys :
+        if key in skipKeys :
             newObj[key] = val
         elif isinstance(val, dict) :
             newObj[key] = dict()
