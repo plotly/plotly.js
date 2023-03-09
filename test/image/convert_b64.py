@@ -23,8 +23,7 @@ rangeKeys = [
     'geojson',
     'layers',
     'range',
-    'selectedpoints',
-    'opacityscale'
+    'selectedpoints'
 ]
 
 def arraysToB64(obj, newObj) :
