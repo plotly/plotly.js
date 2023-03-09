@@ -25,6 +25,9 @@ var getModuleCalcData = require('../plots/get_data').getModuleCalcData;
 var relinkPrivateKeys = Lib.relinkPrivateKeys;
 var _ = Lib._;
 
+var isTypedArraySpec = require('../lib/array').isTypedArraySpec;
+var decodeTypedArraySpec = require('../lib/array').decodeTypedArraySpec;
+
 var plots = module.exports = {};
 
 // Expose registry methods on Plots for backward-compatibility
@@ -1356,7 +1359,10 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
         }
 
         if(_module && _module.selectPoints) {
-            coerce('selectedpoints');
+            var selectedpoints = coerce('selectedpoints');
+            if(isTypedArraySpec(selectedpoints)) {
+                traceOut.selectedpoints = Array.from(decodeTypedArraySpec(selectedpoints));
+            }
         }
 
         plots.supplyTransformDefaults(traceIn, traceOut, layout);
