@@ -2,7 +2,7 @@ from sqlite3 import NotSupportedError
 import numpy
 import base64
 
-plotlyjsTypes = {
+plotlyjsShortTypes = {
     'int8': 'i1',
     'uint8': 'u1',
     'int16': 'i2',
@@ -89,9 +89,9 @@ def arraysToB64(obj, newObj) :
 
                     arr = arr.astype(numpy.uint32)
 
-                if str(arr.dtype) in plotlyjsTypes :
+                if str(arr.dtype) in plotlyjsShortTypes :
                     newObj[key] = {
-                        'dtype': plotlyjsTypes[str(arr.dtype)],
+                        'dtype': plotlyjsShortTypes[str(arr.dtype)],
                         'bdata': base64.b64encode(arr).decode('ascii')
                     }
 
