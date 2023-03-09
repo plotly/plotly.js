@@ -22,10 +22,6 @@ uint32bounds = numpy.iinfo(numpy.uint32)
 rangeKeys = [
     'geojson',
     'layers',
-    'subplots',
-    'xaxes',
-    'yaxes',
-    'domain',
     'range',
     'selectedpoints',
     'opacityscale'
