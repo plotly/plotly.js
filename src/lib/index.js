@@ -686,7 +686,7 @@ lib.getTargetArray = function(trace, transformOpts) {
     if(typeof target === 'string' && target) {
         var array = lib.nestedProperty(trace, target).get();
         return lib.isArrayOrTypedArray(array) ? array : false;
-    } else if(Array.isArray(target)) {
+    } else if(lib.isArrayOrTypedArray(target)) {
         return target;
     }
 
