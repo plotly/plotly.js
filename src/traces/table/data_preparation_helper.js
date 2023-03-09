@@ -3,6 +3,7 @@
 var c = require('./constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 var isNumeric = require('fast-isnumeric');
+var isTypedArray = require('../../lib/array').isTypedArray;
 var isArrayOrTypedArray = require('../../lib/array').isArrayOrTypedArray;
 
 // pure functions, don't alter but passes on `gd` and parts of `trace` without deep copying
@@ -120,7 +121,8 @@ function squareStringMatrix(matrixIn) {
     var maxLen = 0;
     var i;
     for(i = 0; i < matrix.length; i++) {
-        if(!isArrayOrTypedArray(matrix[i])) matrix[i] = [matrix[i]];
+        if(isTypedArray(matrix[i])) matrix[i] = Array.from(matrix[i]);
+        else if(!isArrayOrTypedArray(matrix[i])) matrix[i] = [matrix[i]];
         minLen = Math.min(minLen, matrix[i].length);
         maxLen = Math.max(maxLen, matrix[i].length);
     }
