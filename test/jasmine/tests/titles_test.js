@@ -1155,6 +1155,28 @@ describe('Title automargining', function() {
             expect(gd._fullLayout._size.h).toBe(156);
         }).then(done, done.fail);
     });
+
+    it('should make space for multiple container-referenced components on the same side of the plot', function(done) {
+        Plotly.newPlot(gd, data, {
+            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
+            'xaxis': {
+                'automargin': true, 
+                'title': {'text': 'x-axis title', 'standoff': 0}
+            },
+            'height': 300,
+            'width': 400,
+            'title': {
+                'text': 'Basic title',
+                'font': {'size': 24},
+                'yref': 'container',
+                'automargin': true,
+                'y': 0
+            }
+        }).then(function() {
+            expect(gd._fullLayout._size.b).toBe(51);
+            expect(gd._fullLayout._size.h).toBe(249);
+        }).then(done, done.fail);
+    });
 });
 
 function expectTitle(expTitle) {
