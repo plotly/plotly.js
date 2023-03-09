@@ -30,14 +30,8 @@ rangeKeys = [
     'dtickrange',
     'constraintrange',
     'bounds',
-    'parallels',
-    'sector',
-    'span',
-    'zmin',
-    'zmax',
     'selectedpoints',
-    'opacityscale',
-    'cameraposition' # deprecated
+    'opacityscale'
 ]
 
 def arraysToB64(obj, newObj) :
