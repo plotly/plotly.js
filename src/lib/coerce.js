@@ -293,17 +293,19 @@ exports.valObjectMeta = {
                 return out;
             }
 
-            var twoD = opts.dimensions === 2 || (opts.dimensions === '1-2' && Array.isArray(v) && Array.isArray(v[0]));
+            if(isTypedArraySpec(v)) v = decodeTypedArraySpec(v);
 
-            if(!Array.isArray(v)) {
+            if(!isArrayOrTypedArray(v)) {
                 propOut.set(dflt);
                 return;
             }
 
+            var twoD = opts.dimensions === 2 || (opts.dimensions === '1-2' && Array.isArray(v) && isArrayOrTypedArray(v[0]));
+
             var items = opts.items;
             var vOut = [];
             var arrayItems = Array.isArray(items);
-            var arrayItems2D = arrayItems && twoD && Array.isArray(items[0]);
+            var arrayItems2D = arrayItems && twoD && isArrayOrTypedArray(items[0]);
             var innerItemsOnly = twoD && arrayItems && !arrayItems2D;
             var len = (arrayItems && !innerItemsOnly) ? items.length : v.length;
 
@@ -314,7 +316,7 @@ exports.valObjectMeta = {
             if(twoD) {
                 for(i = 0; i < len; i++) {
                     vOut[i] = [];
-                    row = Array.isArray(v[i]) ? v[i] : [];
+                    row = isArrayOrTypedArray(v[i]) ? v[i] : [];
                     if(innerItemsOnly) len2 = items.length;
                     else if(arrayItems) len2 = items[i].length;
                     else len2 = row.length;
@@ -338,7 +340,7 @@ exports.valObjectMeta = {
             propOut.set(vOut);
         },
         validateFunction: function(v, opts) {
-            if(!Array.isArray(v)) return false;
+            if(!isArrayOrTypedArray(v)) return false;
 
             var items = opts.items;
             var arrayItems = Array.isArray(items);
@@ -350,7 +352,7 @@ exports.valObjectMeta = {
             // valid when all input items are valid
             for(var i = 0; i < v.length; i++) {
                 if(twoD) {
-                    if(!Array.isArray(v[i]) || (!opts.freeLength && v[i].length !== items[i].length)) {
+                    if(!isArrayOrTypedArray(v[i]) || (!opts.freeLength && v[i].length !== items[i].length)) {
                         return false;
                     }
                     for(var j = 0; j < v[i].length; j++) {
