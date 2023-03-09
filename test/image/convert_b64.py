@@ -27,9 +27,6 @@ rangeKeys = [
     'yaxes',
     'domain',
     'range',
-    'dtickrange',
-    'constraintrange',
-    'bounds',
     'selectedpoints',
     'opacityscale'
 ]
