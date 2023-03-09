@@ -35,8 +35,6 @@ rangeKeys = [
     'span',
     'zmin',
     'zmax',
-    'args',
-    'args2',
     'selectedpoints',
     'opacityscale',
     'cameraposition' # deprecated
