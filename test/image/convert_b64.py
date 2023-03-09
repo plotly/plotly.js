@@ -38,7 +38,6 @@ rangeKeys = [
     'args',
     'args2',
     'values',
-    'groups',
     'selectedpoints',
     'opacityscale',
     'cameraposition' # deprecated
