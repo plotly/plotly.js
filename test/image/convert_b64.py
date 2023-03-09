@@ -17,8 +17,7 @@ uint32bounds = numpy.iinfo(numpy.uint32)
 
 skipKeys = [
     'geojson',
-    'layers',
-    'range'
+    'layers'
 ]
 
 def arraysToB64(obj, newObj) :
