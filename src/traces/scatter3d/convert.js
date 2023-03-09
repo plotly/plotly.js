@@ -227,8 +227,11 @@ function convertPlotlyOptions(scene, data) {
     }
 
     // convert text
-    if(Lib.isArrayOrTypedArray(data.text)) text = data.text;
-    else if(data.text !== undefined) {
+    if(Array.isArray(data.text)) {
+        text = data.text;
+    } else if(Lib.isTypedArray(data.text)) {
+        text = Array.from(data.text);
+    } else if(data.text !== undefined) {
         text = new Array(len);
         for(i = 0; i < len; i++) text[i] = data.text;
     }
