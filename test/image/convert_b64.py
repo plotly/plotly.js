@@ -37,7 +37,6 @@ rangeKeys = [
     'zmax',
     'args',
     'args2',
-    'values',
     'selectedpoints',
     'opacityscale',
     'cameraposition' # deprecated
