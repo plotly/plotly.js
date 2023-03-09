@@ -167,11 +167,21 @@ function draw(gd, titleClass, options) {
             var pad = isNumeric(avoid.pad) ? avoid.pad : 2;
 
             var titlebb = Drawing.bBox(titleGroup.node());
+
+            // Need to account for reservedMargins here as well
+            var reservedMargins = {t: 0, b: 0, l: 0, r: 0};
+            var margins = gd._fullLayout._reservedMargin;
+            for(var key in margins) {
+                for(var side in margins[key]) {
+                    var val = margins[key][side];
+                    reservedMargins[side] = Math.max(reservedMargins[side], val);
+                }
+            }
             var paperbb = {
-                left: 0,
-                top: 0,
-                right: fullLayout.width,
-                bottom: fullLayout.height
+                left: 0 + reservedMargins.l,
+                top: 0 + reservedMargins.t,
+                right: fullLayout.width - reservedMargins.r,
+                bottom: fullLayout.height - reservedMargins.b
             };
 
             var maxshift = avoid.maxShift ||
