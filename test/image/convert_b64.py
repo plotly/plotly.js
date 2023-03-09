@@ -1,4 +1,3 @@
-from sqlite3 import NotSupportedError
 import numpy
 import base64
 
