@@ -678,18 +678,13 @@ function drawLabel(gd, index, options, shapeGroup) {
         }
     }
 
-    // Do a fake render so we can get the text bounding box height
-    var _labelText = labelGroup.append('text')
-        .attr(labelTextAttrs)
-        .classed('shape-label-text', true)
-        .text(text);
-    _labelText.call(function(s) {
+    // Do an initial render so we can get the text bounding box height
+    labelText.call(function(s) {
         s.call(Drawing.font, font).attr({});
         svgTextUtils.convertToTspans(s, gd);
         return s;
     });
-    var textBB = Drawing.bBox(_labelText.node());
-    _labelText.remove();
+    var textBB = Drawing.bBox(labelText.node());
 
     // Calculate correct (x,y) for text
     // We also determine true xanchor since xanchor depends on position when set to 'auto'
@@ -698,23 +693,17 @@ function drawLabel(gd, index, options, shapeGroup) {
     var texty = textPos.texty;
     var xanchor = textPos.xanchor;
 
-    function textLayout(s) {
-        s.call(Drawing.font, font)
-            .attr({
-                'text-anchor': {
-                    left: 'start',
-                    center: 'middle',
-                    right: 'end'
-                }[xanchor],
-                'y': texty,
-                'x': textx,
-                'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
-            });
-        svgTextUtils.convertToTspans(s, gd);
-        return s;
-    }
-
-    labelText.call(textLayout);
+    // Update (x,y) position, xanchor, and angle
+    labelText.attr({
+        'text-anchor': {
+            left: 'start',
+            center: 'middle',
+            right: 'end'
+        }[xanchor],
+        'y': texty,
+        'x': textx,
+        'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+    }).call(svgTextUtils.positionText, textx, texty);
 }
 
 function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
