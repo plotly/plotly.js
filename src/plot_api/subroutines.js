@@ -406,7 +406,7 @@ exports.drawMainTitle = function(gd) {
     var dy = getMainTitleDy(fullLayout);
     var y = getMainTitleY(fullLayout, dy);
 
-    if(title.automargin) {
+    if(title.text && title.automargin) {
         applyTitleAutoMargin(gd, y);
     }
 
@@ -442,23 +442,15 @@ function isOutsideContainer(gd, title, position, y) {
 // 'auto' is not supported for either title.y or title.yanchor when automargin=true
 function setDflts(title) {
     if(title.automargin && title.yref === 'paper') {
-        title.y = title.y === 0 ? title.y : 1;
+        title.y = title.y === 0 ? 0 : 1;
         if(title.yanchor === 'auto') {
-            if(title.y === 0) {
-                title.yanchor = 'top';
-            } else {
-                title.yanchor = 'bottom';
-            }
+            title.yanchor = title.y === 0 ? 'top' : 'bottom';
         }
     }
     if(title.automargin && title.yref === 'container') {
-        title.y = title.y === 'auto' ? 1 : title.y;
+        if(title.y === 'auto') title.y = 1;
         if(title.yanchor === 'auto') {
-            if(title.y < 0.5) {
-                title.yanchor = 'bottom';
-            } else {
-                title.yanchor = 'top';
-            }
+            title.yanchor = title.y < 0.5 ? 'bottom' : 'top';
         }
     }
 }

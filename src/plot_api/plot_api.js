@@ -277,7 +277,7 @@ function _doPlot(gd, data, layout, config) {
 
         subroutines.drawMarginPushers(gd);
         Axes.allowAutoMargin(gd);
-        Plots.allowAutoMargin(gd, 'title.automargin');
+        if(gd._fullLayout.title.text && gd._fullLayout.title.automargin) Plots.allowAutoMargin(gd, 'title.automargin');
 
         // TODO can this be moved elsewhere?
         if(fullLayout._has('pie')) {
