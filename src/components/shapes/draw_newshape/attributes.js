@@ -102,11 +102,11 @@ module.exports = {
                 description: [
                     'Sets the position of the label text relative to the new shape.',
                     'Supported values for rectangles, circles and paths are',
-                    '`top left`, `top center`, `top right`, `middle left`,',
-                    '`middle center`, `middle right`, `bottom left`, `bottom center`,',
-                    'and `bottom right`.',
-                    'Supported values for lines are `start`, `middle`, and `end`.',
-                    'Default: `middle center` for rectangles, circles, and paths; `middle` for lines.',
+                    '*top left*, *top center*, *top right*, *middle left*,',
+                    '*middle center*, *middle right*, *bottom left*, *bottom center*,',
+                    'and *bottom right*.',
+                    'Supported values for lines are *start*, *middle*, and *end*.',
+                    'Default: *middle center* for rectangles, circles, and paths; *middle* for lines.',
                 ].join(' ')
             },
             textangle: {
@@ -115,9 +115,9 @@ module.exports = {
                 editType: 'none',
                 description: [
                     'Sets the angle at which the label text is drawn',
-                    'with respect to the horizontal. For lines, angle `auto`',
+                    'with respect to the horizontal. For lines, angle *auto*',
                     'is the same angle as the line. For all other shapes,',
-                    'angle `auto` is horizontal.'
+                    'angle *auto* is horizontal.'
                 ].join(' ')
             },
             xanchor: {
@@ -127,9 +127,9 @@ module.exports = {
                 editType: 'none',
                 description: [
                     'Sets the label\'s horizontal position anchor',
-                    'This anchor binds the specified `label.textposition` to the *left*, *center*',
+                    'This anchor binds the specified `textposition` to the *left*, *center*',
                     'or *right* of the label text.',
-                    'For example, if `label.textposition` is set to *top right* and',
+                    'For example, if `textposition` is set to *top right* and',
                     '`xanchor` to *right* then the right-most portion of the',
                     'label text lines up with the right-most edge of the',
                     'new shape.',
@@ -141,9 +141,9 @@ module.exports = {
                 editType: 'none',
                 description: [
                     'Sets the label\'s vertical position anchor',
-                    'This anchor binds the specified `label.textposition` to the *top*, *middle*',
+                    'This anchor binds the specified `textposition` to the *top*, *middle*',
                     'or *bottom* of the label text.',
-                    'For example, if `label.textposition` is set to *top right* and',
+                    'For example, if `textposition` is set to *top right* and',
                     '`yanchor` to *top* then the top-most portion of the',
                     'label text lines up with the top-most edge of the',
                     'new shape.',
