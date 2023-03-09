@@ -3,6 +3,7 @@ var parseSvgPath = require('parse-svg-path');
 var Plotly = require('../../../lib/index');
 var Lib = require('../../../src/lib');
 
+var d3Select = require('../../strict-d3').select;
 var d3SelectAll = require('../../strict-d3').selectAll;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -840,6 +841,7 @@ describe('Draw new shapes to layout', function() {
                         var newFig = Lib.extendFlat({}, fig);
 
                         newFig.layout.dragmode = 'drawline';
+                        newFig.layout.newshape = { label: { text: 'Shape label' } };
 
                         return Plotly.react(gd, newFig);
                     })
@@ -851,6 +853,11 @@ describe('Draw new shapes to layout', function() {
                         expect(shapes.length).toEqual(++n);
                         var obj = shapes[n - 1]._input;
                         expect(obj.type).toEqual('line');
+                        expect(
+                            d3Select('.shape-group[data-index="' + (n - 1) + '"]')
+                                .select('text')
+                                .text()
+                        ).toEqual('Shape label');
                         print(obj);
                         mockItem.testPos[n - 1]({
                             x0: obj.x0,
