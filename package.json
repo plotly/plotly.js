@@ -125,7 +125,7 @@
     "@babel/preset-env": "^7.19.4",
     "amdefine": "^1.0.1",
     "babel": "^6.23.0",
-    "babel-loader": "^9.0.0",
+    "babel-loader": "^9.1.2",
     "browserify-transform-tools": "^1.7.0",
     "bubleify": "^2.0.0",
     "canvas": "^2.11.0",
