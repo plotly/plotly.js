@@ -1081,13 +1081,13 @@ describe('Title automargining', function() {
 
     it('should avoid overlap with container for yref=paper and allow padding', function(done) {
         Plotly.newPlot(gd, data, {
-            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            'height': 300,
-            'width': 400,
-            'title': {
-                'text': 'Basic title',
-                'font': {'size': 24},
-                'yref': 'paper'
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'paper'
             }
         }).then(function() {
             expect(gd._fullLayout._size.t).toBe(0);
@@ -1116,13 +1116,13 @@ describe('Title automargining', function() {
 
     it('should automargin and position title at the bottom of the plot if title.y=0', function(done) {
         Plotly.newPlot(gd, data, {
-            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            'height': 300,
-            'width': 400,
-            'title': {
-                'text': 'Basic title',
-                'font': {'size': 24},
-                'yref': 'paper'
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'paper'
             }
         }).then(function() {
             return Plotly.relayout(gd, {'title.automargin': true, 'title.y': 0});
@@ -1135,14 +1135,14 @@ describe('Title automargining', function() {
 
     it('should avoid overlap with container and plot area for yref=container and allow padding', function(done) {
         Plotly.newPlot(gd, data, {
-            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            'height': 300,
-            'width': 400,
-            'title': {
-                'text': 'Basic title',
-                'font': {'size': 24},
-                'yref': 'container',
-                'automargin': true
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'container',
+                automargin: true
             }
         }).then(function() {
             expect(gd._fullLayout._size.t).toBe(24);
@@ -1158,19 +1158,19 @@ describe('Title automargining', function() {
 
     it('should make space for multiple container-referenced components on the same side of the plot', function(done) {
         Plotly.newPlot(gd, data, {
-            'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
-            'xaxis': {
-                'automargin': true,
-                'title': {'text': 'x-axis title'}
+            margin: {t: 0, b: 0, l: 0, r: 0},
+            xaxis: {
+                automargin: true,
+                title: {text: 'x-axis title'}
             },
-            'height': 300,
-            'width': 400,
-            'title': {
-                'text': 'Basic title',
-                'font': {'size': 24},
-                'yref': 'container',
-                'automargin': true,
-                'y': 0
+            height: 300,
+            width: 400,
+            title: {
+                text: 'Basic title',
+                font: {size: 24},
+                yref: 'container',
+                automargin: true,
+                y: 0
             }
         }).then(function() {
             expect(gd._fullLayout._size.b).toBeCloseTo(55, -1);
