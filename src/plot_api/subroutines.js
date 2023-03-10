@@ -406,14 +406,14 @@ exports.drawMainTitle = function(gd) {
     var y = getMainTitleY(fullLayout, dy);
 
     if(title.text && title.automargin) {
-        var pushMargin = needsMarginPush(gd, title)
+        var pushMargin = needsMarginPush(gd, title);
         if(pushMargin > 0) {
             setDflts(title, getDflts(title)[0], getDflts(title)[1]);
             // Recalculate these since the defaults have changed
             dy = getMainTitleDy(fullLayout);
             y = getMainTitleY(fullLayout, dy);
             applyTitleAutoMargin(gd, y, pushMargin);
-        }    
+        }
     }
 
     Titles.draw(gd, 'gtitle', {
@@ -445,12 +445,12 @@ function isOutsideContainer(gd, title, position, y) {
 // title.y is 1 or 0 if automargin and paper ref
 // 'auto' is not supported for either title.y or title.yanchor when automargin=true
 function getDflts(title) {
-    var titleY = title.y; 
-    var titleYanchor = title.yanchor; 
+    var titleY = title.y;
+    var titleYanchor = title.yanchor;
     if(title.automargin && title.yref === 'paper') {
         titleY = title.y === 0 ? 0 : 1;
         if(title.yanchor === 'auto') {
-           titleYanchor = title.y === 0 ? 'top' : 'bottom';
+            titleYanchor = title.y === 0 ? 'top' : 'bottom';
         }
     }
     if(title.automargin && title.yref === 'container') {
@@ -459,15 +459,15 @@ function getDflts(title) {
             titleYanchor = title.y < 0.5 ? 'bottom' : 'top';
         }
     }
-    return [titleY, titleYanchor]
+    return [titleY, titleYanchor];
 }
 
 function setDflts(title, titleY, titleYanchor) {
     if(title.yref === 'paper' && title.y !== 0 && title.y !== 1) {
-        console.warn("title.automargin=true so resetting the supplied title.y value to 1.")
-    } 
-    title.y = titleY; 
-    title.yanchor = titleYanchor; 
+        console.warn('title.automargin=true so resetting the supplied title.y value to 1.');
+    }
+    title.y = titleY;
+    title.yanchor = titleYanchor;
 }
 
 function titleDepth(title) {
@@ -499,9 +499,9 @@ function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
 
 function needsMarginPush(gd, title) {
     var titleY = getDflts(title)[0];
-    var titleYanchor = getDflts(title)[1]
+    var titleYanchor = getDflts(title)[1];
     var position = titleY > 0.5 ? 't' : 'b';
-    var curMargin = gd._fullLayout.margin[position]
+    var curMargin = gd._fullLayout.margin[position];
     var pushMargin = 0;
     if(title.yref === 'paper') {
         pushMargin = (
@@ -509,7 +509,7 @@ function needsMarginPush(gd, title) {
             title.pad.t +
             title.pad.b
         );
-    } else if(title.yref === 'container') { 
+    } else if(title.yref === 'container') {
         pushMargin = (
             containerPushVal(position, titleY, titleYanchor, gd._fullLayout.height, titleDepth(title)) +
             title.pad.t +
@@ -517,9 +517,9 @@ function needsMarginPush(gd, title) {
         );
     }
     if(pushMargin > curMargin) {
-        return pushMargin
+        return pushMargin;
     }
-    return 0
+    return 0;
 }
 
 function applyTitleAutoMargin(gd, y, pushMargin) {
@@ -535,7 +535,7 @@ function applyTitleAutoMargin(gd, y, pushMargin) {
     var reservedPush = {};
 
     if(title.yref === 'paper' && isOutsideContainer(gd, title, position, y)) {
-        push[position] = pushMargin; 
+        push[position] = pushMargin;
     } else if(title.yref === 'container') {
         reservedPush[position] = pushMargin;
         gd._fullLayout._reservedMargin[titleID] = reservedPush;
