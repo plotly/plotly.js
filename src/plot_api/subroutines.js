@@ -404,6 +404,7 @@ exports.drawMainTitle = function(gd) {
     var textAnchor = getMainTitleTextAnchor(fullLayout);
     var dy = getMainTitleDy(fullLayout);
     var y = getMainTitleY(fullLayout, dy);
+    var x = getMainTitleX(fullLayout, textAnchor);
 
     // Draw title without positioning to get size
     Titles.draw(gd, 'gtitle', {
@@ -412,10 +413,10 @@ exports.drawMainTitle = function(gd) {
         placeholder: fullLayout._dfltTitle.plot,
     });
 
-    var titleObj = d3.selectAll('.gtitle')
+    var titleObj = d3.selectAll('.gtitle');
 
     if(title.text && title.automargin) {
-        var titleHeight = Drawing.bBox(titleObj.node()).height; 
+        var titleHeight = Drawing.bBox(titleObj.node()).height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
             setDflts(title, getDflts(title)[0], getDflts(title)[1]);
@@ -425,14 +426,14 @@ exports.drawMainTitle = function(gd) {
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
         }
     }
-    
+
     // Position the title once we know where it needs to be
     titleObj.attr({
-        x: getMainTitleX(fullLayout, textAnchor),
+        x: x,
         y: y,
         'text-anchor': textAnchor,
         dy: dy
-    })
+    }).call(svgTextUtils.positionText, x, y);
 };
 
 
