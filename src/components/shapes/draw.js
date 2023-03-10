@@ -701,9 +701,9 @@ function drawLabel(gd, index, options, shapeGroup) {
             center: 'middle',
             right: 'end'
         }[xanchor],
-        'y': texty,
-        'x': textx,
-        'transform': 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+        y: texty,
+        x: textx,
+        transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
     }).call(svgTextUtils.positionText, textx, texty);
 }
 
