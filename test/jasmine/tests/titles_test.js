@@ -1097,16 +1097,16 @@ describe('Title automargining', function() {
             expect(gd._fullLayout.title.automargin).toBe(true);
             expect(gd._fullLayout.title.y).toBe(1);
             expect(gd._fullLayout.title.yanchor).toBe('bottom');
-            expect(gd._fullLayout._size.t).toBe(24);
-            expect(gd._fullLayout._size.h).toBe(276);
+            expect(gd._fullLayout._size.t).toBeCloseTo(33, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(267, -1);
             return Plotly.relayout(gd, 'title.pad.t', 10);
         }).then(function() {
-            expect(gd._fullLayout._size.t).toBe(34);
-            expect(gd._fullLayout._size.h).toBe(266);
+            expect(gd._fullLayout._size.t).toBeCloseTo(43, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(257, -1);
             return Plotly.relayout(gd, 'title.pad.b', 10);
         }).then(function() {
-            expect(gd._fullLayout._size.h).toBe(256);
-            expect(gd._fullLayout._size.t).toBe(44);
+            expect(gd._fullLayout._size.h).toBeCloseTo(247, -1);
+            expect(gd._fullLayout._size.t).toBeCloseTo(53, -1);
             return Plotly.relayout(gd, 'title.yanchor', 'top');
         }).then(function() {
             expect(gd._fullLayout._size.t).toBe(0);
@@ -1127,8 +1127,8 @@ describe('Title automargining', function() {
         }).then(function() {
             return Plotly.relayout(gd, {'title.automargin': true, 'title.y': 0});
         }).then(function() {
-            expect(gd._fullLayout._size.b).toBe(24);
-            expect(gd._fullLayout._size.h).toBe(276);
+            expect(gd._fullLayout._size.b).toBeCloseTo(33, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(267, -1);
             expect(gd._fullLayout.title.yanchor).toBe('top');
         }).then(done, done.fail);
     });
@@ -1145,14 +1145,14 @@ describe('Title automargining', function() {
                 automargin: true
             }
         }).then(function() {
-            expect(gd._fullLayout._size.t).toBe(24);
-            expect(gd._fullLayout._size.h).toBe(276);
+            expect(gd._fullLayout._size.t).toBeCloseTo(33, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(267, -1);
             expect(gd._fullLayout.title.y).toBe(1);
             expect(gd._fullLayout.title.yanchor).toBe('top');
             return Plotly.relayout(gd, 'title.y', 0.6);
         }).then(function() {
-            expect(gd._fullLayout._size.t).toBe(144);
-            expect(gd._fullLayout._size.h).toBe(156);
+            expect(gd._fullLayout._size.t).toBeCloseTo(153, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(147, -1);
         }).then(done, done.fail);
     });
 
@@ -1173,8 +1173,8 @@ describe('Title automargining', function() {
                 y: 0
             }
         }).then(function() {
-            expect(gd._fullLayout._size.b).toBeCloseTo(55, -1);
-            expect(gd._fullLayout._size.h).toBeCloseTo(245, -1);
+            expect(gd._fullLayout._size.b).toBeCloseTo(64, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(236, -1);
         }).then(done, done.fail);
     });
 });
