@@ -23,7 +23,6 @@ var doAutoRange = require('../plots/cartesian/autorange').doAutoRange;
 var SVG_TEXT_ANCHOR_START = 'start';
 var SVG_TEXT_ANCHOR_MIDDLE = 'middle';
 var SVG_TEXT_ANCHOR_END = 'end';
-var LINE_SPACING = alignmentConstants.LINE_SPACING;
 
 exports.layoutStyles = function(gd) {
     return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
@@ -419,8 +418,6 @@ exports.drawMainTitle = function(gd) {
         })
     });
 
-    
-
     if(title.text && title.automargin) {
         var titleObj = d3.selectAll('.gtitle');
         var titleHeight = Drawing.bBox(titleObj.node()).height;
@@ -441,8 +438,6 @@ exports.drawMainTitle = function(gd) {
             }).call(svgTextUtils.positionText, x, y);
         }
     }
-
-    
 };
 
 
