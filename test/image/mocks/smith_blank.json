@@ -41,6 +41,9 @@
         "x": [0, 0.46],
         "y": [0.56, 1]
       },
+      "imaginaryaxis": {
+        "labelalias": { "0": "ZERO<sup>2</sup>" }
+      },
       "realaxis": {
         "side": "top"
       }

@@ -3,7 +3,7 @@ var prependFile = require('prepend-file');
 
 var constants = require('./util/constants');
 var common = require('./util/common');
-var _bundle = require('./util/browserify_wrapper');
+var _bundle = require('./util/bundle_wrapper');
 
 var header = constants.licenseDist + '\n';
 var pathToPlotlyDist = constants.pathToPlotlyDist;

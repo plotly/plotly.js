@@ -428,9 +428,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -443,9 +443,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -461,9 +461,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = size - size * Math.sqrt(1.0 - solidity);
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -475,9 +475,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -489,9 +489,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = solidity * size;
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -504,9 +504,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             linewidth = size - size * Math.sqrt(1.0 - solidity);
             patternTag = 'path';
             patternAttrs = {
-                'd': path,
-                'opacity': opacity,
-                'stroke': fgRGB,
+                d: path,
+                opacity: opacity,
+                stroke: fgRGB,
                 'stroke-width': linewidth + 'px'
             };
             break;
@@ -520,11 +520,11 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             }
             patternTag = 'circle';
             patternAttrs = {
-                'cx': width / 2,
-                'cy': height / 2,
-                'r': radius,
-                'opacity': opacity,
-                'fill': fgRGB
+                cx: width / 2,
+                cy: height / 2,
+                r: radius,
+                opacity: opacity,
+                fill: fgRGB
             };
             break;
     }
@@ -549,12 +549,12 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
             var el = d3.select(this);
 
             el.attr({
-                'id': fullID,
-                'width': width + 'px',
-                'height': height + 'px',
-                'patternUnits': 'userSpaceOnUse',
+                id: fullID,
+                width: width + 'px',
+                height: height + 'px',
+                patternUnits: 'userSpaceOnUse',
                 // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
-                'patternTransform': isLegend ? 'scale(0.8)' : ''
+                patternTransform: isLegend ? 'scale(0.8)' : ''
             });
 
             if(bgcolor) {
@@ -567,9 +567,9 @@ drawing.pattern = function(sel, calledBy, gd, patternID, shape, size, solidity, 
                 rects.enter()
                     .append('rect')
                     .attr({
-                        'width': width + 'px',
-                        'height': height + 'px',
-                        'fill': bgRGB,
+                        width: width + 'px',
+                        height: height + 'px',
+                        fill: bgRGB,
                         'fill-opacity': bgAlpha,
                     });
             }

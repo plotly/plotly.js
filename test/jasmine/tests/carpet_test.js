@@ -781,18 +781,18 @@ describe('scattercarpet hover labels', function() {
 
 describe('scattercarpet texttemplates', function() {
     checkTextTemplate([{
-        'type': 'scattercarpet',
-        'carpet': 'carpet1',
-        'mode': 'markers+text',
-        'a': [0.1, 0.15, 0.25],
-        'b': [1.5, 1.5, 1.5],
-        'text': ['A', 'B', 'C']
+        type: 'scattercarpet',
+        carpet: 'carpet1',
+        mode: 'markers+text',
+        a: [0.1, 0.15, 0.25],
+        b: [1.5, 1.5, 1.5],
+        text: ['A', 'B', 'C']
     }, {
-        'type': 'carpet',
-        'carpet': 'carpet1',
-        'a': [0.1, 0.2, 0.3],
-        'b': [1, 2, 3],
-        'y': [[1, 2.2, 3], [1.5, 2.7, 3.5], [1.7, 2.9, 3.7]]
+        type: 'carpet',
+        carpet: 'carpet1',
+        a: [0.1, 0.2, 0.3],
+        b: [1, 2, 3],
+        y: [[1, 2.2, 3], [1.5, 2.7, 3.5], [1.7, 2.9, 3.7]]
     }], 'g.textpoint', [
         ['%{text}: %{a:0.1f}, %{b:0.1f}', ['A: 0.1, 1.5', 'B: 0.1, 1.5', 'C: 0.3, 1.5']],
         ['%{y}', ['1.000', '1.000', '2.200']]

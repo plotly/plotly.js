@@ -111,11 +111,11 @@ describe('end-to-end scattergl tests', function() {
         it('@gl should handle a plot with less ' + attr + ' labels than data points', function(done) {
             expect(function() {
                 var mock = {
-                    'type': 'scattergl',
-                    'mode': 'markers+text',
-                    'x': [3, 2, 1, 0],
-                    'y': [0, 1, 4, 9],
-                    'textposition': 'top center'
+                    type: 'scattergl',
+                    mode: 'markers+text',
+                    x: [3, 2, 1, 0],
+                    y: [0, 1, 4, 9],
+                    textposition: 'top center'
                 };
                 mock[attr] = ['1', '2', '3'];
                 Plotly.newPlot(gd, [mock])
@@ -236,17 +236,17 @@ describe('end-to-end scattergl tests', function() {
         spyOn(ScatterGl, 'calc').and.callThrough();
 
         var dat = [{
-            'x': [1, 2, 3],
-            'y': [1, 2, 3],
-            'type': 'scattergl',
-            'mode': 'markers'
+            x: [1, 2, 3],
+            y: [1, 2, 3],
+            type: 'scattergl',
+            mode: 'markers'
         }];
 
         Plotly.newPlot(gd, dat, {width: 500, height: 500})
         .then(function() {
             expect(ScatterGl.calc).toHaveBeenCalledTimes(1);
 
-            return Plotly.restyle(gd, {'opacity': 0.1});
+            return Plotly.restyle(gd, {opacity: 0.1});
         })
         .then(function() {
             expect(ScatterGl.calc).toHaveBeenCalledTimes(2);
@@ -257,11 +257,11 @@ describe('end-to-end scattergl tests', function() {
     it('@gl should update selected points', function(done) {
         // #2298
         var dat = [{
-            'x': [1],
-            'y': [1],
-            'type': 'scattergl',
-            'mode': 'markers',
-            'selectedpoints': [0]
+            x: [1],
+            y: [1],
+            type: 'scattergl',
+            mode: 'markers',
+            selectedpoints: [0]
         }];
 
         Plotly.newPlot(gd, dat, {

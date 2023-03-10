@@ -72,7 +72,7 @@ module.exports = function checkTextTemplate(mock, selector, tests, skipExtra) {
         tests.push(['%{customdata}', customdata]);
 
         // Generate meta
-        data[0].meta = {'colname': 'A'};
+        data[0].meta = {colname: 'A'};
         var metaSolution = [];
         for(i = 0; i < N; i++) {
             metaSolution.push(data[0].meta.colname);

@@ -133,7 +133,7 @@ plots.addLinks = function(gd) {
         s.style({
             'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
-            'fill': Color.defaultLine,
+            fill: Color.defaultLine,
             'pointer-events': 'all'
         })
         .each(function() {
@@ -185,7 +185,7 @@ function positionPlayWithData(gd, container) {
     var link = container.append('a')
         .attr({
             'xlink:xlink:href': '#',
-            'class': 'link--impt link--embedview',
+            class: 'link--impt link--embedview',
             'font-weight': 'bold'
         })
         .text(gd._context.linkText + ' ' + String.fromCharCode(187));
@@ -3159,12 +3159,12 @@ function sortAxisCategoriesByValue(axList, gd) {
     }
 
     var aggFn = {
-        'min': function(values) {return Lib.aggNums(Math.min, null, values);},
-        'max': function(values) {return Lib.aggNums(Math.max, null, values);},
-        'sum': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
-        'total': function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
-        'mean': function(values) {return Lib.mean(values);},
-        'median': function(values) {return Lib.median(values);}
+        min: function(values) {return Lib.aggNums(Math.min, null, values);},
+        max: function(values) {return Lib.aggNums(Math.max, null, values);},
+        sum: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        total: function(values) {return Lib.aggNums(function(a, b) { return a + b;}, null, values);},
+        mean: function(values) {return Lib.mean(values);},
+        median: function(values) {return Lib.median(values);}
     };
 
     for(i = 0; i < axList.length; i++) {

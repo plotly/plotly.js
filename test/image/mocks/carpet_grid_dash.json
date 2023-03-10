@@ -37,6 +37,7 @@
         "minorgriddash": "dash"
       },
       "baxis": {
+        "labelalias": { "0": "ZERO<sup>2</sup>" },
         "minorgridcount": 3,
         "gridcolor": "black",
         "minorgridcolor": "red",

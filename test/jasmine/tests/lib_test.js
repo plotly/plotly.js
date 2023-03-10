@@ -2172,7 +2172,7 @@ describe('Test lib.js:', function() {
         });
 
         it('should work with the number *0* (nested case)', function() {
-            expect(Lib.templateString('%{x.y}', {'x': {y: 0}})).toEqual('0');
+            expect(Lib.templateString('%{x.y}', {x: {y: 0}})).toEqual('0');
         });
     });
 
@@ -2199,7 +2199,7 @@ describe('Test lib.js:', function() {
         });
 
         it('should work with the number *0* (nested case)', function() {
-            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {'x': {y: 0}})).toEqual('0');
+            expect(Lib.hovertemplateString('%{x.y}', {}, locale, {x: {y: 0}})).toEqual('0');
         });
 
         it('subtitutes multiple matches', function() {

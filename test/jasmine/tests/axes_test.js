@@ -1641,7 +1641,7 @@ describe('Test axes', function() {
                     height: 300,
                     margin: {l: 100, r: 100, t: 100, b: 100},
                     xaxis: {constrain: 'domain'},
-                    yaxis: {constraintoward: 'top', 'scaleanchor': 'x'}
+                    yaxis: {constraintoward: 'top', scaleanchor: 'x'}
                 }
             )
             .then(function() {
@@ -3539,7 +3539,7 @@ describe('Test axes', function() {
             var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
-                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                _categoriesMap: {a: 0, b: 1, c: 2, d: 3},
                 tickmode: 'array',
                 tickvals: ['a', 1, 1.5, 'c', 2.7, 3, 'e', 4, 5, -2],
                 ticktext: ['A!', 'B?', 'B->C'],
@@ -3572,7 +3572,7 @@ describe('Test axes', function() {
             var ax = {
                 type: 'category',
                 _categories: ['a', 'b', 'c', 'd'],
-                _categoriesMap: {'a': 0, 'b': 1, 'c': 2, 'd': 3},
+                _categoriesMap: {a: 0, b: 1, c: 2, d: 3},
                 tickmode: 'linear',
                 tick0: 0,
                 dtick: 1,

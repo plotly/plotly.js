@@ -1,5 +1,5 @@
 var constants = require('./util/constants');
-var _bundle = require('./util/browserify_wrapper');
+var _bundle = require('./util/bundle_wrapper');
 
 /*
  * Trimmed down version of ./bundle.js for CI testing

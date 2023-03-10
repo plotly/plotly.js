@@ -846,9 +846,9 @@ describe('Pie traces', function() {
               _verifyTitle(true, false, true, false, false);
 
               return Plotly.restyle(gd, {
-                  'title': 'oy',
+                  title: 'oy',
                   'titlefont.color': 'red',
-                  'titleposition': 'bottom right'
+                  titleposition: 'bottom right'
               });
           })
           .then(function() {
@@ -1326,8 +1326,8 @@ describe('pie hovering', function() {
                 );
 
                 return Plotly.restyle(gd, {
-                    'text': [['A', 'B', 'C', 'D', 'E']],
-                    'hovertemplate': '%{text}<extra></extra>'
+                    text: [['A', 'B', 'C', 'D', 'E']],
+                    hovertemplate: '%{text}<extra></extra>'
                 });
             })
             .then(_hover)
