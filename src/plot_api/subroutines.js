@@ -405,39 +405,45 @@ exports.drawMainTitle = function(gd) {
     var dy = getMainTitleDy(fullLayout);
     var y = getMainTitleY(fullLayout, dy);
 
+    // Draw title without positioning to get size
+    Titles.draw(gd, 'gtitle', {
+        propContainer: fullLayout,
+        propName: 'title.text',
+        placeholder: fullLayout._dfltTitle.plot,
+    });
+
+    var titleObj = d3.selectAll('.gtitle')
+
     if(title.text && title.automargin) {
-        var pushMargin = needsMarginPush(gd, title);
+        var titleHeight = Drawing.bBox(titleObj.node()).height; 
+        var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
             setDflts(title, getDflts(title)[0], getDflts(title)[1]);
             // Recalculate these since the defaults have changed
             dy = getMainTitleDy(fullLayout);
             y = getMainTitleY(fullLayout, dy);
-            applyTitleAutoMargin(gd, y, pushMargin);
+            applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
         }
     }
-
-    Titles.draw(gd, 'gtitle', {
-        propContainer: fullLayout,
-        propName: 'title.text',
-        placeholder: fullLayout._dfltTitle.plot,
-        attributes: {
-            x: getMainTitleX(fullLayout, textAnchor),
-            y: y,
-            'text-anchor': textAnchor,
-            dy: dy
-        }
-    });
+    
+    // Position the title once we know where it needs to be
+    titleObj.attr({
+        x: getMainTitleX(fullLayout, textAnchor),
+        y: y,
+        'text-anchor': textAnchor,
+        dy: dy
+    })
 };
 
 
-function isOutsideContainer(gd, title, position, y) {
+function isOutsideContainer(gd, title, position, y, titleHeight) {
     var plotHeight = title.yref === 'paper' ? gd._fullLayout._size.h : gd._fullLayout.height;
-    var yPosTop = Lib.isTopAnchor(title) ? y : y - getTitleDepth(title); // Standardize to the top of the title
+    var yPosTop = Lib.isTopAnchor(title) ? y : y - titleHeight; // Standardize to the top of the title
     var yPosRel = position === 'b' ? plotHeight - yPosTop : yPosTop; // Position relative to the top or bottom of plot
     if((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
         return false;
     } else {
-        return yPosRel < getTitleDepth(title);
+        return yPosRel < titleHeight;
     }
 }
 
@@ -470,13 +476,6 @@ function setDflts(title, titleY, titleYanchor) {
     title.yanchor = titleYanchor;
 }
 
-function getTitleDepth(title) {
-    var fontSize = title.font.size;
-    var extraLines = (title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
-    return extraLines ?
-        fontSize * (extraLines + 1) * LINE_SPACING :
-        fontSize;
-}
 
 function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
     var push = 0;
@@ -497,7 +496,7 @@ function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
     return push;
 }
 
-function needsMarginPush(gd, title) {
+function needsMarginPush(gd, title, titleHeight) {
     var titleY = getDflts(title)[0];
     var titleYanchor = getDflts(title)[1];
     var position = titleY > 0.5 ? 't' : 'b';
@@ -505,13 +504,13 @@ function needsMarginPush(gd, title) {
     var pushMargin = 0;
     if(title.yref === 'paper') {
         pushMargin = (
-            getTitleDepth(title) +
+            titleHeight +
             title.pad.t +
             title.pad.b
         );
     } else if(title.yref === 'container') {
         pushMargin = (
-            containerPushVal(position, titleY, titleYanchor, gd._fullLayout.height, getTitleDepth(title)) +
+            containerPushVal(position, titleY, titleYanchor, gd._fullLayout.height, titleHeight) +
             title.pad.t +
             title.pad.b
         );
@@ -522,7 +521,7 @@ function needsMarginPush(gd, title) {
     return 0;
 }
 
-function applyTitleAutoMargin(gd, y, pushMargin) {
+function applyTitleAutoMargin(gd, y, pushMargin, titleHeight) {
     var titleID = 'title.automargin';
     var title = gd._fullLayout.title;
     var position = title.y > 0.5 ? 't' : 'b';
@@ -534,7 +533,7 @@ function applyTitleAutoMargin(gd, y, pushMargin) {
     };
     var reservedPush = {};
 
-    if(title.yref === 'paper' && isOutsideContainer(gd, title, position, y)) {
+    if(title.yref === 'paper' && isOutsideContainer(gd, title, position, y, titleHeight)) {
         push[position] = pushMargin;
     } else if(title.yref === 'container') {
         reservedPush[position] = pushMargin;
