@@ -432,12 +432,12 @@ exports.drawMainTitle = function(gd) {
 
 function isOutsideContainer(gd, title, position, y) {
     var plotHeight = title.yref === 'paper' ? gd._fullLayout._size.h : gd._fullLayout.height;
-    var yPosTop = Lib.isTopAnchor(title) ? y : y - titleDepth(title); // Standardize to the top of the title
+    var yPosTop = Lib.isTopAnchor(title) ? y : y - getTitleDepth(title); // Standardize to the top of the title
     var yPosRel = position === 'b' ? plotHeight - yPosTop : yPosTop; // Position relative to the top or bottom of plot
     if((Lib.isTopAnchor(title) && position === 't') || Lib.isBottomAnchor(title) && position === 'b') {
         return false;
     } else {
-        return yPosRel < titleDepth(title);
+        return yPosRel < getTitleDepth(title);
     }
 }
 
@@ -470,7 +470,7 @@ function setDflts(title, titleY, titleYanchor) {
     title.yanchor = titleYanchor;
 }
 
-function titleDepth(title) {
+function getTitleDepth(title) {
     var fontSize = title.font.size;
     var extraLines = (title.text.match(svgTextUtils.BR_TAG_ALL) || []).length;
     return extraLines ?
@@ -505,13 +505,13 @@ function needsMarginPush(gd, title) {
     var pushMargin = 0;
     if(title.yref === 'paper') {
         pushMargin = (
-            titleDepth(title) +
+            getTitleDepth(title) +
             title.pad.t +
             title.pad.b
         );
     } else if(title.yref === 'container') {
         pushMargin = (
-            containerPushVal(position, titleY, titleYanchor, gd._fullLayout.height, titleDepth(title)) +
+            containerPushVal(position, titleY, titleYanchor, gd._fullLayout.height, getTitleDepth(title)) +
             title.pad.t +
             title.pad.b
         );

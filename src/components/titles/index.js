@@ -168,7 +168,7 @@ function draw(gd, titleClass, options) {
 
             var titlebb = Drawing.bBox(titleGroup.node());
 
-            // Need to account for reservedMargins here as well
+            // Account for reservedMargins
             var reservedMargins = {t: 0, b: 0, l: 0, r: 0};
             var margins = gd._fullLayout._reservedMargin;
             for(var key in margins) {
@@ -178,8 +178,8 @@ function draw(gd, titleClass, options) {
                 }
             }
             var paperbb = {
-                left: 0 + reservedMargins.l,
-                top: 0 + reservedMargins.t,
+                left: reservedMargins.l,
+                top: reservedMargins.t,
                 right: fullLayout.width - reservedMargins.r,
                 bottom: fullLayout.height - reservedMargins.b
             };
