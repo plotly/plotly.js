@@ -170,7 +170,7 @@
     "read-last-lines": "^1.8.0",
     "run-series": "^1.1.9",
     "sane-topojson": "^4.0.0",
-    "sass": "^1.55.0",
+    "sass": "^1.58.3",
     "stream-browserify": "^3.0.0",
     "through2": "^4.0.2",
     "transform-loader": "^0.2.4",
