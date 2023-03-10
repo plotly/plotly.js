@@ -463,6 +463,9 @@ function getDflts(title) {
 }
 
 function setDflts(title, titleY, titleYanchor) {
+    if(title.yref === 'paper' && title.y !== 0 && title.y !== 1) {
+        console.warn("title.automargin=true so resetting the supplied title.y value to 1.")
+    } 
     title.y = titleY; 
     title.yanchor = titleYanchor; 
 }
