@@ -18,7 +18,7 @@
         "height": 300,
         "width": 400,
         "margin": {"t":0, "b": 0, "l": 0, "r": 0},
-        "xaxis": {"automargin": true, "title": {"text": "x-axis title", "standoff": 0}},
+        "xaxis": {"automargin": true, "title": {"text": "x-axis title"}},
         "title": {
             "automargin": true, 
             "text": "Basic title",

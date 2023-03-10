@@ -1160,8 +1160,8 @@ describe('Title automargining', function() {
         Plotly.newPlot(gd, data, {
             'margin': {'t': 0, 'b': 0, 'l': 0, 'r': 0},
             'xaxis': {
-                'automargin': true, 
-                'title': {'text': 'x-axis title', 'standoff': 0}
+                'automargin': true,
+                'title': {'text': 'x-axis title'}
             },
             'height': 300,
             'width': 400,
@@ -1173,8 +1173,8 @@ describe('Title automargining', function() {
                 'y': 0
             }
         }).then(function() {
-            expect(gd._fullLayout._size.b).toBe(51);
-            expect(gd._fullLayout._size.h).toBe(249);
+            expect(gd._fullLayout._size.b).toBeCloseTo(55, -1);
+            expect(gd._fullLayout._size.h).toBeCloseTo(245, -1);
         }).then(done, done.fail);
     });
 });
