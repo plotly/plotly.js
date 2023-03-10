@@ -153,7 +153,7 @@ function plot(gd, cdModule) {
 
                     sliceText.text(pt.text)
                         .attr({
-                            'class': 'slicetext',
+                            class: 'slicetext',
                             transform: '',
                             'text-anchor': 'middle'
                         })
@@ -224,7 +224,7 @@ function plot(gd, cdModule) {
 
                 titleText.text(txt)
                     .attr({
-                        'class': 'titletext',
+                        class: 'titletext',
                         transform: '',
                         'text-anchor': 'middle',
                     })

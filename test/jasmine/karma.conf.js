@@ -11,7 +11,7 @@ var isCI = Boolean(process.env.CI);
 
 var argv = minimist(process.argv.slice(4), {
     string: ['bundleTest', 'width', 'height'],
-    'boolean': [
+    boolean: [
         'mathjax3',
         'info',
         'nowatch', 'randomize',
@@ -20,14 +20,14 @@ var argv = minimist(process.argv.slice(4), {
         'verbose', 'showSkipped', 'report-progress', 'report-spec', 'report-dots'
     ],
     alias: {
-        'Chrome': 'chrome',
-        'Firefox': ['firefox', 'FF'],
-        'IE11': ['ie11'],
-        'bundleTest': ['bundletest', 'bundle_test'],
-        'nowatch': 'no-watch',
-        'failFast': 'fail-fast',
+        Chrome: 'chrome',
+        Firefox: ['firefox', 'FF'],
+        IE11: ['ie11'],
+        bundleTest: ['bundletest', 'bundle_test'],
+        nowatch: 'no-watch',
+        failFast: 'fail-fast',
     },
-    'default': {
+    default: {
         info: false,
         nowatch: isCI,
         randomize: false,
@@ -268,7 +268,7 @@ func.defaultConfig = {
         },
         resolve: {
             fallback: {
-                'stream': require.resolve('stream-browserify')
+                stream: require.resolve('stream-browserify')
             }
         },
         plugins: [

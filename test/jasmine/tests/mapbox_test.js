@@ -952,14 +952,14 @@ describe('mapbox plots', function() {
                 layout: {
                     mapbox: {
                         layers: [{
-                            'sourcetype': 'raster',
-                            'source': ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                            'below': 'traces',
+                            sourcetype: 'raster',
+                            source: ['https://a.tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                            below: 'traces',
                         }, {
-                            'sourcetype': 'image',
-                            'coordinates': coords,
-                            'source': source,
-                            'below': 'traces',
+                            sourcetype: 'image',
+                            coordinates: coords,
+                            source: source,
+                            below: 'traces',
                         }],
                     }
                 }
@@ -1559,27 +1559,27 @@ describe('mapbox plots', function() {
 
         function mockLayoutCustomStyle() {
             return {
-                'mapbox': {
-                    'style': {
-                        'id': 'osm',
-                        'version': 8,
-                        'sources': {
+                mapbox: {
+                    style: {
+                        id: 'osm',
+                        version: 8,
+                        sources: {
                             'simple-tiles': {
-                                'type': 'raster',
-                                'tiles': [
+                                type: 'raster',
+                                tiles: [
                                     'https://a.tile.openstreetmap.org/{z}/{x}/{y}.png',
                                     'https://b.tile.openstreetmap.org/{z}/{x}/{y}.png'
                                 ],
-                                'tileSize': 256
+                                tileSize: 256
                             }
                         },
-                        'layers': [
+                        layers: [
                             {
-                                'id': 'simple-tiles',
-                                'type': 'raster',
-                                'source': 'simple-tiles',
-                                'minzoom': 0,
-                                'maxzoom': 22
+                                id: 'simple-tiles',
+                                type: 'raster',
+                                source: 'simple-tiles',
+                                minzoom: 0,
+                                maxzoom: 22
                             }
                         ]
                     }

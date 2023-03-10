@@ -941,9 +941,9 @@ describe('calculated data and points', function() {
             .then(function() {
                 expect(gd._fullLayout.xaxis._categories).toEqual(['a', 'b', '1']);
                 expect(gd._fullLayout.xaxis._categoriesMap).toEqual({
-                    '1': 2,
-                    'a': 0,
-                    'b': 1
+                    1: 2,
+                    a: 0,
+                    b: 1
                 });
             })
             .then(done, done.fail);

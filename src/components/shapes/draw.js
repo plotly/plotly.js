@@ -160,7 +160,7 @@ function drawOne(gd, index) {
 
         if(isActiveShape) {
             path.style({
-                'cursor': 'move',
+                cursor: 'move',
             });
 
             var dragOptions = {
@@ -264,7 +264,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         g.append('path')
           .attr('d', shapePath.attr('d'))
           .style({
-              'cursor': 'move',
+              cursor: 'move',
               'stroke-width': sensoryWidth,
               'stroke-opacity': '0' // ensure not visible
           });
@@ -278,9 +278,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         g.append('circle')
           .attr({
               'data-line-point': 'start-point',
-              'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
-              'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
-              'r': circleRadius
+              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
+              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
+              r: circleRadius
           })
           .style(circleStyle)
           .classed('cursor-grab', true);
@@ -288,9 +288,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
         g.append('circle')
           .attr({
               'data-line-point': 'end-point',
-              'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
-              'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
-              'r': circleRadius
+              cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
+              cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
+              r: circleRadius
           })
           .style(circleStyle)
           .classed('cursor-grab', true);
@@ -535,9 +535,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
             visualCues.enter()
               .append('path')
               .attr({
-                  'fill': '#fff',
+                  fill: '#fff',
                   'fill-rule': 'evenodd',
-                  'stroke': '#000',
+                  stroke: '#000',
                   'stroke-width': strokeWidth
               })
               .classed('visual-cue', true);

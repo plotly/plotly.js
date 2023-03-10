@@ -1066,7 +1066,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showupperhalf': true,
+                showupperhalf: true,
                 'diagonal.visible': true
             });
         })
@@ -1079,7 +1079,7 @@ describe('Test splom interactions:', function() {
             });
 
             return Plotly.restyle(gd, {
-                'showlowerhalf': false,
+                showlowerhalf: false,
                 'diagonal.visible': false
             });
         })

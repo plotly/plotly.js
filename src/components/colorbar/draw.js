@@ -931,6 +931,7 @@ function mockColorBarAxis(gd, opts, zrange) {
         tickwidth: opts.tickwidth,
         tickcolor: opts.tickcolor,
         showticklabels: opts.showticklabels,
+        labelalias: opts.labelalias,
         ticklabelposition: opts.ticklabelposition,
         ticklabeloverflow: opts.ticklabeloverflow,
         ticklabelstep: opts.ticklabelstep,

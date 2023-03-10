@@ -86,6 +86,7 @@ module.exports = overrideAll({
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
     showticklabels: axesAttrs.showticklabels,
+    labelalias: axesAttrs.labelalias,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
     tickprefix: axesAttrs.tickprefix,

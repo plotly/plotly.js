@@ -81,6 +81,6 @@ fs.writeFileSync(pathToChangelog, draftNewChangelog.join(ENTER), { encoding: 'ut
 
 if(skippedFiles.length) {
     throw JSON.stringify({
-        'skippedFiles': skippedFiles
+        skippedFiles: skippedFiles
     }, null, 2);
 }

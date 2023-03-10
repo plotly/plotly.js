@@ -584,7 +584,7 @@ proto.saveViewInitial = function(geoLayout) {
     var rotation = projLayout.rotation || {};
 
     this.viewInitial = {
-        'fitbounds': geoLayout.fitbounds,
+        fitbounds: geoLayout.fitbounds,
         'projection.scale': projLayout.scale
     };
 

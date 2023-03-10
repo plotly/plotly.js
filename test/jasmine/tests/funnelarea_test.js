@@ -600,9 +600,9 @@ describe('Funnelarea traces', function() {
               _verifyTitle(true, false, true, false, false);
 
               return Plotly.restyle(gd, {
-                  'title': 'oy',
+                  title: 'oy',
                   'titlefont.color': 'red',
-                  'titleposition': 'top right'
+                  titleposition: 'top right'
               });
           })
           .then(function() {
@@ -988,8 +988,8 @@ describe('funnelarea hovering', function() {
                 );
 
                 return Plotly.restyle(gd, {
-                    'text': [['E', 'D', 'C', 'B', 'A']],
-                    'hovertemplate': '%{text}<extra></extra>'
+                    text: [['E', 'D', 'C', 'B', 'A']],
+                    hovertemplate: '%{text}<extra></extra>'
                 });
             })
             .then(_hover)

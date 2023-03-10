@@ -99,7 +99,7 @@ exports.convertToTspans = function(_context, gd, _callback) {
                 var h0 = _svgBBox.height;
 
                 newSvg.attr({
-                    'class': svgClass,
+                    class: svgClass,
                     height: h0,
                     preserveAspectRatio: 'xMinYMin meet'
                 })

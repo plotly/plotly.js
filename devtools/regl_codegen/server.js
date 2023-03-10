@@ -207,9 +207,17 @@ function handleCodegen(data) {
     var pathToReglCodegenSrc = constants.pathToReglCodegenSrc;
     var pathToReglPrecompiledSrc = path.join(constants.pathToSrc, 'traces', trace, 'regl_precompiled.js');
 
-    var header = '\'use strict\';\n';
+    var header = [
+        '\'use strict\';',
+        '',
+    ].join('\n');
     var imports = '';
-    var exports = '\nmodule.exports = {\n';
+    var exports = [
+        '',
+        '/* eslint-disable quote-props */',
+        'module.exports = {',
+        '',
+    ].join('\n');
     var varId = 0;
 
     Object.entries(generated).forEach(function(kv) {

@@ -59,7 +59,7 @@ module.exports = extendFlat({
         operation: contourContourAttrs.operation,
         value: contourContourAttrs.value,
         editType: 'calc',
-        impliedEdits: {'autocontour': false}
+        impliedEdits: {autocontour: false}
     },
 
     line: {

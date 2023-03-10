@@ -72,7 +72,7 @@ describe('Plotly.Snapshot', function() {
                 height: 150,
                 title: {text: ''},
                 showlegend: false,
-                margin: {'l': 5, 'r': 5, 't': 5, 'b': 5, 'pad': 0},
+                margin: {l: 5, r: 5, t: 5, b: 5, pad: 0},
                 annotations: []
             };
 
@@ -100,16 +100,16 @@ describe('Plotly.Snapshot', function() {
             };
 
             var THUMBNAIL_DEFAULT_LAYOUT = {
-                'title': {text: ''},
-                'hidesources': true,
-                'showlegend': false,
-                'hovermode': false,
-                'dragmode': false,
-                'zoom': false,
-                'borderwidth': 0,
-                'bordercolor': '',
-                'margin': {'l': 1, 'r': 1, 't': 1, 'b': 1, 'pad': 0},
-                'annotations': []
+                title: {text: ''},
+                hidesources: true,
+                showlegend: false,
+                hovermode: false,
+                dragmode: false,
+                zoom: false,
+                borderwidth: 0,
+                bordercolor: '',
+                margin: {l: 1, r: 1, t: 1, b: 1, pad: 0},
+                annotations: []
             };
 
             var thumbTile = Plotly.Snapshot.clone(dummyGraphObj, thumbnailOptions);
