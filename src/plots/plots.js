@@ -1480,16 +1480,41 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut, formatObj) {
 
     coerce('title.text', layoutOut._dfltTitle.plot);
     coerce('title.xref');
-    coerce('title.yref');
-    coerce('title.x');
-    coerce('title.y');
-    coerce('title.xanchor');
-    coerce('title.yanchor');
+    var titleYref = coerce('title.yref');
     coerce('title.pad.t');
     coerce('title.pad.r');
     coerce('title.pad.b');
     coerce('title.pad.l');
-    coerce('title.automargin');
+    var titleAutomargin = coerce('title.automargin');
+
+    coerce('title.x');
+    coerce('title.xanchor');
+    coerce('title.y');
+    coerce('title.yanchor');
+
+    if(titleAutomargin) {
+        // when automargin=true
+        // title.y is 1 or 0 if paper ref
+        // 'auto' is not supported for either title.y or title.yanchor
+
+        // TODO: mention this smart default in the title.y and title.yanchor descriptions
+
+        if(titleYref === 'paper') {
+            if(layoutOut.title.y !== 0) layoutOut.title.y = 1;
+
+            if(layoutOut.title.yanchor === 'auto') {
+                layoutOut.title.yanchor = layoutOut.title.y === 0 ? 'top' : 'bottom';
+            }
+        }
+
+        if(titleYref === 'container') {
+            if(layoutOut.title.y === 'auto') layoutOut.title.y = 1;
+
+            if(layoutOut.title.yanchor === 'auto') {
+                layoutOut.title.yanchor = layoutOut.title.y < 0.5 ? 'bottom' : 'top';
+            }
+        }
+    }
 
     var uniformtextMode = coerce('uniformtext.mode');
     if(uniformtextMode) {

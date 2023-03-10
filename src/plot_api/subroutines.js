@@ -3,7 +3,6 @@
 var d3 = require('@plotly/d3');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
-var Loggers = require('../lib/loggers');
 
 var Lib = require('../lib');
 var svgTextUtils = require('../lib/svg_text_utils');
@@ -406,7 +405,6 @@ exports.drawMainTitle = function(gd) {
     var y = getMainTitleY(fullLayout, dy);
     var x = getMainTitleX(fullLayout, textAnchor);
 
-    // Draw title without positioning to get size
     Titles.draw(gd, 'gtitle', {
         propContainer: fullLayout,
         propName: 'title.text',
@@ -424,13 +422,9 @@ exports.drawMainTitle = function(gd) {
         var titleHeight = Drawing.bBox(titleObj.node()).height;
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
-            setDflts(title, getDflts(title)[0], getDflts(title)[1]);
-            // Recalculate these since the defaults have changed
-            dy = getMainTitleDy(fullLayout);
-            y = getMainTitleY(fullLayout, dy);
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
 
-            // Position the title once we know where it needs to be
+            // Re-position the title once we know where it needs to be
             titleObj.attr({
                 x: x,
                 y: y,
@@ -453,36 +447,6 @@ function isOutsideContainer(gd, title, position, y, titleHeight) {
     }
 }
 
-
-// title.y is 1 or 0 if automargin and paper ref
-// 'auto' is not supported for either title.y or title.yanchor when automargin=true
-function getDflts(title) {
-    var titleY = title.y;
-    var titleYanchor = title.yanchor;
-    if(title.automargin && title.yref === 'paper') {
-        titleY = title.y === 0 ? 0 : 1;
-        if(title.yanchor === 'auto') {
-            titleYanchor = title.y === 0 ? 'top' : 'bottom';
-        }
-    }
-    if(title.automargin && title.yref === 'container') {
-        if(title.y === 'auto') titleY = 1;
-        if(title.yanchor === 'auto') {
-            titleYanchor = title.y < 0.5 ? 'bottom' : 'top';
-        }
-    }
-    return [titleY, titleYanchor];
-}
-
-function setDflts(title, titleY, titleYanchor) {
-    if(title.yref === 'paper' && title.y !== 0 && title.y !== 1 && title.y !== 'auto') {
-        Loggers.warn('title.automargin=true so resetting the supplied title.y value to 1.');
-    }
-    title.y = titleY;
-    title.yanchor = titleYanchor;
-}
-
-
 function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
     var push = 0;
     if(titleYanchor === 'middle') {
@@ -503,8 +467,8 @@ function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
 }
 
 function needsMarginPush(gd, title, titleHeight) {
-    var titleY = getDflts(title)[0];
-    var titleYanchor = getDflts(title)[1];
+    var titleY = title.y;
+    var titleYanchor = title.yanchor;
     var position = titleY > 0.5 ? 't' : 'b';
     var curMargin = gd._fullLayout.margin[position];
     var pushMargin = 0;
