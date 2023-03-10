@@ -15,6 +15,15 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     });
 };
 
+function dfltLabelYanchor(isLine, labelTextPosition) {
+    // If shape is a line, default y-anchor is 'bottom' (so that text is above line by default)
+    // Otherwise, default y-anchor is equal to y-component of `textposition`
+    // (so that text is positioned inside shape bounding box by default)
+    return isLine ? 'bottom' :
+        labelTextPosition.indexOf('top') !== -1 ? 'top' :
+        labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+}
+
 function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
     function coerce(attr, dflt) {
         return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
@@ -115,5 +124,17 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
     if(noPath) {
         Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
+    }
+
+    // Label options
+    var isLine = shapeType === 'line';
+    var labelText = coerce('label.text');
+    if(labelText) {
+        coerce('label.textangle');
+        var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
+        coerce('label.xanchor');
+        coerce('label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
+        coerce('label.padding');
+        Lib.coerceFont(coerce, 'label.font', fullLayout.font);
     }
 }

@@ -36,7 +36,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         // recursive call
         displayOutlines(polygons, outlines, dragOptions, nCalls++);
 
-        if(pointsOnEllipse(polygons[0])) {
+        if(pointsOnEllipse(polygons[0]) || dragOptions.hasText) {
             update({redrawing: true});
         }
     }
