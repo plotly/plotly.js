@@ -3,6 +3,7 @@
 var d3 = require('@plotly/d3');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
+var Loggers = require('../lib/loggers');
 
 var Lib = require('../lib');
 var svgTextUtils = require('../lib/svg_text_utils');
@@ -463,8 +464,8 @@ function getDflts(title) {
 }
 
 function setDflts(title, titleY, titleYanchor) {
-    if(title.yref === 'paper' && title.y !== 0 && title.y !== 1) {
-        console.warn('title.automargin=true so resetting the supplied title.y value to 1.');
+    if(title.yref === 'paper' && title.y !== 0 && title.y !== 1 && title.y !== 'auto') {
+        Loggers.warn('title.automargin=true so resetting the supplied title.y value to 1.');
     }
     title.y = titleY;
     title.yanchor = titleYanchor;
