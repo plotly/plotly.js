@@ -18,13 +18,12 @@
         "height": 300,
         "width": 400,
         "margin": {"t":0, "b": 0, "l": 0, "r": 0},
-        "xaxis": {"automargin": true, "title": {"text": "x-axis title"}},
         "title": {
             "automargin": true, 
             "text": "Basic title",
-            "pad": {"t": 0, "b": 0},
-            "y": 0,
-            "yref": "container"
+            "pad": {"t": 15, "b": 10},
+            "yref": "paper",
+            "y": 0
         }
-    }
+  }
 }

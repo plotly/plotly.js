@@ -21,7 +21,6 @@
         "title": {
             "automargin": true, 
             "text": "Basic title",
-            "font": {"size": 24},
             "pad": {"t": 15, "b": 10},
             "yref": "paper"
         }
