@@ -8,6 +8,7 @@ var handleArrayContainerDefaults = require('../../plots/array_container_defaults
 
 var attributes = require('./attributes');
 var mergeLength = require('../parcoords/merge_length');
+var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
 
 function handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     coerce('line.shape');
@@ -44,7 +45,8 @@ function dimensionDefaults(dimensionIn, dimensionOut) {
 
         // Category level
         var arrayIn = dimensionIn.categoryarray;
-        var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
+        var isValidArray = (Lib.isArrayOrTypedArray(arrayIn) && arrayIn.length > 0) ||
+            isTypedArraySpec(arrayIn);
 
         var orderDefault;
         if(isValidArray) orderDefault = 'array';
