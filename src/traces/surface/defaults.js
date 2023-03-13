@@ -2,8 +2,6 @@
 
 var Registry = require('../../registry');
 var Lib = require('../../lib');
-var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
-var decodeTypedArraySpec = require('../../lib/array').decodeTypedArraySpec;
 
 var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
@@ -27,7 +25,7 @@ function createWave(n, minOpacity) {
 function isValidScaleArray(scl) {
     var highestVal = 0;
 
-    if(!Lib.isArrayOrTypedArray(scl) || scl.length < 2) return false;
+    if(!Array.isArray(scl) || scl.length < 2) return false;
 
     if(!scl[0] || !scl[scl.length - 1]) return false;
 
@@ -146,11 +144,6 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 
 function opacityscaleDefaults(traceIn, traceOut, layout, coerce) {
     var opacityscale = coerce('opacityscale');
-
-    if(isTypedArraySpec(opacityscale)) {
-        traceOut.opacityscale = opacityscale = decodeTypedArraySpec(opacityscale);
-    }
-
     if(opacityscale === 'max') {
         traceOut.opacityscale = [[0, MIN], [1, 1]];
     } else if(opacityscale === 'min') {
