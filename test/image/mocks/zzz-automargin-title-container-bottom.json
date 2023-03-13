@@ -21,8 +21,8 @@
         "xaxis": {"automargin": true, "title": {"text": "x-axis title"}},
         "title": {
             "automargin": true, 
-            "text": "Basic title",
-            "pad": {"t": 0, "b": 0},
+            "text": "Container | pad | y=0",
+            "pad": {"t": 15, "b": 10},
             "y": 0,
             "yref": "container"
         }
