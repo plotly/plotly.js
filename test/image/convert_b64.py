@@ -12,7 +12,11 @@ plotlyjsShortTypes = {
     'float64': 'f8'
 }
 
+int8bounds = numpy.iinfo(numpy.int8)
+int16bounds = numpy.iinfo(numpy.int16)
 int32bounds = numpy.iinfo(numpy.int32)
+uint8bounds = numpy.iinfo(numpy.uint8)
+uint16bounds = numpy.iinfo(numpy.uint16)
 uint32bounds = numpy.iinfo(numpy.uint32)
 
 skipKeys = [
@@ -49,19 +53,30 @@ def arraysToB64(obj, newObj) :
                     newObj[key] = val
                     continue
 
-                # convert Big Ints until we could support them in plotly.js
+                # convert default Big Ints until we could support them in plotly.js
                 if str(arr.dtype) == 'int64' :
-                    if arr.max() > int32bounds.max or arr.min() < int32bounds.min :
+                    max = arr.max()
+                    min = arr.min()
+                    if max <= int8bounds.max and min >= int8bounds.min :
+                        arr = arr.astype(numpy.int8)
+                    elif max <= int16bounds.max and min >= int16bounds.min :
+                        arr = arr.astype(numpy.int16)
+                    elif max <= int32bounds.max and min >= int32bounds.min :
+                        arr = arr.astype(numpy.int32)
+                    else :
                         newObj[key] = val
                         continue
 
-                    arr = arr.astype(numpy.int32)
                 elif str(arr.dtype) == 'uint64' :
-                    if arr.max() > uint32bounds.max or arr.min() < uint32bounds.min :
+                    if max <= uint8bounds.max and min >= uint8bounds.min :
+                        arr = arr.astype(numpy.uint8)
+                    elif max <= uint16bounds.max and min >= uint16bounds.min :
+                        arr = arr.astype(numpy.uint16)
+                    elif max <= uint32bounds.max and min >= uint32bounds.min :
+                        arr = arr.astype(numpy.uint32)
+                    else :
                         newObj[key] = val
                         continue
-
-                    arr = arr.astype(numpy.uint32)
 
                 if str(arr.dtype) in plotlyjsShortTypes :
                     newObj[key] = {
@@ -73,7 +88,6 @@ def arraysToB64(obj, newObj) :
                         newObj[key]['shape'] = str(arr.shape)[1:-1]
 
                     #print(val)
-                    #print('____________________')
                     #print(newObj[key])
                     #print('____________________')
                 else :
