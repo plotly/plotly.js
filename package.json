@@ -175,7 +175,7 @@
     "through2": "^4.0.2",
     "transform-loader": "^0.2.4",
     "true-case-path": "^2.2.1",
-    "webpack": "^5.76.0",
+    "webpack": "^5.76.1",
     "webpack-cli": "^5.0.1"
   }
 }
