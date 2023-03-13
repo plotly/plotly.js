@@ -1074,6 +1074,22 @@ lib.texttemplateString = function() {
     return templateFormatString.apply(texttemplateWarnings, arguments);
 };
 
+var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
+function parseMultDiv(inputStr) {
+    var match = inputStr.match(MULT_DIV_REGEX);
+    if(match) return { key: match[1], op: match[2], number: Number(match[3]) };
+    else return { key: inputStr, op: null, number: null };
+}
+var texttemplateWarningsWithMath = {
+    max: 10,
+    count: 0,
+    name: 'texttemplate',
+    parseMath: true,
+};
+lib.texttemplateStringWithMath = function() {
+    return templateFormatString.apply(texttemplateWarningsWithMath, arguments);
+};
+
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
@@ -1122,6 +1138,16 @@ function templateFormatString(string, labels, d3locale) {
         if(isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
         if(isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
 
+        // Shape labels support * and / operators in template string
+        var parsedOp = null;
+        var parsedNumber = null;
+        if(opts.parseMath) {
+            var _match = parseMultDiv(key);
+            key = _match.key;
+            parsedOp = _match.op;
+            parsedNumber = _match.number;
+        }
+
         var value;
         if(hasOther) {
             value = labels[key];
@@ -1143,6 +1169,13 @@ function templateFormatString(string, labels, d3locale) {
                 }
                 if(value !== undefined) break;
             }
+        }
+
+        if(parsedOp) {
+            value = {
+                '*': (function(v) { return v * parsedNumber; }),
+                '/': (function(v) { return v / parsedNumber; }),
+            }[parsedOp](value);
         }
 
         if(value === undefined && opts) {

@@ -22,6 +22,7 @@ function templateFormatStringDescription(opts) {
         'for details on the date formatting syntax.'
     ].join(' ');
 }
+exports.templateFormatStringDescription = templateFormatStringDescription;
 
 function describeVariables(extra) {
     var descPart = extra.description ? ' ' + extra.description : '';
@@ -40,6 +41,7 @@ function describeVariables(extra) {
     }
     return descPart;
 }
+exports.describeVariables = describeVariables;
 
 exports.hovertemplateAttrs = function(opts, extra) {
     opts = opts || {};

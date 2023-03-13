@@ -605,13 +605,27 @@ function drawLabel(gd, index, options, shapeGroup) {
     // Remove existing label
     shapeGroup.selectAll('.shape-label').remove();
 
-    // If no label, return
-    if(!options.label.text) return;
+    // If no label text or texttemplate, return
+    if(!(options.label.text || options.label.texttemplate)) return;
+
+    // Text template overrides text
+    var text = options.label.text;
+    if(options.label.texttemplate) {
+        text = Lib.texttemplateStringWithMath(options.label.texttemplate,
+            {},
+            gd._fullLayout._d3locale,
+            {
+                x0: options.x0,
+                y0: options.y0,
+                x1: options.x1,
+                y1: options.y1,
+                slope: (options.y1 - options.y0) / (options.x1 - options.x0),
+            });
+    }
 
     var labelGroupAttrs = {
         'data-index': index,
     };
-    var text = options.label.text;
     var font = options.label.font;
 
     var labelTextAttrs = {

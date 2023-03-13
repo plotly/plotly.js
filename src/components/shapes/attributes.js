@@ -4,6 +4,8 @@ var annAttrs = require('../annotations/attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var scatterLineAttrs = require('../../traces/scatter/attributes').line;
 var dash = require('../drawing/attributes').dash;
+var templateFormatStringDescription = require('../../plots/template_attributes').templateFormatStringDescription;
+var describeVariables = require('../../plots/template_attributes').describeVariables;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
@@ -231,6 +233,17 @@ module.exports = templatedArray('shape', {
             dflt: '',
             editType: 'arraydraw',
             description: 'Sets the text to display with shape.'
+        },
+        texttemplate: {
+            valType: 'string',
+            dflt: '',
+            editType: 'calc+arraydraw',
+            description: [
+                'Template string used for rendering the shape\'s label.',
+                'Note that this will override `text`.',
+                templateFormatStringDescription(),
+                describeVariables(['x0', 'y0', 'x1', 'y1', 'slope']),
+            ].join(' ')
         },
         font: fontAttrs({
             editType: 'calc+arraydraw',
