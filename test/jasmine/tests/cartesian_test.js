@@ -594,8 +594,8 @@ describe('subplot creation / deletion:', function() {
 
             // change bg colors to same semi-transparent color
             return Plotly.relayout(gd, {
-                'paper_bgcolor': 'rgba(255,0,0,0.2)',
-                'plot_bgcolor': 'rgba(255,0,0,0.2)'
+                paper_bgcolor: 'rgba(255,0,0,0.2)',
+                plot_bgcolor: 'rgba(255,0,0,0.2)'
             });
         })
         .then(function() {

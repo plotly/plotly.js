@@ -81,7 +81,7 @@ exports.valObjectMeta = {
             return false;
         }
     },
-    'boolean': {
+    boolean: {
         description: 'A boolean (true/false) value.',
         requiredOpts: [],
         otherOpts: ['dflt'],

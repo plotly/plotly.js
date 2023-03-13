@@ -113,7 +113,7 @@ function drawOne(gd, index) {
                 var editHelpers = arrayEditor(gd.layout, 'selections', options);
 
                 path.style({
-                    'cursor': 'move',
+                    cursor: 'move',
                 });
 
                 var dragOptions = {

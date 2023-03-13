@@ -1,5 +1,6 @@
 'use strict';
 
+var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
 var extendFlat = require('../../../lib/extend').extendFlat;
 
@@ -78,7 +79,85 @@ module.exports = {
                 '*vertical* allows vertical extend.'
             ].join(' ')
         },
-
+        label: {
+            text: {
+                valType: 'string',
+                dflt: '',
+                editType: 'none',
+                description: 'Sets the text to display with the new shape.'
+            },
+            font: fontAttrs({
+                editType: 'none',
+                description: 'Sets the new shape label text font.'
+            }),
+            textposition: {
+                valType: 'enumerated',
+                values: [
+                    'top left', 'top center', 'top right',
+                    'middle left', 'middle center', 'middle right',
+                    'bottom left', 'bottom center', 'bottom right',
+                    'start', 'middle', 'end',
+                ],
+                editType: 'none',
+                description: [
+                    'Sets the position of the label text relative to the new shape.',
+                    'Supported values for rectangles, circles and paths are',
+                    '*top left*, *top center*, *top right*, *middle left*,',
+                    '*middle center*, *middle right*, *bottom left*, *bottom center*,',
+                    'and *bottom right*.',
+                    'Supported values for lines are *start*, *middle*, and *end*.',
+                    'Default: *middle center* for rectangles, circles, and paths; *middle* for lines.',
+                ].join(' ')
+            },
+            textangle: {
+                valType: 'angle',
+                dflt: 'auto',
+                editType: 'none',
+                description: [
+                    'Sets the angle at which the label text is drawn',
+                    'with respect to the horizontal. For lines, angle *auto*',
+                    'is the same angle as the line. For all other shapes,',
+                    'angle *auto* is horizontal.'
+                ].join(' ')
+            },
+            xanchor: {
+                valType: 'enumerated',
+                values: ['auto', 'left', 'center', 'right'],
+                dflt: 'auto',
+                editType: 'none',
+                description: [
+                    'Sets the label\'s horizontal position anchor',
+                    'This anchor binds the specified `textposition` to the *left*, *center*',
+                    'or *right* of the label text.',
+                    'For example, if `textposition` is set to *top right* and',
+                    '`xanchor` to *right* then the right-most portion of the',
+                    'label text lines up with the right-most edge of the',
+                    'new shape.',
+                ].join(' '),
+            },
+            yanchor: {
+                valType: 'enumerated',
+                values: ['top', 'middle', 'bottom'],
+                editType: 'none',
+                description: [
+                    'Sets the label\'s vertical position anchor',
+                    'This anchor binds the specified `textposition` to the *top*, *middle*',
+                    'or *bottom* of the label text.',
+                    'For example, if `textposition` is set to *top right* and',
+                    '`yanchor` to *top* then the top-most portion of the',
+                    'label text lines up with the top-most edge of the',
+                    'new shape.',
+                ].join(' ')
+            },
+            padding: {
+                valType: 'number',
+                dflt: 3,
+                min: 0,
+                editType: 'none',
+                description: 'Sets padding (in px) between edge of label and edge of new shape.'
+            },
+            editType: 'none'
+        },
         editType: 'none'
     },
 

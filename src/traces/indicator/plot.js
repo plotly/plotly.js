@@ -20,14 +20,14 @@ var axisLayoutAttrs = require('../../plots/cartesian/layout_attributes');
 
 var Color = require('../../components/color');
 var anchor = {
-    'left': 'start',
-    'center': 'middle',
-    'right': 'end'
+    left: 'start',
+    center: 'middle',
+    right: 'end'
 };
 var position = {
-    'left': 0,
-    'center': 0.5,
-    'right': 1
+    left: 0,
+    center: 0.5,
+    right: 1
 };
 
 var SI_PREFIX = /[yzafpnµmkMGTPEZY]/;

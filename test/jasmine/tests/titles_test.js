@@ -641,7 +641,7 @@ describe('Titles can be updated', function() {
             desc: 'despite passing title only as a string using string attributes ' +
             '(backwards-compatibility)',
             update: {
-                'title': NEW_TITLE,
+                title: NEW_TITLE,
                 'xaxis.title': NEW_XTITLE,
                 'yaxis.title': NEW_YTITLE
             }
@@ -944,7 +944,7 @@ describe('Title fonts can be updated', function() {
             desc: 'despite using string attributes replacing deprecated `titlefont` attributes ' +
             '(backwards-compatibility)',
             update: {
-                'titlefont': NEW_TITLE_FONT,
+                titlefont: NEW_TITLE_FONT,
                 'xaxis.titlefont': NEW_XTITLE_FONT,
                 'yaxis.titlefont': NEW_YTITLE_FONT
             }

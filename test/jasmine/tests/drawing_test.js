@@ -533,7 +533,7 @@ describe('gradients', function() {
                 ['rgb(68, 85, 102)'],
                 ['rgb(170, 187, 204)']);
 
-            return Plotly.restyle(gd, {'mode': 'lines'});
+            return Plotly.restyle(gd, {mode: 'lines'});
         })
         .then(function() {
             // full replot and no resulting markers at all -> no gradients

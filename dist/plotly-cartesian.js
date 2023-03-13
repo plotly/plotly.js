@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.18.2
+* plotly.js (cartesian) v2.19.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -1749,7 +1749,7 @@ module.exports = function drawArrowHead(el3, ends, options) {
     if (!arrowHeadStyle.path) return;
     if (arrowHeadStyle.noRotate) rot = 0;
     d3.select(el.parentNode).append('path').attr({
-      'class': el3.attr('class'),
+      class: el3.attr('class'),
       d: arrowHeadStyle.path,
       transform: strTranslate(p.x, p.y) + strRotate(rot * 180 / Math.PI) + strScale(arrowScale)
     }).style({
@@ -2174,73 +2174,73 @@ var DFLTRANGE = {
  */
 var UNKNOWN = '##';
 var d3ToWorldCalendars = {
-  'd': {
-    '0': 'dd',
+  d: {
+    0: 'dd',
     '-': 'd'
   },
   // 2-digit or unpadded day of month
-  'e': {
-    '0': 'd',
+  e: {
+    0: 'd',
     '-': 'd'
   },
   // alternate, always unpadded day of month
-  'a': {
-    '0': 'D',
+  a: {
+    0: 'D',
     '-': 'D'
   },
   // short weekday name
-  'A': {
-    '0': 'DD',
+  A: {
+    0: 'DD',
     '-': 'DD'
   },
   // full weekday name
-  'j': {
-    '0': 'oo',
+  j: {
+    0: 'oo',
     '-': 'o'
   },
   // 3-digit or unpadded day of the year
-  'W': {
-    '0': 'ww',
+  W: {
+    0: 'ww',
     '-': 'w'
   },
   // 2-digit or unpadded week of the year (Monday first)
-  'm': {
-    '0': 'mm',
+  m: {
+    0: 'mm',
     '-': 'm'
   },
   // 2-digit or unpadded month number
-  'b': {
-    '0': 'M',
+  b: {
+    0: 'M',
     '-': 'M'
   },
   // short month name
-  'B': {
-    '0': 'MM',
+  B: {
+    0: 'MM',
     '-': 'MM'
   },
   // full month name
-  'y': {
-    '0': 'yy',
+  y: {
+    0: 'yy',
     '-': 'yy'
   },
   // 2-digit year (map unpadded to zero-padded)
-  'Y': {
-    '0': 'yyyy',
+  Y: {
+    0: 'yyyy',
     '-': 'yyyy'
   },
   // 4-digit year (map unpadded to zero-padded)
-  'U': UNKNOWN,
+  U: UNKNOWN,
   // Sunday-first week of the year
-  'w': UNKNOWN,
+  w: UNKNOWN,
   // day of the week [0(sunday),6]
   // combined format, we replace the date part with the world-calendar version
   // and the %X stays there for d3 to handle with time parts
-  'c': {
-    '0': 'D M d %X yyyy',
+  c: {
+    0: 'D M d %X yyyy',
     '-': 'D M d %X yyyy'
   },
-  'x': {
-    '0': 'mm/dd/yyyy',
+  x: {
+    0: 'mm/dd/yyyy',
     '-': 'mm/dd/yyyy'
   }
 };
@@ -2488,14 +2488,14 @@ color.contrast = function (cstr, lightAmount, darkAmount) {
 color.stroke = function (s, c) {
   var tc = tinycolor(c);
   s.style({
-    'stroke': color.tinyRGB(tc),
+    stroke: color.tinyRGB(tc),
     'stroke-opacity': tc.getAlpha()
   });
 };
 color.fill = function (s, c) {
   var tc = tinycolor(c);
   s.style({
-    'fill': color.tinyRGB(tc),
+    fill: color.tinyRGB(tc),
     'fill-opacity': tc.getAlpha()
   });
 };
@@ -2667,6 +2667,7 @@ module.exports = overrideAll({
   tickcolor: axesAttrs.tickcolor,
   ticklabelstep: axesAttrs.ticklabelstep,
   showticklabels: axesAttrs.showticklabels,
+  labelalias: axesAttrs.labelalias,
   tickfont: fontAttrs({}),
   tickangle: axesAttrs.tickangle,
   tickformat: axesAttrs.tickformat,
@@ -3535,6 +3536,7 @@ function mockColorBarAxis(gd, opts, zrange) {
     tickwidth: opts.tickwidth,
     tickcolor: opts.tickcolor,
     showticklabels: opts.showticklabels,
+    labelalias: opts.labelalias,
     ticklabelposition: opts.ticklabelposition,
     ticklabeloverflow: opts.ticklabeloverflow,
     ticklabelstep: opts.ticklabelstep,
@@ -4342,28 +4344,28 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
 var tinycolor = __webpack_require__(84267);
 var scales = {
-  'Greys': [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']],
-  'YlGnBu': [[0, 'rgb(8,29,88)'], [0.125, 'rgb(37,52,148)'], [0.25, 'rgb(34,94,168)'], [0.375, 'rgb(29,145,192)'], [0.5, 'rgb(65,182,196)'], [0.625, 'rgb(127,205,187)'], [0.75, 'rgb(199,233,180)'], [0.875, 'rgb(237,248,217)'], [1, 'rgb(255,255,217)']],
-  'Greens': [[0, 'rgb(0,68,27)'], [0.125, 'rgb(0,109,44)'], [0.25, 'rgb(35,139,69)'], [0.375, 'rgb(65,171,93)'], [0.5, 'rgb(116,196,118)'], [0.625, 'rgb(161,217,155)'], [0.75, 'rgb(199,233,192)'], [0.875, 'rgb(229,245,224)'], [1, 'rgb(247,252,245)']],
-  'YlOrRd': [[0, 'rgb(128,0,38)'], [0.125, 'rgb(189,0,38)'], [0.25, 'rgb(227,26,28)'], [0.375, 'rgb(252,78,42)'], [0.5, 'rgb(253,141,60)'], [0.625, 'rgb(254,178,76)'], [0.75, 'rgb(254,217,118)'], [0.875, 'rgb(255,237,160)'], [1, 'rgb(255,255,204)']],
-  'Bluered': [[0, 'rgb(0,0,255)'], [1, 'rgb(255,0,0)']],
+  Greys: [[0, 'rgb(0,0,0)'], [1, 'rgb(255,255,255)']],
+  YlGnBu: [[0, 'rgb(8,29,88)'], [0.125, 'rgb(37,52,148)'], [0.25, 'rgb(34,94,168)'], [0.375, 'rgb(29,145,192)'], [0.5, 'rgb(65,182,196)'], [0.625, 'rgb(127,205,187)'], [0.75, 'rgb(199,233,180)'], [0.875, 'rgb(237,248,217)'], [1, 'rgb(255,255,217)']],
+  Greens: [[0, 'rgb(0,68,27)'], [0.125, 'rgb(0,109,44)'], [0.25, 'rgb(35,139,69)'], [0.375, 'rgb(65,171,93)'], [0.5, 'rgb(116,196,118)'], [0.625, 'rgb(161,217,155)'], [0.75, 'rgb(199,233,192)'], [0.875, 'rgb(229,245,224)'], [1, 'rgb(247,252,245)']],
+  YlOrRd: [[0, 'rgb(128,0,38)'], [0.125, 'rgb(189,0,38)'], [0.25, 'rgb(227,26,28)'], [0.375, 'rgb(252,78,42)'], [0.5, 'rgb(253,141,60)'], [0.625, 'rgb(254,178,76)'], [0.75, 'rgb(254,217,118)'], [0.875, 'rgb(255,237,160)'], [1, 'rgb(255,255,204)']],
+  Bluered: [[0, 'rgb(0,0,255)'], [1, 'rgb(255,0,0)']],
   // modified RdBu based on
   // http://www.kennethmoreland.com/color-maps/
-  'RdBu': [[0, 'rgb(5,10,172)'], [0.35, 'rgb(106,137,247)'], [0.5, 'rgb(190,190,190)'], [0.6, 'rgb(220,170,132)'], [0.7, 'rgb(230,145,90)'], [1, 'rgb(178,10,28)']],
+  RdBu: [[0, 'rgb(5,10,172)'], [0.35, 'rgb(106,137,247)'], [0.5, 'rgb(190,190,190)'], [0.6, 'rgb(220,170,132)'], [0.7, 'rgb(230,145,90)'], [1, 'rgb(178,10,28)']],
   // Scale for non-negative numeric values
-  'Reds': [[0, 'rgb(220,220,220)'], [0.2, 'rgb(245,195,157)'], [0.4, 'rgb(245,160,105)'], [1, 'rgb(178,10,28)']],
+  Reds: [[0, 'rgb(220,220,220)'], [0.2, 'rgb(245,195,157)'], [0.4, 'rgb(245,160,105)'], [1, 'rgb(178,10,28)']],
   // Scale for non-positive numeric values
-  'Blues': [[0, 'rgb(5,10,172)'], [0.35, 'rgb(40,60,190)'], [0.5, 'rgb(70,100,245)'], [0.6, 'rgb(90,120,245)'], [0.7, 'rgb(106,137,247)'], [1, 'rgb(220,220,220)']],
-  'Picnic': [[0, 'rgb(0,0,255)'], [0.1, 'rgb(51,153,255)'], [0.2, 'rgb(102,204,255)'], [0.3, 'rgb(153,204,255)'], [0.4, 'rgb(204,204,255)'], [0.5, 'rgb(255,255,255)'], [0.6, 'rgb(255,204,255)'], [0.7, 'rgb(255,153,255)'], [0.8, 'rgb(255,102,204)'], [0.9, 'rgb(255,102,102)'], [1, 'rgb(255,0,0)']],
-  'Rainbow': [[0, 'rgb(150,0,90)'], [0.125, 'rgb(0,0,200)'], [0.25, 'rgb(0,25,255)'], [0.375, 'rgb(0,152,255)'], [0.5, 'rgb(44,255,150)'], [0.625, 'rgb(151,255,0)'], [0.75, 'rgb(255,234,0)'], [0.875, 'rgb(255,111,0)'], [1, 'rgb(255,0,0)']],
-  'Portland': [[0, 'rgb(12,51,131)'], [0.25, 'rgb(10,136,186)'], [0.5, 'rgb(242,211,56)'], [0.75, 'rgb(242,143,56)'], [1, 'rgb(217,30,30)']],
-  'Jet': [[0, 'rgb(0,0,131)'], [0.125, 'rgb(0,60,170)'], [0.375, 'rgb(5,255,255)'], [0.625, 'rgb(255,255,0)'], [0.875, 'rgb(250,0,0)'], [1, 'rgb(128,0,0)']],
-  'Hot': [[0, 'rgb(0,0,0)'], [0.3, 'rgb(230,0,0)'], [0.6, 'rgb(255,210,0)'], [1, 'rgb(255,255,255)']],
-  'Blackbody': [[0, 'rgb(0,0,0)'], [0.2, 'rgb(230,0,0)'], [0.4, 'rgb(230,210,0)'], [0.7, 'rgb(255,255,255)'], [1, 'rgb(160,200,255)']],
-  'Earth': [[0, 'rgb(0,0,130)'], [0.1, 'rgb(0,180,180)'], [0.2, 'rgb(40,210,40)'], [0.4, 'rgb(230,230,50)'], [0.6, 'rgb(120,70,20)'], [1, 'rgb(255,255,255)']],
-  'Electric': [[0, 'rgb(0,0,0)'], [0.15, 'rgb(30,0,100)'], [0.4, 'rgb(120,0,100)'], [0.6, 'rgb(160,90,0)'], [0.8, 'rgb(230,200,0)'], [1, 'rgb(255,250,220)']],
-  'Viridis': [[0, '#440154'], [0.06274509803921569, '#48186a'], [0.12549019607843137, '#472d7b'], [0.18823529411764706, '#424086'], [0.25098039215686274, '#3b528b'], [0.3137254901960784, '#33638d'], [0.3764705882352941, '#2c728e'], [0.4392156862745098, '#26828e'], [0.5019607843137255, '#21918c'], [0.5647058823529412, '#1fa088'], [0.6274509803921569, '#28ae80'], [0.6901960784313725, '#3fbc73'], [0.7529411764705882, '#5ec962'], [0.8156862745098039, '#84d44b'], [0.8784313725490196, '#addc30'], [0.9411764705882353, '#d8e219'], [1, '#fde725']],
-  'Cividis': [[0.000000, 'rgb(0,32,76)'], [0.058824, 'rgb(0,42,102)'], [0.117647, 'rgb(0,52,110)'], [0.176471, 'rgb(39,63,108)'], [0.235294, 'rgb(60,74,107)'], [0.294118, 'rgb(76,85,107)'], [0.352941, 'rgb(91,95,109)'], [0.411765, 'rgb(104,106,112)'], [0.470588, 'rgb(117,117,117)'], [0.529412, 'rgb(131,129,120)'], [0.588235, 'rgb(146,140,120)'], [0.647059, 'rgb(161,152,118)'], [0.705882, 'rgb(176,165,114)'], [0.764706, 'rgb(192,177,109)'], [0.823529, 'rgb(209,191,102)'], [0.882353, 'rgb(225,204,92)'], [0.941176, 'rgb(243,219,79)'], [1.000000, 'rgb(255,233,69)']]
+  Blues: [[0, 'rgb(5,10,172)'], [0.35, 'rgb(40,60,190)'], [0.5, 'rgb(70,100,245)'], [0.6, 'rgb(90,120,245)'], [0.7, 'rgb(106,137,247)'], [1, 'rgb(220,220,220)']],
+  Picnic: [[0, 'rgb(0,0,255)'], [0.1, 'rgb(51,153,255)'], [0.2, 'rgb(102,204,255)'], [0.3, 'rgb(153,204,255)'], [0.4, 'rgb(204,204,255)'], [0.5, 'rgb(255,255,255)'], [0.6, 'rgb(255,204,255)'], [0.7, 'rgb(255,153,255)'], [0.8, 'rgb(255,102,204)'], [0.9, 'rgb(255,102,102)'], [1, 'rgb(255,0,0)']],
+  Rainbow: [[0, 'rgb(150,0,90)'], [0.125, 'rgb(0,0,200)'], [0.25, 'rgb(0,25,255)'], [0.375, 'rgb(0,152,255)'], [0.5, 'rgb(44,255,150)'], [0.625, 'rgb(151,255,0)'], [0.75, 'rgb(255,234,0)'], [0.875, 'rgb(255,111,0)'], [1, 'rgb(255,0,0)']],
+  Portland: [[0, 'rgb(12,51,131)'], [0.25, 'rgb(10,136,186)'], [0.5, 'rgb(242,211,56)'], [0.75, 'rgb(242,143,56)'], [1, 'rgb(217,30,30)']],
+  Jet: [[0, 'rgb(0,0,131)'], [0.125, 'rgb(0,60,170)'], [0.375, 'rgb(5,255,255)'], [0.625, 'rgb(255,255,0)'], [0.875, 'rgb(250,0,0)'], [1, 'rgb(128,0,0)']],
+  Hot: [[0, 'rgb(0,0,0)'], [0.3, 'rgb(230,0,0)'], [0.6, 'rgb(255,210,0)'], [1, 'rgb(255,255,255)']],
+  Blackbody: [[0, 'rgb(0,0,0)'], [0.2, 'rgb(230,0,0)'], [0.4, 'rgb(230,210,0)'], [0.7, 'rgb(255,255,255)'], [1, 'rgb(160,200,255)']],
+  Earth: [[0, 'rgb(0,0,130)'], [0.1, 'rgb(0,180,180)'], [0.2, 'rgb(40,210,40)'], [0.4, 'rgb(230,230,50)'], [0.6, 'rgb(120,70,20)'], [1, 'rgb(255,255,255)']],
+  Electric: [[0, 'rgb(0,0,0)'], [0.15, 'rgb(30,0,100)'], [0.4, 'rgb(120,0,100)'], [0.6, 'rgb(160,90,0)'], [0.8, 'rgb(230,200,0)'], [1, 'rgb(255,250,220)']],
+  Viridis: [[0, '#440154'], [0.06274509803921569, '#48186a'], [0.12549019607843137, '#472d7b'], [0.18823529411764706, '#424086'], [0.25098039215686274, '#3b528b'], [0.3137254901960784, '#33638d'], [0.3764705882352941, '#2c728e'], [0.4392156862745098, '#26828e'], [0.5019607843137255, '#21918c'], [0.5647058823529412, '#1fa088'], [0.6274509803921569, '#28ae80'], [0.6901960784313725, '#3fbc73'], [0.7529411764705882, '#5ec962'], [0.8156862745098039, '#84d44b'], [0.8784313725490196, '#addc30'], [0.9411764705882353, '#d8e219'], [1, '#fde725']],
+  Cividis: [[0.000000, 'rgb(0,32,76)'], [0.058824, 'rgb(0,42,102)'], [0.117647, 'rgb(0,52,110)'], [0.176471, 'rgb(39,63,108)'], [0.235294, 'rgb(60,74,107)'], [0.294118, 'rgb(76,85,107)'], [0.352941, 'rgb(91,95,109)'], [0.411765, 'rgb(104,106,112)'], [0.470588, 'rgb(117,117,117)'], [0.529412, 'rgb(131,129,120)'], [0.588235, 'rgb(146,140,120)'], [0.647059, 'rgb(161,152,118)'], [0.705882, 'rgb(176,165,114)'], [0.764706, 'rgb(192,177,109)'], [0.823529, 'rgb(209,191,102)'], [0.882353, 'rgb(225,204,92)'], [0.941176, 'rgb(243,219,79)'], [1.000000, 'rgb(255,233,69)']]
 };
 var defaultScale = scales.RdBu;
 function getScale(scl, dflt) {
@@ -5214,9 +5216,9 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       linewidth = solidity * size;
       patternTag = 'path';
       patternAttrs = {
-        'd': path,
-        'opacity': opacity,
-        'stroke': fgRGB,
+        d: path,
+        opacity: opacity,
+        stroke: fgRGB,
         'stroke-width': linewidth + 'px'
       };
       break;
@@ -5227,9 +5229,9 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       linewidth = solidity * size;
       patternTag = 'path';
       patternAttrs = {
-        'd': path,
-        'opacity': opacity,
-        'stroke': fgRGB,
+        d: path,
+        opacity: opacity,
+        stroke: fgRGB,
         'stroke-width': linewidth + 'px'
       };
       break;
@@ -5240,9 +5242,9 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       linewidth = size - size * Math.sqrt(1.0 - solidity);
       patternTag = 'path';
       patternAttrs = {
-        'd': path,
-        'opacity': opacity,
-        'stroke': fgRGB,
+        d: path,
+        opacity: opacity,
+        stroke: fgRGB,
         'stroke-width': linewidth + 'px'
       };
       break;
@@ -5254,9 +5256,9 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       linewidth = solidity * size;
       patternTag = 'path';
       patternAttrs = {
-        'd': path,
-        'opacity': opacity,
-        'stroke': fgRGB,
+        d: path,
+        opacity: opacity,
+        stroke: fgRGB,
         'stroke-width': linewidth + 'px'
       };
       break;
@@ -5268,9 +5270,9 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       linewidth = solidity * size;
       patternTag = 'path';
       patternAttrs = {
-        'd': path,
-        'opacity': opacity,
-        'stroke': fgRGB,
+        d: path,
+        opacity: opacity,
+        stroke: fgRGB,
         'stroke-width': linewidth + 'px'
       };
       break;
@@ -5282,9 +5284,9 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       linewidth = size - size * Math.sqrt(1.0 - solidity);
       patternTag = 'path';
       patternAttrs = {
-        'd': path,
-        'opacity': opacity,
-        'stroke': fgRGB,
+        d: path,
+        opacity: opacity,
+        stroke: fgRGB,
         'stroke-width': linewidth + 'px'
       };
       break;
@@ -5298,11 +5300,11 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       }
       patternTag = 'circle';
       patternAttrs = {
-        'cx': width / 2,
-        'cy': height / 2,
-        'r': radius,
-        'opacity': opacity,
-        'fill': fgRGB
+        cx: width / 2,
+        cy: height / 2,
+        r: radius,
+        opacity: opacity,
+        fill: fgRGB
       };
       break;
   }
@@ -5312,12 +5314,12 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
   pattern.enter().append('pattern').each(function () {
     var el = d3.select(this);
     el.attr({
-      'id': fullID,
-      'width': width + 'px',
-      'height': height + 'px',
-      'patternUnits': 'userSpaceOnUse',
+      id: fullID,
+      width: width + 'px',
+      height: height + 'px',
+      patternUnits: 'userSpaceOnUse',
       // for legends scale down patterns just a bit so that default size (i.e 8) nicely fit in small icons
-      'patternTransform': isLegend ? 'scale(0.8)' : ''
+      patternTransform: isLegend ? 'scale(0.8)' : ''
     });
     if (bgcolor) {
       var bgC = tinycolor(bgcolor);
@@ -5326,9 +5328,9 @@ drawing.pattern = function (sel, calledBy, gd, patternID, shape, size, solidity,
       var rects = el.selectAll('rect').data([0]);
       rects.exit().remove();
       rects.enter().append('rect').attr({
-        'width': width + 'px',
-        'height': height + 'px',
-        'fill': bgRGB,
+        width: width + 'px',
+        height: height + 'px',
+        fill: bgRGB,
         'fill-opacity': bgAlpha
       });
     }
@@ -6780,7 +6782,7 @@ module.exports = {
     needLine: true,
     noDot: true
   },
-  'arrow': {
+  arrow: {
     n: 53,
     f: function (r, angle, standoff) {
       if (skipAngle(angle)) return emptyPath;
@@ -7967,7 +7969,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     };
   });
   var rotateLabels = false;
-  var hoverLabel = createHoverText(pointsData, {
+  var hoverText = createHoverText(pointsData, {
     gd: gd,
     hovermode: 'closest',
     rotateLabels: rotateLabels,
@@ -7975,6 +7977,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     container: d3.select(opts.container),
     outerContainer: opts.outerContainer || opts.container
   });
+  var hoverLabel = hoverText.hoverLabels;
 
   // Fix vertical overlap
   var tooltipSpacing = 5;
@@ -8503,7 +8506,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
   gd._hoverdata = newhoverdata;
   var rotateLabels = hovermode === 'y' && (searchData.length > 1 || hoverData.length > 1) || hovermode === 'closest' && hasOneHorizontalTrace && hoverData.length > 1;
   var bgColor = Color.combine(fullLayout.plot_bgcolor || Color.background, fullLayout.paper_bgcolor);
-  var hoverLabels = createHoverText(hoverData, {
+  var hoverText = createHoverText(hoverData, {
     gd: gd,
     hovermode: hovermode,
     rotateLabels: rotateLabels,
@@ -8513,8 +8516,9 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     commonLabelOpts: fullLayout.hoverlabel,
     hoverdistance: fullLayout.hoverdistance
   });
+  var hoverLabels = hoverText.hoverLabels;
   if (!helpers.isUnifiedHover(hovermode)) {
-    hoverAvoidOverlaps(hoverLabels, rotateLabels ? 'xa' : 'ya', fullLayout);
+    hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, hoverText.commonLabelBoundingBox);
     alignHoverText(hoverLabels, rotateLabels, fullLayout._invScaleX, fullLayout._invScaleY);
   } // TODO: tagName hack is needed to appease geo.js's hack of using eventTarget=true
   // we should improve the "fx" API so other plots can use it without these hack.
@@ -8608,6 +8612,14 @@ function createHoverText(hoverData, opts) {
   var commonLabel = container.selectAll('g.axistext').data(showCommonLabel ? [0] : []);
   commonLabel.enter().append('g').classed('axistext', true);
   commonLabel.exit().remove();
+
+  // set rect (without arrow) behind label below for later collision detection
+  var commonLabelRect = {
+    minX: 0,
+    maxX: 0,
+    minY: 0,
+    maxY: 0
+  };
   commonLabel.each(function () {
     var label = d3.select(this);
     var lpath = Lib.ensureSingle(label, 'path', '', function (s) {
@@ -8644,12 +8656,22 @@ function createHoverText(hoverData, opts) {
       var halfWidth = tbb.width / 2 + HOVERTEXTPAD;
       if (lx < halfWidth) {
         lx = halfWidth;
-        lpath.attr('d', 'M-' + (halfWidth - HOVERARROWSIZE) + ',0' + 'L-' + (halfWidth - HOVERARROWSIZE * 2) + ',' + topsign + HOVERARROWSIZE + 'H' + (HOVERTEXTPAD + tbb.width / 2) + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + halfWidth + 'V' + topsign + HOVERARROWSIZE + 'Z');
+        lpath.attr('d', 'M-' + (halfWidth - HOVERARROWSIZE) + ',0' + 'L-' + (halfWidth - HOVERARROWSIZE * 2) + ',' + topsign + HOVERARROWSIZE + 'H' + halfWidth + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + halfWidth + 'V' + topsign + HOVERARROWSIZE + 'Z');
       } else if (lx > fullLayout.width - halfWidth) {
         lx = fullLayout.width - halfWidth;
         lpath.attr('d', 'M' + (halfWidth - HOVERARROWSIZE) + ',0' + 'L' + halfWidth + ',' + topsign + HOVERARROWSIZE + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + halfWidth + 'V' + topsign + HOVERARROWSIZE + 'H' + (halfWidth - HOVERARROWSIZE * 2) + 'Z');
       } else {
-        lpath.attr('d', 'M0,0' + 'L' + HOVERARROWSIZE + ',' + topsign + HOVERARROWSIZE + 'H' + (HOVERTEXTPAD + tbb.width / 2) + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + (HOVERTEXTPAD + tbb.width / 2) + 'V' + topsign + HOVERARROWSIZE + 'H-' + HOVERARROWSIZE + 'Z');
+        lpath.attr('d', 'M0,0' + 'L' + HOVERARROWSIZE + ',' + topsign + HOVERARROWSIZE + 'H' + halfWidth + 'v' + topsign + (HOVERTEXTPAD * 2 + tbb.height) + 'H-' + halfWidth + 'V' + topsign + HOVERARROWSIZE + 'H-' + HOVERARROWSIZE + 'Z');
+      }
+      commonLabelRect.minX = lx - halfWidth;
+      commonLabelRect.maxX = lx + halfWidth;
+      if (xa.side === 'top') {
+        // label on negative y side
+        commonLabelRect.minY = ly - (HOVERTEXTPAD * 2 + tbb.height);
+        commonLabelRect.maxY = ly - HOVERTEXTPAD;
+      } else {
+        commonLabelRect.minY = ly + HOVERTEXTPAD;
+        commonLabelRect.maxY = ly + (HOVERTEXTPAD * 2 + tbb.height);
       }
     } else {
       var anchor;
@@ -8669,6 +8691,16 @@ function createHoverText(hoverData, opts) {
       ly = ya._offset + (c0.y0 + c0.y1) / 2;
       ltext.attr('text-anchor', anchor);
       lpath.attr('d', 'M0,0' + 'L' + leftsign + HOVERARROWSIZE + ',' + HOVERARROWSIZE + 'V' + (HOVERTEXTPAD + tbb.height / 2) + 'h' + leftsign + (HOVERTEXTPAD * 2 + tbb.width) + 'V-' + (HOVERTEXTPAD + tbb.height / 2) + 'H' + leftsign + HOVERARROWSIZE + 'V-' + HOVERARROWSIZE + 'Z');
+      commonLabelRect.minY = ly - (HOVERTEXTPAD + tbb.height / 2);
+      commonLabelRect.maxY = ly + (HOVERTEXTPAD + tbb.height / 2);
+      if (ya.side === 'right') {
+        commonLabelRect.minX = lx + HOVERARROWSIZE;
+        commonLabelRect.maxX = lx + HOVERARROWSIZE + (HOVERTEXTPAD * 2 + tbb.width);
+      } else {
+        // label on negative x side
+        commonLabelRect.minX = lx - HOVERARROWSIZE - (HOVERTEXTPAD * 2 + tbb.width);
+        commonLabelRect.maxX = lx - HOVERARROWSIZE;
+      }
       var halfHeight = tbb.height / 2;
       var lty = outerTop - tbb.top - halfHeight;
       var clipId = 'clip' + fullLayout._uid + 'commonlabel' + ya._id;
@@ -8955,7 +8987,10 @@ function createHoverText(hoverData, opts) {
       } else if (anchorStartOK) {
         hty += dy / 2;
         d.anchor = 'start';
-      } else d.anchor = 'middle';
+      } else {
+        d.anchor = 'middle';
+      }
+      d.crossPos = hty;
     } else {
       d.pos = hty;
       anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
@@ -8974,12 +9009,16 @@ function createHoverText(hoverData, opts) {
         if (overflowR > 0) htx -= overflowR;
         if (overflowL < 0) htx += -overflowL;
       }
+      d.crossPos = htx;
     }
     tx.attr('text-anchor', d.anchor);
     if (tx2width) tx2.attr('text-anchor', d.anchor);
     g.attr('transform', strTranslate(htx, hty) + (rotateLabels ? strRotate(YANGLE) : ''));
   });
-  return hoverLabels;
+  return {
+    hoverLabels: hoverLabels,
+    commonLabelBoundingBox: commonLabelRect
+  };
 }
 function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
   var name = '';
@@ -9058,7 +9097,9 @@ function getHoverLabelText(d, showCommonLabel, hovermode, fullLayout, t0, g) {
 // know what happens if the group spans all the way from one edge to
 // the other, though it hardly matters - there's just too much
 // information then.
-function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
+function hoverAvoidOverlaps(hoverLabels, rotateLabels, fullLayout, commonLabelBoundingBox) {
+  var axKey = rotateLabels ? 'xa' : 'ya';
+  var crossAxKey = rotateLabels ? 'ya' : 'xa';
   var nummoves = 0;
   var axSign = 1;
   var nLabels = hoverLabels.size();
@@ -9066,12 +9107,73 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
   // make groups of touching points
   var pointgroups = new Array(nLabels);
   var k = 0;
+
+  // get extent of axis hover label
+  var axisLabelMinX = commonLabelBoundingBox.minX;
+  var axisLabelMaxX = commonLabelBoundingBox.maxX;
+  var axisLabelMinY = commonLabelBoundingBox.minY;
+  var axisLabelMaxY = commonLabelBoundingBox.maxY;
+  var pX = function (x) {
+    return x * fullLayout._invScaleX;
+  };
+  var pY = function (y) {
+    return y * fullLayout._invScaleY;
+  };
   hoverLabels.each(function (d) {
     var ax = d[axKey];
+    var crossAx = d[crossAxKey];
     var axIsX = ax._id.charAt(0) === 'x';
     var rng = ax.range;
     if (k === 0 && rng && rng[0] > rng[1] !== axIsX) {
       axSign = -1;
+    }
+    var pmin = 0;
+    var pmax = axIsX ? fullLayout.width : fullLayout.height;
+    // in hovermode avoid overlap between hover labels and axis label
+    if (fullLayout.hovermode === 'x' || fullLayout.hovermode === 'y') {
+      // extent of rect behind hover label on cross axis:
+      var offsets = getHoverLabelOffsets(d, rotateLabels);
+      var anchor = d.anchor;
+      var horzSign = anchor === 'end' ? -1 : 1;
+      var labelMin;
+      var labelMax;
+      if (anchor === 'middle') {
+        // use extent of centered rect either on x or y axis depending on current axis
+        labelMin = d.crossPos + (axIsX ? pY(offsets.y - d.by / 2) : pX(d.bx / 2 + d.tx2width / 2));
+        labelMax = labelMin + (axIsX ? pY(d.by) : pX(d.bx));
+      } else {
+        // use extend of path (see alignHoverText function) without arrow
+        if (axIsX) {
+          labelMin = d.crossPos + pY(HOVERARROWSIZE + offsets.y) - pY(d.by / 2 - HOVERARROWSIZE);
+          labelMax = labelMin + pY(d.by);
+        } else {
+          var startX = pX(horzSign * HOVERARROWSIZE + offsets.x);
+          var endX = startX + pX(horzSign * d.bx);
+          labelMin = d.crossPos + Math.min(startX, endX);
+          labelMax = d.crossPos + Math.max(startX, endX);
+        }
+      }
+      if (axIsX) {
+        if (axisLabelMinY !== undefined && axisLabelMaxY !== undefined && Math.min(labelMax, axisLabelMaxY) - Math.max(labelMin, axisLabelMinY) > 1) {
+          // has at least 1 pixel overlap with axis label
+          if (crossAx.side === 'left') {
+            pmin = crossAx._mainLinePosition;
+            pmax = fullLayout.width;
+          } else {
+            pmax = crossAx._mainLinePosition;
+          }
+        }
+      } else {
+        if (axisLabelMinX !== undefined && axisLabelMaxX !== undefined && Math.min(labelMax, axisLabelMaxX) - Math.max(labelMin, axisLabelMinX) > 1) {
+          // has at least 1 pixel overlap with axis label
+          if (crossAx.side === 'top') {
+            pmin = crossAx._mainLinePosition;
+            pmax = fullLayout.height;
+          } else {
+            pmax = crossAx._mainLinePosition;
+          }
+        }
+      }
     }
     pointgroups[k++] = [{
       datum: d,
@@ -9080,8 +9182,8 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
       pos: d.pos,
       posref: d.posref,
       size: d.by * (axIsX ? YFACTOR : 1) / 2,
-      pmin: 0,
-      pmax: axIsX ? fullLayout.width : fullLayout.height
+      pmin: pmin,
+      pmax: pmax
     }];
   });
   pointgroups.sort(function (a, b) {
@@ -9221,6 +9323,41 @@ function hoverAvoidOverlaps(hoverLabels, axKey, fullLayout) {
     }
   }
 }
+function getHoverLabelOffsets(hoverLabel, rotateLabels) {
+  var offsetX = 0;
+  var offsetY = hoverLabel.offset;
+  if (rotateLabels) {
+    offsetY *= -YSHIFTY;
+    offsetX = hoverLabel.offset * YSHIFTX;
+  }
+  return {
+    x: offsetX,
+    y: offsetY
+  };
+}
+
+/**
+ * Calculate the shift in x for text and text2 elements
+ */
+function getTextShiftX(hoverLabel) {
+  var alignShift = {
+    start: 1,
+    end: -1,
+    middle: 0
+  }[hoverLabel.anchor];
+  var textShiftX = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
+  var text2ShiftX = textShiftX + alignShift * (hoverLabel.txwidth + HOVERTEXTPAD);
+  var isMiddle = hoverLabel.anchor === 'middle';
+  if (isMiddle) {
+    textShiftX -= hoverLabel.tx2width / 2;
+    text2ShiftX += hoverLabel.txwidth / 2 + HOVERTEXTPAD;
+  }
+  return {
+    alignShift: alignShift,
+    textShiftX: textShiftX,
+    text2ShiftX: text2ShiftX
+  };
+}
 function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
   var pX = function (x) {
     return x * scaleX;
@@ -9237,30 +9374,17 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
     var tx = g.select('text.nums');
     var anchor = d.anchor;
     var horzSign = anchor === 'end' ? -1 : 1;
-    var alignShift = {
-      start: 1,
-      end: -1,
-      middle: 0
-    }[anchor];
-    var txx = alignShift * (HOVERARROWSIZE + HOVERTEXTPAD);
-    var tx2x = txx + alignShift * (d.txwidth + HOVERTEXTPAD);
-    var offsetX = 0;
-    var offsetY = d.offset;
+    var shiftX = getTextShiftX(d);
+    var offsets = getHoverLabelOffsets(d, rotateLabels);
+    var offsetX = offsets.x;
+    var offsetY = offsets.y;
     var isMiddle = anchor === 'middle';
-    if (isMiddle) {
-      txx -= d.tx2width / 2;
-      tx2x += d.txwidth / 2 + HOVERTEXTPAD;
-    }
-    if (rotateLabels) {
-      offsetY *= -YSHIFTY;
-      offsetX = d.offset * YSHIFTX;
-    }
     g.select('path').attr('d', isMiddle ?
     // middle aligned: rect centered on data
     'M-' + pX(d.bx / 2 + d.tx2width / 2) + ',' + pY(offsetY - d.by / 2) + 'h' + pX(d.bx) + 'v' + pY(d.by) + 'h-' + pX(d.bx) + 'Z' :
     // left or right aligned: side rect with arrow to data
     'M0,0L' + pX(horzSign * HOVERARROWSIZE + offsetX) + ',' + pY(HOVERARROWSIZE + offsetY) + 'v' + pY(d.by / 2 - HOVERARROWSIZE) + 'h' + pX(horzSign * d.bx) + 'v-' + pY(d.by) + 'H' + pX(horzSign * HOVERARROWSIZE + offsetX) + 'V' + pY(offsetY - HOVERARROWSIZE) + 'Z');
-    var posX = offsetX + txx;
+    var posX = offsetX + shiftX.textShiftX;
     var posY = offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD;
     var textAlign = d.textAlign || 'auto';
     if (textAlign !== 'auto') {
@@ -9274,8 +9398,8 @@ function alignHoverText(hoverLabels, rotateLabels, scaleX, scaleY) {
     }
     tx.call(svgTextUtils.positionText, pX(posX), pY(posY));
     if (d.tx2width) {
-      g.select('text.name').call(svgTextUtils.positionText, pX(tx2x + alignShift * HOVERTEXTPAD + offsetX), pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD));
-      g.select('rect').call(Drawing.setRect, pX(tx2x + (alignShift - 1) * d.tx2width / 2 + offsetX), pY(offsetY - d.by / 2 - 1), pX(d.tx2width), pY(d.by + 2));
+      g.select('text.name').call(svgTextUtils.positionText, pX(shiftX.text2ShiftX + shiftX.alignShift * HOVERTEXTPAD + offsetX), pY(offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD));
+      g.select('rect').call(Drawing.setRect, pX(shiftX.text2ShiftX + (shiftX.alignShift - 1) * d.tx2width / 2 + offsetX), pY(offsetY - d.by / 2 - 1), pX(d.tx2width), pY(d.by + 2));
     }
   });
 }
@@ -14268,8 +14392,8 @@ function drawButtonRect(button, selectorLayout, d) {
     s.attr('shape-rendering', 'crispEdges');
   });
   rect.attr({
-    'rx': constants.rx,
-    'ry': constants.ry
+    rx: constants.rx,
+    ry: constants.ry
   });
   rect.call(Color.stroke, selectorLayout.bordercolor).call(Color.fill, getFillColor(selectorLayout, d)).style('stroke-width', selectorLayout.borderwidth + 'px');
 }
@@ -14479,7 +14603,7 @@ module.exports = {
     }],
     editType: 'calc',
     impliedEdits: {
-      'autorange': false
+      autorange: false
     }
   },
   thickness: {
@@ -15527,7 +15651,7 @@ function drawOne(gd, index) {
       if (isActiveSelection) {
         var editHelpers = arrayEditor(gd.layout, 'selections', options);
         path.style({
-          'cursor': 'move'
+          cursor: 'move'
         });
         var dragOptions = {
           element: path.node(),
@@ -17081,6 +17205,7 @@ module.exports = {
 
 
 var annAttrs = __webpack_require__(50215);
+var fontAttrs = __webpack_require__(41940);
 var scatterLineAttrs = (__webpack_require__(82196).line);
 var dash = (__webpack_require__(79952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
@@ -17179,6 +17304,45 @@ module.exports = templatedArray('shape', {
     valType: 'boolean',
     dflt: false,
     editType: 'calc+arraydraw'
+  },
+  label: {
+    text: {
+      valType: 'string',
+      dflt: '',
+      editType: 'arraydraw'
+    },
+    font: fontAttrs({
+      editType: 'calc+arraydraw',
+      colorEditType: 'arraydraw'
+    }),
+    textposition: {
+      valType: 'enumerated',
+      values: ['top left', 'top center', 'top right', 'middle left', 'middle center', 'middle right', 'bottom left', 'bottom center', 'bottom right', 'start', 'middle', 'end'],
+      editType: 'arraydraw'
+    },
+    textangle: {
+      valType: 'angle',
+      dflt: 'auto',
+      editType: 'calc+arraydraw'
+    },
+    xanchor: {
+      valType: 'enumerated',
+      values: ['auto', 'left', 'center', 'right'],
+      dflt: 'auto',
+      editType: 'calc+arraydraw'
+    },
+    yanchor: {
+      valType: 'enumerated',
+      values: ['top', 'middle', 'bottom'],
+      editType: 'calc+arraydraw'
+    },
+    padding: {
+      valType: 'number',
+      dflt: 3,
+      min: 0,
+      editType: 'arraydraw'
+    },
+    editType: 'arraydraw'
   },
   editType: 'arraydraw'
 });
@@ -17405,6 +17569,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     handleItemDefaults: handleShapeDefaults
   });
 };
+function dfltLabelYanchor(isLine, labelTextPosition) {
+  // If shape is a line, default y-anchor is 'bottom' (so that text is above line by default)
+  // Otherwise, default y-anchor is equal to y-component of `textposition`
+  // (so that text is positioned inside shape bounding box by default)
+  return isLine ? 'bottom' : labelTextPosition.indexOf('top') !== -1 ? 'top' : labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+}
 function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
   function coerce(attr, dflt) {
     return Lib.coerce(shapeIn, shapeOut, attributes, attr, dflt);
@@ -17499,6 +17669,18 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
   if (noPath) {
     Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
   }
+
+  // Label options
+  var isLine = shapeType === 'line';
+  var labelText = coerce('label.text');
+  if (labelText) {
+    coerce('label.textangle');
+    var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
+    coerce('label.xanchor');
+    coerce('label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
+    coerce('label.padding');
+    Lib.coerceFont(coerce, 'label.font', fullLayout.font);
+  }
 }
 
 /***/ }),
@@ -17536,7 +17718,7 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
   function redraw() {
     // recursive call
     displayOutlines(polygons, outlines, dragOptions, nCalls++);
-    if (pointsOnEllipse(polygons[0])) {
+    if (pointsOnEllipse(polygons[0]) || dragOptions.hasText) {
       update({
         redrawing: true
       });
@@ -17825,6 +18007,7 @@ function eraseActiveSelection(gd) {
 "use strict";
 
 
+var d3 = __webpack_require__(39898);
 var Registry = __webpack_require__(73972);
 var Lib = __webpack_require__(71828);
 var Axes = __webpack_require__(89298);
@@ -17836,9 +18019,11 @@ var Drawing = __webpack_require__(91424);
 var arrayEditor = (__webpack_require__(44467).arrayEditor);
 var dragElement = __webpack_require__(28569);
 var setCursor = __webpack_require__(6964);
+var svgTextUtils = __webpack_require__(63893);
 var constants = __webpack_require__(21459);
 var helpers = __webpack_require__(30477);
 var getPathString = helpers.getPathString;
+var FROM_TL = (__webpack_require__(18783).FROM_TL);
 
 // Shapes are stored in gd.layout.shapes, an array of objects
 // index can point to one item in this array,
@@ -17860,9 +18045,14 @@ function draw(gd) {
   // Remove previous shapes before drawing new in shapes in fullLayout.shapes
   fullLayout._shapeUpperLayer.selectAll('path').remove();
   fullLayout._shapeLowerLayer.selectAll('path').remove();
+  fullLayout._shapeUpperLayer.selectAll('text').remove();
+  fullLayout._shapeLowerLayer.selectAll('text').remove();
   for (var k in fullLayout._plots) {
     var shapelayer = fullLayout._plots[k].shapelayer;
-    if (shapelayer) shapelayer.selectAll('path').remove();
+    if (shapelayer) {
+      shapelayer.selectAll('path').remove();
+      shapelayer.selectAll('text').remove();
+    }
   }
   for (var i = 0; i < fullLayout.shapes.length; i++) {
     if (fullLayout.shapes[i].visible) {
@@ -17930,19 +18120,26 @@ function drawOne(gd, index) {
       fillColor = isOpen ? 'rgba(0,0,0,0)' : gd._fullLayout.activeshape.fillcolor;
       opacity = gd._fullLayout.activeshape.opacity;
     }
-    var path = shapeLayer.append('path').attr(attrs).style('opacity', opacity).call(Color.stroke, lineColor).call(Color.fill, fillColor).call(Drawing.dashLine, lineDash, lineWidth);
-    setClipPath(path, gd, options);
+    var shapeGroup = shapeLayer.append('g').classed('shape-group', true).attr({
+      'data-index': index
+    });
+    var path = shapeGroup.append('path').attr(attrs).style('opacity', opacity).call(Color.stroke, lineColor).call(Color.fill, fillColor).call(Drawing.dashLine, lineDash, lineWidth);
+    setClipPath(shapeGroup, gd, options);
+
+    // Draw or clear the label
+    drawLabel(gd, index, options, shapeGroup);
     var editHelpers;
     if (isActiveShape || gd._context.edits.shapePosition) editHelpers = arrayEditor(gd.layout, 'shapes', options);
     if (isActiveShape) {
       path.style({
-        'cursor': 'move'
+        cursor: 'move'
       });
       var dragOptions = {
         element: path.node(),
         plotinfo: plotinfo,
         gd: gd,
         editHelpers: editHelpers,
+        hasText: options.label.text,
         isActiveShape: true // i.e. to enable controllers
       };
 
@@ -17982,6 +18179,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
   var x0, y0, x1, y1, xAnchor, yAnchor;
   var n0, s0, w0, e0, optN, optS, optW, optE;
   var pathIn;
+  var shapeGroup = d3.select(shapePath.node().parentNode);
 
   // setup conversion functions
   var xa = Axes.getFromId(gd, shapeOptions.xref);
@@ -18013,11 +18211,11 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     // Helper shapes group
     // Note that by setting the `data-index` attr, it is ensured that
     // the helper group is purged in this modules `draw` function
-    var g = shapeLayer.append('g').attr('data-index', index);
+    var g = shapeLayer.append('g').attr('data-index', index).attr('drag-helper', true);
 
     // Helper path for moving
     g.append('path').attr('d', shapePath.attr('d')).style({
-      'cursor': 'move',
+      cursor: 'move',
       'stroke-width': sensoryWidth,
       'stroke-opacity': '0' // ensure not visible
     });
@@ -18030,15 +18228,15 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     var circleRadius = Math.max(sensoryWidth / 2, minSensoryWidth);
     g.append('circle').attr({
       'data-line-point': 'start-point',
-      'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
-      'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
-      'r': circleRadius
+      cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x0 : x2p(shapeOptions.x0),
+      cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y0 : y2p(shapeOptions.y0),
+      r: circleRadius
     }).style(circleStyle).classed('cursor-grab', true);
     g.append('circle').attr({
       'data-line-point': 'end-point',
-      'cx': xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
-      'cy': yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
-      'r': circleRadius
+      cx: xPixelSized ? x2p(shapeOptions.xanchor) + shapeOptions.x1 : x2p(shapeOptions.x1),
+      cy: yPixelSized ? y2p(shapeOptions.yanchor) - shapeOptions.y1 : y2p(shapeOptions.y1),
+      r: circleRadius
     }).style(circleStyle).classed('cursor-grab', true);
     return g;
   }
@@ -18175,6 +18373,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     }
     shapePath.attr('d', getPathString(gd, shapeOptions));
     renderVisualCues(shapeLayer, shapeOptions);
+    drawLabel(gd, index, shapeOptions, shapeGroup);
   }
   function resizeShape(dx, dy) {
     if (isPath) {
@@ -18245,6 +18444,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     }
     shapePath.attr('d', getPathString(gd, shapeOptions));
     renderVisualCues(shapeLayer, shapeOptions);
+    drawLabel(gd, index, shapeOptions, shapeGroup);
   }
   function renderVisualCues(shapeLayer, shapeOptions) {
     if (xPixelSized || yPixelSized) {
@@ -18259,9 +18459,9 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
       // Enter
       var strokeWidth = 1;
       visualCues.enter().append('path').attr({
-        'fill': '#fff',
+        fill: '#fff',
         'fill-rule': 'evenodd',
-        'stroke': '#000',
+        stroke: '#000',
         'stroke-width': strokeWidth
       }).classed('visual-cue', true);
 
@@ -18295,6 +18495,232 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     if (yref !== 'paper' && !ya.autorange) clipAxes += yref;
     Drawing.setClipUrl(shapePath, clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null, gd);
   }
+}
+function drawLabel(gd, index, options, shapeGroup) {
+  // Remove existing label
+  shapeGroup.selectAll('.shape-label').remove();
+
+  // If no label, return
+  if (!options.label.text) return;
+  var labelGroupAttrs = {
+    'data-index': index
+  };
+  var text = options.label.text;
+  var font = options.label.font;
+  var labelTextAttrs = {
+    'data-notex': 1
+  };
+  var labelGroup = shapeGroup.append('g').attr(labelGroupAttrs).classed('shape-label', true);
+  var labelText = labelGroup.append('text').attr(labelTextAttrs).classed('shape-label-text', true).text(text);
+
+  // Get x and y bounds of shape
+  var shapex0, shapex1, shapey0, shapey1;
+  if (options.path) {
+    // If shape is defined as a path, get the
+    // min and max bounds across all polygons in path
+    var d = getPathString(gd, options);
+    var polygons = readPaths(d, gd);
+    shapex0 = Infinity;
+    shapey0 = Infinity;
+    shapex1 = -Infinity;
+    shapey1 = -Infinity;
+    for (var i = 0; i < polygons.length; i++) {
+      for (var j = 0; j < polygons[i].length; j++) {
+        var p = polygons[i][j];
+        for (var k = 1; k < p.length; k += 2) {
+          var _x = p[k];
+          var _y = p[k + 1];
+          shapex0 = Math.min(shapex0, _x);
+          shapex1 = Math.max(shapex1, _x);
+          shapey0 = Math.min(shapey0, _y);
+          shapey1 = Math.max(shapey1, _y);
+        }
+      }
+    }
+  } else {
+    // Otherwise, we use the x and y bounds defined in the shape options
+    // and convert them to pixel coordinates
+    // Setup conversion functions
+    var xa = Axes.getFromId(gd, options.xref);
+    var xRefType = Axes.getRefType(options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+    var yRefType = Axes.getRefType(options.yref);
+    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
+    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    shapex0 = x2p(options.x0);
+    shapex1 = x2p(options.x1);
+    shapey0 = y2p(options.y0);
+    shapey1 = y2p(options.y1);
+  }
+
+  // Handle `auto` angle
+  var textangle = options.label.textangle;
+  if (textangle === 'auto') {
+    if (options.type === 'line') {
+      // Auto angle for line is same angle as line
+      textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
+    } else {
+      // Auto angle for all other shapes is 0
+      textangle = 0;
+    }
+  }
+
+  // Do an initial render so we can get the text bounding box height
+  labelText.call(function (s) {
+    s.call(Drawing.font, font).attr({});
+    svgTextUtils.convertToTspans(s, gd);
+    return s;
+  });
+  var textBB = Drawing.bBox(labelText.node());
+
+  // Calculate correct (x,y) for text
+  // We also determine true xanchor since xanchor depends on position when set to 'auto'
+  var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBB);
+  var textx = textPos.textx;
+  var texty = textPos.texty;
+  var xanchor = textPos.xanchor;
+
+  // Update (x,y) position, xanchor, and angle
+  labelText.attr({
+    'text-anchor': {
+      left: 'start',
+      center: 'middle',
+      right: 'end'
+    }[xanchor],
+    y: texty,
+    x: textx,
+    transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+  }).call(svgTextUtils.positionText, textx, texty);
+}
+function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
+  var dy, dx;
+  dx = Math.abs(shapex1 - shapex0);
+  if (shapex1 >= shapex0) {
+    dy = shapey0 - shapey1;
+  } else {
+    dy = shapey1 - shapey0;
+  }
+  return -180 / Math.PI * Math.atan2(dy, dx);
+}
+function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
+  var textPosition = shapeOptions.label.textposition;
+  var textAngle = shapeOptions.label.textangle;
+  var textPadding = shapeOptions.label.padding;
+  var shapeType = shapeOptions.type;
+  var textAngleRad = Math.PI / 180 * actualTextAngle;
+  var sinA = Math.sin(textAngleRad);
+  var cosA = Math.cos(textAngleRad);
+  var xanchor = shapeOptions.label.xanchor;
+  var yanchor = shapeOptions.label.yanchor;
+  var textx, texty, paddingX, paddingY;
+
+  // Text position functions differently for lines vs. other shapes
+  if (shapeType === 'line') {
+    // Set base position for start vs. center vs. end of line (default is 'center')
+    if (textPosition === 'start') {
+      textx = shapex0;
+      texty = shapey0;
+    } else if (textPosition === 'end') {
+      textx = shapex1;
+      texty = shapey1;
+    } else {
+      // Default: center
+      textx = (shapex0 + shapex1) / 2;
+      texty = (shapey0 + shapey1) / 2;
+    }
+
+    // Set xanchor if xanchor is 'auto'
+    if (xanchor === 'auto') {
+      if (textPosition === 'start') {
+        if (textAngle === 'auto') {
+          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
+        } else {
+          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
+        }
+      } else if (textPosition === 'end') {
+        if (textAngle === 'auto') {
+          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
+        } else {
+          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
+        }
+      } else {
+        xanchor = 'center';
+      }
+    }
+
+    // Special case for padding when angle is 'auto' for lines
+    // Padding should be treated as an orthogonal offset in this case
+    // Otherwise, padding is just a simple x and y offset
+    var paddingConstantsX = {
+      left: 1,
+      center: 0,
+      right: -1
+    };
+    var paddingConstantsY = {
+      bottom: -1,
+      middle: 0,
+      top: 1
+    };
+    if (textAngle === 'auto') {
+      // Set direction to apply padding (based on `yanchor` only)
+      var paddingDirection = paddingConstantsY[yanchor];
+      paddingX = -textPadding * sinA * paddingDirection;
+      paddingY = textPadding * cosA * paddingDirection;
+    } else {
+      // Set direction to apply padding (based on `xanchor` and `yanchor`)
+      var paddingDirectionX = paddingConstantsX[xanchor];
+      var paddingDirectionY = paddingConstantsY[yanchor];
+      paddingX = textPadding * paddingDirectionX;
+      paddingY = textPadding * paddingDirectionY;
+    }
+    textx = textx + paddingX;
+    texty = texty + paddingY;
+  } else {
+    // Text position for shapes that are not lines
+    // calc horizontal position
+    // Horizontal needs a little extra padding to look balanced
+    paddingX = textPadding + 3;
+    if (textPosition.indexOf('right') !== -1) {
+      textx = Math.max(shapex0, shapex1) - paddingX;
+      if (xanchor === 'auto') xanchor = 'right';
+    } else if (textPosition.indexOf('left') !== -1) {
+      textx = Math.min(shapex0, shapex1) + paddingX;
+      if (xanchor === 'auto') xanchor = 'left';
+    } else {
+      // Default: center
+      textx = (shapex0 + shapex1) / 2;
+      if (xanchor === 'auto') xanchor = 'center';
+    }
+
+    // calc vertical position
+    if (textPosition.indexOf('top') !== -1) {
+      texty = Math.min(shapey0, shapey1);
+    } else if (textPosition.indexOf('bottom') !== -1) {
+      texty = Math.max(shapey0, shapey1);
+    } else {
+      texty = (shapey0 + shapey1) / 2;
+    }
+    // Apply padding
+    paddingY = textPadding;
+    if (yanchor === 'bottom') {
+      texty = texty - paddingY;
+    } else if (yanchor === 'top') {
+      texty = texty + paddingY;
+    }
+  }
+
+  // Shift vertical (& horizontal) position according to `yanchor`
+  var shiftFraction = FROM_TL[yanchor];
+  // Adjust so that text is anchored at top of first line rather than at baseline of first line
+  var baselineAdjust = shapeOptions.label.font.size;
+  var textHeight = textBB.height;
+  var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
+  var yshift = -(textHeight * shiftFraction - baselineAdjust) * cosA;
+  return {
+    textx: textx + xshift,
+    texty: texty + yshift,
+    xanchor: xanchor
+  };
 }
 function movePath(pathIn, moveX, moveY) {
   return pathIn.replace(constants.segmentRE, function (segment) {
@@ -18363,6 +18789,7 @@ function eraseActiveShape(gd) {
 "use strict";
 
 
+var fontAttrs = __webpack_require__(41940);
 var dash = (__webpack_require__(79952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 module.exports = {
@@ -18414,6 +18841,44 @@ module.exports = {
       dflt: 'diagonal',
       editType: 'none'
     },
+    label: {
+      text: {
+        valType: 'string',
+        dflt: '',
+        editType: 'none'
+      },
+      font: fontAttrs({
+        editType: 'none'
+      }),
+      textposition: {
+        valType: 'enumerated',
+        values: ['top left', 'top center', 'top right', 'middle left', 'middle center', 'middle right', 'bottom left', 'bottom center', 'bottom right', 'start', 'middle', 'end'],
+        editType: 'none'
+      },
+      textangle: {
+        valType: 'angle',
+        dflt: 'auto',
+        editType: 'none'
+      },
+      xanchor: {
+        valType: 'enumerated',
+        values: ['auto', 'left', 'center', 'right'],
+        dflt: 'auto',
+        editType: 'none'
+      },
+      yanchor: {
+        valType: 'enumerated',
+        values: ['top', 'middle', 'bottom'],
+        editType: 'none'
+      },
+      padding: {
+        valType: 'number',
+        dflt: 3,
+        min: 0,
+        editType: 'none'
+      },
+      editType: 'none'
+    },
     editType: 'none'
   },
   activeshape: {
@@ -18463,6 +18928,13 @@ module.exports = {
 
 
 var Color = __webpack_require__(7901);
+var Lib = __webpack_require__(71828);
+function dfltLabelYanchor(isLine, labelTextPosition) {
+  // If shape is a line, default y-anchor is 'bottom' (so that text is above line by default)
+  // Otherwise, default y-anchor is equal to y-component of `textposition`
+  // (so that text is positioned inside shape bounding box by default)
+  return isLine ? 'bottom' : labelTextPosition.indexOf('top') !== -1 ? 'top' : labelTextPosition.indexOf('bottom') !== -1 ? 'bottom' : 'middle';
+}
 module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce) {
   coerce('newshape.drawdirection');
   coerce('newshape.layer');
@@ -18474,6 +18946,16 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
     var bgcolor = (layoutIn || {}).plot_bgcolor || '#FFF';
     coerce('newshape.line.color', Color.contrast(bgcolor));
     coerce('newshape.line.dash');
+  }
+  var isLine = layoutIn.dragmode === 'drawline';
+  var labelText = coerce('newshape.label.text');
+  if (labelText) {
+    coerce('newshape.label.textangle');
+    var labelTextPosition = coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
+    coerce('newshape.label.xanchor');
+    coerce('newshape.label.yanchor', dfltLabelYanchor(isLine, labelTextPosition));
+    coerce('newshape.label.padding');
+    Lib.coerceFont(coerce, 'newshape.label.font', layoutOut.font);
   }
   coerce('activeshape.fillcolor');
   coerce('activeshape.opacity');
@@ -18829,6 +19311,7 @@ module.exports = function newShapes(outlines, dragOptions) {
   var polygons = readPaths(d, gd, plotinfo, isActiveShape);
   var newShape = {
     editable: true,
+    label: newStyle.label,
     xref: xPaper ? 'paper' : xaxis._id,
     yref: yPaper ? 'paper' : yaxis._id,
     layer: newStyle.layer,
@@ -21261,12 +21744,12 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
   hbar.enter().append('rect').classed('scrollbar-horizontal', true).call(Color.fill, ScrollBox.barColor);
   if (needsHorizontalScrollBar) {
     this.hbar = hbar.attr({
-      'rx': ScrollBox.barRadius,
-      'ry': ScrollBox.barRadius,
-      'x': hbarL,
-      'y': hbarT,
-      'width': hbarW,
-      'height': hbarH
+      rx: ScrollBox.barRadius,
+      ry: ScrollBox.barRadius,
+      x: hbarL,
+      y: hbarT,
+      width: hbarW,
+      height: hbarH
     });
 
     // hbar center moves between hbarXMin and hbarXMin + hbarTranslateMax
@@ -21291,12 +21774,12 @@ ScrollBox.prototype.enable = function enable(position, translateX, translateY) {
   vbar.enter().append('rect').classed('scrollbar-vertical', true).call(Color.fill, ScrollBox.barColor);
   if (needsVerticalScrollBar) {
     this.vbar = vbar.attr({
-      'rx': ScrollBox.barRadius,
-      'ry': ScrollBox.barRadius,
-      'x': vbarL,
-      'y': vbarT,
-      'width': vbarW,
-      'height': vbarH
+      rx: ScrollBox.barRadius,
+      ry: ScrollBox.barRadius,
+      x: vbarL,
+      y: vbarT,
+      width: vbarW,
+      height: vbarH
     });
 
     // vbar center moves between vbarYMin and vbarYMin + vbarTranslateMax
@@ -21793,171 +22276,171 @@ exports.PlotSchema = __webpack_require__(86281);
 
 
 module.exports = {
-  'undo': {
-    'width': 857.1,
-    'height': 1000,
-    'path': 'm857 350q0-87-34-166t-91-137-137-92-166-34q-96 0-183 41t-147 114q-4 6-4 13t5 11l76 77q6 5 14 5 9-1 13-7 41-53 100-82t126-29q58 0 110 23t92 61 61 91 22 111-22 111-61 91-92 61-110 23q-55 0-105-20t-90-57l77-77q17-16 8-38-10-23-33-23h-250q-15 0-25 11t-11 25v250q0 24 22 33 22 10 39-8l72-72q60 57 137 88t159 31q87 0 166-34t137-92 91-137 34-166z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  undo: {
+    width: 857.1,
+    height: 1000,
+    path: 'm857 350q0-87-34-166t-91-137-137-92-166-34q-96 0-183 41t-147 114q-4 6-4 13t5 11l76 77q6 5 14 5 9-1 13-7 41-53 100-82t126-29q58 0 110 23t92 61 61 91 22 111-22 111-61 91-92 61-110 23q-55 0-105-20t-90-57l77-77q17-16 8-38-10-23-33-23h-250q-15 0-25 11t-11 25v250q0 24 22 33 22 10 39-8l72-72q60 57 137 88t159 31q87 0 166-34t137-92 91-137 34-166z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'home': {
-    'width': 928.6,
-    'height': 1000,
-    'path': 'm786 296v-267q0-15-11-26t-25-10h-214v214h-143v-214h-214q-15 0-25 10t-11 26v267q0 1 0 2t0 2l321 264 321-264q1-1 1-4z m124 39l-34-41q-5-5-12-6h-2q-7 0-12 3l-386 322-386-322q-7-4-13-4-7 2-12 7l-35 41q-4 5-3 13t6 12l401 334q18 15 42 15t43-15l136-114v109q0 8 5 13t13 5h107q8 0 13-5t5-13v-227l122-102q5-5 6-12t-4-13z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  home: {
+    width: 928.6,
+    height: 1000,
+    path: 'm786 296v-267q0-15-11-26t-25-10h-214v214h-143v-214h-214q-15 0-25 10t-11 26v267q0 1 0 2t0 2l321 264 321-264q1-1 1-4z m124 39l-34-41q-5-5-12-6h-2q-7 0-12 3l-386 322-386-322q-7-4-13-4-7 2-12 7l-35 41q-4 5-3 13t6 12l401 334q18 15 42 15t43-15l136-114v109q0 8 5 13t13 5h107q8 0 13-5t5-13v-227l122-102q5-5 6-12t-4-13z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
   'camera-retro': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm518 386q0 8-5 13t-13 5q-37 0-63-27t-26-63q0-8 5-13t13-5 12 5 5 13q0 23 16 38t38 16q8 0 13 5t5 13z m125-73q0-59-42-101t-101-42-101 42-42 101 42 101 101 42 101-42 42-101z m-572-320h858v71h-858v-71z m643 320q0 89-62 152t-152 62-151-62-63-152 63-151 151-63 152 63 62 151z m-571 358h214v72h-214v-72z m-72-107h858v143h-462l-36-71h-360v-72z m929 143v-714q0-30-21-51t-50-21h-858q-29 0-50 21t-21 51v714q0 30 21 51t50 21h858q29 0 50-21t21-51z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+    width: 1000,
+    height: 1000,
+    path: 'm518 386q0 8-5 13t-13 5q-37 0-63-27t-26-63q0-8 5-13t13-5 12 5 5 13q0 23 16 38t38 16q8 0 13 5t5 13z m125-73q0-59-42-101t-101-42-101 42-42 101 42 101 101 42 101-42 42-101z m-572-320h858v71h-858v-71z m643 320q0 89-62 152t-152 62-151-62-63-152 63-151 151-63 152 63 62 151z m-571 358h214v72h-214v-72z m-72-107h858v143h-462l-36-71h-360v-72z m929 143v-714q0-30-21-51t-50-21h-858q-29 0-50 21t-21 51v714q0 30 21 51t50 21h858q29 0 50-21t21-51z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'zoombox': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm1000-25l-250 251c40 63 63 138 63 218 0 224-182 406-407 406-224 0-406-182-406-406s183-406 407-406c80 0 155 22 218 62l250-250 125 125z m-812 250l0 438 437 0 0-438-437 0z m62 375l313 0 0-312-313 0 0 312z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  zoombox: {
+    width: 1000,
+    height: 1000,
+    path: 'm1000-25l-250 251c40 63 63 138 63 218 0 224-182 406-407 406-224 0-406-182-406-406s183-406 407-406c80 0 155 22 218 62l250-250 125 125z m-812 250l0 438 437 0 0-438-437 0z m62 375l313 0 0-312-313 0 0 312z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'pan': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm1000 350l-187 188 0-125-250 0 0 250 125 0-188 187-187-187 125 0 0-250-250 0 0 125-188-188 186-187 0 125 252 0 0-250-125 0 187-188 188 188-125 0 0 250 250 0 0-126 187 188z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  pan: {
+    width: 1000,
+    height: 1000,
+    path: 'm1000 350l-187 188 0-125-250 0 0 250 125 0-188 187-187-187 125 0 0-250-250 0 0 125-188-188 186-187 0 125 252 0 0-250-125 0 187-188 188 188-125 0 0 250 250 0 0-126 187 188z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'zoom_plus': {
-    'width': 875,
-    'height': 1000,
-    'path': 'm1 787l0-875 875 0 0 875-875 0z m687-500l-187 0 0-187-125 0 0 187-188 0 0 125 188 0 0 187 125 0 0-187 187 0 0-125z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  zoom_plus: {
+    width: 875,
+    height: 1000,
+    path: 'm1 787l0-875 875 0 0 875-875 0z m687-500l-187 0 0-187-125 0 0 187-188 0 0 125 188 0 0 187 125 0 0-187 187 0 0-125z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'zoom_minus': {
-    'width': 875,
-    'height': 1000,
-    'path': 'm0 788l0-876 875 0 0 876-875 0z m688-500l-500 0 0 125 500 0 0-125z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  zoom_minus: {
+    width: 875,
+    height: 1000,
+    path: 'm0 788l0-876 875 0 0 876-875 0z m688-500l-500 0 0 125 500 0 0-125z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'autoscale': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm250 850l-187 0-63 0 0-62 0-188 63 0 0 188 187 0 0 62z m688 0l-188 0 0-62 188 0 0-188 62 0 0 188 0 62-62 0z m-875-938l0 188-63 0 0-188 0-62 63 0 187 0 0 62-187 0z m875 188l0-188-188 0 0-62 188 0 62 0 0 62 0 188-62 0z m-125 188l-1 0-93-94-156 156 156 156 92-93 2 0 0 250-250 0 0-2 93-92-156-156-156 156 94 92 0 2-250 0 0-250 0 0 93 93 157-156-157-156-93 94 0 0 0-250 250 0 0 0-94 93 156 157 156-157-93-93 0 0 250 0 0 250z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  autoscale: {
+    width: 1000,
+    height: 1000,
+    path: 'm250 850l-187 0-63 0 0-62 0-188 63 0 0 188 187 0 0 62z m688 0l-188 0 0-62 188 0 0-188 62 0 0 188 0 62-62 0z m-875-938l0 188-63 0 0-188 0-62 63 0 187 0 0 62-187 0z m875 188l0-188-188 0 0-62 188 0 62 0 0 62 0 188-62 0z m-125 188l-1 0-93-94-156 156 156 156 92-93 2 0 0 250-250 0 0-2 93-92-156-156-156 156 94 92 0 2-250 0 0-250 0 0 93 93 157-156-157-156-93 94 0 0 0-250 250 0 0 0-94 93 156 157 156-157-93-93 0 0 250 0 0 250z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'tooltip_basic': {
-    'width': 1500,
-    'height': 1000,
-    'path': 'm375 725l0 0-375-375 375-374 0-1 1125 0 0 750-1125 0z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  tooltip_basic: {
+    width: 1500,
+    height: 1000,
+    path: 'm375 725l0 0-375-375 375-374 0-1 1125 0 0 750-1125 0z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'tooltip_compare': {
-    'width': 1125,
-    'height': 1000,
-    'path': 'm187 786l0 2-187-188 188-187 0 0 937 0 0 373-938 0z m0-499l0 1-187-188 188-188 0 0 937 0 0 376-938-1z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  tooltip_compare: {
+    width: 1125,
+    height: 1000,
+    path: 'm187 786l0 2-187-188 188-187 0 0 937 0 0 373-938 0z m0-499l0 1-187-188 188-188 0 0 937 0 0 376-938-1z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'plotlylogo': {
-    'width': 1542,
-    'height': 1000,
-    'path': 'm0-10h182v-140h-182v140z m228 146h183v-286h-183v286z m225 714h182v-1000h-182v1000z m225-285h182v-715h-182v715z m225 142h183v-857h-183v857z m231-428h182v-429h-182v429z m225-291h183v-138h-183v138z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  plotlylogo: {
+    width: 1542,
+    height: 1000,
+    path: 'm0-10h182v-140h-182v140z m228 146h183v-286h-183v286z m225 714h182v-1000h-182v1000z m225-285h182v-715h-182v715z m225 142h183v-857h-183v857z m231-428h182v-429h-182v429z m225-291h183v-138h-183v138z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
   'z-axis': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm833 5l-17 108v41l-130-65 130-66c0 0 0 38 0 39 0-1 36-14 39-25 4-15-6-22-16-30-15-12-39-16-56-20-90-22-187-23-279-23-261 0-341 34-353 59 3 60 228 110 228 110-140-8-351-35-351-116 0-120 293-142 474-142 155 0 477 22 477 142 0 50-74 79-163 96z m-374 94c-58-5-99-21-99-40 0-24 65-43 144-43 79 0 143 19 143 43 0 19-42 34-98 40v216h87l-132 135-133-135h88v-216z m167 515h-136v1c16 16 31 34 46 52l84 109v54h-230v-71h124v-1c-16-17-28-32-44-51l-89-114v-51h245v72z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+    width: 1000,
+    height: 1000,
+    path: 'm833 5l-17 108v41l-130-65 130-66c0 0 0 38 0 39 0-1 36-14 39-25 4-15-6-22-16-30-15-12-39-16-56-20-90-22-187-23-279-23-261 0-341 34-353 59 3 60 228 110 228 110-140-8-351-35-351-116 0-120 293-142 474-142 155 0 477 22 477 142 0 50-74 79-163 96z m-374 94c-58-5-99-21-99-40 0-24 65-43 144-43 79 0 143 19 143 43 0 19-42 34-98 40v216h87l-132 135-133-135h88v-216z m167 515h-136v1c16 16 31 34 46 52l84 109v54h-230v-71h124v-1c-16-17-28-32-44-51l-89-114v-51h245v72z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
   '3d_rotate': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm922 660c-5 4-9 7-14 11-359 263-580-31-580-31l-102 28 58-400c0 1 1 1 2 2 118 108 351 249 351 249s-62 27-100 42c88 83 222 183 347 122 16-8 30-17 44-27-2 1-4 2-6 4z m36-329c0 0 64 229-88 296-62 27-124 14-175-11 157-78 225-208 249-266 8-19 11-31 11-31 2 5 6 15 11 32-5-13-8-20-8-20z m-775-239c70-31 117-50 198-32-121 80-199 346-199 346l-96-15-58-12c0 0 55-226 155-287z m603 133l-317-139c0 0 4-4 19-14 7-5 24-15 24-15s-177-147-389 4c235-287 536-112 536-112l31-22 100 299-4-1z m-298-153c6-4 14-9 24-15 0 0-17 10-24 15z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+    width: 1000,
+    height: 1000,
+    path: 'm922 660c-5 4-9 7-14 11-359 263-580-31-580-31l-102 28 58-400c0 1 1 1 2 2 118 108 351 249 351 249s-62 27-100 42c88 83 222 183 347 122 16-8 30-17 44-27-2 1-4 2-6 4z m36-329c0 0 64 229-88 296-62 27-124 14-175-11 157-78 225-208 249-266 8-19 11-31 11-31 2 5 6 15 11 32-5-13-8-20-8-20z m-775-239c70-31 117-50 198-32-121 80-199 346-199 346l-96-15-58-12c0 0 55-226 155-287z m603 133l-317-139c0 0 4-4 19-14 7-5 24-15 24-15s-177-147-389 4c235-287 536-112 536-112l31-22 100 299-4-1z m-298-153c6-4 14-9 24-15 0 0-17 10-24 15z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'camera': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm500 450c-83 0-150-67-150-150 0-83 67-150 150-150 83 0 150 67 150 150 0 83-67 150-150 150z m400 150h-120c-16 0-34 13-39 29l-31 93c-6 15-23 28-40 28h-340c-16 0-34-13-39-28l-31-94c-6-15-23-28-40-28h-120c-55 0-100-45-100-100v-450c0-55 45-100 100-100h800c55 0 100 45 100 100v450c0 55-45 100-100 100z m-400-550c-138 0-250 112-250 250 0 138 112 250 250 250 138 0 250-112 250-250 0-138-112-250-250-250z m365 380c-19 0-35 16-35 35 0 19 16 35 35 35 19 0 35-16 35-35 0-19-16-35-35-35z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  camera: {
+    width: 1000,
+    height: 1000,
+    path: 'm500 450c-83 0-150-67-150-150 0-83 67-150 150-150 83 0 150 67 150 150 0 83-67 150-150 150z m400 150h-120c-16 0-34 13-39 29l-31 93c-6 15-23 28-40 28h-340c-16 0-34-13-39-28l-31-94c-6-15-23-28-40-28h-120c-55 0-100-45-100-100v-450c0-55 45-100 100-100h800c55 0 100 45 100 100v450c0 55-45 100-100 100z m-400-550c-138 0-250 112-250 250 0 138 112 250 250 250 138 0 250-112 250-250 0-138-112-250-250-250z m365 380c-19 0-35 16-35 35 0 19 16 35 35 35 19 0 35-16 35-35 0-19-16-35-35-35z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'movie': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm938 413l-188-125c0 37-17 71-44 94 64 38 107 107 107 187 0 121-98 219-219 219-121 0-219-98-219-219 0-61 25-117 66-156h-115c30 33 49 76 49 125 0 103-84 187-187 187s-188-84-188-187c0-57 26-107 65-141-38-22-65-62-65-109v-250c0-70 56-126 125-126h500c69 0 125 56 125 126l188-126c34 0 62 28 62 63v375c0 35-28 63-62 63z m-750 0c-69 0-125 56-125 125s56 125 125 125 125-56 125-125-56-125-125-125z m406-1c-87 0-157 70-157 157 0 86 70 156 157 156s156-70 156-156-70-157-156-157z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  movie: {
+    width: 1000,
+    height: 1000,
+    path: 'm938 413l-188-125c0 37-17 71-44 94 64 38 107 107 107 187 0 121-98 219-219 219-121 0-219-98-219-219 0-61 25-117 66-156h-115c30 33 49 76 49 125 0 103-84 187-187 187s-188-84-188-187c0-57 26-107 65-141-38-22-65-62-65-109v-250c0-70 56-126 125-126h500c69 0 125 56 125 126l188-126c34 0 62 28 62 63v375c0 35-28 63-62 63z m-750 0c-69 0-125 56-125 125s56 125 125 125 125-56 125-125-56-125-125-125z m406-1c-87 0-157 70-157 157 0 86 70 156 157 156s156-70 156-156-70-157-156-157z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'question': {
-    'width': 857.1,
-    'height': 1000,
-    'path': 'm500 82v107q0 8-5 13t-13 5h-107q-8 0-13-5t-5-13v-107q0-8 5-13t13-5h107q8 0 13 5t5 13z m143 375q0 49-31 91t-77 65-95 23q-136 0-207-119-9-14 4-24l74-55q4-4 10-4 9 0 14 7 30 38 48 51 19 14 48 14 27 0 48-15t21-33q0-21-11-34t-38-25q-35-16-65-48t-29-70v-20q0-8 5-13t13-5h107q8 0 13 5t5 13q0 10 12 27t30 28q18 10 28 16t25 19 25 27 16 34 7 45z m214-107q0-117-57-215t-156-156-215-58-216 58-155 156-58 215 58 215 155 156 216 58 215-58 156-156 57-215z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  question: {
+    width: 857.1,
+    height: 1000,
+    path: 'm500 82v107q0 8-5 13t-13 5h-107q-8 0-13-5t-5-13v-107q0-8 5-13t13-5h107q8 0 13 5t5 13z m143 375q0 49-31 91t-77 65-95 23q-136 0-207-119-9-14 4-24l74-55q4-4 10-4 9 0 14 7 30 38 48 51 19 14 48 14 27 0 48-15t21-33q0-21-11-34t-38-25q-35-16-65-48t-29-70v-20q0-8 5-13t13-5h107q8 0 13 5t5 13q0 10 12 27t30 28q18 10 28 16t25 19 25 27 16 34 7 45z m214-107q0-117-57-215t-156-156-215-58-216 58-155 156-58 215 58 215 155 156 216 58 215-58 156-156 57-215z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'disk': {
-    'width': 857.1,
-    'height': 1000,
-    'path': 'm214-7h429v214h-429v-214z m500 0h72v500q0 8-6 21t-11 20l-157 156q-5 6-19 12t-22 5v-232q0-22-15-38t-38-16h-322q-22 0-37 16t-16 38v232h-72v-714h72v232q0 22 16 38t37 16h465q22 0 38-16t15-38v-232z m-214 518v178q0 8-5 13t-13 5h-107q-7 0-13-5t-5-13v-178q0-8 5-13t13-5h107q7 0 13 5t5 13z m357-18v-518q0-22-15-38t-38-16h-750q-23 0-38 16t-16 38v750q0 22 16 38t38 16h517q23 0 50-12t42-26l156-157q16-15 27-42t11-49z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  disk: {
+    width: 857.1,
+    height: 1000,
+    path: 'm214-7h429v214h-429v-214z m500 0h72v500q0 8-6 21t-11 20l-157 156q-5 6-19 12t-22 5v-232q0-22-15-38t-38-16h-322q-22 0-37 16t-16 38v232h-72v-714h72v232q0 22 16 38t37 16h465q22 0 38-16t15-38v-232z m-214 518v178q0 8-5 13t-13 5h-107q-7 0-13-5t-5-13v-178q0-8 5-13t13-5h107q7 0 13 5t5 13z m357-18v-518q0-22-15-38t-38-16h-750q-23 0-38 16t-16 38v750q0 22 16 38t38 16h517q23 0 50-12t42-26l156-157q16-15 27-42t11-49z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'drawopenpath': {
-    'width': 70,
-    'height': 70,
-    'path': 'M33.21,85.65a7.31,7.31,0,0,1-2.59-.48c-8.16-3.11-9.27-19.8-9.88-41.3-.1-3.58-.19-6.68-.35-9-.15-2.1-.67-3.48-1.43-3.79-2.13-.88-7.91,2.32-12,5.86L3,32.38c1.87-1.64,11.55-9.66,18.27-6.9,2.13.87,4.75,3.14,5.17,9,.17,2.43.26,5.59.36,9.25a224.17,224.17,0,0,0,1.5,23.4c1.54,10.76,4,12.22,4.48,12.4.84.32,2.79-.46,5.76-3.59L43,80.07C41.53,81.57,37.68,85.64,33.21,85.65ZM74.81,69a11.34,11.34,0,0,0,6.09-6.72L87.26,44.5,74.72,32,56.9,38.35c-2.37.86-5.57,3.42-6.61,6L38.65,72.14l8.42,8.43ZM55,46.27a7.91,7.91,0,0,1,3.64-3.17l14.8-5.3,8,8L76.11,60.6l-.06.19a6.37,6.37,0,0,1-3,3.43L48.25,74.59,44.62,71Zm16.57,7.82A6.9,6.9,0,1,0,64.64,61,6.91,6.91,0,0,0,71.54,54.09Zm-4.05,0a2.85,2.85,0,1,1-2.85-2.85A2.86,2.86,0,0,1,67.49,54.09Zm-4.13,5.22L60.5,56.45,44.26,72.7l2.86,2.86ZM97.83,35.67,84.14,22l-8.57,8.57L89.26,44.24Zm-13.69-8,8,8-2.85,2.85-8-8Z',
-    'transform': 'matrix(1 0 0 1 -15 -15)'
+  drawopenpath: {
+    width: 70,
+    height: 70,
+    path: 'M33.21,85.65a7.31,7.31,0,0,1-2.59-.48c-8.16-3.11-9.27-19.8-9.88-41.3-.1-3.58-.19-6.68-.35-9-.15-2.1-.67-3.48-1.43-3.79-2.13-.88-7.91,2.32-12,5.86L3,32.38c1.87-1.64,11.55-9.66,18.27-6.9,2.13.87,4.75,3.14,5.17,9,.17,2.43.26,5.59.36,9.25a224.17,224.17,0,0,0,1.5,23.4c1.54,10.76,4,12.22,4.48,12.4.84.32,2.79-.46,5.76-3.59L43,80.07C41.53,81.57,37.68,85.64,33.21,85.65ZM74.81,69a11.34,11.34,0,0,0,6.09-6.72L87.26,44.5,74.72,32,56.9,38.35c-2.37.86-5.57,3.42-6.61,6L38.65,72.14l8.42,8.43ZM55,46.27a7.91,7.91,0,0,1,3.64-3.17l14.8-5.3,8,8L76.11,60.6l-.06.19a6.37,6.37,0,0,1-3,3.43L48.25,74.59,44.62,71Zm16.57,7.82A6.9,6.9,0,1,0,64.64,61,6.91,6.91,0,0,0,71.54,54.09Zm-4.05,0a2.85,2.85,0,1,1-2.85-2.85A2.86,2.86,0,0,1,67.49,54.09Zm-4.13,5.22L60.5,56.45,44.26,72.7l2.86,2.86ZM97.83,35.67,84.14,22l-8.57,8.57L89.26,44.24Zm-13.69-8,8,8-2.85,2.85-8-8Z',
+    transform: 'matrix(1 0 0 1 -15 -15)'
   },
-  'drawclosedpath': {
-    'width': 90,
-    'height': 90,
-    'path': 'M88.41,21.12a26.56,26.56,0,0,0-36.18,0l-2.07,2-2.07-2a26.57,26.57,0,0,0-36.18,0,23.74,23.74,0,0,0,0,34.8L48,90.12a3.22,3.22,0,0,0,4.42,0l36-34.21a23.73,23.73,0,0,0,0-34.79ZM84,51.24,50.16,83.35,16.35,51.25a17.28,17.28,0,0,1,0-25.47,20,20,0,0,1,27.3,0l4.29,4.07a3.23,3.23,0,0,0,4.44,0l4.29-4.07a20,20,0,0,1,27.3,0,17.27,17.27,0,0,1,0,25.46ZM66.76,47.68h-33v6.91h33ZM53.35,35H46.44V68h6.91Z',
-    'transform': 'matrix(1 0 0 1 -5 -5)'
+  drawclosedpath: {
+    width: 90,
+    height: 90,
+    path: 'M88.41,21.12a26.56,26.56,0,0,0-36.18,0l-2.07,2-2.07-2a26.57,26.57,0,0,0-36.18,0,23.74,23.74,0,0,0,0,34.8L48,90.12a3.22,3.22,0,0,0,4.42,0l36-34.21a23.73,23.73,0,0,0,0-34.79ZM84,51.24,50.16,83.35,16.35,51.25a17.28,17.28,0,0,1,0-25.47,20,20,0,0,1,27.3,0l4.29,4.07a3.23,3.23,0,0,0,4.44,0l4.29-4.07a20,20,0,0,1,27.3,0,17.27,17.27,0,0,1,0,25.46ZM66.76,47.68h-33v6.91h33ZM53.35,35H46.44V68h6.91Z',
+    transform: 'matrix(1 0 0 1 -5 -5)'
   },
-  'lasso': {
-    'width': 1031,
-    'height': 1000,
-    'path': 'm1018 538c-36 207-290 336-568 286-277-48-473-256-436-463 10-57 36-108 76-151-13-66 11-137 68-183 34-28 75-41 114-42l-55-70 0 0c-2-1-3-2-4-3-10-14-8-34 5-45 14-11 34-8 45 4 1 1 2 3 2 5l0 0 113 140c16 11 31 24 45 40 4 3 6 7 8 11 48-3 100 0 151 9 278 48 473 255 436 462z m-624-379c-80 14-149 48-197 96 42 42 109 47 156 9 33-26 47-66 41-105z m-187-74c-19 16-33 37-39 60 50-32 109-55 174-68-42-25-95-24-135 8z m360 75c-34-7-69-9-102-8 8 62-16 128-68 170-73 59-175 54-244-5-9 20-16 40-20 61-28 159 121 317 333 354s407-60 434-217c28-159-121-318-333-355z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  lasso: {
+    width: 1031,
+    height: 1000,
+    path: 'm1018 538c-36 207-290 336-568 286-277-48-473-256-436-463 10-57 36-108 76-151-13-66 11-137 68-183 34-28 75-41 114-42l-55-70 0 0c-2-1-3-2-4-3-10-14-8-34 5-45 14-11 34-8 45 4 1 1 2 3 2 5l0 0 113 140c16 11 31 24 45 40 4 3 6 7 8 11 48-3 100 0 151 9 278 48 473 255 436 462z m-624-379c-80 14-149 48-197 96 42 42 109 47 156 9 33-26 47-66 41-105z m-187-74c-19 16-33 37-39 60 50-32 109-55 174-68-42-25-95-24-135 8z m360 75c-34-7-69-9-102-8 8 62-16 128-68 170-73 59-175 54-244-5-9 20-16 40-20 61-28 159 121 317 333 354s407-60 434-217c28-159-121-318-333-355z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'selectbox': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'm0 850l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z m285 0l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z m-857-286l0-143 143 0 0 143-143 0z m857 0l0-143 143 0 0 143-143 0z m-857-285l0-143 143 0 0 143-143 0z m857 0l0-143 143 0 0 143-143 0z m-857-286l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z m285 0l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z',
-    'transform': 'matrix(1 0 0 -1 0 850)'
+  selectbox: {
+    width: 1000,
+    height: 1000,
+    path: 'm0 850l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z m285 0l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z m-857-286l0-143 143 0 0 143-143 0z m857 0l0-143 143 0 0 143-143 0z m-857-285l0-143 143 0 0 143-143 0z m857 0l0-143 143 0 0 143-143 0z m-857-286l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z m285 0l0-143 143 0 0 143-143 0z m286 0l0-143 143 0 0 143-143 0z',
+    transform: 'matrix(1 0 0 -1 0 850)'
   },
-  'drawline': {
-    'width': 70,
-    'height': 70,
-    'path': 'M60.64,62.3a11.29,11.29,0,0,0,6.09-6.72l6.35-17.72L60.54,25.31l-17.82,6.4c-2.36.86-5.57,3.41-6.6,6L24.48,65.5l8.42,8.42ZM40.79,39.63a7.89,7.89,0,0,1,3.65-3.17l14.79-5.31,8,8L61.94,54l-.06.19a6.44,6.44,0,0,1-3,3.43L34.07,68l-3.62-3.63Zm16.57,7.81a6.9,6.9,0,1,0-6.89,6.9A6.9,6.9,0,0,0,57.36,47.44Zm-4,0a2.86,2.86,0,1,1-2.85-2.85A2.86,2.86,0,0,1,53.32,47.44Zm-4.13,5.22L46.33,49.8,30.08,66.05l2.86,2.86ZM83.65,29,70,15.34,61.4,23.9,75.09,37.59ZM70,21.06l8,8-2.84,2.85-8-8ZM87,80.49H10.67V87H87Z',
-    'transform': 'matrix(1 0 0 1 -15 -15)'
+  drawline: {
+    width: 70,
+    height: 70,
+    path: 'M60.64,62.3a11.29,11.29,0,0,0,6.09-6.72l6.35-17.72L60.54,25.31l-17.82,6.4c-2.36.86-5.57,3.41-6.6,6L24.48,65.5l8.42,8.42ZM40.79,39.63a7.89,7.89,0,0,1,3.65-3.17l14.79-5.31,8,8L61.94,54l-.06.19a6.44,6.44,0,0,1-3,3.43L34.07,68l-3.62-3.63Zm16.57,7.81a6.9,6.9,0,1,0-6.89,6.9A6.9,6.9,0,0,0,57.36,47.44Zm-4,0a2.86,2.86,0,1,1-2.85-2.85A2.86,2.86,0,0,1,53.32,47.44Zm-4.13,5.22L46.33,49.8,30.08,66.05l2.86,2.86ZM83.65,29,70,15.34,61.4,23.9,75.09,37.59ZM70,21.06l8,8-2.84,2.85-8-8ZM87,80.49H10.67V87H87Z',
+    transform: 'matrix(1 0 0 1 -15 -15)'
   },
-  'drawrect': {
-    'width': 80,
-    'height': 80,
-    'path': 'M78,22V79H21V22H78m9-9H12V88H87V13ZM68,46.22H31V54H68ZM53,32H45.22V69H53Z',
-    'transform': 'matrix(1 0 0 1 -10 -10)'
+  drawrect: {
+    width: 80,
+    height: 80,
+    path: 'M78,22V79H21V22H78m9-9H12V88H87V13ZM68,46.22H31V54H68ZM53,32H45.22V69H53Z',
+    transform: 'matrix(1 0 0 1 -10 -10)'
   },
-  'drawcircle': {
-    'width': 80,
-    'height': 80,
-    'path': 'M50,84.72C26.84,84.72,8,69.28,8,50.3S26.84,15.87,50,15.87,92,31.31,92,50.3,73.16,84.72,50,84.72Zm0-60.59c-18.6,0-33.74,11.74-33.74,26.17S31.4,76.46,50,76.46,83.74,64.72,83.74,50.3,68.6,24.13,50,24.13Zm17.15,22h-34v7.11h34Zm-13.8-13H46.24v34h7.11Z',
-    'transform': 'matrix(1 0 0 1 -10 -10)'
+  drawcircle: {
+    width: 80,
+    height: 80,
+    path: 'M50,84.72C26.84,84.72,8,69.28,8,50.3S26.84,15.87,50,15.87,92,31.31,92,50.3,73.16,84.72,50,84.72Zm0-60.59c-18.6,0-33.74,11.74-33.74,26.17S31.4,76.46,50,76.46,83.74,64.72,83.74,50.3,68.6,24.13,50,24.13Zm17.15,22h-34v7.11h34Zm-13.8-13H46.24v34h7.11Z',
+    transform: 'matrix(1 0 0 1 -10 -10)'
   },
-  'eraseshape': {
-    'width': 80,
-    'height': 80,
-    'path': 'M82.77,78H31.85L6,49.57,31.85,21.14H82.77a8.72,8.72,0,0,1,8.65,8.77V69.24A8.72,8.72,0,0,1,82.77,78ZM35.46,69.84H82.77a.57.57,0,0,0,.49-.6V29.91a.57.57,0,0,0-.49-.61H35.46L17,49.57Zm32.68-34.7-24,24,5,5,24-24Zm-19,.53-5,5,24,24,5-5Z',
-    'transform': 'matrix(1 0 0 1 -10 -10)'
+  eraseshape: {
+    width: 80,
+    height: 80,
+    path: 'M82.77,78H31.85L6,49.57,31.85,21.14H82.77a8.72,8.72,0,0,1,8.65,8.77V69.24A8.72,8.72,0,0,1,82.77,78ZM35.46,69.84H82.77a.57.57,0,0,0,.49-.6V29.91a.57.57,0,0,0-.49-.61H35.46L17,49.57Zm32.68-34.7-24,24,5,5,24-24Zm-19,.53-5,5,24,24,5-5Z',
+    transform: 'matrix(1 0 0 1 -10 -10)'
   },
-  'spikeline': {
-    'width': 1000,
-    'height': 1000,
-    'path': 'M512 409c0-57-46-104-103-104-57 0-104 47-104 104 0 57 47 103 104 103 57 0 103-46 103-103z m-327-39l92 0 0 92-92 0z m-185 0l92 0 0 92-92 0z m370-186l92 0 0 93-92 0z m0-184l92 0 0 92-92 0z',
-    'transform': 'matrix(1.5 0 0 -1.5 0 850)'
+  spikeline: {
+    width: 1000,
+    height: 1000,
+    path: 'M512 409c0-57-46-104-103-104-57 0-104 47-104 104 0 57 47 103 104 103 57 0 103-46 103-103z m-327-39l92 0 0 92-92 0z m-185 0l92 0 0 92-92 0z m370-186l92 0 0 93-92 0z m0-184l92 0 0 92-92 0z',
+    transform: 'matrix(1.5 0 0 -1.5 0 850)'
   },
-  'pencil': {
-    'width': 1792,
-    'height': 1792,
-    'path': 'M491 1536l91-91-235-235-91 91v107h128v128h107zm523-928q0-22-22-22-10 0-17 7l-542 542q-7 7-7 17 0 22 22 22 10 0 17-7l542-542q7-7 7-17zm-54-192l416 416-832 832h-416v-416zm683 96q0 53-37 90l-166 166-416-416 166-165q36-38 90-38 53 0 91 38l235 234q37 39 37 91z',
-    'transform': 'matrix(1 0 0 1 0 1)'
+  pencil: {
+    width: 1792,
+    height: 1792,
+    path: 'M491 1536l91-91-235-235-91 91v107h128v128h107zm523-928q0-22-22-22-10 0-17 7l-542 542q-7 7-7 17 0 22 22 22 10 0 17-7l542-542q7-7 7-17zm-54-192l416 416-832 832h-416v-416zm683 96q0 53-37 90l-166 166-416-416 166-165q36-38 90-38 53 0 91 38l235 234q37 39 37 91z',
+    transform: 'matrix(1 0 0 1 0 1)'
   },
-  'newplotlylogo': {
-    'name': 'newplotlylogo',
-    'svg': ['<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'>', '<defs>', ' <style>', '  .cls-0{fill:#000;}', '  .cls-1{fill:#FFF;}', '  .cls-2{fill:#F26;}', '  .cls-3{fill:#D69;}', '  .cls-4{fill:#BAC;}', '  .cls-5{fill:#9EF;}', ' </style>', '</defs>', ' <title>plotly-logomark</title>', ' <g id=\'symbol\'>', '  <rect class=\'cls-0\' x=\'0\' y=\'0\' width=\'132\' height=\'132\' rx=\'18\' ry=\'18\'/>', '  <circle class=\'cls-5\' cx=\'102\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-4\' cx=\'78\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-4\' cx=\'78\' cy=\'54\' r=\'6\'/>', '  <circle class=\'cls-3\' cx=\'54\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-2\' cx=\'30\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-2\' cx=\'30\' cy=\'54\' r=\'6\'/>', '  <path class=\'cls-1\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/>', '  <path class=\'cls-1\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/>', '  <path class=\'cls-1\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/>', '  <path class=\'cls-1\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/>', ' </g>', '</svg>'].join('')
+  newplotlylogo: {
+    name: 'newplotlylogo',
+    svg: ['<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 132 132\'>', '<defs>', ' <style>', '  .cls-0{fill:#000;}', '  .cls-1{fill:#FFF;}', '  .cls-2{fill:#F26;}', '  .cls-3{fill:#D69;}', '  .cls-4{fill:#BAC;}', '  .cls-5{fill:#9EF;}', ' </style>', '</defs>', ' <title>plotly-logomark</title>', ' <g id=\'symbol\'>', '  <rect class=\'cls-0\' x=\'0\' y=\'0\' width=\'132\' height=\'132\' rx=\'18\' ry=\'18\'/>', '  <circle class=\'cls-5\' cx=\'102\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-4\' cx=\'78\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-4\' cx=\'78\' cy=\'54\' r=\'6\'/>', '  <circle class=\'cls-3\' cx=\'54\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-2\' cx=\'30\' cy=\'30\' r=\'6\'/>', '  <circle class=\'cls-2\' cx=\'30\' cy=\'54\' r=\'6\'/>', '  <path class=\'cls-1\' d=\'M30,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,30,72Z\'/>', '  <path class=\'cls-1\' d=\'M78,72a6,6,0,0,0-6,6v24a6,6,0,0,0,12,0V78A6,6,0,0,0,78,72Z\'/>', '  <path class=\'cls-1\' d=\'M54,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,54,48Z\'/>', '  <path class=\'cls-1\' d=\'M102,48a6,6,0,0,0-6,6v48a6,6,0,0,0,12,0V54A6,6,0,0,0,102,48Z\'/>', ' </g>', '</svg>'].join('')
   }
 };
 
@@ -22457,7 +22940,7 @@ exports.valObjectMeta = {
       return false;
     }
   },
-  'boolean': {
+  boolean: {
     coerceFunction: function (v, propOut, dflt) {
       if (v === true || v === false) propOut.set(v);else propOut.set(dflt);
     }
@@ -23147,10 +23630,10 @@ exports.cleanDate = function (v, dflt, calendar) {
 var fracMatch = /%\d?f/g;
 var halfYearMatch = /%h/g;
 var quarterToHalfYear = {
-  '1': '1',
-  '2': '1',
-  '3': '2',
-  '4': '2'
+  1: '1',
+  2: '1',
+  3: '2',
+  4: '2'
 };
 function modDateFormat(fmt, x, formatter, calendar) {
   fmt = fmt.replace(fracMatch, function (match) {
@@ -27172,7 +27655,7 @@ exports.convertToTspans = function (_context, gd, _callback) {
         var w0 = _svgBBox.width;
         var h0 = _svgBBox.height;
         newSvg.attr({
-          'class': svgClass,
+          class: svgClass,
           height: h0,
           preserveAspectRatio: 'xMinYMin meet'
         }).style({
@@ -37774,6 +38257,10 @@ axes.tickText = function (ax, x, hover, noSuffixPrefix) {
     if (ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
     if (ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
   }
+  if (ax.labelalias && ax.labelalias.hasOwnProperty(out.text)) {
+    var t = ax.labelalias[out.text];
+    if (typeof t === 'string') out.text = t;
+  }
 
   // Setup ticks and grid lines boundaries
   // at 1/2 a 'category' to the left/bottom
@@ -38369,9 +38856,9 @@ axes.draw = function (gd, arg, opts) {
     }
   });
   var axShifts = {
-    'false': {
-      'left': 0,
-      'right': 0
+    false: {
+      left: 0,
+      right: 0
     }
   };
   return Lib.syncOrAsync(axList.map(function (axId) {
@@ -42417,7 +42904,7 @@ function getDragCursor(nsew, dragmode, isMainDrag) {
 }
 function makeZoombox(zoomlayer, lum, xs, ys, path0) {
   return zoomlayer.append('path').attr('class', 'zoombox').style({
-    'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+    fill: lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
     'stroke-width': 0
   }).attr('transform', strTranslate(xs, ys)).attr('d', path0 + 'Z');
 }
@@ -43491,7 +43978,7 @@ module.exports = {
     }],
     editType: 'axrange',
     impliedEdits: {
-      'autorange': false
+      autorange: false
     },
     anim: true
   },
@@ -43644,6 +44131,11 @@ module.exports = {
   showticklabels: {
     valType: 'boolean',
     dflt: true,
+    editType: 'ticks'
+  },
+  labelalias: {
+    valType: 'any',
+    dflt: false,
     editType: 'ticks'
   },
   automargin: {
@@ -45365,6 +45857,8 @@ var getShowAttrDflt = __webpack_require__(59652);
 var handleArrayContainerDefaults = __webpack_require__(85501);
 module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
   if (!options) options = {};
+  var labelalias = coerce('labelalias');
+  if (!Lib.isPlainObject(labelalias)) delete containerOut.labelalias;
   var showAttrDflt = getShowAttrDflt(containerIn);
   var showTickLabels = coerce('showticklabels');
   if (showTickLabels) {
@@ -46883,7 +47377,7 @@ plots.addLinks = function (gd) {
     s.style({
       'font-family': '"Open Sans", Arial, sans-serif',
       'font-size': '12px',
-      'fill': Color.defaultLine,
+      fill: Color.defaultLine,
       'pointer-events': 'all'
     }).each(function () {
       var links = d3.select(this);
@@ -46932,7 +47426,7 @@ function positionPlayWithData(gd, container) {
   container.text('');
   var link = container.append('a').attr({
     'xlink:xlink:href': '#',
-    'class': 'link--impt link--embedview',
+    class: 'link--impt link--embedview',
     'font-weight': 'bold'
   }).text(gd._context.linkText + ' ' + String.fromCharCode(187));
   if (gd._context.sendData) {
@@ -49524,26 +50018,26 @@ function sortAxisCategoriesByValue(axList, gd) {
     }
   }
   var aggFn = {
-    'min': function (values) {
+    min: function (values) {
       return Lib.aggNums(Math.min, null, values);
     },
-    'max': function (values) {
+    max: function (values) {
       return Lib.aggNums(Math.max, null, values);
     },
-    'sum': function (values) {
+    sum: function (values) {
       return Lib.aggNums(function (a, b) {
         return a + b;
       }, null, values);
     },
-    'total': function (values) {
+    total: function (values) {
       return Lib.aggNums(function (a, b) {
         return a + b;
       }, null, values);
     },
-    'mean': function (values) {
+    mean: function (values) {
       return Lib.mean(values);
     },
-    'median': function (values) {
+    median: function (values) {
       return Lib.median(values);
     }
   };
@@ -50032,6 +50526,7 @@ var ternaryAxesAttrs = {
   tickcolor: axesAttrs.tickcolor,
   ticklabelstep: axesAttrs.ticklabelstep,
   showticklabels: axesAttrs.showticklabels,
+  labelalias: axesAttrs.labelalias,
   showtickprefix: axesAttrs.showtickprefix,
   tickprefix: axesAttrs.tickprefix,
   showticksuffix: axesAttrs.showticksuffix,
@@ -50701,7 +51196,7 @@ proto.initInteractions = function () {
     path0 = 'M0,' + _this.h + 'L' + _this.w / 2 + ', 0L' + _this.w + ',' + _this.h + 'Z';
     dimmed = false;
     zb = zoomLayer.append('path').attr('class', 'zoombox').attr('transform', strTranslate(_this.x0, _this.y0)).style({
-      'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+      fill: lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
       'stroke-width': 0
     }).attr('d', path0);
     corners = zoomLayer.append('path').attr('class', 'zoombox-corners').attr('transform', strTranslate(_this.x0, _this.y0)).style({
@@ -53647,7 +54142,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
   var textPosition;
   function appendTextNode(bar, text, font) {
     var textSelection = Lib.ensureSingle(bar, 'text').text(text).attr({
-      'class': 'bartext bartext-' + textPosition,
+      class: 'bartext bartext-' + textPosition,
       'text-anchor': 'middle',
       // prohibit tex interpretation until we can handle
       // tex and regular text together
@@ -56442,7 +56937,7 @@ module.exports = extendFlat({
     },
     editType: 'calc',
     impliedEdits: {
-      'autocontour': false
+      autocontour: false
     }
   },
   line: {
@@ -62205,8 +62700,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
     zLabelVal: zLabel,
     text: text,
     hovertemplateLabels: {
-      'zLabel': zLabel,
-      'colorLabel': colorstring,
+      zLabel: zLabel,
+      colorLabel: colorstring,
       'color[0]Label': c[0] + s[0],
       'color[1]Label': c[1] + s[1],
       'color[2]Label': c[2] + s[2],
@@ -63188,7 +63683,7 @@ function plot(gd, cdModule) {
           });
           var font = Lib.ensureUniformFontSize(gd, textPosition === 'outside' ? determineOutsideTextFont(trace, pt, fullLayout.font) : determineInsideTextFont(trace, pt, fullLayout.font));
           sliceText.text(pt.text).attr({
-            'class': 'slicetext',
+            class: 'slicetext',
             transform: '',
             'text-anchor': 'middle'
           }).call(Drawing.font, font).call(svgTextUtils.convertToTspans, gd);
@@ -63244,7 +63739,7 @@ function plot(gd, cdModule) {
           txt = Lib.templateString(txt, trace._meta);
         }
         titleText.text(txt).attr({
-          'class': 'titletext',
+          class: 'titletext',
           transform: '',
           'text-anchor': 'middle'
         }).call(Drawing.font, trace.title.font).call(svgTextUtils.convertToTspans, gd);
@@ -69272,7 +69767,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.18.2';
+exports.version = '2.19.0';
 
 /***/ }),
 
@@ -71057,7 +71552,7 @@ function BufferBigIntNotDefined() {
 module.exports = isMobile;
 module.exports.isMobile = isMobile;
 module.exports["default"] = isMobile;
-var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
+var mobileRE = /(android|bb\d+|meego).+mobile|armv7l|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series[46]0|samsungbrowser.*mobile|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i;
 var notMobileRE = /CrOS/;
 var tabletRE = /android|ipad|playbook|silk/i;
 function isMobile(opts) {
@@ -77914,38 +78409,6 @@ var __WEBPACK_AMD_DEFINE_FACTORY__, __WEBPACK_AMD_DEFINE_RESULT__;!function() {
 
 /***/ }),
 
-/***/ 24696:
-/***/ (function(module) {
-
-
-/**
- * Array#filter.
- *
- * @param {Array} arr
- * @param {Function} fn
- * @param {Object=} self
- * @return {Array}
- * @throw TypeError
- */
-
-module.exports = function (arr, fn, self) {
-  if (arr.filter) return arr.filter(fn, self);
-  if (void 0 === arr || null === arr) throw new TypeError;
-  if ('function' != typeof fn) throw new TypeError;
-  var ret = [];
-  for (var i = 0; i < arr.length; i++) {
-    if (!hasOwn.call(arr, i)) continue;
-    var val = arr[i];
-    if (fn.call(self, val, i, arr)) ret.push(val);
-  }
-  return ret;
-};
-
-var hasOwn = Object.prototype.hasOwnProperty;
-
-
-/***/ }),
-
 /***/ 32791:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -80151,6 +80614,29 @@ function fromByteArray (uint8) {
 
 /***/ }),
 
+/***/ 6614:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var GetIntrinsic = __webpack_require__(68318);
+
+var callBind = __webpack_require__(68222);
+
+var $indexOf = callBind(GetIntrinsic('String.prototype.indexOf'));
+
+module.exports = function callBoundIntrinsic(name, allowMissing) {
+	var intrinsic = GetIntrinsic(name, !!allowMissing);
+	if (typeof intrinsic === 'function' && $indexOf(name, '.prototype.') > -1) {
+		return callBind(intrinsic);
+	}
+	return intrinsic;
+};
+
+
+/***/ }),
+
 /***/ 68222:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -80164,7 +80650,9 @@ var $apply = GetIntrinsic('%Function.prototype.apply%');
 var $call = GetIntrinsic('%Function.prototype.call%');
 var $reflectApply = GetIntrinsic('%Reflect.apply%', true) || bind.call($call, $apply);
 
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
 var $defineProperty = GetIntrinsic('%Object.defineProperty%', true);
+var $max = GetIntrinsic('%Math.max%');
 
 if ($defineProperty) {
 	try {
@@ -80175,8 +80663,20 @@ if ($defineProperty) {
 	}
 }
 
-module.exports = function callBind() {
-	return $reflectApply(bind, $call, arguments);
+module.exports = function callBind(originalFunction) {
+	var func = $reflectApply(bind, $call, arguments);
+	if ($gOPD && $defineProperty) {
+		var desc = $gOPD(func, 'length');
+		if (desc.configurable) {
+			// original length, plus the receiver, minus any additional arguments (after the receiver)
+			$defineProperty(
+				func,
+				'length',
+				{ value: 1 + $max(0, originalFunction.length - (arguments.length - 1)) }
+			);
+		}
+	}
+	return func;
 };
 
 var applyBind = function applyBind() {
@@ -81912,24 +82412,19 @@ var isFunction = function (fn) {
 	return typeof fn === 'function' && toStr.call(fn) === '[object Function]';
 };
 
-var arePropertyDescriptorsSupported = function () {
-	var obj = {};
-	try {
-		origDefineProperty(obj, 'x', { enumerable: false, value: obj });
-		// eslint-disable-next-line no-unused-vars, no-restricted-syntax
-		for (var _ in obj) { // jscs:ignore disallowUnusedVariables
-			return false;
-		}
-		return obj.x === obj;
-	} catch (e) { /* this is IE 8. */
-		return false;
-	}
-};
-var supportsDescriptors = origDefineProperty && arePropertyDescriptorsSupported();
+var hasPropertyDescriptors = __webpack_require__(55622)();
+
+var supportsDescriptors = origDefineProperty && hasPropertyDescriptors;
 
 var defineProperty = function (object, name, value, predicate) {
-	if (name in object && (!isFunction(predicate) || !predicate())) {
-		return;
+	if (name in object) {
+		if (predicate === true) {
+			if (object[name] === value) {
+				return;
+			}
+		} else if (!isFunction(predicate) || !predicate()) {
+			return;
+		}
 	}
 	if (supportsDescriptors) {
 		origDefineProperty(object, name, {
@@ -81939,7 +82434,7 @@ var defineProperty = function (object, name, value, predicate) {
 			writable: true
 		});
 	} else {
-		object[name] = value;
+		object[name] = value; // eslint-disable-line no-param-reassign
 	}
 };
 
@@ -81957,303 +82452,6 @@ var defineProperties = function (object, map) {
 defineProperties.supportsDescriptors = !!supportsDescriptors;
 
 module.exports = defineProperties;
-
-
-/***/ }),
-
-/***/ 72943:
-/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-
-
-/* globals
-	Atomics,
-	SharedArrayBuffer,
-*/
-
-var undefined;
-
-var $TypeError = TypeError;
-
-var $gOPD = Object.getOwnPropertyDescriptor;
-if ($gOPD) {
-	try {
-		$gOPD({}, '');
-	} catch (e) {
-		$gOPD = null; // this is IE 8, which has a broken gOPD
-	}
-}
-
-var throwTypeError = function () { throw new $TypeError(); };
-var ThrowTypeError = $gOPD
-	? (function () {
-		try {
-			// eslint-disable-next-line no-unused-expressions, no-caller, no-restricted-properties
-			arguments.callee; // IE 8 does not throw here
-			return throwTypeError;
-		} catch (calleeThrows) {
-			try {
-				// IE 8 throws on Object.getOwnPropertyDescriptor(arguments, '')
-				return $gOPD(arguments, 'callee').get;
-			} catch (gOPDthrows) {
-				return throwTypeError;
-			}
-		}
-	}())
-	: throwTypeError;
-
-var hasSymbols = __webpack_require__(57877)();
-
-var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
-
-var generator; // = function * () {};
-var generatorFunction = generator ? getProto(generator) : undefined;
-var asyncFn; // async function() {};
-var asyncFunction = asyncFn ? asyncFn.constructor : undefined;
-var asyncGen; // async function * () {};
-var asyncGenFunction = asyncGen ? getProto(asyncGen) : undefined;
-var asyncGenIterator = asyncGen ? asyncGen() : undefined;
-
-var TypedArray = typeof Uint8Array === 'undefined' ? undefined : getProto(Uint8Array);
-
-var INTRINSICS = {
-	'%Array%': Array,
-	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined : ArrayBuffer,
-	'%ArrayBufferPrototype%': typeof ArrayBuffer === 'undefined' ? undefined : ArrayBuffer.prototype,
-	'%ArrayIteratorPrototype%': hasSymbols ? getProto([][Symbol.iterator]()) : undefined,
-	'%ArrayPrototype%': Array.prototype,
-	'%ArrayProto_entries%': Array.prototype.entries,
-	'%ArrayProto_forEach%': Array.prototype.forEach,
-	'%ArrayProto_keys%': Array.prototype.keys,
-	'%ArrayProto_values%': Array.prototype.values,
-	'%AsyncFromSyncIteratorPrototype%': undefined,
-	'%AsyncFunction%': asyncFunction,
-	'%AsyncFunctionPrototype%': asyncFunction ? asyncFunction.prototype : undefined,
-	'%AsyncGenerator%': asyncGen ? getProto(asyncGenIterator) : undefined,
-	'%AsyncGeneratorFunction%': asyncGenFunction,
-	'%AsyncGeneratorPrototype%': asyncGenFunction ? asyncGenFunction.prototype : undefined,
-	'%AsyncIteratorPrototype%': asyncGenIterator && hasSymbols && Symbol.asyncIterator ? asyncGenIterator[Symbol.asyncIterator]() : undefined,
-	'%Atomics%': typeof Atomics === 'undefined' ? undefined : Atomics,
-	'%Boolean%': Boolean,
-	'%BooleanPrototype%': Boolean.prototype,
-	'%DataView%': typeof DataView === 'undefined' ? undefined : DataView,
-	'%DataViewPrototype%': typeof DataView === 'undefined' ? undefined : DataView.prototype,
-	'%Date%': Date,
-	'%DatePrototype%': Date.prototype,
-	'%decodeURI%': decodeURI,
-	'%decodeURIComponent%': decodeURIComponent,
-	'%encodeURI%': encodeURI,
-	'%encodeURIComponent%': encodeURIComponent,
-	'%Error%': Error,
-	'%ErrorPrototype%': Error.prototype,
-	'%eval%': eval, // eslint-disable-line no-eval
-	'%EvalError%': EvalError,
-	'%EvalErrorPrototype%': EvalError.prototype,
-	'%Float32Array%': typeof Float32Array === 'undefined' ? undefined : Float32Array,
-	'%Float32ArrayPrototype%': typeof Float32Array === 'undefined' ? undefined : Float32Array.prototype,
-	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined : Float64Array,
-	'%Float64ArrayPrototype%': typeof Float64Array === 'undefined' ? undefined : Float64Array.prototype,
-	'%Function%': Function,
-	'%FunctionPrototype%': Function.prototype,
-	'%Generator%': generator ? getProto(generator()) : undefined,
-	'%GeneratorFunction%': generatorFunction,
-	'%GeneratorPrototype%': generatorFunction ? generatorFunction.prototype : undefined,
-	'%Int8Array%': typeof Int8Array === 'undefined' ? undefined : Int8Array,
-	'%Int8ArrayPrototype%': typeof Int8Array === 'undefined' ? undefined : Int8Array.prototype,
-	'%Int16Array%': typeof Int16Array === 'undefined' ? undefined : Int16Array,
-	'%Int16ArrayPrototype%': typeof Int16Array === 'undefined' ? undefined : Int8Array.prototype,
-	'%Int32Array%': typeof Int32Array === 'undefined' ? undefined : Int32Array,
-	'%Int32ArrayPrototype%': typeof Int32Array === 'undefined' ? undefined : Int32Array.prototype,
-	'%isFinite%': isFinite,
-	'%isNaN%': isNaN,
-	'%IteratorPrototype%': hasSymbols ? getProto(getProto([][Symbol.iterator]())) : undefined,
-	'%JSON%': typeof JSON === 'object' ? JSON : undefined,
-	'%JSONParse%': typeof JSON === 'object' ? JSON.parse : undefined,
-	'%Map%': typeof Map === 'undefined' ? undefined : Map,
-	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols ? undefined : getProto(new Map()[Symbol.iterator]()),
-	'%MapPrototype%': typeof Map === 'undefined' ? undefined : Map.prototype,
-	'%Math%': Math,
-	'%Number%': Number,
-	'%NumberPrototype%': Number.prototype,
-	'%Object%': Object,
-	'%ObjectPrototype%': Object.prototype,
-	'%ObjProto_toString%': Object.prototype.toString,
-	'%ObjProto_valueOf%': Object.prototype.valueOf,
-	'%parseFloat%': parseFloat,
-	'%parseInt%': parseInt,
-	'%Promise%': typeof Promise === 'undefined' ? undefined : Promise,
-	'%PromisePrototype%': typeof Promise === 'undefined' ? undefined : Promise.prototype,
-	'%PromiseProto_then%': typeof Promise === 'undefined' ? undefined : Promise.prototype.then,
-	'%Promise_all%': typeof Promise === 'undefined' ? undefined : Promise.all,
-	'%Promise_reject%': typeof Promise === 'undefined' ? undefined : Promise.reject,
-	'%Promise_resolve%': typeof Promise === 'undefined' ? undefined : Promise.resolve,
-	'%Proxy%': typeof Proxy === 'undefined' ? undefined : Proxy,
-	'%RangeError%': RangeError,
-	'%RangeErrorPrototype%': RangeError.prototype,
-	'%ReferenceError%': ReferenceError,
-	'%ReferenceErrorPrototype%': ReferenceError.prototype,
-	'%Reflect%': typeof Reflect === 'undefined' ? undefined : Reflect,
-	'%RegExp%': RegExp,
-	'%RegExpPrototype%': RegExp.prototype,
-	'%Set%': typeof Set === 'undefined' ? undefined : Set,
-	'%SetIteratorPrototype%': typeof Set === 'undefined' || !hasSymbols ? undefined : getProto(new Set()[Symbol.iterator]()),
-	'%SetPrototype%': typeof Set === 'undefined' ? undefined : Set.prototype,
-	'%SharedArrayBuffer%': typeof SharedArrayBuffer === 'undefined' ? undefined : SharedArrayBuffer,
-	'%SharedArrayBufferPrototype%': typeof SharedArrayBuffer === 'undefined' ? undefined : SharedArrayBuffer.prototype,
-	'%String%': String,
-	'%StringIteratorPrototype%': hasSymbols ? getProto(''[Symbol.iterator]()) : undefined,
-	'%StringPrototype%': String.prototype,
-	'%Symbol%': hasSymbols ? Symbol : undefined,
-	'%SymbolPrototype%': hasSymbols ? Symbol.prototype : undefined,
-	'%SyntaxError%': SyntaxError,
-	'%SyntaxErrorPrototype%': SyntaxError.prototype,
-	'%ThrowTypeError%': ThrowTypeError,
-	'%TypedArray%': TypedArray,
-	'%TypedArrayPrototype%': TypedArray ? TypedArray.prototype : undefined,
-	'%TypeError%': $TypeError,
-	'%TypeErrorPrototype%': $TypeError.prototype,
-	'%Uint8Array%': typeof Uint8Array === 'undefined' ? undefined : Uint8Array,
-	'%Uint8ArrayPrototype%': typeof Uint8Array === 'undefined' ? undefined : Uint8Array.prototype,
-	'%Uint8ClampedArray%': typeof Uint8ClampedArray === 'undefined' ? undefined : Uint8ClampedArray,
-	'%Uint8ClampedArrayPrototype%': typeof Uint8ClampedArray === 'undefined' ? undefined : Uint8ClampedArray.prototype,
-	'%Uint16Array%': typeof Uint16Array === 'undefined' ? undefined : Uint16Array,
-	'%Uint16ArrayPrototype%': typeof Uint16Array === 'undefined' ? undefined : Uint16Array.prototype,
-	'%Uint32Array%': typeof Uint32Array === 'undefined' ? undefined : Uint32Array,
-	'%Uint32ArrayPrototype%': typeof Uint32Array === 'undefined' ? undefined : Uint32Array.prototype,
-	'%URIError%': URIError,
-	'%URIErrorPrototype%': URIError.prototype,
-	'%WeakMap%': typeof WeakMap === 'undefined' ? undefined : WeakMap,
-	'%WeakMapPrototype%': typeof WeakMap === 'undefined' ? undefined : WeakMap.prototype,
-	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet,
-	'%WeakSetPrototype%': typeof WeakSet === 'undefined' ? undefined : WeakSet.prototype
-};
-
-var bind = __webpack_require__(77575);
-var $replace = bind.call(Function.call, String.prototype.replace);
-
-/* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
-var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
-var reEscapeChar = /\\(\\)?/g; /** Used to match backslashes in property paths. */
-var stringToPath = function stringToPath(string) {
-	var result = [];
-	$replace(string, rePropName, function (match, number, quote, subString) {
-		result[result.length] = quote ? $replace(subString, reEscapeChar, '$1') : (number || match);
-	});
-	return result;
-};
-/* end adaptation */
-
-var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
-	if (!(name in INTRINSICS)) {
-		throw new SyntaxError('intrinsic ' + name + ' does not exist!');
-	}
-
-	// istanbul ignore if // hopefully this is impossible to test :-)
-	if (typeof INTRINSICS[name] === 'undefined' && !allowMissing) {
-		throw new $TypeError('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
-	}
-
-	return INTRINSICS[name];
-};
-
-module.exports = function GetIntrinsic(name, allowMissing) {
-	if (typeof name !== 'string' || name.length === 0) {
-		throw new TypeError('intrinsic name must be a non-empty string');
-	}
-	if (arguments.length > 1 && typeof allowMissing !== 'boolean') {
-		throw new TypeError('"allowMissing" argument must be a boolean');
-	}
-
-	var parts = stringToPath(name);
-
-	var value = getBaseIntrinsic('%' + (parts.length > 0 ? parts[0] : '') + '%', allowMissing);
-	for (var i = 1; i < parts.length; i += 1) {
-		if (value != null) {
-			if ($gOPD && (i + 1) >= parts.length) {
-				var desc = $gOPD(value, parts[i]);
-				if (!allowMissing && !(parts[i] in value)) {
-					throw new $TypeError('base intrinsic for ' + name + ' exists, but the property is not available.');
-				}
-				value = desc ? (desc.get || desc.value) : value[parts[i]];
-			} else {
-				value = value[parts[i]];
-			}
-		}
-	}
-	return value;
-};
-
-
-/***/ }),
-
-/***/ 84671:
-/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-
-
-var bind = __webpack_require__(77575);
-
-var GetIntrinsic = __webpack_require__(72943);
-
-var $Function = GetIntrinsic('%Function%');
-var $apply = $Function.apply;
-var $call = $Function.call;
-
-module.exports = function callBind() {
-	return bind.apply($call, arguments);
-};
-
-module.exports.apply = function applyBind() {
-	return bind.apply($apply, arguments);
-};
-
-
-/***/ }),
-
-/***/ 92978:
-/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-
-
-var GetIntrinsic = __webpack_require__(72943);
-
-var callBind = __webpack_require__(84671);
-
-var $indexOf = callBind(GetIntrinsic('String.prototype.indexOf'));
-
-module.exports = function callBoundIntrinsic(name, allowMissing) {
-	var intrinsic = GetIntrinsic(name, !!allowMissing);
-	if (typeof intrinsic === 'function' && $indexOf(name, '.prototype.')) {
-		return callBind(intrinsic);
-	}
-	return intrinsic;
-};
-
-
-/***/ }),
-
-/***/ 67295:
-/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
-
-"use strict";
-
-
-var GetIntrinsic = __webpack_require__(72943);
-
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%');
-if ($gOPD) {
-	try {
-		$gOPD([], 'length');
-	} catch (e) {
-		// IE 8 has a broken gOPD
-		$gOPD = null;
-	}
-}
-
-module.exports = $gOPD;
 
 
 /***/ }),
@@ -82849,31 +83047,72 @@ module.exports = function(n) {
 
 /***/ }),
 
-/***/ 86165:
-/***/ (function(module) {
+/***/ 31353:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
 
 
-var hasOwn = Object.prototype.hasOwnProperty;
-var toString = Object.prototype.toString;
+var isCallable = __webpack_require__(85395);
 
-module.exports = function forEach (obj, fn, ctx) {
-    if (toString.call(fn) !== '[object Function]') {
-        throw new TypeError('iterator must be a function');
-    }
-    var l = obj.length;
-    if (l === +l) {
-        for (var i = 0; i < l; i++) {
-            fn.call(ctx, obj[i], i, obj);
-        }
-    } else {
-        for (var k in obj) {
-            if (hasOwn.call(obj, k)) {
-                fn.call(ctx, obj[k], k, obj);
+var toStr = Object.prototype.toString;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
+var forEachArray = function forEachArray(array, iterator, receiver) {
+    for (var i = 0, len = array.length; i < len; i++) {
+        if (hasOwnProperty.call(array, i)) {
+            if (receiver == null) {
+                iterator(array[i], i, array);
+            } else {
+                iterator.call(receiver, array[i], i, array);
             }
         }
     }
 };
 
+var forEachString = function forEachString(string, iterator, receiver) {
+    for (var i = 0, len = string.length; i < len; i++) {
+        // no such thing as a sparse string.
+        if (receiver == null) {
+            iterator(string.charAt(i), i, string);
+        } else {
+            iterator.call(receiver, string.charAt(i), i, string);
+        }
+    }
+};
+
+var forEachObject = function forEachObject(object, iterator, receiver) {
+    for (var k in object) {
+        if (hasOwnProperty.call(object, k)) {
+            if (receiver == null) {
+                iterator(object[k], k, object);
+            } else {
+                iterator.call(receiver, object[k], k, object);
+            }
+        }
+    }
+};
+
+var forEach = function forEach(list, iterator, thisArg) {
+    if (!isCallable(iterator)) {
+        throw new TypeError('iterator must be a function');
+    }
+
+    var receiver;
+    if (arguments.length >= 3) {
+        receiver = thisArg;
+    }
+
+    if (toStr.call(list) === '[object Array]') {
+        forEachArray(list, iterator, receiver);
+    } else if (typeof list === 'string') {
+        forEachString(list, iterator, receiver);
+    } else {
+        forEachObject(list, iterator, receiver);
+    }
+};
+
+module.exports = forEach;
 
 
 /***/ }),
@@ -82957,14 +83196,6 @@ module.exports = Function.prototype.bind || implementation;
 "use strict";
 
 
-/* globals
-	AggregateError,
-	Atomics,
-	FinalizationRegistry,
-	SharedArrayBuffer,
-	WeakRef,
-*/
-
 var undefined;
 
 var $SyntaxError = SyntaxError;
@@ -82974,8 +83205,7 @@ var $TypeError = TypeError;
 // eslint-disable-next-line consistent-return
 var getEvalledConstructor = function (expressionSyntax) {
 	try {
-		// eslint-disable-next-line no-new-func
-		return Function('"use strict"; return (' + expressionSyntax + ').constructor;')();
+		return $Function('"use strict"; return (' + expressionSyntax + ').constructor;')();
 	} catch (e) {}
 };
 
@@ -83012,9 +83242,7 @@ var hasSymbols = __webpack_require__(57877)();
 
 var getProto = Object.getPrototypeOf || function (x) { return x.__proto__; }; // eslint-disable-line no-proto
 
-var asyncGenFunction = getEvalledConstructor('async function* () {}');
-var asyncGenFunctionPrototype = asyncGenFunction ? asyncGenFunction.prototype : undefined;
-var asyncGenPrototype = asyncGenFunctionPrototype ? asyncGenFunctionPrototype.prototype : undefined;
+var needsEval = {};
 
 var TypedArray = typeof Uint8Array === 'undefined' ? undefined : getProto(Uint8Array);
 
@@ -83024,12 +83252,14 @@ var INTRINSICS = {
 	'%ArrayBuffer%': typeof ArrayBuffer === 'undefined' ? undefined : ArrayBuffer,
 	'%ArrayIteratorPrototype%': hasSymbols ? getProto([][Symbol.iterator]()) : undefined,
 	'%AsyncFromSyncIteratorPrototype%': undefined,
-	'%AsyncFunction%': getEvalledConstructor('async function () {}'),
-	'%AsyncGenerator%': asyncGenFunctionPrototype,
-	'%AsyncGeneratorFunction%': asyncGenFunction,
-	'%AsyncIteratorPrototype%': asyncGenPrototype ? getProto(asyncGenPrototype) : undefined,
+	'%AsyncFunction%': needsEval,
+	'%AsyncGenerator%': needsEval,
+	'%AsyncGeneratorFunction%': needsEval,
+	'%AsyncIteratorPrototype%': needsEval,
 	'%Atomics%': typeof Atomics === 'undefined' ? undefined : Atomics,
 	'%BigInt%': typeof BigInt === 'undefined' ? undefined : BigInt,
+	'%BigInt64Array%': typeof BigInt64Array === 'undefined' ? undefined : BigInt64Array,
+	'%BigUint64Array%': typeof BigUint64Array === 'undefined' ? undefined : BigUint64Array,
 	'%Boolean%': Boolean,
 	'%DataView%': typeof DataView === 'undefined' ? undefined : DataView,
 	'%Date%': Date,
@@ -83044,7 +83274,7 @@ var INTRINSICS = {
 	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined : Float64Array,
 	'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined : FinalizationRegistry,
 	'%Function%': $Function,
-	'%GeneratorFunction%': getEvalledConstructor('function* () {}'),
+	'%GeneratorFunction%': needsEval,
 	'%Int8Array%': typeof Int8Array === 'undefined' ? undefined : Int8Array,
 	'%Int16Array%': typeof Int16Array === 'undefined' ? undefined : Int16Array,
 	'%Int32Array%': typeof Int32Array === 'undefined' ? undefined : Int32Array,
@@ -83083,6 +83313,39 @@ var INTRINSICS = {
 	'%WeakMap%': typeof WeakMap === 'undefined' ? undefined : WeakMap,
 	'%WeakRef%': typeof WeakRef === 'undefined' ? undefined : WeakRef,
 	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet
+};
+
+try {
+	null.error; // eslint-disable-line no-unused-expressions
+} catch (e) {
+	// https://github.com/tc39/proposal-shadowrealm/pull/384#issuecomment-1364264229
+	var errorProto = getProto(getProto(e));
+	INTRINSICS['%Error.prototype%'] = errorProto;
+}
+
+var doEval = function doEval(name) {
+	var value;
+	if (name === '%AsyncFunction%') {
+		value = getEvalledConstructor('async function () {}');
+	} else if (name === '%GeneratorFunction%') {
+		value = getEvalledConstructor('function* () {}');
+	} else if (name === '%AsyncGeneratorFunction%') {
+		value = getEvalledConstructor('async function* () {}');
+	} else if (name === '%AsyncGenerator%') {
+		var fn = doEval('%AsyncGeneratorFunction%');
+		if (fn) {
+			value = fn.prototype;
+		}
+	} else if (name === '%AsyncIteratorPrototype%') {
+		var gen = doEval('%AsyncGenerator%');
+		if (gen) {
+			value = getProto(gen.prototype);
+		}
+	}
+
+	INTRINSICS[name] = value;
+
+	return value;
 };
 
 var LEGACY_ALIASES = {
@@ -83145,6 +83408,7 @@ var $concat = bind.call(Function.call, Array.prototype.concat);
 var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
 var $replace = bind.call(Function.call, String.prototype.replace);
 var $strSlice = bind.call(Function.call, String.prototype.slice);
+var $exec = bind.call(Function.call, RegExp.prototype.exec);
 
 /* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
 var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
@@ -83175,6 +83439,9 @@ var getBaseIntrinsic = function getBaseIntrinsic(name, allowMissing) {
 
 	if (hasOwn(INTRINSICS, intrinsicName)) {
 		var value = INTRINSICS[intrinsicName];
+		if (value === needsEval) {
+			value = doEval(intrinsicName);
+		}
 		if (typeof value === 'undefined' && !allowMissing) {
 			throw new $TypeError('intrinsic ' + name + ' exists, but is not available. Please file an issue!');
 		}
@@ -83197,6 +83464,9 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 		throw new $TypeError('"allowMissing" argument must be a boolean');
 	}
 
+	if ($exec(/^%?[^%]*%?$/, name) === null) {
+		throw new $SyntaxError('`%` may not be present anywhere but at the beginning and end of the intrinsic name');
+	}
 	var parts = stringToPath(name);
 	var intrinsicBaseName = parts.length > 0 ? parts[0] : '';
 
@@ -84646,6 +84916,30 @@ function transpose(out, a) {
 
 /***/ }),
 
+/***/ 40383:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var GetIntrinsic = __webpack_require__(68318);
+
+var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
+
+if ($gOPD) {
+	try {
+		$gOPD([], 'length');
+	} catch (e) {
+		// IE 8 has a broken gOPD
+		$gOPD = null;
+	}
+}
+
+module.exports = $gOPD;
+
+
+/***/ }),
+
 /***/ 57035:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -84695,6 +84989,47 @@ function detect() {
 }
 
 module.exports = isBrowser && detect()
+
+
+/***/ }),
+
+/***/ 55622:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var GetIntrinsic = __webpack_require__(68318);
+
+var $defineProperty = GetIntrinsic('%Object.defineProperty%', true);
+
+var hasPropertyDescriptors = function hasPropertyDescriptors() {
+	if ($defineProperty) {
+		try {
+			$defineProperty({}, 'a', { value: 1 });
+			return true;
+		} catch (e) {
+			// IE 8 has a broken defineProperty
+			return false;
+		}
+	}
+	return false;
+};
+
+hasPropertyDescriptors.hasArrayLengthDefineBug = function hasArrayLengthDefineBug() {
+	// node v0.6 has a bug where array lengths can be Set but not Defined
+	if (!hasPropertyDescriptors()) {
+		return null;
+	}
+	try {
+		return $defineProperty([], 'length', { value: 1 }).length !== 1;
+	} catch (e) {
+		// In Firefox 4-22, defining length on an array throws an exception.
+		return true;
+	}
+};
+
+module.exports = hasPropertyDescriptors;
 
 
 /***/ }),
@@ -84925,19 +85260,21 @@ if (typeof Object.create === 'function') {
 /***/ }),
 
 /***/ 47216:
-/***/ (function(module) {
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
 "use strict";
 
 
-var hasToStringTag = typeof Symbol === 'function' && typeof Symbol.toStringTag === 'symbol';
-var toStr = Object.prototype.toString;
+var hasToStringTag = __webpack_require__(84543)();
+var callBound = __webpack_require__(6614);
+
+var $toString = callBound('Object.prototype.toString');
 
 var isStandardArguments = function isArguments(value) {
 	if (hasToStringTag && value && typeof value === 'object' && Symbol.toStringTag in value) {
 		return false;
 	}
-	return toStr.call(value) === '[object Arguments]';
+	return $toString(value) === '[object Arguments]';
 };
 
 var isLegacyArguments = function isArguments(value) {
@@ -84948,8 +85285,8 @@ var isLegacyArguments = function isArguments(value) {
 		typeof value === 'object' &&
 		typeof value.length === 'number' &&
 		value.length >= 0 &&
-		toStr.call(value) !== '[object Array]' &&
-		toStr.call(value.callee) === '[object Function]';
+		$toString(value) !== '[object Array]' &&
+		$toString(value.callee) === '[object Function]';
 };
 
 var supportsStandardArguments = (function () {
@@ -84967,6 +85304,115 @@ module.exports = supportsStandardArguments ? isStandardArguments : isLegacyArgum
 /***/ (function(module) {
 
 module.exports = true;
+
+/***/ }),
+
+/***/ 85395:
+/***/ (function(module) {
+
+"use strict";
+
+
+var fnToStr = Function.prototype.toString;
+var reflectApply = typeof Reflect === 'object' && Reflect !== null && Reflect.apply;
+var badArrayLike;
+var isCallableMarker;
+if (typeof reflectApply === 'function' && typeof Object.defineProperty === 'function') {
+	try {
+		badArrayLike = Object.defineProperty({}, 'length', {
+			get: function () {
+				throw isCallableMarker;
+			}
+		});
+		isCallableMarker = {};
+		// eslint-disable-next-line no-throw-literal
+		reflectApply(function () { throw 42; }, null, badArrayLike);
+	} catch (_) {
+		if (_ !== isCallableMarker) {
+			reflectApply = null;
+		}
+	}
+} else {
+	reflectApply = null;
+}
+
+var constructorRegex = /^\s*class\b/;
+var isES6ClassFn = function isES6ClassFunction(value) {
+	try {
+		var fnStr = fnToStr.call(value);
+		return constructorRegex.test(fnStr);
+	} catch (e) {
+		return false; // not a function
+	}
+};
+
+var tryFunctionObject = function tryFunctionToStr(value) {
+	try {
+		if (isES6ClassFn(value)) { return false; }
+		fnToStr.call(value);
+		return true;
+	} catch (e) {
+		return false;
+	}
+};
+var toStr = Object.prototype.toString;
+var objectClass = '[object Object]';
+var fnClass = '[object Function]';
+var genClass = '[object GeneratorFunction]';
+var ddaClass = '[object HTMLAllCollection]'; // IE 11
+var ddaClass2 = '[object HTML document.all class]';
+var ddaClass3 = '[object HTMLCollection]'; // IE 9-10
+var hasToStringTag = typeof Symbol === 'function' && !!Symbol.toStringTag; // better: use `has-tostringtag`
+
+var isIE68 = !(0 in [,]); // eslint-disable-line no-sparse-arrays, comma-spacing
+
+var isDDA = function isDocumentDotAll() { return false; };
+if (typeof document === 'object') {
+	// Firefox 3 canonicalizes DDA to undefined when it's not accessed directly
+	var all = document.all;
+	if (toStr.call(all) === toStr.call(document.all)) {
+		isDDA = function isDocumentDotAll(value) {
+			/* globals document: false */
+			// in IE 6-8, typeof document.all is "object" and it's truthy
+			if ((isIE68 || !value) && (typeof value === 'undefined' || typeof value === 'object')) {
+				try {
+					var str = toStr.call(value);
+					return (
+						str === ddaClass
+						|| str === ddaClass2
+						|| str === ddaClass3 // opera 12.16
+						|| str === objectClass // IE 6-8
+					) && value('') == null; // eslint-disable-line eqeqeq
+				} catch (e) { /**/ }
+			}
+			return false;
+		};
+	}
+}
+
+module.exports = reflectApply
+	? function isCallable(value) {
+		if (isDDA(value)) { return true; }
+		if (!value) { return false; }
+		if (typeof value !== 'function' && typeof value !== 'object') { return false; }
+		try {
+			reflectApply(value, null, badArrayLike);
+		} catch (e) {
+			if (e !== isCallableMarker) { return false; }
+		}
+		return !isES6ClassFn(value) && tryFunctionObject(value);
+	}
+	: function isCallable(value) {
+		if (isDDA(value)) { return true; }
+		if (!value) { return false; }
+		if (typeof value !== 'function' && typeof value !== 'object') { return false; }
+		if (hasToStringTag) { return tryFunctionObject(value); }
+		if (isES6ClassFn(value)) { return false; }
+		var strClass = toStr.call(value);
+		if (strClass !== fnClass && strClass !== genClass && !(/^\[object HTML/).test(strClass)) { return false; }
+		return tryFunctionObject(value);
+	};
+
 
 /***/ }),
 
@@ -85150,14 +85596,15 @@ module.exports = function(str){
 "use strict";
 
 
-var forEach = __webpack_require__(86165);
+var forEach = __webpack_require__(31353);
 var availableTypedArrays = __webpack_require__(72077);
-var callBound = __webpack_require__(92978);
+var callBound = __webpack_require__(6614);
 
 var $toString = callBound('Object.prototype.toString');
-var hasSymbols = __webpack_require__(57877)();
-var hasToStringTag = hasSymbols && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = __webpack_require__(84543)();
+var gOPD = __webpack_require__(40383);
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $indexOf = callBound('Array.prototype.indexOf', true) || function indexOf(array, value) {
@@ -85170,21 +85617,19 @@ var $indexOf = callBound('Array.prototype.indexOf', true) || function indexOf(ar
 };
 var $slice = callBound('String.prototype.slice');
 var toStrTags = {};
-var gOPD = __webpack_require__(67295);
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		var arr = new __webpack_require__.g[typedArray]();
-		if (!(Symbol.toStringTag in arr)) {
-			throw new EvalError('this engine has support for Symbol.toStringTag, but ' + typedArray + ' does not have the property! Please report this.');
+		var arr = new g[typedArray]();
+		if (Symbol.toStringTag in arr) {
+			var proto = getPrototypeOf(arr);
+			var descriptor = gOPD(proto, Symbol.toStringTag);
+			if (!descriptor) {
+				var superProto = getPrototypeOf(proto);
+				descriptor = gOPD(superProto, Symbol.toStringTag);
+			}
+			toStrTags[typedArray] = descriptor.get;
 		}
-		var proto = getPrototypeOf(arr);
-		var descriptor = gOPD(proto, Symbol.toStringTag);
-		if (!descriptor) {
-			var superProto = getPrototypeOf(proto);
-			descriptor = gOPD(superProto, Symbol.toStringTag);
-		}
-		toStrTags[typedArray] = descriptor.get;
 	});
 }
 
@@ -85202,7 +85647,7 @@ var tryTypedArrays = function tryAllTypedArrays(value) {
 
 module.exports = function isTypedArray(value) {
 	if (!value || typeof value !== 'object') { return false; }
-	if (!hasToStringTag) {
+	if (!hasToStringTag || !(Symbol.toStringTag in value)) {
 		var tag = $slice($toString(value), 8, -1);
 		return $indexOf(typedArrays, tag) > -1;
 	}
@@ -96366,34 +96811,33 @@ exports.callbackify = callbackify;
 "use strict";
 
 
-var forEach = __webpack_require__(86165);
+var forEach = __webpack_require__(31353);
 var availableTypedArrays = __webpack_require__(72077);
-var callBound = __webpack_require__(92978);
+var callBound = __webpack_require__(6614);
+var gOPD = __webpack_require__(40383);
 
 var $toString = callBound('Object.prototype.toString');
-var hasSymbols = __webpack_require__(57877)();
-var hasToStringTag = hasSymbols && typeof Symbol.toStringTag === 'symbol';
+var hasToStringTag = __webpack_require__(84543)();
 
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
 var typedArrays = availableTypedArrays();
 
 var $slice = callBound('String.prototype.slice');
 var toStrTags = {};
-var gOPD = __webpack_require__(67295);
 var getPrototypeOf = Object.getPrototypeOf; // require('getprototypeof');
 if (hasToStringTag && gOPD && getPrototypeOf) {
 	forEach(typedArrays, function (typedArray) {
-		if (typeof __webpack_require__.g[typedArray] === 'function') {
-			var arr = new __webpack_require__.g[typedArray]();
-			if (!(Symbol.toStringTag in arr)) {
-				throw new EvalError('this engine has support for Symbol.toStringTag, but ' + typedArray + ' does not have the property! Please report this.');
+		if (typeof g[typedArray] === 'function') {
+			var arr = new g[typedArray]();
+			if (Symbol.toStringTag in arr) {
+				var proto = getPrototypeOf(arr);
+				var descriptor = gOPD(proto, Symbol.toStringTag);
+				if (!descriptor) {
+					var superProto = getPrototypeOf(proto);
+					descriptor = gOPD(superProto, Symbol.toStringTag);
+				}
+				toStrTags[typedArray] = descriptor.get;
 			}
-			var proto = getPrototypeOf(arr);
-			var descriptor = gOPD(proto, Symbol.toStringTag);
-			if (!descriptor) {
-				var superProto = getPrototypeOf(proto);
-				descriptor = gOPD(superProto, Symbol.toStringTag);
-			}
-			toStrTags[typedArray] = descriptor.get;
 		}
 	});
 }
@@ -96417,7 +96861,7 @@ var isTypedArray = __webpack_require__(9187);
 
 module.exports = function whichTypedArray(value) {
 	if (!isTypedArray(value)) { return false; }
-	if (!hasToStringTag) { return $slice($toString(value), 8, -1); }
+	if (!hasToStringTag || !(Symbol.toStringTag in value)) { return $slice($toString(value), 8, -1); }
 	return tryTypedArrays(value);
 };
 
@@ -101723,24 +102167,30 @@ assign(main.baseCalendar.prototype, {
 "use strict";
 
 
-var filter = __webpack_require__(24696);
+var possibleNames = [
+	'BigInt64Array',
+	'BigUint64Array',
+	'Float32Array',
+	'Float64Array',
+	'Int16Array',
+	'Int32Array',
+	'Int8Array',
+	'Uint16Array',
+	'Uint32Array',
+	'Uint8Array',
+	'Uint8ClampedArray'
+];
+
+var g = typeof globalThis === 'undefined' ? __webpack_require__.g : globalThis;
 
 module.exports = function availableTypedArrays() {
-	return filter([
-		'BigInt64Array',
-		'BigUint64Array',
-		'Float32Array',
-		'Float64Array',
-		'Int16Array',
-		'Int32Array',
-		'Int8Array',
-		'Uint16Array',
-		'Uint32Array',
-		'Uint8Array',
-		'Uint8ClampedArray'
-	], function (typedArray) {
-		return typeof __webpack_require__.g[typedArray] === 'function';
-	});
+	var out = [];
+	for (var i = 0; i < possibleNames.length; i++) {
+		if (typeof g[possibleNames[i]] === 'function') {
+			out[out.length] = possibleNames[i];
+		}
+	}
+	return out;
 };
 
 

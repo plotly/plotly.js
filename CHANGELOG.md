@@ -9,10 +9,27 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.19.0] -- 2023-03-13
+
+### Added
+ - Add `label` attribute to shapes [[#6454](https://github.com/plotly/plotly.js/pull/6454)],
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Cells for sponsoring development!
+ - Add `labelalias` to various axes namely cartesian, gl3d, polar, smith, ternary, carpet,
+   indicator and colorbar [[#6481](https://github.com/plotly/plotly.js/pull/6481)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Changed
+ - Upgrade `is-mobile` dependency [[#6517](https://github.com/plotly/plotly.js/pull/6517)]
+
+### Fixed
+ - Avoid overlap of point and axis hover labels for `hovermode: 'x'|'y'` [[#6442](https://github.com/plotly/plotly.js/pull/6442)],
+   with thanks to @dagroe for the contribution!
+
+
 ## [2.18.2] -- 2023-02-15
 
 ### Fixed
- - Avoid attaching internal d3 object to the window (regression introduced in 2.17.0) [#6487](https://github.com/plotly/plotly.js/pull/6487)
+ - Avoid attaching internal d3 object to the window (regression introduced in 2.17.0) [[#6487](https://github.com/plotly/plotly.js/pull/6487)]
  - Correct the order of lower fence and upper fence in the French locale (fr) [[#6476](https://github.com/plotly/plotly.js/pull/6476)],
    with thanks to @Gagaro for the contribution!
  - Correct formats in the Peruvian locale (es-pe) [[#6451](https://github.com/plotly/plotly.js/pull/6451)],

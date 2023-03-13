@@ -213,12 +213,12 @@ module.exports = {
     styleRules: {
         map: 'overflow:hidden;position:relative;',
         'missing-css': 'display:none;',
-        'canary': 'background-color:salmon;',
+        canary: 'background-color:salmon;',
 
         // Reusing CSS directives from: https://api.tiles.mapbox.com/mapbox-gl-js/v1.1.1/mapbox-gl.css
         'ctrl-bottom-left': 'position: absolute; pointer-events: none; z-index: 2; bottom: 0; left: 0;',
         'ctrl-bottom-right': 'position: absolute; pointer-events: none; z-index: 2; right: 0; bottom: 0;',
-        'ctrl': 'clear: both; pointer-events: auto; transform: translate(0, 0);',
+        ctrl: 'clear: both; pointer-events: auto; transform: translate(0, 0);',
 
         // Compact ctrl
         'ctrl-attrib.mapboxgl-compact .mapboxgl-ctrl-attrib-inner': 'display: none;',

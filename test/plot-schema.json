@@ -3579,6 +3579,91 @@
       "nonzero"
      ]
     },
+    "label": {
+     "editType": "none",
+     "font": {
+      "color": {
+       "editType": "none",
+       "valType": "color"
+      },
+      "description": "Sets the new shape label text font.",
+      "editType": "none",
+      "family": {
+       "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+       "editType": "none",
+       "noBlank": true,
+       "strict": true,
+       "valType": "string"
+      },
+      "role": "object",
+      "size": {
+       "editType": "none",
+       "min": 1,
+       "valType": "number"
+      }
+     },
+     "padding": {
+      "description": "Sets padding (in px) between edge of label and edge of new shape.",
+      "dflt": 3,
+      "editType": "none",
+      "min": 0,
+      "valType": "number"
+     },
+     "role": "object",
+     "text": {
+      "description": "Sets the text to display with the new shape.",
+      "dflt": "",
+      "editType": "none",
+      "valType": "string"
+     },
+     "textangle": {
+      "description": "Sets the angle at which the label text is drawn with respect to the horizontal. For lines, angle *auto* is the same angle as the line. For all other shapes, angle *auto* is horizontal.",
+      "dflt": "auto",
+      "editType": "none",
+      "valType": "angle"
+     },
+     "textposition": {
+      "description": "Sets the position of the label text relative to the new shape. Supported values for rectangles, circles and paths are *top left*, *top center*, *top right*, *middle left*, *middle center*, *middle right*, *bottom left*, *bottom center*, and *bottom right*. Supported values for lines are *start*, *middle*, and *end*. Default: *middle center* for rectangles, circles, and paths; *middle* for lines.",
+      "editType": "none",
+      "valType": "enumerated",
+      "values": [
+       "top left",
+       "top center",
+       "top right",
+       "middle left",
+       "middle center",
+       "middle right",
+       "bottom left",
+       "bottom center",
+       "bottom right",
+       "start",
+       "middle",
+       "end"
+      ]
+     },
+     "xanchor": {
+      "description": "Sets the label's horizontal position anchor This anchor binds the specified `textposition` to the *left*, *center* or *right* of the label text. For example, if `textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the new shape.",
+      "dflt": "auto",
+      "editType": "none",
+      "valType": "enumerated",
+      "values": [
+       "auto",
+       "left",
+       "center",
+       "right"
+      ]
+     },
+     "yanchor": {
+      "description": "Sets the label's vertical position anchor This anchor binds the specified `textposition` to the *top*, *middle* or *bottom* of the label text. For example, if `textposition` is set to *top right* and `yanchor` to *top* then the top-most portion of the label text lines up with the top-most edge of the new shape.",
+      "editType": "none",
+      "valType": "enumerated",
+      "values": [
+       "top",
+       "middle",
+       "bottom"
+      ]
+     }
+    },
     "layer": {
      "description": "Specifies whether new shapes are drawn below or above traces.",
      "dflt": "above",
@@ -7144,6 +7229,91 @@
         "evenodd",
         "nonzero"
        ]
+      },
+      "label": {
+       "editType": "arraydraw",
+       "font": {
+        "color": {
+         "editType": "arraydraw",
+         "valType": "color"
+        },
+        "description": "Sets the shape label text font.",
+        "editType": "calc+arraydraw",
+        "family": {
+         "description": "HTML font family - the typeface that will be applied by the web browser. The web browser will only be able to apply a font if it is available on the system which it operates. Provide multiple font families, separated by commas, to indicate the preference in which to apply fonts if they aren't available on the system. The Chart Studio Cloud (at https://chart-studio.plotly.com or on-premise) generates images on a server, where only a select number of fonts are installed and supported. These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*, *Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*, *PT Sans Narrow*, *Raleway*, *Times New Roman*.",
+         "editType": "calc+arraydraw",
+         "noBlank": true,
+         "strict": true,
+         "valType": "string"
+        },
+        "role": "object",
+        "size": {
+         "editType": "calc+arraydraw",
+         "min": 1,
+         "valType": "number"
+        }
+       },
+       "padding": {
+        "description": "Sets padding (in px) between edge of label and edge of shape.",
+        "dflt": 3,
+        "editType": "arraydraw",
+        "min": 0,
+        "valType": "number"
+       },
+       "role": "object",
+       "text": {
+        "description": "Sets the text to display with shape.",
+        "dflt": "",
+        "editType": "arraydraw",
+        "valType": "string"
+       },
+       "textangle": {
+        "description": "Sets the angle at which the label text is drawn with respect to the horizontal. For lines, angle *auto* is the same angle as the line. For all other shapes, angle *auto* is horizontal.",
+        "dflt": "auto",
+        "editType": "calc+arraydraw",
+        "valType": "angle"
+       },
+       "textposition": {
+        "description": "Sets the position of the label text relative to the shape. Supported values for rectangles, circles and paths are *top left*, *top center*, *top right*, *middle left*, *middle center*, *middle right*, *bottom left*, *bottom center*, and *bottom right*. Supported values for lines are *start*, *middle*, and *end*. Default: *middle center* for rectangles, circles, and paths; *middle* for lines.",
+        "editType": "arraydraw",
+        "valType": "enumerated",
+        "values": [
+         "top left",
+         "top center",
+         "top right",
+         "middle left",
+         "middle center",
+         "middle right",
+         "bottom left",
+         "bottom center",
+         "bottom right",
+         "start",
+         "middle",
+         "end"
+        ]
+       },
+       "xanchor": {
+        "description": "Sets the label's horizontal position anchor This anchor binds the specified `textposition` to the *left*, *center* or *right* of the label text. For example, if `textposition` is set to *top right* and `xanchor` to *right* then the right-most portion of the label text lines up with the right-most edge of the shape.",
+        "dflt": "auto",
+        "editType": "calc+arraydraw",
+        "valType": "enumerated",
+        "values": [
+         "auto",
+         "left",
+         "center",
+         "right"
+        ]
+       },
+       "yanchor": {
+        "description": "Sets the label's vertical position anchor This anchor binds the specified `textposition` to the *top*, *middle* or *bottom* of the label text. For example, if `textposition` is set to *top right* and `yanchor` to *top* then the top-most portion of the label text lines up with the top-most edge of the shape.",
+        "editType": "calc+arraydraw",
+        "valType": "enumerated",
+        "values": [
+         "top",
+         "middle",
+         "bottom"
+        ]
+       }
       },
       "layer": {
        "description": "Specifies whether shapes are drawn below or above traces.",

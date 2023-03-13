@@ -9,8 +9,6 @@ var minimist = require('minimist');
 var constants = require('../../tasks/util/constants');
 var config = require('../../webpack.config.js');
 config.optimization = { minimize: false };
-config.mode = 'development';
-config.devtool = 'eval';
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
@@ -19,6 +17,12 @@ var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
 
 if(strict) config.entry = './lib/index-strict.js';
+
+if(!strict) {
+    config.mode = 'development';
+    config.devtool = 'eval';
+}
+
 
 // mock list
 getMockFiles()

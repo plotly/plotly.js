@@ -35,41 +35,41 @@ describe('Test gl3d axes defaults', function() {
             layoutIn = {};
 
             var expected = {
-                'xaxis': {
-                    'showline': false,
-                    'showgrid': true,
-                    'gridcolor': 'rgb(204, 204, 204)',
-                    'gridwidth': 1,
-                    'showspikes': true,
-                    'spikesides': true,
-                    'spikethickness': 2,
-                    'spikecolor': '#444',
-                    'showbackground': false,
-                    'showaxeslabels': true
+                xaxis: {
+                    showline: false,
+                    showgrid: true,
+                    gridcolor: 'rgb(204, 204, 204)',
+                    gridwidth: 1,
+                    showspikes: true,
+                    spikesides: true,
+                    spikethickness: 2,
+                    spikecolor: '#444',
+                    showbackground: false,
+                    showaxeslabels: true
                 },
-                'yaxis': {
-                    'showline': false,
-                    'showgrid': true,
-                    'gridcolor': 'rgb(204, 204, 204)',
-                    'gridwidth': 1,
-                    'showspikes': true,
-                    'spikesides': true,
-                    'spikethickness': 2,
-                    'spikecolor': '#444',
-                    'showbackground': false,
-                    'showaxeslabels': true
+                yaxis: {
+                    showline: false,
+                    showgrid: true,
+                    gridcolor: 'rgb(204, 204, 204)',
+                    gridwidth: 1,
+                    showspikes: true,
+                    spikesides: true,
+                    spikethickness: 2,
+                    spikecolor: '#444',
+                    showbackground: false,
+                    showaxeslabels: true
                 },
-                'zaxis': {
-                    'showline': false,
-                    'showgrid': true,
-                    'gridcolor': 'rgb(204, 204, 204)',
-                    'gridwidth': 1,
-                    'showspikes': true,
-                    'spikesides': true,
-                    'spikethickness': 2,
-                    'spikecolor': '#444',
-                    'showbackground': false,
-                    'showaxeslabels': true
+                zaxis: {
+                    showline: false,
+                    showgrid: true,
+                    gridcolor: 'rgb(204, 204, 204)',
+                    gridwidth: 1,
+                    showspikes: true,
+                    spikesides: true,
+                    spikethickness: 2,
+                    spikecolor: '#444',
+                    showbackground: false,
+                    showaxeslabels: true
                 }
             };
 

@@ -189,11 +189,11 @@ describe('scattermapbox convert', function() {
 
         // N.B repeated values have same geojson props
         expect(circleProps).toEqual([
-            { 'mcc': 'rgb(220, 220, 220)', 'mrc': 5 },
-            { 'mcc': '#444', 'mrc': 10 },
-            { 'mcc': 'rgb(178, 10, 28)', 'mrc': 0 },
-            { 'mcc': '#444', 'mrc': 0 },
-            { 'mcc': '#444', 'mrc': 0 }
+            { mcc: 'rgb(220, 220, 220)', mrc: 5 },
+            { mcc: '#444', mrc: 10 },
+            { mcc: 'rgb(178, 10, 28)', mrc: 0 },
+            { mcc: '#444', mrc: 0 },
+            { mcc: '#444', mrc: 0 }
         ], 'geojson feature properties');
     });
 
@@ -223,13 +223,13 @@ describe('scattermapbox convert', function() {
         });
 
         expect(circleProps).toEqual([
-            { 'mo': 0.5 },
-            { 'mo': 0 },
-            { 'mo': 0.25 },
+            { mo: 0.5 },
+            { mo: 0 },
+            { mo: 0.25 },
             // lat === null
             // lon === null
-            { 'mo': 0 },
-            { 'mo': 0.4 },
+            { mo: 0 },
+            { mo: 0.4 },
         ], 'geojson feature properties');
     });
 
@@ -554,14 +554,14 @@ describe('scattermapbox convert', function() {
 
     it('should generate correct output for texttemplate', function() {
         var mock = {
-            'type': 'scattermapbox',
-            'mode': 'markers+text',
-            'lon': [-73.57, -79.24, -123.06],
-            'lat': [45.5, 43.4, 49.13],
-            'text': ['Montreal', 'Toronto', 'Vancouver'],
-            'texttemplate': '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
-            'textposition': 'top center',
-            'customdata': [1780000, 2930000, 675218]
+            type: 'scattermapbox',
+            mode: 'markers+text',
+            lon: [-73.57, -79.24, -123.06],
+            lat: [45.5, 43.4, 49.13],
+            text: ['Montreal', 'Toronto', 'Vancouver'],
+            texttemplate: '%{text} (%{lon}, %{lat}): %{customdata:.2s}',
+            textposition: 'top center',
+            customdata: [1780000, 2930000, 675218]
         };
         var opts = _convert(mock);
         var actualText = opts.symbol.geojson.features.map(function(f) {

@@ -305,7 +305,7 @@ module.exports = {
             {valType: 'any', editType: 'axrange', impliedEdits: {'^autorange': false}, anim: true}
         ],
         editType: 'axrange',
-        impliedEdits: {'autorange': false},
+        impliedEdits: {autorange: false},
         anim: true,
         description: [
             'Sets the range of this axis.',

@@ -77,6 +77,8 @@ module.exports = function newShapes(outlines, dragOptions) {
     var newShape = {
         editable: true,
 
+        label: newStyle.label,
+
         xref: xPaper ? 'paper' : xaxis._id,
         yref: yPaper ? 'paper' : yaxis._id,
 

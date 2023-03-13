@@ -271,7 +271,7 @@ function appendBarText(gd, plotinfo, bar, cd, i, x0, x1, y0, y1, opts, makeOnCom
         var textSelection = Lib.ensureSingle(bar, 'text')
             .text(text)
             .attr({
-                'class': 'bartext bartext-' + textPosition,
+                class: 'bartext bartext-' + textPosition,
                 'text-anchor': 'middle',
                 // prohibit tex interpretation until we can handle
                 // tex and regular text together
