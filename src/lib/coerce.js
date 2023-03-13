@@ -265,8 +265,14 @@ exports.valObjectMeta = {
         requiredOpts: [],
         otherOpts: ['dflt', 'values', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v === undefined) propOut.set(dflt);
-            else propOut.set(v);
+            if(v === undefined) {
+                propOut.set(dflt);
+            } else {
+                propOut.set(
+                    isTypedArraySpec(v) ? decodeTypedArraySpec(v) :
+                    v
+                );
+            }
         }
     },
     info_array: {
