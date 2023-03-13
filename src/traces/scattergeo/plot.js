@@ -72,7 +72,7 @@ function calcGeoJSON(calcTrace, fullLayout) {
     var len = trace._length;
     var i, calcPt;
 
-    if(Lib.isArrayOrTypedArray(trace.locations)) {
+    if(Array.isArray(trace.locations)) {
         var locationmode = trace.locationmode;
         var features = locationmode === 'geojson-id' ?
             geoUtils.extractTraceFeature(calcTrace) :

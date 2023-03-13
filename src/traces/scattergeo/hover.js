@@ -1,8 +1,6 @@
 'use strict';
 
 var Fx = require('../../components/fx');
-var isTypedArraySpec = require('../../lib/array').isTypedArraySpec;
-
 var BADNUM = require('../../constants/numerical').BADNUM;
 
 var getTraceColor = require('../scatter/get_trace_color');
@@ -78,7 +76,7 @@ function getExtraText(trace, pt, pointData, labels) {
         attributes.hoverinfo.flags :
         hoverinfo.split('+');
 
-    var hasLocation = parts.indexOf('location') !== -1 && isTypedArraySpec(trace.locations);
+    var hasLocation = parts.indexOf('location') !== -1 && Array.isArray(trace.locations);
     var hasLon = (parts.indexOf('lon') !== -1);
     var hasLat = (parts.indexOf('lat') !== -1);
     var hasText = (parts.indexOf('text') !== -1);
