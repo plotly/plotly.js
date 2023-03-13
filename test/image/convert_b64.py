@@ -21,7 +21,8 @@ uint32bounds = numpy.iinfo(numpy.uint32)
 
 skipKeys = [
     'geojson',
-    'layers'
+    'layers',
+    'range'
 ]
 
 def arraysToB64(obj, newObj) :
@@ -48,8 +49,13 @@ def arraysToB64(obj, newObj) :
 
                 newObj[key] = newList
             else :
-                # skip converting arrays with 2 items or less
-                if(arr.ndim == 1 and arr.shape[0] < 3) :
+                # In a real application one does not need to convert
+                # small arrays like those that only have 2 items.
+                # But here we convert 2 item array to test typed arrays
+                # in more places.
+
+                # skip converting arrays with 1 item or less
+                if(arr.ndim == 1 and arr.shape[0] < 2) :
                     newObj[key] = val
                     continue
 
