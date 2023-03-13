@@ -54,8 +54,8 @@ def arraysToB64(obj, newObj) :
                 # But here we convert 2 item array to test typed arrays
                 # in more places.
 
-                # skip converting arrays with 1 item or less
-                if(arr.ndim == 1 and arr.shape[0] < 2) :
+                # skip converting arrays with no items
+                if(arr.ndim == 1 and arr.shape[0] < 1) :
                     newObj[key] = val
                     continue
 
