@@ -497,7 +497,7 @@ function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
         if(titleYanchor === 'bottom') {
             push += titleDepth;
         }
-        push += (height - (1 - titleY) * height);
+        push += titleY * height;
     }
     return push;
 }
