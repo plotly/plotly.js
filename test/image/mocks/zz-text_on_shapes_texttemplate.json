@@ -1,0 +1,19 @@
+{
+    "data":[{
+        "x":[0,10],
+        "y":[0,10],
+        "mode":"markers"
+    }],
+    "layout": {
+        "xaxis":{"title":{"text":"linear"},"range":[0,10],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
+        "yaxis":{"title":{"text":"linear"},"range":[0,10],"type":"linear","showgrid":false,"zeroline":false,"showticklabels":false},
+        "height":400,
+        "width":800,
+        "margin": {"l":20,"r":20,"pad":0},
+        "showlegend":false,
+        "shapes":[
+            {"label":{"text":"this will be overridden", "texttemplate": "Here is x0 divided by 2: %{x0/2:.2f}"}, "layer":"below","x0":2,"x1":5,"y0":6,"y1":9,"opacity":0.5,"fillcolor":"#05e","line":{"width":3,"color":"#025","dash":"dashdot"}, "editable": true},
+            {"label":{"text":"this will be overridden", "texttemplate": "Here is the slope: %{slope:.3f}"}, "layer":"below","x0":5,"x1":9,"y0":2.5,"y1":9,"type": "line", "opacity":0.5,"fillcolor":"#05e","line":{"width":3,"color":"#025"}, "editable": true}
+        ]
+    }
+}
