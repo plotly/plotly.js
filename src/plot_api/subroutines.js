@@ -415,7 +415,7 @@ exports.drawMainTitle = function(gd) {
             x: x,
             y: y,
             'text-anchor': textAnchor,
-            dy: dy
+            dy: 0.5
         })
     });
 
@@ -435,7 +435,7 @@ exports.drawMainTitle = function(gd) {
                 x: x,
                 y: y,
                 'text-anchor': textAnchor,
-                dy: dy
+                dy: 0.5
             }).call(svgTextUtils.positionText, x, y);
         }
     }
