@@ -3642,9 +3642,9 @@
       ]
      },
      "texttemplate": {
-      "description": "Template string used for rendering the new shape's label. Note that this will override `text`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. ",
+      "description": "Template string used for rendering the new shape's label. Note that this will override `text`. Variables are inserted using %{variable}, for example \"x0: %{x0}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{x0:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. A single multiplication or division operation may be applied to the variable, and combined with d3 number formatting, for example \"Length in cm: %{x0*2.54}\", \"%{slope*60:.1f} meters per second.\" ",
       "dflt": "",
-      "editType": "calc+arraydraw",
+      "editType": "none",
       "valType": "string"
      },
      "xanchor": {
@@ -7299,9 +7299,9 @@
         ]
        },
        "texttemplate": {
-        "description": "Template string used for rendering the shape's label. Note that this will override `text`. Variables are inserted using %{variable}, for example \"y: %{y}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{y:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. Dates are formatted using d3-time-format's syntax %{variable|d3-time-format}, for example \"Day: %{2019-01-01|%A}\". https://github.com/d3/d3-time-format/tree/v2.2.3#locale_format for details on the date formatting syntax. ",
+        "description": "Template string used for rendering the shape's label. Note that this will override `text`. Variables are inserted using %{variable}, for example \"x0: %{x0}\". Numbers are formatted using d3-format's syntax %{variable:d3-format}, for example \"Price: %{x0:$.2f}\". https://github.com/d3/d3-format/tree/v1.4.5#d3-format for details on the formatting syntax. A single multiplication or division operation may be applied to the variable, and combined with d3 number formatting, for example \"Length in cm: %{x0*2.54}\", \"%{slope*60:.1f} meters per second.\" ",
         "dflt": "",
-        "editType": "calc+arraydraw",
+        "editType": "arraydraw",
         "valType": "string"
        },
        "xanchor": {
