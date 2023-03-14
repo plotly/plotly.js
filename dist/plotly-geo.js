@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.19.0
+* plotly.js (geo) v2.19.1
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -14878,16 +14878,25 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
       switch (target) {
         case slideBox:
           cursor = 'ew-resize';
+          if (minVal + delta > axisOpts._length || maxVal + delta < 0) {
+            return;
+          }
           pixelMin = minVal + delta;
           pixelMax = maxVal + delta;
           break;
         case grabAreaMin:
           cursor = 'col-resize';
+          if (minVal + delta > axisOpts._length) {
+            return;
+          }
           pixelMin = minVal + delta;
           pixelMax = maxVal;
           break;
         case grabAreaMax:
           cursor = 'col-resize';
+          if (maxVal + delta < 0) {
+            return;
+          }
           pixelMin = minVal;
           pixelMax = maxVal + delta;
           break;
@@ -59480,7 +59489,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.19.0';
+exports.version = '2.19.1';
 
 /***/ }),
 
