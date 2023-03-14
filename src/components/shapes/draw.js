@@ -168,7 +168,7 @@ function drawOne(gd, index) {
                 plotinfo: plotinfo,
                 gd: gd,
                 editHelpers: editHelpers,
-                hasText: options.label.text,
+                hasText: options.label.text || options.label.texttemplate,
                 isActiveShape: true // i.e. to enable controllers
             };
 

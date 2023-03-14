@@ -91,7 +91,7 @@ module.exports = {
             texttemplate: {
                 valType: 'string',
                 dflt: '',
-                editType: 'calc+arraydraw',
+                editType: 'none',
                 description: [
                     'Template string used for rendering the new shape\'s label.',
                     'Note that this will override `text`.',

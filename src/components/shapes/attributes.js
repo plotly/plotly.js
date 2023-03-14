@@ -237,7 +237,7 @@ module.exports = templatedArray('shape', {
         texttemplate: {
             valType: 'string',
             dflt: '',
-            editType: 'calc+arraydraw',
+            editType: 'arraydraw',
             description: [
                 'Template string used for rendering the shape\'s label.',
                 'Note that this will override `text`.',
