@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.19.1] -- 2023-03-14
+
+### Fixed
+ - Ensure slider range stays in bounds during the drag [[#4448](https://github.com/plotly/plotly.js/pull/4448)],
+   with thanks to @jay-bis for the contribution!
+
+
 ## [2.19.0] -- 2023-03-13
 
 ### Added
