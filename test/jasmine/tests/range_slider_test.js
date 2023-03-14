@@ -192,8 +192,7 @@ describe('Visible rangesliders', function() {
             expect(+maskMin.getAttribute('width')).toBeCloseTo(-diff);
             testTranslate1D(handleMin, dataMaxStart + diff);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not exceed slider bounds left to right', function(done) {
@@ -210,8 +209,7 @@ describe('Visible rangesliders', function() {
         .then(function() {
             expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49], -0.5);
         })
-        .catch(failTest)
-        .then(done);
+        .then(done, done.fail);
     });
 
     it('should not exceed slider bounds right to left', function(done) {
