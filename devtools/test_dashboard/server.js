@@ -12,6 +12,7 @@ config.optimization = { minimize: false };
 
 var args = minimist(process.argv.slice(2), {});
 var PORT = args.port || 3000;
+var b64 = args.b64;
 var strict = args.strict;
 var mathjax3 = args.mathjax3;
 var mathjax3chtml = args.mathjax3chtml;
@@ -23,6 +24,7 @@ if(!strict) {
     config.devtool = 'eval';
 }
 
+var mockFolder = path.join(constants.pathToImageTest, b64 ? 'b64' : 'mocks');
 
 // mock list
 getMockFiles()
@@ -104,7 +106,7 @@ compiler.run(function(devtoolsErr, devtoolsStats) {
 
 function getMockFiles() {
     return new Promise(function(resolve, reject) {
-        fs.readdir(constants.pathToTestImageMocks, function(err, files) {
+        fs.readdir(mockFolder, function(err, files) {
             if(err) {
                 reject(err);
             } else {
@@ -116,7 +118,7 @@ function getMockFiles() {
 
 function readFiles(files) {
     var promises = files.map(function(file) {
-        var filePath = path.join(constants.pathToTestImageMocks, file);
+        var filePath = path.join(mockFolder, file);
         return readFilePromise(filePath);
     });
 
