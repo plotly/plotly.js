@@ -611,7 +611,7 @@ function drawLabel(gd, index, options, shapeGroup) {
     // Text template overrides text
     var text = options.label.text;
     if(options.label.texttemplate) {
-        text = Lib.texttemplateStringWithMath(options.label.texttemplate,
+        text = Lib.texttemplateStringForShapes(options.label.texttemplate,
             {},
             gd._fullLayout._d3locale,
             {

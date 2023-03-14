@@ -1074,20 +1074,24 @@ lib.texttemplateString = function() {
     return templateFormatString.apply(texttemplateWarnings, arguments);
 };
 
+// Regex for parsing multiplication and division operations applied to a template key
+// Used for shape.label.texttemplate
+// Matches a key name (non-whitespace characters), followed by a * or / character, followed by a number
+// For example, the following strings are matched: `x0*2`, `slope/1.60934`, `y1*2.54`
 var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
-function parseMultDiv(inputStr) {
+function multDivParser(inputStr) {
     var match = inputStr.match(MULT_DIV_REGEX);
     if(match) return { key: match[1], op: match[2], number: Number(match[3]) };
     else return { key: inputStr, op: null, number: null };
 }
-var texttemplateWarningsWithMath = {
+var texttemplateWarningsForShapes = {
     max: 10,
     count: 0,
     name: 'texttemplate',
-    parseMath: true,
+    parseMultDiv: true,
 };
-lib.texttemplateStringWithMath = function() {
-    return templateFormatString.apply(texttemplateWarningsWithMath, arguments);
+lib.texttemplateStringForShapes = function() {
+    return templateFormatString.apply(texttemplateWarningsForShapes, arguments);
 };
 
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
@@ -1139,10 +1143,11 @@ function templateFormatString(string, labels, d3locale) {
         if(isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
 
         // Shape labels support * and / operators in template string
+        // Parse these if the parseMultDiv param is set to true
         var parsedOp = null;
         var parsedNumber = null;
-        if(opts.parseMath) {
-            var _match = parseMultDiv(key);
+        if(opts.parseMultDiv) {
+            var _match = multDivParser(key);
             key = _match.key;
             parsedOp = _match.op;
             parsedNumber = _match.number;
@@ -1171,6 +1176,7 @@ function templateFormatString(string, labels, d3locale) {
             }
         }
 
+        // Apply mult/div operation (if applicable)
         if(parsedOp) {
             value = {
                 '*': (function(v) { return v * parsedNumber; }),

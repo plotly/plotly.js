@@ -2,7 +2,7 @@
 
 var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
-var templateFormatStringDescription = require('../../../plots/template_attributes').templateFormatStringDescription;
+var templateFormatStringDescriptionForShapes = require('../../../plots/template_attributes').templateFormatStringDescriptionForShapes;
 var describeVariables = require('../../../plots/template_attributes').describeVariables;
 var extendFlat = require('../../../lib/extend').extendFlat;
 
@@ -95,7 +95,7 @@ module.exports = {
                 description: [
                     'Template string used for rendering the new shape\'s label.',
                     'Note that this will override `text`.',
-                    templateFormatStringDescription(),
+                    templateFormatStringDescriptionForShapes(),
                     describeVariables(['x0', 'y0', 'x1', 'y1', 'slope']),
                 ].join(' ')
             },

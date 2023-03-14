@@ -22,7 +22,19 @@ function templateFormatStringDescription(opts) {
         'for details on the date formatting syntax.'
     ].join(' ');
 }
-exports.templateFormatStringDescription = templateFormatStringDescription;
+
+function templateFormatStringDescriptionForShapes() {
+    return [
+        'Variables are inserted using %{variable},',
+        'for example "x0: %{x0}".',
+        'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{x0:$.2f}".',
+        FORMAT_LINK,
+        'for details on the formatting syntax.',
+        'A single multiplication or division operation may be applied to the variable, and combined with',
+        'd3 number formatting, for example "Length in cm: %{x0*2.54}", "%{slope*60:.1f} meters per second."'
+    ].join(' ');
+}
+exports.templateFormatStringDescriptionForShapes = templateFormatStringDescriptionForShapes;
 
 function describeVariables(extra) {
     var descPart = extra.description ? ' ' + extra.description : '';
