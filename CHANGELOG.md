@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.20.0] -- 2023-03-15
+
+### Added
+ - Add `title.automargin` to enable automatic top and bottom margining for both container and paper referenced titles [[#6428](https://github.com/plotly/plotly.js/pull/6428)],
+   with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+
+
 ## [2.19.1] -- 2023-03-14
 
 ### Fixed
