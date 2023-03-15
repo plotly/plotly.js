@@ -27,7 +27,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ### Added
  - Add `label` attribute to shapes [[#6454](https://github.com/plotly/plotly.js/pull/6454)],
-   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Cells for sponsoring development!
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
  - Add `labelalias` to various axes namely cartesian, gl3d, polar, smith, ternary, carpet,
    indicator and colorbar [[#6481](https://github.com/plotly/plotly.js/pull/6481)],
    this feature was anonymously sponsored: thank you to our sponsor!
