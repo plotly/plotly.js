@@ -423,13 +423,12 @@ exports.drawMainTitle = function(gd) {
         var pushMargin = needsMarginPush(gd, title, titleHeight);
         if(pushMargin > 0) {
             applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
-
             // Re-position the title once we know where it needs to be
             titleObj.attr({
                 x: x,
                 y: y,
                 'text-anchor': textAnchor,
-                dy: dy
+                dy: getMainTitleDyAdj(title.yanchor)
             }).call(svgTextUtils.positionText, x, y);
         }
     }
@@ -553,6 +552,16 @@ function getMainTitleY(fullLayout, dy) {
             default:
                 return fullLayout.height - fullLayout.height * title.y + vPadShift;
         }
+    }
+}
+
+function getMainTitleDyAdj(yanchor) {
+    if(yanchor === 'top') {
+        return alignmentConstants.CAP_SHIFT + 0.3 + 'em';
+    } else if(yanchor === 'bottom') {
+        return '-0.3em';
+    } else {
+        return alignmentConstants.MID_SHIFT + 'em';
     }
 }
 
