@@ -12,7 +12,7 @@ elif len(sys.argv) > 1 :
 
 root = os.getcwd()
 dirIn = os.path.join(root, 'test', 'image', 'mocks')
-dirOut = os.path.join(root, 'test', 'image', 'b64')
+dirOut = dirIn
 
 print('output to', dirOut)
 
