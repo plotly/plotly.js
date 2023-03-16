@@ -1,0 +1,40 @@
+{
+    "data":[{
+        "x": ["2023-03-01", "2023-03-02", "2023-03-03", "2023-03-04", "2023-03-05"],
+        "y": [1, 2, 4, 8, 16] 
+    }],
+    "layout": {
+        "margin": { "t": 0 },
+        "shapes": [
+            {
+                  "type": "line",
+                  "x0": "2023-03-02",
+                  "y0": 0,
+                  "x1": "2023-03-02",
+                  "yref": "paper",
+                  "y1": 1,
+                  "line": {
+                      "color": "red",
+                      "width": 5,
+                      "dash": "dash"
+                  }
+              }
+          ],
+        "annotations":[
+            {
+                "x": "2023-03-02",
+                "y": 16,
+                "text": "\uf073",
+                "font": {
+                    "family": "FontAwesome",
+                    "size": "20"
+                },
+                "hovertext": "Today",
+                "showarrow": false,
+                "xanchor": "right",
+                "borderpad": "5",
+                "yanchor": "bottom"
+            }
+        ]
+    }
+}
