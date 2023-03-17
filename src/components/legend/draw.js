@@ -319,9 +319,8 @@ function _draw(gd, legendObj) {
                         var transform = Drawing.getTranslate(legend);
                         x0 = transform.x;
                         y0 = transform.y;
-                        var bbox = legend.node().getBBox();
-                        legendWidth = bbox.width;
-                        legendHeight = bbox.height;
+                        legendWidth = legendObj._width;
+                        legendHeight = legendObj._height;
                     },
                     moveFn: function(dx, dy) {
                         var newX = x0 + dx;
