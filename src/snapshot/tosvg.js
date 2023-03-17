@@ -5,6 +5,7 @@ var d3 = require('@plotly/d3');
 var Lib = require('../lib');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
+var transformHelpers = require('../transforms/helpers');
 
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var DOUBLEQUOTE_REGEX = /"/g;
@@ -140,43 +141,14 @@ module.exports = async function toSVG(gd, format, scale) {
         svg.attr('viewBox', '0 0 ' + width + ' ' + height);
     }
 
-    let resp = await fetch('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-solid-900.woff2');
-    let blob = await resp.blob();
-    let url = await fileListToBase64([blob]);
-    url[0] = url[0].replace('application/octet-stream', 'font/woff2')
+    const defs = await transformHelpers.generateInlineExternalFontDefs(
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-solid-900.woff2', 
+        'FontAwesome', 
+        'woff2');
 
-    let defs = document.createElementNS(xmlnsNamespaces.svg, 'defs');
-    let style = document.createElementNS(xmlnsNamespaces.svg, 'style');
-    style.prepend(`@font-face { font-family: 'FontAwesome'; src: url(${url[0]}) format('woff2'); }`)
-    defs.appendChild(style);
     svg.node().appendChild(defs);
 
     var s = new window.XMLSerializer().serializeToString(svg.node());
-    
-    // convert the SVG to a data URL
-    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(s)}`;
-
-    // create an image for that data URL
-    const img = new Image();
-    img.src = dataUrl;
-
-    img.onload = () => {
-        // create a canvas
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-
-        // draw the image on to the canvas
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(img, 0, 0);
-
-        // do something with the canvas
-        // e.g. turn it into a PNG and add it to the document:
-        const pngUrl = canvas.toDataURL('image/png');
-        const imgElement = document.createElement('img');
-        imgElement.src = pngUrl;
-        document.body.appendChild(imgElement);
-    };
 
     s = htmlEntityDecode(s);
     s = xmlEntityEncode(s);
@@ -207,27 +179,3 @@ module.exports = async function toSVG(gd, format, scale) {
 
     return s;
 };
-
-async function fileListToBase64(fileList) {
-    // create function which return resolved promise
-    // with data:base64 string
-    function getBase64(file) {
-      const reader = new FileReader()
-      return new Promise(resolve => {
-        reader.onload = ev => {
-          resolve(ev.target.result)
-        }
-        reader.readAsDataURL(file)
-      })
-    }
-    // here will be array of promisified functions
-    const promises = []
-  
-    // loop through fileList with for loop
-    for (let i = 0; i < fileList.length; i++) {
-      promises.push(getBase64(fileList[i]))
-    }
-  
-    // array with base64 strings
-    return await Promise.all(promises)
-  }

@@ -5,11 +5,19 @@ var EventEmitter = require('events').EventEmitter;
 
 var helpers = require('./helpers');
 
-function svgToImg(opts) {
+async function svgToImg(opts) {
     var ev = opts.emitter || new EventEmitter();
 
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(await opts.svg, 'image/svg+xml');
+    const s = new window.XMLSerializer().serializeToString(doc);
+    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(s)}`;
+
+    var Image = window.Image;
+    let img = new Image();
+    img.src = dataUrl;
+
     var promise = new Promise(function(resolve, reject) {
-        var Image = window.Image;
         var svg = opts.svg;
         var format = opts.format || 'png';
 
@@ -34,7 +42,7 @@ function svgToImg(opts) {
         var h1 = scale * h0;
 
         var ctx = canvas.getContext('2d', {willReadFrequently: true});
-        var img = new Image();
+        
         var svgBlob, url;
 
         if(format === 'svg' || Lib.isSafari()) {
@@ -101,7 +109,7 @@ function svgToImg(opts) {
             }
         };
 
-        img.src = url;
+        //img.src = url;
     });
 
     // temporary for backward compatibility

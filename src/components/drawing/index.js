@@ -21,13 +21,15 @@ var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 var appendArrayPointValue = require('../../components/fx/helpers').appendArrayPointValue;
 
+var transformHelpers = require('../../transforms/helpers');
+
 var drawing = module.exports = {};
 
 // -----------------------------------------------------
 // styling functions for plot elements
 // -----------------------------------------------------
 
-drawing.font = function(s, family, size, color) {
+drawing.font = async function(s, family, size, color) {
     // also allow the form font(s, {family, size, color})
     if(Lib.isPlainObject(family)) {
         color = family.color;
@@ -37,6 +39,13 @@ drawing.font = function(s, family, size, color) {
     if(family) s.style('font-family', family);
     if(size + 1) s.style('font-size', size + 'px');
     if(color) s.call(Color.fill, color);
+
+    const defs = await transformHelpers.generateInlineExternalFontDefs(
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-solid-900.woff2', 
+        family, 
+        'woff2');
+
+    s.node().appendChild(defs);
 };
 
 /*
