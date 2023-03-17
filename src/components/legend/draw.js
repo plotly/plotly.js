@@ -308,7 +308,7 @@ function _draw(gd, legendObj) {
             }
 
             if(gd._context.edits.legendPosition) {
-                var xf, yf, x0, y0, legend_width, legend_height;
+                var xf, yf, x0, y0, legendWidth, legendHeight;
 
                 legend.classed('cursor-move', true);
 
@@ -320,16 +320,16 @@ function _draw(gd, legendObj) {
                         x0 = transform.x;
                         y0 = transform.y;
                         var bbox = legend.node().getBBox();
-                        legend_width = bbox.width;
-                        legend_height = bbox.height;
+                        legendWidth = bbox.width;
+                        legendHeight = bbox.height;
                     },
                     moveFn: function(dx, dy) {
                         var newX = x0 + dx;
                         var newY = y0 + dy;
 
                         Drawing.setTranslate(legend, newX, newY);
-                        xf = dragElement.align(newX, legend_width, gs.l, gs.l + gs.w, legendObj.xanchor);
-                        yf = dragElement.align(newY + legend_height, -legend_height, gs.t + gs.h, gs.t, legendObj.yanchor);
+                        xf = dragElement.align(newX, legendWidth, gs.l, gs.l + gs.w, legendObj.xanchor);
+                        yf = dragElement.align(newY + legendHeight, -legendHeight, gs.t + gs.h, gs.t, legendObj.yanchor);
                     },
                     doneFn: function() {
                         if(xf !== undefined && yf !== undefined) {
