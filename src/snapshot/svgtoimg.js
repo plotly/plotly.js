@@ -7,17 +7,10 @@ var helpers = require('./helpers');
 
 async function svgToImg(opts) {
     var ev = opts.emitter || new EventEmitter();
-
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(await opts.svg, 'image/svg+xml');
-    const s = new window.XMLSerializer().serializeToString(doc);
-    const dataUrl = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(s)}`;
-
-    var Image = window.Image;
-    let img = new Image();
-    img.src = dataUrl;
-
+    const dataUrl = await generateDataUrl(opts.svg);
+    
     var promise = new Promise(function(resolve, reject) {
+        var Image = window.Image;
         var svg = opts.svg;
         var format = opts.format || 'png';
 
@@ -42,8 +35,11 @@ async function svgToImg(opts) {
         var h1 = scale * h0;
 
         var ctx = canvas.getContext('2d', {willReadFrequently: true});
+        let img = new Image();
         
         var svgBlob, url;
+
+        img.src = dataUrl;
 
         if(format === 'svg' || Lib.isSafari()) {
             url = helpers.encodeSVG(svg);
@@ -120,6 +116,15 @@ async function svgToImg(opts) {
     }
 
     return ev;
+}
+
+async function generateDataUrl(svgPromise) {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(await svgPromise, 'image/svg+xml');
+    const s = new window.XMLSerializer().serializeToString(doc);
+    //console.log(s);
+
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(s)}`;
 }
 
 module.exports = svgToImg;

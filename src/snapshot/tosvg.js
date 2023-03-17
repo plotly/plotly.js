@@ -5,7 +5,6 @@ var d3 = require('@plotly/d3');
 var Lib = require('../lib');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
-var transformHelpers = require('../transforms/helpers');
 
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 var DOUBLEQUOTE_REGEX = /"/g;
@@ -140,13 +139,6 @@ module.exports = async function toSVG(gd, format, scale) {
         svg.attr('height', scale * height);
         svg.attr('viewBox', '0 0 ' + width + ' ' + height);
     }
-
-    const defs = await transformHelpers.generateInlineExternalFontDefs(
-        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/webfonts/fa-solid-900.woff2', 
-        'FontAwesome', 
-        'woff2');
-
-    svg.node().appendChild(defs);
 
     var s = new window.XMLSerializer().serializeToString(svg.node());
 
