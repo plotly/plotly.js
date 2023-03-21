@@ -31,18 +31,18 @@ module.exports = function draw(gd, opts) {
 
 function _draw(gd, legendObj) {
     var fullLayout = gd._fullLayout;
-    var clipId = 'legend' + fullLayout._uid;
-    var layer;
+    var clipId, layer;
 
     var inHover = legendObj._inHover;
     if(inHover) {
         layer = legendObj.layer;
-        clipId += '-hover';
+        clipId = 'hover';
     } else {
         layer = fullLayout._infolayer;
+        clipId = 'legend';
     }
-
     if(!layer) return;
+    clipId += fullLayout._uid;
 
     if(!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
 
