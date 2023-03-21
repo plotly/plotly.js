@@ -25,11 +25,12 @@ var helpers = require('./helpers');
 var MAIN_TITLE = 1;
 
 module.exports = function draw(gd, opts) {
-    if(!opts) opts = gd._fullLayout.legend || {};
-    drawOne(gd, opts);
+    drawOne(gd, opts || gd._fullLayout.legend);
 };
 
-function drawOne(gd, legendObj) {
+function drawOne(gd, opts) {
+    var legendObj = opts || {};
+
     var fullLayout = gd._fullLayout;
     var clipId, layer;
 
