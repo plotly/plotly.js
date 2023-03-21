@@ -9,10 +9,10 @@ var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
-
-module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
-    var containerIn = layoutIn.legend || {};
-    var containerOut = Template.newContainer(layoutOut, 'legend');
+function groupDefaults(legendGroup, layoutIn, layoutOut, fullData) {
+    var name = 'legend' + legendGroup;
+    var containerIn = layoutIn[name] || {};
+    var containerOut = Template.newContainer(layoutOut, name);
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
@@ -146,5 +146,21 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         });
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
+    }
+}
+
+module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
+    var i;
+    var groups = [''];
+
+    for(i = 0; i < fullData.length; i++) {
+        Lib.pushUnique(groups, fullData[i].legendgroup);
+    }
+
+    for(i = 0; i < groups.length; i++) {
+        var groupName = groups[i];
+        groupDefaults(groupName, layoutIn, layoutOut, fullData);
+
+        layoutOut['legend' + groupName]._id = groupName;
     }
 };
