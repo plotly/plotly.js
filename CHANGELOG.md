@@ -9,11 +9,25 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.20.0] -- 2023-03-15
+
+### Added
+ - Add `title.automargin` to enable automatic top and bottom margining for both container and paper referenced titles [[#6428](https://github.com/plotly/plotly.js/pull/6428)],
+   with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+
+
+## [2.19.1] -- 2023-03-14
+
+### Fixed
+ - Ensure slider range stays in bounds during the drag [[#4448](https://github.com/plotly/plotly.js/pull/4448)],
+   with thanks to @jay-bis for the contribution!
+
+
 ## [2.19.0] -- 2023-03-13
 
 ### Added
  - Add `label` attribute to shapes [[#6454](https://github.com/plotly/plotly.js/pull/6454)],
-   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Cells for sponsoring development!
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
  - Add `labelalias` to various axes namely cartesian, gl3d, polar, smith, ternary, carpet,
    indicator and colorbar [[#6481](https://github.com/plotly/plotly.js/pull/6481)],
    this feature was anonymously sponsored: thank you to our sponsor!

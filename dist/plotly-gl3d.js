@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.19.0
+* plotly.js (gl3d) v2.20.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -14928,16 +14928,25 @@ function setupDragElement(rangeSlider, gd, axisOpts, opts) {
       switch (target) {
         case slideBox:
           cursor = 'ew-resize';
+          if (minVal + delta > axisOpts._length || maxVal + delta < 0) {
+            return;
+          }
           pixelMin = minVal + delta;
           pixelMax = maxVal + delta;
           break;
         case grabAreaMin:
           cursor = 'col-resize';
+          if (minVal + delta > axisOpts._length) {
+            return;
+          }
           pixelMin = minVal + delta;
           pixelMax = maxVal;
           break;
         case grabAreaMax:
           cursor = 'col-resize';
+          if (maxVal + delta < 0) {
+            return;
+          }
           pixelMin = minVal;
           pixelMax = maxVal + delta;
           break;
@@ -20700,11 +20709,26 @@ function draw(gd, titleClass, options) {
       var shiftSign = avoid.side === 'left' || avoid.side === 'top' ? -1 : 1;
       var pad = isNumeric(avoid.pad) ? avoid.pad : 2;
       var titlebb = Drawing.bBox(titleGroup.node());
+
+      // Account for reservedMargins
+      var reservedMargins = {
+        t: 0,
+        b: 0,
+        l: 0,
+        r: 0
+      };
+      var margins = gd._fullLayout._reservedMargin;
+      for (var key in margins) {
+        for (var side in margins[key]) {
+          var val = margins[key][side];
+          reservedMargins[side] = Math.max(reservedMargins[side], val);
+        }
+      }
       var paperbb = {
-        left: 0,
-        top: 0,
-        right: fullLayout.width,
-        bottom: fullLayout.height
+        left: reservedMargins.l,
+        top: reservedMargins.t,
+        right: fullLayout.width - reservedMargins.r,
+        bottom: fullLayout.height - reservedMargins.b
       };
       var maxshift = avoid.maxShift || shiftSign * (paperbb[avoid.side] - titlebb[avoid.side]);
       var shift = 0;
@@ -30028,6 +30052,7 @@ function _doPlot(gd, data, layout, config) {
     Plots.clearAutoMarginIds(gd);
     subroutines.drawMarginPushers(gd);
     Axes.allowAutoMargin(gd);
+    if (gd._fullLayout.title.text && gd._fullLayout.title.automargin) Plots.allowAutoMargin(gd, 'title.automargin');
 
     // TODO can this be moved elsewhere?
     if (fullLayout._has('pie')) {
@@ -34386,6 +34411,7 @@ var d3 = __webpack_require__(9898);
 var Registry = __webpack_require__(3972);
 var Plots = __webpack_require__(4875);
 var Lib = __webpack_require__(1828);
+var svgTextUtils = __webpack_require__(3893);
 var clearGlCanvases = __webpack_require__(3306);
 var Color = __webpack_require__(7901);
 var Drawing = __webpack_require__(1424);
@@ -34707,21 +34733,103 @@ function findCounterAxisLineWidth(ax, side, counterAx, axList) {
   return 0;
 }
 exports.drawMainTitle = function (gd) {
+  var title = gd._fullLayout.title;
   var fullLayout = gd._fullLayout;
   var textAnchor = getMainTitleTextAnchor(fullLayout);
   var dy = getMainTitleDy(fullLayout);
+  var y = getMainTitleY(fullLayout, dy);
+  var x = getMainTitleX(fullLayout, textAnchor);
   Titles.draw(gd, 'gtitle', {
     propContainer: fullLayout,
     propName: 'title.text',
     placeholder: fullLayout._dfltTitle.plot,
     attributes: {
-      x: getMainTitleX(fullLayout, textAnchor),
-      y: getMainTitleY(fullLayout, dy),
+      x: x,
+      y: y,
       'text-anchor': textAnchor,
       dy: dy
     }
   });
+  if (title.text && title.automargin) {
+    var titleObj = d3.selectAll('.gtitle');
+    var titleHeight = Drawing.bBox(titleObj.node()).height;
+    var pushMargin = needsMarginPush(gd, title, titleHeight);
+    if (pushMargin > 0) {
+      applyTitleAutoMargin(gd, y, pushMargin, titleHeight);
+      // Re-position the title once we know where it needs to be
+      titleObj.attr({
+        x: x,
+        y: y,
+        'text-anchor': textAnchor,
+        dy: getMainTitleDyAdj(title.yanchor)
+      }).call(svgTextUtils.positionText, x, y);
+    }
+  }
 };
+function isOutsideContainer(gd, title, position, y, titleHeight) {
+  var plotHeight = title.yref === 'paper' ? gd._fullLayout._size.h : gd._fullLayout.height;
+  var yPosTop = Lib.isTopAnchor(title) ? y : y - titleHeight; // Standardize to the top of the title
+  var yPosRel = position === 'b' ? plotHeight - yPosTop : yPosTop; // Position relative to the top or bottom of plot
+  if (Lib.isTopAnchor(title) && position === 't' || Lib.isBottomAnchor(title) && position === 'b') {
+    return false;
+  } else {
+    return yPosRel < titleHeight;
+  }
+}
+function containerPushVal(position, titleY, titleYanchor, height, titleDepth) {
+  var push = 0;
+  if (titleYanchor === 'middle') {
+    push += titleDepth / 2;
+  }
+  if (position === 't') {
+    if (titleYanchor === 'top') {
+      push += titleDepth;
+    }
+    push += height - titleY * height;
+  } else {
+    if (titleYanchor === 'bottom') {
+      push += titleDepth;
+    }
+    push += titleY * height;
+  }
+  return push;
+}
+function needsMarginPush(gd, title, titleHeight) {
+  var titleY = title.y;
+  var titleYanchor = title.yanchor;
+  var position = titleY > 0.5 ? 't' : 'b';
+  var curMargin = gd._fullLayout.margin[position];
+  var pushMargin = 0;
+  if (title.yref === 'paper') {
+    pushMargin = titleHeight + title.pad.t + title.pad.b;
+  } else if (title.yref === 'container') {
+    pushMargin = containerPushVal(position, titleY, titleYanchor, gd._fullLayout.height, titleHeight) + title.pad.t + title.pad.b;
+  }
+  if (pushMargin > curMargin) {
+    return pushMargin;
+  }
+  return 0;
+}
+function applyTitleAutoMargin(gd, y, pushMargin, titleHeight) {
+  var titleID = 'title.automargin';
+  var title = gd._fullLayout.title;
+  var position = title.y > 0.5 ? 't' : 'b';
+  var push = {
+    x: title.x,
+    y: title.y,
+    t: 0,
+    b: 0
+  };
+  var reservedPush = {};
+  if (title.yref === 'paper' && isOutsideContainer(gd, title, position, y, titleHeight)) {
+    push[position] = pushMargin;
+  } else if (title.yref === 'container') {
+    reservedPush[position] = pushMargin;
+    gd._fullLayout._reservedMargin[titleID] = reservedPush;
+  }
+  Plots.allowAutoMargin(gd, titleID);
+  Plots.autoMargin(gd, titleID, push);
+}
 function getMainTitleX(fullLayout, textAnchor) {
   var title = fullLayout.title;
   var gs = fullLayout._size;
@@ -34758,6 +34866,15 @@ function getMainTitleY(fullLayout, dy) {
       default:
         return fullLayout.height - fullLayout.height * title.y + vPadShift;
     }
+  }
+}
+function getMainTitleDyAdj(yanchor) {
+  if (yanchor === 'top') {
+    return alignmentConstants.CAP_SHIFT + 0.3 + 'em';
+  } else if (yanchor === 'bottom') {
+    return '-0.3em';
+  } else {
+    return alignmentConstants.MID_SHIFT + 'em';
   }
 }
 function getMainTitleTextAnchor(fullLayout) {
@@ -49014,6 +49131,11 @@ module.exports = {
     pad: extendFlat(padAttrs({
       editType: 'layoutstyle'
     }), {}),
+    automargin: {
+      valType: 'boolean',
+      dflt: false,
+      editType: 'plot'
+    },
     editType: 'layoutstyle'
   },
   uniformtext: {
@@ -50507,15 +50629,36 @@ plots.supplyLayoutGlobalDefaults = function (layoutIn, layoutOut, formatObj) {
   }));
   coerce('title.text', layoutOut._dfltTitle.plot);
   coerce('title.xref');
-  coerce('title.yref');
-  coerce('title.x');
-  coerce('title.y');
-  coerce('title.xanchor');
-  coerce('title.yanchor');
+  var titleYref = coerce('title.yref');
   coerce('title.pad.t');
   coerce('title.pad.r');
   coerce('title.pad.b');
   coerce('title.pad.l');
+  var titleAutomargin = coerce('title.automargin');
+  coerce('title.x');
+  coerce('title.xanchor');
+  coerce('title.y');
+  coerce('title.yanchor');
+  if (titleAutomargin) {
+    // when automargin=true
+    // title.y is 1 or 0 if paper ref
+    // 'auto' is not supported for either title.y or title.yanchor
+
+    // TODO: mention this smart default in the title.y and title.yanchor descriptions
+
+    if (titleYref === 'paper') {
+      if (layoutOut.title.y !== 0) layoutOut.title.y = 1;
+      if (layoutOut.title.yanchor === 'auto') {
+        layoutOut.title.yanchor = layoutOut.title.y === 0 ? 'top' : 'bottom';
+      }
+    }
+    if (titleYref === 'container') {
+      if (layoutOut.title.y === 'auto') layoutOut.title.y = 1;
+      if (layoutOut.title.yanchor === 'auto') {
+        layoutOut.title.yanchor = layoutOut.title.y < 0.5 ? 'bottom' : 'top';
+      }
+    }
+  }
   var uniformtextMode = coerce('uniformtext.mode');
   if (uniformtextMode) {
     coerce('uniformtext.minsize');
@@ -50824,6 +50967,7 @@ function initMargins(fullLayout) {
   }
   if (!fullLayout._pushmargin) fullLayout._pushmargin = {};
   if (!fullLayout._pushmarginIds) fullLayout._pushmarginIds = {};
+  if (!fullLayout._reservedMargin) fullLayout._reservedMargin = {};
 }
 
 // non-negotiable - this is the smallest height we will allow users to specify via explicit margins
@@ -50933,8 +51077,20 @@ plots.doAutoMargin = function (gd) {
   initMargins(fullLayout);
   var gs = fullLayout._size;
   var margin = fullLayout.margin;
+  var reservedMargins = {
+    t: 0,
+    b: 0,
+    l: 0,
+    r: 0
+  };
   var oldMargins = Lib.extendFlat({}, gs);
-
+  var margins = gd._fullLayout._reservedMargin;
+  for (var key in margins) {
+    for (var side in margins[key]) {
+      var val = margins[key][side];
+      reservedMargins[side] = Math.max(reservedMargins[side], val);
+    }
+  }
   // adjust margins for outside components
   // fullLayout.margin is the requested margin,
   // fullLayout._size has margins and plotsize after adjustment
@@ -50981,13 +51137,15 @@ plots.doAutoMargin = function (gd) {
       var pl = pushleft.size;
       var fb = pushbottom.val;
       var pb = pushbottom.size;
+      var availableWidth = width - reservedMargins.r - reservedMargins.l;
+      var availableHeight = height - reservedMargins.t - reservedMargins.b;
       for (var k2 in pushMargin) {
         if (isNumeric(pl) && pushMargin[k2].r) {
           var fr = pushMargin[k2].r.val;
           var pr = pushMargin[k2].r.size;
           if (fr > fl) {
-            var newL = (pl * fr + (pr - width) * fl) / (fr - fl);
-            var newR = (pr * (1 - fl) + (pl - width) * (1 - fr)) / (fr - fl);
+            var newL = (pl * fr + (pr - availableWidth) * fl) / (fr - fl);
+            var newR = (pr * (1 - fl) + (pl - availableWidth) * (1 - fr)) / (fr - fl);
             if (newL + newR > ml + mr) {
               ml = newL;
               mr = newR;
@@ -50998,8 +51156,8 @@ plots.doAutoMargin = function (gd) {
           var ft = pushMargin[k2].t.val;
           var pt = pushMargin[k2].t.size;
           if (ft > fb) {
-            var newB = (pb * ft + (pt - height) * fb) / (ft - fb);
-            var newT = (pt * (1 - fb) + (pb - height) * (1 - ft)) / (ft - fb);
+            var newB = (pb * ft + (pt - availableHeight) * fb) / (ft - fb);
+            var newT = (pt * (1 - fb) + (pb - availableHeight) * (1 - ft)) / (ft - fb);
             if (newB + newT > mb + mt) {
               mb = newB;
               mt = newT;
@@ -51027,10 +51185,10 @@ plots.doAutoMargin = function (gd) {
       mt /= rH;
     }
   }
-  gs.l = Math.round(ml);
-  gs.r = Math.round(mr);
-  gs.t = Math.round(mt);
-  gs.b = Math.round(mb);
+  gs.l = Math.round(ml) + reservedMargins.l;
+  gs.r = Math.round(mr) + reservedMargins.r;
+  gs.t = Math.round(mt) + reservedMargins.t;
+  gs.b = Math.round(mb) + reservedMargins.b;
   gs.p = Math.round(margin.pad);
   gs.w = Math.round(width) - gs.l - gs.r;
   gs.h = Math.round(height) - gs.t - gs.b;
@@ -62901,7 +63059,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.19.0';
+exports.version = '2.20.0';
 
 /***/ }),
 

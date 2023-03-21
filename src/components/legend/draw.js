@@ -325,9 +325,8 @@ function _draw(gd, legendObj) {
                         var newY = y0 + dy;
 
                         Drawing.setTranslate(legend, newX, newY);
-
-                        xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, legendObj.xanchor);
-                        yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, legendObj.yanchor);
+                        xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
+                        yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
                     },
                     doneFn: function() {
                         if(xf !== undefined && yf !== undefined) {
