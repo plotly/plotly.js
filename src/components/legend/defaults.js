@@ -9,8 +9,12 @@ var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
-function groupDefaults(legendGroup, layoutIn, layoutOut, fullData) {
-    var name = 'legend' + legendGroup;
+function getLegendName(id) {
+    return 'legend' + id;
+}
+
+function groupDefaults(id, layoutIn, layoutOut, fullData) {
+    var name = getLegendName(id);
     var containerIn = layoutIn[name] || {};
     var containerOut = Template.newContainer(layoutOut, name);
 
@@ -147,6 +151,8 @@ function groupDefaults(legendGroup, layoutIn, layoutOut, fullData) {
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     }
+
+    return true;
 }
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
@@ -157,10 +163,18 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         Lib.pushUnique(groups, fullData[i].legendgroup);
     }
 
+    layoutOut._legends = [];
     for(i = 0; i < groups.length; i++) {
-        var groupName = groups[i];
-        groupDefaults(groupName, layoutIn, layoutOut, fullData);
+        var id = groups[i];
+        var name = getLegendName(id);
+        if(id && !layoutIn[name]) continue;
 
-        layoutOut['legend' + groupName]._id = groupName;
+        groupDefaults(id, layoutIn, layoutOut, fullData);
+
+        if(layoutOut[name]) {
+            layoutOut[name]._id = id;
+        }
+
+        layoutOut._legends.push(id);
     }
 };

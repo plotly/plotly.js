@@ -3,7 +3,7 @@
 var Registry = require('../../registry');
 var helpers = require('./helpers');
 
-module.exports = function getLegendData(calcdata, opts) {
+module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
     var inHover = opts._inHover;
     var grouped = helpers.isGrouped(opts);
     var reversed = helpers.isReversed(opts);
@@ -17,6 +17,8 @@ module.exports = function getLegendData(calcdata, opts) {
     var i, j;
 
     function addOneItem(legendGroup, legendItem) {
+        if(hasMultipleLegends && legendGroup !== opts._id) return;
+
         // each '' legend group is treated as a separate group
         if(legendGroup === '' || !helpers.isGrouped(opts)) {
             // TODO: check this against fullData legendgroups?
