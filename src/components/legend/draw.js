@@ -26,7 +26,7 @@ var MAIN_TITLE = 1;
 
 module.exports = function draw(gd, opts) {
     if(!opts) opts = gd._fullLayout.legend || {};
-    return _draw(gd, opts);
+    _draw(gd, opts);
 };
 
 function _draw(gd, legendObj) {
