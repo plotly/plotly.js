@@ -26,10 +26,10 @@ var MAIN_TITLE = 1;
 
 module.exports = function draw(gd, opts) {
     if(!opts) opts = gd._fullLayout.legend || {};
-    _draw(gd, opts);
+    drawOne(gd, opts);
 };
 
-function _draw(gd, legendObj) {
+function drawOne(gd, legendObj) {
     var fullLayout = gd._fullLayout;
     var clipId, layer;
 
