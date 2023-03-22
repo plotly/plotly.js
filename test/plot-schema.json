@@ -12894,6 +12894,13 @@
       "valType": "string"
      }
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -14421,6 +14428,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -15725,6 +15739,13 @@
      "editType": "calc",
      "max": 1,
      "min": 0,
+     "valType": "number"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
      "valType": "number"
     },
     "legendgroup": {
@@ -17070,6 +17091,13 @@
       }
      },
      "role": "object"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -18591,6 +18619,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgrouptitle": {
      "editType": "style",
      "font": {
@@ -19444,6 +19479,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -20443,6 +20485,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -21471,6 +21520,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -22675,6 +22731,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -23926,6 +23989,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -24887,6 +24957,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -25423,6 +25500,13 @@
       "editType": "none",
       "valType": "string"
      }
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -26857,6 +26941,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -27938,6 +28029,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -29082,6 +29180,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgrouptitle": {
      "editType": "style",
      "font": {
@@ -29868,6 +29973,13 @@
       "min": 1,
       "valType": "number"
      }
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -31839,6 +31951,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -33111,6 +33230,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -33873,6 +33999,13 @@
       "valType": "number"
      },
      "role": "object"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -35095,6 +35228,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgrouptitle": {
      "editType": "style",
      "font": {
@@ -35965,6 +36105,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -36997,6 +37144,13 @@
     "isomin": {
      "description": "Sets the minimum boundary for iso-surface plot.",
      "editType": "calc",
+     "valType": "number"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
      "valType": "number"
     },
     "legendgroup": {
@@ -38288,6 +38442,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -38915,6 +39076,13 @@
       }
      },
      "role": "object"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -40390,6 +40558,13 @@
       "bottom"
      ]
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgrouptitle": {
      "editType": "style",
      "font": {
@@ -41591,6 +41766,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -42187,6 +42369,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -42656,6 +42845,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -43858,6 +44054,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -46216,6 +46419,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -48217,6 +48427,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -50109,6 +50326,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `lat`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -52170,6 +52394,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -54173,6 +54404,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -55349,6 +55587,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -57265,6 +57510,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -59110,6 +59362,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `imag`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -61023,6 +61282,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -62938,6 +63204,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `ids`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -65133,6 +65406,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -65844,6 +66124,13 @@
       "valType": "number"
      },
      "role": "object"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -67773,6 +68060,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -68678,6 +68972,13 @@
      "editType": "none",
      "valType": "string"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgrouptitle": {
      "editType": "style",
      "font": {
@@ -69089,6 +69390,13 @@
      "description": "Sets the source reference on Chart Studio Cloud for `labels`.",
      "editType": "none",
      "valType": "string"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -70418,6 +70726,13 @@
      "editType": "calc",
      "max": 1,
      "min": 0,
+     "valType": "number"
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
      "valType": "number"
     },
     "legendgroup": {
@@ -72235,6 +72550,13 @@
      "editType": "calc",
      "valType": "number"
     },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
+    },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
      "dflt": "",
@@ -73079,6 +73401,13 @@
       "editType": "none",
       "valType": "string"
      }
+    },
+    "legend": {
+     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 0,
+     "editType": "style",
+     "min": 2,
+     "valType": "number"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",

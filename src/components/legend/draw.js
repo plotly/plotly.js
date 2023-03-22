@@ -28,9 +28,10 @@ module.exports = function draw(gd, opts) {
     if(opts) {
         drawOne(gd, opts);
     } else {
-        var legendGroups = gd._fullLayout._legends;
-        for(var i = 0; i < legendGroups.length; i++) {
-            drawOne(gd, gd._fullLayout['legend' + legendGroups[i]]);
+        var legends = gd._fullLayout._legends;
+        for(var i = 0; i < legends.length; i++) {
+            var legendObj = gd._fullLayout['legend' + (legends[i] || '')];
+            drawOne(gd, legendObj);
         }
     }
 };

@@ -16,8 +16,8 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
     var maxNameLength = 0;
     var i, j;
 
-    function addOneItem(legendGroup, legendItem) {
-        if(hasMultipleLegends && legendGroup !== opts._id) return;
+    function addOneItem(legendId, legendGroup, legendItem) {
+        if(hasMultipleLegends && legendId !== opts._id) return;
 
         // each '' legend group is treated as a separate group
         if(legendGroup === '' || !helpers.isGrouped(opts)) {
@@ -40,6 +40,7 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
         var cd = calcdata[i];
         var cd0 = cd[0];
         var trace = cd0.trace;
+        var lid = trace.legend;
         var lgroup = trace.legendgroup;
 
         if(!inHover && (!trace.visible || !trace.showlegend)) continue;
@@ -51,7 +52,7 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
                 var labelj = cd[j].label;
 
                 if(!slicesShown[lgroup][labelj]) {
-                    addOneItem(lgroup, {
+                    addOneItem(lid, lgroup, {
                         label: labelj,
                         color: cd[j].color,
                         i: cd[j].i,
@@ -64,7 +65,7 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
                 }
             }
         } else {
-            addOneItem(lgroup, cd0);
+            addOneItem(lid, lgroup, cd0);
             maxNameLength = Math.max(maxNameLength, (trace.name || '').length);
         }
     }

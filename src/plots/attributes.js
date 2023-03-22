@@ -32,6 +32,17 @@ module.exports = {
             'trace is shown in the legend.'
         ].join(' ')
     },
+    legend: {
+        valType: 'number',
+        dflt: 0,
+        min: 2,
+        editType: 'style',
+        description: [
+            'Sets the legend id to show this trace in.',
+            'If *0* (the default value), it refers to `layout.legend`.',
+            'If *2*, it refers to `layout.legend2`, and so on.'
+        ].join(' ')
+    },
     legendgroup: {
         valType: 'string',
         dflt: '',
