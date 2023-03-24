@@ -34,12 +34,12 @@ module.exports = {
     },
     legend: {
         valType: 'number',
-        dflt: 0,
-        min: 2,
+        dflt: 1,
+        min: 1,
         editType: 'style',
         description: [
             'Sets the legend id to show this trace in.',
-            'If *0* (the default value), it refers to `layout.legend`.',
+            'If *1* (the default value), it refers to `layout.legend`.',
             'If *2*, it refers to `layout.legend2`, and so on.'
         ].join(' ')
     },

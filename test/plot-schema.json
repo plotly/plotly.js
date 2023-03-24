@@ -12895,10 +12895,10 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -14429,10 +14429,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -15742,10 +15742,10 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -17093,10 +17093,10 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -18620,10 +18620,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -19481,10 +19481,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -20487,10 +20487,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -21522,10 +21522,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -22733,10 +22733,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -23990,10 +23990,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -24958,10 +24958,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -25502,10 +25502,10 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -26942,10 +26942,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -28031,10 +28031,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -29181,10 +29181,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -29975,10 +29975,10 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -31952,10 +31952,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -33231,10 +33231,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -34001,10 +34001,10 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -35229,10 +35229,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -36107,10 +36107,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -37147,10 +37147,10 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -38443,10 +38443,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -39078,10 +39078,10 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -40559,10 +40559,10 @@
      ]
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -41767,10 +41767,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -42370,10 +42370,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -42847,10 +42847,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -44056,10 +44056,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -46420,10 +46420,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -48428,10 +48428,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -50328,10 +50328,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -52395,10 +52395,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -54405,10 +54405,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -55589,10 +55589,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -57511,10 +57511,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -59364,10 +59364,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -61284,10 +61284,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -63206,10 +63206,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -65407,10 +65407,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -66126,10 +66126,10 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -68061,10 +68061,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -68973,10 +68973,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -69392,10 +69392,10 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgrouptitle": {
@@ -70729,10 +70729,10 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -72551,10 +72551,10 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {
@@ -73403,10 +73403,10 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *0* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 0,
+     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
+     "dflt": 1,
      "editType": "style",
-     "min": 2,
+     "min": 1,
      "valType": "number"
     },
     "legendgroup": {

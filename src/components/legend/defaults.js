@@ -10,7 +10,7 @@ var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
 function getLegendName(id) {
-    return 'legend' + (id || '');
+    return 'legend' + (id > 1 ? id : '');
 }
 
 function groupDefaults(id, layoutIn, layoutOut, fullData) {
@@ -157,7 +157,7 @@ function groupDefaults(id, layoutIn, layoutOut, fullData) {
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var i;
-    var legends = [0];
+    var legends = [1];
 
     for(i = 0; i < fullData.length; i++) {
         Lib.pushUnique(legends, fullData[i].legend);
@@ -167,7 +167,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     for(i = 0; i < legends.length; i++) {
         var id = legends[i];
         var name = getLegendName(id);
-        if(id && !layoutIn[name]) continue;
+        if(id > 1 && !layoutIn[name]) continue;
 
         groupDefaults(id, layoutIn, layoutOut, fullData);
 

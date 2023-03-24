@@ -30,7 +30,8 @@ module.exports = function draw(gd, opts) {
     } else {
         var legends = gd._fullLayout._legends;
         for(var i = 0; i < legends.length; i++) {
-            var legendObj = gd._fullLayout['legend' + (legends[i] || '')];
+            var id = legends[i];
+            var legendObj = gd._fullLayout['legend' + (id > 1 ? id : '')];
             drawOne(gd, legendObj);
         }
     }
@@ -887,5 +888,6 @@ function getYanchor(legendObj) {
 }
 
 function getId(legendObj) {
-    return legendObj._id || '';
+    var id = legendObj._id;
+    return id > 1 ? id : '';
 }
