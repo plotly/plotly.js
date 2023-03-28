@@ -61,10 +61,9 @@ function assert(name, v) {
             var condition = (
                 e.code === 'invisible' ||
                 e.code === 'dynamic' ||
-                e.path[e.path.length - 1] === 'legend' ||
                 e.path[e.path.length - 1] === 'coloraxis'
             );
-            expectToBe(condition, true); // we accept invisible, dynamic, legend and coloraxis for now
+            expectToBe(condition, true); // we accept invisible, dynamic and coloraxis for now
             if(!condition) {
                 console.log('file:', name);
                 console.log(JSON.stringify(v, null, 2));

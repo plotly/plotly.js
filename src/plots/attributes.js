@@ -2,7 +2,6 @@
 
 var fontAttrs = require('./font_attributes');
 var fxAttrs = require('../components/fx/attributes');
-var counterRegex = require('../lib/regex').counter;
 
 module.exports = {
     type: {
@@ -37,7 +36,7 @@ module.exports = {
         valType: 'subplotid',
         dflt: 'legend',
         editType: 'style',
-        regex: counterRegex('legend'),
+
         description: [
             'Sets the reference to a legend to show this trace in.',
             'References to these legends are *legend*, *legend2*, *legend3*, etc.',

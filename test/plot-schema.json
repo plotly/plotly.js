@@ -12899,7 +12899,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -14433,7 +14432,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -15746,7 +15744,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -17097,7 +17094,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -18624,7 +18620,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -19485,7 +19480,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -20491,7 +20485,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -21526,7 +21519,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -22737,7 +22729,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -23994,7 +23985,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -24962,7 +24952,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -25506,7 +25495,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -26946,7 +26934,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -28035,7 +28022,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -29185,7 +29171,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -29979,7 +29964,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -31956,7 +31940,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -33235,7 +33218,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -34005,7 +33987,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -35233,7 +35214,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -36111,7 +36091,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -37151,7 +37130,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -38447,7 +38425,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -39082,7 +39059,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -40563,7 +40539,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -41771,7 +41746,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -42374,7 +42348,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -42851,7 +42824,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -44060,7 +44032,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -46424,7 +46395,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -48432,7 +48402,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -50332,7 +50301,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -52399,7 +52367,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -54409,7 +54376,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -55593,7 +55559,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -57515,7 +57480,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -59368,7 +59332,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -61288,7 +61251,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -63210,7 +63172,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -65411,7 +65372,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -66130,7 +66090,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -68065,7 +68024,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -68977,7 +68935,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -69396,7 +69353,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgrouptitle": {
@@ -70733,7 +70689,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -72555,7 +72510,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
@@ -73407,7 +73361,6 @@
      "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
      "dflt": "legend",
      "editType": "style",
-     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
      "valType": "subplotid"
     },
     "legendgroup": {
