@@ -2743,6 +2743,7 @@
     "role": "object"
    },
    "legend": {
+    "_isSubplotObj": true,
     "bgcolor": {
      "description": "Sets the legend background color. Defaults to `layout.paper_bgcolor`.",
      "editType": "legend",
@@ -12895,11 +12896,11 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -14429,11 +14430,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -15742,11 +15743,11 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -17093,11 +17094,11 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -18620,11 +18621,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -19481,11 +19482,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -20487,11 +20488,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -21522,11 +21523,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -22733,11 +22734,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -23990,11 +23991,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -24958,11 +24959,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -25502,11 +25503,11 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -26942,11 +26943,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -28031,11 +28032,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -29181,11 +29182,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -29975,11 +29976,11 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -31952,11 +31953,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -33231,11 +33232,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -34001,11 +34002,11 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -35229,11 +35230,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -36107,11 +36108,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -37147,11 +37148,11 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -38443,11 +38444,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -39078,11 +39079,11 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -40559,11 +40560,11 @@
      ]
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -41767,11 +41768,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -42370,11 +42371,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -42847,11 +42848,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -44056,11 +44057,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -46420,11 +46421,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -48428,11 +48429,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -50328,11 +50329,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -52395,11 +52396,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -54405,11 +54406,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -55589,11 +55590,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -57511,11 +57512,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -59364,11 +59365,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -61284,11 +61285,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -63206,11 +63207,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -65407,11 +65408,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -66126,11 +66127,11 @@
      "role": "object"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -68061,11 +68062,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -68973,11 +68974,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -69392,11 +69393,11 @@
      "valType": "string"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgrouptitle": {
      "editType": "style",
@@ -70729,11 +70730,11 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -72551,11 +72552,11 @@
      "valType": "number"
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",
@@ -73403,11 +73404,11 @@
      }
     },
     "legend": {
-     "description": "Sets the legend id to show this trace in. If *1* (the default value), it refers to `layout.legend`. If *2*, it refers to `layout.legend2`, and so on.",
-     "dflt": 1,
+     "description": "Sets the reference to a legend to show this trace in. References to these legends are *legend*, *legend2*, *legend3*, etc. Settings for these legends are set in the layout, under `layout.legend`, `layout.legend2`, etc.",
+     "dflt": "legend",
      "editType": "style",
-     "min": 1,
-     "valType": "number"
+     "regex": "/^legend([2-9]|[1-9][0-9]+)?$/",
+     "valType": "subplotid"
     },
     "legendgroup": {
      "description": "Sets the legend group for this trace. Traces part of the same legend group hide/show at the same time when toggling legend items.",

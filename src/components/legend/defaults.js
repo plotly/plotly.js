@@ -9,14 +9,9 @@ var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
-function getLegendName(id) {
-    return 'legend' + (id > 1 ? id : '');
-}
-
-function groupDefaults(id, layoutIn, layoutOut, fullData) {
-    var name = getLegendName(id);
-    var containerIn = layoutIn[name] || {};
-    var containerOut = Template.newContainer(layoutOut, name);
+function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
+    var containerIn = layoutIn[legendId] || {};
+    var containerOut = Template.newContainer(layoutOut, legendId);
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
@@ -157,7 +152,7 @@ function groupDefaults(id, layoutIn, layoutOut, fullData) {
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var i;
-    var legends = [1];
+    var legends = ['legend'];
 
     for(i = 0; i < fullData.length; i++) {
         Lib.pushUnique(legends, fullData[i].legend);
@@ -165,16 +160,14 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     layoutOut._legends = [];
     for(i = 0; i < legends.length; i++) {
-        var id = legends[i];
-        var name = getLegendName(id);
-        if(id > 1 && !layoutIn[name]) continue;
+        var legendId = legends[i];
 
-        groupDefaults(id, layoutIn, layoutOut, fullData);
+        groupDefaults(legendId, layoutIn, layoutOut, fullData);
 
-        if(layoutOut[name]) {
-            layoutOut[name]._id = id;
+        if(layoutOut[legendId]) {
+            layoutOut[legendId]._id = legendId;
         }
 
-        layoutOut._legends.push(id);
+        layoutOut._legends.push(legendId);
     }
 };

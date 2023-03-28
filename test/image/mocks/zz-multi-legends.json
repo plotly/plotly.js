@@ -11,15 +11,15 @@
         },
         {
             "y": [3],
-            "legend": 2
+            "legend": "legend2"
         },
         {
             "y": [4],
-            "legend": 3
+            "legend": "legend3"
         },
         {
             "y": [5],
-            "legend": 3
+            "legend": "legend3"
         }
     ],
     "layout": {

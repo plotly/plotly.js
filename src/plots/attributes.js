@@ -2,6 +2,7 @@
 
 var fontAttrs = require('./font_attributes');
 var fxAttrs = require('../components/fx/attributes');
+var counterRegex = require('../lib/regex').counter;
 
 module.exports = {
     type: {
@@ -33,14 +34,15 @@ module.exports = {
         ].join(' ')
     },
     legend: {
-        valType: 'number',
-        dflt: 1,
-        min: 1,
+        valType: 'subplotid',
+        dflt: 'legend',
         editType: 'style',
+        regex: counterRegex('legend'),
         description: [
-            'Sets the legend id to show this trace in.',
-            'If *1* (the default value), it refers to `layout.legend`.',
-            'If *2*, it refers to `layout.legend2`, and so on.'
+            'Sets the reference to a legend to show this trace in.',
+            'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+            'Settings for these legends are set in the layout, under',
+            '`layout.legend`, `layout.legend2`, etc.'
         ].join(' ')
     },
     legendgroup: {
