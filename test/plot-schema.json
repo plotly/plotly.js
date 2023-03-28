@@ -2957,6 +2957,12 @@
       "bottom"
      ]
     },
+    "visible": {
+     "description": "Determines whether or not this legend is visible.",
+     "dflt": true,
+     "editType": "legend",
+     "valType": "boolean"
+    },
     "x": {
      "description": "Sets the x position (in normalized coordinates) of the legend. Defaults to *1.02* for vertical legends and defaults to *0* for horizontal legends.",
      "editType": "legend",

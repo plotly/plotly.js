@@ -10,6 +10,15 @@ module.exports = {
     // support yaxis, yaxis2, yaxis3, ... counters
     _isSubplotObj: true,
 
+    visible: {
+        valType: 'boolean',
+        dflt: true,
+        editType: 'legend',
+        description: [
+            'Determines whether or not this legend is visible.'
+        ].join(' ')
+    },
+
     bgcolor: {
         valType: 'color',
         editType: 'legend',

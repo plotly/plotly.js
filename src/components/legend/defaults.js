@@ -17,6 +17,14 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
+    // N.B. unified hover needs to inherit from font, bgcolor & bordercolor even when legend.visible is false
+    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
+    coerce('bgcolor', layoutOut.paper_bgcolor);
+    coerce('bordercolor');
+
+    var visible = coerce('visible');
+    if(!visible) return;
+
     var trace;
     var traceCoerce = function(attr, dflt) {
         var traceIn = trace._input;
@@ -90,10 +98,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
     if(showLegend === false) return;
 
-    coerce('bgcolor', layoutOut.paper_bgcolor);
-    coerce('bordercolor');
     coerce('borderwidth');
-    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     var orientation = coerce('orientation');
     var isHorizontal = orientation === 'h';
@@ -164,7 +169,10 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
         groupDefaults(legendId, layoutIn, layoutOut, fullData);
 
-        if(layoutOut[legendId]) {
+        if(
+            layoutOut[legendId] &&
+            layoutOut[legendId].visible
+        ) {
             layoutOut[legendId]._id = legendId;
         }
 

@@ -17,6 +17,7 @@ module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
     var i, j;
 
     function addOneItem(legendId, legendGroup, legendItem) {
+        if(opts.visible === false) return;
         if(hasMultipleLegends && legendId !== opts._id) return;
 
         // each '' legend group is treated as a separate group
