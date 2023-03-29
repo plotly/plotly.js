@@ -8,7 +8,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
 var shapeTexttemplateAttrs = require('../../plots/template_attributes').shapeTexttemplateAttrs;
-var shapeLabelTexttemplateVars = require('./label_texttemplate').shapeLabelTexttemplateVars;
+var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 module.exports = templatedArray('shape', {
     visible: {

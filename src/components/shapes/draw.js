@@ -23,7 +23,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var constants = require('./constants');
 var helpers = require('./helpers');
 var getPathString = helpers.getPathString;
-var shapeLabelTexttemplateVars = require('./label_texttemplate').shapeLabelTexttemplateVars;
+var shapeLabelTexttemplateVars = require('./label_texttemplate');
 var FROM_TL = require('../../constants/alignment').FROM_TL;
 
 

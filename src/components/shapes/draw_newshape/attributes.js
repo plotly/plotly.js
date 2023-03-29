@@ -4,7 +4,7 @@ var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
 var extendFlat = require('../../../lib/extend').extendFlat;
 var shapeTexttemplateAttrs = require('../../../plots/template_attributes').shapeTexttemplateAttrs;
-var shapeLabelTexttemplateVars = require('../label_texttemplate').shapeLabelTexttemplateVars;
+var shapeLabelTexttemplateVars = require('../label_texttemplate');
 
 
 module.exports = {
