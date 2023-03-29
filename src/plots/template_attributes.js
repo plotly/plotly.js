@@ -131,9 +131,5 @@ exports.shapeTexttemplateAttrs = function(opts, extra) {
             descPart,
         ].join(' ')
     };
-
-    if(opts.arrayOk !== false) {
-        texttemplate.arrayOk = true;
-    }
     return texttemplate;
 };
