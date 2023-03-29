@@ -1082,7 +1082,7 @@ var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
 function multDivParser(inputStr) {
     var match = inputStr.match(MULT_DIV_REGEX);
     if(match) return { key: match[1], op: match[2], number: Number(match[3]) };
-    else return { key: inputStr, op: null, number: null };
+    return { key: inputStr, op: null, number: null };
 }
 var texttemplateWarningsForShapes = {
     max: 10,
@@ -1177,8 +1177,8 @@ function templateFormatString(string, labels, d3locale) {
         }
 
         // Apply mult/div operation (if applicable)
-        if(parsedOp) {
-            value = (value === undefined) ? undefined : {
+        if((parsedOp === '*' || parsedOp === '/') && value !== undefined) {
+            value = {
                 '*': (function(v) { return v * parsedNumber; }),
                 '/': (function(v) { return v / parsedNumber; }),
             }[parsedOp](value);
