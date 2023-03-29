@@ -1178,7 +1178,7 @@ function templateFormatString(string, labels, d3locale) {
 
         // Apply mult/div operation (if applicable)
         if(parsedOp) {
-            value = {
+            value = (value === undefined) ? undefined : {
                 '*': (function(v) { return v * parsedNumber; }),
                 '/': (function(v) { return v / parsedNumber; }),
             }[parsedOp](value);

@@ -2,9 +2,10 @@
 
 var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
-var templateFormatStringDescriptionForShapes = require('../../../plots/template_attributes').templateFormatStringDescriptionForShapes;
-var describeVariables = require('../../../plots/template_attributes').describeVariables;
 var extendFlat = require('../../../lib/extend').extendFlat;
+var shapeTexttemplateAttrs = require('../../../plots/template_attributes').shapeTexttemplateAttrs;
+var shapeLabelTexttemplateVars = require('../label_texttemplate').shapeLabelTexttemplateVars;
+
 
 module.exports = {
     newshape: {
@@ -88,17 +89,7 @@ module.exports = {
                 editType: 'none',
                 description: 'Sets the text to display with the new shape.'
             },
-            texttemplate: {
-                valType: 'string',
-                dflt: '',
-                editType: 'none',
-                description: [
-                    'Template string used for rendering the new shape\'s label.',
-                    'Note that this will override `text`.',
-                    templateFormatStringDescriptionForShapes(),
-                    describeVariables(['x0', 'y0', 'x1', 'y1', 'slope']),
-                ].join(' ')
-            },
+            texttemplate: shapeTexttemplateAttrs({newshape: true, editType: 'none'}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
             font: fontAttrs({
                 editType: 'none',
                 description: 'Sets the new shape label text font.'

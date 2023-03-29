@@ -23,6 +23,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var constants = require('./constants');
 var helpers = require('./helpers');
 var getPathString = helpers.getPathString;
+var shapeLabelTexttemplateVars = require('./label_texttemplate').shapeLabelTexttemplateVars;
 var FROM_TL = require('../../constants/alignment').FROM_TL;
 
 
@@ -35,24 +36,11 @@ var FROM_TL = require('../../constants/alignment').FROM_TL;
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this one
 
-var shapeLabelTemplateVars = {
-    x0: (function(shape) { return shape.x0; }),
-    x1: (function(shape) { return shape.x1; }),
-    y0: (function(shape) { return shape.y0; }),
-    y1: (function(shape) { return shape.y1; }),
-    slope: (function(shape) { return (shape.y1 - shape.y0) / (shape.x1 - shape.x0); }),
-    width: (function(shape) { return shape.x1 - shape.x0; }),
-    height: (function(shape) { return shape.y1 - shape.y0; }),
-    length: (function(shape) { return Math.sqrt(Math.pow((shape.x1 - shape.x0), 2) + Math.pow((shape.y1 - shape.y0), 2)); }),
-    xcenter: (function(shape) { return (shape.x1 - shape.x0) / 2; }),
-    ycenter: (function(shape) { return (shape.y1 - shape.y0) / 2; }),
-};
-
 module.exports = {
     draw: draw,
     drawOne: drawOne,
     eraseActiveShape: eraseActiveShape,
-    shapeLabelTemplateVars: Object.keys(shapeLabelTemplateVars),
+    drawLabel: drawLabel,
 };
 
 function draw(gd) {
@@ -627,8 +615,11 @@ function drawLabel(gd, index, options, shapeGroup) {
     if(options.label.texttemplate) {
         var templateValues = {};
         if(options.type !== 'path') {
-            Object.keys(shapeLabelTemplateVars).forEach(function(key) {
-                templateValues[key] = shapeLabelTemplateVars[key](options);
+            var _xa = Axes.getFromId(gd, options.xref);
+            var _ya = Axes.getFromId(gd, options.yref);
+            Object.keys(shapeLabelTexttemplateVars).forEach(function(key) {
+                var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
+                if(val !== undefined) templateValues[key] = val;
             });
         }
         text = Lib.texttemplateStringForShapes(options.label.texttemplate,
