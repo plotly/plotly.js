@@ -274,8 +274,14 @@
         "height": 900,
         "scene": {
             "xaxis": { "nticks": 12},
-            "yaxis": { "nticks": 12},
-            "zaxis": { "nticks": 12},
+            "yaxis": {
+                "autorangemax": 0,
+                "nticks": 12
+            },
+            "zaxis": {
+                "autorangemax": 0,
+                "nticks": 12
+            },
             "camera": {
                 "eye": {
                     "x": 1.4,

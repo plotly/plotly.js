@@ -37,7 +37,8 @@
         "y": [0, 0.46]
       },
       "radialaxis": {
-        "range": [0, 5]
+        "autorangemin": 0.5,
+        "autorangemax": 3.5
       }
     },
     "polar2": {
