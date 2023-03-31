@@ -4295,6 +4295,18 @@
        "reversed"
       ]
      },
+     "autorangemax": {
+      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
       "dflt": "convert types",
@@ -5406,6 +5418,18 @@
        "reversed"
       ]
      },
+     "autorangemax": {
+      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
       "dflt": "convert types",
@@ -5974,6 +5998,18 @@
        "reversed"
       ]
      },
+     "autorangemax": {
+      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
       "dflt": "convert types",
@@ -6541,6 +6577,18 @@
        false,
        "reversed"
       ]
+     },
+     "autorangemax": {
+      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -10218,6 +10266,18 @@
       "reversed"
      ]
     },
+    "autorangemax": {
+     "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
+    "autorangemin": {
+     "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
      "dflt": "convert types",
@@ -11475,6 +11535,18 @@
       false,
       "reversed"
      ]
+    },
+    "autorangemax": {
+     "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
+    "autorangemin": {
+     "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
     },
     "autoshift": {
      "description": "Automatically reposition the axis to avoid overlap with other axes with the same `overlaying` value. This repositioning will account for any `shift` amount applied to other axes on the same side with `autoshift` is set to true. Only has an effect if `anchor` is set to *free*.",

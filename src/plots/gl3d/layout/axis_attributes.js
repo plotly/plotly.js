@@ -65,6 +65,8 @@ module.exports = overrideAll({
     }),
     autotypenumbers: axesAttrs.autotypenumbers,
     autorange: axesAttrs.autorange,
+    autorangemin: axesAttrs.autorangemin,
+    autorangemax: axesAttrs.autorangemax,
     rangemode: axesAttrs.rangemode,
     range: extendFlat({}, axesAttrs.range, {
         items: [

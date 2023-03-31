@@ -78,8 +78,12 @@ function handleDefaults(contIn, contOut, coerce, opts) {
             case 'radialaxis':
                 var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
                 axIn.autorange = autoRange;
-                if(autoRange && (axType === 'linear' || axType === '-')) coerceAxis('rangemode');
-                if(autoRange === 'reversed') axOut._m = -1;
+                if(autoRange) {
+                    coerceAxis('autorangemin');
+                    coerceAxis('autorangemax');
+                    if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
+                    if(autoRange === 'reversed') axOut._m = -1;
+                }
 
                 coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});

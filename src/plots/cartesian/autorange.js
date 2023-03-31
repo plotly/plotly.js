@@ -13,6 +13,8 @@ var getFromId = axIds.getFromId;
 var isLinked = axIds.isLinked;
 
 module.exports = {
+    applyAutorangeMin: applyAutorangeMin,
+    applyAutorangeMax: applyAutorangeMax,
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
@@ -175,6 +177,9 @@ function getAutoRange(gd, ax) {
             maxbest.val + mbest * getPadMax(maxbest)
         ];
     }
+
+    newRange[0] = applyAutorangeMin(newRange[0], ax);
+    newRange[1] = applyAutorangeMax(newRange[1], ax);
 
     // maintain reversal
     if(axReverse) newRange.reverse();
@@ -623,3 +628,13 @@ function goodNumber(v) {
 
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
+
+function applyAutorangeMin(v, ax) {
+    if(!ax || ax.autorangemin === undefined) return v;
+    return Math.max(v, ax.d2l(ax.autorangemin));
+}
+
+function applyAutorangeMax(v, ax) {
+    if(!ax || ax.autorangemax === undefined) return v;
+    return Math.min(v, ax.d2l(ax.autorangemax));
+}
