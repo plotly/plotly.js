@@ -34,17 +34,11 @@ function dyFn(shape, xa, ya) {
 }
 
 function widthFn(shape, xa) {
-    return Math.abs(
-        d2l(shape.x1, xa) -
-        d2l(shape.x0, xa)
-    );
+    return Math.abs(dxFn(shape, xa));
 }
 
 function heightFn(shape, xa, ya) {
-    return Math.abs(
-        d2l(shape.y1, ya) -
-        d2l(shape.y0, ya)
-    );
+    return Math.abs(dyFn(shape, xa, ya));
 }
 
 function lengthFn(shape, xa, ya) {
@@ -66,7 +60,7 @@ function ycenterFn(shape, xa, ya) {
 }
 
 function slopeFn(shape, xa, ya) {
-    return (
+    return (shape.type !== 'line') ? undefined : (
         (d2l(shape.y1, ya) - d2l(shape.y0, ya)) /
         (d2l(shape.x1, xa) - d2l(shape.x0, xa))
     );
