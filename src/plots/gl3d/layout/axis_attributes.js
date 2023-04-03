@@ -68,6 +68,8 @@ module.exports = overrideAll({
     autorangemin: axesAttrs.autorangemin,
     autorangemax: axesAttrs.autorangemax,
     rangemode: axesAttrs.rangemode,
+    rangemin: axesAttrs.rangemin,
+    rangemax: axesAttrs.rangemax,
     range: extendFlat({}, axesAttrs.range, {
         items: [
             {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},

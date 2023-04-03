@@ -4505,6 +4505,22 @@
       ],
       "valType": "info_array"
      },
+     "rangemax": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "rangemin": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "rangemode": {
       "description": "If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. If *normal*, the range is computed in relation to the extrema of the input data (same behavior as for cartesian axes).",
       "dflt": "tozero",
@@ -5623,6 +5639,22 @@
       ],
       "valType": "info_array"
      },
+     "rangemax": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "rangemin": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "rangemode": {
       "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
       "dflt": "normal",
@@ -6203,6 +6235,22 @@
       ],
       "valType": "info_array"
      },
+     "rangemax": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "rangemin": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "rangemode": {
       "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
       "dflt": "normal",
@@ -6782,6 +6830,22 @@
        }
       ],
       "valType": "info_array"
+     },
+     "rangemax": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "rangemin": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
      },
      "rangemode": {
       "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
@@ -10755,6 +10819,22 @@
      },
      "role": "object"
     },
+    "rangemax": {
+     "description": "Determines the maximum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
+    },
+    "rangemin": {
+     "description": "Determines the minimum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
+    },
     "rangemode": {
      "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
      "dflt": "normal",
@@ -12030,6 +12110,22 @@
       }
      },
      "role": "object"
+    },
+    "rangemax": {
+     "description": "Determines the maximum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
+    },
+    "rangemin": {
+     "description": "Determines the minimum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
     },
     "rangemode": {
      "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",

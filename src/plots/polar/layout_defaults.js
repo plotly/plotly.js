@@ -85,6 +85,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     if(autoRange === 'reversed') axOut._m = -1;
                 }
 
+                coerceAxis('rangemin');
+                coerceAxis('rangemax');
                 coerceAxis('range');
                 axOut.cleanRange('range', {dfltRange: [0, 1]});
                 break;

@@ -338,6 +338,22 @@ module.exports = {
             'number from zero in the order it appears.'
         ].join(' ')
     },
+    rangemin: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the minimum range of this axis.'
+        ].join(' ')
+    },
+    rangemax: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'^autorange': false},
+        description: [
+            'Determines the maximum range of this axis.'
+        ].join(' ')
+    },
     fixedrange: {
         valType: 'boolean',
         dflt: false,

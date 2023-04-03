@@ -181,6 +181,8 @@ function getAutoRange(gd, ax) {
     newRange[0] = applyAutorangeMin(newRange[0], ax);
     newRange[1] = applyAutorangeMax(newRange[1], ax);
 
+    if(ax.limitRange) ax.limitRange();
+
     // maintain reversal
     if(axReverse) newRange.reverse();
 

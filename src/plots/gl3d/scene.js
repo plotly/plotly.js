@@ -741,10 +741,17 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
+        axis.range = [
+            sceneBounds[0][i],
+            sceneBounds[1][i]
+        ];
+
+        axis.limitRange();
+
         // Update plot bounds
         scene.glplot.setBounds(i, {
-            min: sceneBounds[0][i] * dataScale[i],
-            max: sceneBounds[1][i] * dataScale[i]
+            min: axis.range[0] * dataScale[i],
+            max: axis.range[1] * dataScale[i]
         });
     }
 

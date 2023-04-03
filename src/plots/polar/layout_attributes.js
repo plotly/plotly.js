@@ -75,6 +75,8 @@ var radialAxisAttrs = {
             'of the input data (same behavior as for cartesian axes).'
         ].join(' ')
     },
+    rangemin: extendFlat({}, axesAttrs.rangemin, {editType: 'plot'}),
+    rangemax: extendFlat({}, axesAttrs.rangemax, {editType: 'plot'}),
     range: extendFlat({}, axesAttrs.range, {
         items: [
             {valType: 'any', editType: 'plot', impliedEdits: {'^autorange': false}},

@@ -432,6 +432,23 @@ module.exports = function setConvert(ax, fullLayout) {
         return (ax.r2l(v) - rl0) / (rl1 - rl0);
     };
 
+    ax.limitRange = function(rangeAttr) {
+        var rangemin = ax.rangemin;
+        var rangemax = ax.rangemax;
+        if(rangemin === undefined && rangemax === undefined) return;
+
+        if(!rangeAttr) rangeAttr = 'range';
+        var range = Lib.nestedProperty(ax, rangeAttr).get();
+        var rng = Lib.simpleMap(range, ax.r2l);
+        var axrev = rng[1] < rng[0];
+        if(axrev) rng.reverse();
+
+        var bounds = Lib.simpleMap([rangemin, rangemax], ax.r2l);
+
+        if(rangemin !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = rangemin;
+        if(rangemax !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = rangemax;
+    };
+
     /*
      * cleanRange: make sure range is a couplet of valid & distinct values
      * keep numbers away from the limits of floating point numbers,
@@ -441,6 +458,11 @@ module.exports = function setConvert(ax, fullLayout) {
      * ax._r, rather than ax.range
      */
     ax.cleanRange = function(rangeAttr, opts) {
+        ax._cleanRange(rangeAttr, opts);
+        ax.limitRange(rangeAttr);
+    };
+
+    ax._cleanRange = function(rangeAttr, opts) {
         if(!opts) opts = {};
         if(!rangeAttr) rangeAttr = 'range';
 
