@@ -151,8 +151,6 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
     }
-
-    return true;
 }
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
