@@ -257,23 +257,22 @@ function filterUnique(value, index, array) {
 function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
     if(!subplot) {
         var dataSubplots = [];
-        if (evt) {
+        if(evt) {
             var curveNumbers = [];
-            if (Array.isArray(evt)) {
-                evt.forEach(function (event_elem) {
-                        if (event_elem.curveNumber) curveNumbers.push(event_elem.curveNumber);
-                    });
+            if(Array.isArray(evt)) {
+                evt.forEach(function(eventElem) {
+                    if(eventElem.curveNumber) curveNumbers.push(eventElem.curveNumber);
+                });
             }
-            if (gd.data.length) {
-                curveNumbers.filter(filterUnique).forEach(function(elm){
-                    if (gd.data[elm] && gd.data[elm].type) {
+            if(gd.data.length) {
+                curveNumbers.filter(filterUnique).forEach(function(elm) {
+                    if(gd.data[elm] && gd.data[elm].type) {
                         dataSubplots.push(
-                            gd.data[elm].type === 'scattermapbox' ? 'mapbox': 'xy'
+                            gd.data[elm].type === 'scattermapbox' ? 'mapbox' : 'xy'
                         );
                     }
-                })
+                });
             }
-
         }
         subplot = dataSubplots.length ? dataSubplots.filter(filterUnique) : 'xy';
     }
