@@ -263,13 +263,14 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 evt.forEach(function (event_elem) {
                         if (event_elem.curveNumber) curveNumbers.push(event_elem.curveNumber);
                     });
-                curveNumbers.filter(filterUnique);
             }
             if (gd.data.length) {
                 curveNumbers.filter(filterUnique).forEach(function(elm){
-                    dataSubplots.push(
-                        gd.data[elm].type === 'scattermapbox' ? 'mapbox': 'xy'
-                    );
+                    if (gd.data[elm] && gd.data[elm].type) {
+                        dataSubplots.push(
+                            gd.data[elm].type === 'scattermapbox' ? 'mapbox': 'xy'
+                        );
+                    }
                 })
             }
 
