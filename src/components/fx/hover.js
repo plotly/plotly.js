@@ -260,12 +260,13 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
         if (evt) {
             var curveNumbers = [];
             if (Array.isArray(evt)) {
-                curveNumbers = evt
-                    .map((event_elem) => event_elem.curveNumber)
-                    .filter(filterUnique);
+                evt.forEach(function (event_elem) {
+                        if (event_elem.curveNumber) curveNumbers.push(event_elem.curveNumber);
+                    });
+                curveNumbers.filter(filterUnique);
             }
             if (gd.data.length) {
-                curveNumbers.forEach((elm) => {
+                curveNumbers.filter(filterUnique).forEach(function(elm){
                     dataSubplots.push(
                         gd.data[elm].type === 'scattermapbox' ? 'mapbox': 'xy'
                     );
