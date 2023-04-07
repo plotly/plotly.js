@@ -249,9 +249,32 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     return multiHover ? hoverLabel : hoverLabel.node();
 };
 
+function filterUnique(value, index, array) {
+    return array.indexOf(value) === index;
+}
+
 // The actual implementation is here:
 function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
-    if(!subplot) subplot = 'xy';
+    if(!subplot) {
+        var dataSubplots = [];
+        if (evt) {
+            var curveNumbers = [];
+            if (Array.isArray(evt)) {
+                curveNumbers = evt
+                    .map((event_elem) => event_elem.curveNumber)
+                    .filter(filterUnique);
+            }
+            if (gd.data.length) {
+                curveNumbers.forEach((elm) => {
+                    dataSubplots.push(
+                        gd.data[elm].type === 'scattermapbox' ? 'mapbox': 'xy'
+                    );
+                })
+            }
+
+        }
+        subplot = dataSubplots.length ? dataSubplots.filter(filterUnique) : 'xy';
+    }
 
     // if the user passed in an array of subplots,
     // use those instead of finding overlayed plots
