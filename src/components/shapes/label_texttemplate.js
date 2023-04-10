@@ -1,36 +1,17 @@
 'use strict';
 
-function d2l(v, axis) {
-    return (
-        axis.type === 'log' ? v :
-        axis.d2l(v)
-    );
-}
 
-function getPos(x, xa) {
-    return (
-        xa.type === 'date' ? x :
-        d2l(x, xa)
-    );
-}
-
-function x0Fn(shape, xa) { return getPos(shape.x0, xa); }
-function x1Fn(shape, xa) { return getPos(shape.x1, xa); }
-function y0Fn(shape, xa, ya) { return getPos(shape.y0, ya); }
-function y1Fn(shape, xa, ya) { return getPos(shape.y1, ya); }
+function x0Fn(shape) { return shape.x0; }
+function x1Fn(shape) { return shape.x1; }
+function y0Fn(shape) { return shape.y0; }
+function y1Fn(shape) { return shape.y1; }
 
 function dxFn(shape, xa) {
-    return (
-        d2l(shape.x1, xa) -
-        d2l(shape.x0, xa)
-    );
+    return xa.d2l(shape.x1) - xa.d2l(shape.x0);
 }
 
 function dyFn(shape, xa, ya) {
-    return (
-        d2l(shape.y1, ya) -
-        d2l(shape.y0, ya)
-    );
+    return ya.d2l(shape.y1) - ya.d2l(shape.y0);
 }
 
 function widthFn(shape, xa) {
@@ -44,25 +25,22 @@ function heightFn(shape, xa, ya) {
 function lengthFn(shape, xa, ya) {
     return (shape.type !== 'line') ? undefined :
         Math.sqrt(
-            Math.pow((d2l(shape.x1, xa) - d2l(shape.x0, xa)), 2) +
-            Math.pow((d2l(shape.y1, ya) - d2l(shape.y0, ya)), 2)
+            Math.pow(dxFn(shape, xa), 2) +
+            Math.pow(dyFn(shape, xa, ya), 2)
         );
 }
 
 function xcenterFn(shape, xa) {
-    var val = (d2l(shape.x1, xa) + d2l(shape.x0, xa)) / 2;
-    return (xa.type === 'date') ? xa.l2d(val) : val;
+    return xa.l2d((xa.d2l(shape.x1) + xa.d2l(shape.x0)) / 2);
 }
 
 function ycenterFn(shape, xa, ya) {
-    var val = (d2l(shape.y1, ya) + d2l(shape.y0, ya)) / 2;
-    return (ya.type === 'date') ? ya.l2d(val) : val;
+    return ya.l2d((ya.d2l(shape.y1) + ya.d2l(shape.y0)) / 2);
 }
 
 function slopeFn(shape, xa, ya) {
     return (shape.type !== 'line') ? undefined : (
-        (d2l(shape.y1, ya) - d2l(shape.y0, ya)) /
-        (d2l(shape.x1, xa) - d2l(shape.x0, xa))
+        dyFn(shape, xa, ya) / dxFn(shape, xa)
     );
 }
 
