@@ -611,21 +611,23 @@ function drawLabel(gd, index, options, shapeGroup) {
     if(!(options.label.text || options.label.texttemplate)) return;
 
     // Text template overrides text
-    var text = options.label.text;
+    var text;
     if(options.label.texttemplate) {
         var templateValues = {};
         if(options.type !== 'path') {
             var _xa = Axes.getFromId(gd, options.xref);
             var _ya = Axes.getFromId(gd, options.yref);
-            Object.keys(shapeLabelTexttemplateVars).forEach(function(key) {
+            for(var key in shapeLabelTexttemplateVars) {
                 var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
                 if(val !== undefined) templateValues[key] = val;
-            });
+            }
         }
         text = Lib.texttemplateStringForShapes(options.label.texttemplate,
             {},
             gd._fullLayout._d3locale,
             templateValues);
+    } else {
+        text = options.label.text;
     }
 
     var labelGroupAttrs = {

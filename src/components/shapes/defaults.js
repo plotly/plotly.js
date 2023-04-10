@@ -128,8 +128,9 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
     // Label options
     var isLine = shapeType === 'line';
-    var labelText = coerce('label.text');
-    var labelTextTemplate = coerce('label.texttemplate');
+    var labelTextTemplate, labelText;
+    if(noPath) { labelTextTemplate = coerce('label.texttemplate'); }
+    if(!labelTextTemplate) { labelText = coerce('label.text'); }
     if(labelText || labelTextTemplate) {
         coerce('label.textangle');
         var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
