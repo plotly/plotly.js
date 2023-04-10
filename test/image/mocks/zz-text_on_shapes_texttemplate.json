@@ -17,12 +17,18 @@
             "xaxis": "x2",
             "yaxis": "y2",
             "x": [
-                0,
-                10
+                "a",
+                "b",
+                "c",
+                "d",
+                "e"
             ],
             "y": [
                 1e-1,
-                1e+6
+                10,
+                1e+3,
+                1e+5,
+                1e+7
             ],
             "mode": "markers"
         },
@@ -85,6 +91,7 @@
                 0.525,
                 1
             ],
+            "type": "category",
             "gridcolor": "white"
         },
         "yaxis2": {
@@ -201,17 +208,17 @@
             },
             {
                 "label": {
-                    "texttemplate": "dy: %{dy:.2f}<br>dx: %{dx:.2f}<br>slope: %{slope:.2f}<br>length: %{length:.2f}<br>",
+                    "texttemplate": "x0: %{x0}, x1: %{x1}<br>dy: %{dy:.2f}, dx: %{dx:.2f}<br>slope: %{slope:.2f}<br>length: %{length:.2f}<br>",
                     "textposition": "start",
                     "yanchor": "top"
                 },
                 "layer": "above",
                 "xref": "x2",
                 "yref": "y2",
-                "x0": 1,
-                "x1": 10,
-                "y0": 1000000,
-                "y1": 10000,
+                "x0": "b",
+                "x1": "d",
+                "y0": 1e+7,
+                "y1": 1e+5,
                 "type": "line",
                 "opacity": 0.5,
                 "line": {
@@ -222,15 +229,15 @@
             },
             {
                 "label": {
-                    "texttemplate": "x0: %{x0:.2f}<br>x1: %{x1:.2f}<br>xcenter: %{xcenter:.2f}<br>dx: %{dx:.2f}<br>width: %{width:.2f}<br><br>y0: %{y0:.2f}<br>y1: %{y1:.2f}<br>ycenter: %{ycenter:.2f}<br>dy: %{dy:.2f}<br>height: %{height:.2f}"
+                    "texttemplate": "x0: %{x0}<br>x1: %{x1}<br>xcenter: %{xcenter}<br>dx: %{dx:.2f}<br>width: %{width:.2f}<br><br>y0: %{y0:.2f}<br>y1: %{y1:.2f}<br>ycenter: %{ycenter:.2f}<br>dy: %{dy:.2f}<br>height: %{height:.2f}"
                 },
                 "layer": "above",
                 "xref": "x2",
                 "yref": "y2",
-                "x0": 2,
-                "x1": 6.5,
-                "y0": 1,
-                "y1": 20000,
+                "x0": "b",
+                "x1": "e",
+                "y0": 0.1,
+                "y1": 2e+4,
                 "type": "circle",
                 "line": {
                     "width": 2,
@@ -240,7 +247,7 @@
             },
             {
                 "label": {
-                    "texttemplate": "dy: %{dy:.2f}<br>dx: %{dx:.2f}<br>slope: %{slope:.2f}<br>length: %{length:.2f}",
+                    "texttemplate": "dy: %{dy:.2f}, dx: %{dx:.2f}<br>slope: %{slope:.2f}<br>length: %{length:.2f}",
                     "textposition": "start",
                     "yanchor": "top"
                 },
