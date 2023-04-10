@@ -162,6 +162,22 @@
         "shapes": [
             {
                 "label": {
+                    "texttemplate": "Paper-referenced shape<br>x0: %{x0:.2f},  x1: %{x1:.2f},  xcenter: %{xcenter:.2f},  dx: %{dx:.2f}<br>y0: %{y0:.2f},  y1: %{y1:.2f},  ycenter: %{ycenter:.2f},  dy: %{dy:.2f}",
+                    "textposition": "middle left"
+                },
+                "layer": "above",
+                "xref": "paper",
+                "yref": "paper",
+                "x0": 0.2,
+                "x1": 0.6,
+                "y0": 0.15,
+                "y1": 0.05,
+                "type": "rect",
+                "opacity": 0.3,
+                "editable": true
+            },
+            {
+                "label": {
                     "text": "this will be overridden",
                     "texttemplate": "Here is x0 divided by 2: %{x0/2:.2f}"
                 },
@@ -186,7 +202,7 @@
                 "layer": "above",
                 "x0": 5,
                 "x1": 9,
-                "y0": 2.5,
+                "y0": 3.7,
                 "y1": 9,
                 "type": "line",
                 "opacity": 0.5,

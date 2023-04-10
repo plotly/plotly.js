@@ -1,5 +1,15 @@
 'use strict';
 
+// Wrapper functions to handle paper-referenced shapes, which have no axis
+
+function d2l(v, axis) {
+    return axis ? axis.d2l(v) : v;
+}
+
+function l2d(v, axis) {
+    return axis ? axis.l2d(v) : v;
+}
+
 
 function x0Fn(shape) { return shape.x0; }
 function x1Fn(shape) { return shape.x1; }
@@ -7,11 +17,11 @@ function y0Fn(shape) { return shape.y0; }
 function y1Fn(shape) { return shape.y1; }
 
 function dxFn(shape, xa) {
-    return xa.d2l(shape.x1) - xa.d2l(shape.x0);
+    return d2l(shape.x1, xa) - d2l(shape.x0, xa);
 }
 
 function dyFn(shape, xa, ya) {
-    return ya.d2l(shape.y1) - ya.d2l(shape.y0);
+    return d2l(shape.y1, ya) - d2l(shape.y0, ya);
 }
 
 function widthFn(shape, xa) {
@@ -31,11 +41,11 @@ function lengthFn(shape, xa, ya) {
 }
 
 function xcenterFn(shape, xa) {
-    return xa.l2d((xa.d2l(shape.x1) + xa.d2l(shape.x0)) / 2);
+    return l2d((d2l(shape.x1, xa) + d2l(shape.x0, xa)) / 2, xa);
 }
 
 function ycenterFn(shape, xa, ya) {
-    return ya.l2d((ya.d2l(shape.y1) + ya.d2l(shape.y0)) / 2);
+    return l2d((d2l(shape.y1, ya) + d2l(shape.y0, ya)) / 2, ya);
 }
 
 function slopeFn(shape, xa, ya) {
