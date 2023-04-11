@@ -249,7 +249,7 @@ exports.loneHover = function loneHover(hoverItems, opts) {
     return multiHover ? hoverLabel : hoverLabel.node();
 };
 
-function filterUnique(value, index, array) {
+function filterUniqueValues(value, index, array) {
     return array.indexOf(value) === index;
 }
 
@@ -261,11 +261,11 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
             var curveNumbers = [];
             if(Array.isArray(evt)) {
                 evt.forEach(function(eventElem) {
-                    if(eventElem.curveNumber) curveNumbers.push(eventElem.curveNumber);
+                    if(typeof eventElem.curveNumber === 'number') curveNumbers.push(eventElem.curveNumber);
                 });
             }
             if(gd.data.length) {
-                curveNumbers.filter(filterUnique).forEach(function(elm) {
+                curveNumbers.filter(filterUniqueValues).forEach(function(elm) {
                     if(gd.data[elm] && gd.data[elm].type) {
                         dataSubplots.push(
                             gd.data[elm].type === 'scattermapbox' ? 'mapbox' : 'xy'
@@ -274,7 +274,7 @@ function _hover(gd, evt, subplot, noHoverEvent, eventTarget) {
                 });
             }
         }
-        subplot = dataSubplots.length ? dataSubplots.filter(filterUnique) : 'xy';
+        subplot = dataSubplots.length ? dataSubplots.filter(filterUniqueValues) : 'xy';
     }
 
     // if the user passed in an array of subplots,
