@@ -456,7 +456,7 @@ proto.render = function() {
 
         if(selection.buttons && selection.distance < 5 && !tabletmode) {
             gd.emit('plotly_click', eventData);
-        }else if(tabletmode && selection.distance < 5) {
+        } else if(tabletmode && selection.distance < 5) {
             gd.emit('plotly_click', eventData);
         } else {
             gd.emit('plotly_hover', eventData);
