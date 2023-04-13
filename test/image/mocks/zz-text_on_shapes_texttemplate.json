@@ -178,7 +178,6 @@
             },
             {
                 "label": {
-                    "text": "this will be overridden",
                     "texttemplate": "Here is x0 divided by 2: %{x0/2:.2f}"
                 },
                 "layer": "above",
@@ -211,16 +210,6 @@
                     "color": "#025"
                 },
                 "editable": true
-            },
-            {
-                "label": {
-                    "texttemplate": "paths have no slope: %{slope}",
-                    "textposition": "top center",
-                    "yanchor": "bottom"
-                },
-                "editable": true,
-                "path": "M3.71,0.75L2.26,3.99L3.71,3.99Z",
-                "layer": "above"
             },
             {
                 "label": {
