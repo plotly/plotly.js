@@ -35,7 +35,7 @@ module.exports = function partialBundle(tasks, opts) {
                 var WHITESPACE_BEFORE = '\\s*';
                 // remove require
                 var regEx = WHITESPACE_BEFORE + 'require\\(\'\\./' + t + '\'\\),';
-                if (strict) {
+                if(strict) {
                     regEx += '|require\\(\'\\.\\./src/traces/' + t + '/strict\'\\),'
                 }
                 var newCode = partialIndex.replace(new RegExp(regEx, 'g'), '');
