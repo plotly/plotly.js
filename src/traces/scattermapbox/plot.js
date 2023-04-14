@@ -81,12 +81,12 @@ proto.addLayer = function(k, opts, below) {
     if(opts.filter) {
         source.filter = opts.filter;
     }
-    var layerId = this.layerIds[k];
+    var currentLayerId = this.layerIds[k];
     var layerExist = this.subplot.getMapLayers().filter(function(mbLayer) {
-        return mbLayer.id === layerId;
+        return mbLayer.id === currentLayerId;
     });
-    if(layerExist.length) {
-        this.subplot.map.removeLayer(layerId);
+    if(layerExist && layerExist.length) {
+        this.subplot.map.removeLayer(currentLayerId);
     }
     this.subplot.addLayer(source, below);
 };
