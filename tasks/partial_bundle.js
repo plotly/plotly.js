@@ -34,13 +34,11 @@ module.exports = function partialBundle(tasks, opts) {
             excludes.forEach(function(t) {
                 var WHITESPACE_BEFORE = '\\s*';
                 // remove require
-                var newCode = partialIndex.replace(
-                    new RegExp(
-                        WHITESPACE_BEFORE +
-                        'require\\(\'\\./' + t + '\'\\),' + '|' +
-                        'require\\(\'\\.\\./src/traces/' + t + '/strict\'\\),',
-                        'g'), ''
-                );
+                var regEx = WHITESPACE_BEFORE + 'require\\(\'\\./' + t + '\'\\),';
+                if (strict) {
+                    regEx += '|require\\(\'\\.\\./src/traces/' + t + '/strict\'\\),'
+                }
+                var newCode = partialIndex.replace(new RegExp(regEx, 'g'), '');
 
                 // test removal
                 if(newCode === partialIndex) {
