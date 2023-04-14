@@ -56,8 +56,12 @@ proto.addSource = function(k, opts, cluster) {
             clusterMaxZoom: cluster.maxzoom,
         });
     }
-
-    this.subplot.map.addSource(this.sourceIds[k], sourceOpts);
+    var isSourceExists = this.subplot.map.getSource(this.sourceIds[k]);
+    if (!!isSourceExists) {
+        isSourceExists.setData(opts.geojson);
+    } else {
+        this.subplot.map.addSource(this.sourceIds[k], sourceOpts);
+    }
 };
 
 proto.setSourceData = function(k, opts) {
@@ -76,6 +80,13 @@ proto.addLayer = function(k, opts, below) {
     };
     if(opts.filter) {
         source.filter = opts.filter;
+    }
+    var layerId = this.layerIds[k];
+    var layerExist = this.subplot.getMapLayers().filter(function(mbLayer) {
+        return mbLayer.id === layerId;
+    })
+    if (layerExist.length) {
+        this.subplot.map.removeLayer(layerId);
     }
     this.subplot.addLayer(source, below);
 };
