@@ -826,6 +826,123 @@ describe('heatmap plot', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should set canvas dimensions according to z data shape if `zsmooth` is fast', function(done) {
+        var mock1 = require('../../image/mocks/zsmooth_methods.json');
+        var mock2 = require('../../image/mocks/heatmap_small_layout_zsmooth_fast.json');
+
+        var canvasStub;
+        var originalCreateElement = document.createElement;
+
+        spyOn(document, 'createElement').and.callFake(function(elementType) {
+            var element = originalCreateElement.call(document, elementType);
+            if(elementType === 'canvas') {
+                canvasStub = {
+                    width: spyOnProperty(element, 'width', 'set').and.callThrough(),
+                    height: spyOnProperty(element, 'height', 'set').and.callThrough()
+                };
+            }
+            return element;
+        });
+
+        function assertCanvas(z) {
+            expect(canvasStub.width.calls.count()).toBe(1);
+            expect(canvasStub.height.calls.count()).toBe(1);
+            var m = z.length;
+            var n = Lib.maxRowLength(z);
+            var canvasW = canvasStub.width.calls.argsFor(0)[0];
+            var canvasH = canvasStub.height.calls.argsFor(0)[0];
+            expect([canvasW, canvasH]).toEqual([n, m]);
+        }
+
+        Plotly.newPlot(gd, [mock1.data[1]]).then(function() {
+            assertCanvas(mock1.data[1].z);
+            return Plotly.newPlot(gd, mock2.data, mock2.layout);
+        }).then(function() {
+            assertCanvas(mock2.data[0].z);
+        }).then(done, done.fail);
+    });
+
+    it('should create imageData that fits the canvas dimensions if zsmooth is set', function(done) {
+        var mock1 = require('../../image/mocks/zsmooth_methods.json');
+        var mock2 = require('../../image/mocks/heatmap_small_layout_zsmooth_fast.json');
+
+        var imageDataStub = {
+            data: {
+                set: jasmine.createSpy()
+            }
+        };
+
+        var getContextStub = {
+            createImageData: jasmine.createSpy().and.returnValue(imageDataStub),
+            putImageData: function() {},
+            fillRect: function() {},
+        };
+
+        function checkPixels(pixels) {
+            for(var j = 0, px, check; j < pixels.length; j += 4) {
+                px = pixels.slice(j, j + 4);
+                check = px.every(function(c) { return c === 0; });
+                if(check) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        var canvasStubs = [];
+        var originalCreateElement = document.createElement;
+
+        spyOn(document, 'createElement').and.callFake(function(elementType) {
+            var element = originalCreateElement.call(document, elementType);
+            if(elementType === 'canvas') {
+                spyOn(element, 'getContext').and.returnValue(getContextStub);
+                canvasStubs.push({
+                    width: spyOnProperty(element, 'width', 'set').and.callThrough(),
+                    height: spyOnProperty(element, 'height', 'set').and.callThrough()
+                });
+            }
+            return element;
+        });
+
+        Plotly.newPlot(gd, mock1.data, mock1.layout).then(function() {
+            expect(getContextStub.createImageData.calls.count()).toBe(2);
+            expect(imageDataStub.data.set.calls.count()).toBe(2);
+
+            [0, 1].forEach(function(i) {
+                var createImageDataArgs = getContextStub.createImageData.calls.argsFor(i);
+                var setImageDataArgs = imageDataStub.data.set.calls.argsFor(i);
+
+                var canvasW = canvasStubs[i].width.calls.argsFor(0)[0];
+                var canvasH = canvasStubs[i].height.calls.argsFor(0)[0];
+                expect(createImageDataArgs).toEqual([canvasW, canvasH]);
+
+                var pixels = setImageDataArgs[0];
+                expect(pixels.length).toBe(canvasW * canvasH * 4);
+                expect(checkPixels(pixels)).toBe(true);
+            });
+
+            getContextStub.createImageData.calls.reset();
+            imageDataStub.data.set.calls.reset();
+            canvasStubs = [];
+
+            return Plotly.newPlot(gd, mock2.data, mock2.layout);
+        }).then(function() {
+            expect(getContextStub.createImageData.calls.count()).toBe(1);
+            expect(imageDataStub.data.set.calls.count()).toBe(1);
+
+            var canvasW = canvasStubs[0].width.calls.argsFor(0)[0];
+            var canvasH = canvasStubs[0].height.calls.argsFor(0)[0];
+
+            var createImageDataArgs = getContextStub.createImageData.calls.argsFor(0);
+            expect(createImageDataArgs).toEqual([canvasW, canvasH]);
+
+            var setImageDataArgs = imageDataStub.data.set.calls.argsFor(0);
+            var pixels = setImageDataArgs[0];
+            expect(pixels.length).toBe(canvasW * canvasH * 4);
+            expect(checkPixels(pixels)).toBe(true);
+        }).then(done, done.fail);
+    });
 });
 
 describe('heatmap hover', function() {
