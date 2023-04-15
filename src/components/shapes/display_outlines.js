@@ -249,8 +249,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                     var dx = nextPoint[1] - x;
                     var dy = nextPoint[2] - y;
 
-                    var width = dy ? 5 : Math.max(Math.min(25, Math.abs(dx) - 5), 5);
-                    var height = dx ? 5 : Math.max(Math.min(25, Math.abs(dy) - 5), 5);
+                    var width = dx ? 5 : Math.max(Math.min(25, Math.abs(dx) - 5), 5);
+                    var height = dy ? 5 : Math.max(Math.min(25, Math.abs(dy) - 5), 5);
 
                     vertex.classed(dy ? 'cursor-ew-resize' : 'cursor-ns-resize', true)
                         .attr('width', width)
