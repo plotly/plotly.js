@@ -1177,11 +1177,9 @@ function templateFormatString(string, labels, d3locale) {
         }
 
         // Apply mult/div operation (if applicable)
-        if((parsedOp === '*' || parsedOp === '/') && value !== undefined) {
-            value = {
-                '*': (function(v) { return v * parsedNumber; }),
-                '/': (function(v) { return v / parsedNumber; }),
-            }[parsedOp](value);
+        if(value !== undefined) {
+            if(parsedOp === '*') value *= parsedNumber;
+            if(parsedOp === '/') value /= parsedNumber;
         }
 
         if(value === undefined && opts) {
