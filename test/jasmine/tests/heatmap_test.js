@@ -829,7 +829,7 @@ describe('heatmap plot', function() {
 
     it('should set canvas dimensions according to z data shape if `zsmooth` is fast', function(done) {
         var mock1 = require('../../image/mocks/zsmooth_methods.json');
-        var mock2 = require('../../image/mocks/zz-heatmap_small_layout_zsmooth_fast.json');
+        var mock2 = require('../../image/mocks/heatmap_small_layout_zsmooth_fast.json');
 
         var canvasStub;
         var originalCreateElement = document.createElement;
@@ -865,7 +865,7 @@ describe('heatmap plot', function() {
 
     it('should create imageData that fits the canvas dimensions if zsmooth is set', function(done) {
         var mock1 = require('../../image/mocks/zsmooth_methods.json');
-        var mock2 = require('../../image/mocks/zz-heatmap_small_layout_zsmooth_fast.json');
+        var mock2 = require('../../image/mocks/heatmap_small_layout_zsmooth_fast.json');
 
         var imageDataStub = {
             data: {
