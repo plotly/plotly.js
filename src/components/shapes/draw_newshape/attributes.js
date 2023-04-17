@@ -3,6 +3,9 @@
 var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
 var extendFlat = require('../../../lib/extend').extendFlat;
+var shapeTexttemplateAttrs = require('../../../plots/template_attributes').shapeTexttemplateAttrs;
+var shapeLabelTexttemplateVars = require('../label_texttemplate');
+
 
 module.exports = {
     newshape: {
@@ -86,6 +89,7 @@ module.exports = {
                 editType: 'none',
                 description: 'Sets the text to display with the new shape.'
             },
+            texttemplate: shapeTexttemplateAttrs({newshape: true, editType: 'none'}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
             font: fontAttrs({
                 editType: 'none',
                 description: 'Sets the new shape label text font.'
