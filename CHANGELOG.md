@@ -9,6 +9,21 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.21.0] -- 2023-04-17
+
+### Added
+ - Add `texttemplate` to shape.label for parametric shapes i.e. line, rect and circle [[#6527](https://github.com/plotly/plotly.js/pull/6527)],
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
+ - Add strict option to custom bundle command [[#6557](https://github.com/plotly/plotly.js/pull/6557)],
+   with thanks to @CallumNZ for the contribution!
+
+### Fixed
+ - Fix dragging of legend when xanchor is not 'left' or yanchor is not 'top' [[#6528](https://github.com/plotly/plotly.js/pull/6528)],
+   with thanks to @bmaranville for the contribution!
+ - Fix heatmap rendering bug and improve performance when `zsmooth` is set to "fast" [[#6565](https://github.com/plotly/plotly.js/pull/6565)],
+   with thanks to @lvlte for the contribution!
+
+
 ## [2.20.0] -- 2023-03-15
 
 ### Added
