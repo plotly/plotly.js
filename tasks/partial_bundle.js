@@ -8,6 +8,7 @@ var header = constants.licenseDist + '\n';
 var allTransforms = constants.allTransforms;
 var allTraces = constants.allTraces;
 var mainIndex = constants.mainIndex;
+var strictIndex = constants.strictIndex;
 
 // Bundle the plotly.js partial bundles
 module.exports = function partialBundle(tasks, opts) {
@@ -19,11 +20,12 @@ module.exports = function partialBundle(tasks, opts) {
     var traceList = opts.traceList;
     var transformList = opts.transformList;
     var calendars = opts.calendars;
+    var strict = opts.strict;
 
     // skip strict bundle which is no longer a partial bundle and has a special index file for regl traces
     if(name !== 'strict') {
         tasks.push(function(done) {
-            var partialIndex = mainIndex;
+            var partialIndex = (strict) ? strictIndex : mainIndex;
 
             var all = ['calendars'].concat(allTransforms).concat(allTraces);
             var includes = (calendars ? ['calendars'] : []).concat(transformList).concat(traceList);
@@ -32,12 +34,11 @@ module.exports = function partialBundle(tasks, opts) {
             excludes.forEach(function(t) {
                 var WHITESPACE_BEFORE = '\\s*';
                 // remove require
-                var newCode = partialIndex.replace(
-                    new RegExp(
-                        WHITESPACE_BEFORE +
-                        'require\\(\'\\./' + t + '\'\\),',
-                    'g'), ''
-                );
+                var regEx = WHITESPACE_BEFORE + 'require\\(\'\\./' + t + '\'\\),';
+                if(strict) {
+                    regEx += '|require\\(\'\\.\\./src/traces/' + t + '/strict\'\\),';
+                }
+                var newCode = partialIndex.replace(new RegExp(regEx, 'g'), '');
 
                 // test removal
                 if(newCode === partialIndex) {

@@ -20,6 +20,7 @@ function startsWithLowerCase(v) {
 var pathToPlotlyIndex = path.join(pathToLib, 'index.js');
 var pathToPlotlyStrict = path.join(pathToLib, 'index-strict.js');
 var mainIndex = fs.readFileSync(pathToPlotlyIndex, 'utf-8');
+var strictIndex = fs.readFileSync(pathToPlotlyStrict, 'utf-8');
 var allTraces = fs.readdirSync(path.join(pathToSrc, 'traces'))
     .filter(startsWithLowerCase);
 
@@ -191,6 +192,7 @@ module.exports = {
     allTransforms: allTransforms,
     allTraces: allTraces,
     mainIndex: mainIndex,
+    strictIndex: strictIndex,
     pathToPlotlyIndex: pathToPlotlyIndex,
     pathToPlotlyStrict: pathToPlotlyStrict,
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
