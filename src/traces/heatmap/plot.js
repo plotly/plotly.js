@@ -109,11 +109,18 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             y = cd0.yfill;
         }
 
+        var drawingMethod = 'default';
+        if(zsmooth) {
+            drawingMethod = zsmooth === 'best' ? 'smooth' : 'fast';
+        } else if(trace._islinear && xGap === 0 && yGap === 0) {
+            drawingMethod = 'fast';
+        }
+
         // make an image that goes at most half a screen off either side, to keep
-        // time reasonable when you zoom in. if zsmooth is true/fast, don't worry
+        // time reasonable when you zoom in. if drawingMethod is fast, don't worry
         // about this, because zooming doesn't increase number of pixels
         // if zsmooth is best, don't include anything off screen because it takes too long
-        if(zsmooth !== 'fast') {
+        if(drawingMethod !== 'fast') {
             var extra = zsmooth === 'best' ? 0 : 0.5;
             left = Math.max(-extra * xa._length, left);
             right = Math.min((1 + extra) * xa._length, right);
@@ -140,7 +147,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         // generate image data
 
         var canvasW, canvasH;
-        if(zsmooth === 'fast') {
+        if(drawingMethod === 'fast') {
             canvasW = n;
             canvasH = m;
         } else {
@@ -158,7 +165,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         // map brick boundaries to image pixels
         var xpx,
             ypx;
-        if(zsmooth === 'fast') {
+        if(drawingMethod === 'fast') {
             xpx = xrev ?
                 function(index) { return n - 1 - index; } :
                 Lib.identity;
@@ -235,7 +242,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
         }
 
-        if(zsmooth) { // best or fast, works fastest with imageData
+        if(drawingMethod !== 'default') { // works fastest with imageData
             var pxIndex = 0;
             var pixels;
 
@@ -245,7 +252,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                 pixels = new Array(canvasW * canvasH * 4);
             }
 
-            if(zsmooth === 'best') {
+            if(drawingMethod === 'smooth') { // zsmooth="best"
                 var xForPx = xc || x;
                 var yForPx = yc || y;
                 var xPixArray = new Array(xForPx.length);
@@ -273,7 +280,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                         putColor(pixels, pxIndex, c);
                     }
                 }
-            } else { // zsmooth = fast
+            } else { // drawingMethod = "fast" (zsmooth = "fast"|false)
                 for(j = 0; j < m; j++) {
                     row = z[j];
                     yb = ypx(j);
@@ -297,7 +304,8 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             }
 
             context.putImageData(imageData, 0, 0);
-        } else { // zsmooth = false -> filling potentially large bricks works fastest with fillRect
+        } else { // rawingMethod = "default" (zsmooth = false)
+            // filling potentially large bricks works fastest with fillRect
             // gaps do not need to be exact integers, but if they *are* we will get
             // cleaner edges by rounding at least one edge
             var xGapLeft = Math.floor(xGap / 2);
@@ -350,6 +358,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             width: imageWidth,
             x: left,
             y: top,
+            'image-rendering': drawingMethod === 'fast' && !zsmooth ? 'pixelated' : 'auto',
             'xlink:href': canvas.toDataURL('image/png')
         });
 
