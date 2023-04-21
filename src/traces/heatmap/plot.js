@@ -18,6 +18,50 @@ var LINE_SPACING = alignmentConstants.LINE_SPACING;
 
 var labelClass = 'heatmap-label';
 
+// Pixelated image rendering
+// The actual declaration is prepended with fallbacks for older browsers.
+// https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
+// https://caniuse.com/?search=image-rendering
+var pixelatedImageCSS = [
+    'image-rendering: optimizeSpeed',
+    'image-rendering: -moz-crisp-edges',
+    'image-rendering: -o-crisp-edges',
+    'image-rendering: -webkit-optimize-contrast',
+    'image-rendering: optimize-contrast',
+    'image-rendering: crisp-edges',
+    'image-rendering: pixelated'
+];
+
+var _supportsPixelated = null;
+function supportsPixelatedImage() {
+    if(_supportsPixelated !== null) { // only run the feature detection once
+        return _supportsPixelated;
+    }
+    if(Lib.isIE()) {
+        // `-ms-interpolation-mode` works only with <img> not with SVG <image>
+        _supportsPixelated = false;
+    } else {
+        var declarations = Array.from(pixelatedImageCSS).reverse();
+        var supports = window.CSS && window.CSS.supports || window.supportsCSS;
+        if(typeof supports === 'function') {
+            _supportsPixelated = declarations.some(function(d) {
+                return supports.apply(null, d.split(': '));
+            });
+        } else {
+            var image3 = Drawing.tester.append('image');
+            var cStyles = window.getComputedStyle(image3.node());
+            image3.attr('style', pixelatedImageCSS.join('; ') + ';');
+            _supportsPixelated = declarations.some(function(d) {
+                var value = d.split(': ')[1];
+                return cStyles.imageRendering === value ||
+                       cStyles.imageRendering === value.toLowerCase();
+            });
+            image3.remove();
+        }
+    }
+    return _supportsPixelated;
+}
+
 function selectLabels(plotGroup) {
     return plotGroup.selectAll('g.' + labelClass);
 }
@@ -112,7 +156,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var drawingMethod = 'default';
         if(zsmooth) {
             drawingMethod = zsmooth === 'best' ? 'smooth' : 'fast';
-        } else if(trace._islinear && xGap === 0 && yGap === 0) {
+        } else if(trace._islinear && xGap === 0 && yGap === 0 && supportsPixelatedImage()) {
             drawingMethod = 'fast';
         }
 
@@ -358,9 +402,12 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             width: imageWidth,
             x: left,
             y: top,
-            'image-rendering': drawingMethod === 'fast' && !zsmooth ? 'pixelated' : 'auto',
             'xlink:href': canvas.toDataURL('image/png')
         });
+
+        if(drawingMethod === 'fast' && !zsmooth) {
+            image3.attr('style', pixelatedImageCSS.join('; ') + ';');
+        }
 
         removeLabels(plotGroup);
 
