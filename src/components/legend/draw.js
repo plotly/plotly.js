@@ -24,13 +24,30 @@ var helpers = require('./helpers');
 
 var MAIN_TITLE = 1;
 
+var LEGEND_PATTERN = /^legend[0-9]*$/;
+
 module.exports = function draw(gd, opts) {
     if(opts) {
         drawOne(gd, opts);
     } else {
-        var legends = gd._fullLayout._legends;
-        for(var i = 0; i < legends.length; i++) {
-            var legendId = legends[i];
+        var fullLayout = gd._fullLayout;
+        var newLegends = fullLayout._legends;
+
+        // remove old legends that won't stay on the graph
+        var oldLegends = fullLayout._infolayer.selectAll('[class^="legend"]');
+
+        oldLegends.each(function() {
+            var el = d3.select(this);
+            var classes = el.attr('class');
+            var cls = classes.split(' ')[0];
+            if(cls.match(LEGEND_PATTERN) && newLegends.indexOf(cls) === -1) {
+                el.remove();
+            }
+        });
+
+        // draw/update new legends
+        for(var i = 0; i < newLegends.length; i++) {
+            var legendId = newLegends[i];
             var legendObj = gd._fullLayout[legendId];
             drawOne(gd, legendObj);
         }
