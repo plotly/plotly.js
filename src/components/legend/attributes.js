@@ -5,6 +5,20 @@ var colorAttrs = require('../color/attributes');
 
 
 module.exports = {
+    // not really a 'subplot' attribute container,
+    // but this is the flag we use to denote attributes that
+    // support yaxis, yaxis2, yaxis3, ... counters
+    _isSubplotObj: true,
+
+    visible: {
+        valType: 'boolean',
+        dflt: true,
+        editType: 'legend',
+        description: [
+            'Determines whether or not this legend is visible.'
+        ].join(' ')
+    },
+
     bgcolor: {
         valType: 'color',
         editType: 'legend',

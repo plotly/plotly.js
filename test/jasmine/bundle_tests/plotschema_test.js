@@ -138,6 +138,7 @@ describe('plot schema', function() {
             // not really a 'subplot' object but supports yaxis, yaxis2, yaxis3,
             // ... counters, so list it here
             'xaxis.rangeslider.yaxis',
+            'legend',
             'coloraxis'
         ];
 
