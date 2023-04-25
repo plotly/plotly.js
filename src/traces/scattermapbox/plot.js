@@ -86,9 +86,13 @@ proto.addLayer = function(k, opts, below) {
         return mbLayer.id === currentLayerId;
     });
     if(layerExist && layerExist.length) {
-        this.subplot.map.removeLayer(currentLayerId);
+        this.subplot.setOptions(currentLayerId, 'setLayoutProperty', source.layout);
+        if(source.layout.visibility === 'visible') {
+            this.subplot.setOptions(currentLayerId, 'setPaintProperty', source.paint);
+        }
+    } else {
+        this.subplot.addLayer(source, below);
     }
-    this.subplot.addLayer(source, below);
 };
 
 proto.update = function update(calcTrace) {
