@@ -1,5 +1,7 @@
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 var createLinePlot = require('../../../stackgl_modules').gl_line3d;
 var createScatterPlot = require('../../../stackgl_modules').gl_scatter3d;
 var createErrorBars = require('../../../stackgl_modules').gl_error3d;
@@ -403,7 +405,7 @@ proto.update = function(data) {
 
     // N.B. marker.opacity must be a scalar for performance
     var scatterOpacity = data.opacity;
-    if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
+    if(data.marker && isNumeric(data.marker.opacity)) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
         gl: this.scene.glplot.gl,
