@@ -109,10 +109,10 @@ module.exports = function calc(gd, trace) {
         if(zsmooth === 'fast') {
             noZsmooth('log axis found');
         }
-    } else if(!scaleIsLinear(x) || !scaleIsLinear(y)) {
-        if(zsmooth === 'fast') {
-            noZsmooth('x/y scale is not linear');
-        }
+    } else if(!scaleIsLinear(x)) {
+        if(zsmooth === 'fast') noZsmooth('x scale is not linear');
+    } else if(!scaleIsLinear(y)) {
+        if(zsmooth === 'fast') noZsmooth('y scale is not linear');
     } else {
         trace._islinear = true;
     }
