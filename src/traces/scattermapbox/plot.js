@@ -82,10 +82,16 @@ proto.addLayer = function(k, opts, below) {
         source.filter = opts.filter;
     }
     var currentLayerId = this.layerIds[k];
-    var layerExist = this.subplot.getMapLayers().filter(function(mbLayer) {
-        return mbLayer.id === currentLayerId;
-    });
-    if(layerExist && layerExist.length) {
+    var layerExist;
+    var layers = this.subplot.getMapLayers();
+    for(var i = 0; i < layers.length; i++) {
+        if(layers[i].id === currentLayerId) {
+            layerExist = true;
+            break;
+        }
+    }
+
+    if(layerExist) {
         this.subplot.setOptions(currentLayerId, 'setLayoutProperty', source.layout);
         if(source.layout.visibility === 'visible') {
             this.subplot.setOptions(currentLayerId, 'setPaintProperty', source.paint);
