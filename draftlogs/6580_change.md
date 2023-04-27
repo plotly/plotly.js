@@ -1,1 +1,0 @@
- - Update translations and number formats to `sk` locale [[#6580](https://github.com/plotly/plotly.js/pull/6580)], with thanks to @Libco for the contribution!
