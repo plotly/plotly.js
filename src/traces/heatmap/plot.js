@@ -15,6 +15,8 @@ var makeColorScaleFuncFromTrace = require('../../components/colorscale').makeCol
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var alignmentConstants = require('../../constants/alignment');
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
+var supportsPixelatedImage = require('../../lib/supports_pixelated_image');
+var PIXELATED_IMAGE_STYLE = require('../../constants/pixelated_image').STYLE;
 
 var labelClass = 'heatmap-label';
 
@@ -112,7 +114,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var drawingMethod = 'default';
         if(zsmooth) {
             drawingMethod = zsmooth === 'best' ? 'smooth' : 'fast';
-        } else if(trace._islinear && xGap === 0 && yGap === 0 && Lib.supportsPixelatedImage()) {
+        } else if(trace._islinear && xGap === 0 && yGap === 0 && supportsPixelatedImage()) {
             drawingMethod = 'fast';
         }
 
@@ -137,12 +139,18 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
 
         if(isOffScreen) {
+            // console.log('isOffScreen', drawingMethod);
+
             var noImage = plotGroup.selectAll('image').data([]);
             noImage.exit().remove();
 
             removeLabels(plotGroup);
             return;
         }
+
+        // console.log('drawingMethod', drawingMethod);
+        // console.log(left, right);
+
 
         // generate image data
 
@@ -362,7 +370,7 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
         });
 
         if(drawingMethod === 'fast' && !zsmooth) {
-            image3.attr('style', Lib.PIXELATED_IMAGE_STYLE);
+            image3.attr('style', PIXELATED_IMAGE_STYLE);
         }
 
         removeLabels(plotGroup);

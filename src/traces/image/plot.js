@@ -5,19 +5,21 @@ var Lib = require('../../lib');
 var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('./constants');
+var supportsPixelatedImage = require('../../lib/supports_pixelated_image');
+var PIXELATED_IMAGE_STYLE = require('../../constants/pixelated_image').STYLE;
 
 module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
     var xa = plotinfo.xaxis;
     var ya = plotinfo.yaxis;
 
-    var supportsPixelatedImage = !gd._context._exportedPlot && Lib.supportsPixelatedImage();
+    var supportsPixelated = !gd._context._exportedPlot && supportsPixelatedImage();
 
     Lib.makeTraceGroups(imageLayer, cdimage, 'im').each(function(cd) {
         var plotGroup = d3.select(this);
         var cd0 = cd[0];
         var trace = cd0.trace;
         var realImage = (
-            ((trace.zsmooth === 'fast') || (trace.zsmooth === false && supportsPixelatedImage)) &&
+            ((trace.zsmooth === 'fast') || (trace.zsmooth === false && supportsPixelated)) &&
             !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear'
         );
         trace._realImage = realImage;
@@ -129,7 +131,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
 
         image3.exit().remove();
 
-        var style = (trace.zsmooth === false) ? Lib.PIXELATED_IMAGE_STYLE : '';
+        var style = (trace.zsmooth === false) ? PIXELATED_IMAGE_STYLE : '';
 
         if(realImage) {
             var xRange = Lib.simpleMap(xa.range, xa.r2l);
