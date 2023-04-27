@@ -32,6 +32,18 @@ module.exports = {
             'trace is shown in the legend.'
         ].join(' ')
     },
+    legend: {
+        valType: 'subplotid',
+        dflt: 'legend',
+        editType: 'style',
+
+        description: [
+            'Sets the reference to a legend to show this trace in.',
+            'References to these legends are *legend*, *legend2*, *legend3*, etc.',
+            'Settings for these legends are set in the layout, under',
+            '`layout.legend`, `layout.legend2`, etc.'
+        ].join(' ')
+    },
     legendgroup: {
         valType: 'string',
         dflt: '',

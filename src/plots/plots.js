@@ -1321,6 +1321,7 @@ plots.supplyTraceDefaults = function(traceIn, traceOut, colorIndex, layout, trac
                 'showlegend'
             );
 
+            coerce('legend');
             coerce('legendwidth');
             coerce('legendgroup');
             coerce('legendgrouptitle.text');

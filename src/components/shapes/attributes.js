@@ -7,6 +7,8 @@ var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
+var shapeTexttemplateAttrs = require('../../plots/template_attributes').shapeTexttemplateAttrs;
+var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 module.exports = templatedArray('shape', {
     visible: {
@@ -232,6 +234,7 @@ module.exports = templatedArray('shape', {
             editType: 'arraydraw',
             description: 'Sets the text to display with shape.'
         },
+        texttemplate: shapeTexttemplateAttrs({}, {keys: Object.keys(shapeLabelTexttemplateVars)}),
         font: fontAttrs({
             editType: 'calc+arraydraw',
             colorEditType: 'arraydraw',

@@ -240,9 +240,9 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
             var pixels;
 
             try {
-                pixels = new Uint8Array(imageWidth * imageHeight * 4);
+                pixels = new Uint8Array(canvasW * canvasH * 4);
             } catch(e) {
-                pixels = new Array(imageWidth * imageHeight * 4);
+                pixels = new Array(canvasW * canvasH * 4);
             }
 
             if(zsmooth === 'best') {
@@ -277,15 +277,15 @@ module.exports = function(gd, plotinfo, cdheatmaps, heatmapLayer) {
                 for(j = 0; j < m; j++) {
                     row = z[j];
                     yb = ypx(j);
-                    for(i = 0; i < imageWidth; i++) {
+                    for(i = 0; i < n; i++) {
                         c = setColor(row[i], 1);
-                        pxIndex = (yb * imageWidth + xpx(i)) * 4;
+                        pxIndex = (yb * n + xpx(i)) * 4;
                         putColor(pixels, pxIndex, c);
                     }
                 }
             }
 
-            var imageData = context.createImageData(imageWidth, imageHeight);
+            var imageData = context.createImageData(canvasW, canvasH);
             try {
                 imageData.data.set(pixels);
             } catch(e) {

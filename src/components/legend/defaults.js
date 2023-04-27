@@ -9,14 +9,21 @@ var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
-
-module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
-    var containerIn = layoutIn.legend || {};
-    var containerOut = Template.newContainer(layoutOut, 'legend');
+function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
+    var containerIn = layoutIn[legendId] || {};
+    var containerOut = Template.newContainer(layoutOut, legendId);
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
+
+    // N.B. unified hover needs to inherit from font, bgcolor & bordercolor even when legend.visible is false
+    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
+    coerce('bgcolor', layoutOut.paper_bgcolor);
+    coerce('bordercolor');
+
+    var visible = coerce('visible');
+    if(!visible) return;
 
     var trace;
     var traceCoerce = function(attr, dflt) {
@@ -91,10 +98,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
 
     if(showLegend === false) return;
 
-    coerce('bgcolor', layoutOut.paper_bgcolor);
-    coerce('bordercolor');
     coerce('borderwidth');
-    var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     var orientation = coerce('orientation');
     var isHorizontal = orientation === 'h';
@@ -146,5 +150,30 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         });
 
         Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
+    }
+}
+
+module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
+    var i;
+    var legends = ['legend'];
+
+    for(i = 0; i < fullData.length; i++) {
+        Lib.pushUnique(legends, fullData[i].legend);
+    }
+
+    layoutOut._legends = [];
+    for(i = 0; i < legends.length; i++) {
+        var legendId = legends[i];
+
+        groupDefaults(legendId, layoutIn, layoutOut, fullData);
+
+        if(
+            layoutOut[legendId] &&
+            layoutOut[legendId].visible
+        ) {
+            layoutOut[legendId]._id = legendId;
+        }
+
+        layoutOut._legends.push(legendId);
     }
 };

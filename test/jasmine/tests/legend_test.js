@@ -1122,6 +1122,44 @@ describe('legend relayout update', function() {
         })
         .then(done, done.fail);
     });
+
+    it('should be able to add & clear multiple legends using react', function(done) {
+        var fig1 = {
+            data: [{
+                y: [1, 2, 3]
+            }]
+        };
+
+        var fig2 = {
+            data: [{
+                y: [1, 2, 3]
+            }, {
+                y: [3, 1, 2],
+                legend: 'legend2'
+            }],
+            layout: {
+                legend2: {y: 0.5}
+            }
+        };
+
+        Plotly.newPlot(gd, fig1)
+        .then(function() {
+            expect(d3SelectAll('.legend2')[0].length).toBe(0);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig2);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend2')[0].length).toBe(1);
+        })
+        .then(function() {
+            return Plotly.react(gd, fig1);
+        })
+        .then(function() {
+            expect(d3SelectAll('.legend2')[0].length).toBe(0);
+        })
+        .then(done, done.fail);
+    });
 });
 
 describe('legend orientation change:', function() {
