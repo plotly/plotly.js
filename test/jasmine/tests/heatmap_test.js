@@ -683,7 +683,7 @@ describe('heatmap plot', function() {
 
             return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
         }).then(function() {
-            assertImageCnt(3);
+            assertImageCnt(2);
 
             return Plotly.relayout(gd, 'xaxis.autorange', true);
         }).then(function() {
