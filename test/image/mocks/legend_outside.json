@@ -54,15 +54,9 @@
    "layout":{
       "showlegend":true,
       "legend":{
-         "x": 0,
-         "y": 0,
-         "xref": "container",
-         "yref": "container",
-         "orientation": "h"
-      },
-      "margin": {
-         "t": 75,
-         "r": 115
+         "x":1,
+         "y":1,
+         "xanchor":"left"
       }
    }
 }

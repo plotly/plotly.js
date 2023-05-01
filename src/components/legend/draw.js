@@ -163,18 +163,20 @@ function drawOne(gd, opts) {
                 // draw the remaining pieces below
                 if(expMargin) return;
 
+                var lx, ly;
+
                 if(legendObj.xref === 'paper') {
-                    var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                    lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
                 } else {
                     legendObj.x = Lib.constrain(legendObj.x, 0, 1); // TODO: Move this to defaults setting?
-                    var lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+                    lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
                 }
 
                 if(legendObj.yref === 'paper') {
-                    var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                    ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
                 } else {
                     legendObj.y = Lib.constrain(legendObj.y, 0, 1); // TODO: Move this to defaults setting?
-                    var ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+                    ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
                 }
 
                 // TODO: Does this also apply if y/xref=container?
