@@ -101,26 +101,48 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     coerce('borderwidth');
 
     var orientation = coerce('orientation');
+
+    var yref = coerce('yref');
+    var xref = coerce('xref');
+
     var isHorizontal = orientation === 'h';
+    var isPaperY = yref === 'paper';
+    var isPaperX = xref === 'paper';
     var defaultX, defaultY, defaultYAnchor;
 
+    // TODO: Adjust default xanchor if needed for container ref?
+    // TODO: Constrain x or y if container ref to be within 0-1
     if(isHorizontal) {
         defaultX = 0;
 
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
-            defaultY = 1.1;
-            defaultYAnchor = 'bottom';
+            if(isPaperY) {
+                defaultY = 1.1;
+                defaultYAnchor = 'bottom';
+            } else {
+                defaultY = 1;
+                defaultYAnchor = 'top';
+            }
         } else {
             // maybe use y=1.1 / yanchor=bottom as above
             //   to avoid https://github.com/plotly/plotly.js/issues/1199
             //   in v3
-            defaultY = -0.1;
-            defaultYAnchor = 'top';
+            if(isPaperY) {
+                defaultY = -0.1;
+                defaultYAnchor = 'top';
+            } else {
+                defaultY = 0;
+                defaultYAnchor = 'bottom';
+            }
         }
     } else {
-        defaultX = 1.02;
         defaultY = 1;
         defaultYAnchor = 'auto';
+        if(isPaperX) {
+            defaultX = 1.02;
+        } else {
+            defaultX = 1;
+        }
     }
 
     coerce('traceorder', defaultOrder);

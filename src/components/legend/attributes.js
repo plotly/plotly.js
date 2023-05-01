@@ -163,14 +163,17 @@ module.exports = {
         max: 3,
         editType: 'legend',
         description: [
-            'Sets the x position (in normalized coordinates) of the legend.',
-            'Defaults to *1.02* for vertical legends and',
-            'defaults to *0* for horizontal legends.'
+            'Sets the x position with respect to `xref` (in normalized coordinates) of the legend.',
+            'When `xref` is *paper*, defaults to *1.02* for vertical legends and',
+            'defaults to *0* for horizontal legends.',
+            'When `xref` is *container*, defaults to *1* for vertical legends and',
+            'defaults to *0* for horizontal legends.',
+            'Must be between *0* and *1* if `xref` is *container*.'
         ].join(' ')
     },
     xref: {
         valType: 'enumerated',
-        dflt: 'container',
+        dflt: 'paper',
         values: ['container', 'paper'],
         editType: 'layoutstyle',
         description: [
@@ -199,15 +202,17 @@ module.exports = {
         max: 3,
         editType: 'legend',
         description: [
-            'Sets the y position (in normalized coordinates) of the legend.',
-            'Defaults to *1* for vertical legends,',
+            'Sets the y position with respect to `yref` (in normalized coordinates) of the legend.',
+            'When `yref` is *paper*, defaults to *1* for vertical legends,',
             'defaults to *-0.1* for horizontal legends on graphs w/o range sliders and',
-            'defaults to *1.1* for horizontal legends on graph with one or multiple range sliders.'
+            'defaults to *1.1* for horizontal legends on graph with one or multiple range sliders.',
+            'When `yref` is *container*, defaults to *1*.',
+            'Must be between *0* and *1* if `yref` is *container*.'
         ].join(' ')
     },
     yref: {
         valType: 'enumerated',
-        dflt: 'container',
+        dflt: 'paper',
         values: ['container', 'paper'],
         editType: 'layoutstyle',
         description: [
