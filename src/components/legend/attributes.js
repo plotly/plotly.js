@@ -168,6 +168,17 @@ module.exports = {
             'defaults to *0* for horizontal legends.'
         ].join(' ')
     },
+    xref: {
+        valType: 'enumerated',
+        dflt: 'container',
+        values: ['container', 'paper'],
+        editType: 'layoutstyle',
+        description: [
+            'Sets the container `x` refers to.',
+            '*container* spans the entire `width` of the plot.',
+            '*paper* refers to the width of the plotting area only.'
+        ].join(' ')
+    },
     xanchor: {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
@@ -192,6 +203,17 @@ module.exports = {
             'Defaults to *1* for vertical legends,',
             'defaults to *-0.1* for horizontal legends on graphs w/o range sliders and',
             'defaults to *1.1* for horizontal legends on graph with one or multiple range sliders.'
+        ].join(' ')
+    },
+    yref: {
+        valType: 'enumerated',
+        dflt: 'container',
+        values: ['container', 'paper'],
+        editType: 'layoutstyle',
+        description: [
+            'Sets the container `y` refers to.',
+            '*container* spans the entire `height` of the plot.',
+            '*paper* refers to the height of the plotting area only.'
         ].join(' ')
     },
     yanchor: {
