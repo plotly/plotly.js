@@ -4308,14 +4308,14 @@
        "reversed"
       ]
      },
-     "autorangemax": {
-      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+     "autorangeclipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
      },
-     "autorangemin": {
-      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+     "autorangeclipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
@@ -5447,14 +5447,14 @@
        "reversed"
       ]
      },
-     "autorangemax": {
-      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+     "autorangeclipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
      },
-     "autorangemin": {
-      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+     "autorangeclipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
@@ -6043,14 +6043,14 @@
        "reversed"
       ]
      },
-     "autorangemax": {
-      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+     "autorangeclipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
      },
-     "autorangemin": {
-      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+     "autorangeclipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
@@ -6639,14 +6639,14 @@
        "reversed"
       ]
      },
-     "autorangemax": {
-      "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+     "autorangeclipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
      },
-     "autorangemin": {
-      "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+     "autorangeclipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
@@ -10349,14 +10349,14 @@
       "reversed"
      ]
     },
-    "autorangemax": {
-     "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+    "autorangeclipmax": {
+     "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
      "editType": "plot",
      "impliedEdits": {},
      "valType": "any"
     },
-    "autorangemin": {
-     "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+    "autorangeclipmin": {
+     "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
      "editType": "plot",
      "impliedEdits": {},
      "valType": "any"
@@ -11635,14 +11635,14 @@
       "reversed"
      ]
     },
-    "autorangemax": {
-     "description": "Determines the maximum range of this axis when computed in relation to the input data.",
+    "autorangeclipmax": {
+     "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
      "editType": "plot",
      "impliedEdits": {},
      "valType": "any"
     },
-    "autorangemin": {
-     "description": "Determines the minimum range of this axis when computed in relation to the input data.",
+    "autorangeclipmin": {
+     "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
      "editType": "plot",
      "impliedEdits": {},
      "valType": "any"

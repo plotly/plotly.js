@@ -283,22 +283,22 @@ module.exports = {
             'If `range` is provided, then `autorange` is set to *false*.'
         ].join(' ')
     },
-    autorangemin: {
+    autorangeclipmin: {
         valType: 'any',
         editType: 'plot',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
-            'Determines the minimum range of this axis when',
-            'computed in relation to the input data.'
+            'Clip autorange minimum if it goes beyond this value.',
+            'Has no effect when `autorangemin` is provided.'
         ].join(' ')
     },
-    autorangemax: {
+    autorangeclipmax: {
         valType: 'any',
         editType: 'plot',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
         description: [
-            'Determines the maximum range of this axis when',
-            'computed in relation to the input data.'
+            'Clip autorange maximum if it goes beyond this value.',
+            'Has no effect when `autorangemax` is provided.'
         ].join(' ')
     },
     rangemode: {

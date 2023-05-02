@@ -58,8 +58,8 @@ var radialAxisAttrs = {
     }),
     autotypenumbers: axesAttrs.autotypenumbers,
 
-    autorangemin: axesAttrs.autorangemin,
-    autorangemax: axesAttrs.autorangemax,
+    autorangeclipmin: axesAttrs.autorangeclipmin,
+    autorangeclipmax: axesAttrs.autorangeclipmax,
     autorange: extendFlat({}, axesAttrs.autorange, {editType: 'plot'}),
     rangemode: {
         valType: 'enumerated',

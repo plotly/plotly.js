@@ -95,8 +95,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     if(autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
     var autoRange = coerce('autorange', autorangeDflt);
     if(autoRange) {
-        coerce('autorangemin');
-        coerce('autorangemax');
+        coerce('autorangeclipmin');
+        coerce('autorangeclipmax');
 
         if(axType === 'linear' || axType === '-') coerce('rangemode');
     }

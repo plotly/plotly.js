@@ -135,13 +135,13 @@
     },
     "scene": {
       "zaxis": {
-        "autorangemin": -0.6
+        "autorangeclipmin": -0.6
       },
       "xaxis": {
-        "autorangemin": -0.6
+        "autorangeclipmin": -0.6
       },
       "yaxis": {
-        "autorangemax": 0.6,
+        "autorangeclipmax": 0.6,
         "autorange": "reversed"
       },
       "camera": {

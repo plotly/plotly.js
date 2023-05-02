@@ -733,7 +733,7 @@
             "mirror": "all",
             "overlaying": false,
             "autorange": true,
-            "autorangemin": "1e3"
+            "autorangeclipmin": "1e3"
         },
         "yaxis": {
             "title": {"text": "Life Expectancy (years)"},
