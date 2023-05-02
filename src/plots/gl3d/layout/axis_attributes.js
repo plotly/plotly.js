@@ -69,6 +69,7 @@ module.exports = overrideAll({
     autorangemax: axesAttrs.autorangemax,
     autorangeclipmin: axesAttrs.autorangeclipmin,
     autorangeclipmax: axesAttrs.autorangeclipmax,
+    autorangeinclude: axesAttrs.autorangeinclude,
     rangemode: axesAttrs.rangemode,
     rangemin: axesAttrs.rangemin,
     rangemax: axesAttrs.rangemax,

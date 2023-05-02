@@ -4320,6 +4320,18 @@
       "impliedEdits": {},
       "valType": "any"
      },
+     "autorangeinclude": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangeincludesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autorangemax": {
       "description": "Use this value exactly as autorange maximum.",
       "editType": "plot",
@@ -5471,6 +5483,18 @@
       "impliedEdits": {},
       "valType": "any"
      },
+     "autorangeinclude": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangeincludesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autorangemax": {
       "description": "Use this value exactly as autorange maximum.",
       "editType": "plot",
@@ -6079,6 +6103,18 @@
       "impliedEdits": {},
       "valType": "any"
      },
+     "autorangeinclude": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangeincludesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
+      "editType": "none",
+      "valType": "string"
+     },
      "autorangemax": {
       "description": "Use this value exactly as autorange maximum.",
       "editType": "plot",
@@ -6686,6 +6722,18 @@
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
+     },
+     "autorangeinclude": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangeincludesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
+      "editType": "none",
+      "valType": "string"
      },
      "autorangemax": {
       "description": "Use this value exactly as autorange maximum.",
@@ -10409,6 +10457,18 @@
      "impliedEdits": {},
      "valType": "any"
     },
+    "autorangeinclude": {
+     "arrayOk": true,
+     "description": "Ensure this value is included in autorange.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
+    "autorangeincludesrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
+     "editType": "none",
+     "valType": "string"
+    },
     "autorangemax": {
      "description": "Use this value exactly as autorange maximum.",
      "editType": "plot",
@@ -11706,6 +11766,18 @@
      "editType": "plot",
      "impliedEdits": {},
      "valType": "any"
+    },
+    "autorangeinclude": {
+     "arrayOk": true,
+     "description": "Ensure this value is included in autorange.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
+    "autorangeincludesrc": {
+     "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
+     "editType": "none",
+     "valType": "string"
     },
     "autorangemax": {
      "description": "Use this value exactly as autorange maximum.",

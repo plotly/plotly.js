@@ -630,14 +630,12 @@ function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
 function applyAutorangeMinOptions(v, ax) {
-    if(!ax) return v;
     if(ax.autorangemin !== undefined) return ax.autorangemin;
     if(ax.autorangeclipmin === undefined) return v;
     return Math.max(v, ax.d2l(ax.autorangeclipmin));
 }
 
 function applyAutorangeMaxOptions(v, ax) {
-    if(!ax) return v;
     if(ax.autorangemax !== undefined) return ax.autorangemax;
     if(ax.autorangeclipmax === undefined) return v;
     return Math.min(v, ax.d2l(ax.autorangeclipmax));
@@ -646,11 +644,32 @@ function applyAutorangeMaxOptions(v, ax) {
 // this function should be (and is) called before reversing the range
 // so range[0] is the minimum and range[1] is the maximum
 function applyAutorangeOptions(range, ax) {
+    if(!ax) return range;
+
     var min = range[0];
     var max = range[1];
 
     min = applyAutorangeMinOptions(min, ax);
     max = applyAutorangeMaxOptions(max, ax);
+
+    var include = ax.autorangeinclude;
+    if(include !== undefined) {
+        var lMin = ax.d2l(min);
+        var lMax = ax.d2l(max);
+
+        if(!Lib.isArrayOrTypedArray(include)) include = [include];
+        for(var i = 0; i < include.length; i++) {
+            var v = ax.d2l(include[i]);
+            if(lMin >= v) {
+                lMin = v;
+                min = v;
+            }
+            if(lMax <= v) {
+                lMax = v;
+                max = v;
+            }
+        }
+    }
 
     return [min, max];
 }

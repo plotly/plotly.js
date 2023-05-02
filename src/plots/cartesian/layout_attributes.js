@@ -317,6 +317,15 @@ module.exports = {
             'Has no effect when `autorangemax` is provided.'
         ].join(' ')
     },
+    autorangeinclude: {
+        valType: 'any',
+        arrayOk: true,
+        editType: 'plot',
+        impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+        description: [
+            'Ensure this value is included in autorange.'
+        ].join(' ')
+    },
     rangemode: {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],

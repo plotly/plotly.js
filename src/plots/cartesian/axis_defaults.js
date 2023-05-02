@@ -101,6 +101,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         if(autorangemin === undefined) coerce('autorangeclipmin');
         if(autorangemax === undefined) coerce('autorangeclipmax');
 
+        coerce('autorangeinclude');
+
         if(axType === 'linear' || axType === '-') coerce('rangemode');
     }
 

@@ -85,6 +85,8 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     if(autorangemin === undefined) coerceAxis('autorangeclipmin');
                     if(autorangemax === undefined) coerceAxis('autorangeclipmax');
 
+                    coerceAxis('autorangeinclude');
+
                     if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
                     if(autoRange === 'reversed') axOut._m = -1;
                 }

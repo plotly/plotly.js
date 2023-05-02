@@ -25,7 +25,7 @@
                 "autorangemin": -0.5
             },
             "yaxis": {
-                "autorangemin": -0.5
+                "autorangeinclude": [2, -1]
             },
             "zaxis": {
                 "autorangemax": 2.5
