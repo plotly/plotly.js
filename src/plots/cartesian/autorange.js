@@ -630,15 +630,50 @@ function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
 function applyAutorangeMinOptions(v, ax) {
-    if(ax.autorangemin !== undefined) return ax.autorangemin;
-    if(ax.autorangeclipmin === undefined) return v;
-    return Math.max(v, ax.d2l(ax.autorangeclipmin));
+    if(
+        ax.autorangemin !== undefined &&
+        hasValidMinAndMax(ax, ax.autorangemin, ax.autorangemax)
+    ) {
+        return ax.autorangemin;
+    }
+
+    if(
+        ax.autorangeclipmin !== undefined &&
+        hasValidMinAndMax(ax, ax.autorangeclipmin, ax.autorangeclipmax)
+    ) {
+        return Math.max(v, ax.d2l(ax.autorangeclipmin));
+    }
+    return v;
 }
 
 function applyAutorangeMaxOptions(v, ax) {
-    if(ax.autorangemax !== undefined) return ax.autorangemax;
-    if(ax.autorangeclipmax === undefined) return v;
-    return Math.min(v, ax.d2l(ax.autorangeclipmax));
+    if(
+        ax.autorangemax !== undefined &&
+        hasValidMinAndMax(ax, ax.autorangemin, ax.autorangemax)
+    ) {
+        return ax.autorangemax;
+    }
+
+    if(
+        ax.autorangeclipmax !== undefined &&
+        hasValidMinAndMax(ax, ax.autorangeclipmin, ax.autorangeclipmax)
+    ) {
+        return Math.min(v, ax.d2l(ax.autorangeclipmax));
+    }
+    return v;
+}
+
+function hasValidMinAndMax(ax, min, max) {
+    // in case both min and max are defined, ensure min < max
+    if(
+        min !== undefined &&
+        max !== undefined
+    ) {
+        min = ax.d2l(ax.autorangeclipmin);
+        max = ax.d2l(ax.autorangeclipmax);
+        return min < max;
+    }
+    return true;
 }
 
 // this function should be (and is) called before reversing the range
