@@ -15,6 +15,7 @@ var handleTickLabelDefaults = require('./tick_label_defaults');
 var handlePrefixSuffixDefaults = require('./prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('./category_order_defaults');
 var handleLineGridDefaults = require('./line_grid_defaults');
+var handleAutorangeOptionsDefaults = require('./autorange_options_defaults');
 var setConvert = require('./set_convert');
 
 var DAY_OF_WEEK = require('./constants').WEEKDAY_PATTERN;
@@ -95,13 +96,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     if(autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
     var autoRange = coerce('autorange', autorangeDflt);
     if(autoRange) {
-        var autorangemin = coerce('autorangemin');
-        var autorangemax = coerce('autorangemax');
-
-        if(autorangemin === undefined) coerce('autorangeclipmin');
-        if(autorangemax === undefined) coerce('autorangeclipmax');
-
-        coerce('autorangeinclude');
+        handleAutorangeOptionsDefaults(coerce);
 
         if(axType === 'linear' || axType === '-') coerce('rangemode');
     }

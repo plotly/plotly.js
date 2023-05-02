@@ -13,6 +13,7 @@ var handleTickLabelDefaults = require('../cartesian/tick_label_defaults');
 var handlePrefixSuffixDefaults = require('../cartesian/prefix_suffix_defaults');
 var handleCategoryOrderDefaults = require('../cartesian/category_order_defaults');
 var handleLineGridDefaults = require('../cartesian/line_grid_defaults');
+var handleAutorangeOptionsDefaults = require('../cartesian/autorange_options_defaults');
 var autoType = require('../cartesian/axis_autotype');
 
 var layoutAttributes = require('./layout_attributes');
@@ -79,13 +80,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
                 axIn.autorange = autoRange;
                 if(autoRange) {
-                    var autorangemin = coerceAxis('autorangemin');
-                    var autorangemax = coerceAxis('autorangemax');
-
-                    if(autorangemin === undefined) coerceAxis('autorangeclipmin');
-                    if(autorangemax === undefined) coerceAxis('autorangeclipmax');
-
-                    coerceAxis('autorangeinclude');
+                    handleAutorangeOptionsDefaults(coerceAxis);
 
                     if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
                     if(autoRange === 'reversed') axOut._m = -1;
