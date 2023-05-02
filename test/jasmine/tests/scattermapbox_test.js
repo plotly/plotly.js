@@ -1253,3 +1253,47 @@ describe('Test plotly events on a scattermapbox plot when css transform is prese
         });
     });
 });
+
+describe('scattermapbox restyle', function() {
+    var gd;
+
+    beforeAll(function() {
+        Plotly.setPlotConfig({
+            mapboxAccessToken: require('../../../build/credentials.json').MAPBOX_ACCESS_TOKEN
+        });
+
+        gd = createGraphDiv();
+    });
+
+    afterAll(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('@gl should be able to update legendonly to visible', function(done) {
+        Plotly.newPlot(gd, {
+            data: [{
+                lat: [0, 2], lon: [0, 2],
+                type: 'scattermapbox',
+                mode: 'lines',
+                visible: 'legendonly'
+            },
+            {
+                lat: [0, 2], lon: [2, 0],
+                type: 'scattermapbox',
+                mode: 'lines',
+                visible: true
+            }
+            ], layout: {
+                mapbox: {
+                    style: 'open-street-map',
+                    zoom: 6,
+                    center: { lat: 1, lon: 1 }
+                },
+                showlegend: true
+            }
+        }).then(function() {
+            return Plotly.restyle(gd, 'visible', true);
+        }).then(done, done.fail);
+    });
+});

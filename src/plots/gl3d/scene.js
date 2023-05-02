@@ -27,6 +27,8 @@ var applyAutorangeMax = require('../cartesian/autorange').applyAutorangeMax;
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
+var tabletmode = false;
+
 function Scene(options, fullLayout) {
     // create sub container for plot
     var sceneContainer = document.createElement('div');
@@ -244,6 +246,10 @@ proto.initializeGLPlot = function() {
             relayoutCallback(scene);
         });
 
+        scene.glplot.canvas.addEventListener('touchstart', function() {
+            tabletmode = true;
+        });
+
         scene.glplot.canvas.addEventListener('wheel', function(e) {
             if(gd._context._scrollZoom.gl3d) {
                 if(scene.camera._ortho) {
@@ -451,7 +457,7 @@ proto.render = function() {
             pointData.bbox = bbox[0];
         }
 
-        if(selection.buttons && selection.distance < 5) {
+        if(selection.distance < 5 && (selection.buttons || tabletmode)) {
             gd.emit('plotly_click', eventData);
         } else {
             gd.emit('plotly_hover', eventData);

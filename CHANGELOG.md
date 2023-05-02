@@ -9,6 +9,40 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.22.0] -- 2023-04-27
+
+### Added
+ - Add `legend` references to traces and `legend2`, `legend3`, etc. to layout,
+   also add `visible` to legend i.e. to allow positioning multiple legends on a graph [[#6535](https://github.com/plotly/plotly.js/pull/6535)],
+   this feature was anonymously sponsored: thank you to our sponsor!
+
+### Changed
+ - Update Norwegian translations in `no` locale [[#5410](https://github.com/plotly/plotly.js/pull/5410)],
+   with thanks to @bjornol for the contribution!
+ - Update Slovak translations and number formats in `sk` locale [[#6580](https://github.com/plotly/plotly.js/pull/6580)], with thanks to @Libco for the contribution!
+
+### Fixed
+ - Fix `plotly_click` in gl3d scenes to fire on touch devices [[#6563](https://github.com/plotly/plotly.js/pull/6563)],
+   with thanks to @NickTominaga for the contribution!
+ - Fix scatter3d when `marker.opacity` is set to zero [[#6581](https://github.com/plotly/plotly.js/pull/6581)], with thanks to @dmyronuk for the contribution!
+ - Fix scattermapbox visibility restyle [[#6567](https://github.com/plotly/plotly.js/pull/6567)]
+
+
+## [2.21.0] -- 2023-04-17
+
+### Added
+ - Add `texttemplate` to shape.label for parametric shapes i.e. line, rect and circle [[#6527](https://github.com/plotly/plotly.js/pull/6527)],
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
+ - Add strict option to custom bundle command [[#6557](https://github.com/plotly/plotly.js/pull/6557)],
+   with thanks to @CallumNZ for the contribution!
+
+### Fixed
+ - Fix dragging of legend when xanchor is not 'left' or yanchor is not 'top' [[#6528](https://github.com/plotly/plotly.js/pull/6528)],
+   with thanks to @bmaranville for the contribution!
+ - Fix heatmap rendering bug and improve performance when `zsmooth` is set to "fast" [[#6565](https://github.com/plotly/plotly.js/pull/6565)],
+   with thanks to @lvlte for the contribution!
+
+
 ## [2.20.0] -- 2023-03-15
 
 ### Added

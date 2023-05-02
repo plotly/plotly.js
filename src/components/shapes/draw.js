@@ -23,6 +23,7 @@ var svgTextUtils = require('../../lib/svg_text_utils');
 var constants = require('./constants');
 var helpers = require('./helpers');
 var getPathString = helpers.getPathString;
+var shapeLabelTexttemplateVars = require('./label_texttemplate');
 var FROM_TL = require('../../constants/alignment').FROM_TL;
 
 
@@ -38,7 +39,8 @@ var FROM_TL = require('../../constants/alignment').FROM_TL;
 module.exports = {
     draw: draw,
     drawOne: drawOne,
-    eraseActiveShape: eraseActiveShape
+    eraseActiveShape: eraseActiveShape,
+    drawLabel: drawLabel,
 };
 
 function draw(gd) {
@@ -168,7 +170,7 @@ function drawOne(gd, index) {
                 plotinfo: plotinfo,
                 gd: gd,
                 editHelpers: editHelpers,
-                hasText: options.label.text,
+                hasText: options.label.text || options.label.texttemplate,
                 isActiveShape: true // i.e. to enable controllers
             };
 
@@ -605,13 +607,32 @@ function drawLabel(gd, index, options, shapeGroup) {
     // Remove existing label
     shapeGroup.selectAll('.shape-label').remove();
 
-    // If no label, return
-    if(!options.label.text) return;
+    // If no label text or texttemplate, return
+    if(!(options.label.text || options.label.texttemplate)) return;
+
+    // Text template overrides text
+    var text;
+    if(options.label.texttemplate) {
+        var templateValues = {};
+        if(options.type !== 'path') {
+            var _xa = Axes.getFromId(gd, options.xref);
+            var _ya = Axes.getFromId(gd, options.yref);
+            for(var key in shapeLabelTexttemplateVars) {
+                var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
+                if(val !== undefined) templateValues[key] = val;
+            }
+        }
+        text = Lib.texttemplateStringForShapes(options.label.texttemplate,
+            {},
+            gd._fullLayout._d3locale,
+            templateValues);
+    } else {
+        text = options.label.text;
+    }
 
     var labelGroupAttrs = {
         'data-index': index,
     };
-    var text = options.label.text;
     var font = options.label.font;
 
     var labelTextAttrs = {

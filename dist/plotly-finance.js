@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.20.0
+* plotly.js (finance) v2.22.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -2777,7 +2777,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
   handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear', opts);
   coerce('title.text', layout._dfltTitle.colorbar);
-  var tickFont = colorbarOut.tickfont;
+  var tickFont = colorbarOut.showticklabels ? colorbarOut.tickfont : font;
   var dfltTitleFont = Lib.extendFlat({}, tickFont, {
     color: font.color,
     size: Lib.bigFont(tickFont.size)
@@ -10765,6 +10765,15 @@ module.exports = {
 var fontAttrs = __webpack_require__(1940);
 var colorAttrs = __webpack_require__(2399);
 module.exports = {
+  // not really a 'subplot' attribute container,
+  // but this is the flag we use to denote attributes that
+  // support yaxis, yaxis2, yaxis3, ... counters
+  _isSubplotObj: true,
+  visible: {
+    valType: 'boolean',
+    dflt: true,
+    editType: 'legend'
+  },
   bgcolor: {
     valType: 'color',
     editType: 'legend'
@@ -10937,12 +10946,19 @@ var plotsAttrs = __webpack_require__(9012);
 var attributes = __webpack_require__(3030);
 var basePlotLayoutAttributes = __webpack_require__(820);
 var helpers = __webpack_require__(130);
-module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
-  var containerIn = layoutIn.legend || {};
-  var containerOut = Template.newContainer(layoutOut, 'legend');
+function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
+  var containerIn = layoutIn[legendId] || {};
+  var containerOut = Template.newContainer(layoutOut, legendId);
   function coerce(attr, dflt) {
     return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
   }
+
+  // N.B. unified hover needs to inherit from font, bgcolor & bordercolor even when legend.visible is false
+  var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
+  coerce('bgcolor', layoutOut.paper_bgcolor);
+  coerce('bordercolor');
+  var visible = coerce('visible');
+  if (!visible) return;
   var trace;
   var traceCoerce = function (attr, dflt) {
     var traceIn = trace._input;
@@ -10994,10 +11010,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
   if (showLegend === false && !containerIn.uirevision) return;
   coerce('uirevision', layoutOut.uirevision);
   if (showLegend === false) return;
-  coerce('bgcolor', layoutOut.paper_bgcolor);
-  coerce('bordercolor');
   coerce('borderwidth');
-  var itemFont = Lib.coerceFont(coerce, 'font', layoutOut.font);
   var orientation = coerce('orientation');
   var isHorizontal = orientation === 'h';
   var defaultX, defaultY, defaultYAnchor;
@@ -11041,6 +11054,22 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     });
     Lib.coerceFont(coerce, 'title.font', dfltTitleFont);
   }
+}
+module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
+  var i;
+  var legends = ['legend'];
+  for (i = 0; i < fullData.length; i++) {
+    Lib.pushUnique(legends, fullData[i].legend);
+  }
+  layoutOut._legends = [];
+  for (i = 0; i < legends.length; i++) {
+    var legendId = legends[i];
+    groupDefaults(legendId, layoutIn, layoutOut, fullData);
+    if (layoutOut[legendId] && layoutOut[legendId].visible) {
+      layoutOut[legendId]._id = legendId;
+    }
+    layoutOut._legends.push(legendId);
+  }
 };
 
 /***/ }),
@@ -11070,38 +11099,64 @@ var getLegendData = __webpack_require__(2424);
 var style = __webpack_require__(3630);
 var helpers = __webpack_require__(130);
 var MAIN_TITLE = 1;
+var LEGEND_PATTERN = /^legend[0-9]*$/;
 module.exports = function draw(gd, opts) {
-  if (!opts) opts = gd._fullLayout.legend || {};
-  return _draw(gd, opts);
+  if (opts) {
+    drawOne(gd, opts);
+  } else {
+    var fullLayout = gd._fullLayout;
+    var newLegends = fullLayout._legends;
+
+    // remove old legends that won't stay on the graph
+    var oldLegends = fullLayout._infolayer.selectAll('[class^="legend"]');
+    oldLegends.each(function () {
+      var el = d3.select(this);
+      var classes = el.attr('class');
+      var cls = classes.split(' ')[0];
+      if (cls.match(LEGEND_PATTERN) && newLegends.indexOf(cls) === -1) {
+        el.remove();
+      }
+    });
+
+    // draw/update new legends
+    for (var i = 0; i < newLegends.length; i++) {
+      var legendId = newLegends[i];
+      var legendObj = gd._fullLayout[legendId];
+      drawOne(gd, legendObj);
+    }
+  }
 };
-function _draw(gd, legendObj) {
+function drawOne(gd, opts) {
+  var legendObj = opts || {};
   var fullLayout = gd._fullLayout;
-  var clipId = 'legend' + fullLayout._uid;
-  var layer;
+  var legendId = getId(legendObj);
+  var clipId, layer;
   var inHover = legendObj._inHover;
   if (inHover) {
     layer = legendObj.layer;
-    clipId += '-hover';
+    clipId = 'hover';
   } else {
     layer = fullLayout._infolayer;
+    clipId = legendId;
   }
   if (!layer) return;
+  clipId += fullLayout._uid;
   if (!gd._legendMouseDownTime) gd._legendMouseDownTime = 0;
   var legendData;
   if (!inHover) {
     if (!gd.calcdata) return;
-    legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj);
+    legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj, fullLayout._legends.length > 1);
   } else {
     if (!legendObj.entries) return;
     legendData = getLegendData(legendObj.entries, legendObj);
   }
   var hiddenSlices = fullLayout.hiddenlabels || [];
   if (!inHover && (!fullLayout.showlegend || !legendData.length)) {
-    layer.selectAll('.legend').remove();
+    layer.selectAll('.' + legendId).remove();
     fullLayout._topdefs.select('#' + clipId).remove();
-    return Plots.autoMargin(gd, 'legend');
+    return Plots.autoMargin(gd, legendId);
   }
-  var legend = Lib.ensureSingle(layer, 'g', 'legend', function (s) {
+  var legend = Lib.ensureSingle(layer, 'g', legendId, function (s) {
     if (!inHover) s.attr('pointer-events', 'all');
   });
   var clipPath = Lib.ensureSingleById(fullLayout._topdefs, 'clipPath', clipId, function (s) {
@@ -11116,11 +11171,11 @@ function _draw(gd, legendObj) {
   legendObj._titleWidth = 0;
   legendObj._titleHeight = 0;
   if (title.text) {
-    var titleEl = Lib.ensureSingle(scrollBox, 'text', 'legendtitletext');
+    var titleEl = Lib.ensureSingle(scrollBox, 'text', legendId + 'titletext');
     titleEl.attr('text-anchor', 'start').call(Drawing.font, title.font).text(title.text);
     textLayout(titleEl, scrollBox, gd, legendObj, MAIN_TITLE); // handle mathjax or multi-line text and compute title height
   } else {
-    scrollBox.selectAll('.legendtitletext').remove();
+    scrollBox.selectAll('.' + legendId + 'titletext').remove();
   }
   var scrollBar = Lib.ensureSingle(legend, 'rect', 'scrollbar', function (s) {
     s.attr(constants.scrollBarEnterAttrs).call(Color.fill, constants.scrollBarColor);
@@ -11141,7 +11196,7 @@ function _draw(gd, legendObj) {
   }).each(function () {
     d3.select(this).call(drawTexts, gd, legendObj);
   }).call(style, gd, legendObj).each(function () {
-    if (!inHover) d3.select(this).call(setupTraceToggle, gd);
+    if (!inHover) d3.select(this).call(setupTraceToggle, gd, legendId);
   });
   Lib.syncOrAsync([Plots.previousPromises, function () {
     return computeLegendDimensions(gd, groups, traces, legendObj);
@@ -11149,7 +11204,7 @@ function _draw(gd, legendObj) {
     var gs = fullLayout._size;
     var bw = legendObj.borderwidth;
     if (!inHover) {
-      var expMargin = expandMargin(gd);
+      var expMargin = expandMargin(gd, legendId);
 
       // IF expandMargin return a Promise (which is truthy),
       // we're under a doAutoMargin redraw, so we don't have to
@@ -11163,10 +11218,10 @@ function _draw(gd, legendObj) {
         lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
         ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
         if (lx !== lx0) {
-          Lib.log('Constrain legend.x to make legend fit inside graph');
+          Lib.log('Constrain ' + legendId + '.x to make legend fit inside graph');
         }
         if (ly !== ly0) {
-          Lib.log('Constrain legend.y to make legend fit inside graph');
+          Lib.log('Constrain ' + legendId + '.y to make legend fit inside graph');
         }
       }
 
@@ -11282,7 +11337,7 @@ function _draw(gd, legendObj) {
       scrollBox.call(scrollBoxTouchDrag);
     }
     function scrollHandler(scrollBoxY, scrollBarHeight, scrollRatio) {
-      legendObj._scrollY = gd._fullLayout.legend._scrollY = scrollBoxY;
+      legendObj._scrollY = gd._fullLayout[legendId]._scrollY = scrollBoxY;
       Drawing.setTranslate(scrollBox, 0, -scrollBoxY);
       Drawing.setRect(scrollBar, legendObj._width, constants.scrollBarMargin + scrollBoxY * scrollRatio, constants.scrollBarWidth, scrollBarHeight);
       clipPath.select('rect').attr('y', bw + scrollBoxY);
@@ -11302,19 +11357,19 @@ function _draw(gd, legendObj) {
           var newX = x0 + dx;
           var newY = y0 + dy;
           Drawing.setTranslate(legend, newX, newY);
-          xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, legendObj.xanchor);
-          yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, legendObj.yanchor);
+          xf = dragElement.align(newX, legendObj._width, gs.l, gs.l + gs.w, legendObj.xanchor);
+          yf = dragElement.align(newY + legendObj._height, -legendObj._height, gs.t + gs.h, gs.t, legendObj.yanchor);
         },
         doneFn: function () {
           if (xf !== undefined && yf !== undefined) {
-            Registry.call('_guiRelayout', gd, {
-              'legend.x': xf,
-              'legend.y': yf
-            });
+            var obj = {};
+            obj[legendId + '.x'] = xf;
+            obj[legendId + '.y'] = yf;
+            Registry.call('_guiRelayout', gd, obj);
           }
         },
         clickFn: function (numClicks, e) {
-          var clickedTrace = layer.selectAll('g.traces').filter(function () {
+          var clickedTrace = groups.selectAll('g.traces').filter(function () {
             var bbox = this.getBoundingClientRect();
             return e.clientX >= bbox.left && e.clientX <= bbox.right && e.clientY >= bbox.top && e.clientY <= bbox.bottom;
           });
@@ -11369,6 +11424,7 @@ function clickOrDoubleClick(gd, legend, legendItem, numClicks, evt) {
   }
 }
 function drawTexts(g, gd, legendObj) {
+  var legendId = getId(legendObj);
   var legendItem = g.data()[0][0];
   var trace = legendItem.trace;
   var isPieLike = Registry.traceIs(trace, 'pie-like');
@@ -11389,7 +11445,7 @@ function drawTexts(g, gd, legendObj) {
       name = legendItem.text;
     }
   }
-  var textEl = Lib.ensureSingle(g, 'text', 'legendtext');
+  var textEl = Lib.ensureSingle(g, 'text', legendId + 'text');
   textEl.attr('text-anchor', 'start').call(Drawing.font, font).text(isEditable ? ensureLength(name, maxNameLength) : name);
   var textGap = legendObj.itemwidth + constants.itemGap * 2;
   svgTextUtils.positionText(textEl, textGap, 0);
@@ -11431,11 +11487,11 @@ function ensureLength(str, maxLength) {
   for (var i = targetLength - str.length; i > 0; i--) str += ' ';
   return str;
 }
-function setupTraceToggle(g, gd) {
+function setupTraceToggle(g, gd, legendId) {
   var doubleClickDelay = gd._context.doubleClickDelay;
   var newMouseDownTime;
   var numClicks = 1;
-  var traceToggle = Lib.ensureSingle(g, 'rect', 'legendtoggle', function (s) {
+  var traceToggle = Lib.ensureSingle(g, 'rect', legendId + 'toggle', function (s) {
     if (!gd._context.staticPlot) {
       s.style('cursor', 'pointer').attr('pointer-events', 'all');
     }
@@ -11455,7 +11511,7 @@ function setupTraceToggle(g, gd) {
   });
   traceToggle.on('mouseup', function () {
     if (gd._dragged || gd._editing) return;
-    var legend = gd._fullLayout.legend;
+    var legend = gd._fullLayout[legendId];
     if (new Date().getTime() - gd._legendMouseDownTime > doubleClickDelay) {
       numClicks = Math.max(numClicks - 1, 1);
     }
@@ -11476,7 +11532,10 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
   }
   var mathjaxGroup = g.select('g[class*=math-group]');
   var mathjaxNode = mathjaxGroup.node();
-  if (!legendObj) legendObj = gd._fullLayout.legend;
+  var legendId = getId(legendObj);
+  if (!legendObj) {
+    legendObj = gd._fullLayout[legendId];
+  }
   var bw = legendObj.borderwidth;
   var font;
   if (aTitle === MAIN_TITLE) {
@@ -11499,7 +11558,8 @@ function computeTextDimensions(g, gd, legendObj, aTitle) {
       Drawing.setTranslate(mathjaxGroup, 0, height * 0.25);
     }
   } else {
-    var textEl = g.select(aTitle === MAIN_TITLE ? '.legendtitletext' : '.legendtext');
+    var cls = '.' + legendId + (aTitle === MAIN_TITLE ? 'title' : '') + 'text';
+    var textEl = g.select(cls);
     var textLines = svgTextUtils.lineCount(textEl);
     var textNode = textEl.node();
     height = lineHeight * textLines;
@@ -11549,7 +11609,7 @@ function getTitleSize(legendObj) {
 }
 
 /*
- * Computes in fullLayout.legend:
+ * Computes in fullLayout[legendId]:
  *
  *  - _height: legend height including items past scrollbox height
  *  - _maxHeight: maximum legend height before scrollbox is required
@@ -11560,7 +11620,10 @@ function getTitleSize(legendObj) {
  */
 function computeLegendDimensions(gd, groups, traces, legendObj) {
   var fullLayout = gd._fullLayout;
-  if (!legendObj) legendObj = fullLayout.legend;
+  var legendId = getId(legendObj);
+  if (!legendObj) {
+    legendObj = fullLayout[legendId];
+  }
   var gs = fullLayout._size;
   var isVertical = helpers.isVertical(legendObj);
   var isGrouped = helpers.isGrouped(legendObj);
@@ -11695,7 +11758,7 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
   var edits = gd._context.edits;
   var isEditable = edits.legendText || edits.legendPosition;
   traces.each(function (d) {
-    var traceToggle = d3.select(this).select('.legendtoggle');
+    var traceToggle = d3.select(this).select('.' + legendId + 'toggle');
     var h = d[0].height;
     var legendgroup = d[0].trace.legendgroup;
     var traceWidth = getTraceWidth(d, legendObj, textGap);
@@ -11709,12 +11772,12 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     Drawing.setRect(traceToggle, 0, -h / 2, w, h);
   });
 }
-function expandMargin(gd) {
+function expandMargin(gd, legendId) {
   var fullLayout = gd._fullLayout;
-  var legendObj = fullLayout.legend;
+  var legendObj = fullLayout[legendId];
   var xanchor = getXanchor(legendObj);
   var yanchor = getYanchor(legendObj);
-  return Plots.autoMargin(gd, 'legend', {
+  return Plots.autoMargin(gd, legendId, {
     x: legendObj.x,
     y: legendObj.y,
     l: legendObj._width * FROM_TL[xanchor],
@@ -11729,6 +11792,9 @@ function getXanchor(legendObj) {
 function getYanchor(legendObj) {
   return Lib.isBottomAnchor(legendObj) ? 'bottom' : Lib.isMiddleAnchor(legendObj) ? 'middle' : 'top';
 }
+function getId(legendObj) {
+  return legendObj._id || 'legend';
+}
 
 /***/ }),
 
@@ -11740,7 +11806,7 @@ function getYanchor(legendObj) {
 
 var Registry = __webpack_require__(3972);
 var helpers = __webpack_require__(130);
-module.exports = function getLegendData(calcdata, opts) {
+module.exports = function getLegendData(calcdata, opts, hasMultipleLegends) {
   var inHover = opts._inHover;
   var grouped = helpers.isGrouped(opts);
   var reversed = helpers.isReversed(opts);
@@ -11751,7 +11817,10 @@ module.exports = function getLegendData(calcdata, opts) {
   var lgroupi = 0;
   var maxNameLength = 0;
   var i, j;
-  function addOneItem(legendGroup, legendItem) {
+  function addOneItem(legendId, legendGroup, legendItem) {
+    if (opts.visible === false) return;
+    if (hasMultipleLegends && legendId !== opts._id) return;
+
     // each '' legend group is treated as a separate group
     if (legendGroup === '' || !helpers.isGrouped(opts)) {
       // TODO: check this against fullData legendgroups?
@@ -11773,6 +11842,7 @@ module.exports = function getLegendData(calcdata, opts) {
     var cd = calcdata[i];
     var cd0 = cd[0];
     var trace = cd0.trace;
+    var lid = trace.legend;
     var lgroup = trace.legendgroup;
     if (!inHover && (!trace.visible || !trace.showlegend)) continue;
     if (Registry.traceIs(trace, 'pie-like')) {
@@ -11780,7 +11850,7 @@ module.exports = function getLegendData(calcdata, opts) {
       for (j = 0; j < cd.length; j++) {
         var labelj = cd[j].label;
         if (!slicesShown[lgroup][labelj]) {
-          addOneItem(lgroup, {
+          addOneItem(lid, lgroup, {
             label: labelj,
             color: cd[j].color,
             i: cd[j].i,
@@ -11792,7 +11862,7 @@ module.exports = function getLegendData(calcdata, opts) {
         }
       }
     } else {
-      addOneItem(lgroup, cd0);
+      addOneItem(lid, lgroup, cd0);
       maxNameLength = Math.max(maxNameLength, (trace.name || '').length);
     }
   }
@@ -17200,6 +17270,8 @@ var dash = (__webpack_require__(9952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var templatedArray = (__webpack_require__(4467).templatedArray);
 var axisPlaceableObjs = __webpack_require__(4695);
+var shapeTexttemplateAttrs = (__webpack_require__(5386)/* .shapeTexttemplateAttrs */ .R);
+var shapeLabelTexttemplateVars = __webpack_require__(7281);
 module.exports = templatedArray('shape', {
   visible: {
     valType: 'boolean',
@@ -17300,6 +17372,9 @@ module.exports = templatedArray('shape', {
       dflt: '',
       editType: 'arraydraw'
     },
+    texttemplate: shapeTexttemplateAttrs({}, {
+      keys: Object.keys(shapeLabelTexttemplateVars)
+    }),
     font: fontAttrs({
       editType: 'calc+arraydraw',
       colorEditType: 'arraydraw'
@@ -17661,8 +17736,14 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
   // Label options
   var isLine = shapeType === 'line';
-  var labelText = coerce('label.text');
-  if (labelText) {
+  var labelTextTemplate, labelText;
+  if (noPath) {
+    labelTextTemplate = coerce('label.texttemplate');
+  }
+  if (!labelTextTemplate) {
+    labelText = coerce('label.text');
+  }
+  if (labelText || labelTextTemplate) {
     coerce('label.textangle');
     var labelTextPosition = coerce('label.textposition', isLine ? 'middle' : 'middle center');
     coerce('label.xanchor');
@@ -18012,6 +18093,7 @@ var svgTextUtils = __webpack_require__(3893);
 var constants = __webpack_require__(1459);
 var helpers = __webpack_require__(477);
 var getPathString = helpers.getPathString;
+var shapeLabelTexttemplateVars = __webpack_require__(7281);
 var FROM_TL = (__webpack_require__(8783).FROM_TL);
 
 // Shapes are stored in gd.layout.shapes, an array of objects
@@ -18026,7 +18108,8 @@ var FROM_TL = (__webpack_require__(8783).FROM_TL);
 module.exports = {
   draw: draw,
   drawOne: drawOne,
-  eraseActiveShape: eraseActiveShape
+  eraseActiveShape: eraseActiveShape,
+  drawLabel: drawLabel
 };
 function draw(gd) {
   var fullLayout = gd._fullLayout;
@@ -18128,7 +18211,7 @@ function drawOne(gd, index) {
         plotinfo: plotinfo,
         gd: gd,
         editHelpers: editHelpers,
-        hasText: options.label.text,
+        hasText: options.label.text || options.label.texttemplate,
         isActiveShape: true // i.e. to enable controllers
       };
 
@@ -18489,12 +18572,28 @@ function drawLabel(gd, index, options, shapeGroup) {
   // Remove existing label
   shapeGroup.selectAll('.shape-label').remove();
 
-  // If no label, return
-  if (!options.label.text) return;
+  // If no label text or texttemplate, return
+  if (!(options.label.text || options.label.texttemplate)) return;
+
+  // Text template overrides text
+  var text;
+  if (options.label.texttemplate) {
+    var templateValues = {};
+    if (options.type !== 'path') {
+      var _xa = Axes.getFromId(gd, options.xref);
+      var _ya = Axes.getFromId(gd, options.yref);
+      for (var key in shapeLabelTexttemplateVars) {
+        var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
+        if (val !== undefined) templateValues[key] = val;
+      }
+    }
+    text = Lib.texttemplateStringForShapes(options.label.texttemplate, {}, gd._fullLayout._d3locale, templateValues);
+  } else {
+    text = options.label.text;
+  }
   var labelGroupAttrs = {
     'data-index': index
   };
-  var text = options.label.text;
   var font = options.label.font;
   var labelTextAttrs = {
     'data-notex': 1
@@ -18781,6 +18880,8 @@ function eraseActiveShape(gd) {
 var fontAttrs = __webpack_require__(1940);
 var dash = (__webpack_require__(9952)/* .dash */ .P);
 var extendFlat = (__webpack_require__(1426).extendFlat);
+var shapeTexttemplateAttrs = (__webpack_require__(5386)/* .shapeTexttemplateAttrs */ .R);
+var shapeLabelTexttemplateVars = __webpack_require__(7281);
 module.exports = {
   newshape: {
     line: {
@@ -18836,6 +18937,12 @@ module.exports = {
         dflt: '',
         editType: 'none'
       },
+      texttemplate: shapeTexttemplateAttrs({
+        newshape: true,
+        editType: 'none'
+      }, {
+        keys: Object.keys(shapeLabelTexttemplateVars)
+      }),
       font: fontAttrs({
         editType: 'none'
       }),
@@ -18938,7 +19045,8 @@ module.exports = function supplyDrawNewShapeDefaults(layoutIn, layoutOut, coerce
   }
   var isLine = layoutIn.dragmode === 'drawline';
   var labelText = coerce('newshape.label.text');
-  if (labelText) {
+  var labelTextTemplate = coerce('newshape.label.texttemplate');
+  if (labelText || labelTextTemplate) {
     coerce('newshape.label.textangle');
     var labelTextPosition = coerce('newshape.label.textposition', isLine ? 'middle' : 'middle center');
     coerce('newshape.label.xanchor');
@@ -19738,6 +19846,72 @@ module.exports = {
   calcAutorange: __webpack_require__(5627),
   draw: drawModule.draw,
   drawOne: drawModule.drawOne
+};
+
+/***/ }),
+
+/***/ 7281:
+/***/ (function(module) {
+
+"use strict";
+
+
+// Wrapper functions to handle paper-referenced shapes, which have no axis
+function d2l(v, axis) {
+  return axis ? axis.d2l(v) : v;
+}
+function l2d(v, axis) {
+  return axis ? axis.l2d(v) : v;
+}
+function x0Fn(shape) {
+  return shape.x0;
+}
+function x1Fn(shape) {
+  return shape.x1;
+}
+function y0Fn(shape) {
+  return shape.y0;
+}
+function y1Fn(shape) {
+  return shape.y1;
+}
+function dxFn(shape, xa) {
+  return d2l(shape.x1, xa) - d2l(shape.x0, xa);
+}
+function dyFn(shape, xa, ya) {
+  return d2l(shape.y1, ya) - d2l(shape.y0, ya);
+}
+function widthFn(shape, xa) {
+  return Math.abs(dxFn(shape, xa));
+}
+function heightFn(shape, xa, ya) {
+  return Math.abs(dyFn(shape, xa, ya));
+}
+function lengthFn(shape, xa, ya) {
+  return shape.type !== 'line' ? undefined : Math.sqrt(Math.pow(dxFn(shape, xa), 2) + Math.pow(dyFn(shape, xa, ya), 2));
+}
+function xcenterFn(shape, xa) {
+  return l2d((d2l(shape.x1, xa) + d2l(shape.x0, xa)) / 2, xa);
+}
+function ycenterFn(shape, xa, ya) {
+  return l2d((d2l(shape.y1, ya) + d2l(shape.y0, ya)) / 2, ya);
+}
+function slopeFn(shape, xa, ya) {
+  return shape.type !== 'line' ? undefined : dyFn(shape, xa, ya) / dxFn(shape, xa);
+}
+module.exports = {
+  x0: x0Fn,
+  x1: x1Fn,
+  y0: y0Fn,
+  y1: y1Fn,
+  slope: slopeFn,
+  dx: dxFn,
+  dy: dyFn,
+  width: widthFn,
+  height: heightFn,
+  length: lengthFn,
+  xcenter: xcenterFn,
+  ycenter: ycenterFn
 };
 
 /***/ }),
@@ -25547,6 +25721,34 @@ var texttemplateWarnings = {
 lib.texttemplateString = function () {
   return templateFormatString.apply(texttemplateWarnings, arguments);
 };
+
+// Regex for parsing multiplication and division operations applied to a template key
+// Used for shape.label.texttemplate
+// Matches a key name (non-whitespace characters), followed by a * or / character, followed by a number
+// For example, the following strings are matched: `x0*2`, `slope/1.60934`, `y1*2.54`
+var MULT_DIV_REGEX = /^(\S+)([\*\/])(-?\d+(\.\d+)?)$/;
+function multDivParser(inputStr) {
+  var match = inputStr.match(MULT_DIV_REGEX);
+  if (match) return {
+    key: match[1],
+    op: match[2],
+    number: Number(match[3])
+  };
+  return {
+    key: inputStr,
+    op: null,
+    number: null
+  };
+}
+var texttemplateWarningsForShapes = {
+  max: 10,
+  count: 0,
+  name: 'texttemplate',
+  parseMultDiv: true
+};
+lib.texttemplateStringForShapes = function () {
+  return templateFormatString.apply(texttemplateWarningsForShapes, arguments);
+};
 var TEMPLATE_STRING_FORMAT_SEPARATOR = /^[:|\|]/;
 /**
  * Substitute values from an object into a string and optionally formats them using d3-format,
@@ -25580,6 +25782,17 @@ function templateFormatString(string, labels, d3locale) {
     var key = rawKey;
     if (isSpaceOther || isSpaceOtherSpace) key = key.substring(1);
     if (isOtherSpace || isSpaceOtherSpace) key = key.substring(0, key.length - 1);
+
+    // Shape labels support * and / operators in template string
+    // Parse these if the parseMultDiv param is set to true
+    var parsedOp = null;
+    var parsedNumber = null;
+    if (opts.parseMultDiv) {
+      var _match = multDivParser(key);
+      key = _match.key;
+      parsedOp = _match.op;
+      parsedNumber = _match.number;
+    }
     var value;
     if (hasOther) {
       value = labels[key];
@@ -25600,6 +25813,12 @@ function templateFormatString(string, labels, d3locale) {
         }
         if (value !== undefined) break;
       }
+    }
+
+    // Apply mult/div operation (if applicable)
+    if (value !== undefined) {
+      if (parsedOp === '*') value *= parsedNumber;
+      if (parsedOp === '/') value /= parsedNumber;
     }
     if (value === undefined && opts) {
       if (opts.count < opts.max) {
@@ -36082,6 +36301,11 @@ module.exports = {
   showlegend: {
     valType: 'boolean',
     dflt: true,
+    editType: 'style'
+  },
+  legend: {
+    valType: 'subplotid',
+    dflt: 'legend',
     editType: 'style'
   },
   legendgroup: {
@@ -48520,6 +48744,7 @@ plots.supplyTraceDefaults = function (traceIn, traceOut, colorIndex, layout, tra
     coerce('meta');
     if (Registry.traceIs(traceOut, 'showLegend')) {
       Lib.coerce(traceIn, traceOut, _module.attributes.showlegend ? _module.attributes : plots.attributes, 'showlegend');
+      coerce('legend');
       coerce('legendwidth');
       coerce('legendgroup');
       coerce('legendgrouptitle.text');
@@ -50473,6 +50698,9 @@ function templateFormatStringDescription(opts) {
   var supportOther = opts && opts.supportOther;
   return ['Variables are inserted using %{variable},', 'for example "y: %{y}"' + (supportOther ? ' as well as %{xother}, {%_xother}, {%_xother_}, {%xother_}. When showing info for several points, *xother* will be added to those with different x positions from the first point. An underscore before or after *(x|y)other* will add a space on that side, only when this field is shown.' : '.'), 'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{y:$.2f}".', FORMAT_LINK, 'for details on the formatting syntax.', 'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{2019-01-01|%A}".', DATE_FORMAT_LINK, 'for details on the date formatting syntax.'].join(' ');
 }
+function shapeTemplateFormatStringDescription() {
+  return ['Variables are inserted using %{variable},', 'for example "x0: %{x0}".', 'Numbers are formatted using d3-format\'s syntax %{variable:d3-format}, for example "Price: %{x0:$.2f}". See', FORMAT_LINK, 'for details on the formatting syntax.', 'Dates are formatted using d3-time-format\'s syntax %{variable|d3-time-format}, for example "Day: %{x0|%m %b %Y}". See', DATE_FORMAT_LINK, 'for details on the date formatting syntax.', 'A single multiplication or division operation may be applied to numeric variables, and combined with', 'd3 number formatting, for example "Length in cm: %{x0*2.54}", "%{slope*60:.1f} meters per second."', 'For log axes, variable values are given in log units.', 'For date axes, x/y coordinate variables and center variables use datetimes, while all other variable values use values in ms.'].join(' ');
+}
 function describeVariables(extra) {
   var descPart = extra.description ? ' ' + extra.description : '';
   var keys = extra.keys || [];
@@ -50483,14 +50711,14 @@ function describeVariables(extra) {
     }
     descPart = descPart + 'Finally, the template string has access to ';
     if (keys.length === 1) {
-      descPart = 'variable ' + quotedKeys[0];
+      descPart = descPart + 'variable ' + quotedKeys[0];
     } else {
-      descPart = 'variables ' + quotedKeys.slice(0, -1).join(', ') + ' and ' + quotedKeys.slice(-1) + '.';
+      descPart = descPart + 'variables ' + quotedKeys.slice(0, -1).join(', ') + ' and ' + quotedKeys.slice(-1) + '.';
     }
   }
   return descPart;
 }
-exports.f = function (opts, extra) {
+exports.fF = function (opts, extra) {
   opts = opts || {};
   extra = extra || {};
   var descPart = describeVariables(extra);
@@ -50504,7 +50732,7 @@ exports.f = function (opts, extra) {
   }
   return hovertemplate;
 };
-exports.s = function (opts, extra) {
+exports.si = function (opts, extra) {
   opts = opts || {};
   extra = extra || {};
   var descPart = describeVariables(extra);
@@ -50516,6 +50744,18 @@ exports.s = function (opts, extra) {
   if (opts.arrayOk !== false) {
     texttemplate.arrayOk = true;
   }
+  return texttemplate;
+};
+exports.R = function (opts, extra) {
+  opts = opts || {};
+  extra = extra || {};
+  var newStr = opts.newshape ? 'new ' : '';
+  var descPart = describeVariables(extra);
+  var texttemplate = {
+    valType: 'string',
+    dflt: '',
+    editType: opts.editType || 'arraydraw'
+  };
   return texttemplate;
 };
 
@@ -51679,8 +51919,8 @@ module.exports = function arraysToCalcdata(cd, trace) {
 
 var scatterAttrs = __webpack_require__(2196);
 var axisHoverFormat = (__webpack_require__(2663).axisHoverFormat);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var colorScaleAttrs = __webpack_require__(693);
 var fontAttrs = __webpack_require__(1940);
 var constants = __webpack_require__(7313);
@@ -54147,7 +54387,7 @@ var scatterAttrs = __webpack_require__(2196);
 var barAttrs = __webpack_require__(1486);
 var colorAttrs = __webpack_require__(2399);
 var axisHoverFormat = (__webpack_require__(2663).axisHoverFormat);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
@@ -55192,8 +55432,8 @@ var barAttrs = __webpack_require__(1486);
 var lineAttrs = (__webpack_require__(2196).line);
 var baseAttrs = __webpack_require__(9012);
 var axisHoverFormat = (__webpack_require__(2663).axisHoverFormat);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var constants = __webpack_require__(8517);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var Color = __webpack_require__(7901);
@@ -55860,8 +56100,8 @@ module.exports = {
 var pieAttrs = __webpack_require__(4000);
 var baseAttrs = __webpack_require__(9012);
 var domainAttrs = (__webpack_require__(7670)/* .attributes */ .Y);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 module.exports = {
   labels: pieAttrs.labels,
@@ -56357,8 +56597,8 @@ module.exports = function style(gd) {
 
 var barAttrs = __webpack_require__(1486);
 var axisHoverFormat = (__webpack_require__(2663).axisHoverFormat);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var fontAttrs = __webpack_require__(1940);
 var makeBinAttrs = __webpack_require__(7656);
 var constants = __webpack_require__(2406);
@@ -59661,8 +59901,8 @@ var baseAttrs = __webpack_require__(9012);
 var domainAttrs = (__webpack_require__(7670)/* .attributes */ .Y);
 var fontAttrs = __webpack_require__(1940);
 var colorAttrs = __webpack_require__(2399);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var textFontAttrs = fontAttrs({
   editType: 'plot',
@@ -61327,8 +61567,8 @@ module.exports = function arraysToCalcdata(cd, trace) {
 
 
 var axisHoverFormat = (__webpack_require__(2663).axisHoverFormat);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
 var colorScaleAttrs = __webpack_require__(693);
 var fontAttrs = __webpack_require__(1940);
 var dash = (__webpack_require__(9952)/* .dash */ .P);
@@ -64251,8 +64491,8 @@ var barAttrs = __webpack_require__(1486);
 var lineAttrs = (__webpack_require__(2196).line);
 var baseAttrs = __webpack_require__(9012);
 var axisHoverFormat = (__webpack_require__(2663).axisHoverFormat);
-var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .f);
-var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .s);
+var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
+var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var constants = __webpack_require__(8334);
 var extendFlat = (__webpack_require__(1426).extendFlat);
 var Color = __webpack_require__(7901);
@@ -65920,7 +66160,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.20.0';
+exports.version = '2.22.0';
 
 /***/ }),
 
