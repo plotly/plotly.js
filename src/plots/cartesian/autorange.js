@@ -13,8 +13,7 @@ var getFromId = axIds.getFromId;
 var isLinked = axIds.isLinked;
 
 module.exports = {
-    applyAutorangeMinOptions: applyAutorangeMinOptions,
-    applyAutorangeMaxOptions: applyAutorangeMaxOptions,
+    applyAutorangeOptions: applyAutorangeOptions,
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
@@ -178,8 +177,7 @@ function getAutoRange(gd, ax) {
         ];
     }
 
-    newRange[0] = applyAutorangeMinOptions(newRange[0], ax);
-    newRange[1] = applyAutorangeMaxOptions(newRange[1], ax);
+    newRange = applyAutorangeOptions(newRange, ax);
 
     if(ax.limitRange) ax.limitRange();
 
@@ -643,4 +641,16 @@ function applyAutorangeMaxOptions(v, ax) {
     if(ax.autorangemax !== undefined) return ax.autorangemax;
     if(ax.autorangeclipmax === undefined) return v;
     return Math.min(v, ax.d2l(ax.autorangeclipmax));
+}
+
+// this function should be (and is) called before reversing the range
+// so range[0] is the minimum and range[1] is the maximum
+function applyAutorangeOptions(range, ax) {
+    var min = range[0];
+    var max = range[1];
+
+    min = applyAutorangeMinOptions(min, ax);
+    max = applyAutorangeMaxOptions(max, ax);
+
+    return [min, max];
 }

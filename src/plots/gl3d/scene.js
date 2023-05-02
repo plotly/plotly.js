@@ -22,8 +22,7 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
-var applyAutorangeMinOptions = require('../cartesian/autorange').applyAutorangeMinOptions;
-var applyAutorangeMaxOptions = require('../cartesian/autorange').applyAutorangeMaxOptions;
+var applyAutorangeOptions = require('../cartesian/autorange').applyAutorangeOptions;
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -682,6 +681,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
             };
         }
 
+        var range;
+
         if(axis.autorange) {
             sceneBounds[0][i] = Infinity;
             sceneBounds[1][i] = -Infinity;
@@ -727,8 +728,15 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] += d / 32.0;
             }
 
-            sceneBounds[0][i] = applyAutorangeMinOptions(sceneBounds[0][i], axis);
-            sceneBounds[1][i] = applyAutorangeMaxOptions(sceneBounds[1][i], axis);
+            range = [
+                sceneBounds[0][i],
+                sceneBounds[1][i]
+            ];
+
+            range = applyAutorangeOptions(range, axis);
+
+            sceneBounds[0][i] = range[0];
+            sceneBounds[1][i] = range[1];
 
             if(axis.autorange === 'reversed') {
                 // swap bounds:
@@ -737,7 +745,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] = tmp;
             }
         } else {
-            var range = axis.range;
+            range = axis.range;
             sceneBounds[0][i] = axis.r2l(range[0]);
             sceneBounds[1][i] = axis.r2l(range[1]);
         }
