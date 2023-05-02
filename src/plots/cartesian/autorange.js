@@ -649,9 +649,6 @@ function applyAutorangeOptions(range, ax) {
     var min = range[0];
     var max = range[1];
 
-    min = applyAutorangeMinOptions(min, ax);
-    max = applyAutorangeMaxOptions(max, ax);
-
     var include = ax.autorangeinclude;
     if(include !== undefined) {
         var lMin = ax.d2l(min);
@@ -670,6 +667,9 @@ function applyAutorangeOptions(range, ax) {
             }
         }
     }
+
+    min = applyAutorangeMinOptions(min, ax);
+    max = applyAutorangeMaxOptions(max, ax);
 
     return [min, max];
 }
