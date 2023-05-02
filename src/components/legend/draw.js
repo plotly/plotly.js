@@ -154,38 +154,39 @@ function drawOne(gd, opts) {
         function() {
             var gs = fullLayout._size;
             var bw = legendObj.borderwidth;
+            var isPaperX = legendObj.xref === 'paper';
+            var isPaperY = legendObj.yref === 'paper';
 
             if(!inHover) {
-                var expMargin = expandMargin(gd, legendId);
-
-                // IF expandMargin return a Promise (which is truthy),
-                // we're under a doAutoMargin redraw, so we don't have to
-                // draw the remaining pieces below
-                if(expMargin) return;
-
                 var lx, ly;
 
-                if(legendObj.xref === 'paper') {
+                if(isPaperX) {
                     lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
                 } else {
                     legendObj.x = Lib.constrain(legendObj.x, 0, 1); // TODO: Move this to defaults setting?
                     lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
                 }
 
-                if(legendObj.yref === 'paper') {
+                if(isPaperY) {
                     ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
                 } else {
                     legendObj.y = Lib.constrain(legendObj.y, 0, 1); // TODO: Move this to defaults setting?
                     ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
                 }
 
-                // TODO: Does this also apply if y/xref=container?
+                var expMargin = expandMargin(gd, legendId, lx, ly);
+
+                // IF expandMargin return a Promise (which is truthy),
+                // we're under a doAutoMargin redraw, so we don't have to
+                // draw the remaining pieces below
+                if(expMargin) return;
+
                 if(fullLayout.margin.autoexpand) {
                     var lx0 = lx;
                     var ly0 = ly;
 
-                    lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
-                    ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+                    lx = isPaperX ? Lib.constrain(lx, 0, fullLayout.width - legendObj._width) : lx0;
+                    ly = isPaperY ? Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight) : ly0;
 
                     if(lx !== lx0) {
                         Lib.log('Constrain ' + legendId + '.x to make legend fit inside graph');
@@ -890,20 +891,48 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     });
 }
 
-function expandMargin(gd, legendId) {
+function expandMargin(gd, legendId, lx, ly) {
     var fullLayout = gd._fullLayout;
     var legendObj = fullLayout[legendId];
     var xanchor = getXanchor(legendObj);
     var yanchor = getYanchor(legendObj);
 
-    return Plots.autoMargin(gd, legendId, {
-        x: legendObj.x,
-        y: legendObj.y,
-        l: legendObj._width * (FROM_TL[xanchor]),
-        r: legendObj._width * (FROM_BR[xanchor]),
-        b: legendObj._effHeight * (FROM_BR[yanchor]),
-        t: legendObj._effHeight * (FROM_TL[yanchor])
-    });
+    var isPaperX = legendObj.xref === 'paper';
+    var isPaperY = legendObj.yref === 'paper';
+
+    gd._fullLayout._reservedMargin[legendId] = {};
+    var sideY = legendObj.y < 0.5 ? 'b' : 't';
+    var sideX = legendObj.x < 0.5 ? 'l' : 'r';
+    var possibleReservedMargins = {
+        r: (fullLayout.width - lx),
+        l: lx + legendObj._width,
+        b: (fullLayout.height - ly),
+        t: ly + legendObj._effHeight
+    };
+
+    if(isPaperX && isPaperY) {
+        return Plots.autoMargin(gd, legendId, {
+            x: legendObj.x,
+            y: legendObj.y,
+            l: legendObj._width * (FROM_TL[xanchor]),
+            r: legendObj._width * (FROM_BR[xanchor]),
+            b: legendObj._effHeight * (FROM_BR[yanchor]),
+            t: legendObj._effHeight * (FROM_TL[yanchor])
+        });
+    } else if(isPaperX) {
+        gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+        return;
+    } else if(isPaperY) {
+        gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+        return;
+    } else {
+        if(legendObj.orientation === 'v') {
+            gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+        } else {
+            gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+        }
+        return;
+    }
 }
 
 function getXanchor(legendObj) {
