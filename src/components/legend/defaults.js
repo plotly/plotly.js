@@ -109,6 +109,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     var isPaperY = yref === 'paper';
     var isPaperX = xref === 'paper';
     var defaultX, defaultY, defaultYAnchor;
+    var defaultXAnchor = 'left';
 
     // TODO: Adjust default xanchor if needed for container ref?
     // TODO: Constrain x or y if container ref to be within 0-1
@@ -142,6 +143,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
             defaultX = 1.02;
         } else {
             defaultX = 1;
+            defaultXAnchor = 'right';
         }
     }
 
@@ -158,7 +160,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     coerce('groupclick');
 
     coerce('x', defaultX);
-    coerce('xanchor');
+    coerce('xanchor', defaultXAnchor);
     coerce('y', defaultY);
     coerce('yanchor', defaultYAnchor);
     coerce('valign');
