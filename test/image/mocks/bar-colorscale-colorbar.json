@@ -58,6 +58,7 @@
             "text": "bars + colorbar = <3"
         },
         "xaxis": {
+            "autorangemin": 0.5,
             "type": "linear",
             "range": [
                 -0.5,

@@ -283,6 +283,22 @@ module.exports = {
             'If `range` is provided, then `autorange` is set to *false*.'
         ].join(' ')
     },
+    autorangemin: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+        description: [
+            'Use this value exactly as autorange minimum.'
+        ].join(' ')
+    },
+    autorangemax: {
+        valType: 'any',
+        editType: 'plot',
+        impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
+        description: [
+            'Use this value exactly as autorange maximum.'
+        ].join(' ')
+    },
     autorangeclipmin: {
         valType: 'any',
         editType: 'plot',

@@ -20,6 +20,17 @@
         "title": {
             "text": "Should draw transparent mesh<br>when having transparent rgba color"
         },
+        "scene": {
+            "xaxis": {
+                "autorangemin": -0.5
+            },
+            "yaxis": {
+                "autorangemin": -0.5
+            },
+            "zaxis": {
+                "autorangemax": 2.5
+            }
+        },
         "width": 400,
         "height": 400
     }

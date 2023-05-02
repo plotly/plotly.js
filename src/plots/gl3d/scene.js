@@ -22,8 +22,8 @@ var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
-var applyAutorangeClipMin = require('../cartesian/autorange').applyAutorangeClipMin;
-var applyAutorangeClipMax = require('../cartesian/autorange').applyAutorangeClipMax;
+var applyAutorangeMinOptions = require('../cartesian/autorange').applyAutorangeMinOptions;
+var applyAutorangeMaxOptions = require('../cartesian/autorange').applyAutorangeMaxOptions;
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -727,8 +727,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] += d / 32.0;
             }
 
-            sceneBounds[0][i] = applyAutorangeClipMin(sceneBounds[0][i], axis);
-            sceneBounds[1][i] = applyAutorangeClipMax(sceneBounds[1][i], axis);
+            sceneBounds[0][i] = applyAutorangeMinOptions(sceneBounds[0][i], axis);
+            sceneBounds[1][i] = applyAutorangeMaxOptions(sceneBounds[1][i], axis);
 
             if(axis.autorange === 'reversed') {
                 // swap bounds:

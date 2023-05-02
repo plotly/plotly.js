@@ -79,8 +79,12 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 var autoRange = coerceAxis('autorange', !axOut.isValidRange(axIn.range));
                 axIn.autorange = autoRange;
                 if(autoRange) {
-                    coerceAxis('autorangeclipmin');
-                    coerceAxis('autorangeclipmax');
+                    var autorangemin = coerceAxis('autorangemin');
+                    var autorangemax = coerceAxis('autorangemax');
+
+                    if(autorangemin === undefined) coerceAxis('autorangeclipmin');
+                    if(autorangemax === undefined) coerceAxis('autorangeclipmax');
+
                     if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
                     if(autoRange === 'reversed') axOut._m = -1;
                 }

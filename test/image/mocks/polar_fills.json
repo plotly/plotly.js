@@ -47,7 +47,8 @@
         "y": [0.54, 1]
       },
       "radialaxis": {
-        "range": [2, 5]
+        "autorangeclipmin": 2,
+        "autorangeclipmax": 5
       }
     },
     "showlegend": false,

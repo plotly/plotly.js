@@ -4320,6 +4320,18 @@
       "impliedEdits": {},
       "valType": "any"
      },
+     "autorangemax": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Use this value exactly as autorange minimum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
       "dflt": "convert types",
@@ -5459,6 +5471,18 @@
       "impliedEdits": {},
       "valType": "any"
      },
+     "autorangemax": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Use this value exactly as autorange minimum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
       "dflt": "convert types",
@@ -6055,6 +6079,18 @@
       "impliedEdits": {},
       "valType": "any"
      },
+     "autorangemax": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Use this value exactly as autorange minimum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
       "dflt": "convert types",
@@ -6647,6 +6683,18 @@
      },
      "autorangeclipmin": {
       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemax": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "autorangemin": {
+      "description": "Use this value exactly as autorange minimum.",
       "editType": "plot",
       "impliedEdits": {},
       "valType": "any"
@@ -10361,6 +10409,18 @@
      "impliedEdits": {},
      "valType": "any"
     },
+    "autorangemax": {
+     "description": "Use this value exactly as autorange maximum.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
+    "autorangemin": {
+     "description": "Use this value exactly as autorange minimum.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
      "dflt": "convert types",
@@ -11643,6 +11703,18 @@
     },
     "autorangeclipmin": {
      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
+    "autorangemax": {
+     "description": "Use this value exactly as autorange maximum.",
+     "editType": "plot",
+     "impliedEdits": {},
+     "valType": "any"
+    },
+    "autorangemin": {
+     "description": "Use this value exactly as autorange minimum.",
      "editType": "plot",
      "impliedEdits": {},
      "valType": "any"

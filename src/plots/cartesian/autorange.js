@@ -13,8 +13,8 @@ var getFromId = axIds.getFromId;
 var isLinked = axIds.isLinked;
 
 module.exports = {
-    applyAutorangeClipMin: applyAutorangeClipMin,
-    applyAutorangeClipMax: applyAutorangeClipMax,
+    applyAutorangeMinOptions: applyAutorangeMinOptions,
+    applyAutorangeMaxOptions: applyAutorangeMaxOptions,
     getAutoRange: getAutoRange,
     makePadFn: makePadFn,
     doAutoRange: doAutoRange,
@@ -178,8 +178,8 @@ function getAutoRange(gd, ax) {
         ];
     }
 
-    newRange[0] = applyAutorangeClipMin(newRange[0], ax);
-    newRange[1] = applyAutorangeClipMax(newRange[1], ax);
+    newRange[0] = applyAutorangeMinOptions(newRange[0], ax);
+    newRange[1] = applyAutorangeMaxOptions(newRange[1], ax);
 
     if(ax.limitRange) ax.limitRange();
 
@@ -631,12 +631,16 @@ function goodNumber(v) {
 function lessOrEqual(v0, v1) { return v0 <= v1; }
 function greaterOrEqual(v0, v1) { return v0 >= v1; }
 
-function applyAutorangeClipMin(v, ax) {
-    if(!ax || ax.autorangeclipmin === undefined) return v;
+function applyAutorangeMinOptions(v, ax) {
+    if(!ax) return v;
+    if(ax.autorangemin !== undefined) return ax.autorangemin;
+    if(ax.autorangeclipmin === undefined) return v;
     return Math.max(v, ax.d2l(ax.autorangeclipmin));
 }
 
-function applyAutorangeClipMax(v, ax) {
-    if(!ax || ax.autorangeclipmax === undefined) return v;
+function applyAutorangeMaxOptions(v, ax) {
+    if(!ax) return v;
+    if(ax.autorangemax !== undefined) return ax.autorangemax;
+    if(ax.autorangeclipmax === undefined) return v;
     return Math.min(v, ax.d2l(ax.autorangeclipmax));
 }
