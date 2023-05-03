@@ -921,17 +921,14 @@ function expandMargin(gd, legendId, lx, ly) {
         });
     } else if(isPaperX) {
         gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
-        return;
     } else if(isPaperY) {
         gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
-        return;
     } else {
         if(legendObj.orientation === 'v') {
             gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
         } else {
             gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
         }
-        return;
     }
 }
 
