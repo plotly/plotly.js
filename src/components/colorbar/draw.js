@@ -808,7 +808,7 @@ function drawColorBar(g, opts, gd) {
         var sideY = opts.y < 0.5 ? 'b' : 't';
         var sideX = opts.x < 0.5 ? 'l' : 'r';
 
-        gd._fullLayout._reservedMargin[opts._id] = {}
+        gd._fullLayout._reservedMargin[opts._id] = {};
 
         if(isPaperX && isPaperY) {
             Plots.autoMargin(gd, opts._id, marginOpts);
@@ -822,7 +822,7 @@ function drawColorBar(g, opts, gd) {
             } else {
                 gd._fullLayout._reservedMargin[opts._id][sideY] = marginOpts[sideY];
             }
-        }   
+        }
     }
 
     return Lib.syncOrAsync([
