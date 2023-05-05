@@ -37,11 +37,32 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         isVertical ? h : w
     );
 
-    coerce('x', isVertical ? 1.02 : 0.5);
-    coerce('xanchor', isVertical ? 'left' : 'center');
+    var yref = coerce('yref');
+    var xref = coerce('xref');
+
+    var isPaperY = yref === 'paper';
+    var isPaperX = xref === 'paper';
+
+    var defaultX, defaultY, defaultYAnchor;
+    var defaultXAnchor = 'left';
+
+    if(isVertical) {
+        defaultYAnchor = 'middle';
+        defaultXAnchor = 'left';
+        defaultX = isPaperX ? 1.02 : 1;
+        defaultY = 0.5;
+    } else {
+        defaultYAnchor = 'bottom';
+        defaultXAnchor = 'center';
+        defaultX = 0.5;
+        defaultY = isPaperY ? 1.02 : 1;
+    }
+
+    coerce('x', defaultX);
+    coerce('xanchor', defaultXAnchor);
     coerce('xpad');
-    coerce('y', isVertical ? 0.5 : 1.02);
-    coerce('yanchor', isVertical ? 'middle' : 'bottom');
+    coerce('y', defaultY);
+    coerce('yanchor', defaultYAnchor);
     coerce('ypad');
     Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
