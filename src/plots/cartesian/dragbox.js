@@ -565,6 +565,7 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(xActive === 'ew' || yActive === 'ns') {
             var spDx = xActive ? -dx : 0;
             var spDy = yActive ? -dy : 0;
+
             if(matches.isSubplotConstrained) {
                 if(xActive && yActive) {
                     var frac = (dx / pw - dy / ph) / 2;
@@ -922,6 +923,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     clipDx = scaleAndGetShift(xa, xScaleFactor2);
                 }
 
+                if(xScaleFactor2 > 1 && (
+                    (xa.rangemax !== undefined && editX === (xa.range[0] < xa.range[1] ? 'e' : 'w')) ||
+                    (xa.rangemin !== undefined && editX === (xa.range[0] < xa.range[1] ? 'w' : 'e'))
+                )) {
+                    xScaleFactor2 = 1;
+                    clipDx = 0;
+                }
+
                 if(editY2) {
                     yScaleFactor2 = yScaleFactor;
                     clipDy = ns || matches.isSubplotConstrained ? viewBox[1] : getShift(ya, yScaleFactor2);
@@ -936,6 +945,14 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 } else {
                     yScaleFactor2 = getLinkedScaleFactor(ya, xScaleFactor, yScaleFactor);
                     clipDy = scaleAndGetShift(ya, yScaleFactor2);
+                }
+
+                if(yScaleFactor2 > 1 && (
+                    (ya.rangemax !== undefined && editY === (ya.range[0] < ya.range[1] ? 'n' : 's')) ||
+                    (ya.rangemin !== undefined && editY === (ya.range[0] < ya.range[1] ? 's' : 'n'))
+                )) {
+                    yScaleFactor2 = 1;
+                    clipDy = 0;
                 }
 
                 // don't scale at all if neither axis is scalable here
