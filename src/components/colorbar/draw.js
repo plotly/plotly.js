@@ -182,6 +182,9 @@ function drawColorBar(g, opts, gd) {
     var optsX = opts.x;
     var optsY = isVertical ? opts.y : 1 - opts.y;
 
+    var isPaperY = opts.yref === 'paper';
+    var isPaperX = opts.xref === 'paper';
+
     var fullLayout = gd._fullLayout;
     var gs = fullLayout._size;
 
@@ -802,8 +805,24 @@ function drawColorBar(g, opts, gd) {
                 marginOpts.yb = optsY + thickness * bFrac;
             }
         }
+        var sideY = opts.y < 0.5 ? 'b' : 't';
+        var sideX = opts.x < 0.5 ? 'l' : 'r';
 
-        Plots.autoMargin(gd, opts._id, marginOpts);
+        gd._fullLayout._reservedMargin[opts._id] = {}
+
+        if(isPaperX && isPaperY) {
+            Plots.autoMargin(gd, opts._id, marginOpts);
+        } else if(isPaperX) {
+            gd._fullLayout._reservedMargin[opts._id][sideY] = marginOpts[sideY];
+        } else if(isPaperY) {
+            gd._fullLayout._reservedMargin[opts._id][sideX] = marginOpts[sideX];
+        } else {
+            if(isVertical) {
+                gd._fullLayout._reservedMargin[opts._id][sideX] = marginOpts[sideX];
+            } else {
+                gd._fullLayout._reservedMargin[opts._id][sideY] = marginOpts[sideY];
+            }
+        }   
     }
 
     return Lib.syncOrAsync([
