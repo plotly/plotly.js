@@ -219,11 +219,14 @@ function drawColorBar(g, opts, gd) {
     var lenPx = Math.round(len * (lenmode === 'fraction' ? (isVertical ? gs.h : gs.w) : 1));
     var lenFrac = lenPx / (isVertical ? gs.h : gs.w);
 
+    var posW = isPaperX ? gs.w : gd._fullLayout.width;
+    var posH = isPaperY ? gs.h : gd._fullLayout.height;
+
     // x positioning: do it initially just for left anchor,
     // then fix at the end (since we don't know the width yet)
     var uPx = Math.round(isVertical ?
-        optsX * gs.w + xpad :
-        optsY * gs.h + ypad
+        optsX * posW + xpad :
+        optsY * posH + ypad
     );
 
     var xRatio = {center: 0.5, right: 1}[xanchor] || 0;
@@ -240,8 +243,8 @@ function drawColorBar(g, opts, gd) {
         optsX - xRatio * lenFrac;
 
     var vPx = Math.round(isVertical ?
-        gs.h * (1 - vFrac) :
-        gs.w * vFrac
+        posH * (1 - vFrac) :
+        posW * vFrac
     );
 
     // stash a few things for makeEditable
@@ -385,14 +388,14 @@ function drawColorBar(g, opts, gd) {
 
             if(titleSide === 'right') {
                 y = mid;
-                x = gs.l + gs.w * pos + 10 + titleFontSize * (
+                x = gs.l + posW * pos + 10 + titleFontSize * (
                     ax.showticklabels ? 1 : 0.5
                 );
             } else {
                 x = mid;
 
                 if(titleSide === 'bottom') {
-                    y = gs.t + gs.h * pos + 10 + (
+                    y = gs.t + posH * pos + 10 + (
                         ticklabelposition.indexOf('inside') === -1 ?
                             ax.tickfont.size :
                             0
@@ -405,7 +408,7 @@ function drawColorBar(g, opts, gd) {
 
                 if(titleSide === 'top') {
                     var nlines = title.text.split('<br>').length;
-                    y = gs.t + gs.h * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
+                    y = gs.t + posH * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
                 }
             }
 
@@ -671,9 +674,13 @@ function drawColorBar(g, opts, gd) {
 
         var extraW = borderwidth + outlinewidth;
 
+        // TODO - are these the correct positions?
+        var lx = (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0);
+        var ly = (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle);
+
         g.select('.' + cn.cbbg)
-        .attr('x', (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0))
-        .attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle))
+        .attr('x', lx)
+        .attr('y', ly)
         .attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2))
         .attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2))
         .call(Color.fill, bgcolor)
@@ -696,9 +703,14 @@ function drawColorBar(g, opts, gd) {
             'stroke-width': outlinewidth
         });
 
+        var xShift = ((isVertical ? xRatio * outerThickness : 0));
+        var yShift = ((isVertical ? 0 : (1 - yRatio) * outerThickness - moveY));
+        xShift = isPaperX ? gs.l - xShift : -xShift;
+        yShift = isPaperY ? gs.t - yShift : -yShift;
+
         g.attr('transform', strTranslate(
-            gs.l - (isVertical ? xRatio * outerThickness : 0),
-            gs.t - (isVertical ? 0 : (1 - yRatio) * outerThickness - moveY)
+            xShift,
+            yShift
         ));
 
         if(!isVertical && (
@@ -809,18 +821,24 @@ function drawColorBar(g, opts, gd) {
         var sideX = opts.x < 0.5 ? 'l' : 'r';
 
         gd._fullLayout._reservedMargin[opts._id] = {};
+        var possibleReservedMargins = {
+            r: (fullLayout.width - lx - xShift),
+            l: lx + marginOpts.r,
+            b: (fullLayout.height - ly - yShift),
+            t: ly + marginOpts.b
+        };
 
         if(isPaperX && isPaperY) {
             Plots.autoMargin(gd, opts._id, marginOpts);
         } else if(isPaperX) {
-            gd._fullLayout._reservedMargin[opts._id][sideY] = marginOpts[sideY];
+            gd._fullLayout._reservedMargin[opts._id][sideY] = possibleReservedMargins[sideY];
         } else if(isPaperY) {
-            gd._fullLayout._reservedMargin[opts._id][sideX] = marginOpts[sideX];
+            gd._fullLayout._reservedMargin[opts._id][sideX] = possibleReservedMargins[sideX];
         } else {
             if(isVertical) {
-                gd._fullLayout._reservedMargin[opts._id][sideX] = marginOpts[sideX];
+                gd._fullLayout._reservedMargin[opts._id][sideX] = possibleReservedMargins[sideX];
             } else {
-                gd._fullLayout._reservedMargin[opts._id][sideY] = marginOpts[sideY];
+                gd._fullLayout._reservedMargin[opts._id][sideY] = possibleReservedMargins[sideY];
             }
         }
     }
