@@ -41,6 +41,7 @@
         "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
         "height": 300,
         "width": 400,
-        "yaxis": {"automargin": true, "side": "right", "title": {"text": "Y-axis title"}}
+        "yaxis": {"automargin": true, "side": "right", "title": {"text": "Y-axis title"}},
+        "title": {"text": "Colorbar with `xref='container'`", "automargin": true}
     }
 }
