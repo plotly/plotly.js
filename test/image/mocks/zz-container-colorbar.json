@@ -3,7 +3,6 @@
         {
             "colorbar": {
                 "orientation": "v",
-                "xanchor": "right",
                 "xref": "container",
                 "thickness": 10,
                 "ticks": "outside",

@@ -48,11 +48,11 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
 
     if(isVertical) {
         defaultYAnchor = 'middle';
-        defaultXAnchor = 'left';
+        defaultXAnchor = isPaperX ? 'left' : 'right';
         defaultX = isPaperX ? 1.02 : 1;
         defaultY = 0.5;
     } else {
-        defaultYAnchor = 'bottom';
+        defaultYAnchor = isPaperY ? 'bottom' : 'top';
         defaultXAnchor = 'center';
         defaultX = 0.5;
         defaultY = isPaperY ? 1.02 : 1;
