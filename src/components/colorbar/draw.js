@@ -367,8 +367,8 @@ function drawColorBar(g, opts, gd) {
             }
 
             if(titleSide === 'right') {
-                y = ypad + gs.t + posW * optsY + 3 + titleFontSize * 0.75;
-                x = xpad + gs.l + posH * vFrac;
+                y = ypad + gs.t + posH * optsY + 3 + titleFontSize * 0.75;
+                x = xpad + gs.l + posW * vFrac;
             }
 
             drawTitle(ax._id + 'title', {
