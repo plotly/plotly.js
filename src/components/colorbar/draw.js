@@ -357,18 +357,18 @@ function drawColorBar(g, opts, gd) {
             var x, y;
 
             if(titleSide === 'top') {
-                x = xpad + gs.l + gs.w * optsX;
-                y = ypad + gs.t + gs.h * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
+                x = xpad + gs.l + posW * optsX;
+                y = ypad + gs.t + posH * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
             }
 
             if(titleSide === 'bottom') {
-                x = xpad + gs.l + gs.w * optsX;
-                y = ypad + gs.t + gs.h * (1 - vFrac) - 3 - titleFontSize * 0.25;
+                x = xpad + gs.l + posW * optsX;
+                y = ypad + gs.t + posH * (1 - vFrac) - 3 - titleFontSize * 0.25;
             }
 
             if(titleSide === 'right') {
-                y = ypad + gs.t + gs.h * optsY + 3 + titleFontSize * 0.75;
-                x = xpad + gs.l + gs.w * vFrac;
+                y = ypad + gs.t + posW * optsY + 3 + titleFontSize * 0.75;
+                x = xpad + gs.l + posH * vFrac;
             }
 
             drawTitle(ax._id + 'title', {
