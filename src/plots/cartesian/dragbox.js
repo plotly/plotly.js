@@ -1120,6 +1120,8 @@ function dragAxList(axList, pix) {
                     axi.l2r(axi._rl[1] - pix / axi._m)
                 ];
             }
+
+            if(axi.limitRange) axi.limitRange();
         }
     }
 }
