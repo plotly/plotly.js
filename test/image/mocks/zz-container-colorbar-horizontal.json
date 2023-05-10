@@ -12,7 +12,6 @@
                 "borderwidth": 4,
                 "bordercolor": "gray",
                 "title": {
-                  "side": "left",
                   "text": "Colorbar<br>title",
                   "font": {
                     "size": 16
