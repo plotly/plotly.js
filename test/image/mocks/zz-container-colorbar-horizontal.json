@@ -2,15 +2,17 @@
     "data": [
         {
             "colorbar": {
-                "orientation": "v",
-                "xref": "container",
+                "orientation": "h",
+                "yref": "container",
+                "y": 0,
+                "yanchor": "bottom",
                 "thickness": 10,
                 "ticks": "outside",
                 "bgcolor": "rgba(255,255,0,0.5)",
                 "borderwidth": 4,
                 "bordercolor": "gray",
                 "title": {
-                  "side": "top",
+                  "side": "left",
                   "text": "Colorbar<br>title",
                   "font": {
                     "size": 16
@@ -41,7 +43,7 @@
         "margin": {"l": 0, "r": 0, "t": 0, "b": 0},
         "height": 300,
         "width": 400,
-        "yaxis": {"automargin": true, "side": "right", "title": {"text": "Y-axis title"}},
-        "title": {"text": "Colorbar with `xref='container'`", "automargin": true}
+        "xaxis": {"automargin": true,  "title": {"text": "X-axis title"}},
+        "title": {"text": "Colorbar with `yref='container'` | horizontal", "automargin": true}
     }
 }
