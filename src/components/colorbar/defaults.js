@@ -58,10 +58,26 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
         defaultY = isPaperY ? 1.02 : 1;
     }
 
-    coerce('x', defaultX);
+    Lib.coerce(colorbarIn, colorbarOut, {
+        x: {
+            valType: 'number',
+            min: isPaperX ? -2 : 0,
+            max: isPaperX ? 3 : 1,
+            dflt: defaultX,
+        }
+    }, 'x');
+
+    Lib.coerce(colorbarIn, colorbarOut, {
+        y: {
+            valType: 'number',
+            min: isPaperY ? -2 : 0,
+            max: isPaperY ? 3 : 1,
+            dflt: defaultY,
+        }
+    }, 'y');
+
     coerce('xanchor', defaultXAnchor);
     coerce('xpad');
-    coerce('y', defaultY);
     coerce('yanchor', defaultYAnchor);
     coerce('ypad');
     Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
