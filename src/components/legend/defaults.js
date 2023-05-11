@@ -179,9 +179,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     coerce('itemdoubleclick');
     coerce('groupclick');
 
-    coerce('x', defaultX);
     coerce('xanchor', defaultXAnchor);
-    coerce('y', defaultY);
     coerce('yanchor', defaultYAnchor);
     coerce('valign');
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
