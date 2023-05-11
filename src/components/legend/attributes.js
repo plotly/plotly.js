@@ -159,8 +159,6 @@ module.exports = {
     },
     x: {
         valType: 'number',
-        min: -2,
-        max: 3,
         editType: 'legend',
         description: [
             'Sets the x position with respect to `xref` (in normalized coordinates) of the legend.',
@@ -168,7 +166,8 @@ module.exports = {
             'defaults to *0* for horizontal legends.',
             'When `xref` is *container*, defaults to *1* for vertical legends and',
             'defaults to *0* for horizontal legends.',
-            'Must be between *0* and *1* if `xref` is *container*.'
+            'Must be between *0* and *1* if `xref` is *container*.',
+            'and between *-2* and *3* if `xref` is *paper*.'
         ].join(' ')
     },
     xref: {
@@ -198,8 +197,6 @@ module.exports = {
     },
     y: {
         valType: 'number',
-        min: -2,
-        max: 3,
         editType: 'legend',
         description: [
             'Sets the y position with respect to `yref` (in normalized coordinates) of the legend.',
@@ -207,7 +204,8 @@ module.exports = {
             'defaults to *-0.1* for horizontal legends on graphs w/o range sliders and',
             'defaults to *1.1* for horizontal legends on graph with one or multiple range sliders.',
             'When `yref` is *container*, defaults to *1*.',
-            'Must be between *0* and *1* if `yref` is *container*.'
+            'Must be between *0* and *1* if `yref` is *container*',
+            'and between *-2* and *3* if `yref` is *paper*.'
         ].join(' ')
     },
     yref: {

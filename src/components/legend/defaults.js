@@ -147,6 +147,26 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
         }
     }
 
+    Lib.coerce(containerIn, containerOut, {
+        x: {
+            valType: 'number',
+            editType: 'legend',
+            min: isPaperX ? -2 : 0,
+            max: isPaperX ? 3 : 1,
+            dflt: defaultX,
+        }
+    }, 'x');
+
+    Lib.coerce(containerIn, containerOut, {
+        y: {
+            valType: 'number',
+            editType: 'legend',
+            min: isPaperY ? -2 : 0,
+            max: isPaperY ? 3 : 1,
+            dflt: defaultY,
+        }
+    }, 'y');
+
     coerce('traceorder', defaultOrder);
     if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
