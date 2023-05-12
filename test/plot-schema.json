@@ -2980,10 +2980,8 @@
      "valType": "boolean"
     },
     "x": {
-     "description": "Sets the x position (in normalized coordinates) of the legend. Defaults to *1.02* for vertical legends and defaults to *0* for horizontal legends.",
+     "description": "Sets the x position with respect to `xref` (in normalized coordinates) of the legend. When `xref` is *paper*, defaults to *1.02* for vertical legends and defaults to *0* for horizontal legends. When `xref` is *container*, defaults to *1* for vertical legends and defaults to *0* for horizontal legends. Must be between *0* and *1* if `xref` is *container*. and between *-2* and *3* if `xref` is *paper*.",
      "editType": "legend",
-     "max": 3,
-     "min": -2,
      "valType": "number"
     },
     "xanchor": {
@@ -2998,11 +2996,19 @@
       "right"
      ]
     },
+    "xref": {
+     "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+     "dflt": "paper",
+     "editType": "layoutstyle",
+     "valType": "enumerated",
+     "values": [
+      "container",
+      "paper"
+     ]
+    },
     "y": {
-     "description": "Sets the y position (in normalized coordinates) of the legend. Defaults to *1* for vertical legends, defaults to *-0.1* for horizontal legends on graphs w/o range sliders and defaults to *1.1* for horizontal legends on graph with one or multiple range sliders.",
+     "description": "Sets the y position with respect to `yref` (in normalized coordinates) of the legend. When `yref` is *paper*, defaults to *1* for vertical legends, defaults to *-0.1* for horizontal legends on graphs w/o range sliders and defaults to *1.1* for horizontal legends on graph with one or multiple range sliders. When `yref` is *container*, defaults to *1*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
      "editType": "legend",
-     "max": 3,
-     "min": -2,
      "valType": "number"
     },
     "yanchor": {
@@ -3014,6 +3020,16 @@
       "top",
       "middle",
       "bottom"
+     ]
+    },
+    "yref": {
+     "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+     "dflt": "paper",
+     "editType": "layoutstyle",
+     "valType": "enumerated",
+     "values": [
+      "container",
+      "paper"
      ]
     }
    },
