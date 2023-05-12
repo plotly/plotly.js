@@ -1,0 +1,1 @@
+ - Improve heatmap rendering performance when `zsmooth` is set to false [[#6574](https://github.com/plotly/plotly.js/pull/6574)], with thanks to @lvlte for the contribution!
