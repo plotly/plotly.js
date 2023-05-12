@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v2.22.0
+* plotly.js (cartesian) v2.23.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -2602,9 +2602,13 @@ module.exports = overrideAll({
     dflt: 1
   },
   x: {
-    valType: 'number',
-    min: -2,
-    max: 3
+    valType: 'number'
+  },
+  xref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   xanchor: {
     valType: 'enumerated',
@@ -2616,9 +2620,13 @@ module.exports = overrideAll({
     dflt: 10
   },
   y: {
-    valType: 'number',
-    min: -2,
-    max: 3
+    valType: 'number'
+  },
+  yref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   yanchor: {
     valType: 'enumerated',
@@ -2763,11 +2771,42 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
   coerce('thickness', thicknessmode === 'fraction' ? 30 / (isVertical ? w : h) : 30);
   var lenmode = coerce('lenmode');
   coerce('len', lenmode === 'fraction' ? 1 : isVertical ? h : w);
-  coerce('x', isVertical ? 1.02 : 0.5);
-  coerce('xanchor', isVertical ? 'left' : 'center');
+  var yref = coerce('yref');
+  var xref = coerce('xref');
+  var isPaperY = yref === 'paper';
+  var isPaperX = xref === 'paper';
+  var defaultX, defaultY, defaultYAnchor;
+  var defaultXAnchor = 'left';
+  if (isVertical) {
+    defaultYAnchor = 'middle';
+    defaultXAnchor = isPaperX ? 'left' : 'right';
+    defaultX = isPaperX ? 1.02 : 1;
+    defaultY = 0.5;
+  } else {
+    defaultYAnchor = isPaperY ? 'bottom' : 'top';
+    defaultXAnchor = 'center';
+    defaultX = 0.5;
+    defaultY = isPaperY ? 1.02 : 1;
+  }
+  Lib.coerce(colorbarIn, colorbarOut, {
+    x: {
+      valType: 'number',
+      min: isPaperX ? -2 : 0,
+      max: isPaperX ? 3 : 1,
+      dflt: defaultX
+    }
+  }, 'x');
+  Lib.coerce(colorbarIn, colorbarOut, {
+    y: {
+      valType: 'number',
+      min: isPaperY ? -2 : 0,
+      max: isPaperY ? 3 : 1,
+      dflt: defaultY
+    }
+  }, 'y');
+  coerce('xanchor', defaultXAnchor);
   coerce('xpad');
-  coerce('y', isVertical ? 0.5 : 1.02);
-  coerce('yanchor', isVertical ? 'middle' : 'bottom');
+  coerce('yanchor', defaultYAnchor);
   coerce('ypad');
   Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
   coerce('outlinecolor');
@@ -2981,6 +3020,8 @@ function drawColorBar(g, opts, gd) {
   var ypad = opts.ypad;
   var optsX = opts.x;
   var optsY = isVertical ? opts.y : 1 - opts.y;
+  var isPaperY = opts.yref === 'paper';
+  var isPaperX = opts.xref === 'paper';
   var fullLayout = gd._fullLayout;
   var gs = fullLayout._size;
   var fillColor = opts._fillcolor;
@@ -3009,10 +3050,12 @@ function drawColorBar(g, opts, gd) {
   var thickFrac = thickPx / (isVertical ? gs.w : gs.h);
   var lenPx = Math.round(len * (lenmode === 'fraction' ? isVertical ? gs.h : gs.w : 1));
   var lenFrac = lenPx / (isVertical ? gs.h : gs.w);
+  var posW = isPaperX ? gs.w : gd._fullLayout.width;
+  var posH = isPaperY ? gs.h : gd._fullLayout.height;
 
   // x positioning: do it initially just for left anchor,
   // then fix at the end (since we don't know the width yet)
-  var uPx = Math.round(isVertical ? optsX * gs.w + xpad : optsY * gs.h + ypad);
+  var uPx = Math.round(isVertical ? optsX * posW + xpad : optsY * posH + ypad);
   var xRatio = {
     center: 0.5,
     right: 1
@@ -3027,7 +3070,7 @@ function drawColorBar(g, opts, gd) {
 
   // y/x positioning (for v/h) we can do correctly from the start
   var vFrac = isVertical ? optsY - yRatio * lenFrac : optsX - xRatio * lenFrac;
-  var vPx = Math.round(isVertical ? gs.h * (1 - vFrac) : gs.w * vFrac);
+  var vPx = Math.round(isVertical ? posH * (1 - vFrac) : posW * vFrac);
 
   // stash a few things for makeEditable
   opts._lenFrac = lenFrac;
@@ -3112,16 +3155,16 @@ function drawColorBar(g, opts, gd) {
     if (isVertical && topOrBottom || !isVertical && !topOrBottom) {
       var x, y;
       if (titleSide === 'top') {
-        x = xpad + gs.l + gs.w * optsX;
-        y = ypad + gs.t + gs.h * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
+        x = xpad + gs.l + posW * optsX;
+        y = ypad + gs.t + posH * (1 - vFrac - lenFrac) + 3 + titleFontSize * 0.75;
       }
       if (titleSide === 'bottom') {
-        x = xpad + gs.l + gs.w * optsX;
-        y = ypad + gs.t + gs.h * (1 - vFrac) - 3 - titleFontSize * 0.25;
+        x = xpad + gs.l + posW * optsX;
+        y = ypad + gs.t + posH * (1 - vFrac) - 3 - titleFontSize * 0.25;
       }
       if (titleSide === 'right') {
-        y = ypad + gs.t + gs.h * optsY + 3 + titleFontSize * 0.75;
-        x = xpad + gs.l + gs.w * vFrac;
+        y = ypad + gs.t + posH * optsY + 3 + titleFontSize * 0.75;
+        x = xpad + gs.l + posW * vFrac;
       }
       drawTitle(ax._id + 'title', {
         attributes: {
@@ -3139,15 +3182,15 @@ function drawColorBar(g, opts, gd) {
       var x, y;
       if (titleSide === 'right') {
         y = mid;
-        x = gs.l + gs.w * pos + 10 + titleFontSize * (ax.showticklabels ? 1 : 0.5);
+        x = gs.l + posW * pos + 10 + titleFontSize * (ax.showticklabels ? 1 : 0.5);
       } else {
         x = mid;
         if (titleSide === 'bottom') {
-          y = gs.t + gs.h * pos + 10 + (ticklabelposition.indexOf('inside') === -1 ? ax.tickfont.size : 0) + (ax.ticks !== 'intside' ? opts.ticklen || 0 : 0);
+          y = gs.t + posH * pos + 10 + (ticklabelposition.indexOf('inside') === -1 ? ax.tickfont.size : 0) + (ax.ticks !== 'intside' ? opts.ticklen || 0 : 0);
         }
         if (titleSide === 'top') {
           var nlines = title.text.split('<br>').length;
-          y = gs.t + gs.h * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
+          y = gs.t + posH * pos + 10 - thickPx - LINE_SPACING * titleFontSize * nlines;
         }
       }
       drawTitle((isVertical ?
@@ -3338,13 +3381,21 @@ function drawColorBar(g, opts, gd) {
     fullLayout._hColorbarMoveTitle = hColorbarMoveTitle;
     fullLayout._hColorbarMoveCBTitle = moveY;
     var extraW = borderwidth + outlinewidth;
-    g.select('.' + cn.cbbg).attr('x', (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0)).attr('y', (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle)).attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2)).call(Color.fill, bgcolor).call(Color.stroke, opts.bordercolor).style('stroke-width', borderwidth);
+
+    // TODO - are these the correct positions?
+    var lx = (isVertical ? uPx : vPx) - extraW / 2 - (isVertical ? xpad : 0);
+    var ly = (isVertical ? vPx : uPx) - (isVertical ? lenPx : ypad + moveY - hColorbarMoveTitle);
+    g.select('.' + cn.cbbg).attr('x', lx).attr('y', ly).attr(isVertical ? 'width' : 'height', Math.max(outerThickness - hColorbarMoveTitle, 2)).attr(isVertical ? 'height' : 'width', Math.max(lenPx + extraW, 2)).call(Color.fill, bgcolor).call(Color.stroke, opts.bordercolor).style('stroke-width', borderwidth);
     var moveX = rightSideHorizontal ? Math.max(titleWidth - 10, 0) : 0;
     g.selectAll('.' + cn.cboutline).attr('x', (isVertical ? uPx : vPx + xpad) + moveX).attr('y', (isVertical ? vPx + ypad - lenPx : uPx) + (topSideVertical ? titleHeight : 0)).attr(isVertical ? 'width' : 'height', Math.max(thickPx, 2)).attr(isVertical ? 'height' : 'width', Math.max(lenPx - (isVertical ? 2 * ypad + titleHeight : 2 * xpad + moveX), 2)).call(Color.stroke, opts.outlinecolor).style({
       fill: 'none',
       'stroke-width': outlinewidth
     });
-    g.attr('transform', strTranslate(gs.l - (isVertical ? xRatio * outerThickness : 0), gs.t - (isVertical ? 0 : (1 - yRatio) * outerThickness - moveY)));
+    var xShift = isVertical ? xRatio * outerThickness : 0;
+    var yShift = isVertical ? 0 : (1 - yRatio) * outerThickness - moveY;
+    xShift = isPaperX ? gs.l - xShift : -xShift;
+    yShift = isPaperY ? gs.t - yShift : -yShift;
+    g.attr('transform', strTranslate(xShift, yShift));
     if (!isVertical && (borderwidth || tinycolor(bgcolor).getAlpha() && !tinycolor.equals(fullLayout.paper_bgcolor, bgcolor))) {
       // for horizontal colorbars when there is a border line or having different background color
       // hide/adjust x positioning for the first/last tick labels if they go outside the border
@@ -3434,7 +3485,28 @@ function drawColorBar(g, opts, gd) {
         marginOpts.yb = optsY + thickness * bFrac;
       }
     }
-    Plots.autoMargin(gd, opts._id, marginOpts);
+    var sideY = opts.y < 0.5 ? 'b' : 't';
+    var sideX = opts.x < 0.5 ? 'l' : 'r';
+    gd._fullLayout._reservedMargin[opts._id] = {};
+    var possibleReservedMargins = {
+      r: fullLayout.width - lx - xShift,
+      l: lx + marginOpts.r,
+      b: fullLayout.height - ly - yShift,
+      t: ly + marginOpts.b
+    };
+    if (isPaperX && isPaperY) {
+      Plots.autoMargin(gd, opts._id, marginOpts);
+    } else if (isPaperX) {
+      gd._fullLayout._reservedMargin[opts._id][sideY] = possibleReservedMargins[sideY];
+    } else if (isPaperY) {
+      gd._fullLayout._reservedMargin[opts._id][sideX] = possibleReservedMargins[sideX];
+    } else {
+      if (isVertical) {
+        gd._fullLayout._reservedMargin[opts._id][sideX] = possibleReservedMargins[sideX];
+      } else {
+        gd._fullLayout._reservedMargin[opts._id][sideY] = possibleReservedMargins[sideY];
+      }
+    }
   }
   return Lib.syncOrAsync([Plots.previousPromises, drawDummyTitle, drawAxis, drawCbTitle, Plots.previousPromises, positionCB], gd);
 }
@@ -10876,9 +10948,13 @@ module.exports = {
   },
   x: {
     valType: 'number',
-    min: -2,
-    max: 3,
     editType: 'legend'
+  },
+  xref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   xanchor: {
     valType: 'enumerated',
@@ -10888,9 +10964,13 @@ module.exports = {
   },
   y: {
     valType: 'number',
-    min: -2,
-    max: 3,
     editType: 'legend'
+  },
+  yref: {
+    valType: 'enumerated',
+    dflt: 'paper',
+    values: ['container', 'paper'],
+    editType: 'layoutstyle'
   },
   yanchor: {
     valType: 'enumerated',
@@ -11032,25 +11112,63 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
   if (showLegend === false) return;
   coerce('borderwidth');
   var orientation = coerce('orientation');
+  var yref = coerce('yref');
+  var xref = coerce('xref');
   var isHorizontal = orientation === 'h';
+  var isPaperY = yref === 'paper';
+  var isPaperX = xref === 'paper';
   var defaultX, defaultY, defaultYAnchor;
+  var defaultXAnchor = 'left';
   if (isHorizontal) {
     defaultX = 0;
     if (Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
-      defaultY = 1.1;
-      defaultYAnchor = 'bottom';
+      if (isPaperY) {
+        defaultY = 1.1;
+        defaultYAnchor = 'bottom';
+      } else {
+        defaultY = 1;
+        defaultYAnchor = 'top';
+      }
     } else {
       // maybe use y=1.1 / yanchor=bottom as above
       //   to avoid https://github.com/plotly/plotly.js/issues/1199
       //   in v3
-      defaultY = -0.1;
-      defaultYAnchor = 'top';
+      if (isPaperY) {
+        defaultY = -0.1;
+        defaultYAnchor = 'top';
+      } else {
+        defaultY = 0;
+        defaultYAnchor = 'bottom';
+      }
     }
   } else {
-    defaultX = 1.02;
     defaultY = 1;
     defaultYAnchor = 'auto';
+    if (isPaperX) {
+      defaultX = 1.02;
+    } else {
+      defaultX = 1;
+      defaultXAnchor = 'right';
+    }
   }
+  Lib.coerce(containerIn, containerOut, {
+    x: {
+      valType: 'number',
+      editType: 'legend',
+      min: isPaperX ? -2 : 0,
+      max: isPaperX ? 3 : 1,
+      dflt: defaultX
+    }
+  }, 'x');
+  Lib.coerce(containerIn, containerOut, {
+    y: {
+      valType: 'number',
+      editType: 'legend',
+      min: isPaperY ? -2 : 0,
+      max: isPaperY ? 3 : 1,
+      dflt: defaultY
+    }
+  }, 'y');
   coerce('traceorder', defaultOrder);
   if (helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
   coerce('entrywidth');
@@ -11060,9 +11178,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
   coerce('itemclick');
   coerce('itemdoubleclick');
   coerce('groupclick');
-  coerce('x', defaultX);
-  coerce('xanchor');
-  coerce('y', defaultY);
+  coerce('xanchor', defaultXAnchor);
   coerce('yanchor', defaultYAnchor);
   coerce('valign');
   Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
@@ -11223,20 +11339,31 @@ function drawOne(gd, opts) {
   }, function () {
     var gs = fullLayout._size;
     var bw = legendObj.borderwidth;
+    var isPaperX = legendObj.xref === 'paper';
+    var isPaperY = legendObj.yref === 'paper';
     if (!inHover) {
-      var expMargin = expandMargin(gd, legendId);
+      var lx, ly;
+      if (isPaperX) {
+        lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+      } else {
+        lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
+      }
+      if (isPaperY) {
+        ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+      } else {
+        ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
+      }
+      var expMargin = expandMargin(gd, legendId, lx, ly);
 
       // IF expandMargin return a Promise (which is truthy),
       // we're under a doAutoMargin redraw, so we don't have to
       // draw the remaining pieces below
       if (expMargin) return;
-      var lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
-      var ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
       if (fullLayout.margin.autoexpand) {
         var lx0 = lx;
         var ly0 = ly;
-        lx = Lib.constrain(lx, 0, fullLayout.width - legendObj._width);
-        ly = Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight);
+        lx = isPaperX ? Lib.constrain(lx, 0, fullLayout.width - legendObj._width) : lx0;
+        ly = isPaperY ? Lib.constrain(ly, 0, fullLayout.height - legendObj._effHeight) : ly0;
         if (lx !== lx0) {
           Lib.log('Constrain ' + legendId + '.x to make legend fit inside graph');
         }
@@ -11792,19 +11919,42 @@ function computeLegendDimensions(gd, groups, traces, legendObj) {
     Drawing.setRect(traceToggle, 0, -h / 2, w, h);
   });
 }
-function expandMargin(gd, legendId) {
+function expandMargin(gd, legendId, lx, ly) {
   var fullLayout = gd._fullLayout;
   var legendObj = fullLayout[legendId];
   var xanchor = getXanchor(legendObj);
   var yanchor = getYanchor(legendObj);
-  return Plots.autoMargin(gd, legendId, {
-    x: legendObj.x,
-    y: legendObj.y,
-    l: legendObj._width * FROM_TL[xanchor],
-    r: legendObj._width * FROM_BR[xanchor],
-    b: legendObj._effHeight * FROM_BR[yanchor],
-    t: legendObj._effHeight * FROM_TL[yanchor]
-  });
+  var isPaperX = legendObj.xref === 'paper';
+  var isPaperY = legendObj.yref === 'paper';
+  gd._fullLayout._reservedMargin[legendId] = {};
+  var sideY = legendObj.y < 0.5 ? 'b' : 't';
+  var sideX = legendObj.x < 0.5 ? 'l' : 'r';
+  var possibleReservedMargins = {
+    r: fullLayout.width - lx,
+    l: lx + legendObj._width,
+    b: fullLayout.height - ly,
+    t: ly + legendObj._effHeight
+  };
+  if (isPaperX && isPaperY) {
+    return Plots.autoMargin(gd, legendId, {
+      x: legendObj.x,
+      y: legendObj.y,
+      l: legendObj._width * FROM_TL[xanchor],
+      r: legendObj._width * FROM_BR[xanchor],
+      b: legendObj._effHeight * FROM_BR[yanchor],
+      t: legendObj._effHeight * FROM_TL[yanchor]
+    });
+  } else if (isPaperX) {
+    gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+  } else if (isPaperY) {
+    gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+  } else {
+    if (legendObj.orientation === 'v') {
+      gd._fullLayout._reservedMargin[legendId][sideX] = possibleReservedMargins[sideX];
+    } else {
+      gd._fullLayout._reservedMargin[legendId][sideY] = possibleReservedMargins[sideY];
+    }
+  }
 }
 function getXanchor(legendObj) {
   return Lib.isRightAnchor(legendObj) ? 'right' : Lib.isCenterAnchor(legendObj) ? 'center' : 'left';
@@ -22377,6 +22527,25 @@ module.exports = {
 
 /***/ }),
 
+/***/ 32396:
+/***/ (function(__unused_webpack_module, exports) {
+
+"use strict";
+
+
+// Pixelated image rendering
+// The actual CSS declaration is prepended with fallbacks for older browsers.
+// NB. IE's `-ms-interpolation-mode` works only with <img> not with SVG <image>
+// https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
+// https://caniuse.com/?search=image-rendering
+// http://phrogz.net/tmp/canvas_image_zoom.html
+exports.CSS_DECLARATIONS = [['image-rendering', 'optimizeSpeed'], ['image-rendering', '-moz-crisp-edges'], ['image-rendering', '-o-crisp-edges'], ['image-rendering', '-webkit-optimize-contrast'], ['image-rendering', 'optimize-contrast'], ['image-rendering', 'crisp-edges'], ['image-rendering', 'pixelated']];
+exports.STYLE = exports.CSS_DECLARATIONS.map(function (d) {
+  return d.join(': ') + '; ';
+}).join('');
+
+/***/ }),
+
 /***/ 77922:
 /***/ (function(__unused_webpack_module, exports) {
 
@@ -27812,6 +27981,53 @@ exports.interp = function (arr, n) {
   var frac = n % 1;
   return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
+
+/***/ }),
+
+/***/ 3883:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var constants = __webpack_require__(32396);
+var Drawing = __webpack_require__(91424);
+var Lib = __webpack_require__(71828);
+var _supportsPixelated = null;
+
+/**
+ * Check browser support for pixelated image rendering
+ *
+ * @return {boolean}
+ */
+function supportsPixelatedImage() {
+  if (_supportsPixelated !== null) {
+    // only run the feature detection once
+    return _supportsPixelated;
+  }
+  if (Lib.isIE()) {
+    _supportsPixelated = false;
+  } else {
+    var declarations = Array.from(constants.CSS_DECLARATIONS).reverse();
+    var supports = window.CSS && window.CSS.supports || window.supportsCSS;
+    if (typeof supports === 'function') {
+      _supportsPixelated = declarations.some(function (d) {
+        return supports.apply(null, d);
+      });
+    } else {
+      var image3 = Drawing.tester.append('image');
+      var cStyles = window.getComputedStyle(image3.node());
+      image3.attr('style', constants.STYLE);
+      _supportsPixelated = declarations.some(function (d) {
+        var value = d[1];
+        return cStyles.imageRendering === value || cStyles.imageRendering === value.toLowerCase();
+      });
+      image3.remove();
+    }
+  }
+  return _supportsPixelated;
+}
+module.exports = supportsPixelatedImage;
 
 /***/ }),
 
@@ -59404,33 +59620,31 @@ module.exports = function calc(gd, trace) {
     zsmooth = trace._input.zsmooth = trace.zsmooth = false;
     Lib.warn('cannot use zsmooth: "fast": ' + msg);
   }
-
-  // check whether we really can smooth (ie all boxes are about the same size)
-  if (zsmooth === 'fast') {
-    if (xa.type === 'log' || ya.type === 'log') {
-      noZsmooth('log axis found');
-    } else if (!isHist) {
-      if (x.length) {
-        var avgdx = (x[x.length - 1] - x[0]) / (x.length - 1);
-        var maxErrX = Math.abs(avgdx / 100);
-        for (i = 0; i < x.length - 1; i++) {
-          if (Math.abs(x[i + 1] - x[i] - avgdx) > maxErrX) {
-            noZsmooth('x scale is not linear');
-            break;
-          }
-        }
-      }
-      if (y.length && zsmooth === 'fast') {
-        var avgdy = (y[y.length - 1] - y[0]) / (y.length - 1);
-        var maxErrY = Math.abs(avgdy / 100);
-        for (i = 0; i < y.length - 1; i++) {
-          if (Math.abs(y[i + 1] - y[i] - avgdy) > maxErrY) {
-            noZsmooth('y scale is not linear');
-            break;
-          }
+  function scaleIsLinear(s) {
+    if (s.length > 1) {
+      var avgdx = (s[s.length - 1] - s[0]) / (s.length - 1);
+      var maxErrX = Math.abs(avgdx / 100);
+      for (i = 0; i < s.length - 1; i++) {
+        if (Math.abs(s[i + 1] - s[i] - avgdx) > maxErrX) {
+          return false;
         }
       }
     }
+    return true;
+  }
+
+  // Check whether all brick are uniform
+  trace._islinear = false;
+  if (xa.type === 'log' || ya.type === 'log') {
+    if (zsmooth === 'fast') {
+      noZsmooth('log axis found');
+    }
+  } else if (!scaleIsLinear(x)) {
+    if (zsmooth === 'fast') noZsmooth('x scale is not linear');
+  } else if (!scaleIsLinear(y)) {
+    if (zsmooth === 'fast') noZsmooth('y scale is not linear');
+  } else {
+    trace._islinear = true;
   }
 
   // create arrays of brick boundaries, to be used by autorange and heatmap.plot
@@ -60171,6 +60385,8 @@ var makeColorScaleFuncFromTrace = (__webpack_require__(21081).makeColorScaleFunc
 var xmlnsNamespaces = __webpack_require__(77922);
 var alignmentConstants = __webpack_require__(18783);
 var LINE_SPACING = alignmentConstants.LINE_SPACING;
+var supportsPixelatedImage = __webpack_require__(3883);
+var PIXELATED_IMAGE_STYLE = (__webpack_require__(32396).STYLE);
 var labelClass = 'heatmap-label';
 function selectLabels(plotGroup) {
   return plotGroup.selectAll('g.' + labelClass);
@@ -60254,12 +60470,18 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
       x = cd0.xfill;
       y = cd0.yfill;
     }
+    var drawingMethod = 'default';
+    if (zsmooth) {
+      drawingMethod = zsmooth === 'best' ? 'smooth' : 'fast';
+    } else if (trace._islinear && xGap === 0 && yGap === 0 && supportsPixelatedImage()) {
+      drawingMethod = 'fast';
+    }
 
     // make an image that goes at most half a screen off either side, to keep
-    // time reasonable when you zoom in. if zsmooth is true/fast, don't worry
+    // time reasonable when you zoom in. if drawingMethod is fast, don't worry
     // about this, because zooming doesn't increase number of pixels
     // if zsmooth is best, don't include anything off screen because it takes too long
-    if (zsmooth !== 'fast') {
+    if (drawingMethod !== 'fast') {
       var extra = zsmooth === 'best' ? 0 : 0.5;
       left = Math.max(-extra * xa._length, left);
       right = Math.min((1 + extra) * xa._length, right);
@@ -60272,7 +60494,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
     // setup image nodes
 
     // if image is entirely off-screen, don't even draw it
-    var isOffScreen = imageWidth <= 0 || imageHeight <= 0;
+    var isOffScreen = left >= xa._length || right <= 0 || top >= ya._length || bottom <= 0;
     if (isOffScreen) {
       var noImage = plotGroup.selectAll('image').data([]);
       noImage.exit().remove();
@@ -60283,7 +60505,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
     // generate image data
 
     var canvasW, canvasH;
-    if (zsmooth === 'fast') {
+    if (drawingMethod === 'fast') {
       canvasW = n;
       canvasH = m;
     } else {
@@ -60301,7 +60523,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
 
     // map brick boundaries to image pixels
     var xpx, ypx;
-    if (zsmooth === 'fast') {
+    if (drawingMethod === 'fast') {
       xpx = xrev ? function (index) {
         return n - 1 - index;
       } : Lib.identity;
@@ -60365,8 +60587,8 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
       } else if (z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;else dxy = z11 + z00 - z01 - z10;
       return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
     }
-    if (zsmooth) {
-      // best or fast, works fastest with imageData
+    if (drawingMethod !== 'default') {
+      // works fastest with imageData
       var pxIndex = 0;
       var pixels;
       try {
@@ -60374,7 +60596,8 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
       } catch (e) {
         pixels = new Array(canvasW * canvasH * 4);
       }
-      if (zsmooth === 'best') {
+      if (drawingMethod === 'smooth') {
+        // zsmooth="best"
         var xForPx = xc || x;
         var yForPx = yc || y;
         var xPixArray = new Array(xForPx.length);
@@ -60403,7 +60626,7 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
           }
         }
       } else {
-        // zsmooth = fast
+        // drawingMethod = "fast" (zsmooth = "fast"|false)
         for (j = 0; j < m; j++) {
           row = z[j];
           yb = ypx(j);
@@ -60426,7 +60649,8 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
       }
       context.putImageData(imageData, 0, 0);
     } else {
-      // zsmooth = false -> filling potentially large bricks works fastest with fillRect
+      // rawingMethod = "default" (zsmooth = false)
+      // filling potentially large bricks works fastest with fillRect
       // gaps do not need to be exact integers, but if they *are* we will get
       // cleaner edges by rounding at least one edge
       var xGapLeft = Math.floor(xGap / 2);
@@ -60472,6 +60696,9 @@ module.exports = function (gd, plotinfo, cdheatmaps, heatmapLayer) {
       y: top,
       'xlink:href': canvas.toDataURL('image/png')
     });
+    if (drawingMethod === 'fast' && !zsmooth) {
+      image3.attr('style', PIXELATED_IMAGE_STYLE);
+    }
     removeLabels(plotGroup);
     var texttemplate = trace.texttemplate;
     if (texttemplate) {
@@ -62923,11 +63150,7 @@ module.exports = {
       },
       suffix: ['°', '%', '%', '']
     }
-  },
-  // For pixelated image rendering
-  // http://phrogz.net/tmp/canvas_image_zoom.html
-  // https://developer.mozilla.org/en-US/docs/Web/CSS/image-rendering
-  pixelatedStyle: ['image-rendering: optimizeSpeed', 'image-rendering: -moz-crisp-edges', 'image-rendering: -o-crisp-edges', 'image-rendering: -webkit-optimize-contrast', 'image-rendering: optimize-contrast', 'image-rendering: crisp-edges', 'image-rendering: pixelated', ''].join('; ')
+  }
 };
 
 /***/ }),
@@ -63145,16 +63368,17 @@ var Lib = __webpack_require__(71828);
 var strTranslate = Lib.strTranslate;
 var xmlnsNamespaces = __webpack_require__(77922);
 var constants = __webpack_require__(51877);
-var unsupportedBrowsers = Lib.isIOS() || Lib.isSafari() || Lib.isIE();
+var supportsPixelatedImage = __webpack_require__(3883);
+var PIXELATED_IMAGE_STYLE = (__webpack_require__(32396).STYLE);
 module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
   var xa = plotinfo.xaxis;
   var ya = plotinfo.yaxis;
-  var supportsPixelatedImage = !(unsupportedBrowsers || gd._context._exportedPlot);
+  var supportsPixelated = !gd._context._exportedPlot && supportsPixelatedImage();
   Lib.makeTraceGroups(imageLayer, cdimage, 'im').each(function (cd) {
     var plotGroup = d3.select(this);
     var cd0 = cd[0];
     var trace = cd0.trace;
-    var realImage = (trace.zsmooth === 'fast' || trace.zsmooth === false && supportsPixelatedImage) && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
+    var realImage = (trace.zsmooth === 'fast' || trace.zsmooth === false && supportsPixelated) && !trace._hasZ && trace._hasSource && xa.type === 'linear' && ya.type === 'linear';
     trace._realImage = realImage;
     var z = cd0.z;
     var x0 = cd0.x0;
@@ -63259,7 +63483,7 @@ module.exports = function plot(gd, plotinfo, cdimage, imageLayer) {
       preserveAspectRatio: 'none'
     });
     image3.exit().remove();
-    var style = trace.zsmooth === false ? constants.pixelatedStyle : '';
+    var style = trace.zsmooth === false ? PIXELATED_IMAGE_STYLE : '';
     if (realImage) {
       var xRange = Lib.simpleMap(xa.range, xa.r2l);
       var yRange = Lib.simpleMap(ya.range, ya.r2l);
@@ -70165,7 +70389,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.22.0';
+exports.version = '2.23.0';
 
 /***/ }),
 
