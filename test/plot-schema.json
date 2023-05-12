@@ -1563,10 +1563,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -1586,11 +1584,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -1609,6 +1615,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -13481,10 +13497,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -13504,11 +13518,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -13527,6 +13549,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -15014,10 +15046,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -15037,11 +15067,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -15060,6 +15098,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -19274,10 +19322,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -19297,11 +19343,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -19320,6 +19374,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -20285,10 +20349,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -20308,11 +20370,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -20331,6 +20401,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -21325,10 +21405,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -21348,11 +21426,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -21371,6 +21457,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -22383,10 +22479,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -22406,11 +22500,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -22429,6 +22531,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -23782,10 +23894,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -23805,11 +23915,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -23828,6 +23946,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -24752,10 +24880,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -24775,11 +24901,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -24798,6 +24932,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -26077,10 +26221,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -26100,11 +26242,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -26123,6 +26273,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -27805,10 +27965,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -27828,11 +27986,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -27851,6 +28017,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -28987,10 +29163,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -29010,11 +29184,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "calc",
       "valType": "number"
      },
      "yanchor": {
@@ -29033,6 +29215,16 @@
       "editType": "calc",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -30546,10 +30738,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -30569,11 +30759,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -30592,6 +30790,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -31736,10 +31944,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -31759,11 +31965,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -31782,6 +31996,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -32890,10 +33114,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -32913,11 +33135,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -32936,6 +33166,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -34563,10 +34803,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -34586,11 +34824,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -34609,6 +34855,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colors": {
@@ -36900,10 +37156,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -36923,11 +37177,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "calc",
       "valType": "number"
      },
      "yanchor": {
@@ -36946,6 +37208,16 @@
       "editType": "calc",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -38134,10 +38406,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -38157,11 +38427,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -38180,6 +38458,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -40140,10 +40428,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -40163,11 +40449,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -40186,6 +40480,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -41115,10 +41419,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -41138,11 +41440,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -41161,6 +41471,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -44712,10 +45032,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -44735,11 +45053,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -44758,6 +45084,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -46977,10 +47313,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -47000,11 +47334,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "calc",
        "valType": "number"
       },
       "yanchor": {
@@ -47023,6 +47365,16 @@
        "editType": "calc",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -47572,10 +47924,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -47595,11 +47945,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "calc",
        "valType": "number"
       },
       "yanchor": {
@@ -47618,6 +47976,16 @@
        "editType": "calc",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -49067,10 +49435,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -49090,11 +49456,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -49113,6 +49487,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -50968,10 +51352,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -50991,11 +51373,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "calc",
        "valType": "number"
       },
       "yanchor": {
@@ -51014,6 +51404,16 @@
        "editType": "calc",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -53004,10 +53404,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -53027,11 +53425,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "calc",
        "valType": "number"
       },
       "yanchor": {
@@ -53050,6 +53456,16 @@
        "editType": "calc",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -55002,10 +55418,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -55025,11 +55439,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "calc",
        "valType": "number"
       },
       "yanchor": {
@@ -55048,6 +55470,16 @@
        "editType": "calc",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -56224,10 +56656,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -56247,11 +56677,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -56270,6 +56708,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -58117,10 +58565,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -58140,11 +58586,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "calc",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "calc",
        "valType": "number"
       },
       "yanchor": {
@@ -58163,6 +58617,16 @@
        "editType": "calc",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "calc",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -59997,10 +60461,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -60020,11 +60482,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -60043,6 +60513,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -61916,10 +62396,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -61939,11 +62417,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -61962,6 +62448,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -63766,10 +64262,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -63789,11 +64283,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -63812,6 +64314,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colorscale": {
@@ -65183,10 +65695,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -65206,11 +65716,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "colorbars",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "colorbars",
       "valType": "number"
      },
      "yanchor": {
@@ -65229,6 +65747,16 @@
       "editType": "colorbars",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "colorbars",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -66666,10 +67194,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -66689,11 +67215,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -66712,6 +67246,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colors": {
@@ -67545,10 +68089,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -67568,11 +68110,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "calc",
       "valType": "number"
      },
      "yanchor": {
@@ -67591,6 +68141,16 @@
       "editType": "calc",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
@@ -69929,10 +70489,8 @@
        }
       },
       "x": {
-       "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+       "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
        "valType": "number"
       },
       "xanchor": {
@@ -69952,11 +70510,19 @@
        "min": 0,
        "valType": "number"
       },
-      "y": {
-       "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+      "xref": {
+       "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+       "dflt": "paper",
        "editType": "colorbars",
-       "max": 3,
-       "min": -2,
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
+      },
+      "y": {
+       "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+       "editType": "colorbars",
        "valType": "number"
       },
       "yanchor": {
@@ -69975,6 +70541,16 @@
        "editType": "colorbars",
        "min": 0,
        "valType": "number"
+      },
+      "yref": {
+       "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+       "dflt": "paper",
+       "editType": "colorbars",
+       "valType": "enumerated",
+       "values": [
+        "container",
+        "paper"
+       ]
       }
      },
      "colors": {
@@ -72280,10 +72856,8 @@
       }
      },
      "x": {
-      "description": "Sets the x position of the color bar (in plot fraction). Defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*.",
+      "description": "Sets the x position with respect to `xref` of the color bar (in plot fraction). When `xref` is *paper*, defaults to 1.02 when `orientation` is *v* and 0.5 when `orientation` is *h*. When `xref` is *container*, defaults to *1* when `orientation` is *v* and 0.5 when `orientation` is *h*. Must be between *0* and *1* if `xref` is *container* and between *-2* and *3* if `xref` is *paper*.",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
       "valType": "number"
      },
      "xanchor": {
@@ -72303,11 +72877,19 @@
       "min": 0,
       "valType": "number"
      },
-     "y": {
-      "description": "Sets the y position of the color bar (in plot fraction). Defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*.",
+     "xref": {
+      "description": "Sets the container `x` refers to. *container* spans the entire `width` of the plot. *paper* refers to the width of the plotting area only.",
+      "dflt": "paper",
       "editType": "calc",
-      "max": 3,
-      "min": -2,
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
+     },
+     "y": {
+      "description": "Sets the y position with respect to `yref` of the color bar (in plot fraction). When `yref` is *paper*, defaults to 0.5 when `orientation` is *v* and 1.02 when `orientation` is *h*. When `yref` is *container*, defaults to 0.5 when `orientation` is *v* and 1 when `orientation` is *h*. Must be between *0* and *1* if `yref` is *container* and between *-2* and *3* if `yref` is *paper*.",
+      "editType": "calc",
       "valType": "number"
      },
      "yanchor": {
@@ -72326,6 +72908,16 @@
       "editType": "calc",
       "min": 0,
       "valType": "number"
+     },
+     "yref": {
+      "description": "Sets the container `y` refers to. *container* spans the entire `height` of the plot. *paper* refers to the height of the plotting area only.",
+      "dflt": "paper",
+      "editType": "calc",
+      "valType": "enumerated",
+      "values": [
+       "container",
+       "paper"
+      ]
      }
     },
     "colorscale": {
