@@ -20,7 +20,9 @@ module.exports = function styleOne(s, pt, trace, gd) {
         // coming from a legend
         s[0][0].__data__.i = s[0][0].__data__[0].i;
     }
-    // console.log( 's0 - i : ', s[0][0].__data__['i']);
+    // console.log( 's0 - i : ', s[0][0].__data__['i'], 'pt.color', pt.color, 'trace', trace);
+
+    if(!trace.marker.shape) trace.marker.color = pt.color;
 
     Drawing.pointStyle(s, trace, gd);
     // to do : push into s.style d3 logic
