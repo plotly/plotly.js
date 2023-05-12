@@ -94,7 +94,14 @@ module.exports = extendFlat({
         valType: 'any',
         dflt: 0,
         editType: 'calc+clearAxisTypes',
-        description: 'Set the image\'s y position. The bottom left corner of the image will be found at y0-dy/2'
+        description: [
+            'Set the image\'s y position. The top edge of the image',
+            '(or the bottom edge if the y axis is NOT reversed or if dy is negative)',
+            'will be found at ymin=y0-dy/2. By default when an image trace is',
+            'included, the y axis will be reversed so that the image is right-side-up,',
+            'but you can disable this by setting yaxis.autorange=true or by providing',
+            'an explicit y axis range.'
+        ].join(' ')
     },
     dx: {
         valType: 'number',
