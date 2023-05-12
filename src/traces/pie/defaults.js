@@ -5,6 +5,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
+var coercePattern = require('../../lib').coercePattern;
 
 function handleLabelsAndValues(labels, values) {
     var hasLabels = Array.isArray(labels);
@@ -64,7 +65,11 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var lineWidth = coerce('marker.line.width');
     if(lineWidth) coerce('marker.line.color');
 
-    coerce('marker.colors');
+    var markerColors = coerce('marker.colors');
+    coercePattern(coerce, 'marker.pattern', markerColors);
+    // push the marker colors (with s) to the foreground colors, to work around logic in the drawing pattern code on marker.color (without s, which is okay for a bar trace)
+    if(!traceOut.marker.pattern.fgcolor) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
+    if(!traceOut.marker.pattern.bgcolor) traceOut.marker.pattern.bgcolor = layout.paper_bgcolor;
 
     coerce('scalegroup');
     // TODO: hole needs to be coerced to the same value within a scaleegroup

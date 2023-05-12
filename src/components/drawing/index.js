@@ -699,7 +699,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
         if('mc' in d) {
             fillColor = d.mcc = fns.markerScale(d.mc);
         } else {
-            fillColor = marker.color || 'rgba(0,0,0,0)';
+            fillColor = marker.color || marker.colors || 'rgba(0,0,0,0)';
         }
 
         if(fns.selectedColorFn) {
@@ -766,7 +766,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd) {
                 patternBGColor, patternFGColor, patternFGOpacity
             );
         } else {
-            Color.fill(sel, fillColor);
+            Lib.isArrayOrTypedArray(fillColor) ? Color.fill(sel, fillColor[d.i]) : Color.fill(sel, fillColor);
         }
 
         if(lineWidth) {
