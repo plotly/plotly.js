@@ -68,7 +68,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var markerColors = coerce('marker.colors');
     coercePattern(coerce, 'marker.pattern', markerColors);
     // push the marker colors (with s) to the foreground colors, to work around logic in the drawing pattern code on marker.color (without s, which is okay for a bar trace)
-    if(!traceOut.marker.pattern.fgcolor) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
+    if(!traceOut.marker.pattern.fgcolor && traceIn.marker !== undefined) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
     if(!traceOut.marker.pattern.bgcolor) traceOut.marker.pattern.bgcolor = layout.paper_bgcolor;
 
     coerce('scalegroup');
