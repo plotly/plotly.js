@@ -163,14 +163,12 @@ function drawOne(gd, opts) {
                 if(isPaperX) {
                     lx = gs.l + gs.w * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
                 } else {
-                    legendObj.x = Lib.constrain(legendObj.x, 0, 1); // TODO: Move this to defaults setting?
                     lx = fullLayout.width * legendObj.x - FROM_TL[getXanchor(legendObj)] * legendObj._width;
                 }
 
                 if(isPaperY) {
                     ly = gs.t + gs.h * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
                 } else {
-                    legendObj.y = Lib.constrain(legendObj.y, 0, 1); // TODO: Move this to defaults setting?
                     ly = fullLayout.height * (1 - legendObj.y) - FROM_TL[getYanchor(legendObj)] * legendObj._effHeight;
                 }
 

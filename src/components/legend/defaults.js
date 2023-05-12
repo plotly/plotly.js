@@ -111,8 +111,6 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     var defaultX, defaultY, defaultYAnchor;
     var defaultXAnchor = 'left';
 
-    // TODO: Adjust default xanchor if needed for container ref?
-    // TODO: Constrain x or y if container ref to be within 0-1
     if(isHorizontal) {
         defaultX = 0;
 
