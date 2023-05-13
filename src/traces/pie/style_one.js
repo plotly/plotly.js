@@ -25,7 +25,7 @@ module.exports = function styleOne(s, pt, trace, gd) {
     // enforce the point color, when colors (with s) & the pattern shape are missing.
     // 'abuse' the color attribute, used in the Drawing component for bar trace type.
     // alternative could be to pass the point color as an extra parameter in pointStyle
-    if(!trace.marker.colors && !trace.marker.pattern.shape) trace.marker.color = pt.color;
+    if(!trace.marker.colors && trace.marker.pattern && !trace.marker.pattern.shape) trace.marker.color = pt.color;
 
     Drawing.pointStyle(s, trace, gd);
     // to do : push into s.style d3 logic
