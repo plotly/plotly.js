@@ -16,16 +16,22 @@ module.exports = function styleOne(s, pt, trace, gd) {
     // console.log( 'pie style_one: s', s, 'trace', trace, 'gd', gd);
 
     // to do: rework this assembler code in a next iteration.
-    if(s[0][0].__data__.i === undefined) {
+    var gibberish = s[0][0].__data__;
+    if(gibberish.i === undefined) {
         // coming from a legend
-        s[0][0].__data__.i = s[0][0].__data__[0].i;
+        gibberish.i = gibberish[0].i;
     }
     // console.log( 's0 - i : ', s[0][0].__data__['i'], 'pt.color', pt.color, 'trace', trace);
 
     // enforce the point color, when colors (with s) & the pattern shape are missing.
     // 'abuse' the color attribute, used in the Drawing component for bar trace type.
     // alternative could be to pass the point color as an extra parameter in pointStyle
-    if(!trace.marker.colors && trace.marker.pattern && !trace.marker.pattern.shape) trace.marker.color = pt.color;
+    var marker = trace.marker;
+    if(marker.pattern) {
+        if(!marker.colors || !marker.pattern.shape) marker.color = pt.color;
+    } else {
+        marker.color = pt.color;
+    }
 
     Drawing.pointStyle(s, trace, gd);
     // to do : push into s.style d3 logic
