@@ -1,0 +1,89 @@
+{
+  "data": [
+    {
+      "labels": [ "giraffe", "orangutan", "monkey"],
+      "values": [ 30, 20, 50],
+      "type": "pie",
+      "marker": {
+        "colors": [ "red", "green", "red"],
+        "line": {
+          "color": "lightgrey",
+          "width": 4
+        },
+        "pattern": {
+          "shape": [ "+", "", "-"],
+          "fgcolor": [ "darksalmon", "black", "steelblue"],
+          "bgcolor": "lightgrey"
+        }
+      },
+      "textfont": { "color": ["black", "white", "black"]},
+      "sort": false,
+      "domain": {"x": [0.81, 0.99]}
+    }, {
+      "labels": [ "giraffe", "orangutan", "monkey"],
+      "values": [ 30, 20, 50],
+      "type": "pie",
+      "marker": {
+        "colors": [ "red", "green", "blue"],
+        "line": {
+          "color": "lightgrey",
+          "width": 4
+        },
+        "pattern": {
+          "shape": [ "+", "", "-"],
+          "fgcolor": [ "darksalmon", "black", "steelblue"]
+        }
+      },
+      "textfont": { "color": ["black", "white", "black"]},
+      "sort": false,
+      "domain": {"x": [0.61, 0.79]}
+    }, {
+      "labels": [ "giraffe", "orangutan", "monkey"],
+      "values": [ 30, 20, 50],
+      "type": "pie",
+      "marker": {
+        "colors": [ "red", "green", "blue"],
+        "line": {
+          "color": "lightgrey",
+          "width": 4
+        },
+        "pattern": {
+          "shape": [ "+", "", "-"]
+        }
+      },
+      "textfont": { "color": "black"},
+      "sort": false,
+      "domain": {"x": [0.41, 0.59]}
+    }, {
+      "labels": [ "giraffe", "orangutan", "monkey"],
+      "values": [ 30, 20, 50],
+      "type": "pie",
+      "marker": {
+        "colors": [ "red", "green", "blue"],
+        "line": {
+          "color": "lightgrey",
+          "width": 4
+        }
+      },
+      "sort": false,
+      "domain": {"x": [0.21, 0.39]}
+    }, {
+      "labels": [ "giraffe", "orangutan", "monkey"],
+      "values": [ 30, 20, 50],
+      "type": "pie",
+      "marker": {
+        "colors": ["steelblue", "steelblue", "steelblue"],
+        "line": {
+          "color": "lightgrey",
+          "width": 4
+        }
+      },
+      "sort": false,
+      "domain": {"x": [0.01, 0.19]}
+    }
+  ],
+  "layout": {
+    "title": { "text": "pie chart with pattern"},
+    "width": 800
+  }
+}
