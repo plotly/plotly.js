@@ -15,7 +15,7 @@ function supportsPixelatedImage() {
     if(_supportsPixelated !== null) { // only run the feature detection once
         return _supportsPixelated;
     }
-    if(Lib.isIE() || Lib.isSafari()) {
+    if(Lib.isIE() || Lib.isSafari() || lib.isIOS()) {
         // NB. Safari passes the test below but the final rendering is not pixelated
         _supportsPixelated = false;
     } else {
