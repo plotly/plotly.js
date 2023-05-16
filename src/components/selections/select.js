@@ -25,7 +25,7 @@ var newShapeHelpers = require('../shapes/draw_newshape/helpers');
 var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
 
-var newShapes = require('../shapes/draw_newshape/newshapes');
+var newShapes = require('../shapes/draw_newshape/newshapes').newShapes;
 
 var newSelections = require('./draw_newselection/newselections');
 var activateLastSelection = require('./draw').activateLastSelection;
@@ -111,6 +111,10 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     var newStyle = isDrawMode ?
         fullLayout.newshape :
         fullLayout.newselection;
+
+    if(isDrawMode) {
+        dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
+    }
 
     var fillC = (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'rgba(0,0,0,0)';
 

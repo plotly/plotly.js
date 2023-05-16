@@ -24,8 +24,11 @@ var helpers = require('./draw_newshape/helpers');
 var pointsOnRectangle = helpers.pointsOnRectangle;
 var pointsOnEllipse = helpers.pointsOnEllipse;
 var writePaths = helpers.writePaths;
-var newShapes = require('./draw_newshape/newshapes');
+var newShapes = require('./draw_newshape/newshapes').newShapes;
+var createShapeObj = require('./draw_newshape/newshapes').createShapeObj;
 var newSelections = require('../selections/draw_newselection/newselections');
+var drawLabel = require('./display_labels');
+
 
 module.exports = function displayOutlines(polygons, outlines, dragOptions, nCalls) {
     if(!nCalls) nCalls = 0;
@@ -93,6 +96,17 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         var g = zoomLayer.append('g').attr('class', 'outline-controllers');
         addVertexControllers(g);
         addGroupControllers();
+    }
+
+    // draw label
+    if(isDrawMode && dragOptions.hasText) {
+        var shapeGroup = zoomLayer.select('.shape-group');
+        if(shapeGroup.empty()) {
+            shapeGroup = zoomLayer.append('g')
+                .classed('shape-group', true);
+        }
+        var shapeOptions = createShapeObj(outlines, dragOptions);
+        drawLabel(gd, 100, shapeOptions, shapeGroup);
     }
 
     function startDragVertex(evt) {
