@@ -37,8 +37,10 @@
         "y": [0, 0.46]
       },
       "radialaxis": {
-        "autorangeclipmin": 0.5,
-        "autorangeclipmax": 3.5
+        "autorangeoptions": {
+          "clipmin": 0.5,
+          "clipmax": 3.5
+        }
       }
     },
     "polar2": {
@@ -47,8 +49,10 @@
         "y": [0.54, 1]
       },
       "radialaxis": {
-        "autorangeclipmin": 2,
-        "autorangeclipmax": 5
+        "autorangeoptions": {
+          "clipmin": 2,
+          "clipmax": 5
+        }
       }
     },
     "showlegend": false,

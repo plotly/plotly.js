@@ -4308,41 +4308,45 @@
        "reversed"
       ]
      },
-     "autorangeclipmax": {
-      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
       "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeclipmin": {
-      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeinclude": {
-      "arrayOk": true,
-      "description": "Ensure this value is included in autorange.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeincludesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
-      "editType": "none",
-      "valType": "string"
-     },
-     "autorangemax": {
-      "description": "Use this value exactly as autorange maximum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangemin": {
-      "description": "Use this value exactly as autorange minimum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -4503,6 +4507,22 @@
       "min": 0,
       "valType": "number"
      },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
       "dflt": 3,
@@ -4541,22 +4561,6 @@
        }
       ],
       "valType": "info_array"
-     },
-     "rangemax": {
-      "description": "Determines the maximum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
-     },
-     "rangemin": {
-      "description": "Determines the minimum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
      },
      "rangemode": {
       "description": "If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. If *normal*, the range is computed in relation to the extrema of the input data (same behavior as for cartesian axes).",
@@ -5471,41 +5475,45 @@
        "reversed"
       ]
      },
-     "autorangeclipmax": {
-      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
       "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeclipmin": {
-      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeinclude": {
-      "arrayOk": true,
-      "description": "Ensure this value is included in autorange.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeincludesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
-      "editType": "none",
-      "valType": "string"
-     },
-     "autorangemax": {
-      "description": "Use this value exactly as autorange maximum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangemin": {
-      "description": "Use this value exactly as autorange minimum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -5648,6 +5656,22 @@
       "min": 0,
       "valType": "number"
      },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
       "dflt": 3,
@@ -5699,22 +5723,6 @@
        }
       ],
       "valType": "info_array"
-     },
-     "rangemax": {
-      "description": "Determines the maximum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
-     },
-     "rangemin": {
-      "description": "Determines the minimum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
      },
      "rangemode": {
       "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
@@ -6091,41 +6099,45 @@
        "reversed"
       ]
      },
-     "autorangeclipmax": {
-      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
       "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeclipmin": {
-      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeinclude": {
-      "arrayOk": true,
-      "description": "Ensure this value is included in autorange.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeincludesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
-      "editType": "none",
-      "valType": "string"
-     },
-     "autorangemax": {
-      "description": "Use this value exactly as autorange maximum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangemin": {
-      "description": "Use this value exactly as autorange minimum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -6268,6 +6280,22 @@
       "min": 0,
       "valType": "number"
      },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
       "dflt": 3,
@@ -6319,22 +6347,6 @@
        }
       ],
       "valType": "info_array"
-     },
-     "rangemax": {
-      "description": "Determines the maximum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
-     },
-     "rangemin": {
-      "description": "Determines the minimum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
      },
      "rangemode": {
       "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
@@ -6711,41 +6723,45 @@
        "reversed"
       ]
      },
-     "autorangeclipmax": {
-      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
+     "autorangeoptions": {
+      "clipmax": {
+       "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "clipmin": {
+       "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
       "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeclipmin": {
-      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeinclude": {
-      "arrayOk": true,
-      "description": "Ensure this value is included in autorange.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangeincludesrc": {
-      "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
-      "editType": "none",
-      "valType": "string"
-     },
-     "autorangemax": {
-      "description": "Use this value exactly as autorange maximum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
-     },
-     "autorangemin": {
-      "description": "Use this value exactly as autorange minimum.",
-      "editType": "plot",
-      "impliedEdits": {},
-      "valType": "any"
+      "include": {
+       "arrayOk": true,
+       "description": "Ensure this value is included in autorange.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "includesrc": {
+       "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+       "editType": "none",
+       "valType": "string"
+      },
+      "maxallowed": {
+       "description": "Use this value exactly as autorange maximum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "minallowed": {
+       "description": "Use this value exactly as autorange minimum.",
+       "editType": "plot",
+       "impliedEdits": {},
+       "valType": "any"
+      },
+      "role": "object"
      },
      "autotypenumbers": {
       "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -6888,6 +6904,22 @@
       "min": 0,
       "valType": "number"
      },
+     "maxallowed": {
+      "description": "Determines the maximum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Determines the minimum range of this axis.",
+      "editType": "plot",
+      "impliedEdits": {
+       "^autorange": false
+      },
+      "valType": "any"
+     },
      "minexponent": {
       "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
       "dflt": 3,
@@ -6939,22 +6971,6 @@
        }
       ],
       "valType": "info_array"
-     },
-     "rangemax": {
-      "description": "Determines the maximum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
-     },
-     "rangemin": {
-      "description": "Determines the minimum range of this axis.",
-      "editType": "plot",
-      "impliedEdits": {
-       "^autorange": false
-      },
-      "valType": "any"
      },
      "rangemode": {
       "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
@@ -10445,41 +10461,45 @@
       "reversed"
      ]
     },
-    "autorangeclipmax": {
-     "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
+    "autorangeoptions": {
+     "clipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "clipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangeclipmin": {
-     "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangeinclude": {
-     "arrayOk": true,
-     "description": "Ensure this value is included in autorange.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangeincludesrc": {
-     "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
-     "editType": "none",
-     "valType": "string"
-    },
-    "autorangemax": {
-     "description": "Use this value exactly as autorange maximum.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangemin": {
-     "description": "Use this value exactly as autorange minimum.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
+     "include": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "includesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "maxallowed": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Use this value exactly as autorange minimum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "role": "object"
     },
     "autotypenumbers": {
      "description": "Using *strict* a numeric string in trace data is not converted to a number. Using *convert types* a numeric string in trace data may be treated as a number during automatic axis `type` detection. Defaults to layout.autotypenumbers.",
@@ -10711,6 +10731,22 @@
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
       "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
      ]
+    },
+    "maxallowed": {
+     "description": "Determines the maximum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
+    },
+    "minallowed": {
+     "description": "Determines the minimum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
     },
     "minexponent": {
      "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
@@ -10957,22 +10993,6 @@
       }
      },
      "role": "object"
-    },
-    "rangemax": {
-     "description": "Determines the maximum range of this axis.",
-     "editType": "plot",
-     "impliedEdits": {
-      "^autorange": false
-     },
-     "valType": "any"
-    },
-    "rangemin": {
-     "description": "Determines the minimum range of this axis.",
-     "editType": "plot",
-     "impliedEdits": {
-      "^autorange": false
-     },
-     "valType": "any"
     },
     "rangemode": {
      "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",
@@ -11755,41 +11775,45 @@
       "reversed"
      ]
     },
-    "autorangeclipmax": {
-     "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangemax` is provided.",
+    "autorangeoptions": {
+     "clipmax": {
+      "description": "Clip autorange maximum if it goes beyond this value. Has no effect when `autorangeoptions.maxallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "clipmin": {
+      "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangeoptions.minallowed` is provided.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
      "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangeclipmin": {
-     "description": "Clip autorange minimum if it goes beyond this value. Has no effect when `autorangemin` is provided.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangeinclude": {
-     "arrayOk": true,
-     "description": "Ensure this value is included in autorange.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangeincludesrc": {
-     "description": "Sets the source reference on Chart Studio Cloud for `autorangeinclude`.",
-     "editType": "none",
-     "valType": "string"
-    },
-    "autorangemax": {
-     "description": "Use this value exactly as autorange maximum.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
-    },
-    "autorangemin": {
-     "description": "Use this value exactly as autorange minimum.",
-     "editType": "plot",
-     "impliedEdits": {},
-     "valType": "any"
+     "include": {
+      "arrayOk": true,
+      "description": "Ensure this value is included in autorange.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "includesrc": {
+      "description": "Sets the source reference on Chart Studio Cloud for `include`.",
+      "editType": "none",
+      "valType": "string"
+     },
+     "maxallowed": {
+      "description": "Use this value exactly as autorange maximum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "minallowed": {
+      "description": "Use this value exactly as autorange minimum.",
+      "editType": "plot",
+      "impliedEdits": {},
+      "valType": "any"
+     },
+     "role": "object"
     },
     "autoshift": {
      "description": "Automatically reposition the axis to avoid overlap with other axes with the same `overlaying` value. This repositioning will account for any `shift` amount applied to other axes on the same side with `autoshift` is set to true. Only has an effect if `anchor` is set to *free*.",
@@ -12027,6 +12051,22 @@
       "/^x([2-9]|[1-9][0-9]+)?( domain)?$/",
       "/^y([2-9]|[1-9][0-9]+)?( domain)?$/"
      ]
+    },
+    "maxallowed": {
+     "description": "Determines the maximum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
+    },
+    "minallowed": {
+     "description": "Determines the minimum range of this axis.",
+     "editType": "plot",
+     "impliedEdits": {
+      "^autorange": false
+     },
+     "valType": "any"
     },
     "minexponent": {
      "description": "Hide SI prefix for 10^n if |n| is below this number. This only has an effect when `tickformat` is *SI* or *B*.",
@@ -12273,22 +12313,6 @@
       }
      },
      "role": "object"
-    },
-    "rangemax": {
-     "description": "Determines the maximum range of this axis.",
-     "editType": "plot",
-     "impliedEdits": {
-      "^autorange": false
-     },
-     "valType": "any"
-    },
-    "rangemin": {
-     "description": "Determines the minimum range of this axis.",
-     "editType": "plot",
-     "impliedEdits": {
-      "^autorange": false
-     },
-     "valType": "any"
     },
     "rangemode": {
      "description": "If *normal*, the range is computed in relation to the extrema of the input data. If *tozero*`, the range extends to 0, regardless of the input data If *nonnegative*, the range is non-negative, regardless of the input data. Applies only to linear axes.",

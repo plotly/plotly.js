@@ -136779,13 +136779,13 @@
     "height": 800,
     "xaxis": {
       "type": "linear",
-      "rangemin": 0,
-      "rangemax": 4000000000
+      "minallowed": 0,
+      "maxallowed": 4000000000
     },
     "yaxis": {
       "type": "linear",
-      "rangemin": 0,
-      "rangemax": 70000
+      "minallowed": 0,
+      "maxallowed": 70000
     }
   }
 }

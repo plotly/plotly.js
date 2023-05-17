@@ -275,11 +275,15 @@
         "scene": {
             "xaxis": { "nticks": 12},
             "yaxis": {
-                "autorangeclipmax": 0,
+                "autorangeoptions": {
+                    "clipmax": 0
+                },
                 "nticks": 12
             },
             "zaxis": {
-                "autorangeclipmax": 0,
+                "autorangeoptions": {
+                    "clipmax": 0
+                },
                 "nticks": 12
             },
             "camera": {

@@ -22,13 +22,13 @@
         },
         "scene": {
             "xaxis": {
-                "autorangemin": -0.5
+                "autorangeoptions" : {"minallowed": -0.5}
             },
             "yaxis": {
-                "autorangeinclude": [2, -1]
+                "autorangeoptions" : {"include": [2, -1]}
             },
             "zaxis": {
-                "autorangemax": 2.5
+                "autorangeoptions" : {"maxallowed": 2.5}
             }
         },
         "width": 400,

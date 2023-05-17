@@ -101,8 +101,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         if(axType === 'linear' || axType === '-') coerce('rangemode');
     }
 
-    coerce('rangemin');
-    coerce('rangemax');
+    coerce('minallowed');
+    coerce('maxallowed');
     coerce('range');
     containerOut.cleanRange();
 

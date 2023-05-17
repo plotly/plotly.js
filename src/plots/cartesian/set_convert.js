@@ -433,9 +433,9 @@ module.exports = function setConvert(ax, fullLayout) {
     };
 
     ax.limitRange = function(rangeAttr) {
-        var rangemin = ax.rangemin;
-        var rangemax = ax.rangemax;
-        if(rangemin === undefined && rangemax === undefined) return;
+        var minallowed = ax.minallowed;
+        var maxallowed = ax.maxallowed;
+        if(minallowed === undefined && maxallowed === undefined) return;
 
         if(!rangeAttr) rangeAttr = 'range';
         var range = Lib.nestedProperty(ax, rangeAttr).get();
@@ -443,10 +443,10 @@ module.exports = function setConvert(ax, fullLayout) {
         var axrev = rng[1] < rng[0];
         if(axrev) rng.reverse();
 
-        var bounds = Lib.simpleMap([rangemin, rangemax], ax.r2l);
+        var bounds = Lib.simpleMap([minallowed, maxallowed], ax.r2l);
 
-        if(rangemin !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = rangemin;
-        if(rangemax !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = rangemax;
+        if(minallowed !== undefined && rng[0] < bounds[0]) range[axrev ? 1 : 0] = minallowed;
+        if(maxallowed !== undefined && rng[1] > bounds[1]) range[axrev ? 0 : 1] = maxallowed;
     };
 
     /*

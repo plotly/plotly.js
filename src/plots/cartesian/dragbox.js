@@ -924,8 +924,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 }
 
                 if(xScaleFactor2 > 1 && (
-                    (xa.rangemax !== undefined && editX === (xa.range[0] < xa.range[1] ? 'e' : 'w')) ||
-                    (xa.rangemin !== undefined && editX === (xa.range[0] < xa.range[1] ? 'w' : 'e'))
+                    (xa.maxallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'e' : 'w')) ||
+                    (xa.minallowed !== undefined && editX === (xa.range[0] < xa.range[1] ? 'w' : 'e'))
                 )) {
                     xScaleFactor2 = 1;
                     clipDx = 0;
@@ -948,8 +948,8 @@ function makeDragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 }
 
                 if(yScaleFactor2 > 1 && (
-                    (ya.rangemax !== undefined && editY === (ya.range[0] < ya.range[1] ? 'n' : 's')) ||
-                    (ya.rangemin !== undefined && editY === (ya.range[0] < ya.range[1] ? 's' : 'n'))
+                    (ya.maxallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 'n' : 's')) ||
+                    (ya.minallowed !== undefined && editY === (ya.range[0] < ya.range[1] ? 's' : 'n'))
                 )) {
                     yScaleFactor2 = 1;
                     clipDy = 0;

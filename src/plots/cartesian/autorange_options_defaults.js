@@ -1,11 +1,11 @@
 'use strict';
 
 module.exports = function handleAutorangeOptionsDefaults(coerce) {
-    var autorangemin = coerce('autorangemin');
-    var autorangemax = coerce('autorangemax');
+    var minallowed = coerce('autorangeoptions.minallowed');
+    var maxallowed = coerce('autorangeoptions.maxallowed');
 
-    if(autorangemin === undefined) coerce('autorangeclipmin');
-    if(autorangemax === undefined) coerce('autorangeclipmax');
+    if(minallowed === undefined) coerce('autorangeoptions.clipmin');
+    if(maxallowed === undefined) coerce('autorangeoptions.clipmax');
 
-    coerce('autorangeinclude');
+    coerce('autorangeoptions.include');
 };
