@@ -633,7 +633,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
     var marker = trace.marker;
     var markerLine = marker.line;
 
-    if( pt && pt.i>=0 && d.i === undefined) d.i = pt.i;
+    if(pt && pt.i >= 0 && d.i === undefined) d.i = pt.i;
 
     sel.style('opacity',
         fns.selectedOpacityFn ? fns.selectedOpacityFn(d) :
