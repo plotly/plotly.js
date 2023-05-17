@@ -9,6 +9,12 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.23.1] -- 2023-05-16
+
+### Fixed
+ - Fix heatmap rendering on iOS and Safari when `zsmooth` is set to false [[#6605](https://github.com/plotly/plotly.js/pull/6605)], with thanks to @lvlte for the contribution!
+
+
 ## [2.23.0] -- 2023-05-12
 
 ### Added
