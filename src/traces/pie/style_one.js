@@ -18,7 +18,8 @@ module.exports = function styleOne(s, pt, trace, gd) {
         marker.color = pt.color;
     }
 
+    Drawing.pointStyle(s, trace, gd, pt);
+
     s.style('stroke-width', lineWidth)
-        .call(Drawing.pointStyle, trace, gd, pt)
         .call(Color.stroke, lineColor);
 };
