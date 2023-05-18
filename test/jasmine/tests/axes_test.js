@@ -718,10 +718,10 @@ describe('Test axes', function() {
         it('should set autorange to true when input range is invalid', function() {
             layoutIn = {
                 xaxis: { range: 'not-gonna-work' },
-                xaxis2: { range: [1, 2, 3] },
+                xaxis2: { range: [1] },
                 yaxis: { range: ['a', 2] },
                 yaxis2: { range: [1, 'b'] },
-                yaxis3: { range: [null, {}] }
+                yaxis3: { range: [undefined, {}] }
             };
             layoutOut._subplots.cartesian.push('x2y2', 'xy3');
             layoutOut._subplots.yaxis.push('x2', 'y2', 'y3');
@@ -748,6 +748,36 @@ describe('Test axes', function() {
             Axes.list({ _fullLayout: layoutOut }).forEach(function(ax) {
                 expect(ax.autorange).toBe(false, ax._name);
             });
+        });
+
+        it('should set autorange to true when range[0] and range[1] are set to null', function() {
+            layoutIn = {
+                xaxis: { range: [null, null] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe(true);
+        });
+
+        it('should set autorange to min when range[0] is set to null', function() {
+            layoutIn = {
+                xaxis: { range: [null, 1] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe('min');
+        });
+
+        it('should set autorange to max when range[1] is set to null', function() {
+            layoutIn = {
+                xaxis: { range: [1, null] }
+            };
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+
+            expect(layoutOut.xaxis.autorange).toBe('max');
         });
 
         it('only allows rangemode with linear axes', function() {

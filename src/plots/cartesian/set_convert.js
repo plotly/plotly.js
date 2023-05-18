@@ -877,13 +877,28 @@ module.exports = function setConvert(ax, fullLayout) {
         return arrayOut;
     };
 
-    ax.isValidRange = function(range) {
+    ax.isValidRange = function(range, nullOk) {
         return (
             Array.isArray(range) &&
             range.length === 2 &&
-            isNumeric(ax.r2l(range[0])) &&
-            isNumeric(ax.r2l(range[1]))
+            ((nullOk && range[0] === null) || isNumeric(ax.r2l(range[0]))) &&
+            ((nullOk && range[1] === null) || isNumeric(ax.r2l(range[1])))
         );
+    };
+
+    ax.getAutorangeDflt = function(range, options) {
+        var autorangeDflt = !ax.isValidRange(range, 'nullOk');
+        if(autorangeDflt && options && options.reverseDflt) autorangeDflt = 'reversed';
+        else if(range) {
+            if(range[0] === null && range[1] === null) {
+                autorangeDflt = true;
+            } else if(range[0] === null && range[1] !== null) {
+                autorangeDflt = 'min';
+            } else if(range[0] !== null && range[1] === null) {
+                autorangeDflt = 'max';
+            }
+        }
+        return autorangeDflt;
     };
 
     ax.isPtWithinRange = function(d, calendar) {

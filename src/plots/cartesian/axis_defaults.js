@@ -92,8 +92,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut, layoutOut);
 
-    var autorangeDflt = !containerOut.isValidRange(containerIn.range);
-    if(autorangeDflt && options.reverseDflt) autorangeDflt = 'reversed';
+    coerce('minallowed');
+    coerce('maxallowed');
+    var range = coerce('range');
+
+    var autorangeDflt = containerOut.getAutorangeDflt(range, options);
+
     var autoRange = coerce('autorange', autorangeDflt);
     if(autoRange) {
         handleAutorangeOptionsDefaults(coerce);
@@ -101,9 +105,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         if(axType === 'linear' || axType === '-') coerce('rangemode');
     }
 
-    coerce('minallowed');
-    coerce('maxallowed');
-    coerce('range');
     containerOut.cleanRange();
 
     handleCategoryOrderDefaults(containerIn, containerOut, coerce, options);
