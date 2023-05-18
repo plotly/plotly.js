@@ -272,7 +272,7 @@ module.exports = {
     },
     autorange: {
         valType: 'enumerated',
-        values: [true, false, 'reversed'],
+        values: [true, false, 'reversed', 'min reversed', 'max reversed', 'min', 'max'],
         dflt: true,
         editType: 'axrange',
         impliedEdits: {'range[0]': undefined, 'range[1]': undefined},
@@ -280,7 +280,12 @@ module.exports = {
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
             'See `rangemode` for more info.',
-            'If `range` is provided, then `autorange` is set to *false*.'
+            'If `range` is provided, then `autorange` is set to *false*.',
+            'Using *min* applys autorange only to set the minimum.',
+            'Using *max* applys autorange only to set the maximum.',
+            'Using *min reversed* applys autorange only to set the minimum on a reversed axis.',
+            'Using *max reversed* applys autorange only to set the maximum on a reversed axis.',
+            'Using *reversed* applys autorange on both ends and reverse the axis direction.',
         ].join(' ')
     },
     autorangeoptions: {
@@ -363,7 +368,8 @@ module.exports = {
             'will be accepted and converted to strings.',
             'If the axis `type` is *category*, it should be numbers,',
             'using the scale where each category is assigned a serial',
-            'number from zero in the order it appears.'
+            'number from zero in the order it appears.',
+            'Leaving either or both elements `null` impacts the default `autorange`.',
         ].join(' ')
     },
     minallowed: {

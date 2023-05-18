@@ -4297,7 +4297,7 @@
       "valType": "angle"
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*. Using *min* applys autorange only to set the minimum. Using *max* applys autorange only to set the maximum. Using *min reversed* applys autorange only to set the minimum on a reversed axis. Using *max reversed* applys autorange only to set the maximum on a reversed axis. Using *reversed* applys autorange on both ends and reverse the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -4305,7 +4305,11 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
      },
      "autorangeoptions": {
@@ -4539,7 +4543,7 @@
      },
      "range": {
       "anim": true,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -5464,7 +5468,7 @@
       }
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*. Using *min* applys autorange only to set the minimum. Using *max* applys autorange only to set the maximum. Using *min reversed* applys autorange only to set the minimum on a reversed axis. Using *max reversed* applys autorange only to set the maximum on a reversed axis. Using *reversed* applys autorange on both ends and reverse the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -5472,7 +5476,11 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
      },
      "autorangeoptions": {
@@ -5701,7 +5709,7 @@
      },
      "range": {
       "anim": false,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -6088,7 +6096,7 @@
       }
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*. Using *min* applys autorange only to set the minimum. Using *max* applys autorange only to set the maximum. Using *min reversed* applys autorange only to set the minimum on a reversed axis. Using *max reversed* applys autorange only to set the maximum on a reversed axis. Using *reversed* applys autorange on both ends and reverse the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -6096,7 +6104,11 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
      },
      "autorangeoptions": {
@@ -6325,7 +6337,7 @@
      },
      "range": {
       "anim": false,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -6712,7 +6724,7 @@
       }
      },
      "autorange": {
-      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+      "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*. Using *min* applys autorange only to set the minimum. Using *max* applys autorange only to set the maximum. Using *min reversed* applys autorange only to set the minimum on a reversed axis. Using *max reversed* applys autorange only to set the maximum on a reversed axis. Using *reversed* applys autorange on both ends and reverse the axis direction.",
       "dflt": true,
       "editType": "plot",
       "impliedEdits": {},
@@ -6720,7 +6732,11 @@
       "values": [
        true,
        false,
-       "reversed"
+       "reversed",
+       "min reversed",
+       "max reversed",
+       "min",
+       "max"
       ]
      },
      "autorangeoptions": {
@@ -6949,7 +6965,7 @@
      },
      "range": {
       "anim": false,
-      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+      "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
       "editType": "plot",
       "impliedEdits": {
        "autorange": false
@@ -10450,7 +10466,7 @@
      "valType": "flaglist"
     },
     "autorange": {
-     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*. Using *min* applys autorange only to set the minimum. Using *max* applys autorange only to set the maximum. Using *min reversed* applys autorange only to set the minimum on a reversed axis. Using *max reversed* applys autorange only to set the maximum on a reversed axis. Using *reversed* applys autorange on both ends and reverse the axis direction.",
      "dflt": true,
      "editType": "axrange",
      "impliedEdits": {},
@@ -10458,7 +10474,11 @@
      "values": [
       true,
       false,
-      "reversed"
+      "reversed",
+      "min reversed",
+      "max reversed",
+      "min",
+      "max"
      ]
     },
     "autorangeoptions": {
@@ -10902,7 +10922,7 @@
     },
     "range": {
      "anim": true,
-     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
      "editType": "axrange",
      "impliedEdits": {
       "autorange": false
@@ -11764,7 +11784,7 @@
      "valType": "flaglist"
     },
     "autorange": {
-     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*.",
+     "description": "Determines whether or not the range of this axis is computed in relation to the input data. See `rangemode` for more info. If `range` is provided, then `autorange` is set to *false*. Using *min* applys autorange only to set the minimum. Using *max* applys autorange only to set the maximum. Using *min reversed* applys autorange only to set the minimum on a reversed axis. Using *max reversed* applys autorange only to set the maximum on a reversed axis. Using *reversed* applys autorange on both ends and reverse the axis direction.",
      "dflt": true,
      "editType": "axrange",
      "impliedEdits": {},
@@ -11772,7 +11792,11 @@
      "values": [
       true,
       false,
-      "reversed"
+      "reversed",
+      "min reversed",
+      "max reversed",
+      "min",
+      "max"
      ]
     },
     "autorangeoptions": {
@@ -12222,7 +12246,7 @@
     },
     "range": {
      "anim": true,
-     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears.",
+     "description": "Sets the range of this axis. If the axis `type` is *log*, then you must take the log of your desired range (e.g. to set the range from 1 to 100, set the range from 0 to 2). If the axis `type` is *date*, it should be date strings, like date data, though Date objects and unix milliseconds will be accepted and converted to strings. If the axis `type` is *category*, it should be numbers, using the scale where each category is assigned a serial number from zero in the order it appears. Leaving either or both elements `null` impacts the default `autorange`.",
      "editType": "axrange",
      "impliedEdits": {
       "autorange": false
