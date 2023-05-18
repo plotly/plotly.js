@@ -87,6 +87,12 @@ function getAutoRange(gd, ax) {
     if(ax.autorange === 'reversed') {
         axReverse = true;
         ax.autorange = true;
+    } else if(ax.autorange === 'min reversed') {
+        axReverse = true;
+        ax.autorange = 'min';
+    } else if(ax.autorange === 'max reversed') {
+        axReverse = true;
+        ax.autorange = 'max';
     }
 
     var rangeMode = ax.rangemode;
@@ -214,7 +220,7 @@ function makePadFn(fullLayout, ax, max) {
         (ax.ticklabelposition || '').indexOf('inside') !== -1 ||
         (anchorAxis.ticklabelposition || '').indexOf('inside') !== -1
     ) {
-        var axReverse = ax.autorange === 'reversed';
+        var axReverse = ax.isReversed();
         if(!axReverse) {
             var rng = Lib.simpleMap(ax.range, ax.r2l);
             axReverse = rng[1] < rng[0];

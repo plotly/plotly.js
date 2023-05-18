@@ -738,7 +738,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
             sceneBounds[0][i] = range[0];
             sceneBounds[1][i] = range[1];
 
-            if(axis.autorange === 'reversed') {
+            if(axis.isReversed()) {
                 // swap bounds:
                 var tmp = sceneBounds[0][i];
                 sceneBounds[0][i] = sceneBounds[1][i];

@@ -89,7 +89,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                     handleAutorangeOptionsDefaults(coerceAxis);
 
                     if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
-                    if(autoRange === 'reversed') axOut._m = -1;
+                    if(axOut.isReversed()) axOut._m = -1;
                 }
 
                 axOut.cleanRange('range', {dfltRange: [0, 1]});

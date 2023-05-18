@@ -901,6 +901,15 @@ module.exports = function setConvert(ax, fullLayout) {
         return autorangeDflt;
     };
 
+    ax.isReversed = function() {
+        var autorange = ax.autorange;
+        return (
+            autorange === 'reversed' ||
+            autorange === 'min reversed' ||
+            autorange === 'max reversed'
+        );
+    };
+
     ax.isPtWithinRange = function(d, calendar) {
         var coord = ax.c2l(d[axLetter], null, calendar);
         var r0 = ax.r2l(ax.range[0]);
