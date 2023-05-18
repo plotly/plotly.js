@@ -103,7 +103,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
         var shapeGroup = zoomLayer.select('.shape-group');
         if(shapeGroup.empty()) {
             shapeGroup = zoomLayer.append('g')
-                .classed('shape-group', true);
+                .classed('shape-group', true)
+                .classed('select-outline', true);
         }
         var shapeOptions = createShapeObj(outlines, dragOptions);
         drawLabel(gd, 100, shapeOptions, shapeGroup);
