@@ -62,7 +62,7 @@ function newShapes(outlines, dragOptions) {
         }
     }
 
-    var newShape = createShapeObj(outlines, dragOptions);
+    var newShape = createShapeObj(outlines, dragOptions, dragmode);
 
     clearOutline(gd);
 
@@ -105,7 +105,7 @@ function newShapes(outlines, dragOptions) {
     return editHelpers ? editHelpers.getUpdateObj() : {};
 }
 
-function createShapeObj(outlines, dragOptions) {
+function createShapeObj(outlines, dragOptions, dragmode) {
     var e = outlines[0][0]; // pick first outline
     var gd = dragOptions.gd;
 
@@ -113,7 +113,6 @@ function createShapeObj(outlines, dragOptions) {
     var newStyle = gd._fullLayout.newshape;
     var plotinfo = dragOptions.plotinfo;
     var isActiveShape = dragOptions.isActiveShape;
-    var dragmode = dragOptions.dragmode;
 
     var xaxis = plotinfo.xaxis;
     var yaxis = plotinfo.yaxis;

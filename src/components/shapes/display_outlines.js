@@ -106,8 +106,8 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
                 .classed('shape-group', true)
                 .classed('select-outline', true);
         }
-        var shapeOptions = createShapeObj(outlines, dragOptions);
-        drawLabel(gd, 100, shapeOptions, shapeGroup);
+        var shapeOptions = createShapeObj(outlines, dragOptions, dragOptions.dragmode);
+        drawLabel(gd, 'draw-temp', shapeOptions, shapeGroup);
     }
 
     function startDragVertex(evt) {
