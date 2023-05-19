@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v2.23.1
+* plotly.js (geo) v2.23.2
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -16133,7 +16133,7 @@ var clearOutline = (__webpack_require__(1873).clearOutline);
 var newShapeHelpers = __webpack_require__(165);
 var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
-var newShapes = __webpack_require__(551);
+var newShapes = (__webpack_require__(551).newShapes);
 var newSelections = __webpack_require__(5855);
 var activateLastSelection = (__webpack_require__(2485).activateLastSelection);
 var Lib = __webpack_require__(1828);
@@ -16198,6 +16198,9 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
   }
   var outlines = zoomLayer.selectAll('path.select-outline-' + plotinfo.id).data([1]);
   var newStyle = isDrawMode ? fullLayout.newshape : fullLayout.newselection;
+  if (isDrawMode) {
+    dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
+  }
   var fillC = isDrawMode && !isOpenMode ? newStyle.fillcolor : 'rgba(0,0,0,0)';
   var strokeC = newStyle.line.color || (isCartesian ? Color.contrast(gd._fullLayout.plot_bgcolor) : '#7f7f7f' // non-cartesian subplot
   );
@@ -16213,6 +16216,16 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
     stroke: Color.defaultLine,
     'stroke-width': 1
   }).attr('transform', transform).attr('d', 'M0,0Z');
+
+  // create & style group for text label
+  if (isDrawMode && dragOptions.hasText) {
+    var shapeGroup = zoomLayer.select('.label-temp');
+    if (shapeGroup.empty()) {
+      shapeGroup = zoomLayer.append('g').classed('label-temp', true).classed('select-outline', true).style({
+        opacity: 0.8
+      });
+    }
+  }
   var throttleID = fullLayout._uid + constants.SELECTID;
   var selection = [];
 
@@ -17835,6 +17848,266 @@ function handleShapeDefaults(shapeIn, shapeOut, fullLayout) {
 
 /***/ }),
 
+/***/ 8100:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var Lib = __webpack_require__(1828);
+var Axes = __webpack_require__(9298);
+var svgTextUtils = __webpack_require__(3893);
+var Drawing = __webpack_require__(1424);
+var readPaths = (__webpack_require__(165).readPaths);
+var helpers = __webpack_require__(477);
+var getPathString = helpers.getPathString;
+var shapeLabelTexttemplateVars = __webpack_require__(7281);
+var FROM_TL = (__webpack_require__(8783).FROM_TL);
+module.exports = function drawLabel(gd, index, options, shapeGroup) {
+  // Remove existing label
+  shapeGroup.selectAll('.shape-label').remove();
+
+  // If no label text or texttemplate, return
+  if (!(options.label.text || options.label.texttemplate)) return;
+
+  // Text template overrides text
+  var text;
+  if (options.label.texttemplate) {
+    var templateValues = {};
+    if (options.type !== 'path') {
+      var _xa = Axes.getFromId(gd, options.xref);
+      var _ya = Axes.getFromId(gd, options.yref);
+      for (var key in shapeLabelTexttemplateVars) {
+        var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
+        if (val !== undefined) templateValues[key] = val;
+      }
+    }
+    text = Lib.texttemplateStringForShapes(options.label.texttemplate, {}, gd._fullLayout._d3locale, templateValues);
+  } else {
+    text = options.label.text;
+  }
+  var labelGroupAttrs = {
+    'data-index': index
+  };
+  var font = options.label.font;
+  var labelTextAttrs = {
+    'data-notex': 1
+  };
+  var labelGroup = shapeGroup.append('g').attr(labelGroupAttrs).classed('shape-label', true);
+  var labelText = labelGroup.append('text').attr(labelTextAttrs).classed('shape-label-text', true).text(text);
+
+  // Get x and y bounds of shape
+  var shapex0, shapex1, shapey0, shapey1;
+  if (options.path) {
+    // If shape is defined as a path, get the
+    // min and max bounds across all polygons in path
+    var d = getPathString(gd, options);
+    var polygons = readPaths(d, gd);
+    shapex0 = Infinity;
+    shapey0 = Infinity;
+    shapex1 = -Infinity;
+    shapey1 = -Infinity;
+    for (var i = 0; i < polygons.length; i++) {
+      for (var j = 0; j < polygons[i].length; j++) {
+        var p = polygons[i][j];
+        for (var k = 1; k < p.length; k += 2) {
+          var _x = p[k];
+          var _y = p[k + 1];
+          shapex0 = Math.min(shapex0, _x);
+          shapex1 = Math.max(shapex1, _x);
+          shapey0 = Math.min(shapey0, _y);
+          shapey1 = Math.max(shapey1, _y);
+        }
+      }
+    }
+  } else {
+    // Otherwise, we use the x and y bounds defined in the shape options
+    // and convert them to pixel coordinates
+    // Setup conversion functions
+    var xa = Axes.getFromId(gd, options.xref);
+    var xRefType = Axes.getRefType(options.xref);
+    var ya = Axes.getFromId(gd, options.yref);
+    var yRefType = Axes.getRefType(options.yref);
+    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
+    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
+    shapex0 = x2p(options.x0);
+    shapex1 = x2p(options.x1);
+    shapey0 = y2p(options.y0);
+    shapey1 = y2p(options.y1);
+  }
+
+  // Handle `auto` angle
+  var textangle = options.label.textangle;
+  if (textangle === 'auto') {
+    if (options.type === 'line') {
+      // Auto angle for line is same angle as line
+      textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
+    } else {
+      // Auto angle for all other shapes is 0
+      textangle = 0;
+    }
+  }
+
+  // Do an initial render so we can get the text bounding box height
+  labelText.call(function (s) {
+    s.call(Drawing.font, font).attr({});
+    svgTextUtils.convertToTspans(s, gd);
+    return s;
+  });
+  var textBB = Drawing.bBox(labelText.node());
+
+  // Calculate correct (x,y) for text
+  // We also determine true xanchor since xanchor depends on position when set to 'auto'
+  var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBB);
+  var textx = textPos.textx;
+  var texty = textPos.texty;
+  var xanchor = textPos.xanchor;
+
+  // Update (x,y) position, xanchor, and angle
+  labelText.attr({
+    'text-anchor': {
+      left: 'start',
+      center: 'middle',
+      right: 'end'
+    }[xanchor],
+    y: texty,
+    x: textx,
+    transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
+  }).call(svgTextUtils.positionText, textx, texty);
+};
+function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
+  var dy, dx;
+  dx = Math.abs(shapex1 - shapex0);
+  if (shapex1 >= shapex0) {
+    dy = shapey0 - shapey1;
+  } else {
+    dy = shapey1 - shapey0;
+  }
+  return -180 / Math.PI * Math.atan2(dy, dx);
+}
+function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
+  var textPosition = shapeOptions.label.textposition;
+  var textAngle = shapeOptions.label.textangle;
+  var textPadding = shapeOptions.label.padding;
+  var shapeType = shapeOptions.type;
+  var textAngleRad = Math.PI / 180 * actualTextAngle;
+  var sinA = Math.sin(textAngleRad);
+  var cosA = Math.cos(textAngleRad);
+  var xanchor = shapeOptions.label.xanchor;
+  var yanchor = shapeOptions.label.yanchor;
+  var textx, texty, paddingX, paddingY;
+
+  // Text position functions differently for lines vs. other shapes
+  if (shapeType === 'line') {
+    // Set base position for start vs. center vs. end of line (default is 'center')
+    if (textPosition === 'start') {
+      textx = shapex0;
+      texty = shapey0;
+    } else if (textPosition === 'end') {
+      textx = shapex1;
+      texty = shapey1;
+    } else {
+      // Default: center
+      textx = (shapex0 + shapex1) / 2;
+      texty = (shapey0 + shapey1) / 2;
+    }
+
+    // Set xanchor if xanchor is 'auto'
+    if (xanchor === 'auto') {
+      if (textPosition === 'start') {
+        if (textAngle === 'auto') {
+          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
+        } else {
+          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
+        }
+      } else if (textPosition === 'end') {
+        if (textAngle === 'auto') {
+          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
+        } else {
+          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
+        }
+      } else {
+        xanchor = 'center';
+      }
+    }
+
+    // Special case for padding when angle is 'auto' for lines
+    // Padding should be treated as an orthogonal offset in this case
+    // Otherwise, padding is just a simple x and y offset
+    var paddingConstantsX = {
+      left: 1,
+      center: 0,
+      right: -1
+    };
+    var paddingConstantsY = {
+      bottom: -1,
+      middle: 0,
+      top: 1
+    };
+    if (textAngle === 'auto') {
+      // Set direction to apply padding (based on `yanchor` only)
+      var paddingDirection = paddingConstantsY[yanchor];
+      paddingX = -textPadding * sinA * paddingDirection;
+      paddingY = textPadding * cosA * paddingDirection;
+    } else {
+      // Set direction to apply padding (based on `xanchor` and `yanchor`)
+      var paddingDirectionX = paddingConstantsX[xanchor];
+      var paddingDirectionY = paddingConstantsY[yanchor];
+      paddingX = textPadding * paddingDirectionX;
+      paddingY = textPadding * paddingDirectionY;
+    }
+    textx = textx + paddingX;
+    texty = texty + paddingY;
+  } else {
+    // Text position for shapes that are not lines
+    // calc horizontal position
+    // Horizontal needs a little extra padding to look balanced
+    paddingX = textPadding + 3;
+    if (textPosition.indexOf('right') !== -1) {
+      textx = Math.max(shapex0, shapex1) - paddingX;
+      if (xanchor === 'auto') xanchor = 'right';
+    } else if (textPosition.indexOf('left') !== -1) {
+      textx = Math.min(shapex0, shapex1) + paddingX;
+      if (xanchor === 'auto') xanchor = 'left';
+    } else {
+      // Default: center
+      textx = (shapex0 + shapex1) / 2;
+      if (xanchor === 'auto') xanchor = 'center';
+    }
+
+    // calc vertical position
+    if (textPosition.indexOf('top') !== -1) {
+      texty = Math.min(shapey0, shapey1);
+    } else if (textPosition.indexOf('bottom') !== -1) {
+      texty = Math.max(shapey0, shapey1);
+    } else {
+      texty = (shapey0 + shapey1) / 2;
+    }
+    // Apply padding
+    paddingY = textPadding;
+    if (yanchor === 'bottom') {
+      texty = texty - paddingY;
+    } else if (yanchor === 'top') {
+      texty = texty + paddingY;
+    }
+  }
+
+  // Shift vertical (& horizontal) position according to `yanchor`
+  var shiftFraction = FROM_TL[yanchor];
+  // Adjust so that text is anchored at top of first line rather than at baseline of first line
+  var baselineAdjust = shapeOptions.label.font.size;
+  var textHeight = textBB.height;
+  var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
+  var yshift = -(textHeight * shiftFraction - baselineAdjust) * cosA;
+  return {
+    textx: textx + xshift,
+    texty: texty + yshift,
+    xanchor: xanchor
+  };
+}
+
+/***/ }),
+
 /***/ 2359:
 /***/ (function(module, __unused_webpack_exports, __webpack_require__) {
 
@@ -17860,8 +18133,10 @@ var helpers = __webpack_require__(165);
 var pointsOnRectangle = helpers.pointsOnRectangle;
 var pointsOnEllipse = helpers.pointsOnEllipse;
 var writePaths = helpers.writePaths;
-var newShapes = __webpack_require__(551);
+var newShapes = (__webpack_require__(551).newShapes);
+var createShapeObj = (__webpack_require__(551).createShapeObj);
 var newSelections = __webpack_require__(5855);
+var drawLabel = __webpack_require__(8100);
 module.exports = function displayOutlines(polygons, outlines, dragOptions, nCalls) {
   if (!nCalls) nCalls = 0;
   var gd = dragOptions.gd;
@@ -17913,6 +18188,13 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
     var g = zoomLayer.append('g').attr('class', 'outline-controllers');
     addVertexControllers(g);
     addGroupControllers();
+  }
+
+  // draw label
+  if (isDrawMode && dragOptions.hasText) {
+    var shapeGroup = zoomLayer.select('.label-temp');
+    var shapeOptions = createShapeObj(outlines, dragOptions, dragOptions.dragmode);
+    drawLabel(gd, 'label-temp', shapeOptions, shapeGroup);
   }
   function startDragVertex(evt) {
     indexI = +evt.srcElement.getAttribute('data-i');
@@ -18163,18 +18445,16 @@ var Lib = __webpack_require__(1828);
 var Axes = __webpack_require__(9298);
 var readPaths = (__webpack_require__(165).readPaths);
 var displayOutlines = __webpack_require__(2359);
+var drawLabel = __webpack_require__(8100);
 var clearOutlineControllers = (__webpack_require__(1873).clearOutlineControllers);
 var Color = __webpack_require__(7901);
 var Drawing = __webpack_require__(1424);
 var arrayEditor = (__webpack_require__(4467).arrayEditor);
 var dragElement = __webpack_require__(8569);
 var setCursor = __webpack_require__(6964);
-var svgTextUtils = __webpack_require__(3893);
 var constants = __webpack_require__(1459);
 var helpers = __webpack_require__(477);
 var getPathString = helpers.getPathString;
-var shapeLabelTexttemplateVars = __webpack_require__(7281);
-var FROM_TL = (__webpack_require__(8783).FROM_TL);
 
 // Shapes are stored in gd.layout.shapes, an array of objects
 // index can point to one item in this array,
@@ -18647,248 +18927,6 @@ function setupDragElement(gd, shapePath, shapeOptions, index, shapeLayer, editHe
     if (yref !== 'paper' && !ya.autorange) clipAxes += yref;
     Drawing.setClipUrl(shapePath, clipAxes ? 'clip' + gd._fullLayout._uid + clipAxes : null, gd);
   }
-}
-function drawLabel(gd, index, options, shapeGroup) {
-  // Remove existing label
-  shapeGroup.selectAll('.shape-label').remove();
-
-  // If no label text or texttemplate, return
-  if (!(options.label.text || options.label.texttemplate)) return;
-
-  // Text template overrides text
-  var text;
-  if (options.label.texttemplate) {
-    var templateValues = {};
-    if (options.type !== 'path') {
-      var _xa = Axes.getFromId(gd, options.xref);
-      var _ya = Axes.getFromId(gd, options.yref);
-      for (var key in shapeLabelTexttemplateVars) {
-        var val = shapeLabelTexttemplateVars[key](options, _xa, _ya);
-        if (val !== undefined) templateValues[key] = val;
-      }
-    }
-    text = Lib.texttemplateStringForShapes(options.label.texttemplate, {}, gd._fullLayout._d3locale, templateValues);
-  } else {
-    text = options.label.text;
-  }
-  var labelGroupAttrs = {
-    'data-index': index
-  };
-  var font = options.label.font;
-  var labelTextAttrs = {
-    'data-notex': 1
-  };
-  var labelGroup = shapeGroup.append('g').attr(labelGroupAttrs).classed('shape-label', true);
-  var labelText = labelGroup.append('text').attr(labelTextAttrs).classed('shape-label-text', true).text(text);
-
-  // Get x and y bounds of shape
-  var shapex0, shapex1, shapey0, shapey1;
-  if (options.path) {
-    // If shape is defined as a path, get the
-    // min and max bounds across all polygons in path
-    var d = getPathString(gd, options);
-    var polygons = readPaths(d, gd);
-    shapex0 = Infinity;
-    shapey0 = Infinity;
-    shapex1 = -Infinity;
-    shapey1 = -Infinity;
-    for (var i = 0; i < polygons.length; i++) {
-      for (var j = 0; j < polygons[i].length; j++) {
-        var p = polygons[i][j];
-        for (var k = 1; k < p.length; k += 2) {
-          var _x = p[k];
-          var _y = p[k + 1];
-          shapex0 = Math.min(shapex0, _x);
-          shapex1 = Math.max(shapex1, _x);
-          shapey0 = Math.min(shapey0, _y);
-          shapey1 = Math.max(shapey1, _y);
-        }
-      }
-    }
-  } else {
-    // Otherwise, we use the x and y bounds defined in the shape options
-    // and convert them to pixel coordinates
-    // Setup conversion functions
-    var xa = Axes.getFromId(gd, options.xref);
-    var xRefType = Axes.getRefType(options.xref);
-    var ya = Axes.getFromId(gd, options.yref);
-    var yRefType = Axes.getRefType(options.yref);
-    var x2p = helpers.getDataToPixel(gd, xa, false, xRefType);
-    var y2p = helpers.getDataToPixel(gd, ya, true, yRefType);
-    shapex0 = x2p(options.x0);
-    shapex1 = x2p(options.x1);
-    shapey0 = y2p(options.y0);
-    shapey1 = y2p(options.y1);
-  }
-
-  // Handle `auto` angle
-  var textangle = options.label.textangle;
-  if (textangle === 'auto') {
-    if (options.type === 'line') {
-      // Auto angle for line is same angle as line
-      textangle = calcTextAngle(shapex0, shapey0, shapex1, shapey1);
-    } else {
-      // Auto angle for all other shapes is 0
-      textangle = 0;
-    }
-  }
-
-  // Do an initial render so we can get the text bounding box height
-  labelText.call(function (s) {
-    s.call(Drawing.font, font).attr({});
-    svgTextUtils.convertToTspans(s, gd);
-    return s;
-  });
-  var textBB = Drawing.bBox(labelText.node());
-
-  // Calculate correct (x,y) for text
-  // We also determine true xanchor since xanchor depends on position when set to 'auto'
-  var textPos = calcTextPosition(shapex0, shapey0, shapex1, shapey1, options, textangle, textBB);
-  var textx = textPos.textx;
-  var texty = textPos.texty;
-  var xanchor = textPos.xanchor;
-
-  // Update (x,y) position, xanchor, and angle
-  labelText.attr({
-    'text-anchor': {
-      left: 'start',
-      center: 'middle',
-      right: 'end'
-    }[xanchor],
-    y: texty,
-    x: textx,
-    transform: 'rotate(' + textangle + ',' + textx + ',' + texty + ')'
-  }).call(svgTextUtils.positionText, textx, texty);
-}
-function calcTextAngle(shapex0, shapey0, shapex1, shapey1) {
-  var dy, dx;
-  dx = Math.abs(shapex1 - shapex0);
-  if (shapex1 >= shapex0) {
-    dy = shapey0 - shapey1;
-  } else {
-    dy = shapey1 - shapey0;
-  }
-  return -180 / Math.PI * Math.atan2(dy, dx);
-}
-function calcTextPosition(shapex0, shapey0, shapex1, shapey1, shapeOptions, actualTextAngle, textBB) {
-  var textPosition = shapeOptions.label.textposition;
-  var textAngle = shapeOptions.label.textangle;
-  var textPadding = shapeOptions.label.padding;
-  var shapeType = shapeOptions.type;
-  var textAngleRad = Math.PI / 180 * actualTextAngle;
-  var sinA = Math.sin(textAngleRad);
-  var cosA = Math.cos(textAngleRad);
-  var xanchor = shapeOptions.label.xanchor;
-  var yanchor = shapeOptions.label.yanchor;
-  var textx, texty, paddingX, paddingY;
-
-  // Text position functions differently for lines vs. other shapes
-  if (shapeType === 'line') {
-    // Set base position for start vs. center vs. end of line (default is 'center')
-    if (textPosition === 'start') {
-      textx = shapex0;
-      texty = shapey0;
-    } else if (textPosition === 'end') {
-      textx = shapex1;
-      texty = shapey1;
-    } else {
-      // Default: center
-      textx = (shapex0 + shapex1) / 2;
-      texty = (shapey0 + shapey1) / 2;
-    }
-
-    // Set xanchor if xanchor is 'auto'
-    if (xanchor === 'auto') {
-      if (textPosition === 'start') {
-        if (textAngle === 'auto') {
-          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
-        } else {
-          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
-        }
-      } else if (textPosition === 'end') {
-        if (textAngle === 'auto') {
-          if (shapex1 > shapex0) xanchor = 'right';else if (shapex1 < shapex0) xanchor = 'left';else xanchor = 'center';
-        } else {
-          if (shapex1 > shapex0) xanchor = 'left';else if (shapex1 < shapex0) xanchor = 'right';else xanchor = 'center';
-        }
-      } else {
-        xanchor = 'center';
-      }
-    }
-
-    // Special case for padding when angle is 'auto' for lines
-    // Padding should be treated as an orthogonal offset in this case
-    // Otherwise, padding is just a simple x and y offset
-    var paddingConstantsX = {
-      left: 1,
-      center: 0,
-      right: -1
-    };
-    var paddingConstantsY = {
-      bottom: -1,
-      middle: 0,
-      top: 1
-    };
-    if (textAngle === 'auto') {
-      // Set direction to apply padding (based on `yanchor` only)
-      var paddingDirection = paddingConstantsY[yanchor];
-      paddingX = -textPadding * sinA * paddingDirection;
-      paddingY = textPadding * cosA * paddingDirection;
-    } else {
-      // Set direction to apply padding (based on `xanchor` and `yanchor`)
-      var paddingDirectionX = paddingConstantsX[xanchor];
-      var paddingDirectionY = paddingConstantsY[yanchor];
-      paddingX = textPadding * paddingDirectionX;
-      paddingY = textPadding * paddingDirectionY;
-    }
-    textx = textx + paddingX;
-    texty = texty + paddingY;
-  } else {
-    // Text position for shapes that are not lines
-    // calc horizontal position
-    // Horizontal needs a little extra padding to look balanced
-    paddingX = textPadding + 3;
-    if (textPosition.indexOf('right') !== -1) {
-      textx = Math.max(shapex0, shapex1) - paddingX;
-      if (xanchor === 'auto') xanchor = 'right';
-    } else if (textPosition.indexOf('left') !== -1) {
-      textx = Math.min(shapex0, shapex1) + paddingX;
-      if (xanchor === 'auto') xanchor = 'left';
-    } else {
-      // Default: center
-      textx = (shapex0 + shapex1) / 2;
-      if (xanchor === 'auto') xanchor = 'center';
-    }
-
-    // calc vertical position
-    if (textPosition.indexOf('top') !== -1) {
-      texty = Math.min(shapey0, shapey1);
-    } else if (textPosition.indexOf('bottom') !== -1) {
-      texty = Math.max(shapey0, shapey1);
-    } else {
-      texty = (shapey0 + shapey1) / 2;
-    }
-    // Apply padding
-    paddingY = textPadding;
-    if (yanchor === 'bottom') {
-      texty = texty - paddingY;
-    } else if (yanchor === 'top') {
-      texty = texty + paddingY;
-    }
-  }
-
-  // Shift vertical (& horizontal) position according to `yanchor`
-  var shiftFraction = FROM_TL[yanchor];
-  // Adjust so that text is anchored at top of first line rather than at baseline of first line
-  var baselineAdjust = shapeOptions.label.font.size;
-  var textHeight = textBB.height;
-  var xshift = (textHeight * shiftFraction - baselineAdjust) * sinA;
-  var yshift = -(textHeight * shiftFraction - baselineAdjust) * cosA;
-  return {
-    textx: textx + xshift,
-    texty: texty + yshift,
-    xanchor: xanchor
-  };
 }
 function movePath(pathIn, moveX, moveY) {
   return pathIn.replace(constants.segmentRE, function (segment) {
@@ -19445,18 +19483,11 @@ var readPaths = helpers.readPaths;
 var writePaths = helpers.writePaths;
 var ellipseOver = helpers.ellipseOver;
 var fixDatesForPaths = helpers.fixDatesForPaths;
-module.exports = function newShapes(outlines, dragOptions) {
+function newShapes(outlines, dragOptions) {
   if (!outlines.length) return;
   var e = outlines[0][0]; // pick first
   if (!e) return;
-  var d = e.getAttribute('d');
   var gd = dragOptions.gd;
-  var newStyle = gd._fullLayout.newshape;
-  var plotinfo = dragOptions.plotinfo;
-  var xaxis = plotinfo.xaxis;
-  var yaxis = plotinfo.yaxis;
-  var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
-  var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
   var isActiveShape = dragOptions.isActiveShape;
   var dragmode = dragOptions.dragmode;
   var shapes = (gd.layout || {}).shapes || [];
@@ -19484,6 +19515,48 @@ module.exports = function newShapes(outlines, dragOptions) {
       }
     }
   }
+  var newShape = createShapeObj(outlines, dragOptions, dragmode);
+  clearOutline(gd);
+  var editHelpers = dragOptions.editHelpers;
+  var modifyItem = (editHelpers || {}).modifyItem;
+  var allShapes = [];
+  for (var q = 0; q < shapes.length; q++) {
+    var beforeEdit = gd._fullLayout.shapes[q];
+    allShapes[q] = beforeEdit._input;
+    if (isActiveShape !== undefined && q === gd._fullLayout._activeShapeIndex) {
+      var afterEdit = newShape;
+      switch (beforeEdit.type) {
+        case 'line':
+        case 'rect':
+        case 'circle':
+          modifyItem('x0', afterEdit.x0);
+          modifyItem('x1', afterEdit.x1);
+          modifyItem('y0', afterEdit.y0);
+          modifyItem('y1', afterEdit.y1);
+          break;
+        case 'path':
+          modifyItem('path', afterEdit.path);
+          break;
+      }
+    }
+  }
+  if (isActiveShape === undefined) {
+    allShapes.push(newShape); // add new shape
+    return allShapes;
+  }
+  return editHelpers ? editHelpers.getUpdateObj() : {};
+}
+function createShapeObj(outlines, dragOptions, dragmode) {
+  var e = outlines[0][0]; // pick first outline
+  var gd = dragOptions.gd;
+  var d = e.getAttribute('d');
+  var newStyle = gd._fullLayout.newshape;
+  var plotinfo = dragOptions.plotinfo;
+  var isActiveShape = dragOptions.isActiveShape;
+  var xaxis = plotinfo.xaxis;
+  var yaxis = plotinfo.yaxis;
+  var xPaper = !!plotinfo.domain || !plotinfo.xaxis;
+  var yPaper = !!plotinfo.domain || !plotinfo.yaxis;
   var isOpenMode = openMode(dragmode);
   var polygons = readPaths(d, gd, plotinfo, isActiveShape);
   var newShape = {
@@ -19574,35 +19647,11 @@ module.exports = function newShapes(outlines, dragOptions) {
     newShape.path = writePaths(polygons);
     cell = null;
   }
-  clearOutline(gd);
-  var editHelpers = dragOptions.editHelpers;
-  var modifyItem = (editHelpers || {}).modifyItem;
-  var allShapes = [];
-  for (var q = 0; q < shapes.length; q++) {
-    var beforeEdit = gd._fullLayout.shapes[q];
-    allShapes[q] = beforeEdit._input;
-    if (isActiveShape !== undefined && q === gd._fullLayout._activeShapeIndex) {
-      var afterEdit = newShape;
-      switch (beforeEdit.type) {
-        case 'line':
-        case 'rect':
-        case 'circle':
-          modifyItem('x0', afterEdit.x0);
-          modifyItem('x1', afterEdit.x1);
-          modifyItem('y0', afterEdit.y0);
-          modifyItem('y1', afterEdit.y1);
-          break;
-        case 'path':
-          modifyItem('path', afterEdit.path);
-          break;
-      }
-    }
-  }
-  if (isActiveShape === undefined) {
-    allShapes.push(newShape); // add new shape
-    return allShapes;
-  }
-  return editHelpers ? editHelpers.getUpdateObj() : {};
+  return newShape;
+}
+module.exports = {
+  newShapes: newShapes,
+  createShapeObj: createShapeObj
 };
 
 /***/ }),
@@ -60028,7 +60077,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.23.1';
+exports.version = '2.23.2';
 
 /***/ }),
 
