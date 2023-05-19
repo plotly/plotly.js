@@ -112,10 +112,6 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         fullLayout.newshape :
         fullLayout.newselection;
 
-    if(isDrawMode) {
-        dragOptions.hasText = newStyle.label.text || newStyle.label.texttemplate;
-    }
-
     var fillC = (isDrawMode && !isOpenMode) ? newStyle.fillcolor : 'rgba(0,0,0,0)';
 
     var strokeC = newStyle.line.color || (
