@@ -26,6 +26,8 @@ var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
 
 var newShapes = require('../shapes/draw_newshape/newshapes').newShapes;
+var createShapeObj = require('../shapes/draw_newshape/newshapes').createShapeObj;
+var drawLabel = require('../shapes/display_labels');
 
 var newSelections = require('./draw_newselection/newselections');
 var activateLastSelection = require('./draw').activateLastSelection;
@@ -150,6 +152,16 @@ function prepSelect(evt, startX, startY, dragOptions, mode) {
         .attr('transform', transform)
         .attr('d', 'M0,0Z');
 
+    // create & style group for text label
+    if(isDrawMode && dragOptions.hasText) {
+        var shapeGroup = zoomLayer.select('.label-temp');
+        if(shapeGroup.empty()) {
+            shapeGroup = zoomLayer.append('g')
+                .classed('label-temp', true)
+                .classed('select-outline', true)
+                .style({ opacity: 0.8 });
+        }
+    }
 
     var throttleID = fullLayout._uid + constants.SELECTID;
     var selection = [];

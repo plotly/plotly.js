@@ -100,14 +100,9 @@ module.exports = function displayOutlines(polygons, outlines, dragOptions, nCall
 
     // draw label
     if(isDrawMode && dragOptions.hasText) {
-        var shapeGroup = zoomLayer.select('.shape-group');
-        if(shapeGroup.empty()) {
-            shapeGroup = zoomLayer.append('g')
-                .classed('shape-group', true)
-                .classed('select-outline', true);
-        }
+        var shapeGroup = zoomLayer.select('.label-temp');
         var shapeOptions = createShapeObj(outlines, dragOptions, dragOptions.dragmode);
-        drawLabel(gd, 'draw-temp', shapeOptions, shapeGroup);
+        drawLabel(gd, 'label-temp', shapeOptions, shapeGroup);
     }
 
     function startDragVertex(evt) {
