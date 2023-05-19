@@ -26,8 +26,6 @@ var handleEllipse = newShapeHelpers.handleEllipse;
 var readPaths = newShapeHelpers.readPaths;
 
 var newShapes = require('../shapes/draw_newshape/newshapes').newShapes;
-var createShapeObj = require('../shapes/draw_newshape/newshapes').createShapeObj;
-var drawLabel = require('../shapes/display_labels');
 
 var newSelections = require('./draw_newselection/newselections');
 var activateLastSelection = require('./draw').activateLastSelection;
