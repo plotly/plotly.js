@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.23.2] -- 2023-05-19
+
+### Fixed
+ - Fix text rendering while drawing new shapes [[#6608](https://github.com/plotly/plotly.js/pull/6608)],
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
+
+
 ## [2.23.1] -- 2023-05-16
 
 ### Fixed
