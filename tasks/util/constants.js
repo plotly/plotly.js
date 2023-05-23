@@ -239,7 +239,7 @@ module.exports = {
 
     // this mapbox access token is 'public', no need to hide it
     // more info: https://www.mapbox.com/help/define-access-token/
-    mapboxAccessToken: 'pk.eyJ1IjoicGxvdGx5LWpzLXRlc3RzIiwiYSI6ImNrNG9meTJmOTAxa3UzZm10dWdteDQ2eWMifQ.2REjOFyIrleMqwS8H8y1-A',
+    mapboxAccessToken: 'pk.eyJ1IjoicGxvdGx5LWRvY3MiLCJhIjoiY2xpMGYyNWgxMGJhdzNzbXhtNGI0Nnk0aSJ9.0oBvi_UUZ0O1N0xk0yfRwg',
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
 
     testContainerImage: 'plotly/testbed:latest',
