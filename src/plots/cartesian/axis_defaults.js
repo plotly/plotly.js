@@ -100,7 +100,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     var autoRange = coerce('autorange', autorangeDflt);
     if(autoRange) {
-        handleAutorangeOptionsDefaults(coerce);
+        handleAutorangeOptionsDefaults(coerce, autoRange, range);
 
         if(axType === 'linear' || axType === '-') coerce('rangemode');
     }

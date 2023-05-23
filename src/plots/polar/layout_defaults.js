@@ -86,7 +86,7 @@ function handleDefaults(contIn, contOut, coerce, opts) {
                 var autoRange = coerceAxis('autorange', autorangeDflt);
                 axIn.autorange = autoRange;
                 if(autoRange) {
-                    handleAutorangeOptionsDefaults(coerceAxis);
+                    handleAutorangeOptionsDefaults(coerceAxis, autoRange, range);
 
                     if(axType === 'linear' || axType === '-') coerceAxis('rangemode');
                     if(axOut.isReversed()) axOut._m = -1;
