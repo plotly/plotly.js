@@ -4725,12 +4725,12 @@ describe('hovermode: (x|y)unified', function() {
         })
         .then(done, done.fail);
     });
-    
+
     it('should not fail if only hoverinfo: "none" are current visible', function(done) {
         Plotly.newPlot(gd, {
             data: [{
                 name: 'A',
-                x: [1,100],
+                x: [1,100], 
                 y: [1, 1]
             }, {
                 name: 'B',
@@ -4739,7 +4739,7 @@ describe('hovermode: (x|y)unified', function() {
                 hoverinfo: 'none'
             }],
             layout: {
-                xaxis: {range: [40,60]},
+                xaxis: {range: [40,60]}, 
                 hovermode: 'x unified',
                 showlegend: false,
                 width: 500,
@@ -4754,7 +4754,6 @@ describe('hovermode: (x|y)unified', function() {
         })
         .then(function() {
             _hover(gd, { xpx: 200, ypx: 200 });
-            
             expect(gd._hoverdata, undefined);
             assertHoverLabelContent({});
         })
