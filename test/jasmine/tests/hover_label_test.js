@@ -4730,16 +4730,16 @@ describe('hovermode: (x|y)unified', function() {
         Plotly.newPlot(gd, {
             data: [{
                 name: 'A',
-                x: [1,100], 
+                x: [1, 100],
                 y: [1, 1]
             }, {
                 name: 'B',
                 y: [1],
-                x:[50],
+                x: [50],
                 hoverinfo: 'none'
             }],
             layout: {
-                xaxis: {range: [40,60]}, 
+                xaxis: {range: [40, 60]},
                 hovermode: 'x unified',
                 showlegend: false,
                 width: 500,
