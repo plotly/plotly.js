@@ -2010,11 +2010,14 @@ plots.doAutoMargin = function(gd) {
     var reservedMargins = {t: 0, b: 0, l: 0, r: 0};
     var oldMargins = Lib.extendFlat({}, gs);
 
-    var margins = gd._fullLayout._reservedMargin;
-    for(var key in margins) {
-        for(var side in margins[key]) {
-            var val = margins[key][side];
-            reservedMargins[side] = Math.max(reservedMargins[side], val);
+    // only account for reservedMargins if autoexpand
+    if(margin.autoexpand === true) {    
+        var margins = gd._fullLayout._reservedMargin;
+        for(var key in margins) {
+            for(var side in margins[key]) {
+                var val = margins[key][side];
+                reservedMargins[side] = Math.max(reservedMargins[side], val);
+            }
         }
     }
     // adjust margins for outside components
