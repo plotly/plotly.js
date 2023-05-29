@@ -2011,7 +2011,7 @@ plots.doAutoMargin = function(gd) {
     var oldMargins = Lib.extendFlat({}, gs);
 
     // only account for reservedMargins if autoexpand
-    if(margin.autoexpand === true) {    
+    if(margin.autoexpand !== false) {
         var margins = gd._fullLayout._reservedMargin;
         for(var key in margins) {
             for(var side in margins[key]) {
@@ -2047,6 +2047,20 @@ plots.doAutoMargin = function(gd) {
 
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
+
+        // make sure that the reservedMargin is the minimum needed
+        for(var s in reservedMargins) {
+            var autoMarginPush = 0;
+            for(var m in pushMargin) {
+                if(m !== 'base') {
+                    if(isNumeric(pushMargin[m][s].size)) {
+                        autoMarginPush += pushMargin[m][s].size;
+                    }
+                }
+            }
+            var extraMargin = Math.max(0, (margin[s] - autoMarginPush));
+            reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
+        }
 
         for(var k1 in pushMargin) {
             var pushleft = pushMargin[k1].l || {};
