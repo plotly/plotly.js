@@ -1126,7 +1126,7 @@ function createHoverText(hoverData, opts) {
         container.selectAll('g.hovertext').remove();
         var groupedHoverData = hoverData.filter(function(data) {return data.hoverinfo !== 'none';});
         // Return early if nothing is hovered on
-        if(groupedHoverData.length === 0) return;
+        if(groupedHoverData.length === 0) return [];
 
         // mock legend
         var hoverlabel = fullLayout.hoverlabel;
