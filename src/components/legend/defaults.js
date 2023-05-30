@@ -101,27 +101,69 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     coerce('borderwidth');
 
     var orientation = coerce('orientation');
+
+    var yref = coerce('yref');
+    var xref = coerce('xref');
+
     var isHorizontal = orientation === 'h';
+    var isPaperY = yref === 'paper';
+    var isPaperX = xref === 'paper';
     var defaultX, defaultY, defaultYAnchor;
+    var defaultXAnchor = 'left';
 
     if(isHorizontal) {
         defaultX = 0;
 
         if(Registry.getComponentMethod('rangeslider', 'isVisible')(layoutIn.xaxis)) {
-            defaultY = 1.1;
-            defaultYAnchor = 'bottom';
+            if(isPaperY) {
+                defaultY = 1.1;
+                defaultYAnchor = 'bottom';
+            } else {
+                defaultY = 1;
+                defaultYAnchor = 'top';
+            }
         } else {
             // maybe use y=1.1 / yanchor=bottom as above
             //   to avoid https://github.com/plotly/plotly.js/issues/1199
             //   in v3
-            defaultY = -0.1;
-            defaultYAnchor = 'top';
+            if(isPaperY) {
+                defaultY = -0.1;
+                defaultYAnchor = 'top';
+            } else {
+                defaultY = 0;
+                defaultYAnchor = 'bottom';
+            }
         }
     } else {
-        defaultX = 1.02;
         defaultY = 1;
         defaultYAnchor = 'auto';
+        if(isPaperX) {
+            defaultX = 1.02;
+        } else {
+            defaultX = 1;
+            defaultXAnchor = 'right';
+        }
     }
+
+    Lib.coerce(containerIn, containerOut, {
+        x: {
+            valType: 'number',
+            editType: 'legend',
+            min: isPaperX ? -2 : 0,
+            max: isPaperX ? 3 : 1,
+            dflt: defaultX,
+        }
+    }, 'x');
+
+    Lib.coerce(containerIn, containerOut, {
+        y: {
+            valType: 'number',
+            editType: 'legend',
+            min: isPaperY ? -2 : 0,
+            max: isPaperY ? 3 : 1,
+            dflt: defaultY,
+        }
+    }, 'y');
 
     coerce('traceorder', defaultOrder);
     if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
@@ -135,9 +177,7 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
     coerce('itemdoubleclick');
     coerce('groupclick');
 
-    coerce('x', defaultX);
-    coerce('xanchor');
-    coerce('y', defaultY);
+    coerce('xanchor', defaultXAnchor);
     coerce('yanchor', defaultYAnchor);
     coerce('valign');
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);

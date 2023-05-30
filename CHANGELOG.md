@@ -9,6 +9,29 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.23.2] -- 2023-05-19
+
+### Fixed
+ - Fix text rendering while drawing new shapes [[#6608](https://github.com/plotly/plotly.js/pull/6608)],
+   with thanks to the [Volkswagen](https://www.volkswagenag.com) Center of Excellence for Battery Systems for sponsoring development!
+
+
+## [2.23.1] -- 2023-05-16
+
+### Fixed
+ - Fix heatmap rendering on iOS and Safari when `zsmooth` is set to false [[#6605](https://github.com/plotly/plotly.js/pull/6605)], with thanks to @lvlte for the contribution!
+
+
+## [2.23.0] -- 2023-05-12
+
+### Added
+- Add `legend.xref` and `legend.yref` to enable container-referenced positioning of legends [[#6589](https://github.com/plotly/plotly.js/pull/6589)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+- Add `colorbar.xref` and `colorbar.yref` to enable container-referenced positioning of colorbars [[#6593](https://github.com/plotly/plotly.js/pull/6593)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+
+### Changed
+ - Improve heatmap rendering performance when `zsmooth` is set to false [[#6574](https://github.com/plotly/plotly.js/pull/6574)], with thanks to @lvlte for the contribution!
+
+
 ## [2.22.0] -- 2023-04-27
 
 ### Added

@@ -407,7 +407,7 @@ describe('mapbox credentials', function() {
         });
     }, LONG_TIMEOUT_INTERVAL);
 
-    it('@gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
+    it('@noCI @gl should not throw when using a custom mapbox style URL with an access token in the layout', function(done) {
         var cnt = 0;
 
         Plotly.newPlot(gd, [{
