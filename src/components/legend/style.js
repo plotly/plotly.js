@@ -512,7 +512,7 @@ module.exports = function style(s, gd, legend) {
 
             var d0Mod = Lib.minExtend(d0, {trace: tMod});
 
-            stylePie(pts, d0Mod, tMod);
+            stylePie(pts, d0Mod, tMod, gd);
         }
     }
 
