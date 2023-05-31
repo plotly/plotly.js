@@ -2034,6 +2034,17 @@ plots.doAutoMargin = function(gd) {
                 reservedMargins[side] = Math.max(reservedMargins[side], val);
             }
         }
+
+        // remove reservedMargins from the requested margins, since these are
+        // the only margin "pushers" that can overlap the reservedMargins, and
+        // we're going to add them back in at the end of this process
+        // note that ml etc can be negative at this point, but the final result
+        // will always be >=0
+        ml -= reservedMargins.l;
+        mr -= reservedMargins.r;
+        mt -= reservedMargins.t;
+        mb -= reservedMargins.b;
+
         // fill in the requested margins
         pushMargin.base = {
             l: {val: 0, size: ml},
@@ -2041,21 +2052,6 @@ plots.doAutoMargin = function(gd) {
             t: {val: 1, size: mt},
             b: {val: 0, size: mb}
         };
-
-
-        // make sure that the reservedMargin is the minimum needed
-        for(var s in reservedMargins) {
-            var autoMarginPush = 0;
-            for(var m in pushMargin) {
-                if(m !== 'base') {
-                    if(isNumeric(pushMargin[m][s].size)) {
-                        autoMarginPush += pushMargin[m][s].size;
-                    }
-                }
-            }
-            var extraMargin = Math.max(0, (margin[s] - autoMarginPush));
-            reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
-        }
 
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
