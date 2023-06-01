@@ -2049,7 +2049,7 @@ plots.doAutoMargin = function(gd) {
             for(var m in pushMargin) {
                 if(m !== 'base') {
                     if(isNumeric(pushMargin[m][s].size)) {
-                        autoMarginPush += pushMargin[m][s].size;
+                        autoMarginPush = pushMargin[m][s].size > autoMarginPush ? pushMargin[m][s].size : autoMarginPush;
                     }
                 }
             }
