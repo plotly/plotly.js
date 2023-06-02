@@ -4,7 +4,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 var handleDomainDefaults = require('../../plots/domain').defaults;
 var handleText = require('../bar/defaults').handleText;
-var coercePattern = require('../../lib').coercePattern;
+var handleMarkerDefaults = require('../pie/defaults').handleMarkerDefaults;
 
 var Colorscale = require('../../components/colorscale');
 var hasColorscale = Colorscale.hasColorscale;
@@ -33,14 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('level');
     coerce('maxdepth');
 
-    var lineWidth = coerce('marker.line.width');
-    if(lineWidth) coerce('marker.line.color', layout.paper_bgcolor);
-
-    var markerColors = coerce('marker.colors');
-    coercePattern(coerce, 'marker.pattern', markerColors);
-    // push the marker colors (with s) to the foreground colors, to work around logic in the drawing pattern code on marker.color (without s, which is okay for a bar trace)
-    if(traceIn.marker && !traceOut.marker.pattern.fgcolor) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
-    if(!traceOut.marker.pattern.bgcolor) traceOut.marker.pattern.bgcolor = layout.paper_bgcolor;
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce, 'sunburst');
 
     var withColorscale = traceOut._hasColorscale = (
         hasColorscale(traceIn, 'marker', 'colors') ||
