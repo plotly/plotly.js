@@ -36,9 +36,14 @@ function handleLabelsAndValues(labels, values) {
     };
 }
 
-function handleMarkerDefaults(traceIn, traceOut, layout, coerce, isFunnelarea) {
+function handleMarkerDefaults(traceIn, traceOut, layout, coerce, isPie) {
     var lineWidth = coerce('marker.line.width');
-    if(lineWidth) coerce('marker.line.color', isFunnelarea ? layout.paper_bgcolor : undefined);
+    if(lineWidth) {
+        coerce('marker.line.color',
+            isPie ? undefined :
+            layout.paper_bgcolor // case of funnelarea, sunburst, icicle, treemap
+        );
+    }
 
     var markerColors = coerce('marker.colors');
     coercePattern(coerce, 'marker.pattern', markerColors);
@@ -73,7 +78,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     }
     traceOut._length = len;
 
-    handleMarkerDefaults(traceIn, traceOut, layout, coerce);
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce, true);
 
     coerce('scalegroup');
     // TODO: hole needs to be coerced to the same value within a scaleegroup

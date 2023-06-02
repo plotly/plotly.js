@@ -2,7 +2,7 @@
 
 var Color = require('../../components/color');
 var castOption = require('./helpers').castOption;
-var Drawing = require('../../components/drawing');
+var fillOne = require('./fill_one');
 
 module.exports = function styleOne(s, pt, trace, gd) {
     var line = trace.marker.line;
@@ -18,8 +18,7 @@ module.exports = function styleOne(s, pt, trace, gd) {
         marker.color = pt.color;
     }
 
-    Drawing.pointStyle(s, trace, gd, pt);
-
-    s.style('stroke-width', lineWidth)
+    s.call(fillOne, pt, trace, gd)
+        .style('stroke-width', lineWidth)
         .call(Color.stroke, lineColor);
 };
