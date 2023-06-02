@@ -1,0 +1,36 @@
+{
+  "data": [
+    {
+      "type": "sunburst",
+      "textinfo": "label",
+      "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+      "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+      "domain": {"x": [0, 0.5]},
+      "marker": {
+        "colors": [ "orange", "steelblue", "steelblue", "steelblue", "green", "red", "red", "purple"]
+      }
+    },
+    {
+      "type": "sunburst",
+      "textinfo": "none",
+      "labels": ["Cain", "Seth", "Enos", "Noam", "Abel", "Awan", "Enoch", "Azura"],
+      "parents": ["Eve", "Eve", "Seth", "Seth", "Eve", "Eve", "Awan", "Eve" ],
+      "domain": {"x": [0.5, 1]},
+      "marker": {
+        "colors": [ "orange", "steelblue", "lightgrey", "lightgrey", "green", "red", "lightgrey", "purple"],
+        "pattern": {
+          "shape": ".",
+          "size": 4
+        },
+        "line": {
+          "color": "lightgrey"
+        }
+      }
+    }
+  ],
+  "layout": {
+    "title": { "text": "sunburst with pattern"},
+    "width": 800,
+    "height": 400
+  }
+}

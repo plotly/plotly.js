@@ -755,6 +755,7 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
             var perPointPattern = d.mcc ||
                 Lib.isArrayOrTypedArray(markerPattern.shape) ||
                 Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
+                Lib.isArrayOrTypedArray(markerPattern.fgcolor) ||
                 Lib.isArrayOrTypedArray(markerPattern.size) ||
                 Lib.isArrayOrTypedArray(markerPattern.solidity);
 
