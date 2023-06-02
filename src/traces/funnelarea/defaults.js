@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
     traceOut._length = len;
 
-    handleMarkerDefaults(traceIn, traceOut, layout, coerce, 'funnelarea');
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce);
 
     coerce('scalegroup');
 

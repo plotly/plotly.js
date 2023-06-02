@@ -161,7 +161,7 @@ module.exports = function drawDescendants(gd, cd, entry, slices, opts) {
             })
             .call(helpers.setSliceCursor, gd, { isTransitioning: gd._transitioning });
 
-        slicePath.call(styleOne, pt, trace, {
+        slicePath.call(styleOne, pt, trace, gd, {
             hovered: false
         });
 

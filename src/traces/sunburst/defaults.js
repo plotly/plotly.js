@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('level');
     coerce('maxdepth');
 
-    handleMarkerDefaults(traceIn, traceOut, layout, coerce, 'sunburst');
+    handleMarkerDefaults(traceIn, traceOut, layout, coerce);
 
     var withColorscale = traceOut._hasColorscale = (
         hasColorscale(traceIn, 'marker', 'colors') ||
