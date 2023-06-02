@@ -29,10 +29,10 @@ module.exports = function makeColorMap(trace) {
 
     var si, i;
 
-    if(contours.coloring === 'heatmap') {
-        var zmin0 = cOpts.min;
-        var zmax0 = cOpts.max;
+    var zmin0 = cOpts.min;
+    var zmax0 = cOpts.max;
 
+    if(contours.coloring === 'heatmap') {
         for(i = 0; i < len; i++) {
             si = scl[i];
             domain[i] = si[0] * (zmax0 - zmin0) + zmin0;
@@ -64,6 +64,18 @@ module.exports = function makeColorMap(trace) {
             si = scl[i];
             domain[i] = (si[0] * (nc + extra - 1) - (extra / 2)) * cs + start;
             range[i] = si[1];
+        }
+
+        // Ensure zmin and zmax are included in the colorscale
+
+        if(domain[0] > zmin0) {
+            domain.unshift(zmin0);
+            range.unshift(range[0]);
+        }
+
+        if(domain[domain.length - 1] < zmax0) {
+            domain.push(zmax0);
+            range.push(range[range.length - 1]);
         }
     }
 
