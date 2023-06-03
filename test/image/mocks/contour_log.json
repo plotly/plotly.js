@@ -11,6 +11,8 @@
         [6, 5, 4, 8, 2, 1],
         [5, 4, 3, 2, 1, 0]
       ],
+      "zmin": 4,
+      "zmax": 6.5,
       "contours": {"start": 4, "end": 6.5, "size": 1},
       "type": "contour"
     },

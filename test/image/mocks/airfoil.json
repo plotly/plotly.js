@@ -211,7 +211,7 @@
       "zmax":1,
       "name":"Pressure",
       "colorscale":"Viridis",
-      "zmin":-8,
+      "zmin":-1,
       "colorbar":{
         "y":0,
         "yanchor":"bottom",
