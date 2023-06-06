@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v2.23.2
+* plotly.js (basic) v2.24.0
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -5349,16 +5349,17 @@ drawing.getPatternAttr = function (mp, i, dflt) {
   }
   return mp;
 };
-drawing.pointStyle = function (s, trace, gd) {
+drawing.pointStyle = function (s, trace, gd, pt) {
   if (!s.size()) return;
   var fns = drawing.makePointStyleFns(trace);
   s.each(function (d) {
-    drawing.singlePointStyle(d, d3.select(this), trace, fns, gd);
+    drawing.singlePointStyle(d, d3.select(this), trace, fns, gd, pt);
   });
 };
-drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
+drawing.singlePointStyle = function (d, sel, trace, fns, gd, pt) {
   var marker = trace.marker;
   var markerLine = marker.line;
+  if (pt && pt.i >= 0 && d.i === undefined) d.i = pt.i;
   sel.style('opacity', fns.selectedOpacityFn ? fns.selectedOpacityFn(d) : d.mo === undefined ? marker.opacity : d.mo);
   if (fns.ms2mrc) {
     var r;
@@ -5409,7 +5410,7 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
     if ('mc' in d) {
       fillColor = d.mcc = fns.markerScale(d.mc);
     } else {
-      fillColor = marker.color || 'rgba(0,0,0,0)';
+      fillColor = marker.color || marker.colors || 'rgba(0,0,0,0)';
     }
     if (fns.selectedColorFn) {
       fillColor = fns.selectedColorFn(d);
@@ -5443,17 +5444,23 @@ drawing.singlePointStyle = function (d, sel, trace, fns, gd) {
       if (perPointGradient) gradientID += '-' + d.i;
       drawing.gradient(sel, gd, gradientID, gradientType, [[0, gradientColor], [1, fillColor]], 'fill');
     } else if (patternShape) {
+      var perPointPattern = false;
+      var fgcolor = markerPattern.fgcolor;
+      if (!fgcolor && pt && pt.color) {
+        fgcolor = pt.color;
+        perPointPattern = true;
+      }
+      var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, pt && pt.color || null);
       var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
-      var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
       var patternFGOpacity = markerPattern.fgopacity;
       var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
       var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-      var perPointPattern = d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
+      perPointPattern = perPointPattern || d.mcc || Lib.isArrayOrTypedArray(markerPattern.shape) || Lib.isArrayOrTypedArray(markerPattern.bgcolor) || Lib.isArrayOrTypedArray(markerPattern.fgcolor) || Lib.isArrayOrTypedArray(markerPattern.size) || Lib.isArrayOrTypedArray(markerPattern.solidity);
       var patternID = trace.uid;
       if (perPointPattern) patternID += '-' + d.i;
       drawing.pattern(sel, 'point', gd, patternID, patternShape, patternSize, patternSolidity, d.mcc, markerPattern.fillmode, patternBGColor, patternFGColor, patternFGOpacity);
     } else {
-      Color.fill(sel, fillColor);
+      Lib.isArrayOrTypedArray(fillColor) ? Color.fill(sel, fillColor[d.i]) : Color.fill(sel, fillColor);
     }
     if (lineWidth) {
       Color.stroke(sel, lineColor);
@@ -8726,7 +8733,7 @@ function createHoverText(hoverData, opts) {
       return data.hoverinfo !== 'none';
     });
     // Return early if nothing is hovered on
-    if (groupedHoverData.length === 0) return;
+    if (groupedHoverData.length === 0) return [];
 
     // mock legend
     var hoverlabel = fullLayout.hoverlabel;
@@ -12649,21 +12656,19 @@ module.exports = function style(s, gd, legend) {
     pts.enter().append('path').classed('legend' + desiredType, true).attr('d', 'M6,6H-6V-6H6Z').attr('transform', centerTransform);
     pts.exit().remove();
     if (pts.size()) {
-      var cont = (trace.marker || {}).line;
-      var lw = boundLineWidth(pieCastOption(cont.width, d0.pts), cont, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+      var cont = trace.marker || {};
+      var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
       var tMod = Lib.minExtend(trace, {
         marker: {
           line: {
             width: lw
           }
         }
-      });
-      // since minExtend do not slice more than 3 items we need to patch line.color here
-      tMod.marker.line.color = cont.color;
+      }, true);
       var d0Mod = Lib.minExtend(d0, {
         trace: tMod
-      });
-      stylePie(pts, d0Mod, tMod);
+      }, true);
+      stylePie(pts, d0Mod, tMod, gd);
     }
   }
   function styleSpatial(d) {
@@ -25498,17 +25503,17 @@ lib.getTargetArray = function (trace, transformOpts) {
  * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
-lib.minExtend = function (obj1, obj2) {
+lib.minExtend = function (obj1, obj2, isPie) {
   var objOut = {};
   if (typeof obj2 !== 'object') obj2 = {};
-  var arrayLen = 3;
+  var arrayLen = isPie = 3;
   var keys = Object.keys(obj1);
   var i, k, v;
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     v = obj1[k];
     if (k.charAt(0) === '_' || typeof v === 'function') continue;else if (k === 'module') objOut[k] = v;else if (Array.isArray(v)) {
-      if (k === 'colorscale') {
+      if (isPie || k === 'colorscale') {
         objOut[k] = v.slice();
       } else {
         objOut[k] = v.slice(0, arrayLen);
@@ -49441,13 +49446,7 @@ plots.doAutoMargin = function (gd) {
     r: 0
   };
   var oldMargins = Lib.extendFlat({}, gs);
-  var margins = gd._fullLayout._reservedMargin;
-  for (var key in margins) {
-    for (var side in margins[key]) {
-      var val = margins[key][side];
-      reservedMargins[side] = Math.max(reservedMargins[side], val);
-    }
-  }
+
   // adjust margins for outside components
   // fullLayout.margin is the requested margin,
   // fullLayout._size has margins and plotsize after adjustment
@@ -49459,11 +49458,17 @@ plots.doAutoMargin = function (gd) {
   var pushMarginIds = fullLayout._pushmarginIds;
   var minreducedwidth = fullLayout.minreducedwidth;
   var minreducedheight = fullLayout.minreducedheight;
-  if (fullLayout.margin.autoexpand !== false) {
+  if (margin.autoexpand !== false) {
     for (var k in pushMargin) {
       if (!pushMarginIds[k]) delete pushMargin[k];
     }
-
+    var margins = gd._fullLayout._reservedMargin;
+    for (var key in margins) {
+      for (var side in margins[key]) {
+        var val = margins[key][side];
+        reservedMargins[side] = Math.max(reservedMargins[side], val);
+      }
+    }
     // fill in the requested margins
     pushMargin.base = {
       l: {
@@ -49484,9 +49489,22 @@ plots.doAutoMargin = function (gd) {
       }
     };
 
+    // make sure that the reservedMargin is the minimum needed
+    for (var s in reservedMargins) {
+      var autoMarginPush = 0;
+      for (var m in pushMargin) {
+        if (m !== 'base') {
+          if (isNumeric(pushMargin[m][s].size)) {
+            autoMarginPush = pushMargin[m][s].size > autoMarginPush ? pushMargin[m][s].size : autoMarginPush;
+          }
+        }
+      }
+      var extraMargin = Math.max(0, margin[s] - autoMarginPush);
+      reservedMargins[s] = Math.max(0, reservedMargins[s] - extraMargin);
+    }
+
     // now cycle through all the combinations of l and r
     // (and t and b) to find the required margins
-
     for (var k1 in pushMargin) {
       var pushleft = pushMargin[k1].l || {};
       var pushbottom = pushMargin[k1].b || {};
@@ -54500,6 +54518,7 @@ var colorAttrs = __webpack_require__(2399);
 var hovertemplateAttrs = (__webpack_require__(5386)/* .hovertemplateAttrs */ .fF);
 var texttemplateAttrs = (__webpack_require__(5386)/* .texttemplateAttrs */ .si);
 var extendFlat = (__webpack_require__(1426).extendFlat);
+var pattern = (__webpack_require__(9952)/* .pattern */ .u);
 var textFontAttrs = fontAttrs({
   editType: 'plot',
   arrayOk: true,
@@ -54547,6 +54566,7 @@ module.exports = {
       },
       editType: 'calc'
     },
+    pattern: pattern,
     editType: 'calc'
   },
   text: {
@@ -54867,6 +54887,7 @@ var Lib = __webpack_require__(1828);
 var attributes = __webpack_require__(4000);
 var handleDomainDefaults = (__webpack_require__(7670)/* .defaults */ .c);
 var handleText = (__webpack_require__(769).handleText);
+var coercePattern = (__webpack_require__(1828).coercePattern);
 function handleLabelsAndValues(labels, values) {
   var hasLabels = Array.isArray(labels);
   var hasValues = Lib.isArrayOrTypedArray(values);
@@ -54889,6 +54910,19 @@ function handleLabelsAndValues(labels, values) {
     len: len
   };
 }
+function handleMarkerDefaults(traceIn, traceOut, layout, coerce, isPie) {
+  var lineWidth = coerce('marker.line.width');
+  if (lineWidth) {
+    coerce('marker.line.color', isPie ? undefined : layout.paper_bgcolor // case of funnelarea, sunburst, icicle, treemap
+    );
+  }
+
+  var markerColors = coerce('marker.colors');
+  coercePattern(coerce, 'marker.pattern', markerColors);
+  // push the marker colors (with s) to the foreground colors, to work around logic in the drawing pattern code on marker.color (without s, which is okay for a bar trace)
+  if (traceIn.marker && !traceOut.marker.pattern.fgcolor) traceOut.marker.pattern.fgcolor = traceIn.marker.colors;
+  if (!traceOut.marker.pattern.bgcolor) traceOut.marker.pattern.bgcolor = layout.paper_bgcolor;
+}
 function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
   function coerce(attr, dflt) {
     return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
@@ -54908,9 +54942,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     return;
   }
   traceOut._length = len;
-  var lineWidth = coerce('marker.line.width');
-  if (lineWidth) coerce('marker.line.color');
-  coerce('marker.colors');
+  handleMarkerDefaults(traceIn, traceOut, layout, coerce, true);
   coerce('scalegroup');
   // TODO: hole needs to be coerced to the same value within a scaleegroup
 
@@ -54954,6 +54986,7 @@ function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
 }
 module.exports = {
   handleLabelsAndValues: handleLabelsAndValues,
+  handleMarkerDefaults: handleMarkerDefaults,
   supplyDefaults: supplyDefaults
 };
 
@@ -55000,6 +55033,25 @@ module.exports = function eventData(pt, trace) {
     delete out.i;
   }
   return out;
+};
+
+/***/ }),
+
+/***/ 2209:
+/***/ (function(module, __unused_webpack_exports, __webpack_require__) {
+
+"use strict";
+
+
+var Drawing = __webpack_require__(1424);
+var Color = __webpack_require__(7901);
+module.exports = function fillOne(s, pt, trace, gd) {
+  var pattern = trace.marker.pattern;
+  if (pattern && pattern.shape) {
+    Drawing.pointStyle(s, trace, gd, pt);
+  } else {
+    Color.fill(s, pt.color);
+  }
 };
 
 /***/ }),
@@ -56087,7 +56139,7 @@ module.exports = function style(gd) {
       opacity: trace.opacity
     });
     traceSelection.selectAll('path.surface').each(function (pt) {
-      d3.select(this).call(styleOne, pt, trace);
+      d3.select(this).call(styleOne, pt, trace, gd);
     });
   });
 };
@@ -56102,11 +56154,12 @@ module.exports = function style(gd) {
 
 var Color = __webpack_require__(7901);
 var castOption = (__webpack_require__(3581).castOption);
-module.exports = function styleOne(s, pt, trace) {
+var fillOne = __webpack_require__(2209);
+module.exports = function styleOne(s, pt, trace, gd) {
   var line = trace.marker.line;
   var lineColor = castOption(line.color, pt.pts) || Color.defaultLine;
   var lineWidth = castOption(line.width, pt.pts) || 0;
-  s.style('stroke-width', lineWidth).call(Color.fill, pt.color).call(Color.stroke, lineColor);
+  s.call(fillOne, pt, trace, gd).style('stroke-width', lineWidth).call(Color.stroke, lineColor);
 };
 
 /***/ }),
@@ -60050,7 +60103,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.23.2';
+exports.version = '2.24.0';
 
 /***/ }),
 
