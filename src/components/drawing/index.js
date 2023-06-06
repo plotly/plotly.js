@@ -753,7 +753,8 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
                 fgcolor = pt.color;
                 perPointPattern = true;
             }
-            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, null);
+            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, (pt && pt.color) || null);
+
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
             var patternFGOpacity = markerPattern.fgopacity;
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
