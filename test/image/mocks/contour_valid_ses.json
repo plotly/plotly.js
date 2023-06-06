@@ -45,8 +45,8 @@
                 "end": 10,
                 "size": 1
             },
-            "zmin": 2,
-            "zmax": 10
+            "zmin": 0,
+            "zmax": 20
         }
     ],
     "layout": {

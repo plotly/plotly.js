@@ -655,8 +655,6 @@
       }
     ],
     "coloraxis": {
-      "cmin": 0,
-      "cmax": 8.5,
       "colorscale": [
         [
           0,

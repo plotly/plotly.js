@@ -112,8 +112,6 @@
       }
     },
     "coloraxis2": {
-      "cmin": -5.5,
-      "cmax": 4.5,
       "colorbar": {
         "dtick": 1,
         "len": 0.5,
@@ -122,8 +120,6 @@
       }
     },
     "coloraxis3": {
-      "cmin": -5.5,
-      "cmax": 4.5,
       "colorbar": {
         "len": 0.5,
         "x": -0.05, "xanchor": "right",
