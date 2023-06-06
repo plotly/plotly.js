@@ -9,6 +9,19 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.24.0] -- 2023-06-06
+
+### Added
+- add pattern to pie, funnelarea, sunburst, icicle and treemap traces [[#6601](https://github.com/plotly/plotly.js/pull/6601), [#6619](https://github.com/plotly/plotly.js/pull/6619), [#6622](https://github.com/plotly/plotly.js/pull/6622), [#6626](https://github.com/plotly/plotly.js/pull/6626), [#6627](https://github.com/plotly/plotly.js/pull/6627, [#6628](https://github.com/plotly/plotly.js/pull/6628), [#6629](https://github.com/plotly/plotly.js/pull/6629)],
+  with thanks to @thierryVergult for the contribution!
+
+### Fixed
+- Fix to prevent accessing undefined (hoverText.hoverLabels) in case all currently shown markers
+  have hoverinfo: "none" (regression introduced in 2.6.0) [#6614]((https://github.com/plotly/plotly.js/issues/6614)),
+  with thanks to @Domino987 for the contribution!
+- Fix to ensure only minimum margin spacing is added for container-referenced legends and colorbars [[#6616](https://github.com/plotly/plotly.js/pull/6616)]
+
+
 ## [2.23.2] -- 2023-05-19
 
 ### Fixed
