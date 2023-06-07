@@ -506,8 +506,9 @@ module.exports = function style(s, gd, legend) {
             var cont = trace.marker || {};
             var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
 
-            var tMod = Lib.minExtend(trace, {marker: {line: {width: lw}}}, true);
-            var d0Mod = Lib.minExtend(d0, {trace: tMod}, true);
+            var opt = 'pieLike';
+            var tMod = Lib.minExtend(trace, {marker: {line: {width: lw}}}, opt);
+            var d0Mod = Lib.minExtend(d0, {trace: tMod}, opt);
 
             stylePie(pts, d0Mod, tMod, gd);
         }
