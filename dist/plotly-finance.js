@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.24.0
+* plotly.js (finance) v2.24.1
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -12728,16 +12728,17 @@ module.exports = function style(s, gd, legend) {
     if (pts.size()) {
       var cont = trace.marker || {};
       var lw = boundLineWidth(pieCastOption(cont.line.width, d0.pts), cont.line, MAX_MARKER_LINE_WIDTH, CST_MARKER_LINE_WIDTH);
+      var opt = 'pieLike';
       var tMod = Lib.minExtend(trace, {
         marker: {
           line: {
             width: lw
           }
         }
-      }, true);
+      }, opt);
       var d0Mod = Lib.minExtend(d0, {
         trace: tMod
-      }, true);
+      }, opt);
       stylePie(pts, d0Mod, tMod, gd);
     }
   }
@@ -25592,24 +25593,28 @@ lib.getTargetArray = function (trace, transformOpts) {
  * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
-lib.minExtend = function (obj1, obj2, isPie) {
+function minExtend(obj1, obj2, opt) {
   var objOut = {};
   if (typeof obj2 !== 'object') obj2 = {};
-  var arrayLen = isPie = 3;
+  var arrayLen = opt === 'pieLike' ? -1 : 3;
   var keys = Object.keys(obj1);
   var i, k, v;
   for (i = 0; i < keys.length; i++) {
     k = keys[i];
     v = obj1[k];
     if (k.charAt(0) === '_' || typeof v === 'function') continue;else if (k === 'module') objOut[k] = v;else if (Array.isArray(v)) {
-      if (isPie || k === 'colorscale') {
+      if (k === 'colorscale' || arrayLen === -1) {
         objOut[k] = v.slice();
       } else {
         objOut[k] = v.slice(0, arrayLen);
       }
     } else if (lib.isTypedArray(v)) {
-      objOut[k] = v.subarray(0, arrayLen);
-    } else if (v && typeof v === 'object') objOut[k] = lib.minExtend(obj1[k], obj2[k]);else objOut[k] = v;
+      if (arrayLen === -1) {
+        objOut[k] = v.subarray();
+      } else {
+        objOut[k] = v.subarray(0, arrayLen);
+      }
+    } else if (v && typeof v === 'object') objOut[k] = minExtend(obj1[k], obj2[k], opt);else objOut[k] = v;
   }
   keys = Object.keys(obj2);
   for (i = 0; i < keys.length; i++) {
@@ -25620,7 +25625,8 @@ lib.minExtend = function (obj1, obj2, isPie) {
     }
   }
   return objOut;
-};
+}
+lib.minExtend = minExtend;
 lib.titleCase = function (s) {
   return s.charAt(0).toUpperCase() + s.substr(1);
 };
@@ -66412,7 +66418,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.24.0';
+exports.version = '2.24.1';
 
 /***/ }),
 
