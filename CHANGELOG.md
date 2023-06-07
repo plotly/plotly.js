@@ -9,6 +9,13 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.24.1] -- 2023-06-07
+
+### Fixed
+- Fix minimal copying of arrays in minExtend function
+  (regression introduced in 2.24.0) [#6632]((https://github.com/plotly/plotly.js/issues/6632))
+
+
 ## [2.24.0] -- 2023-06-06
 
 ### Added
