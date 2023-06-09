@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v2.24.1
+* plotly.js (gl3d) v2.24.2
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11483,7 +11483,7 @@ function drawOne(gd, opts) {
           }
         },
         clickFn: function (numClicks, e) {
-          var clickedTrace = groups.selectAll('g.traces').filter(function () {
+          var clickedTrace = layer.selectAll('g.traces').filter(function () {
             var bbox = this.getBoundingClientRect();
             return e.clientX >= bbox.left && e.clientX <= bbox.right && e.clientY >= bbox.top && e.clientY <= bbox.bottom;
           });
@@ -63546,7 +63546,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.24.1';
+exports.version = '2.24.2';
 
 /***/ }),
 

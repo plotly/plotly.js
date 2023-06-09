@@ -1,5 +1,5 @@
 /**
-* plotly.js (finance) v2.24.1
+* plotly.js (finance) v2.24.2
 * Copyright 2012-2023, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -11503,7 +11503,7 @@ function drawOne(gd, opts) {
           }
         },
         clickFn: function (numClicks, e) {
-          var clickedTrace = groups.selectAll('g.traces').filter(function () {
+          var clickedTrace = layer.selectAll('g.traces').filter(function () {
             var bbox = this.getBoundingClientRect();
             return e.clientX >= bbox.left && e.clientX <= bbox.right && e.clientY >= bbox.top && e.clientY <= bbox.bottom;
           });
@@ -65174,15 +65174,13 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, opts) {
   var index = point.index;
   var di = cd[index];
   var size = di.isSum ? di.b + di.s : di.rawS;
-  if (!di.isSum) {
-    point.initial = di.b + di.s - size;
-    point.delta = size;
-    point.final = point.initial + point.delta;
-    var v = formatNumber(Math.abs(point.delta));
-    point.deltaLabel = size < 0 ? '(' + v + ')' : v;
-    point.finalLabel = formatNumber(point.final);
-    point.initialLabel = formatNumber(point.initial);
-  }
+  point.initial = di.b + di.s - size;
+  point.delta = size;
+  point.final = point.initial + point.delta;
+  var v = formatNumber(Math.abs(point.delta));
+  point.deltaLabel = size < 0 ? '(' + v + ')' : v;
+  point.finalLabel = formatNumber(point.final);
+  point.initialLabel = formatNumber(point.initial);
   var hoverinfo = di.hi || trace.hoverinfo;
   var text = [];
   if (hoverinfo && hoverinfo !== 'none' && hoverinfo !== 'skip') {
@@ -66418,7 +66416,7 @@ function getSortFunc(opts, d2c) {
 
 
 // package version injected by `npm run preprocess`
-exports.version = '2.24.1';
+exports.version = '2.24.2';
 
 /***/ }),
 
