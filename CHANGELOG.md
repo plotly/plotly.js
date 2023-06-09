@@ -9,24 +9,31 @@ To see all merged commits on the master branch that will be part of the next plo
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [2.24.2] -- 2023-06-09
+
+### Fixed
+ - Fix legend groups toggle (regression introduced in 2.22.0) [#6639]((https://github.com/plotly/plotly.js/issues/6639))
+ - Fix waterfall `hovertemplate` not showing delta on totals similar [#6635]((https://github.com/plotly/plotly.js/issues/6635))
+
+
 ## [2.24.1] -- 2023-06-07
 
 ### Fixed
-- Fix minimal copying of arrays in minExtend function
+ - Fix minimal copying of arrays in minExtend function
   (regression introduced in 2.24.0) [#6632]((https://github.com/plotly/plotly.js/issues/6632))
 
 
 ## [2.24.0] -- 2023-06-06
 
 ### Added
-- add pattern to pie, funnelarea, sunburst, icicle and treemap traces [[#6601](https://github.com/plotly/plotly.js/pull/6601), [#6619](https://github.com/plotly/plotly.js/pull/6619), [#6622](https://github.com/plotly/plotly.js/pull/6622), [#6626](https://github.com/plotly/plotly.js/pull/6626), [#6627](https://github.com/plotly/plotly.js/pull/6627), [#6628](https://github.com/plotly/plotly.js/pull/6628), [#6629](https://github.com/plotly/plotly.js/pull/6629)],
+ - add pattern to pie, funnelarea, sunburst, icicle and treemap traces [[#6601](https://github.com/plotly/plotly.js/pull/6601), [#6619](https://github.com/plotly/plotly.js/pull/6619), [#6622](https://github.com/plotly/plotly.js/pull/6622), [#6626](https://github.com/plotly/plotly.js/pull/6626), [#6627](https://github.com/plotly/plotly.js/pull/6627), [#6628](https://github.com/plotly/plotly.js/pull/6628), [#6629](https://github.com/plotly/plotly.js/pull/6629)],
   with thanks to @thierryVergult for the contribution!
 
 ### Fixed
-- Fix to prevent accessing undefined (hoverText.hoverLabels) in case all currently shown markers
-  have hoverinfo: "none" (regression introduced in 2.6.0) [#6614]((https://github.com/plotly/plotly.js/issues/6614)),
-  with thanks to @Domino987 for the contribution!
-- Fix to ensure only minimum margin spacing is added for container-referenced legends and colorbars [[#6616](https://github.com/plotly/plotly.js/pull/6616)]
+ - Fix to prevent accessing undefined (hoverText.hoverLabels) in case all currently shown markers
+   have hoverinfo: "none" (regression introduced in 2.6.0) [#6614]((https://github.com/plotly/plotly.js/issues/6614)),
+   with thanks to @Domino987 for the contribution!
+ - Fix to ensure only minimum margin spacing is added for container-referenced legends and colorbars [[#6616](https://github.com/plotly/plotly.js/pull/6616)]
 
 
 ## [2.23.2] -- 2023-05-19
@@ -45,8 +52,8 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ## [2.23.0] -- 2023-05-12
 
 ### Added
-- Add `legend.xref` and `legend.yref` to enable container-referenced positioning of legends [[#6589](https://github.com/plotly/plotly.js/pull/6589)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
-- Add `colorbar.xref` and `colorbar.yref` to enable container-referenced positioning of colorbars [[#6593](https://github.com/plotly/plotly.js/pull/6593)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+ - Add `legend.xref` and `legend.yref` to enable container-referenced positioning of legends [[#6589](https://github.com/plotly/plotly.js/pull/6589)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
+ - Add `colorbar.xref` and `colorbar.yref` to enable container-referenced positioning of colorbars [[#6593](https://github.com/plotly/plotly.js/pull/6593)], with thanks to [Gamma Technologies](https://www.gtisoft.com/) for sponsoring the related development.
 
 ### Changed
  - Improve heatmap rendering performance when `zsmooth` is set to false [[#6574](https://github.com/plotly/plotly.js/pull/6574)], with thanks to @lvlte for the contribution!
