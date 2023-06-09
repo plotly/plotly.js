@@ -379,7 +379,7 @@ function drawOne(gd, opts) {
                         }
                     },
                     clickFn: function(numClicks, e) {
-                        var clickedTrace = groups.selectAll('g.traces').filter(function() {
+                        var clickedTrace = layer.selectAll('g.traces').filter(function() {
                             var bbox = this.getBoundingClientRect();
                             return (
                                 e.clientX >= bbox.left && e.clientX <= bbox.right &&
