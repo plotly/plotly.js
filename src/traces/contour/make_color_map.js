@@ -66,16 +66,28 @@ module.exports = function makeColorMap(trace) {
             range[i] = si[1];
         }
 
-        // Ensure zmin and zmax are included in the colorscale
+        // If zmin/zmax are explicitly set
+        if(typeof trace._input.zmin === 'number' && typeof trace._input.zmax === 'number') {
+            // Consider case where user specifies a narrower z range than that
+            // of the contours start/end.
+            if(start <= zmin0) {
+                domain = domain.filter(function(z) { return z >= zmin0; });
+                range.splice(0, range.length - domain.length);
+            }
+            if(end >= zmax0) {
+                domain = domain.filter(function(z) { return z <= zmax0; });
+                range.splice(domain.length, range.length - domain.length);
+            }
 
-        if(domain[0] > zmin0) {
-            domain.unshift(zmin0);
-            range.unshift(range[0]);
-        }
-
-        if(domain[domain.length - 1] < zmax0) {
-            domain.push(zmax0);
-            range.push(range[range.length - 1]);
+            // Make the colorscale fit the z range
+            if(domain[0] > zmin0) {
+                domain.unshift(zmin0);
+                range.unshift(range[0]);
+            }
+            if(domain[domain.length - 1] < zmax0) {
+                domain.push(zmax0);
+                range.push(range[range.length - 1]);
+            }
         }
     }
 
