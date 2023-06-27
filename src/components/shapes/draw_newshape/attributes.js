@@ -1,5 +1,6 @@
 'use strict';
 
+var basePlotAttributes = require('../../../plots/attributes');
 var fontAttrs = require('../../../plots/font_attributes');
 var dash = require('../../drawing/attributes').dash;
 var extendFlat = require('../../../lib/extend').extendFlat;
@@ -9,6 +10,49 @@ var shapeLabelTexttemplateVars = require('../label_texttemplate');
 
 module.exports = {
     newshape: {
+        visible: extendFlat({}, basePlotAttributes.visible, {
+            editType: 'none'
+        }),
+
+        showlegend: {
+            valType: 'boolean',
+            dflt: false,
+            editType: 'none',
+            description: [
+                'Determines whether or not new',
+                'shape is shown in the legend.'
+            ].join(' ')
+        },
+
+        legend: extendFlat({}, basePlotAttributes.legend, {
+            editType: 'none'
+        }),
+
+        legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
+            editType: 'none'
+        }),
+
+        legendgrouptitle: {
+            text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {
+                editType: 'none'
+            }),
+            font: fontAttrs({
+                editType: 'none',
+                description: [
+                    'Sets this legend group\'s title font.'
+                ].join(' '),
+            }),
+            editType: 'none',
+        },
+
+        legendrank: extendFlat({}, basePlotAttributes.legendrank, {
+            editType: 'none'
+        }),
+
+        legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
+            editType: 'none'
+        }),
+
         line: {
             color: {
                 valType: 'color',

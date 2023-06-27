@@ -7,18 +7,53 @@ var dash = require('../drawing/attributes').dash;
 var extendFlat = require('../../lib/extend').extendFlat;
 var templatedArray = require('../../plot_api/plot_template').templatedArray;
 var axisPlaceableObjs = require('../../constants/axis_placeable_objects');
+var basePlotAttributes = require('../../plots/attributes');
 var shapeTexttemplateAttrs = require('../../plots/template_attributes').shapeTexttemplateAttrs;
 var shapeLabelTexttemplateVars = require('./label_texttemplate');
 
 module.exports = templatedArray('shape', {
-    visible: {
+    visible: extendFlat({}, basePlotAttributes.visible, {
+        editType: 'calc+arraydraw'
+    }),
+
+    showlegend: {
         valType: 'boolean',
-        dflt: true,
+        dflt: false,
         editType: 'calc+arraydraw',
         description: [
-            'Determines whether or not this shape is visible.'
+            'Determines whether or not this',
+            'shape is shown in the legend.'
         ].join(' ')
     },
+
+    legend: extendFlat({}, basePlotAttributes.legend, {
+        editType: 'calc+arraydraw'
+    }),
+
+    legendgroup: extendFlat({}, basePlotAttributes.legendgroup, {
+        editType: 'calc+arraydraw'
+    }),
+
+    legendgrouptitle: {
+        text: extendFlat({}, basePlotAttributes.legendgrouptitle.text, {
+            editType: 'calc+arraydraw'
+        }),
+        font: fontAttrs({
+            editType: 'calc+arraydraw',
+            description: [
+                'Sets this legend group\'s title font.'
+            ].join(' '),
+        }),
+        editType: 'calc+arraydraw',
+    },
+
+    legendrank: extendFlat({}, basePlotAttributes.legendrank, {
+        editType: 'calc+arraydraw'
+    }),
+
+    legendwidth: extendFlat({}, basePlotAttributes.legendwidth, {
+        editType: 'calc+arraydraw'
+    }),
 
     type: {
         valType: 'enumerated',

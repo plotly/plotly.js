@@ -117,6 +117,7 @@ function makeColorBarData(gd) {
     for(var i = 0; i < calcdata.length; i++) {
         var cd = calcdata[i];
         trace = cd[0].trace;
+        if(!trace._module) continue;
         var moduleOpts = trace._module.colorbar;
 
         if(trace.visible === true && moduleOpts) {

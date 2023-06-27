@@ -68,13 +68,17 @@ module.exports = function handleClick(g, gd, numClicks) {
         if(legendItem.groupTitle && !toggleGroup) return;
 
         var fullInput = fullTrace._fullInput;
+        var isShape = fullInput._isShape;
+        if(isShape) fullInput = fullTrace;
+        var index = fullInput.index;
+
         if(Registry.hasTransform(fullInput, 'groupby')) {
-            var kcont = carrs[fullInput.index];
+            var kcont = carrs[index];
             if(!kcont) {
                 var groupbyIndices = Registry.getTransformIndices(fullInput, 'groupby');
                 var lastGroupbyIndex = groupbyIndices[groupbyIndices.length - 1];
                 kcont = Lib.keyedContainer(fullInput, 'transforms[' + lastGroupbyIndex + '].styles', 'target', 'value.visible');
-                carrs[fullInput.index] = kcont;
+                carrs[index] = kcont;
             }
 
             var curState = kcont.get(fullTrace._group);
@@ -92,14 +96,18 @@ module.exports = function handleClick(g, gd, numClicks) {
                 // true -> legendonly. All others toggle to true:
                 kcont.set(fullTrace._group, visibility);
             }
-            carrIdx[fullInput.index] = insertUpdate(fullInput.index, 'visible', fullInput.visible === false ? false : true);
+            carrIdx[index] = insertUpdate(index, 'visible', fullInput.visible === false ? false : true);
         } else {
             // false -> false (not possible since will not be visible in legend)
             // true -> legendonly
             // legendonly -> true
             var nextVisibility = fullInput.visible === false ? false : visibility;
 
-            insertUpdate(fullInput.index, 'visible', nextVisibility);
+            if(isShape) {
+                Registry.call('_guiRelayout', gd, 'shapes[' + index + '].visible', nextVisibility);
+            } else {
+                insertUpdate(index, 'visible', nextVisibility);
+            }
         }
     }
 

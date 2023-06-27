@@ -2228,6 +2228,15 @@ function _relayout(gd, aobj) {
     // couldn't editType do this?
     if(updateAutosize(gd) || aobj.height || aobj.width) flags.plot = true;
 
+    // update shape legends
+    var shapes = fullLayout.shapes;
+    for(i = 0; i < shapes.length; i++) {
+        if(shapes[i].showlegend) {
+            flags.calc = true;
+            break;
+        }
+    }
+
     if(flags.plot || flags.calc) {
         flags.layoutReplot = true;
     }

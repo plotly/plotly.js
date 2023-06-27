@@ -195,17 +195,37 @@ function groupDefaults(legendId, layoutIn, layoutOut, fullData) {
 
 module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var i;
-    var legends = ['legend'];
 
-    for(i = 0; i < fullData.length; i++) {
-        Lib.pushUnique(legends, fullData[i].legend);
+    var allLegendsData = fullData.slice();
+
+    // shapes could also show up in legends
+    var shapes = layoutOut.shapes;
+    if(shapes) {
+        for(i = 0; i < shapes.length; i++) {
+            var shape = shapes[i];
+            if(!shape.showlegend) continue;
+
+            var mockTrace = {
+                _input: shape._input,
+                visible: shape.visible,
+                showlegend: shape.showlegend,
+                legend: shape.legend
+            };
+
+            allLegendsData.push(mockTrace);
+        }
+    }
+
+    var legends = ['legend'];
+    for(i = 0; i < allLegendsData.length; i++) {
+        Lib.pushUnique(legends, allLegendsData[i].legend);
     }
 
     layoutOut._legends = [];
     for(i = 0; i < legends.length; i++) {
         var legendId = legends[i];
 
-        groupDefaults(legendId, layoutIn, layoutOut, fullData);
+        groupDefaults(legendId, layoutIn, layoutOut, allLegendsData);
 
         if(
             layoutOut[legendId] &&

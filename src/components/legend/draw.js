@@ -77,8 +77,39 @@ function drawOne(gd, opts) {
 
     var legendData;
     if(!inHover) {
-        if(!gd.calcdata) return;
-        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, legendObj, fullLayout._legends.length > 1);
+        var calcdata = (gd.calcdata || []).slice();
+
+        var shapes = fullLayout.shapes;
+        for(var i = 0; i < shapes.length; i++) {
+            var shape = shapes[i];
+            if(!shape.showlegend) continue;
+
+            var shapeLegend = {
+                _fullInput: shape,
+                index: shape._index,
+                name: shape.name || shape.label.text || ('shape ' + shape._index),
+                legend: shape.legend,
+                legendgroup: shape.legendgroup,
+                legendgrouptitle: shape.legendgrouptitle,
+                legendrank: shape.legendrank,
+                legendwidth: shape.legendwidth,
+                showlegend: shape.showlegend,
+                visible: shape.visible,
+                opacity: shape.opacity,
+                mode: shape.type === 'line' ? 'lines' : 'markers',
+                line: shape.line,
+                marker: {
+                    line: shape.line,
+                    color: shape.fillcolor,
+                    symbol: shape.type === 'rect' ? 'square' : 'circle',
+                    size: 12
+                },
+            };
+
+            calcdata.push([{ trace: shapeLegend }]);
+        }
+        if(!calcdata.length) return;
+        legendData = fullLayout.showlegend && getLegendData(calcdata, legendObj, fullLayout._legends.length > 1);
     } else {
         if(!legendObj.entries) return;
         legendData = getLegendData(legendObj.entries, legendObj);
