@@ -154,10 +154,8 @@ module.exports = function convert(gd, calcTrace) {
             Lib.extendFlat(symbol.layout, {
                 'text-size': trace.textfont.size,
                 'text-anchor': textOpts.anchor,
-                'text-offset': textOpts.offset
-
-                // TODO font family
-                // 'text-font': symbol.textfont.family.split(', '),
+                'text-offset': textOpts.offset,
+                'text-font': trace.textfont.family.split(', '),
             });
 
             Lib.extendFlat(symbol.paint, {

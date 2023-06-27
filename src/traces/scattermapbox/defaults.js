@@ -66,7 +66,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('cluster.enabled', clusterEnabledDflt);
 
     if(subTypes.hasText(traceOut)) {
-        handleTextDefaults(traceIn, traceOut, layout, coerce, {noSelect: true});
+        handleTextDefaults(traceIn, traceOut, layout, coerce,
+            {noSelect: true,
+                font: {
+                    family: 'Open Sans Regular',
+                    size: layout.font.size,
+                    color: layout.font.color
+                }
+            });
     }
 
     coerce('fill');
