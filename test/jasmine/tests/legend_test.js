@@ -1740,6 +1740,13 @@ describe('legend interaction', function() {
             };
         }
 
+        function assertVisibleShapes(expectation) {
+            return function() {
+                var actual = extractVisibilities(gd._fullLayout.shapes);
+                expect(actual).toEqual(expectation);
+            };
+        }
+
         describe('for regular traces', function() {
             beforeEach(function(done) {
                 Plotly.newPlot(gd, [
@@ -1778,6 +1785,34 @@ describe('legend interaction', function() {
                 Promise.resolve()
                     .then(click(0, 2))
                     .then(assertVisible([false, true, true]))
+                    .then(done, done.fail);
+            });
+        });
+
+        describe('click shape legends', function() {
+            beforeEach(function(done) {
+                Plotly.newPlot(gd, [], {
+                    shapes: [
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.1, y0: 0.2, x1: 0.2, y1: 0.1, visible: false},
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.3, y0: 0.4, x1: 0.4, y1: 0.3, visible: 'legendonly'},
+                        {showlegend: true, type: 'line', xref: 'paper', yref: 'paper', x0: 0.5, y0: 0.6, x1: 0.6, y1: 0.5}
+                    ]
+                }).then(done);
+            });
+
+            it('clicking once toggles legendonly -> true', function(done) {
+                Promise.resolve()
+                    .then(assertVisibleShapes([false, 'legendonly', true]))
+                    .then(click(0))
+                    .then(assertVisibleShapes([false, true, true]))
+                    .then(done, done.fail);
+            });
+
+            it('clicking once toggles true -> legendonly', function(done) {
+                Promise.resolve()
+                    .then(assertVisibleShapes([false, 'legendonly', true]))
+                    .then(click(1))
+                    .then(assertVisibleShapes([false, 'legendonly', 'legendonly']))
                     .then(done, done.fail);
             });
         });
