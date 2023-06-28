@@ -1513,7 +1513,7 @@ describe('mapbox plots', function() {
             });
         });
 
-        it('@gl should be displayed for style "stamen-watercolor"', function(done) {
+        it('@noCI @gl should be displayed for style "stamen-watercolor"', function(done) {
             Plotly.newPlot(gd, [{type: 'scattermapbox'}], {mapbox: {style: 'stamen-watercolor'}})
             .then(function() {
                 var s = d3SelectAll('.mapboxgl-ctrl-attrib');

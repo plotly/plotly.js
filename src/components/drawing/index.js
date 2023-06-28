@@ -747,12 +747,19 @@ drawing.singlePointStyle = function(d, sel, trace, fns, gd, pt) {
             drawing.gradient(sel, gd, gradientID, gradientType,
                 [[0, gradientColor], [1, fillColor]], 'fill');
         } else if(patternShape) {
+            var perPointPattern = false;
+            var fgcolor = markerPattern.fgcolor;
+            if(!fgcolor && pt && pt.color) {
+                fgcolor = pt.color;
+                perPointPattern = true;
+            }
+            var patternFGColor = drawing.getPatternAttr(fgcolor, d.i, (pt && pt.color) || null);
+
             var patternBGColor = drawing.getPatternAttr(markerPattern.bgcolor, d.i, null);
-            var patternFGColor = drawing.getPatternAttr(markerPattern.fgcolor, d.i, null);
             var patternFGOpacity = markerPattern.fgopacity;
             var patternSize = drawing.getPatternAttr(markerPattern.size, d.i, 8);
             var patternSolidity = drawing.getPatternAttr(markerPattern.solidity, d.i, 0.3);
-            var perPointPattern = d.mcc ||
+            perPointPattern = perPointPattern || d.mcc ||
                 Lib.isArrayOrTypedArray(markerPattern.shape) ||
                 Lib.isArrayOrTypedArray(markerPattern.bgcolor) ||
                 Lib.isArrayOrTypedArray(markerPattern.fgcolor) ||

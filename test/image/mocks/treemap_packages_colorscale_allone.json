@@ -16,6 +16,11 @@
 				"line": {
 					"color": "#777"
 				},
+				"pattern": {
+					"fillmode": "replace",
+					"shape": ".",
+					"size": 3
+				},
 				"colorscale": [
 					[
 						0,
